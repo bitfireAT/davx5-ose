@@ -31,11 +31,7 @@
   <string name="intro_leave_unchecked">* Efterlad åben for senere påmindelse. Kan nulstilles i program opsætning / %s.</string>
   <string name="intro_more_info">Mere information</string>
   <string name="intro_tasks_title">Opgaver understøttelse</string>
-  <string name="intro_tasks_not_installed">Ikke installeret</string>
-  <string name="intro_tasks_opentasks_installed">OpenTasks installeret</string>
   <string name="intro_tasks_no_app_store">ingen program-butik tilgængelig</string>
-  <string name="intro_tasks_text1"><![CDATA[Android har ikke en indbygget opgaver understøttelse. Hvis opgaver er server understøttet, %s kan synkronisere dem va <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
-  <string name="intro_tasks_text2">For avancerede funktioner som underopgaver eller gentagne opgaver, bruges 3. part program.</string>
   <string name="intro_tasks_dont_show">Ingen opgaver understøttelse.*</string>
   <string name="intro_open_source_title">Åben kilde program</string>
   <string name="intro_open_source_text">Vi er glade for at  %s bruges, som er åben kilde program. Udvikling, vedligehold og understøttelse er hårdt arbejde. Overvej at bidrage (der er flere måder) eller donere. Det vil blive meget værdsat!</string>
@@ -53,7 +49,6 @@
   <string name="permissions_calendar_title">Kalender rettigheder</string>
   <string name="permissions_calendar_status_off">Ingen kalender synkronisering (ikke anbefalet)</string>
   <string name="permissions_calendar_status_on">Kalender synkronisering mulig</string>
-  <string name="permissions_tasks_title">OpenTasks rettigheder</string>
   <string name="permissions_tasks_status_not_installed">Ingen opgave synkronisering (ikke installeret)</string>
   <string name="permissions_tasks_status_off">Ingen opgave synkronisering (ikke anbefalet)</string>
   <string name="permissions_tasks_status_on">Opgave synkronisering mulig</string>
@@ -239,11 +234,7 @@
   <string name="settings_default_alarm_off">Ingen standard påmindelse oprettet</string>
   <string name="settings_default_alarm_message">Hvis standard påmindelse skal oprettes for hændelse uden påmindelse: antal minutter før hændelse. Efterlad tom for at deaktivere standard påmindelse.</string>
   <string name="settings_manage_calendar_colors">Administrer farver for kalender</string>
-  <string name="settings_manage_calendar_colors_on">Kalenderfarver administreres af DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Kalenderfarver sættes ikke fra DAVx⁵</string>
   <string name="settings_event_colors">Farver for begivenheder</string>
-  <string name="settings_event_colors_on">Synkroniser farver for begivenheder</string>
-  <string name="settings_event_colors_off">Synkroniser ikke farver for begivenheder</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Gruppering af kontakter</string>
   <string-array name="settings_contact_group_method_entries">
@@ -307,8 +298,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵-rettigheder</string>
   <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks-version for gammel</string>
-  <string name="sync_error_opentasks_required_version">Påkrævet version: %1$s (aktuelt%2$s)</string>
   <string name="sync_error_authentication_failed">Login mislykkedes (check loginoplysninger)</string>
   <string name="sync_error_io">Netværks- eller I/O-fejl - %s</string>
   <string name="sync_error_http_dav">HTTP-serverfejl - %s</string>

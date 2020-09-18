@@ -192,11 +192,7 @@
   <string name="settings_default_alarm_off">未創建默認的提醒方式</string>
   <string name="settings_default_alarm_message">如果默認的提醒方式在創建時沒有這一項：在事項前幾分鐘，就可以留空來關閉默認的提醒方式。</string>
   <string name="settings_manage_calendar_colors">管理行事曆的顏色</string>
-  <string name="settings_manage_calendar_colors_on">行事曆顏色由 DAVx⁵ 管理</string>
-  <string name="settings_manage_calendar_colors_off">行事曆顏色不由 DAVx⁵ 管理</string>
   <string name="settings_event_colors">設定事項的顔色</string>
-  <string name="settings_event_colors_on">同步事項的顔色</string>
-  <string name="settings_event_colors_off">不同步事項的顔色</string>
   <string name="settings_carddav">CardDAV（聯絡人檔案）</string>
   <string name="settings_contact_group_method">聯絡人群組的儲存格式</string>
   <string-array name="settings_contact_group_method_entries">
@@ -242,8 +238,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ 權限</string>
   <string name="sync_error_permissions_text">需要額外的權限</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks 太舊了</string>
-  <string name="sync_error_opentasks_required_version">需要版本：%1$s（當前版本：%2$s）</string>
   <string name="sync_error_authentication_failed">鑒權失敗（你需要檢查登錄憑證）</string>
   <string name="sync_error_io">網際網絡或者輸入輸出錯誤——%s</string>
   <string name="sync_error_http_dav">HTTP伺服器錯誤——%s</string>

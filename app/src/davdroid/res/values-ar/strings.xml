@@ -172,11 +172,7 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">الأحداث التي جرت بعد عدد الأيام هذا في الماضي سيتم تجاهلها (يمكن أن يكون 0).  أتركه فارغاً لمزامنة جميع الأحداث.</string>
   <string name="settings_manage_calendar_colors">إدارة ألوان التقاويم</string>
-  <string name="settings_manage_calendar_colors_on">ألوان التقاويم يديرها DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">ألوان التقاويم لا يقوم DAVx⁵ بضبطها</string>
   <string name="settings_event_colors">دعم ألوان الأحداث</string>
-  <string name="settings_event_colors_on">زامن ألوان الأحداث</string>
-  <string name="settings_event_colors_off">لا تزامن ألوان الأحداث</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">طريقة مجموعة عنوان الاتصال</string>
   <string name="settings_contact_group_method_change">تغيير طريقة المجموعة</string>
@@ -218,8 +214,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">أذونات DAVx⁵</string>
   <string name="sync_error_permissions_text">مطلوب أذونات إضافية</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks قديم للغاية</string>
-  <string name="sync_error_opentasks_required_version">الإصدار  المطلوب:%1$s (الموجود %2$s)</string>
   <string name="sync_error_authentication_failed">فشلت المصادقة (تحقق من بيانات تسجيل الدخول)</string>
   <string name="sync_error_io">خطأ شبكة أو الإدخال/الإخراج - %s</string>
   <string name="sync_error_http_dav">خطأ خادم HTTP - %s</string>

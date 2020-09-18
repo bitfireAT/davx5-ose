@@ -31,11 +31,7 @@
   <string name="intro_leave_unchecked">*取消选中以供稍后提醒。可以在应用设置中重置/%s。</string>
   <string name="intro_more_info">更多信息</string>
   <string name="intro_tasks_title">任务支持</string>
-  <string name="intro_tasks_not_installed">未安装</string>
-  <string name="intro_tasks_opentasks_installed">OpenTasks 已安装</string>
   <string name="intro_tasks_no_app_store">没有可用的应用商店</string>
-  <string name="intro_tasks_text1"><![CDATA[Android没有内置的任务支持。如果你的服务器支持任务，%s可以使用<a href="https://opentasks.app/">OpenTasks</a>同步它们。]]></string>
-  <string name="intro_tasks_text2">对于子任务或重复任务等高级功能，您将需要其他应用。</string>
   <string name="intro_tasks_dont_show">我不需要任务支持。*</string>
   <string name="intro_open_source_title">开源软件</string>
   <string name="intro_open_source_text">我们很高兴您使用%s开源软件。开发，维护和支持是艰苦的工作。请考虑捐款（有很多方式）或捐款。将不胜感激！</string>
@@ -53,7 +49,6 @@
   <string name="permissions_calendar_title">日历权限</string>
   <string name="permissions_calendar_status_off">无日历同步（不推荐）</string>
   <string name="permissions_calendar_status_on">可同步日历</string>
-  <string name="permissions_tasks_title">OpenTasks 权限</string>
   <string name="permissions_tasks_status_not_installed">无任务同步 （未安装）</string>
   <string name="permissions_tasks_status_off">无任务同步 （不推荐）</string>
   <string name="permissions_tasks_status_on">可同步任务</string>
@@ -237,11 +232,7 @@
   <string name="settings_default_alarm_off">默认提醒未创建</string>
   <string name="settings_default_alarm_message">当没有提醒的事件需增加默认提醒时，事件开始前多少分钟触发提醒。留空以禁用默认提醒。</string>
   <string name="settings_manage_calendar_colors">管理日历颜色</string>
-  <string name="settings_manage_calendar_colors_on">日历颜色由 DAVx⁵ 设置</string>
-  <string name="settings_manage_calendar_colors_off">日历颜色不由 DAVx⁵ 设置</string>
   <string name="settings_event_colors">事件日历颜色支持</string>
-  <string name="settings_event_colors_on">同步日历事件颜色</string>
-  <string name="settings_event_colors_off">不同步日历事件颜色</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">联系人分组方式</string>
   <string-array name="settings_contact_group_method_entries">
@@ -305,8 +296,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks 版本太旧</string>
-  <string name="sync_error_opentasks_required_version">最低版本 %1$s （当前 %2$s）</string>
   <string name="sync_error_authentication_failed">认证失败（请检查登录凭据，如用户名密码）</string>
   <string name="sync_error_io">网络或 I/O 错误 – %s</string>
   <string name="sync_error_http_dav">HTTP 服务器错误 – %s</string>

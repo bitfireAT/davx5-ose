@@ -30,11 +30,7 @@
   <string name="intro_leave_unchecked">* Déjelo desmarcado para que se le recuerde más tarde. Se puede reconfigurar en los ajustes de la aplicación / %s</string>
   <string name="intro_more_info">Información adicional</string>
   <string name="intro_tasks_title">Soporte de tareas</string>
-  <string name="intro_tasks_not_installed">No instalado</string>
-  <string name="intro_tasks_opentasks_installed">OpenTasks instalado</string>
   <string name="intro_tasks_no_app_store">Ninguna tienda de aplicaciones disponible</string>
-  <string name="intro_tasks_text1"><![CDATA[Android no tiene soporte propio de tareas (tasks). Si su servidor las soporta, %s puede sincronizarlas usando <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
-  <string name="intro_tasks_text2">Para características avanzadas como subtareas o tareas recurrentes necesitará aplicaciones adicionales.</string>
   <string name="intro_tasks_dont_show">No necesito soporte para tareas.*</string>
   <string name="intro_open_source_title">Software open-source</string>
   <string name="intro_open_source_text">Nos complace que use%s, que es software open-source. Desarrollar, mantener y asistir a usuarios es un trabajo duro. Por favor, considere contribuir (hay muchas maneras) o hacer una donación. ¡Se agradecería mucho!</string>
@@ -52,7 +48,6 @@
   <string name="permissions_calendar_title">Permisos de calendario</string>
   <string name="permissions_calendar_status_off">Sin sincronización de calendario (no recomendado)</string>
   <string name="permissions_calendar_status_on">Sincronización de calendario permitida</string>
-  <string name="permissions_tasks_title">Permisos de OpenTasks</string>
   <string name="permissions_tasks_status_not_installed">Sin sincronización de tareas (no instalado)</string>
   <string name="permissions_tasks_status_off">Sin sincronización de tareas (no recomendado)</string>
   <string name="permissions_tasks_status_on">Sincronización de tareas permitidas</string>
@@ -233,11 +228,7 @@
   <string name="settings_default_alarm_off">No se han creado recordatorios por defecto</string>
   <string name="settings_default_alarm_message">Si se crearán recordatorios por defecto para los eventos que no los tengan: el número de minutos antes del evento. Déjelo en blanco para deshabilitar los recordatorios por defecto.</string>
   <string name="settings_manage_calendar_colors">Colores de calendario</string>
-  <string name="settings_manage_calendar_colors_on">Los colores de los calendarios son administrados por DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Los colores de los calendarios no son establecidos por DAVx⁵</string>
   <string name="settings_event_colors">Soporte de colores en eventos</string>
-  <string name="settings_event_colors_on">Sincronizar colores de eventos</string>
-  <string name="settings_event_colors_off">No sincronizar colores de eventos</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Método de contacto de grupo</string>
   <string-array name="settings_contact_group_method_entries">
@@ -283,8 +274,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">Permisos de DAVx⁵</string>
   <string name="sync_error_permissions_text">Permisos adicionales requeridos</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks muy viejo</string>
-  <string name="sync_error_opentasks_required_version">Versión requerida: %1$s (actual %2$s)</string>
   <string name="sync_error_authentication_failed">Falló la autenticación (revise credenciales de inicio de sesión)</string>
   <string name="sync_error_io">Error de red o E/S – %s</string>
   <string name="sync_error_http_dav">Error de servidor – %s</string>

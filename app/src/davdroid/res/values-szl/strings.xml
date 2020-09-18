@@ -30,11 +30,7 @@
   <string name="intro_leave_unchecked">* Ôstow niyzaznaczōne, żeby spōmniało ô sobie niyskorzij. Idzie to zmiynić we sztelōnkach aplikacyje / %s</string>
   <string name="intro_more_info">Wiyncyj informacyji</string>
   <string name="intro_tasks_title">Sparcie Zadań</string>
-  <string name="intro_tasks_not_installed">Niyzainstalowane</string>
-  <string name="intro_tasks_opentasks_installed">OpenTasks zainstalowany</string>
   <string name="intro_tasks_no_app_store">Niy je dostympny żodyn sklep ze aplikacyjami</string>
-  <string name="intro_tasks_text1"><![CDATA[Android niy mo wbudowanego sparcio zadań. Jeźli zadania sōm spiyrane ôd twojigo serwera, to %s może je synchrōnizować bez <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
-  <string name="intro_tasks_text2">Do szyrszych działań jak podzadania abo zadania, co sie powtorzajōm, potrzebujesz ekstra aplikacyji.</string>
   <string name="intro_tasks_dont_show">Niy potrzebuja sparcio zadań.*</string>
   <string name="intro_open_source_title">Ôprogramowanie Open-Source</string>
   <string name="intro_open_source_text">Sōm my radzi, że używosz %s, ôprogramowanie open-source. Tworzynie, utrzimanie i sparcie to ciynżko robota. Pōmyśl nad pōmocōm (sōm rozmajte spusoby) abo dowkōm. Fest by nos to ucieszyło!</string>
@@ -212,11 +208,7 @@
   <string name="settings_default_alarm_off">Niy były stworzōne żodne wychodne spōmniynia</string>
   <string name="settings_default_alarm_message">Jeźli wychodne spōmniynia bydōm tworzōne do zdarzyń bez spōmniynio: liczba minut przed zdarzyniym. Ôstow prōzne, żeby zastawić wychodne spōmniynia.</string>
   <string name="settings_manage_calendar_colors">Zarzōndzej farbami kalyndorza</string>
-  <string name="settings_manage_calendar_colors_on">Farby kalyndorza sōm zarzōndzane ôd DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Farby kalyndorza niy sōm sztelowane ôd DAVx⁵</string>
   <string name="settings_event_colors">Sparcie farbōw zdarzyń</string>
-  <string name="settings_event_colors_on">Synchrōnizuj farby zdarzyń</string>
-  <string name="settings_event_colors_off">Niy synchrōnizuj farbōw zdarzyń</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Spusōb grupy kōntaktōw</string>
   <string-array name="settings_contact_group_method_entries">
@@ -262,8 +254,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">Uprawniynia DAVx⁵</string>
   <string name="sync_error_permissions_text">Wymogane ekstra uprawniynia</string>
-  <string name="sync_error_opentasks_too_old">OpenTask je za stary</string>
-  <string name="sync_error_opentasks_required_version">Wymogano wersyjo: %1$s (teroźno %2$s)</string>
   <string name="sync_error_authentication_failed">Autoryzacyjo sie niy podarziła (dej pozōr na dane logowanio)</string>
   <string name="sync_error_io">Feler necu abo I/O – %s</string>
   <string name="sync_error_http_dav">Feler serwera HTTP – %s</string>

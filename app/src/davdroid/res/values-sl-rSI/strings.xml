@@ -174,11 +174,7 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Dogodki, ki so v preteklosti več kot ta številka dni bodo prezrti (lahko je 0). Pusti prazno za sinhronizacijo vseh dogodkov.</string>
   <string name="settings_manage_calendar_colors">Uredi barve koledarjev</string>
-  <string name="settings_manage_calendar_colors_on">Barve koledarja ureja DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Barve koledarja ne ureja DAVx⁵</string>
   <string name="settings_event_colors">Podpora barva dogodka</string>
-  <string name="settings_event_colors_on">Sinhroniziraj barve dogodkov</string>
-  <string name="settings_event_colors_off">Ne sinhroniziraj barve dogodkov</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Metoda skupine kontaktov</string>
   <string name="settings_contact_group_method_change">Spremeni metodo skupine</string>
@@ -220,8 +216,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ dovoljenja</string>
   <string name="sync_error_permissions_text">Dodatna dovoljenja so zahtevana</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks je prestar</string>
-  <string name="sync_error_opentasks_required_version">Zahtevana verzija:%1$s (trenutno %2$s)</string>
   <string name="sync_error_authentication_failed">Avtentikacija ni uspela (preverite podatke prijave)</string>
   <string name="sync_error_io">Omrežna ali I/O napaka -- %s</string>
   <string name="sync_error_http_dav">HTTP strežniška napaka -- %s</string>

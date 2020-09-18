@@ -183,11 +183,7 @@
   <string name="settings_default_alarm_off">Δεν δημιουργούνται προεπιλεγμένες υπενθυμίσεις</string>
   <string name="settings_default_alarm_message">Εάν δημιουργούνται προεπιλεγμένες υπενθυμίσεις για συμβάντα χωρίς υπενθύμιση: επιθυμητός αριθμός λεπτών πριν από το συμβάν. Αφήστε κενό για να απενεργοποιήσετε τις προεπιλεγμένες υπενθυμίσεις.</string>
   <string name="settings_manage_calendar_colors">Διαχείριση χρωμάτων ημερολογίου</string>
-  <string name="settings_manage_calendar_colors_on">Τα χρώματα του ημερολογίου διαχειρίζονται από το DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Τα χρώματα του ημερολογίου δεν ορίστηκαν από το DAVx⁵</string>
   <string name="settings_event_colors">Υποστήριξη χρώματος στα συμβάντα</string>
-  <string name="settings_event_colors_on">Συγχρονισμός χρωμάτων συμβάντων</string>
-  <string name="settings_event_colors_off">Να μην γίνει συγχρονισμός χρωμάτων συμβάντων</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Αλλαγή μεθόδου ομάδας</string>
   <string-array name="settings_contact_group_method_entries">
@@ -233,8 +229,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
   <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>
-  <string name="sync_error_opentasks_too_old">Πολύ παλιά εφαρμογή OpenTasks</string>
-  <string name="sync_error_opentasks_required_version">Απαιτούμενη έκδοση: %1$s (τρέχουσα %2$s)</string>
   <string name="sync_error_authentication_failed">Ο έλεγχος ταυτότητας απέτυχε (ελέγξτε τα διαπιστευτήρια σύνδεσης)</string>
   <string name="sync_error_io">Σφάλμα δικτύου ή I/O – %s</string>
   <string name="sync_error_http_dav">Σφάλμα διακομιστής HTTP – %s</string>

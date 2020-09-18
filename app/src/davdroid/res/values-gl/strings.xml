@@ -31,11 +31,7 @@
   <string name="intro_leave_unchecked">* Deixar sen marcar para lembrar máis tarde. Pode restablecerse nos axustes da app / %s.</string>
   <string name="intro_more_info">Máis información</string>
   <string name="intro_tasks_title">Soporte para Tasks</string>
-  <string name="intro_tasks_not_installed">Non instalada</string>
-  <string name="intro_tasks_opentasks_installed">OpenTasks instalada</string>
   <string name="intro_tasks_no_app_store">Sen tenda de apps dispoñible</string>
-  <string name="intro_tasks_text1"><![CDATA[Android non ten soporte propio para tarefas. Se as tarefas están soportadas polo teu servidor, %s podes sincronizalas usando <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
-  <string name="intro_tasks_text2">Para características avanzadas como subtarefas ou tarefas recurrentes, precisas apps adicionais.</string>
   <string name="intro_tasks_dont_show">Non necesito soporte para tarefas.*</string>
   <string name="intro_open_source_title">Software de código aberto</string>
   <string name="intro_open_source_text">Encántanos que uses %s, que é software de código aberto. O desenvolvemento, mantemento e soporte son un traballo difícil. Considera contribuír (hai moitos xeitos) ou facer unha doazón. Sería de agradecer!</string>
@@ -53,7 +49,6 @@
   <string name="permissions_calendar_title">Permisos de calendario</string>
   <string name="permissions_calendar_status_off">Sen sincronización de calendario (non se recomenda)</string>
   <string name="permissions_calendar_status_on">É posible sincronizar o calendario</string>
-  <string name="permissions_tasks_title">Permisos de OpenTasks</string>
   <string name="permissions_tasks_status_not_installed">Sen sincronización de tarefas (non instalado) </string>
   <string name="permissions_tasks_status_off">Sen sincronización de tarefas (non se recomenda)</string>
   <string name="permissions_tasks_status_on">É posible sincronizar as tarefas</string>
@@ -239,11 +234,7 @@
   <string name="settings_default_alarm_off">Non se crearon alarmas por omisión</string>
   <string name="settings_default_alarm_message">Se deben ser creadas as alarmas por omisión para eventos sen alarma: o número de minutos desexado antes do evento. Deixar baleiro para desactivar alarmas por omisión.</string>
   <string name="settings_manage_calendar_colors">Xestionar cores dos calendarios</string>
-  <string name="settings_manage_calendar_colors_on">As cores dos calendarios son xestionadas por DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">As cores do calendario non son establecidas por DAVx⁵</string>
   <string name="settings_event_colors">Soporte para cor de eventos</string>
-  <string name="settings_event_colors_on">Sincr. cores de eventos</string>
-  <string name="settings_event_colors_off">Non sincr. cores de eventos</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Método para agrupar contacto</string>
   <string-array name="settings_contact_group_method_entries">
@@ -307,8 +298,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">Permisos DAVx⁵</string>
   <string name="sync_error_permissions_text">Precísanse permisos adicionais</string>
-  <string name="sync_error_opentasks_too_old">OpenTask demasiado antigo</string>
-  <string name="sync_error_opentasks_required_version">Require versión: %1$s (actual %2$s)</string>
   <string name="sync_error_authentication_failed">Fallo na autenticación (verifique credenciais)</string>
   <string name="sync_error_io">Fallo de Rede ou I/O – %s</string>
   <string name="sync_error_http_dav">Fallo servidor HTTP – %s</string>

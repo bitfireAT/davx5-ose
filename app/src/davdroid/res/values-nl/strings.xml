@@ -31,11 +31,7 @@
   <string name="intro_leave_unchecked">* Laat dit selectievakje uitgeschakeld om later te worden herinnerd. Kan worden gereset in app-instellingen / %s.</string>
   <string name="intro_more_info">Meer informatie</string>
   <string name="intro_tasks_title">Takenondersteuning</string>
-  <string name="intro_tasks_not_installed">Niet geïnstalleerd</string>
-  <string name="intro_tasks_opentasks_installed">OpenTasks geïnstalleerd</string>
   <string name="intro_tasks_no_app_store">Geen app store beschikbaar</string>
-  <string name="intro_tasks_text1"><![CDATA[Android heeft geen ingebouwde ondersteuning voor taken. Als taken worden ondersteund door uw server, kan %s ze synchroniseren met <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
-  <string name="intro_tasks_text2">Voor geavanceerde functies zoals subtaken of terugkerende taken heb je extra apps nodig.</string>
   <string name="intro_tasks_dont_show">Ik heb geen taakondersteuning nodig.*</string>
   <string name="intro_open_source_title">Open source software</string>
   <string name="intro_open_source_text">We zijn blij dat je de open-source software %s gebruikt. Ontwikkeling, onderhoud en ondersteuning zijn hard werk. Overweeg om een bijdrage te leveren (er zijn veel manieren) of een donatie. Het wordt zeer gewaardeerd!</string>
@@ -53,7 +49,6 @@
   <string name="permissions_calendar_title">Agendamachtigingen</string>
   <string name="permissions_calendar_status_off">Geen agendasynchronisatie (niet aanbevolen)</string>
   <string name="permissions_calendar_status_on">Agendasynchronisatie mogelijk</string>
-  <string name="permissions_tasks_title">OpenTasks machtigingen</string>
   <string name="permissions_tasks_status_not_installed">Geen taaksynchronisatie (niet geïnstalleerd)</string>
   <string name="permissions_tasks_status_off">Geen taaksynchronisatie (niet aanbevolen)</string>
   <string name="permissions_tasks_status_on">Taaksynchronisatie mogelijk</string>
@@ -239,11 +234,7 @@
   <string name="settings_default_alarm_off">Er worden geen standaardherinneringen gemaakt</string>
   <string name="settings_default_alarm_message">Als standaardherinneringen worden aangemaakt voor evenementen zonder herinnering: het gewenste aantal minuten voor het evenement. Laat leeg om standaardherinneringen uit te schakelen.</string>
   <string name="settings_manage_calendar_colors">Agendakleuren beheren</string>
-  <string name="settings_manage_calendar_colors_on">Agendakleuren worden door DAVx⁵ beheerd.</string>
-  <string name="settings_manage_calendar_colors_off">Agendakleuren worden niet door DAVx⁵ ingesteld</string>
   <string name="settings_event_colors">Evenementkleuren ondersteunen</string>
-  <string name="settings_event_colors_on">Evenementkleuren worden synchroniseerd</string>
-  <string name="settings_event_colors_off">Evenementkleuren worden niet gesynchroniseerd</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Methode groepen contacten</string>
   <string-array name="settings_contact_group_method_entries">
@@ -307,8 +298,6 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
-  <string name="sync_error_opentasks_too_old">OpenTasks te oud</string>
-  <string name="sync_error_opentasks_required_version">Vereiste verzie: %1$s(momenteel %2$s)</string>
   <string name="sync_error_authentication_failed">Inloggen mislukt (check je login credentials)</string>
   <string name="sync_error_io">Netwerk of I/O error - %s</string>
   <string name="sync_error_http_dav">HTTP server fout - %s</string>

@@ -31,11 +31,12 @@
   <string name="intro_leave_unchecked">* Pro připomenutí později nezaškrtávejte. Je možné resetovat v nastavení aplikace / %s.</string>
   <string name="intro_more_info">Další informace</string>
   <string name="intro_tasks_title">Podpora úkolů</string>
-  <string name="intro_tasks_not_installed">Nenainstalováno</string>
-  <string name="intro_tasks_opentasks_installed">OpenTasks nainstalováno</string>
+  <string name="intro_tasks_text1">Pokud jsou úkoly podporovány vámi využívaným serverem, je možné je synchronizovat pomocí podporované aplikace pro úkoly:</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[Pro některé funkce, jako jsou dílčí a opakující se úkoly nejspíš budete potřebovat <a href="https://www.davx5.com/faq/tasks/advanced-task-features">další aplikace</a>.]]></string>
+  <string name="intro_tasks_tasks_org">Úkoly</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Některé funkce (ještě) <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nejsou podporovány</a>.]]></string>
   <string name="intro_tasks_no_app_store">Není k dispozici obchod s aplikacemi</string>
-  <string name="intro_tasks_text1"><![CDATA[Android nemá vestavěnou podporu pro úkoly. Pokud jsou úlohy podporovány serverem, který využíváte, %s je možné je synchronizovat pomocí aplikace <a href="https://opentasks.app/">OpenTasks</a>.]]></string>
-  <string name="intro_tasks_text2">Pro pokročilé funkce, jako např. dílčí nebo opakující se úlohy, je zapotřebí další aplikace.</string>
   <string name="intro_tasks_dont_show">Nepotřebuji podporu pro úkoly.*</string>
   <string name="intro_open_source_title">Opensource software</string>
   <string name="intro_open_source_text">Jsme rádi, že %s používáte. Jde o opensource software. Vývoj, údržba a podpora je ale těžká práce. Prosím zvažte zapojení se (je mnoho způsobů jak) nebo podpoření vývoje darem. Bude to velmi oceněno!</string>
@@ -53,7 +54,8 @@
   <string name="permissions_calendar_title">Oprávnění pro přístup ke kalendáři</string>
   <string name="permissions_calendar_status_off">Bez synchronizace kalendáře (nedoporučeno)</string>
   <string name="permissions_calendar_status_on">Synchronizace kalendáře možná</string>
-  <string name="permissions_tasks_title">Oprávnění pro OpenTasks</string>
+  <string name="permissions_opentasks_title">Oprávnění pro OpenTasks</string>
+  <string name="permissions_tasksorg_title">Oprávnění pro úkoly</string>
   <string name="permissions_tasks_status_not_installed">Bez synchronizace úkolů (nenainstalováno)</string>
   <string name="permissions_tasks_status_off">Bez synchronizace úkolů (nedoporučeno)</string>
   <string name="permissions_tasks_status_on">Synchronizace úkolů možná</string>
@@ -126,6 +128,10 @@
   <string name="app_settings_reset_hints">Znovu zobrazovat rady</string>
   <string name="app_settings_reset_hints_summary">Znovu povolí vypnuté texty nápovědy</string>
   <string name="app_settings_reset_hints_success">Budou zobrazovány všechny texty nápovědy</string>
+  <string name="app_settings_integration">Napojení</string>
+  <string name="app_settings_tasks_provider">Aplikace pro úkoly</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">Synchronizuje se s %s</string>
+  <string name="app_settings_tasks_provider_none">Nenalezena žádná kompatibilní aplikace pro úkoly</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -243,11 +249,11 @@
   <string name="settings_default_alarm_off">Nejsou vytvořené žádné výchozí připomínky</string>
   <string name="settings_default_alarm_message">Pokud mají být pro události bez připomínky vytvořeny výchozí připomínky: požadovaný počet minut před událostí. Pro vypnutí výchozích připomínek nevyplňujte.</string>
   <string name="settings_manage_calendar_colors">Spravovat barvy kalendářů</string>
-  <string name="settings_manage_calendar_colors_on">Barvy kalendářů spravuje DAVx⁵</string>
-  <string name="settings_manage_calendar_colors_off">Barvy kalendářů nespravuje DAVx⁵</string>
+  <string name="settings_manage_calendar_colors_on">Barvy kalendáře jsou při každé synchronizaci resetovány</string>
+  <string name="settings_manage_calendar_colors_off">Barvy kalendáře je možné nastavovat ostatními aplikacemi</string>
   <string name="settings_event_colors">Podpora pro barvy událostí</string>
-  <string name="settings_event_colors_on">Synchronizovat barvy událostí</string>
-  <string name="settings_event_colors_off">Nesynchronizovat barvy událostí</string>
+  <string name="settings_event_colors_on">Barvy událostí jsou synchronizovány</string>
+  <string name="settings_event_colors_off">Barvy událostí nejsou synchronizovány</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Metoda seskupování kontaktů</string>
   <string-array name="settings_contact_group_method_entries">
@@ -311,8 +317,8 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ oprávnění</string>
   <string name="sync_error_permissions_text">Vyžadována dodatečná oprávnění</string>
-  <string name="sync_error_opentasks_too_old">Příliš stará verze OpenTasks</string>
-  <string name="sync_error_opentasks_required_version">Požadovaná verze: %1$s (stávající %2$s)</string>
+  <string name="sync_error_tasks_too_old">Příliš stará verze %s</string>
+  <string name="sync_error_tasks_required_version">Nejnižší požadovaná verze: %1$s</string>
   <string name="sync_error_authentication_failed">Ověření se nezdařilo (zkontrolujte přihlašovací údaje)</string>
   <string name="sync_error_io">Chyba sítě nebo vstupu/výstupu – %s</string>
   <string name="sync_error_http_dav">Chyba HTTP serveru – %s</string>
