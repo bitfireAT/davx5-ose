@@ -22,10 +22,7 @@ class TextTable(
         if (values.size != headers.size)
             throw IllegalArgumentException("Table line must have ${headers.size} column(s)")
         lines += values.map {
-            if (it == null)
-                "—"
-            else
-                it.toString()
+            it?.toString() ?: "—"
         }.toTypedArray()
     }
 

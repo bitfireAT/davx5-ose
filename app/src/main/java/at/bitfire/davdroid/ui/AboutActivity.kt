@@ -132,7 +132,7 @@ class AboutActivity: AppCompatActivity() {
                 warranty.setText(R.string.about_license_info_no_warranty)
 
                 model.initialize("gplv3.html", true)
-                model.htmlText.observe(viewLifecycleOwner, Observer { spanned ->
+                model.htmlText.observe(viewLifecycleOwner, { spanned ->
                     license_text.text = spanned
                 })
             }
@@ -149,7 +149,7 @@ class AboutActivity: AppCompatActivity() {
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             model.initialize("translators.json", false)
-            model.plainText.observe(viewLifecycleOwner, Observer { json ->
+            model.plainText.observe(viewLifecycleOwner, { json ->
                 val jsonTranslations = JSONObject(json)
                 translators.adapter = TranslationsAdapter(jsonTranslations)
             })
@@ -183,7 +183,7 @@ class AboutActivity: AppCompatActivity() {
 
                 // sort translations by localized language name
                 val collator = Collator.getInstance()
-                translations.sortWith(Comparator<Translation> {
+                translations.sortWith({
                     o1, o2 -> collator.compare(o1.language, o2.language)
                 })
             }

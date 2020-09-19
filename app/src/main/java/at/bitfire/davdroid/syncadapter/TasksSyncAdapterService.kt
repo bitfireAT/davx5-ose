@@ -86,7 +86,7 @@ open class TasksSyncAdapterService: SyncAdapterService() {
                         .setSmallIcon(R.drawable.ic_sync_problem_notify)
                         .setContentTitle(context.getString(R.string.sync_error_tasks_too_old, tasksAppLabel))
                         .setContentText(message)
-                        .setSubText("${tasksAppLabel} ${e.installedVersionName}")
+                        .setSubText("$tasksAppLabel ${e.installedVersionName}")
                         .setCategory(NotificationCompat.CATEGORY_ERROR)
 
                 try {

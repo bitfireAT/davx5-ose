@@ -43,7 +43,7 @@ class BatteryOptimizationsFragment: Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.model = model
 
-        model.shouldBeWhitelisted.observe(viewLifecycleOwner, Observer { shouldBeWhitelisted ->
+        model.shouldBeWhitelisted.observe(viewLifecycleOwner, { shouldBeWhitelisted ->
             @SuppressLint("BatteryLife")
             if (shouldBeWhitelisted && !model.isWhitelisted.value!! && Build.VERSION.SDK_INT >= 23)
                startActivityForResult(Intent(

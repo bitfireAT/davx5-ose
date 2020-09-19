@@ -105,7 +105,7 @@ class SettingsActivity: AppCompatActivity() {
         private fun initSettings() {
             // preference group: sync
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_contacts_key))!!.let {
-                model.syncIntervalContacts.observe(this, Observer { interval ->
+                model.syncIntervalContacts.observe(this, { interval: Long? ->
                     if (interval != null) {
                         it.isEnabled = true
                         it.isVisible = true
@@ -124,7 +124,7 @@ class SettingsActivity: AppCompatActivity() {
                 })
             }
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_calendars_key))!!.let {
-                model.syncIntervalCalendars.observe(this, Observer { interval ->
+                model.syncIntervalCalendars.observe(this, { interval: Long? ->
                     if (interval != null) {
                         it.isEnabled = true
                         it.isVisible = true
@@ -143,7 +143,7 @@ class SettingsActivity: AppCompatActivity() {
                 })
             }
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_tasks_key))!!.let {
-                model.syncIntervalTasks.observe(this, Observer { interval ->
+                model.syncIntervalTasks.observe(this, { interval: Long? ->
                     if (interval != null) {
                         it.isEnabled = true
                         it.isVisible = true
@@ -163,7 +163,7 @@ class SettingsActivity: AppCompatActivity() {
             }
 
             findPreference<SwitchPreferenceCompat>(getString(R.string.settings_sync_wifi_only_key))!!.let {
-                model.syncWifiOnly.observe(this, Observer { wifiOnly ->
+                model.syncWifiOnly.observe(this, { wifiOnly ->
                     it.isEnabled = !settings.containsKey(AccountSettings.KEY_WIFI_ONLY)
                     it.isChecked = wifiOnly
                     it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, wifiOnly ->
@@ -174,10 +174,10 @@ class SettingsActivity: AppCompatActivity() {
             }
 
             findPreference<EditTextPreference>("sync_wifi_only_ssids")!!.let {
-                model.syncWifiOnly.observe(this, Observer { wifiOnly ->
+                model.syncWifiOnly.observe(this, { wifiOnly ->
                     it.isEnabled = wifiOnly
                 })
-                model.syncWifiOnlySSIDs.observe(this, Observer { onlySSIDs ->
+                model.syncWifiOnlySSIDs.observe(this, { onlySSIDs ->
                     if (onlySSIDs != null) {
                         it.text = onlySSIDs.joinToString(", ")
                         it.summary = getString(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
@@ -198,7 +198,7 @@ class SettingsActivity: AppCompatActivity() {
                 })
             }
 
-            model.askForPermissions.observe(this, Observer { permissions ->
+            model.askForPermissions.observe(this, { permissions ->
                 if (permissions.any { ContextCompat.checkSelfPermission(requireActivity(), it) != PackageManager.PERMISSION_GRANTED }) {
                     if (permissions.any { shouldShowRequestPermissionRationale(it) })
                         // show rationale before requesting permissions
@@ -227,7 +227,7 @@ class SettingsActivity: AppCompatActivity() {
             val prefUserName = findPreference<EditTextPreference>("username")!!
             val prefPassword = findPreference<EditTextPreference>("password")!!
             val prefCertAlias = findPreference<Preference>("certificate_alias")!!
-            model.credentials.observe(this, Observer { credentials ->
+            model.credentials.observe(this, { credentials ->
                 when (credentials.type) {
                     Credentials.Type.UsernamePassword -> {
                         prefUserName.isVisible = true
@@ -263,7 +263,7 @@ class SettingsActivity: AppCompatActivity() {
             })
 
             // preference group: CalDAV
-            model.hasCalDav.observe(this, Observer { hasCalDav ->
+            model.hasCalDav.observe(this, { hasCalDav ->
                 if (!hasCalDav)
                     findPreference<PreferenceGroup>(getString(R.string.settings_caldav_key))!!.isVisible = false
                 else {
@@ -276,7 +276,7 @@ class SettingsActivity: AppCompatActivity() {
                     
                     findPreference<EditTextPreference>(getString(R.string.settings_sync_time_range_past_key))!!.let { pref ->
                         if (hasCalendars)
-                            model.timeRangePastDays.observe(this, Observer { pastDays ->
+                            model.timeRangePastDays.observe(this, { pastDays ->
                                 if (model.syncIntervalCalendars.value != null) {
                                     pref.isVisible = true
                                     if (pastDays != null) {
@@ -304,7 +304,7 @@ class SettingsActivity: AppCompatActivity() {
 
                     findPreference<EditTextPreference>(getString(R.string.settings_key_default_alarm))!!.let { pref ->
                         if (hasCalendars)
-                            model.defaultAlarmMinBefore.observe(this, Observer { minBefore ->
+                            model.defaultAlarmMinBefore.observe(this, { minBefore ->
                                 pref.isVisible = true
                                 if (minBefore != null) {
                                     pref.text = minBefore.toString()
@@ -328,7 +328,7 @@ class SettingsActivity: AppCompatActivity() {
                     }
 
                     findPreference<SwitchPreferenceCompat>(getString(R.string.settings_manage_calendar_colors_key))!!.let {
-                        model.manageCalendarColors.observe(this, Observer { manageCalendarColors ->
+                        model.manageCalendarColors.observe(this, { manageCalendarColors ->
                             it.isEnabled = !settings.containsKey(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
                             it.isChecked = manageCalendarColors
                             it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
@@ -340,7 +340,7 @@ class SettingsActivity: AppCompatActivity() {
 
                     findPreference<SwitchPreferenceCompat>(getString(R.string.settings_event_colors_key))!!.let { pref ->
                         if (hasCalendars)
-                            model.eventColors.observe(this, Observer { eventColors ->
+                            model.eventColors.observe(this, { eventColors ->
                                 pref.isVisible = true
                                 pref.isEnabled = !settings.containsKey(AccountSettings.KEY_EVENT_COLORS)
                                 pref.isChecked = eventColors
@@ -356,14 +356,14 @@ class SettingsActivity: AppCompatActivity() {
             })
 
             // preference group: CardDAV
-            model.syncIntervalContacts.observe(this, Observer { contactsSyncInterval ->
+            model.syncIntervalContacts.observe(this, { contactsSyncInterval ->
                 val hasCardDav = contactsSyncInterval != null
                 if (!hasCardDav)
                     findPreference<PreferenceGroup>(getString(R.string.settings_carddav_key))!!.isVisible = false
                 else {
                     findPreference<PreferenceGroup>(getString(R.string.settings_carddav_key))!!.isVisible = true
                     findPreference<ListPreference>(getString(R.string.settings_contact_group_method_key))!!.let {
-                        model.contactGroupMethod.observe(this, Observer { groupMethod ->
+                        model.contactGroupMethod.observe(this, { groupMethod ->
                             if (model.syncIntervalContacts.value != null) {
                                 it.isVisible = true
                                 it.value = groupMethod.name

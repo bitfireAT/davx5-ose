@@ -75,7 +75,7 @@ class TasksWatcher(
                     // account has already been removed
                 }
             } else {
-                Logger.log.info("Disabling ${authority} sync for $account")
+                Logger.log.info("Disabling $authority sync for $account")
                 ContentResolver.setIsSyncable(account, authority, 0)
             }
         }

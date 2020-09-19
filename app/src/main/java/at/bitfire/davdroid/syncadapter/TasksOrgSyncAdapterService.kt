@@ -1,4 +1,3 @@
 package at.bitfire.davdroid.syncadapter
 
-class TasksOrgSyncAdapterService: TasksSyncAdapterService() {
-}
+class TasksOrgSyncAdapterService: TasksSyncAdapterService()

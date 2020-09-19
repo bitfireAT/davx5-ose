@@ -11,7 +11,6 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import android.text.Html
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.log.Logger

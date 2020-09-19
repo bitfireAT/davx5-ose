@@ -71,7 +71,7 @@ class RenameAccountFragment: DialogFragment() {
         layout.setPadding(8*density, 8*density, 8*density, 8*density)
         layout.addView(editText)
 
-        model.finished.observe(this, Observer {
+        model.finished.observe(this, {
             this@RenameAccountFragment.requireActivity().finish()
         })
 

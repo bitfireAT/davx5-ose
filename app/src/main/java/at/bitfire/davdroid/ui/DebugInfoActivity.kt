@@ -131,7 +131,7 @@ class DebugInfoActivity: AppCompatActivity() {
             )
         })
 
-        model.debugInfo.observe(this, Observer { debugInfo ->
+        model.debugInfo.observe(this, { debugInfo ->
             val showDebugInfo = View.OnClickListener {
                 val uri = FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), debugInfo)
                 val intent = Intent(Intent.ACTION_VIEW)
@@ -143,7 +143,7 @@ class DebugInfoActivity: AppCompatActivity() {
             binding.debugInfoView.setOnClickListener(showDebugInfo)
         })
 
-        model.logFile.observe(this, Observer { logs ->
+        model.logFile.observe(this, { logs ->
             binding.logsView.setOnClickListener {
                 val uri = FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), logs)
                 val intent = Intent(Intent.ACTION_VIEW)
@@ -161,7 +161,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
 
     fun onShare(item: MenuItem? = null) {
-        model.generateZip() { zipFile ->
+        model.generateZip { zipFile ->
             val builder = ShareCompat.IntentBuilder.from(this)
                     .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
                     .setText(getString(R.string.debug_info_attached))
@@ -192,7 +192,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
         init {
             // create debug info directory
-            if (!debugInfoDir.isDirectory() && !debugInfoDir.mkdir())
+            if (!debugInfoDir.isDirectory && !debugInfoDir.mkdir())
                 throw IOException("Couldn't create debug info directory")
         }
 
@@ -202,12 +202,12 @@ class DebugInfoActivity: AppCompatActivity() {
                 return
             initialized = true
 
-            viewModelScope.async(Dispatchers.Default) {
+            viewModelScope.launch(Dispatchers.Default) {
                 val logFileName = extras?.getString(EXTRA_LOG_FILE)
                 val logsText = extras?.getString(EXTRA_LOGS)
                 if (logFileName != null) {
                     val file = File(logFileName)
-                    if (file.isFile() && file.canRead())
+                    if (file.isFile && file.canRead())
                         logFile.postValue(file)
                     else
                         Logger.log.warning("Can't read logs from $logFileName")
@@ -333,7 +333,7 @@ class DebugInfoActivity: AppCompatActivity() {
                     connectivityManager.allNetworks.sortedByDescending { it == activeNetwork }.forEach { network ->
                         val capabilities = connectivityManager.getNetworkCapabilities(network)!!
                         writer  .append(if (network == activeNetwork) " ☒ " else " ☐ ")
-                                .append("${capabilities.toString().replace('&',' ')}")
+                                .append(capabilities.toString().replace('&',' '))
                                 .append('\n')
                     }
                     writer.append('\n')

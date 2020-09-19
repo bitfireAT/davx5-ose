@@ -27,7 +27,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.ui.DeleteCollectionFragment
 import at.bitfire.ical4android.TaskProvider

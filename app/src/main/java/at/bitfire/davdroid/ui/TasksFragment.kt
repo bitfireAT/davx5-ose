@@ -19,11 +19,8 @@ import androidx.lifecycle.observe
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityTasksBinding
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
-import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_tasks.*
@@ -67,7 +64,7 @@ class TasksFragment: Fragment() {
     }
 
     private fun installApp(packageName: String) {
-        val uri = Uri.parse("market://details?id=" + packageName)
+        val uri = Uri.parse("market://details?id=$packageName")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         if (intent.resolveActivity(requireActivity().packageManager) != null)
             startActivity(intent)

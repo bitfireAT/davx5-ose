@@ -39,7 +39,7 @@ class DetectConfigurationFragment: Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model.detectConfiguration(loginModel).observe(this, Observer<DavResourceFinder.Configuration> { result ->
+        model.detectConfiguration(loginModel).observe(this, { result ->
             // save result for next step
             loginModel.configuration = result
 

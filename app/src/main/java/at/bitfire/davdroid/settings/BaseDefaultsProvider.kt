@@ -9,7 +9,6 @@
 package at.bitfire.davdroid.settings
 
 import android.content.Context
-import android.text.Html
 import at.bitfire.davdroid.TextTable
 import java.io.Writer
 

@@ -35,23 +35,23 @@ class PermissionsFragment: Fragment() {
 
         binding.text.text = getString(R.string.permissions_text, getString(R.string.app_name))
 
-        model.needContactsPermissions.observe(viewLifecycleOwner, Observer { needContacts ->
+        model.needContactsPermissions.observe(viewLifecycleOwner, { needContacts ->
             if (needContacts && model.haveContactsPermissions.value == false)
                 requestPermissions(CONTACT_PERMISSIONS, 0)
         })
-        model.needCalendarPermissions.observe(viewLifecycleOwner, Observer { needCalendars ->
+        model.needCalendarPermissions.observe(viewLifecycleOwner, { needCalendars ->
             if (needCalendars && model.haveCalendarPermissions.value == false)
                 requestPermissions(CALENDAR_PERMISSIONS, 0)
         })
-        model.needOpenTasksPermissions.observe(viewLifecycleOwner, Observer { needOpenTasks ->
+        model.needOpenTasksPermissions.observe(viewLifecycleOwner, { needOpenTasks ->
             if (needOpenTasks == true && model.haveOpenTasksPermissions.value == false)
                 requestPermissions(TaskProvider.PERMISSIONS_OPENTASKS, 0)
         })
-        model.needTasksOrgPermissions.observe(viewLifecycleOwner, Observer { needTasksOrg ->
+        model.needTasksOrgPermissions.observe(viewLifecycleOwner, { needTasksOrg ->
             if (needTasksOrg == true && model.haveTasksOrgPermissions.value == false)
                 requestPermissions(TaskProvider.PERMISSIONS_TASKS_ORG, 0)
         })
-        model.needAllPermissions.observe(viewLifecycleOwner, Observer { needAll ->
+        model.needAllPermissions.observe(viewLifecycleOwner, { needAll ->
             if (needAll && model.haveAllPermissions.value == false) {
                 val all = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS +
                     if (model.haveOpenTasksPermissions.value != null) TaskProvider.PERMISSIONS_OPENTASKS else emptyArray<String>() +

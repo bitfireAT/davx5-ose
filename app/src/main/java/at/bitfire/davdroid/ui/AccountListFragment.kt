@@ -51,7 +51,7 @@ class AccountListFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        model.networkAvailable.observe(viewLifecycleOwner, Observer { networkAvailable ->
+        model.networkAvailable.observe(viewLifecycleOwner, { networkAvailable ->
             no_network_info.visibility = if (networkAvailable) View.GONE else View.VISIBLE
         })
 
@@ -60,7 +60,7 @@ class AccountListFragment: Fragment() {
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = accountAdapter
         }
-        model.accounts.observe(viewLifecycleOwner, Observer { accounts ->
+        model.accounts.observe(viewLifecycleOwner, { accounts ->
             if (accounts.isEmpty()) {
                 list.visibility = View.GONE
                 empty.visibility = View.VISIBLE
@@ -231,7 +231,7 @@ class AccountListFragment: Fragment() {
 
             val sortedAccounts = accountManager
                     .getAccountsByType(context.getString(R.string.account_type))
-                    .sortedArrayWith(Comparator { a, b ->
+                    .sortedArrayWith({ a, b ->
                         collator.compare(a.name, b.name)
                     })
             val accountsWithInfo = sortedAccounts.map { account ->

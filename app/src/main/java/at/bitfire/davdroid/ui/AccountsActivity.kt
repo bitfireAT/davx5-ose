@@ -142,9 +142,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     fun syncAllAccounts(item: MenuItem? = null) {
         if (Build.VERSION.SDK_INT >= 25)
-            getSystemService<ShortcutManager>()?.let { shortcutManager ->
-                shortcutManager.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
-            }
+            getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
 
         val accounts = allAccounts()
         for (account in accounts)

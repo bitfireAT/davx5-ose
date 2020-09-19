@@ -12,6 +12,6 @@ class Converters {
 
     @TypeConverter
     fun stringToHttpUrl(url: String?): HttpUrl? =
-            url?.let { it.toHttpUrlOrNull() }
+            url?.toHttpUrlOrNull()
 
 }

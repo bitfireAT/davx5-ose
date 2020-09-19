@@ -7,9 +7,6 @@
 -dontobfuscate
 -printusage build/reports/r8-usage.txt
 
-# okhttp
--keepclassmembers class okhttp3.internal.Util.** { *; }
-
 # ez-vcard: keep all vCard properties/parameters (used via reflection)
 -keep class ezvcard.io.scribe.** { *; }
 -keep class ezvcard.property.** { *; }

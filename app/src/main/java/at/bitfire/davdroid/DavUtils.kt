@@ -20,9 +20,7 @@ import android.provider.ContactsContract
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.TaskUtils
-import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
 import org.xbill.DNS.*
 import java.util.*
@@ -110,7 +108,7 @@ object DavUtils {
                 the random number selected. The target host specified in the
                 selected SRV RR is the next one to be contacted by the client.
         */
-        val minPriority = srvRecords.map { it.priority }.min()
+        val minPriority = srvRecords.map { it.priority }.minOrNull()
         val useableRecords = srvRecords.filter { it.priority == minPriority }.sortedBy { it.weight != 0 }
 
         val map = TreeMap<Int, SRVRecord>()

@@ -21,7 +21,7 @@ import at.bitfire.davdroid.R
 
 object UiUtils {
 
-    val SHORTCUT_SYNC_ALL = "syncAllAccounts"
+    const val SHORTCUT_SYNC_ALL = "syncAllAccounts"
 
     fun updateShortcuts(context: Context) {
         if (Build.VERSION.SDK_INT >= 25)

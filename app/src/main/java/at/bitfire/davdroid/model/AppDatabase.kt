@@ -1,10 +1,7 @@
 package at.bitfire.davdroid.model
 
 import android.content.Context
-import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteQueryBuilder
-import android.text.Html
-import android.text.TextUtils
 import androidx.core.database.getStringOrNull
 import androidx.room.Database
 import androidx.room.Room
@@ -62,7 +59,7 @@ abstract class AppDatabase: RoomDatabase() {
                     val cols = cursor.columnCount
                     // print rows
                     while (cursor.moveToNext()) {
-                        val values = Array<String?>(cols, { idx -> cursor.getStringOrNull(idx) })
+                        val values = Array<String?>(cols) { idx -> cursor.getStringOrNull(idx) }
                         table.addLine(*values)
                     }
                     writer.append(table.toString())

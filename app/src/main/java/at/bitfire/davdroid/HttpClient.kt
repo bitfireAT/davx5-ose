@@ -92,11 +92,7 @@ class HttpClient private constructor(
 
             // add network logging, if requested
             if (logger.isLoggable(Level.FINEST)) {
-                val loggingInterceptor = HttpLoggingInterceptor(object: HttpLoggingInterceptor.Logger {
-                    override fun log(message: String) {
-                        logger.finest(message)
-                    }
-                })
+                val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
                 loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
                 orig.addInterceptor(loggingInterceptor)
             }

@@ -10,7 +10,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.PermissionsActivity
-import at.bitfire.ical4android.TaskProvider
 
 object PermissionUtils {
 

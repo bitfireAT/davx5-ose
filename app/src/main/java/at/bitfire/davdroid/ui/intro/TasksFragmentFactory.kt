@@ -12,7 +12,6 @@ import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.TasksFragment
 import at.bitfire.davdroid.ui.intro.IIntroFragmentFactory.ShowMode
-import at.bitfire.ical4android.TaskProvider
 
 class TasksFragmentFactory: IIntroFragmentFactory {
 
