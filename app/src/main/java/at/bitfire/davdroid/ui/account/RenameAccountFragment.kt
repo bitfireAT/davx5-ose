@@ -21,7 +21,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.InvalidAccountException

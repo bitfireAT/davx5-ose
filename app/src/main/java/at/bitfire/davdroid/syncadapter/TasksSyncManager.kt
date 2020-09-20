@@ -16,7 +16,10 @@ import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.DavResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.property.*
+import at.bitfire.dav4jvm.property.CalendarData
+import at.bitfire.dav4jvm.property.GetCTag
+import at.bitfire.dav4jvm.property.GetETag
+import at.bitfire.dav4jvm.property.SyncToken
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger

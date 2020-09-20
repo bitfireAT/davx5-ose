@@ -30,6 +30,7 @@ import at.bitfire.davdroid.model.Credentials
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
+import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
@@ -53,8 +54,11 @@ class AccountSettings(
 
     companion object {
 
-        const val CURRENT_VERSION = 10
+        const val CURRENT_VERSION = 11
         const val KEY_SETTINGS_VERSION = "version"
+
+        /** Stores the tasks sync interval (in minutes) so that it can be set again when the provider is switched */
+        const val KEY_SYNC_INTERVAL_TASKS = "sync_interval_tasks"
 
         const val KEY_USERNAME = "user_name"
         const val KEY_CERTIFICATE_ALIAS = "certificate_alias"
@@ -95,6 +99,7 @@ class AccountSettings(
         const val KEY_CONTACT_GROUP_METHOD = "contact_group_method"
 
         const val SYNC_INTERVAL_MANUALLY = -1L
+
 
         fun initialUserData(credentials: Credentials): Bundle {
             val bundle = Bundle(2)
@@ -186,12 +191,19 @@ class AccountSettings(
                 ContentResolver.addPeriodicSync(account, authority, Bundle(), seconds)
             } while (ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.period != seconds)
         }
+
+        // store task sync interval in account settings (used when the provider is switched)
+        if (TaskProvider.ProviderName.values().any { it.authority == authority })
+            accountManager.setUserData(account, KEY_SYNC_INTERVAL_TASKS, seconds.toString())
     }
 
-    fun getSyncWifiOnly() = if (settings.containsKey(KEY_WIFI_ONLY))
-        settings.getBoolean(KEY_WIFI_ONLY)
-                else
-            accountManager.getUserData(account, KEY_WIFI_ONLY) != null
+    fun getSavedTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
+
+    fun getSyncWifiOnly() =
+            if (settings.containsKey(KEY_WIFI_ONLY))
+                settings.getBoolean(KEY_WIFI_ONLY)
+            else
+                accountManager.getUserData(account, KEY_WIFI_ONLY) != null
     fun setSyncWiFiOnly(wiFiOnly: Boolean) =
             accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
@@ -300,6 +312,19 @@ class AccountSettings(
         }
     }
 
+
+    @Suppress("unused","FunctionName")
+    /**
+     * The tasks sync interval should be stored in account settings. It's used to set the sync interval
+     * again when the tasks provider is switched.
+     */
+    private fun update_10_11() {
+        TaskUtils.currentProvider(context)?.let { provider ->
+            val interval = getSyncInterval(provider.authority)
+            if (interval != null)
+                accountManager.setUserData(account, KEY_SYNC_INTERVAL_TASKS, interval.toString())
+        }
+    }
 
     @Suppress("unused","FunctionName")
     /**

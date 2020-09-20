@@ -29,13 +29,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.preference.*
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
+import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.SyncAdapterService
@@ -144,7 +144,8 @@ class SettingsActivity: AppCompatActivity() {
             }
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_tasks_key))!!.let {
                 model.syncIntervalTasks.observe(this, { interval: Long? ->
-                    if (interval != null) {
+                    val provider = model.tasksProvider
+                    if (provider != null && interval != null) {
                         it.isEnabled = true
                         it.isVisible = true
                         it.value = interval.toString()
@@ -154,7 +155,7 @@ class SettingsActivity: AppCompatActivity() {
                             it.summary = getString(R.string.settings_sync_summary_periodically, interval / 60)
                         it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
                             pref.isEnabled = false
-                            model.updateSyncInterval(TaskProvider.ProviderName.OpenTasks.authority, (newValue as String).toLong())
+                            model.updateSyncInterval(provider.authority, (newValue as String).toLong())
                             false
                         }
                     } else
@@ -422,6 +423,7 @@ class SettingsActivity: AppCompatActivity() {
         // settings
         val syncIntervalContacts = MutableLiveData<Long>()
         val syncIntervalCalendars = MutableLiveData<Long>()
+        val tasksProvider = TaskUtils.currentProvider(getApplication())
         val syncIntervalTasks = MutableLiveData<Long>()
         val hasCalDav = object: MediatorLiveData<Boolean>() {
             init {
@@ -513,7 +515,8 @@ class SettingsActivity: AppCompatActivity() {
 
             syncIntervalContacts.postValue(accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)))
             syncIntervalCalendars.postValue(accountSettings.getSyncInterval(CalendarContract.AUTHORITY))
-            syncIntervalTasks.postValue(accountSettings.getSyncInterval(TaskProvider.ProviderName.OpenTasks.authority))
+            syncIntervalTasks.postValue(tasksProvider?.let { accountSettings.getSyncInterval(it.authority) })
+
             syncWifiOnly.postValue(accountSettings.getSyncWifiOnly())
             syncWifiOnlySSIDs.postValue(accountSettings.getSyncWifiOnlySSIDs())
 

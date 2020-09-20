@@ -70,7 +70,9 @@ class TasksWatcher(
                 Logger.log.info("Enabling $authority sync for $account")
                 ContentResolver.setIsSyncable(account, authority, 1)
                 try {
-                    AccountSettings(context, account).setSyncInterval(authority, Constants.DEFAULT_SYNC_INTERVAL)
+                    val settings = AccountSettings(context, account)
+                    val interval = settings.getSavedTasksSyncInterval() ?: Constants.DEFAULT_SYNC_INTERVAL
+                    settings.setSyncInterval(authority, interval)
                 } catch (e: InvalidAccountException) {
                     // account has already been removed
                 }

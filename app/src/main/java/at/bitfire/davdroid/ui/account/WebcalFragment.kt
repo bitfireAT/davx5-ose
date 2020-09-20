@@ -22,7 +22,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.Observer
 import androidx.room.Transaction
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.Constants
