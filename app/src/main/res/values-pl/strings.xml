@@ -31,6 +31,11 @@
   <string name="intro_leave_unchecked">* Pozostaw nie zaznaczone, aby otrzymać przypomnienie później. Możesz to zresetować w ustawieniach aplikacji/%s. </string>
   <string name="intro_more_info">Więcej informacji</string>
   <string name="intro_tasks_title">Obsługa zadań</string>
+  <string name="intro_tasks_text1">Jeśli zadania są wspierane przez Twój serwer, mogą być synchronizowane ze wspieraną aplikacją zadań:</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[Dla pewnych funkcjonalności jak podzadania lub zadania powtarzalne,  możesz potrzebować<a href="https://www.davx5.com/faq/tasks/advanced-task-features">dodatkowych aplikacji</a>.]]></string>
+  <string name="intro_tasks_tasks_org">Zadania</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Pewne funkcjonalności <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nie są (jeszcze) wspierane</a> .]]></string>
   <string name="intro_tasks_no_app_store">Sklep aplikacji nie jest dostępny</string>
   <string name="intro_tasks_dont_show">Nie potrzebuję obsługi zadań.*</string>
   <string name="intro_open_source_title">Oprogramowanie open-source</string>
@@ -49,6 +54,8 @@
   <string name="permissions_calendar_title">Uprawnienia kalendarza</string>
   <string name="permissions_calendar_status_off">Bez synchronizacji kalendarza (nie zalecane)</string>
   <string name="permissions_calendar_status_on">Synchronizacja kalendarza możliwa</string>
+  <string name="permissions_opentasks_title">Uprawnienia OpenTasks</string>
+  <string name="permissions_tasksorg_title">Uprawnienia zadań</string>
   <string name="permissions_tasks_status_not_installed">Bez synchronizacji zadań (nie zainstalowane)</string>
   <string name="permissions_tasks_status_off">Bez synchronizacji zadań (nie zalecane)</string>
   <string name="permissions_tasks_status_on">Synchronizacja zadań możliwa</string>
@@ -121,6 +128,10 @@
   <string name="app_settings_reset_hints">Zresetuj podpowiedzi</string>
   <string name="app_settings_reset_hints_summary">Ponownie włącz wskazówki, które zostały usunięte wcześniej</string>
   <string name="app_settings_reset_hints_success">Wszystkie wskazówki pojawią się ponownie</string>
+  <string name="app_settings_integration">Integracja</string>
+  <string name="app_settings_tasks_provider">Aplikacja zadań</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">Synchronizacja z %s</string>
+  <string name="app_settings_tasks_provider_none">Nie znaleziono kompatybilnej aplikacji zadań</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -238,7 +249,11 @@
   <string name="settings_default_alarm_off">Nie utworzono przypomnień domyślnych</string>
   <string name="settings_default_alarm_message">Jeżeli domyślne przypomnienia mają być utworzone dla zdarzeń bez przypomnienia: pożądana liczba minut przed zdarzeniem. Pozostaw puste aby wyłączyć domyślne przypomnienia. </string>
   <string name="settings_manage_calendar_colors">Zarządzaj kolorami kalendarza</string>
+  <string name="settings_manage_calendar_colors_on">Kolory kalendarza są resetowane przy każdej synchronizacji</string>
+  <string name="settings_manage_calendar_colors_off">Kolory kalendarza mogą być ustawiane przez inne aplikacje</string>
   <string name="settings_event_colors">Obsługa kolorów wydarzeń</string>
+  <string name="settings_event_colors_on">Kolory wydarzeń są zsynchronizowane</string>
+  <string name="settings_event_colors_off">Kolory wydarzeń nie są zsynchronizowane</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Metoda grupowania kontaktów</string>
   <string-array name="settings_contact_group_method_entries">
@@ -302,6 +317,8 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">Uprawnienia DAVx⁵</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>
+  <string name="sync_error_tasks_too_old">%s zbyt stary/a</string>
+  <string name="sync_error_tasks_required_version">Minimalna wymagana wersja: %1$s</string>
   <string name="sync_error_authentication_failed">Nieudane uwierzytelnienie (sprawdź dane logowania)</string>
   <string name="sync_error_io">Błąd sieci lub wejścia/wyjścia — %s</string>
   <string name="sync_error_http_dav">Błąd serwera HTTP — %s</string>
