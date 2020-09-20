@@ -8,11 +8,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.PermissionUtils.CALENDAR_PERMISSIONS
@@ -53,10 +53,12 @@ class PermissionsFragment: Fragment() {
         })
         model.needAllPermissions.observe(viewLifecycleOwner, { needAll ->
             if (needAll && model.haveAllPermissions.value == false) {
-                val all = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS +
-                    if (model.haveOpenTasksPermissions.value != null) TaskProvider.PERMISSIONS_OPENTASKS else emptyArray<String>() +
-                    if (model.haveTasksOrgPermissions.value != null) TaskProvider.PERMISSIONS_TASKS_ORG else emptyArray<String>()
-                requestPermissions(all, 0)
+                val all = mutableSetOf(*CONTACT_PERMISSIONS, *CALENDAR_PERMISSIONS)
+                if (model.haveOpenTasksPermissions.value != null)
+                    all.addAll(TaskProvider.PERMISSIONS_OPENTASKS)
+                if (model.haveTasksOrgPermissions.value != null)
+                    all.addAll(TaskProvider.PERMISSIONS_TASKS_ORG)
+                requestPermissions(all.toTypedArray(), 0)
             }
         })
 
@@ -93,6 +95,7 @@ class PermissionsFragment: Fragment() {
         val haveTasksOrgPermissions = MutableLiveData<Boolean>()
         val needTasksOrgPermissions = MutableLiveData<Boolean>()
         val tasksWatcher = object: PackageChangedReceiver(app) {
+            @MainThread
             override fun onReceive(context: Context?, intent: Intent?) {
                 checkPermissions()
             }
@@ -109,6 +112,7 @@ class PermissionsFragment: Fragment() {
             tasksWatcher.close()
         }
 
+        @MainThread
         fun checkPermissions() {
             val contactPermissions = havePermissions(getApplication(), CONTACT_PERMISSIONS)
             haveContactsPermissions.value = contactPermissions
