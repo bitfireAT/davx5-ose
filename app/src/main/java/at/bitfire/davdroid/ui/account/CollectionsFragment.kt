@@ -217,6 +217,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val serviceId = MutableLiveData<Long>()
         private lateinit var collectionType: String
 
+        // cache task provider
+        val taskProvider by lazy { TaskUtils.currentProvider(getApplication()) }
+
         val collections: LiveData<PagedList<Collection>> =
                 Transformations.switchMap(serviceId) { service ->
                     db.collectionDao().pageByServiceAndType(service, collectionType).toLiveData(25)
@@ -305,7 +308,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                 isSyncPending.postValue(mainSyncPending || syncPending)
             } else {
                 val authorities = mutableListOf(CalendarContract.AUTHORITY)
-                TaskUtils.currentProvider(context)?.let {
+                taskProvider?.let {
                     authorities += it.authority
                 }
                 isSyncActive.postValue(authorities.any {

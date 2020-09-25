@@ -143,6 +143,7 @@ class AccountListFragment: Fragment() {
         )
 
         val accounts = MutableLiveData<List<AccountInfo>>()
+        val syncAuthorities by lazy { DavUtils.syncAuthorities(getApplication()) }
 
         val networkAvailable = MutableLiveData<Boolean>()
         private var networkCallback: ConnectivityManager.NetworkCallback? = null
@@ -234,7 +235,7 @@ class AccountListFragment: Fragment() {
                         collator.compare(a.name, b.name)
                     })
             val accountsWithInfo = sortedAccounts.map { account ->
-                AccountInfo(account, DavUtils.accountSyncStatus(context, DavUtils.syncAuthorities(context), account))
+                AccountInfo(account, DavUtils.accountSyncStatus(context, syncAuthorities, account))
             }
             accounts.postValue(accountsWithInfo)
         }
