@@ -4,10 +4,12 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -35,6 +37,12 @@ class PermissionsFragment: Fragment() {
 
         binding.text.text = getString(R.string.permissions_text, getString(R.string.app_name))
 
+        model.needAutoResetPermission.observe(viewLifecycleOwner, { keepPermissions ->
+            if (keepPermissions == true && model.haveAutoResetPermission.value == false) {
+                Toast.makeText(requireActivity(), "Click Permissions > uncheck \"Remove permissions if app isn't used\"", Toast.LENGTH_LONG).show()
+                startActivity(Intent(Intent.ACTION_AUTO_REVOKE_PERMISSIONS, Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)))
+            }
+        })
         model.needContactsPermissions.observe(viewLifecycleOwner, { needContacts ->
             if (needContacts && model.haveContactsPermissions.value == false)
                 requestPermissions(CONTACT_PERMISSIONS, 0)
@@ -85,6 +93,9 @@ class PermissionsFragment: Fragment() {
 
     class Model(app: Application): AndroidViewModel(app) {
 
+        val haveAutoResetPermission = MutableLiveData<Boolean>()
+        val needAutoResetPermission = MutableLiveData<Boolean>()
+
         val haveContactsPermissions = MutableLiveData<Boolean>()
         val needContactsPermissions = MutableLiveData<Boolean>()
         val haveCalendarPermissions = MutableLiveData<Boolean>()
@@ -114,6 +125,16 @@ class PermissionsFragment: Fragment() {
 
         @MainThread
         fun checkPermissions() {
+            val pm = getApplication<Application>().packageManager
+
+            // auto-reset permissions
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val keepPermissions = pm.isAutoRevokeWhitelisted
+                haveAutoResetPermission.value = keepPermissions
+                needAutoResetPermission.value = keepPermissions
+            }
+
+            // other permissions
             val contactPermissions = havePermissions(getApplication(), CONTACT_PERMISSIONS)
             haveContactsPermissions.value = contactPermissions
             needContactsPermissions.value = contactPermissions
@@ -122,7 +143,6 @@ class PermissionsFragment: Fragment() {
             haveCalendarPermissions.value = calendarPermissions
             needCalendarPermissions.value = calendarPermissions
 
-            val pm = getApplication<Application>().packageManager
             // OpenTasks
             val openTasksAvailable = pm.resolveContentProvider(ProviderName.OpenTasks.authority, 0) != null
             var openTasksPermissions: Boolean? = null
@@ -145,6 +165,7 @@ class PermissionsFragment: Fragment() {
                 haveOpenTasksPermissions.value = null
                 needOpenTasksPermissions.value = null
             }
+
 
             val allPermissions = contactPermissions &&
                     calendarPermissions &&
