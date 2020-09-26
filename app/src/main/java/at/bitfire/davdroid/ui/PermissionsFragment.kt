@@ -17,6 +17,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
+import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.PermissionUtils.CALENDAR_PERMISSIONS
 import at.bitfire.davdroid.PermissionUtils.CONTACT_PERMISSIONS
 import at.bitfire.davdroid.PermissionUtils.havePermissions
@@ -71,10 +72,7 @@ class PermissionsFragment: Fragment() {
         })
 
         binding.appSettings.setOnClickListener {
-            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    Uri.fromParts("package", BuildConfig.APPLICATION_ID, null))
-            if (intent.resolveActivity(requireActivity().packageManager) != null)
-                startActivity(intent)
+            PermissionUtils.showAppSettings(requireActivity())
         }
 
         return binding.root

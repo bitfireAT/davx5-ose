@@ -8,23 +8,19 @@
 
 package at.bitfire.davdroid.syncadapter
 
-import android.Manifest
 import android.accounts.Account
 import android.app.Service
 import android.content.*
-import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
-import android.os.Build
 import android.os.Bundle
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.account.SettingsActivity
+import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
@@ -167,22 +163,25 @@ abstract class SyncAdapterService: Service() {
                 // if execution reaches this point, we're on a connected WiFi
 
                 settings.getSyncWifiOnlySSIDs()?.let { onlySSIDs ->
-                    // getting the WiFi name requires location permission (and active location services) since Android 8.1
-                    // see https://issuetracker.google.com/issues/70633700
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 &&
-                        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        val intent = Intent(context, SettingsActivity::class.java)
-                        intent.putExtra(SettingsActivity.EXTRA_ACCOUNT, settings.account)
+                    // check required permissions and location status
+                    if (!PermissionUtils.canAccessWifiSsid(context)) {
+                        // not all permissions granted; show notification
+                        val intent = Intent(context, WifiPermissionsActivity::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, settings.account)
                         PermissionUtils.notifyPermissions(context, intent)
+
+                        Logger.log.warning("Can't access WiFi SSID, aborting sync")
+                        return false
                     }
 
                     val wifi = context.getSystemService<WifiManager>()!!
                     val info = wifi.connectionInfo
                     if (info == null || !onlySSIDs.contains(info.ssid.trim('"'))) {
-                        Logger.log.info("Connected to wrong WiFi network (${info.ssid}), ignoring")
+                        Logger.log.info("Connected to wrong WiFi network (${info.ssid}), aborting sync")
                         return false
-                    }
+                    } else
+                        Logger.log.fine("Connected to WiFi network ${info.ssid}")
                 }
             }
             return true

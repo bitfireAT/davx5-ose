@@ -81,6 +81,19 @@
     <string name="permissions_app_settings_hint">If a switch doesn\'t work, use app settings / Permissions.</string>
     <string name="permissions_app_settings">App settings</string>
 
+    <!-- WifiPermissionsActivity -->
+    <string name="wifi_permissions_label">WiFi SSID permissions</string>
+    <string name="wifi_permissions_intro">To be able to access the current WiFi name (SSID), these conditions must be met:</string>
+    <string name="wifi_permissions_location_permission">Location permission</string>
+    <string name="wifi_permissions_location_permission_on">Location permission granted</string>
+    <string name="wifi_permissions_location_permission_off">Location permission denied</string>
+    <string name="wifi_permissions_background_location_permission">Background location permission</string>
+    <string name="wifi_permissions_background_location_permission_on"><![CDATA[Location permission set to <b>%s</b>]]></string>
+    <string name="wifi_permissions_background_location_permission_off"><![CDATA[Location permission not set to <b>%s</b>]]></string>
+    <string name="wifi_permissions_location_enabled">Location always enabled</string>
+    <string name="wifi_permissions_location_enabled_on">Location service is enabled</string>
+    <string name="wifi_permissions_location_enabled_off">Location service is disabled</string>
+
     <!-- AboutActivity -->
     <string name="about_translations">Translations</string>
     <string name="about_libraries">Libraries</string>
@@ -264,7 +277,8 @@
     <string name="settings_sync_wifi_only_ssids_on_location_services">Will only sync over %s (requires active location services)</string>
     <string name="settings_sync_wifi_only_ssids_off">All WiFi connections will be used</string>
     <string name="settings_sync_wifi_only_ssids_message">Comma-separated names (SSIDs) of allowed WiFi networks (leave blank for all)</string>
-    <string name="settings_sync_wifi_only_ssids_location_permission">To read WiFi names, the Location permission and permanently activated location services are required.</string>
+    <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID restriction requires further settings</string>
+    <string name="settings_sync_wifi_only_ssids_permissions_action">Manage</string>
     <string name="settings_more_info_faq">More information (FAQ)</string>
     <string name="settings_authentication">Authentication</string>
     <string name="settings_username_key" translatable="false">username</string>

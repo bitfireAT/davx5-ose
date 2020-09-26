@@ -229,10 +229,14 @@ class AccountSettings(
     fun setSyncWiFiOnly(wiFiOnly: Boolean) =
             accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
-    fun getSyncWifiOnlySSIDs(): List<String>? = (if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
-                settings.getString(KEY_WIFI_ONLY_SSIDS)
-            else
-                accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS))?.split(',')
+    fun getSyncWifiOnlySSIDs(): List<String>? =
+            if (getSyncWifiOnly()) {
+                (if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
+                    settings.getString(KEY_WIFI_ONLY_SSIDS)
+                else
+                    accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS))?.split(',')
+            } else
+                null
     fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
             accountManager.setUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
 

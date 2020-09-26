@@ -5,9 +5,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.net.Uri
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.location.LocationManagerCompat
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.PermissionsActivity
 
@@ -21,6 +26,31 @@ object PermissionUtils {
             Manifest.permission.READ_CALENDAR,
             Manifest.permission.WRITE_CALENDAR
     )
+
+    val WIFI_SSID_PERMISSIONS =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+            else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+            else
+                arrayOf()
+
+    /**
+     * Checks whether all conditions to access the current WiFi's SSID are met:
+     *
+     * 1. location permissions ([WIFI_SSID_PERMISSIONS]) granted
+     * 2. location enabled
+     *
+     * @return *true* if SSID can be obtained; *false* if the SSID will be <unknown> or something like that
+     */
+    fun canAccessWifiSsid(context: Context): Boolean {
+        val locationEnabled = ContextCompat.getSystemService(context, LocationManager::class.java)?.let { locationManager ->
+            LocationManagerCompat.isLocationEnabled(locationManager)
+        } ?: /* location feature not available on this device */ false
+
+        return  havePermissions(context, WIFI_SSID_PERMISSIONS) &&
+                locationEnabled
+    }
 
     /**
      * Checks whether at least one of the given permissions is granted.
@@ -62,6 +92,15 @@ object PermissionUtils {
                 .build()
         NotificationManagerCompat.from(context)
                 .notify(NotificationUtils.NOTIFY_PERMISSIONS, notify)
+    }
+
+    fun showAppSettings(context: Context) {
+        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", BuildConfig.APPLICATION_ID, null))
+        if (intent.resolveActivity(context.packageManager) != null)
+            context.startActivity(intent)
+        else
+            Logger.log.warning("App settings Intent not resolvable")
     }
 
 }

@@ -8,30 +8,28 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.Manifest
 import android.accounts.Account
 import android.app.Application
 import android.content.ContentResolver
 import android.content.Intent
 import android.content.SyncStatusObserver
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.security.KeyChain
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.*
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Credentials
@@ -39,9 +37,10 @@ import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.SyncAdapterService
+import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,14 +80,19 @@ class SettingsActivity: AppCompatActivity() {
 
 
     class AccountSettingsFragment: PreferenceFragmentCompat() {
+
         private val account by lazy { requireArguments().getParcelable<Account>(EXTRA_ACCOUNT)!! }
         private val settings by lazy { SettingsManager.getInstance(requireActivity()) }
 
         val model by viewModels<Model>()
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
 
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            addPreferencesFromResource(R.xml.settings_account)
+        }
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
             try {
                 model.initialize(account)
                 initSettings()
@@ -98,14 +102,15 @@ class SettingsActivity: AppCompatActivity() {
             }
         }
 
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            addPreferencesFromResource(R.xml.settings_account)
+        override fun onResume() {
+            super.onResume()
+            checkWifiPermissions()
         }
 
         private fun initSettings() {
             // preference group: sync
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_contacts_key))!!.let {
-                model.syncIntervalContacts.observe(this, { interval: Long? ->
+                model.syncIntervalContacts.observe(viewLifecycleOwner, { interval: Long? ->
                     if (interval != null) {
                         it.isEnabled = true
                         it.isVisible = true
@@ -124,7 +129,7 @@ class SettingsActivity: AppCompatActivity() {
                 })
             }
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_calendars_key))!!.let {
-                model.syncIntervalCalendars.observe(this, { interval: Long? ->
+                model.syncIntervalCalendars.observe(viewLifecycleOwner, { interval: Long? ->
                     if (interval != null) {
                         it.isEnabled = true
                         it.isVisible = true
@@ -143,7 +148,7 @@ class SettingsActivity: AppCompatActivity() {
                 })
             }
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_tasks_key))!!.let {
-                model.syncIntervalTasks.observe(this, { interval: Long? ->
+                model.syncIntervalTasks.observe(viewLifecycleOwner, { interval: Long? ->
                     val provider = model.tasksProvider
                     if (provider != null && interval != null) {
                         it.isEnabled = true
@@ -164,7 +169,7 @@ class SettingsActivity: AppCompatActivity() {
             }
 
             findPreference<SwitchPreferenceCompat>(getString(R.string.settings_sync_wifi_only_key))!!.let {
-                model.syncWifiOnly.observe(this, { wifiOnly ->
+                model.syncWifiOnly.observe(viewLifecycleOwner, { wifiOnly ->
                     it.isEnabled = !settings.containsKey(AccountSettings.KEY_WIFI_ONLY)
                     it.isChecked = wifiOnly
                     it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, wifiOnly ->
@@ -174,14 +179,16 @@ class SettingsActivity: AppCompatActivity() {
                 })
             }
 
-            findPreference<EditTextPreference>("sync_wifi_only_ssids")!!.let {
-                model.syncWifiOnly.observe(this, { wifiOnly ->
+            findPreference<EditTextPreference>(getString(R.string.settings_sync_wifi_only_ssids_key))!!.let {
+                model.syncWifiOnly.observe(viewLifecycleOwner, { wifiOnly ->
                     it.isEnabled = wifiOnly
                 })
-                model.syncWifiOnlySSIDs.observe(this, { onlySSIDs ->
+                model.syncWifiOnlySSIDs.observe(viewLifecycleOwner, { onlySSIDs ->
+                    checkWifiPermissions()
+
                     if (onlySSIDs != null) {
                         it.text = onlySSIDs.joinToString(", ")
-                        it.summary = getString(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
+                        it.summary = getString(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                                 R.string.settings_sync_wifi_only_ssids_on_location_services
                                 else R.string.settings_sync_wifi_only_ssids_on, onlySSIDs.joinToString(", "))
                     } else {
@@ -199,36 +206,11 @@ class SettingsActivity: AppCompatActivity() {
                 })
             }
 
-            model.askForPermissions.observe(this, { permissions ->
-                if (permissions.any { ContextCompat.checkSelfPermission(requireActivity(), it) != PackageManager.PERMISSION_GRANTED }) {
-                    if (permissions.any { shouldShowRequestPermissionRationale(it) })
-                        // show rationale before requesting permissions
-                        MaterialAlertDialogBuilder(requireActivity())
-                                .setIcon(R.drawable.ic_network_wifi_dark)
-                                .setTitle(R.string.settings_sync_wifi_only_ssids)
-                                .setMessage(R.string.settings_sync_wifi_only_ssids_location_permission)
-                                .setPositiveButton(android.R.string.ok) { _, _ ->
-                                    requestPermissions(permissions.toTypedArray(), 0)
-                                }
-                                .setNeutralButton(R.string.settings_more_info_faq) { _, _ ->
-                                    val faqUrl = App.homepageUrl(requireActivity()).buildUpon()
-                                            .appendPath("faq").appendPath("wifi-ssid-restriction-location-permission")
-                                            .build()
-                                    val intent = Intent(Intent.ACTION_VIEW, faqUrl)
-                                    startActivity(Intent.createChooser(intent, null))
-                                }
-                                .show()
-                    else
-                        // request permissions without rationale
-                        requestPermissions(permissions.toTypedArray(), 0)
-                }
-            })
-
             // preference group: authentication
             val prefUserName = findPreference<EditTextPreference>("username")!!
             val prefPassword = findPreference<EditTextPreference>("password")!!
             val prefCertAlias = findPreference<Preference>("certificate_alias")!!
-            model.credentials.observe(this, { credentials ->
+            model.credentials.observe(viewLifecycleOwner, { credentials ->
                 when (credentials.type) {
                     Credentials.Type.UsernamePassword -> {
                         prefUserName.isVisible = true
@@ -264,7 +246,7 @@ class SettingsActivity: AppCompatActivity() {
             })
 
             // preference group: CalDAV
-            model.hasCalDav.observe(this, { hasCalDav ->
+            model.hasCalDav.observe(viewLifecycleOwner, { hasCalDav ->
                 if (!hasCalDav)
                     findPreference<PreferenceGroup>(getString(R.string.settings_caldav_key))!!.isVisible = false
                 else {
@@ -277,7 +259,7 @@ class SettingsActivity: AppCompatActivity() {
                     
                     findPreference<EditTextPreference>(getString(R.string.settings_sync_time_range_past_key))!!.let { pref ->
                         if (hasCalendars)
-                            model.timeRangePastDays.observe(this, { pastDays ->
+                            model.timeRangePastDays.observe(viewLifecycleOwner, { pastDays ->
                                 if (model.syncIntervalCalendars.value != null) {
                                     pref.isVisible = true
                                     if (pastDays != null) {
@@ -305,7 +287,7 @@ class SettingsActivity: AppCompatActivity() {
 
                     findPreference<EditTextPreference>(getString(R.string.settings_key_default_alarm))!!.let { pref ->
                         if (hasCalendars)
-                            model.defaultAlarmMinBefore.observe(this, { minBefore ->
+                            model.defaultAlarmMinBefore.observe(viewLifecycleOwner, { minBefore ->
                                 pref.isVisible = true
                                 if (minBefore != null) {
                                     pref.text = minBefore.toString()
@@ -329,7 +311,7 @@ class SettingsActivity: AppCompatActivity() {
                     }
 
                     findPreference<SwitchPreferenceCompat>(getString(R.string.settings_manage_calendar_colors_key))!!.let {
-                        model.manageCalendarColors.observe(this, { manageCalendarColors ->
+                        model.manageCalendarColors.observe(viewLifecycleOwner, { manageCalendarColors ->
                             it.isEnabled = !settings.containsKey(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
                             it.isChecked = manageCalendarColors
                             it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
@@ -341,7 +323,7 @@ class SettingsActivity: AppCompatActivity() {
 
                     findPreference<SwitchPreferenceCompat>(getString(R.string.settings_event_colors_key))!!.let { pref ->
                         if (hasCalendars)
-                            model.eventColors.observe(this, { eventColors ->
+                            model.eventColors.observe(viewLifecycleOwner, { eventColors ->
                                 pref.isVisible = true
                                 pref.isEnabled = !settings.containsKey(AccountSettings.KEY_EVENT_COLORS)
                                 pref.isChecked = eventColors
@@ -357,14 +339,14 @@ class SettingsActivity: AppCompatActivity() {
             })
 
             // preference group: CardDAV
-            model.syncIntervalContacts.observe(this, { contactsSyncInterval ->
+            model.syncIntervalContacts.observe(viewLifecycleOwner, { contactsSyncInterval ->
                 val hasCardDav = contactsSyncInterval != null
                 if (!hasCardDav)
                     findPreference<PreferenceGroup>(getString(R.string.settings_carddav_key))!!.isVisible = false
                 else {
                     findPreference<PreferenceGroup>(getString(R.string.settings_carddav_key))!!.isVisible = true
                     findPreference<ListPreference>(getString(R.string.settings_contact_group_method_key))!!.let {
-                        model.contactGroupMethod.observe(this, { groupMethod ->
+                        model.contactGroupMethod.observe(viewLifecycleOwner, { groupMethod ->
                             if (model.syncIntervalContacts.value != null) {
                                 it.isVisible = true
                                 it.value = groupMethod.name
@@ -379,34 +361,22 @@ class SettingsActivity: AppCompatActivity() {
                                     }
                                 }
                             } else
-                            it.isVisible = false
+                                it.isVisible = false
                         })
                     }
                 }
             })
         }
 
-        override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-            if (grantResults.any { it == PackageManager.PERMISSION_DENIED }) {
-                // location permission denied, reset SSID restriction
-                model.updateSyncWifiOnlySSIDs(null)
-
-                MaterialAlertDialogBuilder(requireActivity())
-                        .setIcon(R.drawable.ic_network_wifi_dark)
-                        .setTitle(R.string.settings_sync_wifi_only_ssids)
-                        .setMessage(R.string.settings_sync_wifi_only_ssids_location_permission)
-                        .setPositiveButton(android.R.string.ok) { _, _ -> }
-                        .setNeutralButton(R.string.settings_more_info_faq) { _, _ ->
-                            val faqUrl = App.homepageUrl(requireActivity()).buildUpon()
-                                    .appendPath("faq").appendPath("wifi-ssid-restriction-location-permission")
-                                    .build()
-                            val intent = Intent(Intent.ACTION_VIEW, faqUrl)
-                            startActivity(Intent.createChooser(intent, null))
-                        }
+        private fun checkWifiPermissions() {
+            if (!PermissionUtils.canAccessWifiSsid(requireActivity()))
+                Snackbar.make(requireView(), R.string.settings_sync_wifi_only_ssids_permissions_required, UiUtils.SNACKBAR_LENGTH_VERY_LONG)
+                        .setAction(R.string.settings_sync_wifi_only_ssids_permissions_action, {
+                            val intent = Intent(requireActivity(), WifiPermissionsActivity::class.java)
+                            intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, account)
+                            startActivity(intent)
+                        })
                         .show()
-            }
         }
 
     }
@@ -447,33 +417,6 @@ class SettingsActivity: AppCompatActivity() {
 
         val contactGroupMethod = MutableLiveData<GroupMethod>()
 
-        // derived values
-        val askForPermissions = object: MediatorLiveData<List<String>>() {
-            init {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                    addSource(syncWifiOnly) { calculate() }
-                    addSource(syncWifiOnlySSIDs) { calculate() }
-                }
-            }
-            private fun calculate() {
-                val wifiOnly = syncWifiOnly.value ?: return
-                val wifiOnlySSIDs = syncWifiOnlySSIDs.value ?: return
-
-                val permissions = mutableListOf<String>()
-                if (wifiOnly && wifiOnlySSIDs.isNotEmpty()) {
-                    // Android 8.1+: getting the WiFi name requires location permission (and active location services)
-                    permissions += Manifest.permission.ACCESS_FINE_LOCATION
-
-                    // Android 10+: getting the Wifi name in the background (= while syncing) requires extra permission
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                        permissions += Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                }
-
-                if (permissions != value)
-                    postValue(permissions)
-            }
-        }
-
 
         fun initialize(account: Account) {
             if (this.account != null)
@@ -509,7 +452,7 @@ class SettingsActivity: AppCompatActivity() {
             reload()
         }
 
-        private fun reload() {
+        fun reload() {
             val accountSettings = accountSettings ?: return
             val context = getApplication<Application>()
 

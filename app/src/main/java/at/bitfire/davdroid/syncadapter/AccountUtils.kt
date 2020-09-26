@@ -5,7 +5,6 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
 import at.bitfire.davdroid.log.Logger
-import kotlin.jvm.Throws
 
 object AccountUtils {
 

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.account.WifiPermissionsActivity">
+
+    <data>
+        <variable name="model" type="at.bitfire.davdroid.ui.account.WifiPermissionsActivity.Model" />
+        <import type="android.view.View" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_margin">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_height="match_parent"
+            android:layout_width="match_parent">
+
+            <TextView
+                android:id="@+id/intro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:text="@string/wifi_permissions_intro"/>
+
+            <TextView
+                android:id="@+id/locationTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/intro"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/locationSwitch"
+                android:layout_marginTop="@dimen/card_margin_title_text"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:text="Location permission" />
+            <TextView
+                android:id="@+id/locationStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/locationTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/locationSwitch"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:text="@{model.haveLocation ? @string/wifi_permissions_location_permission_on : @string/wifi_permissions_location_permission_off}" />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/locationSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/locationTitle"
+                app:layout_constraintBottom_toBottomOf="@id/locationStatus"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:clickable="@{!model.haveLocation}"
+                android:checked="@={model.needLocation}" />
+
+            <TextView
+                android:id="@+id/backgroundLocationTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/locationStatus"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/backgroundLocationSwitch"
+                android:visibility="@{model.haveBackgroundLocation != null ? View.VISIBLE : View.GONE}"
+                android:layout_marginTop="@dimen/card_margin_title_text"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:text="Background location permission" />
+            <TextView
+                android:id="@+id/backgroundLocationStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/backgroundLocationTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/backgroundLocationSwitch"
+                android:visibility="@{model.haveBackgroundLocation != null ? View.VISIBLE : View.GONE}"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                tools:text="@string/wifi_permissions_background_location_permission_off" />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/backgroundLocationSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/backgroundLocationTitle"
+                app:layout_constraintBottom_toBottomOf="@id/backgroundLocationStatus"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:visibility="@{model.haveBackgroundLocation != null ? View.VISIBLE : View.GONE}"
+                android:enabled="@{model.haveLocation}"
+                android:clickable="@{!model.haveBackgroundLocation}"
+                android:checked="@={model.needBackgroundLocation}" />
+
+            <TextView
+                android:id="@+id/locationEnabledTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/backgroundLocationStatus"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/locationEnabledSwitch"
+                android:visibility="@{model.isLocationEnabled != null ? View.VISIBLE : View.GONE}"
+                android:layout_marginTop="@dimen/card_margin_title_text"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:text="@string/wifi_permissions_location_enabled" />
+            <TextView
+                android:id="@+id/locationEnabledStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/locationEnabledTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/locationEnabledSwitch"
+                android:visibility="@{model.isLocationEnabled != null ? View.VISIBLE : View.GONE}"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:text="@{model.isLocationEnabled ? @string/wifi_permissions_location_enabled_on : @string/wifi_permissions_location_enabled_off}" />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/locationEnabledSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/locationEnabledTitle"
+                app:layout_constraintBottom_toBottomOf="@id/locationEnabledStatus"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:visibility="@{model.isLocationEnabled != null ? View.VISIBLE : View.GONE}"
+                android:checked="@={model.needLocationEnabled}" />
+
+            <TextView
+                android:id="@+id/settingsHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/locationEnabledStatus"
+                android:layout_marginTop="16dp"
+                android:text="@string/permissions_app_settings_hint"
+                style="@style/TextAppearance.MaterialComponents.Body1"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:layout_constraintTop_toBottomOf="@id/settingsHint"
+                android:layout_marginTop="8dp"
+                android:onClick="viewAppSettings"
+                android:text="@string/permissions_app_settings"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</layout>
