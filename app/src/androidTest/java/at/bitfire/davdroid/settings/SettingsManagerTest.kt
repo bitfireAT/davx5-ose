@@ -16,12 +16,7 @@ import org.junit.Test
 
 class SettingsManagerTest {
 
-    lateinit var settingsManager: SettingsManager
-
-    @Before
-    fun initialize() {
-        settingsManager = SettingsManager.getInstance(InstrumentationRegistry.getInstrumentation().targetContext)
-    }
+    val settingsManager by lazy { SettingsManager.getInstance(InstrumentationRegistry.getInstrumentation().targetContext) }
 
     @Test
     fun testContainsKey() {

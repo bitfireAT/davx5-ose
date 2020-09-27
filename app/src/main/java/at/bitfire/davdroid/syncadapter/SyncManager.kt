@@ -27,10 +27,7 @@ import at.bitfire.dav4jvm.property.GetCTag
 import at.bitfire.dav4jvm.property.GetETag
 import at.bitfire.dav4jvm.property.ScheduleTag
 import at.bitfire.dav4jvm.property.SyncToken
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.DavService
-import at.bitfire.davdroid.HttpClient
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.SyncState
 import at.bitfire.davdroid.resource.*
@@ -233,9 +230,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         }, { e, local, remote ->
             when (e) {
-                // sync was cancelled: re-throw to SyncAdapterService
+                // sync was cancelled or account has been removed: re-throw to SyncAdapterService
                 is InterruptedException,
-                is InterruptedIOException ->
+                is InterruptedIOException,
+                is InvalidAccountException ->
                     throw e
 
                 // specific I/O errors

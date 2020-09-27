@@ -20,6 +20,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
@@ -117,8 +118,10 @@ abstract class SyncAdapterService: Service() {
             Thread.currentThread().contextClassLoader = context.classLoader
 
             try {
-                if (true)
+                if (/* always true in open-source edition */ true)
                     sync(account, extras, authority, provider, syncResult)
+            } catch (e: InvalidAccountException) {
+                Logger.log.log(Level.WARNING, "Account was removed during synchronization", e)
             } finally {
                 synchronized(runningSyncs) {
                     runningSyncs.removeAll { it.get() == null || it.get() == currentSync }

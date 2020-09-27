@@ -174,27 +174,49 @@ class AccountSettings(
      * @param authority sync authority (like [CalendarContract.AUTHORITY])
      * @param seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
      * otherwise: automatic sync will be enabled and set to the given number of seconds
+     *
+     * @return whether the sync interval was successfully set
      */
     @WorkerThread
-    fun setSyncInterval(authority: String, seconds: Long) {
+    fun setSyncInterval(authority: String, seconds: Long): Boolean {
         /* Ugly hack: because there is no callback for when the sync status/interval has been
         updated, we need to make this call blocking. */
-        if (seconds == SYNC_INTERVAL_MANUALLY) {
-            do {
-                Logger.log.fine("Unsetting automatic sync of $account/$authority to $seconds seconds")
-                ContentResolver.setSyncAutomatically(account, authority, false)
-            } while (ContentResolver.getSyncAutomatically(account, authority))
-        } else {
-            do {
-                Logger.log.fine("Setting automatic sync of $account/$authority to $seconds seconds")
-                ContentResolver.setSyncAutomatically(account, authority, true)
-                ContentResolver.addPeriodicSync(account, authority, Bundle(), seconds)
-            } while (ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.period != seconds)
+        val setInterval: () -> Boolean =
+                if (seconds == SYNC_INTERVAL_MANUALLY) {
+                    {
+                        Logger.log.fine("Disabling automatic sync of $account/$authority")
+                        ContentResolver.setSyncAutomatically(account, authority, false)
+
+                        /* return */ ContentResolver.getSyncAutomatically(account, authority) == false
+                    }
+                } else {
+                    {
+                        Logger.log.fine("Setting automatic sync of $account/$authority to $seconds seconds")
+                        ContentResolver.setSyncAutomatically(account, authority, true)
+                        ContentResolver.addPeriodicSync(account, authority, Bundle(), seconds)
+
+                        /* return */ ContentResolver.getSyncAutomatically(account, authority) &&
+                                ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.period == seconds
+                    }
+                }
+
+        // try up to 10 times with 100 ms pause
+        var success: Boolean = false
+        for (idxTry in 0 until 10) {
+            success = setInterval()
+            if (success)
+                break
+            Thread.sleep(100)
         }
+
+        if (!success)
+            return false
 
         // store task sync interval in account settings (used when the provider is switched)
         if (TaskProvider.ProviderName.values().any { it.authority == authority })
             accountManager.setUserData(account, KEY_SYNC_INTERVAL_TASKS, seconds.toString())
+
+        return true
     }
 
     fun getSavedTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
