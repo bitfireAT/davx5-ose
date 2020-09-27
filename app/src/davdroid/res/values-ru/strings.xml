@@ -91,7 +91,7 @@
   <string name="navigation_drawer_forums">Помощь / Форумы</string>
   <string name="navigation_drawer_donate">Пожертвовать</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
-  <string name="account_list_no_internet">Нет подключения к интернету. Android не будет запускать синхронизацию.</string>
+  <string name="account_list_no_internet">Нет подключения к интернету. Android не будет выполнять синхронизацию.</string>
   <string name="account_list_empty">Добро пожаловать в DAVx⁵\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
   <string name="accounts_global_sync_enable">Включить</string>
