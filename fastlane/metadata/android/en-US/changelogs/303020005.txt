@@ -1,0 +1,2 @@
+* support for tasks synchronization with Tasks app (tasks.org) [not all fields, see https://tasks.org/docs/sync.html]
+* minor improvements, bug fixes, translations
