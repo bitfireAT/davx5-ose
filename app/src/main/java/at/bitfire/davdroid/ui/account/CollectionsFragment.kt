@@ -28,7 +28,6 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
-import at.bitfire.davdroid.ui.DeleteCollectionFragment
 import kotlinx.android.synthetic.main.account_collections.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -34,14 +34,13 @@ class WifiPermissionsActivity: AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    private val account by lazy {
-        intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
-    }
+    private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
     private val model by viewModels<Model>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val binding = DataBindingUtil.setContentView<ActivityWifiPermissionsBinding>(this, R.layout.activity_wifi_permissions)
         binding.lifecycleOwner = this
@@ -73,8 +72,6 @@ class WifiPermissionsActivity: AppCompatActivity() {
                     Logger.log.warning("Couldn't resolve Location settings Intent")
             }
         }
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true

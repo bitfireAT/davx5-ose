@@ -75,6 +75,24 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.DebugInfoActivity"
+            android:parentActivityName=".ui.AppSettingsActivity"
+            android:exported="true"
+            android:label="@string/debug_info_title">
+            <intent-filter>
+                <action android:name="android.intent.action.BUG_REPORT"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.PermissionsActivity"
+            android:label="@string/app_settings_security_app_permissions"
+            android:parentActivityName=".ui.AppSettingsActivity" />
+        <activity
+            android:name=".ui.TasksActivity"
+            android:label="@string/intro_tasks_title"
+            android:parentActivityName=".ui.AppSettingsActivity" />
 
         <activity
             android:name=".ui.setup.LoginActivity"
@@ -90,46 +108,20 @@
             android:parentActivityName=".ui.AccountsActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".ui.CreateAddressBookActivity"
-            android:label="@string/create_addressbook"/>
+            android:name=".ui.account.CreateAddressBookActivity"
+            android:label="@string/create_addressbook"
+            android:parentActivityName=".ui.account.AccountActivity" />
         <activity
-            android:name=".ui.CreateCalendarActivity"
-            android:label="@string/create_calendar"/>
+            android:name=".ui.account.CreateCalendarActivity"
+            android:label="@string/create_calendar"
+            android:parentActivityName=".ui.account.AccountActivity" />
         <activity
-            android:name=".ui.account.SettingsActivity" />
+            android:name=".ui.account.SettingsActivity"
+            android:parentActivityName=".ui.account.AccountActivity" />
         <activity
             android:name=".ui.account.WifiPermissionsActivity"
             android:label="@string/wifi_permissions_label"
             android:parentActivityName=".ui.account.SettingsActivity" />
-
-        <activity
-            android:name=".ui.DebugInfoActivity"
-            android:parentActivityName=".ui.AppSettingsActivity"
-            android:exported="true"
-            android:label="@string/debug_info_title">
-            <intent-filter>
-                <action android:name="android.intent.action.BUG_REPORT"/>
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/authority_debug_provider"
-            android:grantUriPermissions="true"
-            android:exported="false">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/debug_paths" />
-        </provider>
-
-        <activity
-            android:name=".ui.PermissionsActivity"
-            android:label="@string/app_settings_security_app_permissions"
-            android:parentActivityName=".ui.AppSettingsActivity" />
-        <activity
-            android:name=".ui.TasksActivity"
-            android:label="@string/intro_tasks_title"
-            android:parentActivityName=".ui.AppSettingsActivity" />
 
         <!-- account type "DAVx⁵" -->
         <service
@@ -222,6 +214,16 @@
                 android:resource="@xml/contacts"/>
         </service>
 
-    </application>
+        <!-- provider to share debug info/logs -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="@string/authority_debug_provider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/debug_paths" />
+        </provider>
 
+    </application>
 </manifest>

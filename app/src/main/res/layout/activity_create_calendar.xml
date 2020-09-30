@@ -10,13 +10,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.CreateCalendarActivity">
+    tools:context=".ui.account.CreateCalendarActivity">
 
     <data>
         <import type="android.view.View"/>
         <variable
             name="model"
-            type="at.bitfire.davdroid.ui.CreateCalendarActivity.Model"/>
+            type="at.bitfire.davdroid.ui.account.CreateCalendarActivity.Model"/>
     </data>
 
     <ScrollView

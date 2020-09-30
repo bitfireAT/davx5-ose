@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.app.Application
@@ -18,7 +18,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NavUtils
+import androidx.core.app.TaskStackBuilder
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -28,7 +28,7 @@ import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
-import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.ui.HomeSetAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
@@ -40,6 +40,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
+    private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
     val model by viewModels<Model>()
 
 
@@ -47,13 +48,12 @@ class CreateAddressBookActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        (intent?.getParcelableExtra(EXTRA_ACCOUNT) as? Account)?.let {
-            model.initialize(it)
-        }
-
         val binding = DataBindingUtil.setContentView<ActivityCreateAddressBookBinding>(this, R.layout.activity_create_address_book)
         binding.lifecycleOwner = this
         binding.model = model
+
+        if (savedInstanceState == null)
+            model.initialize(account)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -61,14 +61,12 @@ class CreateAddressBookActivity: AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) =
-            if (item.itemId == android.R.id.home) {
-                val intent = Intent(this, AccountActivity::class.java)
-                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
-                NavUtils.navigateUpTo(this, intent)
-                true
-            } else
-                false
+    override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
+
+    override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
+        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+    }
+
 
     fun onCreateCollection(item: MenuItem) {
         var ok = true

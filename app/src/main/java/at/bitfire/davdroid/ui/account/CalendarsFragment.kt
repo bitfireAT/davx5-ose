@@ -7,7 +7,6 @@ import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.resource.TaskUtils
-import at.bitfire.davdroid.ui.CreateCalendarActivity
 import kotlinx.android.synthetic.main.account_caldav_item.view.*
 import kotlinx.android.synthetic.main.account_collections.*
 

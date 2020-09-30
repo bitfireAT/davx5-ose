@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.app.Application
@@ -24,6 +24,7 @@ import at.bitfire.davdroid.databinding.DeleteCollectionBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.ui.ExceptionInfoFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -44,7 +45,7 @@ class DeleteCollectionFragment: DialogFragment() {
         }
     }
 
-    val model by viewModels<DeleteCollectionModel>()
+    val model by viewModels<Model>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +83,7 @@ class DeleteCollectionFragment: DialogFragment() {
     }
 
 
-    class DeleteCollectionModel(
+    class Model(
             application: Application
     ): AndroidViewModel(application) {
 

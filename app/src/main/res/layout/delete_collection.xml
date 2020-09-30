@@ -4,7 +4,7 @@
     <data>
         <variable
             name="model"
-            type="at.bitfire.davdroid.ui.DeleteCollectionFragment.DeleteCollectionModel" />
+            type="at.bitfire.davdroid.ui.account.DeleteCollectionFragment.Model" />
     </data>
 
     <ScrollView

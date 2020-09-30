@@ -17,11 +17,10 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.security.KeyChain
-import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NavUtils
+import androidx.core.app.TaskStackBuilder
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
@@ -52,13 +51,12 @@ class SettingsActivity: AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    private lateinit var account: Account
+    private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        account = intent.getParcelableExtra(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
         title = getString(R.string.settings_title, account.name)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -69,14 +67,11 @@ class SettingsActivity: AppCompatActivity() {
                     .commit()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) =
-            if (item.itemId == android.R.id.home) {
-                val intent = Intent(this, AccountActivity::class.java)
-                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
-                NavUtils.navigateUpTo(this, intent)
-                true
-            } else
-                false
+    override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
+
+    override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
+        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+    }
 
 
     class AccountSettingsFragment: PreferenceFragmentCompat() {

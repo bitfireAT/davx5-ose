@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/gpl.html
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.app.Application
@@ -32,7 +32,7 @@ import at.bitfire.davdroid.databinding.ActivityCreateCalendarBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
-import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.ui.HomeSetAdapter
 import at.bitfire.ical4android.DateUtils
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
@@ -49,15 +49,12 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         const val EXTRA_ACCOUNT = "account"
     }
 
+    private val account by lazy { intent.getParcelableExtra<Account>(CreateAddressBookActivity.EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
     val model by viewModels<Model>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        (intent?.getParcelableExtra(EXTRA_ACCOUNT) as? Account)?.let {
-            model.initialize(it)
-        }
 
         val binding = DataBindingUtil.setContentView<ActivityCreateCalendarBinding>(this, R.layout.activity_create_calendar)
         binding.lifecycleOwner = this
@@ -71,6 +68,9 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         }
 
         binding.timezone.setAdapter(model.timezones)
+
+        if (savedInstanceState == null)
+            model.initialize(account)
     }
 
     override fun onColorSelected(dialogId: Int, rgb: Int) {
