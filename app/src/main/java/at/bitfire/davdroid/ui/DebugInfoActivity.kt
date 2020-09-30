@@ -54,6 +54,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.ical4android.TaskProvider
+import at.bitfire.ical4android.TaskProvider.ProviderName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -286,31 +287,41 @@ class DebugInfoActivity: AppCompatActivity() {
                     writer.append("SOFTWARE INFORMATION\n")
                     val table = TextTable("Package", "Version", "Code", "Installer", "Notes")
                     val pm = context.packageManager
-                    val appIDs = mutableSetOf(      // we always want info about these packages
-                            BuildConfig.APPLICATION_ID,                         // DAVx5
-                            TaskProvider.ProviderName.OpenTasks.packageName,    // OpenTasks
-                            TaskProvider.ProviderName.TasksOrg.packageName      // tasks.org
+
+                    val packageNames = mutableSetOf(      // we always want info about these packages:
+                            BuildConfig.APPLICATION_ID,            // DAVx5
+                            ProviderName.OpenTasks.packageName,    // OpenTasks
+                            ProviderName.TasksOrg.packageName      // tasks.org
                     )
-                    // add info about contact, calendar, task provider
-                    for (authority in arrayOf(ContactsContract.AUTHORITY, CalendarContract.AUTHORITY, TaskProvider.ProviderName.OpenTasks.authority))
-                        pm.resolveContentProvider(authority, 0)?.let { appIDs += it.packageName }
-                    // add info about available contact, calendar, task apps
-                    for (uri in arrayOf(ContactsContract.Contacts.CONTENT_URI, CalendarContract.Events.CONTENT_URI, TaskContract.Tasks.getContentUri(TaskProvider.ProviderName.OpenTasks.authority))) {
-                        val viewIntent = Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(uri, 1))
+                    // ... and info about contact and calendar provider
+                    for (authority in arrayOf(ContactsContract.AUTHORITY, CalendarContract.AUTHORITY))
+                        pm.resolveContentProvider(authority, 0)?.let { packageNames += it.packageName }
+                    // ... and info about contact, calendar, task-editing apps
+                    val dataUris = arrayOf(
+                            ContactsContract.Contacts.CONTENT_URI,
+                            CalendarContract.Events.CONTENT_URI,
+                            TaskContract.Tasks.getContentUri(ProviderName.OpenTasks.authority),
+                            TaskContract.Tasks.getContentUri(ProviderName.TasksOrg.authority)
+                    )
+                    for (uri in dataUris) {
+                        val viewIntent = Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(uri, /* some random ID */ 1))
                         for (info in pm.queryIntentActivities(viewIntent, 0))
-                            appIDs += info.activityInfo.packageName
+                            packageNames += info.activityInfo.packageName
                     }
 
-                    for (appID in appIDs)
+                    for (packageName in packageNames)
                         try {
-                            val info = pm.getPackageInfo(appID, 0)
+                            val info = pm.getPackageInfo(packageName, 0)
                             val appInfo = info.applicationInfo
                             val notes = mutableListOf<String>()
                             if (!appInfo.enabled)
                                 notes += "disabled"
                             if (appInfo.flags.and(ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0)
                                 notes += "<em>on external storage</em>"
-                            table.addLine(appID, info.versionName, PackageInfoCompat.getLongVersionCode(info), pm.getInstallerPackageName(appID) ?: '—', notes.joinToString(", "))
+                            table.addLine(
+                                    info.packageName, info.versionName, PackageInfoCompat.getLongVersionCode(info),
+                                    pm.getInstallerPackageName(info.packageName) ?: '—', notes.joinToString(", ")
+                            )
                         } catch(e: PackageManager.NameNotFoundException) {
                         }
                     writer.append(table.toString())

@@ -226,4 +226,22 @@
         </provider>
 
     </application>
+
+    <!-- package visiblity – which apps do we need to see? -->
+    <queries>
+        <!-- task providers -->
+        <provider android:authorities="org.dmfs.tasks" />
+        <provider android:authorities="org.tasks.opentasks" />
+
+        <!-- apps that interact with contact, calendar, task data (for debug info) -->
+        <intent>
+            <action android:name="*" />
+            <data android:scheme="content" android:host="com.android.contacts" />
+        </intent>
+        <intent>
+            <action android:name="*" />
+            <data android:scheme="content" android:host="com.android.calendar" />
+        </intent>
+    </queries>
+
 </manifest>
