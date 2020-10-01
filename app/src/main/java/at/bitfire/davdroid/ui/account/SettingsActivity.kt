@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ContentResolver
 import android.content.Intent
@@ -363,6 +364,7 @@ class SettingsActivity: AppCompatActivity() {
             })
         }
 
+        @SuppressLint("WrongConstant")
         private fun checkWifiPermissions() {
             if (!PermissionUtils.canAccessWifiSsid(requireActivity()))
                 Snackbar.make(requireView(), R.string.settings_sync_wifi_only_ssids_permissions_required, UiUtils.SNACKBAR_LENGTH_VERY_LONG)

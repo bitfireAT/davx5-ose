@@ -15,6 +15,7 @@ import android.provider.Settings
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -48,7 +49,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
 
         model.needLocation.observe(this) { needPermission ->
             if (needPermission && model.haveLocation.value == false)
-                requestPermissions(arrayOf(model.PERMISSION_LOCATION), 0)
+                ActivityCompat.requestPermissions(this, arrayOf(model.PERMISSION_LOCATION), 0)
         }
 
         model.haveBackgroundLocation.observe(this) { status ->
@@ -60,7 +61,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
         }
         model.needBackgroundLocation.observe(this) { needPermission ->
             if (needPermission && model.haveBackgroundLocation.value == false)
-                requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 0)
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 0)
         }
 
         model.needLocationEnabled.observe(this) { needLocation ->

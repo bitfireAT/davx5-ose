@@ -22,7 +22,7 @@ import at.bitfire.davdroid.R
 object UiUtils {
 
     const val SHORTCUT_SYNC_ALL = "syncAllAccounts"
-    const val SNACKBAR_LENGTH_VERY_LONG = 5000
+    const val SNACKBAR_LENGTH_VERY_LONG = 5000          // 5s
 
     fun updateShortcuts(context: Context) {
         if (Build.VERSION.SDK_INT >= 25)

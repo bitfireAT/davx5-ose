@@ -126,6 +126,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/locationEnabledStatus"
+                app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="16dp"
                 android:text="@string/permissions_app_settings_hint"
                 style="@style/TextAppearance.MaterialComponents.Body1"/>
@@ -135,6 +136,7 @@
                 android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 app:layout_constraintTop_toBottomOf="@id/settingsHint"
+                app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="8dp"
                 android:onClick="viewAppSettings"
                 android:text="@string/permissions_app_settings"/>
