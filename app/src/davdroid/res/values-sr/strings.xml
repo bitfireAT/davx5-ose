@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Адресари</string>
   <string name="help">Помоћ</string>
   <string name="manage_accounts">Управљај налозима</string>
-  <string name="send">Пошаљи</string>
   <string name="notification_channel_debugging">Тражење грешака</string>
   <string name="notification_channel_general">Остале важне поруке</string>
   <string name="notification_channel_sync">Синхронизација</string>
@@ -14,6 +13,7 @@
   <string name="notification_channel_sync_io_errors">Мрежне и У/И грешке</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Библиотеке</string>
   <string name="about_version">Издање %1$s (%2$d)</string>

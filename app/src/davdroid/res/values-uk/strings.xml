@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Адресні книги</string>
   <string name="help">Допомога</string>
   <string name="manage_accounts">Керування обліковими записами</string>
-  <string name="send">Відправити</string>
   <string name="notification_channel_debugging">Зневадження</string>
   <string name="notification_channel_general">Інші важливі повідомлення</string>
   <string name="notification_channel_sync">Синхронізація</string>
@@ -18,6 +17,7 @@
   <string name="notification_channel_sync_io_errors_desc">Спливання часу відклику, проблеми зв\'язку, і т.п. (часто тимчасові)</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Бібліотеки</string>
   <string name="about_version">Версія %1$s (%2$d)</string>
@@ -26,9 +26,6 @@
   <string name="about_license_info_no_warranty">Цей програмний засіб постачається АБСОЛЮТНО БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ. Це вільне програмне забезпечення, і ви можете поширювати її, за деякими умовами.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Не вдалося створити файл звіту</string>
-  <string name="logging_notification_title">Звітування DAVx⁵</string>
-  <string name="logging_notification_text">Тепер звітування DAVx⁵ активно</string>
-  <string name="logging_notification_send_log">Відправити звіт</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Відкрити панель навігації</string>
   <string name="navigation_drawer_close">Закрити панель навігації</string>
@@ -158,7 +155,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Синхронізація відбуватиметься тільки через %s (вимагає ввімкнені служби локації)</string>
   <string name="settings_sync_wifi_only_ssids_off">Може використовуватись всі Wi-Fi з\'єднання</string>
   <string name="settings_sync_wifi_only_ssids_message">Назви (SSID) дозволених Wi-Fi мереж, розділені комами (залиште порожнім для всіх)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Для читання назв WiFi, потрібен дозвіл до локації, та ввімкнені сервіси локації.</string>
   <string name="settings_more_info_faq">Більше інформації (FAQ)</string>
   <string name="settings_authentication">Автентифікація</string>
   <string name="settings_username">Ім\'я користувача</string>

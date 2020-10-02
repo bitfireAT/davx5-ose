@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Helbide liburuak</string>
   <string name="help">Laguntza</string>
   <string name="manage_accounts">Kudeatu kontuak</string>
-  <string name="send">Bidali</string>
   <string name="notification_channel_debugging">Arazten</string>
   <string name="notification_channel_general">Beste mezu garrantzitsu batzuk</string>
   <string name="notification_channel_sync">Sinkronizazioa</string>
@@ -32,6 +31,7 @@
   <string name="permissions_calendar_status_off">Egutegi sinkronizaziorik ez (ez gomendatuta)</string>
   <string name="permissions_calendar_status_on">Egutegiaren sinkronizazioa posible</string>
   <string name="permissions_app_settings">Aplikazioaren ezarpenak</string>
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">Itzulpenak</string>
   <string name="about_libraries">Liburutegiak</string>
@@ -39,7 +39,6 @@
   <string name="about_build_date">%s(e)an konpilatuta</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Ezin izan da egunkari fitxategia sortu</string>
-  <string name="logging_notification_send_log">Bidali egunkaria</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_about">Honi buruz / Lizentzia</string>
   <string name="install_email_client">Instalatu e-mail bezero bat</string>

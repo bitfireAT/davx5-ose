@@ -7,7 +7,6 @@
   <string name="address_books_authority_title">Adresáře kontaktů</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
-  <string name="send">Odeslat</string>
   <string name="notification_channel_debugging">Ladění</string>
   <string name="notification_channel_general">Ostatní důležité zprávy</string>
   <string name="notification_channel_sync">Synchronizace</string>
@@ -59,8 +58,23 @@
   <string name="permissions_tasks_status_not_installed">Bez synchronizace úkolů (nenainstalováno)</string>
   <string name="permissions_tasks_status_off">Bez synchronizace úkolů (nedoporučeno)</string>
   <string name="permissions_tasks_status_on">Synchronizace úkolů možná</string>
+  <string name="permissions_autoreset_title">Ponechat oprávnění</string>
+  <string name="permissions_autoreset_status_off">Oprávnění mohou být automaticky resetována (nedoporučeno)</string>
+  <string name="permissions_autoreset_status_on">Oprávnění nebudou resetována automaticky</string>
   <string name="permissions_app_settings_hint">Pokud přepínač nefunguje, použijte nastavení aplikací / Oprávnění</string>
   <string name="permissions_app_settings">Nastavení aplikace</string>
+  <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">Oprávnění k přístupu k názvům (SSID) WiFi sítí</string>
+  <string name="wifi_permissions_intro">Aby bylo možné přistupovat k názvu (SSID) WiFi sítě, ke které jste připojení, je třeba, aby byly splněny tyto podmínky:</string>
+  <string name="wifi_permissions_location_permission">Oprávnění pro přístup k poloze</string>
+  <string name="wifi_permissions_location_permission_on">Oprávnění pro přístup k poloze uděleno</string>
+  <string name="wifi_permissions_location_permission_off">Oprávnění pro přístup k poloze odepřeno</string>
+  <string name="wifi_permissions_background_location_permission">Oprávnění pro přístup k poloze na pozadí</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Oprávnění pro přístup k poloze nastaveno na <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Oprávnění pro přístup k poloze nenastaveno na <b>%s</b>]]></string>
+  <string name="wifi_permissions_location_enabled">Určování polohy vždy zapnuté</string>
+  <string name="wifi_permissions_location_enabled_on">Služba určován polohy je zapnutá</string>
+  <string name="wifi_permissions_location_enabled_off">Služba určován polohy je vypnutá</string>
   <!--AboutActivity-->
   <string name="about_translations">Překlady</string>
   <string name="about_libraries">Knihovny</string>
@@ -71,9 +85,6 @@
   <string name="about_translations_thanks"><![CDATA[<i>Poděkování: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nedaří se vytvořit soubor pro záznam událostí</string>
-  <string name="logging_notification_title">Zaznamenávání událostí v DAVx⁵</string>
-  <string name="logging_notification_text">Nyní jsou zaznamenávány všechny aktivity v DAVx⁵</string>
-  <string name="logging_notification_send_log">Záznam událostí odesílání</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Otevřít panel navigace</string>
   <string name="navigation_drawer_close">Zavřít panel navigace</string>
@@ -220,7 +231,8 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Bude synchronizovat pouze přes %s (vyžaduje aktivní lokační služby)</string>
   <string name="settings_sync_wifi_only_ssids_off">Bude použito libovolné WiFi připojení</string>
   <string name="settings_sync_wifi_only_ssids_message">Čárkou oddělovaný seznam názvů (SSID) WiFi sítí, přes které synchronizovat (pokud omezovat nechcete, nevyplňujte)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Pro čtení názvů WiFi sítí je zapotřebí oprávnění k Umístění a trvale aktivované lokační služby.</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">Omezení na názvy (SSID) WiFi sítí vyžaduje další nastavení</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Spravovat</string>
   <string name="settings_more_info_faq">Další informace (ČKD)</string>
   <string name="settings_authentication">Ověření</string>
   <string name="settings_username">Uživatelské jméno</string>

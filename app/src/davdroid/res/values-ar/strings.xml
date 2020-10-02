@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">دفاتر العناوين</string>
   <string name="help">مساعدة</string>
   <string name="manage_accounts">إدارة الحسابات</string>
-  <string name="send">إرسال</string>
   <string name="notification_channel_debugging">تصحيح العلل</string>
   <string name="notification_channel_general">رسائل هامة أخرى</string>
   <string name="notification_channel_sync">مزامنة</string>
@@ -18,6 +17,7 @@
   <string name="notification_channel_sync_io_errors_desc">أوقات المهل، مشاكل الاتصال ، …الخ (مؤقتة في العادة)</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">المكتبات</string>
   <string name="about_version">النسخة %1$s (%2$d)</string>
@@ -26,9 +26,6 @@
   <string name="about_license_info_no_warranty">يقدَّم هذا البرنامج دون أدنى مسؤولية.  إنه برنامج حر، وندعوك لإعادة توزيعه حسب أحكام محددة.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">لا يمكن إنشاء ملف سجل</string>
-  <string name="logging_notification_title">سجلات DAVx⁵</string>
-  <string name="logging_notification_text">يجري الآن تسجيل جميع نشاطات DAVx⁵</string>
-  <string name="logging_notification_send_log">إرسال السجل</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">فتح درج التنقل</string>
   <string name="navigation_drawer_close">إغلاق درج التنقل</string>
@@ -150,7 +147,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">ستتم المزامنة عبر %sفقط (يتطلب تفعيل خدمات الموقع الجغرافي)</string>
   <string name="settings_sync_wifi_only_ssids_off">سيتم استخدام جميع اتصالات WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">أسماء (SSIDs) مفصولة بفواصل لشبكات WiFi المسموح الاتصال عبرها (اتركه فارغاً للسماح للكل)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">الإذن لمعرفة الموقع الجغرافي والتفعيل الدائم لخدمات الموقع مطلوبان من أجل قراءة أسماء شبكات وايفاي</string>
   <string name="settings_more_info_faq">المزيد من المعلومات (الأسئلة الشائعة)</string>
   <string name="settings_authentication">المصادقة</string>
   <string name="settings_username">اسم المستخدم</string>

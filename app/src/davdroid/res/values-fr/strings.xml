@@ -7,7 +7,6 @@
   <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
-  <string name="send">Envoyer</string>
   <string name="notification_channel_debugging">Débogage</string>
   <string name="notification_channel_general">Autres messages importants</string>
   <string name="notification_channel_sync">Synchronisation</string>
@@ -54,6 +53,7 @@
   <string name="permissions_tasks_status_on">Synchronisation des tâches possible</string>
   <string name="permissions_app_settings_hint">Si un commutateur ne fonctionne pas, utiliser les paramètres de l\'application / Permissions.</string>
   <string name="permissions_app_settings">Paramètres de l\'application</string>
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">Traductions</string>
   <string name="about_libraries">Librairies</string>
@@ -64,9 +64,6 @@
   <string name="about_translations_thanks"><![CDATA[<i>Merci à : </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Impossible de créer le fichier journal</string>
-  <string name="logging_notification_title">Journalisation de DAVx⁵</string>
-  <string name="logging_notification_text">Journaliser dès maintenant toutes les activités de DAVx⁵</string>
-  <string name="logging_notification_send_log">Envoyer le journal</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
   <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
@@ -207,7 +204,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Ne synchronise que sur %s (nécessite des services de localisation actifs)</string>
   <string name="settings_sync_wifi_only_ssids_off">Toutes les connexions WiFi seront utilisées</string>
   <string name="settings_sync_wifi_only_ssids_message">Liste des points d\'accès WiFi (SSID) autorisés, séparés par des virgules. (Laissez vide pour tous)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Pour lire les noms WiFi, vous devez disposer des services de localisation et des sites activés en permanence.</string>
   <string name="settings_more_info_faq">Plus d\'informations (FAQ)</string>
   <string name="settings_authentication">Authentification</string>
   <string name="settings_username">Nom d\'utilisateur</string>

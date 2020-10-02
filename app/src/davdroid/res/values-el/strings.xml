@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Βιβλία διευθύνσεων</string>
   <string name="help">Βοήθεια</string>
   <string name="manage_accounts">Διαχείριση λογαριασμών</string>
-  <string name="send">Αποστολή</string>
   <string name="notification_channel_debugging">Αποσφαλμάτωση</string>
   <string name="notification_channel_general">Άλλα σημαντικά μηνύματα</string>
   <string name="notification_channel_sync">Συγχρονισμός</string>
@@ -18,6 +17,7 @@
   <string name="notification_channel_sync_io_errors_desc">Χρονικά όρια, προβλήματα σύνδεσης, κλπ. (συχνά προσωρινά)</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Βιβλιοθήκες</string>
   <string name="about_version">Έκδοση %1$s (%2$d)</string>
@@ -26,9 +26,6 @@
   <string name="about_license_info_no_warranty">Αυτό το πρόγραμμα συνοδεύεται χωρις ΚΑΜΙΑ ΕΓΓΥΗΣΗ. Είναι ελεύθερο λογισμικό και είστε ευπρόσδεκτοι να το αναδιανείμετε υπό ορισμένες προϋποθέσεις.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Αδυναμία δημιουργίας αρχείου ιστορικού</string>
-  <string name="logging_notification_title">Καταγραφές DAVx⁵</string>
-  <string name="logging_notification_text">Τώρα γίνεται η καταγραφή όλων των δραστηριοτήτων του DAVx⁵</string>
-  <string name="logging_notification_send_log">Αποστολή ιστορικού</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Άνοιγμα συρταριού πλοήγησης</string>
   <string name="navigation_drawer_close">Κλείσιμο συρταριού πλοήγησης</string>
@@ -158,7 +155,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Θα συγχρονίζεται μόνο μέσω %s (απαιτεί ενεργές υπηρεσίες τοποθεσίας)</string>
   <string name="settings_sync_wifi_only_ssids_off">Θα χρησιμοποιηθούν όλες οι συνδέσεις WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">Ονόματα που χωρίζονται με κόμμα (SSIDs) των επιτρεπόμενων δικτύων WiFi (αφήστε κενό για όλους)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Για να διαβάσετε ονόματα WiFi, απαιτείται η άδεια θέσης και οι μόνιμα ενεργοποιημένες υπηρεσίες τοποθεσίας.</string>
   <string name="settings_more_info_faq">Περισσότερες πληροφορίες (FAQ)</string>
   <string name="settings_authentication">Πιστοποίηση</string>
   <string name="settings_username">Όνομα χρήστη</string>

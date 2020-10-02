@@ -7,7 +7,6 @@
   <string name="address_books_authority_title">Rubriche</string>
   <string name="help">Aiuto</string>
   <string name="manage_accounts">Gestione account</string>
-  <string name="send">Invia</string>
   <string name="notification_channel_debugging">Debugging</string>
   <string name="notification_channel_general">Altri messaggi importanti</string>
   <string name="notification_channel_sync">Sincronizzazione</string>
@@ -54,6 +53,7 @@
   <string name="permissions_tasks_status_on">Permette di sincronizzare le attività</string>
   <string name="permissions_app_settings_hint">Se uno slider non funziona, vai a impostazioni app/ autorizzazioni.</string>
   <string name="permissions_app_settings">Impostazioni app</string>
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">Traduzioni</string>
   <string name="about_libraries">Librerie</string>
@@ -64,9 +64,6 @@
   <string name="about_translations_thanks"><![CDATA[<i>Grazie a: </i>%s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Non riesco a creare il file di log</string>
-  <string name="logging_notification_title">Sto registrando DAVx⁵</string>
-  <string name="logging_notification_text">Ora sto registrando tutte le attività di  DAVx⁵</string>
-  <string name="logging_notification_send_log">Invia log</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Apri barra di navigazione</string>
   <string name="navigation_drawer_close">Chiudi barra di navigazione</string>
@@ -207,7 +204,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Sincronizzeremo solo oltre  %s (richiede che i servizi di localizzazione siano attivi)</string>
   <string name="settings_sync_wifi_only_ssids_off">Verranno utilizzate tutte le connessioni WIFI </string>
   <string name="settings_sync_wifi_only_ssids_message">Nomi (SSID) delle reti WiFi autorizzate separati da virgola (lascia vuoto per autorizzarle tutte)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Per leggere i nomi WiFi, sono richiesti i permessi di Localizzazione e i servizi di localizzazione attivati sempre.</string>
   <string name="settings_more_info_faq">Maggiori informazioni (FAQ)</string>
   <string name="settings_authentication">Autenticazione</string>
   <string name="settings_username">Nome utente</string>

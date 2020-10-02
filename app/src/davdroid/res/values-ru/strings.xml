@@ -7,7 +7,6 @@
   <string name="address_books_authority_title">Адресные книги</string>
   <string name="help">Помощь</string>
   <string name="manage_accounts">Управление аккаунтами</string>
-  <string name="send">Отправить</string>
   <string name="notification_channel_debugging">Отладка</string>
   <string name="notification_channel_general">Другие важные сообщения</string>
   <string name="notification_channel_sync">Синхронизация</string>
@@ -61,6 +60,7 @@
   <string name="permissions_tasks_status_on">Синхронизация задач возможна</string>
   <string name="permissions_app_settings_hint">Если переключатель не работает, используйте Настройки приложения / Разрешения.</string>
   <string name="permissions_app_settings">Настройки приложения</string>
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">Переводы</string>
   <string name="about_libraries">Библиотеки</string>
@@ -71,9 +71,6 @@
   <string name="about_translations_thanks"><![CDATA[<i>Благодарность: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Не удалось создать файл журнала</string>
-  <string name="logging_notification_title">Журналирование DAVx⁵</string>
-  <string name="logging_notification_text">Сейчас вся активность DAVx⁵ журналируется</string>
-  <string name="logging_notification_send_log">Отправить журнал</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Открыть панель навигации</string>
   <string name="navigation_drawer_close">Закрыть панель навигации</string>
@@ -220,7 +217,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Будет синхронизироваться только более %s (требуются активированные службы определения местоположения)</string>
   <string name="settings_sync_wifi_only_ssids_off">Будут использоваться все WiFi-подключения</string>
   <string name="settings_sync_wifi_only_ssids_message">Имена (SSID) разрешенных сетей WiFi, разделенные запятыми (оставьте пустым для всех)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Для чтения имен WiFi требуются разрешение на геолокацию и постоянно активированные службы определения местоположения</string>
   <string name="settings_more_info_faq">Дополнительная информация (FAQ)</string>
   <string name="settings_authentication">Аутентификация</string>
   <string name="settings_username">Имя пользователя</string>

@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Osoitekirjat</string>
   <string name="help">Apua</string>
   <string name="manage_accounts">Hallitse tilejä</string>
-  <string name="send">Lähetä</string>
   <string name="notification_channel_debugging">Debuggaus</string>
   <string name="notification_channel_general">Muut tärkeät viestit</string>
   <string name="notification_channel_sync">Synkronointi</string>
@@ -18,6 +17,7 @@
   <string name="notification_channel_sync_io_errors_desc">Aikakatkaisut, yhteysvirheet, yms. (usein väliaikaisia)</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <!--global settings-->
   <!--AccountsActivity-->

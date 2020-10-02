@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Adressebøker</string>
   <string name="help">Hjelp</string>
   <string name="manage_accounts">Behandle kontoer</string>
-  <string name="send">Send</string>
   <string name="notification_channel_debugging">Feilsøking</string>
   <string name="notification_channel_general">Andre viktige beskjeder</string>
   <string name="notification_channel_sync">Synkronisering</string>
@@ -16,6 +15,7 @@
   <string name="notification_channel_sync_io_errors">Nettverk- og I/O-feil</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Bibliotek</string>
   <string name="about_version">Versjon %1$s(%2$d)</string>
@@ -24,9 +24,6 @@
   <string name="about_license_info_no_warranty">Dette programmet kommer uten NOEN FORM FOR GARANTI. Det er fri programvare, og du er velkommen til å redistribuere det under gitte forhold.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kan ikke opprette loggfil</string>
-  <string name="logging_notification_title">DAVx⁵ logging</string>
-  <string name="logging_notification_text">Logger nå all aktivitet fra DAVx⁵</string>
-  <string name="logging_notification_send_log">Send logg</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Åpne navigasjonsskuff</string>
   <string name="navigation_drawer_close">Lukk navigasjonsskuff</string>

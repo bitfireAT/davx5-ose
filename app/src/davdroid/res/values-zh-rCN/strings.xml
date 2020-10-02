@@ -7,7 +7,6 @@
   <string name="address_books_authority_title">通讯录</string>
   <string name="help">帮助</string>
   <string name="manage_accounts">管理账户</string>
-  <string name="send">发送</string>
   <string name="notification_channel_debugging">调试</string>
   <string name="notification_channel_general">其它重要消息</string>
   <string name="notification_channel_sync">同步</string>
@@ -54,6 +53,7 @@
   <string name="permissions_tasks_status_on">可同步任务</string>
   <string name="permissions_app_settings_hint">如果切换没有正常工作，请使用应用程序设置/权限</string>
   <string name="permissions_app_settings">应用设置</string>
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">翻译</string>
   <string name="about_libraries">程序库</string>
@@ -64,9 +64,6 @@
   <string name="about_translations_thanks"><![CDATA[<i>谢谢：</i>%s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">无法创建日志文件</string>
-  <string name="logging_notification_title">DAVx⁵ 日志</string>
-  <string name="logging_notification_text">正在记录 DAVx⁵ 的所有活动</string>
-  <string name="logging_notification_send_log">发送日志</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">打开导航抽屉</string>
   <string name="navigation_drawer_close">关闭导航抽屉</string>
@@ -209,7 +206,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">将只在 %s 上同步（需要生效的位置服务）</string>
   <string name="settings_sync_wifi_only_ssids_off">任意 WiFi 网络均可同步</string>
   <string name="settings_sync_wifi_only_ssids_message">请用半角逗号分隔允许同步的 WiFi 网络名（SSID），留空则允许任意网络</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">读取 WiFi 网络名称需要位置权限，以及永久生效的位置服务。</string>
   <string name="settings_more_info_faq">更多信息（常见问题）</string>
   <string name="settings_authentication">认证</string>
   <string name="settings_username">用户名</string>
