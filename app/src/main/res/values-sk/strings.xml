@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Adresáre</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovať používateľské účty</string>
-  <string name="send">Poslať</string>
   <string name="notification_channel_debugging">Ladenie</string>
   <string name="notification_channel_general">Ďalšie dôležité správy</string>
   <string name="notification_channel_sync">Synchronizácia</string>
@@ -18,6 +17,7 @@
   <string name="notification_channel_sync_io_errors_desc">Vypršanie času, problémy spojenia, atď. (často dočasné)</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Knižnice</string>
   <string name="about_version">Verzia %1$s (%2$d)</string>
@@ -26,9 +26,6 @@
   <string name="about_license_info_no_warranty">Tento program sa poskytuje BEZ AKEJKOĽVEK ZÁRUKY. Je to slobodný softvér a môžete ho ďalej šíriť pri splnení určitých podmienok.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nie je možné vytvoriť súbor protokolu</string>
-  <string name="logging_notification_title">DAVx⁵ protokol</string>
-  <string name="logging_notification_text">Odteraz sa protokolujú všetky DAVx⁵ aktivity</string>
-  <string name="logging_notification_send_log">Poslať protokol</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Otvoriť navigačnú zásuvku</string>
   <string name="navigation_drawer_close">Zatvoriť navigačnú zásuvku</string>
@@ -158,7 +155,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Synchronizuje sa iba cez %s (miestne lokalizačné služby musia byť aktívne)</string>
   <string name="settings_sync_wifi_only_ssids_off">Použije sa akékoľvek WiFi pripojenie</string>
   <string name="settings_sync_wifi_only_ssids_message">Čiarkou oddelený zoznam mien (SSID) povolených WiFi sietí (ponechať prázdne pre všetky)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Aby bolo možné čítať mená WiFi, musia byť dostupné povolenia pre lokalizáciu a trvalo aktivované lokalizačné služby</string>
   <string name="settings_more_info_faq">Viac informácií (FAQ)</string>
   <string name="settings_authentication">Overenie</string>
   <string name="settings_username">Meno používateľa</string>

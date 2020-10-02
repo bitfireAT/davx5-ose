@@ -7,7 +7,7 @@
   <string name="address_books_authority_title">Adressbücher</string>
   <string name="help">Hilfe</string>
   <string name="manage_accounts">Konten verwalten</string>
-  <string name="send">Senden</string>
+  <string name="share">Teilen</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
   <string name="notification_channel_general">Andere wichtige Mitteilungen</string>
   <string name="notification_channel_sync">Synchronisierung</string>
@@ -59,8 +59,23 @@
   <string name="permissions_tasks_status_not_installed">Keine Aufgabensynchronisierung (nicht installiert)</string>
   <string name="permissions_tasks_status_off">Keine Aufgabensynchronisierung (nicht empfohlen)</string>
   <string name="permissions_tasks_status_on">Aufgabensynchronisierung möglich</string>
+  <string name="permissions_autoreset_title">Berechtigungen behalten</string>
+  <string name="permissions_autoreset_status_off">Berechtigungen können automatisch entzogen werden (nicht empfohlen)</string>
+  <string name="permissions_autoreset_status_on">Berechtigungen werden nicht automatisch entzogen</string>
   <string name="permissions_app_settings_hint">Wenn ein Schalter nicht funktioniert, App-Einstellungen / Berechtigungen verwenden.</string>
   <string name="permissions_app_settings">App-Einstellungen</string>
+  <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WLAN-SSID-Berechtigungen</string>
+  <string name="wifi_permissions_intro">Um auf den aktuellen WLAN-Namen (SSID) zugreifen zu können, müssen folgende Bedingungen erfüllt werden:</string>
+  <string name="wifi_permissions_location_permission">Standort-Berechtigung</string>
+  <string name="wifi_permissions_location_permission_on">Standort-Zugriff erlaubt</string>
+  <string name="wifi_permissions_location_permission_off">Standort-Zugriff verweigert</string>
+  <string name="wifi_permissions_background_location_permission">Hintergrund-Standort-Berechtigung</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Standort-Berechtigung auf <b>%s</b> gesetzt]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Standort-Berechtigung nicht auf <b>%s</b> gesetzt]]></string>
+  <string name="wifi_permissions_location_enabled">Standort-Dienst immer aktiviert</string>
+  <string name="wifi_permissions_location_enabled_on">Standort-Dienst aktiv</string>
+  <string name="wifi_permissions_location_enabled_off">Standort-Dienst inaktiv</string>
   <!--AboutActivity-->
   <string name="about_translations">Übersetzungen</string>
   <string name="about_libraries">Bibliotheken</string>
@@ -71,9 +86,9 @@
   <string name="about_translations_thanks"><![CDATA[<i>Dank an: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Protokolldatei konnte nicht angelegt werden</string>
-  <string name="logging_notification_title">DAVx⁵-Protokollierung</string>
-  <string name="logging_notification_text">Alle DAVx⁵-Aktivitäten werden protokolliert</string>
-  <string name="logging_notification_send_log">Protokoll senden</string>
+  <string name="logging_notification_text">Alle %s-Aktivitäten werden protokolliert</string>
+  <string name="logging_notification_view_share">Anzeigen/teilen</string>
+  <string name="logging_notification_disable">Deaktivieren</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Hauptmenü anzeigen</string>
   <string name="navigation_drawer_close">Hauptmenü schließen</string>
@@ -220,7 +235,8 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Synchronisierung nur über %s (benötigt aktive Standortdienste)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WLAN-Verbindungen werden verwendet</string>
   <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Komma getrennt, leer lassen für alle)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Zum Auslesen von WLAN-Namen sind die Standort-Berechtigung und die ständige Aktivierung der Standortdienste notwendig.</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WLAN-SSID-Einschränkung benötigt weitere Einstellungen</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Verwalten</string>
   <string name="settings_more_info_faq">Mehr Infos (FAQ)</string>
   <string name="settings_authentication">Anmeldeinformationen</string>
   <string name="settings_username">Benutzername</string>
@@ -305,6 +321,7 @@
   <string name="debug_info_involved_view">In App öffnen</string>
   <string name="debug_info_logs_caption">Protokoll</string>
   <string name="debug_info_logs_subtitle">Ausführliches Protokoll verfügbar</string>
+  <string name="debug_info_logs_view">Logs anzeigen</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Ein Fehler ist aufgetreten.</string>
   <string name="exception_httpexception">Ein HTTP-Fehler ist aufgetreten.</string>

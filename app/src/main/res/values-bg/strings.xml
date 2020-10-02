@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Адресни указатели</string>
   <string name="help">Помощ</string>
   <string name="manage_accounts">Управление на регистрациите</string>
-  <string name="send">Изпрати</string>
   <string name="notification_channel_general">Други важни съобщения</string>
   <string name="notification_channel_sync">Синхронизиране</string>
   <string name="notification_channel_sync_errors">Грешки при синхронизирането</string>
@@ -16,6 +15,7 @@
   <string name="notification_channel_sync_io_errors_desc">Проточване на времето, проблеми с връзката, и т.н. (обикновенно временни)</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Версия %1$s (%2$d)</string>
@@ -24,9 +24,6 @@
   <string name="about_license_info_no_warranty">Тази програма няма абсолютно никаква гаранция.  Тя е свободен софтуер и можеш да я разпространяваш при определени условия.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Не можах да създада файл с протокола</string>
-  <string name="logging_notification_title">DAVx⁵ протоколиране</string>
-  <string name="logging_notification_text">Сега действията на DAVx⁵ се протоколират</string>
-  <string name="logging_notification_send_log">Изпрати протокола</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_subtitle">Адаптор за CalDAV/CardDAV синхронизиране</string>
   <string name="navigation_drawer_about">Относно / Лиценз</string>
@@ -137,7 +134,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Ще синхронизира само пред %s(изисква услуга за местоположението)</string>
   <string name="settings_sync_wifi_only_ssids_off">Всички WiFi връзки ще бъдат използвани</string>
   <string name="settings_sync_wifi_only_ssids_message">Списък на разделени със запетайка имена на мрежи (SSID WiFi) (остави празно за всички мрежи)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">За да се четат имената на WiFi мрежите са необходими право да се чете местоположението и постоянно включена услуга за местоположението.</string>
   <string name="settings_more_info_faq">Повече информация (често задавани въпроси)</string>
   <string name="settings_username">Потребителско име</string>
   <string name="settings_enter_username">Въведи потребитеско име:</string>

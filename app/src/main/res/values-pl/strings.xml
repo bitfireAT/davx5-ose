@@ -7,7 +7,6 @@
   <string name="address_books_authority_title">Książka adresowa</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Zadządzaj kontami</string>
-  <string name="send">Wyślij</string>
   <string name="notification_channel_debugging">Debugowanie</string>
   <string name="notification_channel_general">Inne ważne wiadomości</string>
   <string name="notification_channel_sync">Synchronizacja</string>
@@ -61,6 +60,7 @@
   <string name="permissions_tasks_status_on">Synchronizacja zadań możliwa</string>
   <string name="permissions_app_settings_hint">Jeśli przełącznik nie działa użyj ustawień dla aplikacji/Uprawnienia.</string>
   <string name="permissions_app_settings">Ustawienia aplikacji</string>
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">Tłumaczenia</string>
   <string name="about_libraries">Biblioteki</string>
@@ -71,9 +71,6 @@
   <string name="about_translations_thanks"><![CDATA[<i>Dzięki życzliwości: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nie udało się utworzyć pliku logu</string>
-  <string name="logging_notification_title">Zapis logu DAVx⁵</string>
-  <string name="logging_notification_text">Teraz są zapisywane wszystkie aktywności DAVx⁵</string>
-  <string name="logging_notification_send_log">Wyślij log</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Otwórz menu nawigacji</string>
   <string name="navigation_drawer_close">Zamknij menu nawigacji</string>
@@ -220,7 +217,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Będzie synchronizować tylko w %s (wymaga aktywnych usług lokalizacji)</string>
   <string name="settings_sync_wifi_only_ssids_off">Wszystkie połączenia Wi‑Fi będą używane</string>
   <string name="settings_sync_wifi_only_ssids_message">Oddzielone przecinkami nazwy (SSID) dozwolonych sieci Wi‑Fi (pozostaw puste dla wszystkich)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Aby odczytać nazwy Wi‑Fi, wymagana jest zgoda na Lokalizację oraz aktywowane na stałe usługi lokalizacji.</string>
   <string name="settings_more_info_faq">Więcej informacji (Najczęściej zadawane pytania)</string>
   <string name="settings_authentication">Uwierzytelnianie</string>
   <string name="settings_username">Nazwa użytkownika</string>

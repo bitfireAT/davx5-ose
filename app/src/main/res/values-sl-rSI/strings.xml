@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Seznami s stiki</string>
   <string name="help">Pomoč</string>
   <string name="manage_accounts">Urejanje prijav</string>
-  <string name="send">Pošlji</string>
   <string name="notification_channel_debugging">Razhroščevalnik</string>
   <string name="notification_channel_general">Ostale pomembne nastavitve</string>
   <string name="notification_channel_sync">Sinhronizacija</string>
@@ -18,6 +17,7 @@
   <string name="notification_channel_sync_io_errors_desc">Pavze, povezave v povezavi z omrežjem, itd. (ponavadi začasno)</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Knjižnice </string>
   <string name="about_version">Verzija %1$s (%2$d)</string>
@@ -26,9 +26,6 @@
   <string name="about_license_info_no_warranty">Ta program ne vsebuje NIČ garancije. To je brezplačna programska oprema in jo lahko pod določenimi pogoji delite naprej.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Ni bilo mogoče ustvariti zapisnika</string>
-  <string name="logging_notification_title">DAVx⁵ zapisnik</string>
-  <string name="logging_notification_text">Sedaj zapisujem vse DAVx⁵ aktivnosti</string>
-  <string name="logging_notification_send_log">Pošlji zapisnik</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Odpri navigacijski predal</string>
   <string name="navigation_drawer_close">Zapri navigacijski predal</string>
@@ -154,7 +151,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Bo sinhroniziralo samo preko %s (potrebuje aktivirano določanje lokacije)</string>
   <string name="settings_sync_wifi_only_ssids_off">Vse WiFi povezave bodo uporabljene</string>
   <string name="settings_sync_wifi_only_ssids_message">Z vejico ločena imena (SSID) dovoljenih WiFi omrežij (pusti prazno za vse)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Za branje WiFi imen morajo biti vključena dovoljenja aplikacije za lokacijo in stalno aktivirano določanje lokacije.</string>
   <string name="settings_more_info_faq">Več informacij (pogosta vprašanja)</string>
   <string name="settings_authentication">Avtentikacija</string>
   <string name="settings_username">Uporabniško ime</string>

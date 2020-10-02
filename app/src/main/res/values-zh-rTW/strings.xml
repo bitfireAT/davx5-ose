@@ -7,7 +7,6 @@
   <string name="address_books_authority_title">通訊錄</string>
   <string name="help">幫助</string>
   <string name="manage_accounts">管理帳號</string>
-  <string name="send">送出</string>
   <string name="notification_channel_debugging">除錯</string>
   <string name="notification_channel_general">其他重要訊息</string>
   <string name="notification_channel_sync">同步</string>
@@ -29,6 +28,7 @@
   <string name="intro_autostart_dont_show">所需設定已完成，不用再提醒我</string>
   <string name="intro_more_info">更多訊息</string>
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">庫</string>
   <string name="about_version">版本號%1$s（%2$d）</string>
@@ -37,9 +37,6 @@
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">無法創建事項記錄文檔</string>
-  <string name="logging_notification_title">DAVx⁵ 正在進行事項記錄</string>
-  <string name="logging_notification_text">正在進行DAVx⁵的所有事項的記錄</string>
-  <string name="logging_notification_send_log">發送事項記錄</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">開啟瀏覽窗格</string>
   <string name="navigation_drawer_close">關閉瀏覽窗格</string>
@@ -169,7 +166,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">只在%s連線時同步（需要開啓的定位服務）</string>
   <string name="settings_sync_wifi_only_ssids_off">所有 WiFi 連線都可以使用</string>
   <string name="settings_sync_wifi_only_ssids_message">使用逗號分割的名稱 (SSIDs) 表示的 WiFi 連綫（留空則代表全部）</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">要讀取 WiFi 名稱，需要開啓定位權限，並永久開啓定位服務。</string>
   <string name="settings_more_info_faq">更多訊息（FAQ）</string>
   <string name="settings_authentication">登入驗證</string>
   <string name="settings_username">使用者帳號</string>

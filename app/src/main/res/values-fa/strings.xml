@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">دفترچه‌های آدرس</string>
   <string name="help">راهنما</string>
   <string name="manage_accounts">مدیریت حساب‌ها</string>
-  <string name="send">ارسال</string>
   <string name="notification_channel_debugging">عیب‌یابی</string>
   <string name="notification_channel_general">سایر پیام‌های مهم</string>
   <string name="notification_channel_sync">همگام‌سازی</string>
@@ -18,6 +17,7 @@
   <string name="notification_channel_sync_io_errors_desc">اتمام وقت، مشکل اتصال، غیره(اغلب موقت)</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">کتابخانه ها</string>
   <string name="about_version">نسخه %1$s (%2$d)</string>
@@ -26,9 +26,6 @@
   <string name="about_license_info_no_warranty">این برنامه بدون هیچ گونه تغییری است. این نرم افزار رایگان است و شما می توانید آن را تحت شرایط خاصی توزیع کنید.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">فایل ورودی خارجی ایجاد نشد: %s</string>
-  <string name="logging_notification_title">رویداد نگار DAVx⁵</string>
-  <string name="logging_notification_text">اکنون همه‌ی رویدادهای DAVx⁵ ثبت می‌شوند</string>
-  <string name="logging_notification_send_log">ارسال رویدادنگاری</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">باز کردن گزینه ها</string>
   <string name="navigation_drawer_close">بستن گزینه ها</string>
@@ -158,7 +155,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">فقط روی %s همگام خواهد شد. (خدمات مکان‌یابی لازم است)</string>
   <string name="settings_sync_wifi_only_ssids_off">تمامی اتصالات وای‌فای استفاده خواهد شد</string>
   <string name="settings_sync_wifi_only_ssids_message">نام‌های (SSID) شبکه‌های مجاز وای‌فای که با ویرگول از هم جدا شده‌اند (برای همه، خالی بگذارید)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">برای خواندن نام‌های وای فای دسترسی مکان لازم است و باید خدمات مکان بطور دائم فعال باشد</string>
   <string name="settings_more_info_faq">اطلاعات بیشتر(FAQ)</string>
   <string name="settings_authentication">احراز هویت</string>
   <string name="settings_username">نام کاربر</string>

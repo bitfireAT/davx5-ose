@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">Ksiōnżka adresowo</string>
   <string name="help">Pōmoc</string>
   <string name="manage_accounts">Zarzōndzej kōntami</string>
-  <string name="send">Wyślij</string>
   <string name="notification_channel_debugging">Debugowanie</string>
   <string name="notification_channel_general">Inksze ważne wiadōmości</string>
   <string name="notification_channel_sync">Synchrōnizacyjo</string>
@@ -37,6 +36,7 @@
   <string name="intro_open_source_details">Jak pōmōc/dociepnōńć sie</string>
   <string name="intro_open_source_dont_show">Niy pokazuj zaś</string>
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">Przekłady</string>
   <string name="about_libraries">Bibliotyki</string>
@@ -47,9 +47,6 @@
   <string name="about_translations_thanks"><![CDATA[<i>Dziynki: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Niy szło stworzić zbioru dziynnika</string>
-  <string name="logging_notification_title">Dziynnik DAVx⁵</string>
-  <string name="logging_notification_text">Zapisowanie wszyjskich ôperacyji DAVx⁵</string>
-  <string name="logging_notification_send_log">Wyślij dziynnik</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Ôtwōrz myni nawigacyje</string>
   <string name="navigation_drawer_close">Zawrzij myni nawigacyje</string>
@@ -181,7 +178,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Bydzie synchrōnizować ino bez %s (wymogo aktywnych serwisōw lokalizacyje)</string>
   <string name="settings_sync_wifi_only_ssids_off">Wszyjske połōnczynia WiFi bydōm używane</string>
   <string name="settings_sync_wifi_only_ssids_message">Ôddzielōne kōmami miana (SSID) przizwolōnych necōw WiFi (ôstow prōzne dlo wszyjskich)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Żeby czytać miana WiFi, potrzebne je uprawniynie Lokalizacyje i permanynt aktywowane serwisy lokalizacyje.</string>
   <string name="settings_more_info_faq">Wiyncyj informacyji (FAQ)</string>
   <string name="settings_authentication">Autoryzowanie</string>
   <string name="settings_username">Miano używocza</string>

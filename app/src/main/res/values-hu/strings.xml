@@ -7,7 +7,6 @@
   <string name="address_books_authority_title">Címjegyzékek</string>
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
-  <string name="send">Küldés</string>
   <string name="notification_channel_debugging">Hibakeresés</string>
   <string name="notification_channel_general">Egyéb fontos üzenetek</string>
   <string name="notification_channel_sync">Szinkronizáció</string>
@@ -54,6 +53,7 @@
   <string name="permissions_tasks_status_on">A feladatlisták szinkronizálása lehetséges</string>
   <string name="permissions_app_settings_hint">Ha a kapcsolók nem működnek, használja az alkalmazás-beállításokat</string>
   <string name="permissions_app_settings">Alkalmazásbeállítások</string>
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">Fordítások</string>
   <string name="about_libraries">Könyvtárak</string>
@@ -64,9 +64,6 @@
   <string name="about_translations_thanks"><![CDATA[<i>Köszönet a következőknek: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">A naplófájl létrehozása nem sikerült</string>
-  <string name="logging_notification_title">DAVx⁵ naplózás</string>
-  <string name="logging_notification_text">Mostantól DAVx⁵ minden művelete naplózásra kerül</string>
-  <string name="logging_notification_send_log">Naplófájl küldése</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Navigációs fiók megnyitása</string>
   <string name="navigation_drawer_close">Navigációs fiók lezárása</string>
@@ -209,7 +206,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Szinkroniázálás csak a megadott hálózaton (%s) keresztül (bekapcsolt helymeghatározási szolgáltatást igényel)</string>
   <string name="settings_sync_wifi_only_ssids_off">Minden hálózat használható</string>
   <string name="settings_sync_wifi_only_ssids_message">A használható WiFi hálózatok nevei (SSID), vesszővel elválasztva (hagyja üresen, ha nem akar szűrést beállítani)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">A WiFi hálózatok nevének elérése Helyadatok alkalmazásengedélyt és folyamatosan bekapcsolt helymeghatározási szolgáltatást igényel.</string>
   <string name="settings_more_info_faq">További információk (GYIK)</string>
   <string name="settings_authentication">Authentikáció</string>
   <string name="settings_username">Felhasználónév</string>

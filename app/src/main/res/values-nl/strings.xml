@@ -7,7 +7,6 @@
   <string name="address_books_authority_title">Adresboeken</string>
   <string name="help">Help</string>
   <string name="manage_accounts">Beheer accounts</string>
-  <string name="send">Verzenden</string>
   <string name="notification_channel_debugging">Debuggen</string>
   <string name="notification_channel_general">Andere belangrijke berichten</string>
   <string name="notification_channel_sync">Synchroniseren</string>
@@ -54,6 +53,7 @@
   <string name="permissions_tasks_status_on">Taaksynchronisatie mogelijk</string>
   <string name="permissions_app_settings_hint">Als een schakelaar niet werkt, gebruik dan app-instellingen / machtigingen.</string>
   <string name="permissions_app_settings">App instellingen</string>
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">Vertalingen</string>
   <string name="about_libraries">Libraries</string>
@@ -64,9 +64,6 @@
   <string name="about_translations_thanks"><![CDATA[<i>Dankzij: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kon de log file niet creëren.</string>
-  <string name="logging_notification_title">DAVx⁵ logged</string>
-  <string name="logging_notification_text">Op dit moment worden alle DAVx⁵ activiteiten gelogd</string>
-  <string name="logging_notification_send_log">Verstuur het log</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Open navigatie drawer</string>
   <string name="navigation_drawer_close">Sluit navigatie drawer</string>
@@ -209,7 +206,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Synced alleen over %s(vereist actieve locatie services)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WiFI verbindingen zullen worden gebruikt</string>
   <string name="settings_sync_wifi_only_ssids_message">Comma gescheiden namen (SSIDs) van toegestane WIFI netwerken (laat blank voor alle WIFI Netwrken)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Om WIFI namen te lezen, zijn de locatie toestemming en permanent toegestane locatie services vereist.</string>
   <string name="settings_more_info_faq">Meer informatie (vaak gestelde vragen)</string>
   <string name="settings_authentication">Authenticatie</string>
   <string name="settings_username">Gebruikersnaam</string>

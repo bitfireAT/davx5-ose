@@ -7,7 +7,6 @@
   <string name="address_books_authority_title">Libretas de enderezos</string>
   <string name="help">Axuda</string>
   <string name="manage_accounts">Xestionar contas</string>
-  <string name="send">Enviar</string>
   <string name="notification_channel_debugging">Depurando</string>
   <string name="notification_channel_general">Outras mensaxes importantes</string>
   <string name="notification_channel_sync">Sincronización</string>
@@ -54,6 +53,7 @@
   <string name="permissions_tasks_status_on">É posible sincronizar as tarefas</string>
   <string name="permissions_app_settings_hint">Se unha opción non funciona, use configuracións da aplicación / Permisos.</string>
   <string name="permissions_app_settings">Permisos da aplicación</string>
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_translations">Traducións</string>
   <string name="about_libraries">Bibliotecas</string>
@@ -64,9 +64,6 @@
   <string name="about_translations_thanks"><![CDATA[<i>Grazas a: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Non se creou ficheiro de rexistro</string>
-  <string name="logging_notification_title">Rexistro DAVx⁵</string>
-  <string name="logging_notification_text">Está a rexistrar todas as actividades DAVx⁵</string>
-  <string name="logging_notification_send_log">Enviar rexistro</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Abrir cadro de navegación</string>
   <string name="navigation_drawer_close">Pechar cadro de navegación</string>
@@ -209,7 +206,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Só se sincronizará baixo %s (require servizos de localización activos)</string>
   <string name="settings_sync_wifi_only_ssids_off">Utilizaranse todas as conexións WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">Nome das rede WiFi permitidas (SSIDs) separados por vírgulas (en branco para todas)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">Para ler os nomes WiFi,  requírese o permiso de Localización e que os servizos de localización estén sempre activados.</string>
   <string name="settings_more_info_faq">Máis información (PMF)</string>
   <string name="settings_authentication">Autenticación</string>
   <string name="settings_username">Nome de usuaria</string>

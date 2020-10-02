@@ -6,7 +6,6 @@
   <string name="address_books_authority_title">アドレス帳</string>
   <string name="help">ヘルプ</string>
   <string name="manage_accounts">アカウントの管理</string>
-  <string name="send">送信</string>
   <string name="notification_channel_debugging">デバッグ中</string>
   <string name="notification_channel_general">他の重要なメッセージ</string>
   <string name="notification_channel_sync">同期</string>
@@ -18,6 +17,7 @@
   <string name="notification_channel_sync_io_errors_desc">タイムアウト、接続の問題など (多くの場合、一時的なもの)</string>
   <!--IntroActivity-->
   <!--PermissionsActivity-->
+  <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">ライブラリー</string>
   <string name="about_version">バージョン %1$s (%2$d)</string>
@@ -26,9 +26,6 @@
   <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">ログファイルを作成できませんでした</string>
-  <string name="logging_notification_title">DAVx⁵ ログ</string>
-  <string name="logging_notification_text">すべての DAVx⁵ アクティビティのログを取得します</string>
-  <string name="logging_notification_send_log">ログを送信</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">ナビゲーションドロワーを開く</string>
   <string name="navigation_drawer_close">ナビゲーションドロワーを閉じる</string>
@@ -39,7 +36,7 @@
   <string name="navigation_drawer_news_updates">ニュース &amp; 更新</string>
   <string name="navigation_drawer_external_links">外部リンク</string>
   <string name="navigation_drawer_website">Web サイト</string>
-  <string name="navigation_drawer_manual">手動</string>
+  <string name="navigation_drawer_manual">マニュアル</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_forums">ヘルプ / フォーラム</string>
   <string name="navigation_drawer_donate">寄付</string>
@@ -155,7 +152,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">%s でのみ同期します (有効な位置サービスが必要です)</string>
   <string name="settings_sync_wifi_only_ssids_off">すべての WiFi 接続が使用されます</string>
   <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
-  <string name="settings_sync_wifi_only_ssids_location_permission">WiFi 名を読み取るため、位置情報のアクセス許可と恒久的に有効化された位置情報サービスが必要です。</string>
   <string name="settings_more_info_faq">詳細情報 (FAQ)</string>
   <string name="settings_authentication">認証</string>
   <string name="settings_username">ユーザー名</string>
