@@ -23,8 +23,6 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -107,6 +105,10 @@ class DebugInfoActivity: AppCompatActivity() {
         binding.model = model
         binding.lifecycleOwner = this
 
+        binding.fab.setOnClickListener {
+            shareArchive()
+        }
+
         model.cause.observe(this, Observer { cause ->
             if (cause == null)
                 return@Observer
@@ -154,13 +156,7 @@ class DebugInfoActivity: AppCompatActivity() {
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_debug_info, menu)
-        return true
-    }
-
-
-    fun onShare(item: MenuItem? = null) {
+    fun shareArchive() {
         model.generateZip { zipFile ->
             val builder = ShareCompat.IntentBuilder.from(this)
                     .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")

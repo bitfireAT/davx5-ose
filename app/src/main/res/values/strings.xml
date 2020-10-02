@@ -10,6 +10,9 @@
 
     <!-- common strings -->
     <string name="app_name">DAVx⁵</string>
+    <string name="homepage_url" translatable="false">https://www.davx5.com/</string>
+    <string name="twitter_handle" translatable="false">davx5app</string>
+
     <string name="account_invalid">Account does not exist (anymore)</string>
     <string name="account_type" translatable="false">bitfire.at.davdroid</string>
     <string name="account_type_address_book" translatable="false">at.bitfire.davdroid.address_book</string>
@@ -18,9 +21,7 @@
     <string name="address_books_authority_title">Address books</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
-    <string name="send">Send</string>
-    <string name="homepage_url" translatable="false">https://www.davx5.com/</string>
-    <string name="twitter_handle" translatable="false">davx5app</string>
+    <string name="share">Share</string>
 
     <string name="notification_channel_debugging">Debugging</string>
     <string name="notification_channel_general">Other important messages</string>
@@ -106,9 +107,9 @@
 
     <!-- global settings -->
     <string name="logging_couldnt_create_file">Couldn\'t create log file</string>
-    <string name="logging_notification_title">DAVx⁵ logging</string>
-    <string name="logging_notification_text">Now logging all DAVx⁵ activities</string>
-    <string name="logging_notification_send_log">Send log</string>
+    <string name="logging_notification_text">Now logging all %s activities</string>
+    <string name="logging_notification_view_share">View/share</string>
+    <string name="logging_notification_disable">Disable</string>
 
     <!-- AccountsActivity -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -380,6 +381,7 @@
     <string name="debug_info_involved_view">View with app</string>
     <string name="debug_info_logs_caption">Logs</string>
     <string name="debug_info_logs_subtitle">Verbose logs are available</string>
+    <string name="debug_info_logs_view">View logs</string>
 
     <!-- ExceptionInfoFragment -->
     <string name="exception">An error has occurred.</string>

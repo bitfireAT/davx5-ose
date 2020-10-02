@@ -18,377 +18,391 @@
             type="at.bitfire.davdroid.ui.DebugInfoActivity.ReportModel"/>
     </data>
 
-    <ScrollView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_margin"
-                android:orientation="vertical">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <ProgressBar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:visibility="@{model.debugInfo == null ? View.VISIBLE : View.GONE}"
-                tools:visibility="visible" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_margin"
+                    android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:orientation="vertical">
+                <ProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:visibility="@{model.debugInfo == null ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible" />
 
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:visibility="@{model.cause == null ? View.GONE : View.VISIBLE}">
+                    android:orientation="vertical">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/card_padding"
-                        android:orientation="vertical">
+                        android:layout_marginBottom="8dp"
+                        android:visibility="@{model.cause == null ? View.GONE : View.VISIBLE}">
 
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/causeStart"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_begin="@dimen/card_padding" />
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/causeEnd"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_end="@dimen/card_padding" />
-
-                        <at.bitfire.davdroid.ui.widget.CropImageView
-                            android:id="@+id/causeTheme"
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:maxHeight="@dimen/card_theme_max_height"
-                            app:layout_constraintVertical_chainStyle="packed"
-                            app:layout_constraintVertical_bias="0"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/causeIcon"
-                            android:adjustViewBounds="true"
-                            app:verticalOffsetPercent=".85"
-                            app:srcCompat="@drawable/undraw_server_down" />
+                            android:layout_marginBottom="@dimen/card_padding"
+                            android:orientation="vertical">
 
-                        <ImageView
-                            android:id="@+id/causeIcon"
-                            android:layout_width="44dp"
-                            android:layout_height="0dp"
-                            android:paddingRight="12dp"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            app:layout_constraintTop_toBottomOf="@id/causeTheme"
-                            app:layout_constraintLeft_toLeftOf="@id/causeStart"
-                            app:layout_constraintRight_toLeftOf="@id/causeCaption"
-                            app:layout_constraintBottom_toBottomOf="@id/causeSubtitle"
-                            android:src="@drawable/ic_info_dark" />
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/causeStart"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintGuide_begin="@dimen/card_padding" />
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/causeEnd"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintGuide_end="@dimen/card_padding" />
 
-                        <TextView
-                            android:id="@+id/causeCaption"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintLeft_toRightOf="@id/causeIcon"
-                            app:layout_constraintTop_toTopOf="@id/causeIcon"
-                            app:layout_constraintRight_toRightOf="@id/causeEnd"
-                            app:layout_constraintBottom_toTopOf="@id/causeSubtitle"
-                            style="@style/TextAppearance.MaterialComponents.Headline6"
-                            tools:text="SampleException" />
+                            <at.bitfire.davdroid.ui.widget.CropImageView
+                                android:id="@+id/causeTheme"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxHeight="@dimen/card_theme_max_height"
+                                app:layout_constraintVertical_chainStyle="packed"
+                                app:layout_constraintVertical_bias="0"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintBottom_toTopOf="@id/causeIcon"
+                                android:adjustViewBounds="true"
+                                app:verticalOffsetPercent=".85"
+                                app:srcCompat="@drawable/undraw_server_down" />
 
-                        <TextView
-                            android:id="@+id/causeSubtitle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintLeft_toRightOf="@id/causeIcon"
-                            app:layout_constraintTop_toBottomOf="@id/causeCaption"
-                            app:layout_constraintRight_toRightOf="@id/causeEnd"
-                            app:layout_constraintBottom_toTopOf="@id/causeText"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            tools:text="Couldn't find …"
-                            android:text="@{model.cause.localizedMessage}" />
+                            <ImageView
+                                android:id="@+id/causeIcon"
+                                android:layout_width="44dp"
+                                android:layout_height="0dp"
+                                android:paddingRight="12dp"
+                                android:layout_marginTop="@dimen/card_margin_title_text"
+                                app:layout_constraintTop_toBottomOf="@id/causeTheme"
+                                app:layout_constraintLeft_toLeftOf="@id/causeStart"
+                                app:layout_constraintRight_toLeftOf="@id/causeCaption"
+                                app:layout_constraintBottom_toBottomOf="@id/causeSubtitle"
+                                android:src="@drawable/ic_info_dark" />
 
-                        <TextView
-                            android:id="@+id/causeText"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@id/causeSubtitle"
-                            app:layout_constraintLeft_toLeftOf="@id/causeStart"
-                            app:layout_constraintRight_toRightOf="@id/causeEnd"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            style="@style/TextAppearance.MaterialComponents.Body1"
-                            tools:text="Error explanation"/>
+                            <TextView
+                                android:id="@+id/causeCaption"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintLeft_toRightOf="@id/causeIcon"
+                                app:layout_constraintTop_toTopOf="@id/causeIcon"
+                                app:layout_constraintRight_toRightOf="@id/causeEnd"
+                                app:layout_constraintBottom_toTopOf="@id/causeSubtitle"
+                                style="@style/TextAppearance.MaterialComponents.Headline6"
+                                tools:text="SampleException" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/causeView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            app:layout_constraintTop_toBottomOf="@id/causeText"
-                            app:layout_constraintLeft_toLeftOf="@id/causeStart"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:text="@string/debug_info_view_details"/>
+                            <TextView
+                                android:id="@+id/causeSubtitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintLeft_toRightOf="@id/causeIcon"
+                                app:layout_constraintTop_toBottomOf="@id/causeCaption"
+                                app:layout_constraintRight_toRightOf="@id/causeEnd"
+                                app:layout_constraintBottom_toTopOf="@id/causeText"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                                tools:text="Couldn't find …"
+                                android:text="@{model.cause.localizedMessage}" />
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                            <TextView
+                                android:id="@+id/causeText"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintTop_toBottomOf="@id/causeSubtitle"
+                                app:layout_constraintLeft_toLeftOf="@id/causeStart"
+                                app:layout_constraintRight_toRightOf="@id/causeEnd"
+                                android:layout_marginTop="@dimen/card_margin_title_text"
+                                style="@style/TextAppearance.MaterialComponents.Body1"
+                                tools:text="Error explanation"/>
 
-                </com.google.android.material.card.MaterialCardView>
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/causeView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/card_margin_title_text"
+                                app:layout_constraintTop_toBottomOf="@id/causeText"
+                                app:layout_constraintLeft_toLeftOf="@id/causeStart"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                style="@style/Widget.MaterialComponents.Button.TextButton"
+                                android:text="@string/debug_info_view_details"/>
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:visibility="@{(model.debugInfo != null &amp;&amp; model.cause == null) ? View.VISIBLE : View.GONE}">
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/card_padding"
-                        android:orientation="vertical">
+                        android:layout_marginBottom="8dp"
+                        android:visibility="@{(model.debugInfo != null &amp;&amp; model.cause == null) ? View.VISIBLE : View.GONE}">
 
-
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/debugInfoStart"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_begin="@dimen/card_padding" />
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/debugInfoEnd"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_end="@dimen/card_padding" />
-
-                        <at.bitfire.davdroid.ui.widget.CropImageView
-                            android:id="@+id/debugInfoTheme"
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:maxHeight="@dimen/card_theme_max_height"
-                            app:layout_constraintVertical_chainStyle="packed"
-                            app:layout_constraintVertical_bias="0"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/debugInfoIcon"
-                            android:adjustViewBounds="true"
-                            app:verticalOffsetPercent=".85"
-                            app:srcCompat="@drawable/undraw_server_down" />
+                            android:layout_marginBottom="@dimen/card_padding"
+                            android:orientation="vertical">
 
-                        <ImageView
-                            android:id="@+id/debugInfoIcon"
-                            android:layout_width="44dp"
-                            android:layout_height="0dp"
-                            android:paddingRight="12dp"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            app:layout_constraintTop_toBottomOf="@id/debugInfoTheme"
-                            app:layout_constraintLeft_toLeftOf="@id/debugInfoStart"
-                            app:layout_constraintRight_toLeftOf="@id/debugInfoCaption"
-                            app:layout_constraintBottom_toBottomOf="@id/debugInfoSubtitle"
-                            android:src="@drawable/ic_bug_report_dark"/>
 
-                        <TextView
-                            android:id="@+id/debugInfoCaption"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintLeft_toRightOf="@id/debugInfoIcon"
-                            app:layout_constraintTop_toTopOf="@id/debugInfoIcon"
-                            app:layout_constraintRight_toRightOf="@id/debugInfoEnd"
-                            app:layout_constraintBottom_toTopOf="@id/debugInfoSubtitle"
-                            android:text="@string/debug_info_title"
-                            style="@style/TextAppearance.MaterialComponents.Headline6"/>
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/debugInfoStart"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintGuide_begin="@dimen/card_padding" />
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/debugInfoEnd"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintGuide_end="@dimen/card_padding" />
 
-                        <TextView
-                            android:id="@+id/debugInfoSubtitle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintLeft_toRightOf="@id/debugInfoIcon"
-                            app:layout_constraintTop_toBottomOf="@id/debugInfoCaption"
-                            app:layout_constraintRight_toRightOf="@id/debugInfoEnd"
-                            app:layout_constraintBottom_toTopOf="@id/debugInfoView"
-                            android:text="@string/debug_info_subtitle"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+                            <at.bitfire.davdroid.ui.widget.CropImageView
+                                android:id="@+id/debugInfoTheme"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxHeight="@dimen/card_theme_max_height"
+                                app:layout_constraintVertical_chainStyle="packed"
+                                app:layout_constraintVertical_bias="0"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintBottom_toTopOf="@id/debugInfoIcon"
+                                android:adjustViewBounds="true"
+                                app:verticalOffsetPercent=".85"
+                                app:srcCompat="@drawable/undraw_server_down" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/debugInfoView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            app:layout_constraintTop_toBottomOf="@id/debugInfoSubtitle"
-                            app:layout_constraintLeft_toLeftOf="@id/debugInfoStart"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:text="@string/debug_info_view_details"/>
+                            <ImageView
+                                android:id="@+id/debugInfoIcon"
+                                android:layout_width="44dp"
+                                android:layout_height="0dp"
+                                android:paddingRight="12dp"
+                                android:layout_marginTop="@dimen/card_margin_title_text"
+                                app:layout_constraintTop_toBottomOf="@id/debugInfoTheme"
+                                app:layout_constraintLeft_toLeftOf="@id/debugInfoStart"
+                                app:layout_constraintRight_toLeftOf="@id/debugInfoCaption"
+                                app:layout_constraintBottom_toBottomOf="@id/debugInfoSubtitle"
+                                android:src="@drawable/ic_bug_report_dark"/>
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                            <TextView
+                                android:id="@+id/debugInfoCaption"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintLeft_toRightOf="@id/debugInfoIcon"
+                                app:layout_constraintTop_toTopOf="@id/debugInfoIcon"
+                                app:layout_constraintRight_toRightOf="@id/debugInfoEnd"
+                                app:layout_constraintBottom_toTopOf="@id/debugInfoSubtitle"
+                                android:text="@string/debug_info_title"
+                                style="@style/TextAppearance.MaterialComponents.Headline6"/>
 
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:id="@+id/debugInfoSubtitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintLeft_toRightOf="@id/debugInfoIcon"
+                                app:layout_constraintTop_toBottomOf="@id/debugInfoCaption"
+                                app:layout_constraintRight_toRightOf="@id/debugInfoEnd"
+                                app:layout_constraintBottom_toTopOf="@id/debugInfoView"
+                                android:text="@string/debug_info_subtitle"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:visibility="@{(model.localResource != null || model.remoteResource != null) ? View.VISIBLE : View.GONE}">
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/debugInfoView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/card_margin_title_text"
+                                app:layout_constraintTop_toBottomOf="@id/debugInfoSubtitle"
+                                app:layout_constraintLeft_toLeftOf="@id/debugInfoStart"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                style="@style/Widget.MaterialComponents.Button.TextButton"
+                                android:text="@string/debug_info_view_details"/>
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/card_padding">
+                        android:layout_marginBottom="8dp"
+                        android:visibility="@{(model.localResource != null || model.remoteResource != null) ? View.VISIBLE : View.GONE}">
 
-                        <ImageView
-                            android:id="@+id/resIcon"
-                            android:layout_width="44dp"
-                            android:layout_height="0dp"
-                            android:paddingRight="12dp"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toLeftOf="@id/resCaption"
-                            app:layout_constraintBottom_toBottomOf="@id/resSubtitle"
-                            android:src="@drawable/ic_adb_dark"/>
-
-
-                        <TextView
-                            android:id="@+id/resCaption"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintLeft_toRightOf="@id/resIcon"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/resSubtitle"
-                            android:text="@string/debug_info_involved_caption"
-                            style="@style/TextAppearance.MaterialComponents.Headline6"/>
-
-                        <TextView
-                            android:id="@+id/resSubtitle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/card_margin_title_text"
-                            app:layout_constraintLeft_toRightOf="@id/resIcon"
-                            app:layout_constraintTop_toBottomOf="@id/resCaption"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/resRemoteTitle"
-                            android:text="@string/debug_info_involved_subtitle"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
-
-                        <TextView
-                            android:id="@+id/resRemoteTitle"
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:visibility="@{model.remoteResource != null ? View.VISIBLE : View.GONE}"
-                            style="@style/TextAppearance.MaterialComponents.Body1"
-                            app:layout_constraintTop_toBottomOf="@id/resSubtitle"
-                            app:layout_constraintBottom_toTopOf="@id/resRemote"
-                            android:text="@string/debug_info_involved_remote"/>
+                            android:layout_margin="@dimen/card_padding">
 
-                        <TextView
-                            android:id="@+id/resRemote"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            app:layout_constraintTop_toBottomOf="@id/resRemoteTitle"
-                            app:layout_constraintBottom_toTopOf="@id/resLocalTitle"
-                            android:visibility="@{model.remoteResource != null ? View.VISIBLE : View.GONE}"
-                            android:fontFamily="monospace"
-                            android:textIsSelectable="true"
-                            android:text="@{model.remoteResource}"
-                            tools:text="https://example.com"/>
+                            <ImageView
+                                android:id="@+id/resIcon"
+                                android:layout_width="44dp"
+                                android:layout_height="0dp"
+                                android:paddingRight="12dp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toLeftOf="@id/resCaption"
+                                app:layout_constraintBottom_toBottomOf="@id/resSubtitle"
+                                android:src="@drawable/ic_adb_dark"/>
 
-                        <TextView
-                            android:id="@+id/resLocalTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:visibility="@{model.localResource != null ? View.VISIBLE : View.GONE}"
-                            style="@style/TextAppearance.MaterialComponents.Body1"
-                            app:layout_constraintTop_toBottomOf="@id/resRemote"
-                            app:layout_constraintBottom_toTopOf="@id/resLocal"
-                            android:text="@string/debug_info_involved_local"/>
+                            <TextView
+                                android:id="@+id/resCaption"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintLeft_toRightOf="@id/resIcon"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintBottom_toTopOf="@id/resSubtitle"
+                                android:text="@string/debug_info_involved_caption"
+                                style="@style/TextAppearance.MaterialComponents.Headline6"/>
 
-                        <TextView
-                            android:id="@+id/resLocal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@id/resLocalTitle"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            android:visibility="@{model.localResource != null ? View.VISIBLE : View.GONE}"
-                            android:fontFamily="monospace"
-                            android:textIsSelectable="true"
-                            android:text="@{model.localResource}"/>
+                            <TextView
+                                android:id="@+id/resSubtitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/card_margin_title_text"
+                                app:layout_constraintLeft_toRightOf="@id/resIcon"
+                                app:layout_constraintTop_toBottomOf="@id/resCaption"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintBottom_toTopOf="@id/resRemoteTitle"
+                                android:text="@string/debug_info_involved_subtitle"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                            <TextView
+                                android:id="@+id/resRemoteTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:visibility="@{model.remoteResource != null ? View.VISIBLE : View.GONE}"
+                                style="@style/TextAppearance.MaterialComponents.Body1"
+                                app:layout_constraintTop_toBottomOf="@id/resSubtitle"
+                                app:layout_constraintBottom_toTopOf="@id/resRemote"
+                                android:text="@string/debug_info_involved_remote"/>
 
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:id="@+id/resRemote"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                app:layout_constraintTop_toBottomOf="@id/resRemoteTitle"
+                                app:layout_constraintBottom_toTopOf="@id/resLocalTitle"
+                                android:visibility="@{model.remoteResource != null ? View.VISIBLE : View.GONE}"
+                                android:fontFamily="monospace"
+                                android:textIsSelectable="true"
+                                android:text="@{model.remoteResource}"
+                                tools:text="https://example.com"/>
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:visibility="@{model.logFile == null ? View.GONE : View.VISIBLE}">
+                            <TextView
+                                android:id="@+id/resLocalTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:visibility="@{model.localResource != null ? View.VISIBLE : View.GONE}"
+                                style="@style/TextAppearance.MaterialComponents.Body1"
+                                app:layout_constraintTop_toBottomOf="@id/resRemote"
+                                app:layout_constraintBottom_toTopOf="@id/resLocal"
+                                android:text="@string/debug_info_involved_local"/>
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                            <TextView
+                                android:id="@+id/resLocal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintTop_toBottomOf="@id/resLocalTitle"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:visibility="@{model.localResource != null ? View.VISIBLE : View.GONE}"
+                                android:fontFamily="monospace"
+                                android:textIsSelectable="true"
+                                android:text="@{model.localResource}"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/card_padding">
+                        android:layout_marginBottom="8dp"
+                        android:visibility="@{model.logFile == null ? View.GONE : View.VISIBLE}">
 
-                        <ImageView
-                            android:id="@+id/logsIcon"
-                            android:layout_width="44dp"
-                            android:layout_height="0dp"
-                            android:paddingRight="12dp"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toLeftOf="@id/logsCaption"
-                            app:layout_constraintBottom_toBottomOf="@id/logsSubtitle"
-                            android:src="@drawable/ic_adb_dark"/>
-
-                        <TextView
-                            android:id="@+id/logsCaption"
-                            android:layout_width="0dp"
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:layout_constraintLeft_toRightOf="@id/logsIcon"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/logsSubtitle"
-                            android:text="Logs"
-                            style="@style/TextAppearance.MaterialComponents.Headline6"/>
+                            android:layout_margin="@dimen/card_padding">
 
-                        <TextView
-                            android:id="@+id/logsSubtitle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintLeft_toRightOf="@id/logsIcon"
-                            app:layout_constraintTop_toBottomOf="@id/logsCaption"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/logsView"
-                            android:text="Verbose logs are available"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+                            <ImageView
+                                android:id="@+id/logsIcon"
+                                android:layout_width="44dp"
+                                android:layout_height="0dp"
+                                android:paddingRight="12dp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toLeftOf="@id/logsCaption"
+                                app:layout_constraintBottom_toBottomOf="@id/logsSubtitle"
+                                android:src="@drawable/ic_adb_dark"/>
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/logsView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/card_margin_title_text"
-                            app:layout_constraintTop_toBottomOf="@id/logsSubtitle"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:text="View logs"/>
+                            <TextView
+                                android:id="@+id/logsCaption"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintLeft_toRightOf="@id/logsIcon"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintBottom_toTopOf="@id/logsSubtitle"
+                                android:text="@string/debug_info_logs_caption"
+                                style="@style/TextAppearance.MaterialComponents.Headline6"/>
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                            <TextView
+                                android:id="@+id/logsSubtitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintLeft_toRightOf="@id/logsIcon"
+                                app:layout_constraintTop_toBottomOf="@id/logsCaption"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintBottom_toTopOf="@id/logsView"
+                                android:text="@string/debug_info_logs_subtitle"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
-                </com.google.android.material.card.MaterialCardView>
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/logsView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/card_margin_title_text"
+                                app:layout_constraintTop_toBottomOf="@id/logsSubtitle"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                style="@style/Widget.MaterialComponents.Button.TextButton"
+                                android:text="@string/debug_info_logs_view"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
+        </ScrollView>
 
-    </ScrollView>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="@dimen/fab_margin"
+            android:contentDescription="@string/share"
+            android:src="@drawable/ic_share_action"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

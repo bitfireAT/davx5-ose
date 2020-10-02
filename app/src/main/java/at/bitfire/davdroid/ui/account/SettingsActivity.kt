@@ -366,7 +366,7 @@ class SettingsActivity: AppCompatActivity() {
 
         @SuppressLint("WrongConstant")
         private fun checkWifiPermissions() {
-            if (!PermissionUtils.canAccessWifiSsid(requireActivity()))
+            if (model.syncWifiOnlySSIDs.value != null && !PermissionUtils.canAccessWifiSsid(requireActivity()))
                 Snackbar.make(requireView(), R.string.settings_sync_wifi_only_ssids_permissions_required, UiUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .setAction(R.string.settings_sync_wifi_only_ssids_permissions_action, {
                             val intent = Intent(requireActivity(), WifiPermissionsActivity::class.java)
