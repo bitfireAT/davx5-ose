@@ -73,6 +73,7 @@
   <string name="wifi_permissions_background_location_permission">Hintergrund-Standort-Berechtigung</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Standort-Berechtigung auf <b>%s</b> gesetzt]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Standort-Berechtigung nicht auf <b>%s</b> gesetzt]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s verwendet die Standort-Berechtigung ausschließlich zum Bestimmen der aktuellen WLAN-SSID für SSID-beschränkte Accounts. Dies findet auch statt, wenn die App geschlossen ist bzw. im Hintergrund läuft. Standortdaten werden weder gesammelt, gespeichert, verarbeitet noch irgendwohin gesendet.</string>
   <string name="wifi_permissions_location_enabled">Standort-Dienst immer aktiviert</string>
   <string name="wifi_permissions_location_enabled_on">Standort-Dienst aktiv</string>
   <string name="wifi_permissions_location_enabled_off">Standort-Dienst inaktiv</string>
