@@ -63,6 +63,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
             if (needPermission && model.haveBackgroundLocation.value == false)
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 0)
         }
+        binding.backgroundLocationDisclaimer.text = getString(R.string.wifi_permissions_background_location_disclaimer, getString(R.string.app_name))
 
         model.needLocationEnabled.observe(this) { needLocation ->
             if (needLocation != null && needLocation != model.isLocationEnabled.value) {

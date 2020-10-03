@@ -67,7 +67,7 @@
                 android:visibility="@{model.haveBackgroundLocation != null ? View.VISIBLE : View.GONE}"
                 android:layout_marginTop="@dimen/card_margin_title_text"
                 style="@style/TextAppearance.MaterialComponents.Body1"
-                android:text="Background location permission" />
+                android:text="@string/wifi_permissions_background_location_permission" />
             <TextView
                 android:id="@+id/backgroundLocationStatus"
                 android:layout_width="0dp"
@@ -91,10 +91,21 @@
                 android:checked="@={model.needBackgroundLocation}" />
 
             <TextView
+                android:id="@+id/backgroundLocationDisclaimer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/backgroundLocationStatus"
+                app:layout_constraintStart_toStartOf="parent"
+                android:visibility="@{model.haveBackgroundLocation != null ? View.VISIBLE : View.GONE}"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:text="@string/wifi_permissions_background_location_disclaimer"/>
+
+            <TextView
                 android:id="@+id/locationEnabledTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/backgroundLocationStatus"
+                app:layout_constraintTop_toBottomOf="@id/backgroundLocationDisclaimer"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/locationEnabledSwitch"
                 android:visibility="@{model.isLocationEnabled != null ? View.VISIBLE : View.GONE}"

@@ -91,6 +91,7 @@
     <string name="wifi_permissions_background_location_permission">Background location permission</string>
     <string name="wifi_permissions_background_location_permission_on"><![CDATA[Location permission set to <b>%s</b>]]></string>
     <string name="wifi_permissions_background_location_permission_off"><![CDATA[Location permission not set to <b>%s</b>]]></string>
+    <string name="wifi_permissions_background_location_disclaimer">%s uses the Location permission only to determine the current WiFi\'s SSID for SSID-restricted accounts. This will happen even when the app is in background. No location data are collected, stored, processed or sent anywhere.</string>
     <string name="wifi_permissions_location_enabled">Location always enabled</string>
     <string name="wifi_permissions_location_enabled_on">Location service is enabled</string>
     <string name="wifi_permissions_location_enabled_off">Location service is disabled</string>
