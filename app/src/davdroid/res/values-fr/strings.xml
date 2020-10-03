@@ -7,6 +7,7 @@
   <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
+  <string name="share">Partager</string>
   <string name="notification_channel_debugging">Débogage</string>
   <string name="notification_channel_general">Autres messages importants</string>
   <string name="notification_channel_sync">Synchronisation</string>

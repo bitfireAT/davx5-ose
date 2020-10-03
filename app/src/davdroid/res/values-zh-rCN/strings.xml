@@ -7,6 +7,7 @@
   <string name="address_books_authority_title">通讯录</string>
   <string name="help">帮助</string>
   <string name="manage_accounts">管理账户</string>
+  <string name="share">分享</string>
   <string name="notification_channel_debugging">调试</string>
   <string name="notification_channel_general">其它重要消息</string>
   <string name="notification_channel_sync">同步</string>
@@ -30,6 +31,11 @@
   <string name="intro_leave_unchecked">*取消选中以供稍后提醒。可以在应用设置中重置/%s。</string>
   <string name="intro_more_info">更多信息</string>
   <string name="intro_tasks_title">任务支持</string>
+  <string name="intro_tasks_text1">如果你的服务器支持任务，它们可以通过一个受支持的任务应用进行同步:</string>
+  <string name="intro_tasks_opentasks">OpenTasks </string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[对于子任务或重复任务等某些功能，您可能需要<a href="https://www.davx5.com/faq/tasks/advanced-task-features">额外的应用</a>.]]></string>
+  <string name="intro_tasks_tasks_org">Tasks</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[(尚)<a href="https://www.davx5.com/faq/tasks/advanced-task-features">不支持</a>一些功能.]]></string>
   <string name="intro_tasks_no_app_store">没有可用的应用商店</string>
   <string name="intro_tasks_dont_show">我不需要任务支持。*</string>
   <string name="intro_open_source_title">开源软件</string>
@@ -48,12 +54,28 @@
   <string name="permissions_calendar_title">日历权限</string>
   <string name="permissions_calendar_status_off">无日历同步（不推荐）</string>
   <string name="permissions_calendar_status_on">可同步日历</string>
+  <string name="permissions_opentasks_title">OpenTasks权限</string>
+  <string name="permissions_tasksorg_title">Tasks权限</string>
   <string name="permissions_tasks_status_not_installed">无任务同步 （未安装）</string>
   <string name="permissions_tasks_status_off">无任务同步 （不推荐）</string>
   <string name="permissions_tasks_status_on">可同步任务</string>
+  <string name="permissions_autoreset_title">Keep权限</string>
+  <string name="permissions_autoreset_status_off">权限可能被自动重置(不推荐)</string>
+  <string name="permissions_autoreset_status_on">权限不会被自动重置</string>
   <string name="permissions_app_settings_hint">如果切换没有正常工作，请使用应用程序设置/权限</string>
   <string name="permissions_app_settings">应用设置</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID权限</string>
+  <string name="wifi_permissions_intro">要访问当前的WiFi名称(SSID)，必须满足以下条件: </string>
+  <string name="wifi_permissions_location_permission">位置权限</string>
+  <string name="wifi_permissions_location_permission_on">已授予位置权限</string>
+  <string name="wifi_permissions_location_permission_off">位置权限被拒</string>
+  <string name="wifi_permissions_background_location_permission">后台位置权限</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[位置权限设定为<b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[位置权限未设为%s<b>]]></string>
+  <string name="wifi_permissions_location_enabled">始终允许定位</string>
+  <string name="wifi_permissions_location_enabled_on">位置服务已启用</string>
+  <string name="wifi_permissions_location_enabled_off">位置服务已禁用</string>
   <!--AboutActivity-->
   <string name="about_translations">翻译</string>
   <string name="about_libraries">程序库</string>
@@ -64,6 +86,9 @@
   <string name="about_translations_thanks"><![CDATA[<i>谢谢：</i>%s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">无法创建日志文件</string>
+  <string name="logging_notification_text">正记录%s的所有活动</string>
+  <string name="logging_notification_view_share">查看/分享</string>
+  <string name="logging_notification_disable">禁用</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">打开导航抽屉</string>
   <string name="navigation_drawer_close">关闭导航抽屉</string>
@@ -118,6 +143,10 @@
   <string name="app_settings_reset_hints">重设提示</string>
   <string name="app_settings_reset_hints_summary">重新显示之前忽略过的提示</string>
   <string name="app_settings_reset_hints_success">所有提示将会再次显示</string>
+  <string name="app_settings_integration">集成</string>
+  <string name="app_settings_tasks_provider">Tasks 应用</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">正与%s同步</string>
+  <string name="app_settings_tasks_provider_none">未找到兼容的任务应用</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -206,6 +235,8 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">将只在 %s 上同步（需要生效的位置服务）</string>
   <string name="settings_sync_wifi_only_ssids_off">任意 WiFi 网络均可同步</string>
   <string name="settings_sync_wifi_only_ssids_message">请用半角逗号分隔允许同步的 WiFi 网络名（SSID），留空则允许任意网络</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID限制要求进一步设置 </string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
   <string name="settings_more_info_faq">更多信息（常见问题）</string>
   <string name="settings_authentication">认证</string>
   <string name="settings_username">用户名</string>
@@ -228,7 +259,11 @@
   <string name="settings_default_alarm_off">默认提醒未创建</string>
   <string name="settings_default_alarm_message">当没有提醒的事件需增加默认提醒时，事件开始前多少分钟触发提醒。留空以禁用默认提醒。</string>
   <string name="settings_manage_calendar_colors">管理日历颜色</string>
+  <string name="settings_manage_calendar_colors_on">日历的颜色会在每次同步时被重置 </string>
+  <string name="settings_manage_calendar_colors_off">日历的颜色可以由其他应用程序设置 </string>
   <string name="settings_event_colors">事件日历颜色支持</string>
+  <string name="settings_event_colors_on">事件颜色已同步</string>
+  <string name="settings_event_colors_off">事件颜色未同步</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">联系人分组方式</string>
   <string-array name="settings_contact_group_method_entries">
@@ -284,6 +319,7 @@
   <string name="debug_info_involved_view">用应用程序查看</string>
   <string name="debug_info_logs_caption">日志</string>
   <string name="debug_info_logs_subtitle">详细日志可用</string>
+  <string name="debug_info_logs_view">查看日志</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">出现错误</string>
   <string name="exception_httpexception">出现 HTTP 错误</string>
@@ -292,6 +328,8 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>
+  <string name="sync_error_tasks_too_old">%s太老</string>
+  <string name="sync_error_tasks_required_version">最低要求版本: %1$s</string>
   <string name="sync_error_authentication_failed">认证失败（请检查登录凭据，如用户名密码）</string>
   <string name="sync_error_io">网络或 I/O 错误 – %s</string>
   <string name="sync_error_http_dav">HTTP 服务器错误 – %s</string>
