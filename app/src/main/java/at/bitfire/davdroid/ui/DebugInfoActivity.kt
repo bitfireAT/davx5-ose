@@ -394,12 +394,9 @@ class DebugInfoActivity: AppCompatActivity() {
                 writer.append('\n')
                 // permissions
                 writer.append("Permissions:\n")
-                for (permission in arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS,
-                        Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR,
-                        TaskProvider.PERMISSION_OPENTASKS_READ, TaskProvider.PERMISSION_OPENTASKS_WRITE,
-                        TaskProvider.PERMISSION_TASKS_ORG_READ, TaskProvider.PERMISSION_TASKS_ORG_WRITE,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                    val shortPermission = permission.replace(Regex("^.+\\.permission\\."), "")
+                val ownPkgInfo = context.packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, PackageManager.GET_PERMISSIONS)
+                for (permission in ownPkgInfo.requestedPermissions) {
+                    val shortPermission = permission.removePrefix("android.permission.")
                     writer  .append(" - $shortPermission: ")
                             .append(if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
                                 "granted"
@@ -512,15 +509,15 @@ class DebugInfoActivity: AppCompatActivity() {
 
             try {
                 val accountSettings = AccountSettings(context, account)
-                writer.append("WiFi only: ${accountSettings.getSyncWifiOnly()}")
+                writer.append("  WiFi only: ${accountSettings.getSyncWifiOnly()}")
                 accountSettings.getSyncWifiOnlySSIDs()?.let { ssids ->
                     writer.append(", SSIDs: ${ssids.joinToString(", ")}")
                 }
-                writer.append("\nContact group method: ${accountSettings.getGroupMethod()}\n" +
-                        "Time range (past days): ${accountSettings.getTimeRangePastDays()}\n" +
-                        "Default alarm (min before): ${accountSettings.getDefaultAlarm()}\n" +
-                        "Manage calendar colors: ${accountSettings.getManageCalendarColors()}\n" +
-                        "Use event colors: ${accountSettings.getEventColors()}\n")
+                writer.append("\n  Contact group method: ${accountSettings.getGroupMethod()}\n" +
+                        "  Time range (past days): ${accountSettings.getTimeRangePastDays()}\n" +
+                        "  Default alarm (min before): ${accountSettings.getDefaultAlarm()}\n" +
+                        "  Manage calendar colors: ${accountSettings.getManageCalendarColors()}\n" +
+                        "  Use event colors: ${accountSettings.getEventColors()}\n")
             } catch(e: InvalidAccountException) {
                 writer.append("$e\n")
             }
@@ -528,7 +525,7 @@ class DebugInfoActivity: AppCompatActivity() {
         }
 
         private fun dumpAddressBookAccount(account: Account, accountManager: AccountManager, writer: Writer) {
-            writer.append("   * Address book: ${account.name}\n")
+            writer.append("  * Address book: ${account.name}\n")
             val table = TextTable("isSyncable", "getSyncAutomatically", "Sync interval")
             table.addLine(
                     ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY),
@@ -538,8 +535,8 @@ class DebugInfoActivity: AppCompatActivity() {
                     }
             )
             writer  .append(TextTable.indent(table.toString(), 3))
-                    .append("   URL: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL)}\n")
-                    .append("   Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
+                    .append("    URL: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL)}\n")
+                    .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
         }
 
     }
