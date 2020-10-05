@@ -43,13 +43,16 @@ object UiUtils {
      * installed), this method does nothing.
      *
      * @param toastInstallBrowser whether to show "Please install a browser" toast when
-     * the Intent could not be resolved
+     * the Intent could not be resolved; will also add [Intent.CATEGORY_BROWSABLE] to the Intent
      *
      * @return true on success, false if the Intent could not be resolved (for instance, because
      * there is no user agent installed)
      */
     fun launchUri(context: Context, uri: Uri, action: String = Intent.ACTION_VIEW, toastInstallBrowser: Boolean = true): Boolean {
         val intent = Intent(action, uri)
+        if (toastInstallBrowser)
+            intent.addCategory(Intent.CATEGORY_BROWSABLE)
+
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
             return true

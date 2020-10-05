@@ -231,9 +231,6 @@
     <string name="login_account_name_already_taken">Account name already taken</string>
     <string name="login_account_not_created">Account could not be created</string>
 
-    <string name="login_webview_tlserror">Connection security problem (error code %d)</string>
-    <string name="login_webview_retry">Retry</string>
-
     <string name="login_configuration_detection">Configuration detection</string>
     <string name="login_querying_server">Please wait, querying server…</string>
     <string name="login_no_caldav_carddav">Couldn\'t find CalDAV or CardDAV service.</string>

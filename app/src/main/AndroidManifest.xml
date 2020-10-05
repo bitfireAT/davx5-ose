@@ -242,6 +242,11 @@
             <action android:name="*" />
             <data android:scheme="content" android:host="com.android.calendar" />
         </intent>
+
+        <!-- Custom Tabs support (e.g. Nextcloud Login Flow) -->
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
     </queries>
 
 </manifest>
