@@ -160,11 +160,11 @@ class PermissionsFragment: Fragment() {
                 haveTasksOrgPermissions.value = tasksOrgPermissions
                 needTasksOrgPermissions.value = tasksOrgPermissions
             } else {
-                haveOpenTasksPermissions.value = null
-                needOpenTasksPermissions.value = null
+                haveTasksOrgPermissions.value = null
+                needTasksOrgPermissions.value = null
             }
 
-
+            // "all permissions" switch
             val allPermissions = contactPermissions &&
                     calendarPermissions &&
                     (!openTasksAvailable || openTasksPermissions == true) &&
