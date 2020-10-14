@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
-  <string name="account_invalid">帐户不存在（不再）</string>
+  <string name="account_invalid">帐户不再存在</string>
   <string name="account_title_address_book">DAVx⁵ 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>
   <string name="help">帮助</string>
@@ -35,12 +35,12 @@
   <string name="intro_tasks_opentasks">OpenTasks </string>
   <string name="intro_tasks_opentasks_info"><![CDATA[对于子任务或重复任务等某些功能，您可能需要<a href="https://www.davx5.com/faq/tasks/advanced-task-features">额外的应用</a>.]]></string>
   <string name="intro_tasks_tasks_org">Tasks</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[(尚)<a href="https://www.davx5.com/faq/tasks/advanced-task-features">不支持</a>一些功能.]]></string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[部分功能尚<a href="https://www.davx5.com/faq/tasks/advanced-task-features">未提供支持</a>]]></string>
   <string name="intro_tasks_no_app_store">没有可用的应用商店</string>
   <string name="intro_tasks_dont_show">我不需要任务支持。*</string>
   <string name="intro_open_source_title">开源软件</string>
-  <string name="intro_open_source_text">我们很高兴您使用%s开源软件。开发，维护和支持是艰苦的工作。请考虑捐款（有很多方式）或捐款。将不胜感激！</string>
-  <string name="intro_open_source_details">如何捐款/捐款</string>
+  <string name="intro_open_source_text">我们很高兴您使用 %s 开源软件。开发、维护和支持是艰苦的工作。请考虑通过多种方式提供贡献或捐款。不胜感激！</string>
+  <string name="intro_open_source_details">如何贡献或捐款</string>
   <string name="intro_open_source_dont_show">下次不再显示</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">权限</string>
@@ -59,7 +59,7 @@
   <string name="permissions_tasks_status_not_installed">无任务同步 （未安装）</string>
   <string name="permissions_tasks_status_off">无任务同步 （不推荐）</string>
   <string name="permissions_tasks_status_on">可同步任务</string>
-  <string name="permissions_autoreset_title">Keep权限</string>
+  <string name="permissions_autoreset_title">保留权限</string>
   <string name="permissions_autoreset_status_off">权限可能被自动重置(不推荐)</string>
   <string name="permissions_autoreset_status_on">权限不会被自动重置</string>
   <string name="permissions_app_settings_hint">如果切换没有正常工作，请使用应用程序设置/权限</string>
@@ -73,6 +73,7 @@
   <string name="wifi_permissions_background_location_permission">后台位置权限</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[位置权限设定为<b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[位置权限未设为%s<b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s 仅使用位置权限为 SSID 受限帐户确定当前 WiFi 的SSID。应用在后台运行时也会获取 SSID。位置数据不会被收集、存储、处理或发送到任何地方。</string>
   <string name="wifi_permissions_location_enabled">始终允许定位</string>
   <string name="wifi_permissions_location_enabled_on">位置服务已启用</string>
   <string name="wifi_permissions_location_enabled_off">位置服务已禁用</string>
@@ -203,12 +204,10 @@
   <string name="login_account_name_required">请输入账户名</string>
   <string name="login_account_name_already_taken">账户名已被占用</string>
   <string name="login_account_not_created">账户无法创建</string>
-  <string name="login_webview_tlserror">连接安全问题 (错误码%d)</string>
-  <string name="login_webview_retry">重试</string>
   <string name="login_configuration_detection">正在配置</string>
   <string name="login_querying_server">正在与服务器通信，请稍等…</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>
-  <string name="login_username_password_wrong">用户名(电邮地址) / 密码错误？</string>
+  <string name="login_username_password_wrong">用户名（邮箱地址）或密码错误？</string>
   <string name="login_view_logs">显示详情</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">设置：%s</string>
@@ -235,7 +234,7 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">将只在 %s 上同步（需要生效的位置服务）</string>
   <string name="settings_sync_wifi_only_ssids_off">任意 WiFi 网络均可同步</string>
   <string name="settings_sync_wifi_only_ssids_message">请用半角逗号分隔允许同步的 WiFi 网络名（SSID），留空则允许任意网络</string>
-  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID限制要求进一步设置 </string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 限制需要进一步设置</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
   <string name="settings_more_info_faq">更多信息（常见问题）</string>
   <string name="settings_authentication">认证</string>
@@ -306,8 +305,8 @@
   <string name="debug_info_server_error">服务器错误</string>
   <string name="debug_info_webdav_error">WebDAV错误</string>
   <string name="debug_info_io_error">I/O错误</string>
-  <string name="debug_info_http_403_description">该请求已被拒绝。 检查涉及的资源和调试信息以获取详细信息。</string>
-  <string name="debug_info_http_404_description">所请求的资源不存在（不再）。 检查涉及的资源和调试信息以获取详细信息。</string>
+  <string name="debug_info_http_403_description">该请求已被拒绝。 请检查涉及的资源和调试信息，以了解详情。</string>
+  <string name="debug_info_http_404_description">所请求的资源不再存在。请检查涉及的资源和调试信息，以了解详情。</string>
   <string name="debug_info_http_5xx_description">发生服务器端问题。 请联系您的服务器支持</string>
   <string name="debug_info_unexpected_error">发生意外错误。 查看调试信息以获取详细信息。</string>
   <string name="debug_info_view_details">查看细节</string>
@@ -316,7 +315,7 @@
   <string name="debug_info_involved_subtitle">与此问题有关</string>
   <string name="debug_info_involved_remote">远程资源:</string>
   <string name="debug_info_involved_local">本地资源:</string>
-  <string name="debug_info_involved_view">用应用程序查看</string>
+  <string name="debug_info_involved_view">用其它应用查看</string>
   <string name="debug_info_logs_caption">日志</string>
   <string name="debug_info_logs_subtitle">详细日志可用</string>
   <string name="debug_info_logs_view">查看日志</string>
@@ -328,7 +327,7 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>
-  <string name="sync_error_tasks_too_old">%s太老</string>
+  <string name="sync_error_tasks_too_old">%s太旧</string>
   <string name="sync_error_tasks_required_version">最低要求版本: %1$s</string>
   <string name="sync_error_authentication_failed">认证失败（请检查登录凭据，如用户名密码）</string>
   <string name="sync_error_io">网络或 I/O 错误 – %s</string>

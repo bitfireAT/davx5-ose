@@ -185,8 +185,6 @@
   <string name="login_account_name_required">Требуется имя аккаунта</string>
   <string name="login_account_name_already_taken">Имя аккаунта уже используется</string>
   <string name="login_account_not_created">Аккаунт не может быть создан</string>
-  <string name="login_webview_tlserror">Проблема безопасности соединения (код ошибки %d)</string>
-  <string name="login_webview_retry">Повторить</string>
   <string name="login_configuration_detection">Обнаружение конфигурации</string>
   <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>
   <string name="login_no_caldav_carddav">Не удалось найти службу CalDAV или CardDAV.</string>

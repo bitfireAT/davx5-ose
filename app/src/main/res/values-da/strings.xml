@@ -7,6 +7,7 @@
   <string name="address_books_authority_title">Adressebøger</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrere konti</string>
+  <string name="share">Dele</string>
   <string name="notification_channel_debugging">Fejlsøgning</string>
   <string name="notification_channel_general">Andre vigtige beskeder</string>
   <string name="notification_channel_sync">Synkronisering</string>
@@ -58,9 +59,14 @@
   <string name="permissions_tasks_status_not_installed">Ingen opgave synkronisering (ikke installeret)</string>
   <string name="permissions_tasks_status_off">Ingen opgave synkronisering (ikke anbefalet)</string>
   <string name="permissions_tasks_status_on">Opgave synkronisering mulig</string>
+  <string name="permissions_autoreset_title">Behold rettigheder</string>
   <string name="permissions_app_settings_hint">Hvis en omskifter ikke virker, brug program opsætninger / rettigheder.</string>
   <string name="permissions_app_settings">Program opsætning</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">Trådløs SSID rettigheder</string>
+  <string name="wifi_permissions_location_permission">Placering rettighed</string>
+  <string name="wifi_permissions_location_permission_on">Placering rettighed tildelt</string>
+  <string name="wifi_permissions_location_permission_off">Placering rettighed afvist</string>
   <!--AboutActivity-->
   <string name="about_translations">Oversættelser</string>
   <string name="about_libraries">Biblioteker</string>
@@ -185,8 +191,6 @@
   <string name="login_account_name_required">Kontonavn påkrævet</string>
   <string name="login_account_name_already_taken">Konto navn er taget</string>
   <string name="login_account_not_created">Konto kunne ikke oprettes</string>
-  <string name="login_webview_tlserror">Forbindelse sikkerheds problem (fejlkode %d)</string>
-  <string name="login_webview_retry">Prøv igen</string>
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
   <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>

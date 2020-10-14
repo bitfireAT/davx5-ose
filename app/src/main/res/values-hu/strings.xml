@@ -174,8 +174,6 @@
   <string name="login_account_name_required">A fióknév megadása feltétlenül szükséges</string>
   <string name="login_account_name_already_taken">A fióknév már használatban van</string>
   <string name="login_account_not_created">A fiók létrehozása nem sikerült</string>
-  <string name="login_webview_tlserror">Biztonsági probléma a kapcsolódásnál (hibakód:%d)</string>
-  <string name="login_webview_retry">Újbóli próbálkozás</string>
   <string name="login_configuration_detection">A konfiguráció felderítése</string>
   <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése…</string>
   <string name="login_no_caldav_carddav">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
