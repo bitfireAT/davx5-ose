@@ -174,8 +174,6 @@
   <string name="login_account_name_required">Nome de conta requerido</string>
   <string name="login_account_name_already_taken">O nome de conta xa está a ser utilizado</string>
   <string name="login_account_not_created">Non se creou a conta</string>
-  <string name="login_webview_tlserror">Problema de seguridade de conexión (código de erro %d)</string>
-  <string name="login_webview_retry">Reintentar</string>
   <string name="login_configuration_detection">Detección da configuración</string>
   <string name="login_querying_server">Agarda por favor, consultando o servidor…</string>
   <string name="login_no_caldav_carddav">Non se atopou servizo CalDAV ou CardDAV.</string>

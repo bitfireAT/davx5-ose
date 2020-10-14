@@ -7,6 +7,7 @@
   <string name="address_books_authority_title">Adresáře kontaktů</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
+  <string name="share">Sdílet</string>
   <string name="notification_channel_debugging">Ladění</string>
   <string name="notification_channel_general">Ostatní důležité zprávy</string>
   <string name="notification_channel_sync">Synchronizace</string>
@@ -72,6 +73,7 @@
   <string name="wifi_permissions_background_location_permission">Oprávnění pro přístup k poloze na pozadí</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Oprávnění pro přístup k poloze nastaveno na <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Oprávnění pro přístup k poloze nenastaveno na <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s používá oprávnění k přístupu k poloze pouze pro zjišťování názvu (SSID) sítě, ke které jste právě připojení pro účely účtů, které jsou omezené právě na SSID. Toto se děje i když je aplikace spuštěná na pozadí. Žádná data o poloze nejsou shromažďována, ukládána, zpracovávána ani nikam odesílána.</string>
   <string name="wifi_permissions_location_enabled">Určování polohy vždy zapnuté</string>
   <string name="wifi_permissions_location_enabled_on">Služba určován polohy je zapnutá</string>
   <string name="wifi_permissions_location_enabled_off">Služba určován polohy je vypnutá</string>
@@ -85,6 +87,9 @@
   <string name="about_translations_thanks"><![CDATA[<i>Poděkování: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nedaří se vytvořit soubor pro záznam událostí</string>
+  <string name="logging_notification_text">Nyní je zaznamenáváno všech %s aktivit</string>
+  <string name="logging_notification_view_share">Zobrazit/sdílet</string>
+  <string name="logging_notification_disable">Vypnout</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Otevřít panel navigace</string>
   <string name="navigation_drawer_close">Zavřít panel navigace</string>
@@ -199,8 +204,6 @@
   <string name="login_account_name_required">Je třeba zadat název pro účet</string>
   <string name="login_account_name_already_taken">Tento název účtu už je používán někým jiným</string>
   <string name="login_account_not_created">Účet nelze vytvořit</string>
-  <string name="login_webview_tlserror">Problém se zabezpečením připojení (kód chyby %d)</string>
-  <string name="login_webview_retry">Zkusit znovu</string>
   <string name="login_configuration_detection">Zjišťování nastavení</string>
   <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru…</string>
   <string name="login_no_caldav_carddav">Nedaří se nalézt službu CalDAV nebo CardDAV.</string>
@@ -321,6 +324,7 @@
   <string name="debug_info_involved_view">Zobrazit v aplikaci</string>
   <string name="debug_info_logs_caption">Záznamy událostí</string>
   <string name="debug_info_logs_subtitle">Jsou k dispozici podrobnější záznamy událostí</string>
+  <string name="debug_info_logs_view">Zobrazit záznamy událostí</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Došlo k chybě.</string>
   <string name="exception_httpexception">Došlo k HTTP chybě.</string>

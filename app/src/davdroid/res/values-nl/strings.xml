@@ -174,8 +174,6 @@
   <string name="login_account_name_required">Accountnaam vereist</string>
   <string name="login_account_name_already_taken">Account name is al in gebruik</string>
   <string name="login_account_not_created">Account kon niet gemaakt worden.</string>
-  <string name="login_webview_tlserror">Beveiligingsprobleem verbinding (foutcode %d)</string>
-  <string name="login_webview_retry">Opnieuw proberen</string>
   <string name="login_configuration_detection">Configuratie detectie</string>
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_caldav_carddav">Kon geen CalDAV of CardDAV service vinden.</string>
