@@ -8,7 +8,6 @@
 
 package at.bitfire.davdroid.resource
 
-import android.content.ContentProviderOperation
 import android.content.ContentValues
 import at.bitfire.ical4android.*
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -47,7 +46,7 @@ class LocalTask: AndroidTask, LocalResource<Task> {
 
     /* process LocalTask-specific fields */
 
-    override fun buildTask(builder: ContentProviderOperation.Builder, update: Boolean) {
+    override fun buildTask(builder: BatchOperation.CpoBuilder, update: Boolean) {
         super.buildTask(builder, update)
 
         builder .withValue(Tasks._SYNC_ID, fileName)

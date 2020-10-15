@@ -10,7 +10,6 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.ContentProviderOperation
 import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
@@ -168,10 +167,9 @@ class LocalCalendar private constructor(
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(0)
                 // delete event and possible exceptions (content provider doesn't delete exceptions itself)
-                batch.enqueue(BatchOperation.Operation(
-                        ContentProviderOperation.newDelete(eventsSyncURI())
-                                .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString()))
-                ))
+                batch.enqueue(BatchOperation.CpoBuilder
+                        .newDelete(eventsSyncURI())
+                        .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString())))
             }
             deleted = batch.commit()
         }
@@ -211,18 +209,15 @@ class LocalCalendar private constructor(
                         val originalSequence = if (cursor2.isNull(0)) 0 else cursor2.getInt(0)
 
                         // re-schedule original event and set it to DIRTY
-                        batch.enqueue(BatchOperation.Operation(
-                                ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
-                                        .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
-                                        .withValue(Events.DIRTY, 1)
-                        ))
+                        batch.enqueue(BatchOperation.CpoBuilder
+                                .newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                                .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
+                                .withValue(Events.DIRTY, 1))
                     }
                 }
 
                 // completely remove deleted exception
-                batch.enqueue(BatchOperation.Operation(
-                        ContentProviderOperation.newDelete(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
-                ))
+                batch.enqueue(BatchOperation.CpoBuilder.newDelete(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id))))
                 batch.commit()
             }
         }
@@ -242,16 +237,14 @@ class LocalCalendar private constructor(
 
                 val batch = BatchOperation(provider)
                 // original event to DIRTY
-                batch.enqueue(BatchOperation.Operation (
-                        ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
-                                .withValue(Events.DIRTY, 1)
-                ))
+                batch.enqueue(BatchOperation.CpoBuilder
+                        .newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                        .withValue(Events.DIRTY, 1))
                 // increase SEQUENCE and set DIRTY to 0
-                batch.enqueue(BatchOperation.Operation (
-                        ContentProviderOperation.newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
-                                .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
-                                .withValue(Events.DIRTY, 0)
-                ))
+                batch.enqueue(BatchOperation.CpoBuilder
+                        .newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
+                        .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
+                        .withValue(Events.DIRTY, 0))
                 batch.commit()
             }
         }

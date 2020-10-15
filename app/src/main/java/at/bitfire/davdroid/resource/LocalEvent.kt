@@ -8,7 +8,6 @@
 
 package at.bitfire.davdroid.resource
 
-import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.BuildConfig
@@ -69,7 +68,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         super.populateEvent(row, groupScheduled)
     }
 
-    override fun buildEvent(recurrence: Event?, builder: ContentProviderOperation.Builder) {
+    override fun buildEvent(recurrence: Event?, builder: BatchOperation.CpoBuilder) {
         super.buildEvent(recurrence, builder)
         val event = requireNotNull(event)
 

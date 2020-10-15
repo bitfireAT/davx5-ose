@@ -210,11 +210,9 @@ class ContactsSyncManager(
                         val currentGroups = contact.getGroupMemberships()
                         for (groupID in cachedGroups disjunct currentGroups) {
                             Logger.log.fine("Marking group as dirty: $groupID")
-                            batch.enqueue(BatchOperation.Operation(
-                                    ContentProviderOperation.newUpdate(localCollection.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
-                                    .withValue(Groups.DIRTY, 1)
-                                    .withYieldAllowed(true)
-                            ))
+                            batch.enqueue(BatchOperation.CpoBuilder
+                                    .newUpdate(localCollection.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, groupID)))
+                                    .withValue(Groups.DIRTY, 1))
                         }
                     } catch(e: FileNotFoundException) {
                     }
