@@ -209,20 +209,24 @@ class NextcloudLoginFlowFragment: Fragment() {
             val token = token ?: return
 
             CoroutineScope(Dispatchers.IO).launch {
-                val json = postForJson(pollUrl, "token=$token".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
-                val serverUrl = json.getString("server")
-                val loginName = json.getString("loginName")
-                val appPassword = json.getString("appPassword")
+                try {
+                    val json = postForJson(pollUrl, "token=$token".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
+                    val serverUrl = json.getString("server")
+                    val loginName = json.getString("loginName")
+                    val appPassword = json.getString("appPassword")
 
-                val baseUri = if (davPath != null)
-                    URI.create(serverUrl + davPath)
-                else
-                    URI.create(serverUrl)
+                    val baseUri = if (davPath != null)
+                        URI.create(serverUrl + davPath)
+                    else
+                        URI.create(serverUrl)
 
-                loginData.postValue(Pair(
-                        baseUri,
-                        Credentials(loginName, appPassword)
-                ))
+                    loginData.postValue(Pair(
+                            baseUri,
+                            Credentials(loginName, appPassword)
+                    ))
+                } catch (e: Exception) {
+                    error.postValue(e)
+                }
             }
         }
 
