@@ -1,0 +1,7 @@
+* support for Android 11
+  - ask for permission to keep permissions in Permissions fragment
+  - handle background location permission for WiFi SSID restriction as required for Android 11
+  - declare requirements for package visibility
+* login over Nextcloud app: use Login Flow v2 and Custom Tabs to support WebAuthn; so for instance 2FA with Yubikey is now supported
+* minor improvements, bug fixes (including a big where OpenTasks was not shown in the permissions fragment when tasks.org was not installed), translation updates
+
