@@ -41,11 +41,23 @@
                     android:visibility="@{model.debugInfo == null ? View.VISIBLE : View.GONE}"
                     tools:visibility="visible" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        app:drawableStartCompat="@drawable/ic_share_action"
+                        app:drawableLeftCompat="@drawable/ic_share_action"
+                        android:drawablePadding="8dp"
+                        android:text="@string/debug_info_use_share1"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="16dp"
+                        style="@style/TextAppearance.MaterialComponents.Body2"
+                        android:text="@string/debug_info_use_share2"/>
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
@@ -389,8 +401,6 @@
                     </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
-
-            </LinearLayout>
 
         </ScrollView>
 
