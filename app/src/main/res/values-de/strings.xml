@@ -302,6 +302,8 @@
   <string name="collection_properties_copy_url">URL kopieren</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
+  <string name="debug_info_use_share1">Verwenden Sie Teilen, um die unveränderten Daten zu schicken, insbesondere für Support-Anfragen.</string>
+  <string name="debug_info_use_share2">Copy &amp; paste und Screenshots vermeiden, da das Interpretieren damit schwieriger ist.</string>
   <string name="debug_info_attached">Debug-Informationen sind dieser Nachricht beigelegt (benötigt Unterstützung für Anhänge in der empfangenden App).</string>
   <string name="debug_info_http_error">HTTP-Fehler</string>
   <string name="debug_info_server_error">Serverfehler</string>
