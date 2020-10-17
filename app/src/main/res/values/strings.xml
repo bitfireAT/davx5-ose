@@ -57,7 +57,7 @@
     <string name="intro_open_source_title">Open-source software</string>
     <string name="intro_open_source_text">We\'re happy that you use %s, which is open-source software. Development, maintenance and support are hard work. Please consider contributing (there are many ways) or a donation. It would be highly appreciated!</string>
     <string name="intro_open_source_details">How to contribute/donate</string>
-    <string name="intro_open_source_dont_show">Don\'t show in the next time</string>
+    <string name="intro_open_source_dont_show">Don\'t show in the near future</string>
 
     <!-- PermissionsActivity -->
     <string name="permissions_title">Permissions</string>
@@ -362,7 +362,7 @@
     <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>
     <string name="debug_info_title">Debug info</string>
     <string name="debug_info_use_share1">Use the Share action to send the unmodified data, especially for support requests.</string>
-    <string name="debug_info_use_share2">Avoid copy &amp; paste or screenshots because they make interpretion more difficult.</string>
+    <string name="debug_info_use_share2">Avoid copy &amp; paste or screenshots because they make interpretation more difficult.</string>
     <string name="debug_info_attached">Debug info attached to this message (requires attachment support of the receiving app).</string>
     <string name="debug_info_http_error">HTTP Error</string>
     <string name="debug_info_server_error">Server Error</string>
