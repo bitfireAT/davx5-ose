@@ -42,6 +42,12 @@ class LoginActivity: AppCompatActivity() {
          * When set, the password field will be set to this value.
          */
         const val EXTRA_PASSWORD = "password"
+
+        /**
+         * When set, the checkbox values will be restored
+         */
+        const val EXTRA_USE_USERNAME_PASSWORD = false
+        const val EXTRA_USE_CLIENT_CERTIFICATE = false
     }
 
     private val loginFragmentLoader = ServiceLoader.load(LoginCredentialsFragment::class.java)!!

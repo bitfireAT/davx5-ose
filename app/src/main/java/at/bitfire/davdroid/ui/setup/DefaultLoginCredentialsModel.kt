@@ -21,7 +21,8 @@ class DefaultLoginCredentialsModel: ViewModel() {
 
     val loginWithEmailAddress = MutableLiveData<Boolean>()
     val loginWithUrlAndUsername = MutableLiveData<Boolean>()
-    val loginWithUrlAndCertificate = MutableLiveData<Boolean>()
+    val loginAdvanced = MutableLiveData<Boolean>()
+
 
     val baseUrl = MutableLiveData<String>()
     val baseUrlError = MutableLiveData<String>()
@@ -36,8 +37,13 @@ class DefaultLoginCredentialsModel: ViewModel() {
     val certificateAlias = MutableLiveData<String>()
     val certificateAliasError = MutableLiveData<String>()
 
+    val loginUseUsernamePassword = MutableLiveData<Boolean>()
+    val loginUseClientCertificate = MutableLiveData<Boolean>()
+
     init {
         loginWithEmailAddress.value = true
+        loginUseClientCertificate.value = false
+        loginUseUsernamePassword.value = false
     }
 
     fun clearUrlError(s: Editable) {

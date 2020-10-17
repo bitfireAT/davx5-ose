@@ -16,7 +16,8 @@ class Credentials(
 
     enum class Type {
         UsernamePassword,
-        ClientCertificate
+        ClientCertificate,
+        Anonymous
     }
 
     val type: Type
@@ -28,7 +29,7 @@ class Credentials(
             !userName.isNullOrEmpty() && !password.isNullOrEmpty() ->
                 Type.UsernamePassword
             else ->
-                throw IllegalArgumentException("Either username/password or certificate alias must be set")
+                Type.Anonymous
         }
     }
 

@@ -44,7 +44,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import java.util.logging.Level
 
-class AccountDetailsFragment: Fragment() {
+class AccountDetailsFragment : Fragment() {
 
     val loginModel by activityViewModels<LoginModel>()
     val model by viewModels<AccountDetailsModel>()
@@ -59,9 +59,8 @@ class AccountDetailsFragment: Fragment() {
 
         // default account name
         model.name.value =
-                config.calDAV?.emails?.firstOrNull() ?:
-                        loginModel.credentials?.userName ?:
-                        loginModel.credentials?.certificateAlias
+                config.calDAV?.emails?.firstOrNull() ?: loginModel.credentials?.userName
+                        ?: loginModel.credentials?.certificateAlias
 
         // CardDAV-specific
         val settings = SettingsManager.getInstance(requireActivity())
@@ -95,7 +94,7 @@ class AccountDetailsFragment: Fragment() {
 
                 model.createAccount(
                         name,
-                        loginModel.credentials!!,
+                        loginModel.credentials,
                         config,
                         GroupMethod.valueOf(groupMethodName)
                 ).observe(viewLifecycleOwner, Observer<Boolean> { success ->
@@ -129,7 +128,7 @@ class AccountDetailsFragment: Fragment() {
 
     class AccountDetailsModel(
             application: Application
-    ): AndroidViewModel(application) {
+    ) : AndroidViewModel(application) {
 
         val name = MutableLiveData<String>()
         val nameError = MutableLiveData<String>()
@@ -138,7 +137,7 @@ class AccountDetailsFragment: Fragment() {
             nameError.value = null
         }
 
-        fun createAccount(name: String, credentials: Credentials, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): LiveData<Boolean> {
+        fun createAccount(name: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): LiveData<Boolean> {
             val result = MutableLiveData<Boolean>()
             val context = getApplication<Application>()
             viewModelScope.launch(Dispatchers.Default + NonCancellable) {
@@ -149,7 +148,7 @@ class AccountDetailsFragment: Fragment() {
                 Logger.log.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
                 val accountManager = AccountManager.get(context)
-                if (!accountManager.addAccountExplicitly(account, credentials.password, userData)) {
+                if (!accountManager.addAccountExplicitly(account, credentials?.password, userData)) {
                     result.postValue(false)
                     return@launch
                 }
@@ -212,27 +211,28 @@ class AccountDetailsFragment: Fragment() {
             return result
         }
 
-        private fun insertService(db: AppDatabase, accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
-            // insert service
-            val service = Service(0, accountName, type, info.principal)
-            val serviceId = db.serviceDao().insertOrReplace(service)
 
-            // insert home sets
-            val homeSetDao = db.homeSetDao()
-            for (homeSet in info.homeSets) {
-                homeSetDao.insertOrReplace(HomeSet(0, serviceId, homeSet))
-            }
+    private fun insertService(db: AppDatabase, accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
+        // insert service
+        val service = Service(0, accountName, type, info.principal)
+        val serviceId = db.serviceDao().insertOrReplace(service)
 
-            // insert collections
-            val collectionDao = db.collectionDao()
-            for (collection in info.collections.values) {
-                collection.serviceId = serviceId
-                collectionDao.insertOrReplace(collection)
-            }
-
-            return serviceId
+        // insert home sets
+        val homeSetDao = db.homeSetDao()
+        for (homeSet in info.homeSets) {
+            homeSetDao.insertOrReplace(HomeSet(0, serviceId, homeSet))
         }
 
+        // insert collections
+        val collectionDao = db.collectionDao()
+        for (collection in info.collections.values) {
+            collection.serviceId = serviceId
+            collectionDao.insertOrReplace(collection)
+        }
+
+        return serviceId
     }
+
+}
 
 }

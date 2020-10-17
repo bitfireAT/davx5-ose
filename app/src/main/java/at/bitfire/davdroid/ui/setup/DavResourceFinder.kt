@@ -54,10 +54,12 @@ class DavResourceFinder(
 
     var encountered401 = false
 
-    private val httpClient: HttpClient = HttpClient.Builder(context, logger = log)
-            .addAuthentication(null, loginModel.credentials!!)
-            .setForeground(true)
-            .build()
+    private val httpClient: HttpClient = HttpClient.Builder(context, logger = log).let{
+        if (loginModel.credentials != null)
+            it.addAuthentication(null, loginModel.credentials!!)
+        it.setForeground(true)
+        it.build()
+    }
 
     override fun close() {
         httpClient.close()

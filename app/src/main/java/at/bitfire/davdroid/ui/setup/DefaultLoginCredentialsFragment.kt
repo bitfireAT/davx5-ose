@@ -26,7 +26,7 @@ import at.bitfire.davdroid.model.Credentials
 import java.net.URI
 import java.net.URISyntaxException
 
-class DefaultLoginCredentialsFragment: Fragment() {
+class DefaultLoginCredentialsFragment : Fragment() {
 
     val loginModel by activityViewModels<LoginModel>()
     val model by viewModels<DefaultLoginCredentialsModel>()
@@ -48,6 +48,7 @@ class DefaultLoginCredentialsFragment: Fragment() {
                 }
             }, null, null, null, -1, model.certificateAlias.value)
         }
+
 
         v.login.setOnClickListener {
             if (validate())
@@ -133,26 +134,53 @@ class DefaultLoginCredentialsFragment: Fragment() {
                     loginModel.credentials = Credentials(username, password, null)
             }
 
-            model.loginWithUrlAndCertificate.value == true -> {
+
+            model.loginAdvanced.value == true -> {
                 validateUrl()
 
                 model.certificateAliasError.value = null
                 val alias = model.certificateAlias.value
-                if (alias.isNullOrBlank()) {
+                if (model.loginUseClientCertificate.value == true && alias.isNullOrBlank()) {
                     valid = false
                     model.certificateAliasError.value = ""      // error icon without text
                 }
 
-                if (valid)
+
+                model.usernameError.value = null
+                model.passwordError.value = null
+                val username = model.username.value
+                val password = model.password.value
+
+                if (model.loginUseUsernamePassword.value == true) {
+                    if (username.isNullOrEmpty()) {
+                        valid = false
+                        model.usernameError.value = getString(R.string.login_user_name_required)
+                    }
+
+                    if (password.isNullOrEmpty()) {
+                        valid = false
+                        model.passwordError.value = getString(R.string.login_password_required)
+                    }
+                }
+
+
+                //loginModel.credentials stays null if Login is tried with Base URL only!
+                if (valid && model.loginUseUsernamePassword.value == true && model.loginUseClientCertificate.value == true)
+                    loginModel.credentials = Credentials(username, password, alias)
+                if (valid && model.loginUseUsernamePassword.value == true && model.loginUseClientCertificate.value == false)
+                    loginModel.credentials = Credentials(username, password, null)
+                if (valid && model.loginUseUsernamePassword.value == false && model.loginUseClientCertificate.value == true)
                     loginModel.credentials = Credentials(null, null, alias)
+
             }
+
         }
 
         return valid
     }
 
 
-    class Factory: LoginCredentialsFragment {
+    class Factory : LoginCredentialsFragment {
 
         override fun getFragment(intent: Intent) = DefaultLoginCredentialsFragment()
 
