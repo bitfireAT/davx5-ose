@@ -230,7 +230,7 @@
     <string name="login_account_name_required">Account name required</string>
     <string name="login_account_name_already_taken">Account name already taken</string>
     <string name="login_account_not_created">Account could not be created</string>
-    <string name="login_type_advanced">Advanced login for special use cases</string>
+    <string name="login_type_advanced">Advanced login (special use cases)</string>
     <string name="login_use_username_password">Use username/password</string>
     <string name="login_use_client_certificate">Use client certificate</string>
 

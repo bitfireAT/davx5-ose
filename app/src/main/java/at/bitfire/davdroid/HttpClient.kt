@@ -157,16 +157,13 @@ class HttpClient private constructor(
         }
 
         fun addAuthentication(host: String?, credentials: Credentials): Builder {
-            when (credentials.type) {
-                Credentials.Type.UsernamePassword -> {
-                    val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.userName!!, credentials.password!!)
-                    orig    .addNetworkInterceptor(authHandler)
-                            .authenticator(authHandler)
-                }
-                Credentials.Type.ClientCertificate -> {
-                    certificateAlias = credentials.certificateAlias
-                }
+            if (credentials.userName != null && credentials.password != null) {
+                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.userName, credentials.password)
+                orig    .addNetworkInterceptor(authHandler)
+                        .authenticator(authHandler)
             }
+            if (credentials.certificateAlias != null)
+                certificateAlias = credentials.certificateAlias
             return this
         }
 

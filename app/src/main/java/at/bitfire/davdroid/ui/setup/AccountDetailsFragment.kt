@@ -37,6 +37,7 @@ import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -59,8 +60,10 @@ class AccountDetailsFragment : Fragment() {
 
         // default account name
         model.name.value =
-                config.calDAV?.emails?.firstOrNull() ?: loginModel.credentials?.userName
+                config.calDAV?.emails?.firstOrNull()
+                        ?: loginModel.credentials?.userName
                         ?: loginModel.credentials?.certificateAlias
+                        ?: loginModel.baseURI?.host
 
         // CardDAV-specific
         val settings = SettingsManager.getInstance(requireActivity())
@@ -147,8 +150,7 @@ class AccountDetailsFragment : Fragment() {
                 val userData = AccountSettings.initialUserData(credentials)
                 Logger.log.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
-                val accountManager = AccountManager.get(context)
-                if (!accountManager.addAccountExplicitly(account, credentials?.password, userData)) {
+                if (!AccountUtils.createAccount(context, account, userData, credentials?.password)) {
                     result.postValue(false)
                     return@launch
                 }
@@ -165,7 +167,6 @@ class AccountDetailsFragment : Fragment() {
                     val addrBookAuthority = context.getString(R.string.address_books_authority)
                     if (config.cardDAV != null) {
                         // insert CardDAV service
-
                         val id = insertService(db, name, Service.TYPE_CARDDAV, config.cardDAV)
 
                         // initial CardDAV account settings
@@ -211,28 +212,27 @@ class AccountDetailsFragment : Fragment() {
             return result
         }
 
+        private fun insertService(db: AppDatabase, accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
+            // insert service
+            val service = Service(0, accountName, type, info.principal)
+            val serviceId = db.serviceDao().insertOrReplace(service)
 
-    private fun insertService(db: AppDatabase, accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
-        // insert service
-        val service = Service(0, accountName, type, info.principal)
-        val serviceId = db.serviceDao().insertOrReplace(service)
+            // insert home sets
+            val homeSetDao = db.homeSetDao()
+            for (homeSet in info.homeSets) {
+                homeSetDao.insertOrReplace(HomeSet(0, serviceId, homeSet))
+            }
 
-        // insert home sets
-        val homeSetDao = db.homeSetDao()
-        for (homeSet in info.homeSets) {
-            homeSetDao.insertOrReplace(HomeSet(0, serviceId, homeSet))
+            // insert collections
+            val collectionDao = db.collectionDao()
+            for (collection in info.collections.values) {
+                collection.serviceId = serviceId
+                collectionDao.insertOrReplace(collection)
+            }
+
+            return serviceId
         }
 
-        // insert collections
-        val collectionDao = db.collectionDao()
-        for (collection in info.collections.values) {
-            collection.serviceId = serviceId
-            collectionDao.insertOrReplace(collection)
-        }
-
-        return serviceId
     }
-
-}
 
 }

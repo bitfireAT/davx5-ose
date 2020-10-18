@@ -207,38 +207,36 @@ class SettingsActivity: AppCompatActivity() {
             val prefPassword = findPreference<EditTextPreference>("password")!!
             val prefCertAlias = findPreference<Preference>("certificate_alias")!!
             model.credentials.observe(viewLifecycleOwner, { credentials ->
-                when (credentials.type) {
-                    Credentials.Type.UsernamePassword -> {
-                        prefUserName.isVisible = true
-                        prefUserName.summary = credentials.userName
-                        prefUserName.text = credentials.userName
-                        prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                            model.updateCredentials(Credentials(newValue as String, credentials.password))
-                            false
-                        }
-
-                        prefPassword.isVisible = true
-                        prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                            model.updateCredentials(Credentials(credentials.userName, newValue as String))
-                            false
-                        }
-
-                        prefCertAlias.isVisible = false
+                if (credentials.userName != null && credentials.password != null) {
+                    prefUserName.isVisible = true
+                    prefUserName.summary = credentials.userName
+                    prefUserName.text = credentials.userName
+                    prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newUserName ->
+                        model.updateCredentials(Credentials(newUserName as String, credentials.password, credentials.certificateAlias))
+                        false
                     }
-                    Credentials.Type.ClientCertificate -> {
-                        prefUserName.isVisible = false
-                        prefPassword.isVisible = false
 
-                        prefCertAlias.isVisible = true
-                        prefCertAlias.summary = credentials.certificateAlias
-                        prefCertAlias.setOnPreferenceClickListener {
-                            KeyChain.choosePrivateKeyAlias(requireActivity(), { alias ->
-                                model.updateCredentials(Credentials(certificateAlias = alias))
-                            }, null, null, null, -1, credentials.certificateAlias)
-                            true
-                        }
+                    prefPassword.isVisible = true
+                    prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newPassword ->
+                        model.updateCredentials(Credentials(credentials.userName, newPassword as String, credentials.certificateAlias))
+                        false
                     }
+                } else {
+                    prefUserName.isVisible = false
+                    prefPassword.isVisible = false
                 }
+
+                if (credentials.certificateAlias != null) {
+                    prefCertAlias.isVisible = true
+                    prefCertAlias.summary = credentials.certificateAlias
+                    prefCertAlias.setOnPreferenceClickListener {
+                        KeyChain.choosePrivateKeyAlias(requireActivity(), { newAlias ->
+                            model.updateCredentials(Credentials(credentials.userName, credentials.password, newAlias))
+                        }, null, null, null, -1, credentials.certificateAlias)
+                        true
+                    }
+                } else
+                    prefCertAlias.isVisible = false
             })
 
             // preference group: CalDAV
@@ -251,8 +249,7 @@ class SettingsActivity: AppCompatActivity() {
                     // when model.hasCalDav is available, model.syncInterval* are also available
                     // (because hasCalDav is calculated from them)
                     val hasCalendars = model.syncIntervalCalendars.value != null
-                    val hasTasks = model.syncIntervalTasks.value != null
-                    
+
                     findPreference<EditTextPreference>(getString(R.string.settings_sync_time_range_past_key))!!.let { pref ->
                         if (hasCalendars)
                             model.timeRangePastDays.observe(viewLifecycleOwner, { pastDays ->

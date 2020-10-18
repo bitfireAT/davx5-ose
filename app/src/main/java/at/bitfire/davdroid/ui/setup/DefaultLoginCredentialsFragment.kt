@@ -134,7 +134,6 @@ class DefaultLoginCredentialsFragment : Fragment() {
                     loginModel.credentials = Credentials(username, password, null)
             }
 
-
             model.loginAdvanced.value == true -> {
                 validateUrl()
 
@@ -145,10 +144,10 @@ class DefaultLoginCredentialsFragment : Fragment() {
                     model.certificateAliasError.value = ""      // error icon without text
                 }
 
-
                 model.usernameError.value = null
-                model.passwordError.value = null
                 val username = model.username.value
+
+                model.passwordError.value = null
                 val password = model.password.value
 
                 if (model.loginUseUsernamePassword.value == true) {
@@ -156,24 +155,29 @@ class DefaultLoginCredentialsFragment : Fragment() {
                         valid = false
                         model.usernameError.value = getString(R.string.login_user_name_required)
                     }
-
-                    if (password.isNullOrEmpty()) {
-                        valid = false
-                        model.passwordError.value = getString(R.string.login_password_required)
-                    }
+                    validatePassword()
                 }
 
+                // loginModel.credentials stays null if login is tried with Base URL only
+                if (valid)
+                    loginModel.credentials = when {
+                        // username/password and client certificate
+                        model.loginUseUsernamePassword.value == true && model.loginUseClientCertificate.value == true ->
+                            Credentials(username, password, alias)
 
-                //loginModel.credentials stays null if Login is tried with Base URL only!
-                if (valid && model.loginUseUsernamePassword.value == true && model.loginUseClientCertificate.value == true)
-                    loginModel.credentials = Credentials(username, password, alias)
-                if (valid && model.loginUseUsernamePassword.value == true && model.loginUseClientCertificate.value == false)
-                    loginModel.credentials = Credentials(username, password, null)
-                if (valid && model.loginUseUsernamePassword.value == false && model.loginUseClientCertificate.value == true)
-                    loginModel.credentials = Credentials(null, null, alias)
+                        // user/name password only
+                        model.loginUseUsernamePassword.value == true && model.loginUseClientCertificate.value == false ->
+                            Credentials(username, password)
 
+                        // client certificate only
+                        model.loginUseUsernamePassword.value == false && model.loginUseClientCertificate.value == true ->
+                            Credentials(certificateAlias = alias)
+
+                        // anonymous (neither username/password nor client certificate)
+                        else ->
+                            null
+                    }
             }
-
         }
 
         return valid

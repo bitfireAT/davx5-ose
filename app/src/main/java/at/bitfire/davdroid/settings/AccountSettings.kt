@@ -106,13 +106,10 @@ class AccountSettings(
             bundle.putString(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
 
             if (credentials != null) {
-
-                when (credentials.type) {
-                    Credentials.Type.UsernamePassword ->
-                        bundle.putString(KEY_USERNAME, credentials.userName)
-                    Credentials.Type.ClientCertificate ->
-                        bundle.putString(KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
-                }
+                if (credentials.userName != null)
+                    bundle.putString(KEY_USERNAME, credentials.userName)
+                if (credentials.certificateAlias != null)
+                    bundle.putString(KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
             }
 
             return bundle
