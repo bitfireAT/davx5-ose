@@ -35,7 +35,6 @@
   <string name="intro_open_source_title">Software Livre</string>
   <string name="intro_open_source_text">Estamos felizes por usar o %s, que é um software de código aberto. Desenvolvimento, manutenção e suporte são um trabalho árduo. Considere contribuir (existem várias maneiras) ou fazer uma doação. Seria muito apreciado!</string>
   <string name="intro_open_source_details">Como contribuir/doar</string>
-  <string name="intro_open_source_dont_show">Não exibir na próxima vez</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permissões</string>
   <string name="permissions_text">%s requer permissões para trabalhar corretamente.</string>

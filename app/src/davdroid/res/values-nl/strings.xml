@@ -35,7 +35,6 @@
   <string name="intro_open_source_title">Open source software</string>
   <string name="intro_open_source_text">We zijn blij dat je de open-source software %s gebruikt. Ontwikkeling, onderhoud en ondersteuning zijn hard werk. Overweeg om een bijdrage te leveren (er zijn veel manieren) of een donatie. Het wordt zeer gewaardeerd!</string>
   <string name="intro_open_source_details">Hoe u kunt bijdragen / doneren</string>
-  <string name="intro_open_source_dont_show">De volgende keer niet meer laten zien</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Machtigingen</string>
   <string name="permissions_text">%s heeft machtigingen nodig om goed te werken.</string>

@@ -41,7 +41,7 @@
   <string name="intro_open_source_title">Oprogramowanie open-source</string>
   <string name="intro_open_source_text">Cieszymy się, że używasz %s, czyli oprogramowania typu open-source. Rozwój, utrzymanie i wsparcie to ciężka praca. Prosimy o rozważenie wniesienia swojego wkładu (jest wiele sposobów) lub darowizny. Byłoby to bardzo cenne!</string>
   <string name="intro_open_source_details">Jak wspomóc/wesprzeć</string>
-  <string name="intro_open_source_dont_show">Nie pokazuj następnym razem</string>
+  <string name="intro_open_source_dont_show">Nie pokazuj w najbliższej przyszłości</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Uprawnienia</string>
   <string name="permissions_text">%s wymaga uprawnień do prawidłowego działania</string>
@@ -204,6 +204,9 @@
   <string name="login_account_name_required">Wymagana nazwa konta</string>
   <string name="login_account_name_already_taken">Nazwa konta jest już zajęta</string>
   <string name="login_account_not_created">Konto nie mogło zostać stworzone</string>
+  <string name="login_type_advanced">Logowanie zaawansowane (dla specjalnych zastosowań)</string>
+  <string name="login_use_username_password">Użyj loginu/hasła</string>
+  <string name="login_use_client_certificate">Użyj certyfikatu klienta</string>
   <string name="login_configuration_detection">Wykrywanie konfiguracji</string>
   <string name="login_querying_server">Proszę czekać, odpytywanie serwera…</string>
   <string name="login_no_caldav_carddav">Nie można znaleźć usługi CalDAV lub CardDAV.</string>
@@ -306,6 +309,8 @@
   <string name="collection_properties_copy_url">Kopiuj adres URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacje debugowania</string>
+  <string name="debug_info_use_share1">Użyj akcji Udostępnij aby wysłać nie zmodyfikowane dane, szczególnie dla zgłoszeń wsparcia.</string>
+  <string name="debug_info_use_share2">Unikaj kopiuj &amp; wklej lub zrzutów ekranu ponieważ czynią one interpretację trudniejszą.</string>
   <string name="debug_info_attached">Informacja debugowania załączona do tej wiadomości (wymaga wsparcia dla załączników w odbierającej aplikacji).</string>
   <string name="debug_info_http_error">Błąd HTTP</string>
   <string name="debug_info_server_error">Błąd serwera</string>

@@ -41,7 +41,7 @@
   <string name="intro_open_source_title">开源软件</string>
   <string name="intro_open_source_text">我们很高兴您使用 %s 开源软件。开发、维护和支持是艰苦的工作。请考虑通过多种方式提供贡献或捐款。不胜感激！</string>
   <string name="intro_open_source_details">如何贡献或捐款</string>
-  <string name="intro_open_source_dont_show">下次不再显示</string>
+  <string name="intro_open_source_dont_show">不要在不久的将来出现</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">权限</string>
   <string name="permissions_text">%s需要权限才能正常工作</string>
@@ -204,6 +204,9 @@
   <string name="login_account_name_required">请输入账户名</string>
   <string name="login_account_name_already_taken">账户名已被占用</string>
   <string name="login_account_not_created">账户无法创建</string>
+  <string name="login_type_advanced">高级登录 (特殊用例)</string>
+  <string name="login_use_username_password">使用用户名/密码</string>
+  <string name="login_use_client_certificate">使用客户端证书</string>
   <string name="login_configuration_detection">正在配置</string>
   <string name="login_querying_server">正在与服务器通信，请稍等…</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>
@@ -300,6 +303,8 @@
   <string name="collection_properties_copy_url">复制 URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">调试信息</string>
+  <string name="debug_info_use_share1">使用“分享”操作发送未更改的数据，尤其对于支持请求。</string>
+  <string name="debug_info_use_share2">避免复制 &amp; 粘贴或截屏，因为它们让问题阐释变得更困难。</string>
   <string name="debug_info_attached">已附加调试信息到此消息(需要接收应用支持附件功能)</string>
   <string name="debug_info_http_error">HTTP错误</string>
   <string name="debug_info_server_error">服务器错误</string>
