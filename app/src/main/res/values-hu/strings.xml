@@ -35,7 +35,6 @@
   <string name="intro_open_source_title">Nyílt forráskódú szoftver</string>
   <string name="intro_open_source_text">Nagyon örülünk, hogy a %s felhasználói közé tartozik, ami egy nyílt forráskódú szoftver.  Ennek fejlesztése, karbantartása és támogatása ugyanakkor kemény munkát igényel.  Kérjük, fontolja meg, hogy ezt pénzzel vagy valamilyen módon támogassa (több lehetőség közül is választhat).  Nagyon megköszönnénk!</string>
   <string name="intro_open_source_details">A hozzájárulás lehetőségei</string>
-  <string name="intro_open_source_dont_show">Ne mutassa legközelebb</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Engedélyek</string>
   <string name="permissions_text">A %s megfelelő működése bizonyos engedélyeket igényel.</string>

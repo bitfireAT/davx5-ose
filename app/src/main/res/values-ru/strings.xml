@@ -7,6 +7,7 @@
   <string name="address_books_authority_title">Адресные книги</string>
   <string name="help">Помощь</string>
   <string name="manage_accounts">Управление аккаунтами</string>
+  <string name="share">Поделиться</string>
   <string name="notification_channel_debugging">Отладка</string>
   <string name="notification_channel_general">Другие важные сообщения</string>
   <string name="notification_channel_sync">Синхронизация</string>
@@ -40,7 +41,6 @@
   <string name="intro_open_source_title">ПО с открытым исходным кодом</string>
   <string name="intro_open_source_text">Мы рады, что вы используете %s, программное обеспечение с открытым исходным кодом. Разработка, сопровождение и поддержка - это тяжелая работа. Пожалуйста, подумайте о том, чтобы внести свой вклад (существует множество способов) или сделать пожертвование. Будем очень признательны!</string>
   <string name="intro_open_source_details">Как внести свой вклад/пожертвовать</string>
-  <string name="intro_open_source_dont_show">Не показывать в следующий раз</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Разрешения</string>
   <string name="permissions_text">%s необходимы разрешения для корректной работы.</string>
@@ -58,9 +58,24 @@
   <string name="permissions_tasks_status_not_installed">Задачи не синхронизируются (не установлены)</string>
   <string name="permissions_tasks_status_off">Задачи не синхронизируются (не рекомендуется)</string>
   <string name="permissions_tasks_status_on">Синхронизация задач возможна</string>
+  <string name="permissions_autoreset_title">Сохранить разрешения</string>
+  <string name="permissions_autoreset_status_off">Разрешения могут быть сброшены автоматически (не рекомендуется)</string>
+  <string name="permissions_autoreset_status_on">Разрешения не будут сброшены автоматически</string>
   <string name="permissions_app_settings_hint">Если переключатель не работает, используйте Настройки приложения / Разрешения.</string>
   <string name="permissions_app_settings">Настройки приложения</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">Разрешения WiFi SSID</string>
+  <string name="wifi_permissions_intro">Для получения доступа к названию текущей WiFi (SSID), должны быть выполнены следующие условия:</string>
+  <string name="wifi_permissions_location_permission">Разрешение на определение местоположения</string>
+  <string name="wifi_permissions_location_permission_on">Разрешение на определение местоположения предоставлено</string>
+  <string name="wifi_permissions_location_permission_off">Разрешение на определение местоположения отклонено</string>
+  <string name="wifi_permissions_background_location_permission">Разрешение на фоновое определение местоположения</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Настроено разрешение на определение местоположения <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Не настроено разрешение на определение местоположения <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s использует разрешение на доступ к местоположению только для определения текущего SSID WiFi для аккацнтов с ограничениями SSID. Это будет происходить даже когда приложение находится в фоновом режиме. Никакие данные о местоположении не собираются, не хранятся, не обрабатываются и не отправляются куда-либо.</string>
+  <string name="wifi_permissions_location_enabled">Определение местоположения всегда включено</string>
+  <string name="wifi_permissions_location_enabled_on">Служба определения местоположения включена</string>
+  <string name="wifi_permissions_location_enabled_off">Служба определения местоположения отключена</string>
   <!--AboutActivity-->
   <string name="about_translations">Переводы</string>
   <string name="about_libraries">Библиотеки</string>
@@ -71,6 +86,9 @@
   <string name="about_translations_thanks"><![CDATA[<i>Благодарность: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Не удалось создать файл журнала</string>
+  <string name="logging_notification_text">Сейчас регистрируются все %s действий</string>
+  <string name="logging_notification_view_share">Посмотреть/поделиться</string>
+  <string name="logging_notification_disable">Отключено</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Открыть панель навигации</string>
   <string name="navigation_drawer_close">Закрыть панель навигации</string>
@@ -215,6 +233,8 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Будет синхронизироваться только более %s (требуются активированные службы определения местоположения)</string>
   <string name="settings_sync_wifi_only_ssids_off">Будут использоваться все WiFi-подключения</string>
   <string name="settings_sync_wifi_only_ssids_message">Имена (SSID) разрешенных сетей WiFi, разделенные запятыми (оставьте пустым для всех)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">Ограничение WiFi SSID требует дополнительных настроек</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Управление</string>
   <string name="settings_more_info_faq">Дополнительная информация (FAQ)</string>
   <string name="settings_authentication">Аутентификация</string>
   <string name="settings_username">Имя пользователя</string>
@@ -285,6 +305,7 @@
   <string name="collection_properties_copy_url">Копировать URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
+  <string name="debug_info_use_share1">Используйте действие Поделиться для отправки немодифицированных данных, особенно это касается запросов поддержки.</string>
   <string name="debug_info_attached">Отладочная информация, прикреплена к данному сообщению (требует поддержки вложений со стороны принимающего приложения).</string>
   <string name="debug_info_http_error">Ошибка HTTP</string>
   <string name="debug_info_server_error">Ошибка сервера</string>
@@ -303,6 +324,7 @@
   <string name="debug_info_involved_view">Просмотр с помощью приложения</string>
   <string name="debug_info_logs_caption">Журналы</string>
   <string name="debug_info_logs_subtitle">Доступны подробные журналы</string>
+  <string name="debug_info_logs_view">Просмотр журналов</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>

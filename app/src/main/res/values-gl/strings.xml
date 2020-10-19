@@ -35,7 +35,6 @@
   <string name="intro_open_source_title">Software de código aberto</string>
   <string name="intro_open_source_text">Encántanos que uses %s, que é software de código aberto. O desenvolvemento, mantemento e soporte son un traballo difícil. Considera contribuír (hai moitos xeitos) ou facer unha doazón. Sería de agradecer!</string>
   <string name="intro_open_source_details">Como contribuír/doar</string>
-  <string name="intro_open_source_dont_show">Non mostar de novo</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisos</string>
   <string name="permissions_text">1%s require permisos para funcionar axeitadamente.</string>

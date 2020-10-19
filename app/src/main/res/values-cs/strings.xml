@@ -41,7 +41,7 @@
   <string name="intro_open_source_title">Opensource software</string>
   <string name="intro_open_source_text">Jsme rádi, že %s používáte. Jde o opensource software. Vývoj, údržba a podpora je ale těžká práce. Prosím zvažte zapojení se (je mnoho způsobů jak) nebo podpoření vývoje darem. Bude to velmi oceněno!</string>
   <string name="intro_open_source_details">Jak se zapojit / podpořit vývoj darem</string>
-  <string name="intro_open_source_dont_show">Příště už nezobrazovat</string>
+  <string name="intro_open_source_dont_show">Nějakou dobu teď nezobrazovat</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Oprávnění</string>
   <string name="permissions_text">Aby fungovalo správně, %s vyžaduje oprávnění.</string>
@@ -204,6 +204,9 @@
   <string name="login_account_name_required">Je třeba zadat název pro účet</string>
   <string name="login_account_name_already_taken">Tento název účtu už je používán někým jiným</string>
   <string name="login_account_not_created">Účet nelze vytvořit</string>
+  <string name="login_type_advanced">Pokročilé přihlašování (zvláštní případy použití)</string>
+  <string name="login_use_username_password">Použít uživatelské jméno / heslo</string>
+  <string name="login_use_client_certificate">Použít klientský certifikát</string>
   <string name="login_configuration_detection">Zjišťování nastavení</string>
   <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru…</string>
   <string name="login_no_caldav_carddav">Nedaří se nalézt službu CalDAV nebo CardDAV.</string>
@@ -306,6 +309,8 @@
   <string name="collection_properties_copy_url">Zkopírovat URL adresu</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Ladící informace</string>
+  <string name="debug_info_use_share1">Pro odeslání neupravených dat použijte akci Sdílet, hlavně v případě požadavků na podporu.</string>
+  <string name="debug_info_use_share2">Vyhněte se kopírování a vkládání nebo snímkům obrazovky, protože ztěžují interpretaci.</string>
   <string name="debug_info_attached">Ladící informace připojené k této správě (vyžaduje podporu pro přílohy na straně přijímající aplikace).</string>
   <string name="debug_info_http_error">Chyba HTTP</string>
   <string name="debug_info_server_error">Chyba serveru</string>

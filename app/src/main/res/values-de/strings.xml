@@ -41,7 +41,6 @@
   <string name="intro_open_source_title">Open-Source-Software</string>
   <string name="intro_open_source_text">Wir freuen uns, dass Sie die Open-Source-Software %s verwenden. Entwicklung, Wartung und Support sind viel Arbeit. Ziehen Sie daher bitte in Betracht, mitzuhelfen (dazu gibt es viele Möglichkeiten) oder zu spenden. Vielen Dank!</string>
   <string name="intro_open_source_details">Infos zum Mithelfen/Spenden</string>
-  <string name="intro_open_source_dont_show">In nächster Zeit nicht mehr anzeigen</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Rechteverwaltung</string>
   <string name="permissions_text">%s benötigt Berechtigungen, um ordnungsgemäß zu funktionieren.</string>
@@ -302,8 +301,7 @@
   <string name="collection_properties_copy_url">URL kopieren</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
-  <string name="debug_info_use_share1">Verwenden Sie Teilen, um die unveränderten Daten zu schicken, insbesondere für Support-Anfragen.</string>
-  <string name="debug_info_use_share2">Copy &amp; paste und Screenshots vermeiden, da das Interpretieren damit schwieriger ist.</string>
+  <string name="debug_info_use_share1">Verwenden Sie Teilen, um die unveränderten Daten zu schicken – insbesondere für Support-Anfragen.</string>
   <string name="debug_info_attached">Debug-Informationen sind dieser Nachricht beigelegt (benötigt Unterstützung für Anhänge in der empfangenden App).</string>
   <string name="debug_info_http_error">HTTP-Fehler</string>
   <string name="debug_info_server_error">Serverfehler</string>
