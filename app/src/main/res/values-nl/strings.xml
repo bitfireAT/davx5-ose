@@ -7,6 +7,7 @@
   <string name="address_books_authority_title">Adresboeken</string>
   <string name="help">Help</string>
   <string name="manage_accounts">Beheer accounts</string>
+  <string name="share">Delen</string>
   <string name="notification_channel_debugging">Debuggen</string>
   <string name="notification_channel_general">Andere belangrijke berichten</string>
   <string name="notification_channel_sync">Synchroniseren</string>
@@ -30,11 +31,17 @@
   <string name="intro_leave_unchecked">* Laat dit selectievakje uitgeschakeld om later te worden herinnerd. Kan worden gereset in app-instellingen / %s.</string>
   <string name="intro_more_info">Meer informatie</string>
   <string name="intro_tasks_title">Takenondersteuning</string>
+  <string name="intro_tasks_text1">Als taken worden ondersteund door uw server, kunnen ze worden gesynchroniseerd met een ondersteunde taken-app:</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[Voor sommige functies, zoals subtaken of terugkerende taken, hebt u mogelijk <a href="https://www.davx5.com/faq/tasks/advanced-task-features">extra apps</a> nodig.]]></string>
+  <string name="intro_tasks_tasks_org">Taken</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Sommige functies <a href="https://www.davx5.com/faq/tasks/advanced-task-features">worden niet ondersteund</a> (of nog niet).]]></string>
   <string name="intro_tasks_no_app_store">Geen app store beschikbaar</string>
   <string name="intro_tasks_dont_show">Ik heb geen taakondersteuning nodig.*</string>
   <string name="intro_open_source_title">Open source software</string>
   <string name="intro_open_source_text">We zijn blij dat je de open-source software %s gebruikt. Ontwikkeling, onderhoud en ondersteuning zijn hard werk. Overweeg om een bijdrage te leveren (er zijn veel manieren) of een donatie. Het wordt zeer gewaardeerd!</string>
   <string name="intro_open_source_details">Hoe u kunt bijdragen / doneren</string>
+  <string name="intro_open_source_dont_show">Niet laten zien in de nabije toekomst</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Machtigingen</string>
   <string name="permissions_text">%s heeft machtigingen nodig om goed te werken.</string>
@@ -47,12 +54,29 @@
   <string name="permissions_calendar_title">Agendamachtigingen</string>
   <string name="permissions_calendar_status_off">Geen agendasynchronisatie (niet aanbevolen)</string>
   <string name="permissions_calendar_status_on">Agendasynchronisatie mogelijk</string>
+  <string name="permissions_opentasks_title">OpenTasks machtigingen</string>
+  <string name="permissions_tasksorg_title">Machtigingen voor taken</string>
   <string name="permissions_tasks_status_not_installed">Geen taaksynchronisatie (niet geïnstalleerd)</string>
   <string name="permissions_tasks_status_off">Geen taaksynchronisatie (niet aanbevolen)</string>
   <string name="permissions_tasks_status_on">Taaksynchronisatie mogelijk</string>
+  <string name="permissions_autoreset_title">Behoud machtigingen</string>
+  <string name="permissions_autoreset_status_off">Machtigingen kunnen automatisch worden gereset (niet aanbevolen)</string>
+  <string name="permissions_autoreset_status_on">Machtigingen worden niet automatisch gereset</string>
   <string name="permissions_app_settings_hint">Als een schakelaar niet werkt, gebruik dan app-instellingen / machtigingen.</string>
   <string name="permissions_app_settings">App instellingen</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID machtigingen</string>
+  <string name="wifi_permissions_intro">Om toegang te krijgen tot de huidige WiFi-naam (SSID), moet aan deze voorwaarden zijn voldaan:</string>
+  <string name="wifi_permissions_location_permission">Locatie machtigingen</string>
+  <string name="wifi_permissions_location_permission_on">Locatie machtiging verleend</string>
+  <string name="wifi_permissions_location_permission_off">Locatie machtiging geweigerd</string>
+  <string name="wifi_permissions_background_location_permission">Toestemming voor locatieservice in de achtergrond</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Locatie machtiging ingesteld op <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Locatie machtiging niet ingesteld op <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%sgebruikt de locatiemachtiging alleen om de huidige WiFi-SSID voor SSID-beperkte accounts te bepalen. Dit gebeurt zelfs als de app zich op de achtergrond bevindt. Er worden geen locatiegegevens verzameld, opgeslagen, verwerkt of ergens naartoe verzonden.</string>
+  <string name="wifi_permissions_location_enabled">Locatieservice altijd ingeschakeld</string>
+  <string name="wifi_permissions_location_enabled_on">Locatieservice is ingeschakeld</string>
+  <string name="wifi_permissions_location_enabled_off">Locatieservice is uitgeschakeld</string>
   <!--AboutActivity-->
   <string name="about_translations">Vertalingen</string>
   <string name="about_libraries">Libraries</string>
@@ -63,6 +87,9 @@
   <string name="about_translations_thanks"><![CDATA[<i>Dankzij: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kon de log file niet creëren.</string>
+  <string name="logging_notification_text">Nu worden alle %s activiteiten gelogd</string>
+  <string name="logging_notification_view_share">Bekijk/deel</string>
+  <string name="logging_notification_disable">Uitschakelen</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Open navigatie drawer</string>
   <string name="navigation_drawer_close">Sluit navigatie drawer</string>
@@ -117,6 +144,10 @@
   <string name="app_settings_reset_hints">Hints resetten </string>
   <string name="app_settings_reset_hints_summary">Hints die al gezien zijn opnieuw weergeven</string>
   <string name="app_settings_reset_hints_success">Alle hints worden opnieuw weergegeven</string>
+  <string name="app_settings_integration">Integratie</string>
+  <string name="app_settings_tasks_provider">Taken-app</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">Synchroniseren met %s</string>
+  <string name="app_settings_tasks_provider_none">Geen compatibele taken-app gevonden</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -173,6 +204,9 @@
   <string name="login_account_name_required">Accountnaam vereist</string>
   <string name="login_account_name_already_taken">Account name is al in gebruik</string>
   <string name="login_account_not_created">Account kon niet gemaakt worden.</string>
+  <string name="login_type_advanced">Geavanceerde login (speciale gevallen)</string>
+  <string name="login_use_username_password">Gebruik gebruikersnaam/wachtwoord</string>
+  <string name="login_use_client_certificate">Gebruik client certificaat</string>
   <string name="login_configuration_detection">Configuratie detectie</string>
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_caldav_carddav">Kon geen CalDAV of CardDAV service vinden.</string>
@@ -203,6 +237,8 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Synced alleen over %s(vereist actieve locatie services)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WiFI verbindingen zullen worden gebruikt</string>
   <string name="settings_sync_wifi_only_ssids_message">Comma gescheiden namen (SSIDs) van toegestane WIFI netwerken (laat blank voor alle WIFI Netwrken)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID-beperking vereist verdere instellingen</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Beheren</string>
   <string name="settings_more_info_faq">Meer informatie (vaak gestelde vragen)</string>
   <string name="settings_authentication">Authenticatie</string>
   <string name="settings_username">Gebruikersnaam</string>
@@ -227,7 +263,11 @@
   <string name="settings_default_alarm_off">Er worden geen standaardherinneringen gemaakt</string>
   <string name="settings_default_alarm_message">Als standaardherinneringen worden aangemaakt voor evenementen zonder herinnering: het gewenste aantal minuten voor het evenement. Laat leeg om standaardherinneringen uit te schakelen.</string>
   <string name="settings_manage_calendar_colors">Agendakleuren beheren</string>
+  <string name="settings_manage_calendar_colors_on">Kalenderkleuren worden bij elke synchronisatie opnieuw ingesteld</string>
+  <string name="settings_manage_calendar_colors_off">Kalenderkleuren kunnen door andere apps worden ingesteld</string>
   <string name="settings_event_colors">Evenementkleuren ondersteunen</string>
+  <string name="settings_event_colors_on">Gebeurteniskleuren worden gesynchroniseerd</string>
+  <string name="settings_event_colors_off">Gebeurteniskleuren worden niet gesynchroniseerd</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Methode groepen contacten</string>
   <string-array name="settings_contact_group_method_entries">
@@ -265,6 +305,8 @@
   <string name="collection_properties_copy_url">kopieer URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
+  <string name="debug_info_use_share1">Gebruik de actie Delen om de ongewijzigde gegevens te verzenden, vooral voor ondersteuningsverzoeken.</string>
+  <string name="debug_info_use_share2">Vermijd kopiëren en plakken of schermafbeeldingen omdat ze de interpretatie moeilijker maken.</string>
   <string name="debug_info_attached">Debug-informatie wordt toegevoegd aan dit bericht (de ontvangende app moet bijlagen kunnen versturen).</string>
   <string name="debug_info_http_error">HTTP-fout</string>
   <string name="debug_info_server_error">Serverfout</string>
@@ -283,6 +325,7 @@
   <string name="debug_info_involved_view">Bekijk met app</string>
   <string name="debug_info_logs_caption">Logboeken</string>
   <string name="debug_info_logs_subtitle">Uitgebreide logboeken zijn beschikbaar</string>
+  <string name="debug_info_logs_view">Bekijk details</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Er is een fout opgetreden.</string>
   <string name="exception_httpexception">Er is een HTTP fout opgetreden.</string>
@@ -291,6 +334,8 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
+  <string name="sync_error_tasks_too_old">%ste oud</string>
+  <string name="sync_error_tasks_required_version">Minimaal vereiste versie: %1$s</string>
   <string name="sync_error_authentication_failed">Inloggen mislukt (check je login credentials)</string>
   <string name="sync_error_io">Netwerk of I/O error - %s</string>
   <string name="sync_error_http_dav">HTTP server fout - %s</string>

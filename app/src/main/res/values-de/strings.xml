@@ -41,6 +41,7 @@
   <string name="intro_open_source_title">Open-Source-Software</string>
   <string name="intro_open_source_text">Wir freuen uns, dass Sie die Open-Source-Software %s verwenden. Entwicklung, Wartung und Support sind viel Arbeit. Ziehen Sie daher bitte in Betracht, mitzuhelfen (dazu gibt es viele Möglichkeiten) oder zu spenden. Vielen Dank!</string>
   <string name="intro_open_source_details">Infos zum Mithelfen/Spenden</string>
+  <string name="intro_open_source_dont_show">In nächster Zeit nicht anzeigen</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Rechteverwaltung</string>
   <string name="permissions_text">%s benötigt Berechtigungen, um ordnungsgemäß zu funktionieren.</string>
@@ -203,6 +204,9 @@
   <string name="login_account_name_required">Kontoname wird benötigt</string>
   <string name="login_account_name_already_taken">Kontoname bereits verwendet</string>
   <string name="login_account_not_created">Konto konnte nicht angelegt werden</string>
+  <string name="login_type_advanced">Erweiterter Login (für spezielle Anwendungsfälle)</string>
+  <string name="login_use_username_password">Name/Passwort benutzen</string>
+  <string name="login_use_client_certificate">Client-Zertifikat benutzen</string>
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
   <string name="login_no_caldav_carddav">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>
@@ -302,6 +306,7 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
   <string name="debug_info_use_share1">Verwenden Sie Teilen, um die unveränderten Daten zu schicken – insbesondere für Support-Anfragen.</string>
+  <string name="debug_info_use_share2">Copy &amp; paste und Bildschirmfotos vermeiden, da das Interpretieren damit schwieriger ist.</string>
   <string name="debug_info_attached">Debug-Informationen sind dieser Nachricht beigelegt (benötigt Unterstützung für Anhänge in der empfangenden App).</string>
   <string name="debug_info_http_error">HTTP-Fehler</string>
   <string name="debug_info_server_error">Serverfehler</string>
