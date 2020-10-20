@@ -381,6 +381,18 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     else
                         throw e
                 }
+                is NotFoundException, is GoneException -> {
+                    // HTTP 404 Not Found (i.e. either original resource or the whole collection is not there anymore)
+                    if (local.scheduleTag != null || local.eTag != null) {      // this was an update of a previously existing resource
+                        Logger.log.info("Original version of locally modified resource is not there (anymore), trying as fresh upload")
+                        if (local.scheduleTag != null)  // contacts don't support scheduleTag, don't try to set it without check
+                            local.scheduleTag = null
+                        local.eTag = null
+                        uploadDirty(local)      // if this fails with 404, too, the collection is gone
+                        return
+                    } else
+                        throw e                 // the collection is probably gone
+                }
                 is ConflictException -> {
                     // HTTP 409 Conflict
                     // We can't interact with the user to resolve the conflict, so we treat 409 like 412.
