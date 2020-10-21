@@ -44,6 +44,10 @@ object PermissionUtils {
      * @return *true* if SSID can be obtained; *false* if the SSID will be <unknown> or something like that
      */
     fun canAccessWifiSsid(context: Context): Boolean {
+        // before Android 8, SSIDs are always readable
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            return true
+
         val locationEnabled = ContextCompat.getSystemService(context, LocationManager::class.java)?.let { locationManager ->
             LocationManagerCompat.isLocationEnabled(locationManager)
         } ?: /* location feature not available on this device */ false

@@ -129,9 +129,11 @@ class WifiPermissionsActivity: AppCompatActivity() {
         }
 
         fun checkPermissions() {
-            val location = ContextCompat.checkSelfPermission(getApplication(), PERMISSION_LOCATION) == PackageManager.PERMISSION_GRANTED
-            haveLocation.value = location
-            needLocation.value = location
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val location = ContextCompat.checkSelfPermission(getApplication(), PERMISSION_LOCATION) == PackageManager.PERMISSION_GRANTED
+                haveLocation.value = location
+                needLocation.value = location
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val backgroundLocation = ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED

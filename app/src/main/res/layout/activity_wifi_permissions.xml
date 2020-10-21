@@ -35,6 +35,7 @@
                 app:layout_constraintTop_toBottomOf="@id/intro"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/locationSwitch"
+                android:visibility="@{model.haveLocation != null ? View.VISIBLE : View.GONE}"
                 android:layout_marginTop="@dimen/card_margin_title_text"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:text="Location permission" />
@@ -45,6 +46,7 @@
                 app:layout_constraintTop_toBottomOf="@id/locationTitle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/locationSwitch"
+                android:visibility="@{model.haveLocation != null ? View.VISIBLE : View.GONE}"
                 style="@style/TextAppearance.MaterialComponents.Body2"
                 android:text="@{model.haveLocation ? @string/wifi_permissions_location_permission_on : @string/wifi_permissions_location_permission_off}" />
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -54,6 +56,7 @@
                 app:layout_constraintTop_toTopOf="@id/locationTitle"
                 app:layout_constraintBottom_toBottomOf="@id/locationStatus"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:visibility="@{model.haveLocation != null ? View.VISIBLE : View.GONE}"
                 android:clickable="@{!model.haveLocation}"
                 android:checked="@={model.needLocation}" />
 
