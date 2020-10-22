@@ -18,6 +18,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.security.KeyChain
+import android.text.InputType
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -85,6 +86,10 @@ class SettingsActivity: AppCompatActivity() {
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             addPreferencesFromResource(R.xml.settings_account)
+
+            findPreference<EditTextPreference>(getString(R.string.settings_password_key))!!.setOnBindEditTextListener { password ->
+                password.inputType = InputType.TYPE_CLASS_TEXT.or(InputType.TYPE_TEXT_VARIATION_PASSWORD)
+            }
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

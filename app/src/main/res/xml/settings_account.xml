@@ -65,7 +65,6 @@
             android:key="@string/settings_password_key"
             android:title="@string/settings_password"
             android:persistent="false"
-            android:inputType="textPassword"
             android:summary="@string/settings_password_summary"
             android:dialogTitle="@string/settings_enter_password"/>
 
