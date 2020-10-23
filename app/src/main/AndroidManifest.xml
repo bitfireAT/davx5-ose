@@ -233,6 +233,9 @@
         <provider android:authorities="org.dmfs.tasks" />
         <provider android:authorities="org.tasks.opentasks" />
 
+        <!-- ICSx5 for Webcal feeds -->
+        <package android:name="at.bitfire.icsdroid"/>
+
         <!-- apps that interact with contact, calendar, task data (for debug info) -->
         <intent>
             <action android:name="*" />
