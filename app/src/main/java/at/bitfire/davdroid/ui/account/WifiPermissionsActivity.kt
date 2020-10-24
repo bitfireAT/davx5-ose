@@ -129,22 +129,27 @@ class WifiPermissionsActivity: AppCompatActivity() {
         }
 
         fun checkPermissions() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Android 8.1+: location permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
                 val location = ContextCompat.checkSelfPermission(getApplication(), PERMISSION_LOCATION) == PackageManager.PERMISSION_GRANTED
                 haveLocation.value = location
                 needLocation.value = location
             }
 
+            // Android 9+: location service
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                getSystemService(getApplication(), LocationManager::class.java)?.let { locationManager ->
+                    val locationEnabled = LocationManagerCompat.isLocationEnabled(locationManager)
+                    isLocationEnabled.value = locationEnabled
+                    needLocationEnabled.value = locationEnabled
+                }
+            }
+
+            // Android 10+: background location permission
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val backgroundLocation = ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
                 haveBackgroundLocation.value = backgroundLocation
                 needBackgroundLocation.value = backgroundLocation
-            }
-
-            getSystemService(getApplication(), LocationManager::class.java)?.let { locationManager ->
-                val locationEnabled = LocationManagerCompat.isLocationEnabled(locationManager)
-                isLocationEnabled.value = locationEnabled
-                needLocationEnabled.value = locationEnabled
             }
         }
 
