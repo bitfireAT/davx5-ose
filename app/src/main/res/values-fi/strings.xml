@@ -32,6 +32,8 @@
   <string name="login_user_name">Käyttäjänimi</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Asetukset: %s</string>
+  <string name="settings_username">Käyttäjänimi</string>
+  <string name="settings_password">Salasana</string>
   <!--collection management-->
   <!--debugging and DebugInfoActivity-->
   <!--ExceptionInfoFragment-->
