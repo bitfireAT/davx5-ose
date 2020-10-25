@@ -207,7 +207,8 @@ class AccountDetailsFragment : Fragment() {
                             accountSettings.setSyncInterval(taskProvider.authority, Constants.DEFAULT_SYNC_INTERVAL)
                             // further changes will be handled by TasksWatcher on app start or when tasks app is (un)installed
                         }
-                    }
+                    } else
+                        ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
 
                 } catch(e: InvalidAccountException) {
                     Logger.log.log(Level.SEVERE, "Couldn't access account settings", e)
