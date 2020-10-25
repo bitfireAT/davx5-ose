@@ -124,7 +124,7 @@ abstract class SyncAdapterService: Service() {
                 }
             }
 
-            Logger.log.info("Sync for $currentSync finished")
+            Logger.log.log(Level.INFO, "Sync for $currentSync finished", syncResult)
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {

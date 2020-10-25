@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -56,7 +57,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
     @Synchronized
     private fun reinitialize() {
         val logToFile = preferences.getBoolean(LOG_TO_FILE, false)
-        val logVerbose = logToFile || Log.isLoggable(log.name, Log.DEBUG)
+        val logVerbose = logToFile || BuildConfig.DEBUG || Log.isLoggable(log.name, Log.DEBUG)
 
         log.info("Verbose logging: $logVerbose; to file: $logToFile")
 
