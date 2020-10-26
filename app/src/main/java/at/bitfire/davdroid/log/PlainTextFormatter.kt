@@ -11,6 +11,7 @@ package at.bitfire.davdroid.log
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.commons.lang3.time.DateFormatUtils
+import java.util.*
 import java.util.logging.Formatter
 import java.util.logging.LogRecord
 
@@ -29,7 +30,7 @@ class PlainTextFormatter private constructor(
         val builder = StringBuilder()
 
         if (!logcat)
-            builder .append(DateFormatUtils.format(r.millis, "yyyy-MM-dd HH:mm:ss"))
+            builder .append(DateFormatUtils.format(r.millis, "yyyy-MM-dd HH:mm:ss", Locale.ROOT))
                     .append(" ").append(r.threadID).append(" ")
 
         val className = shortClassName(r.sourceClassName)

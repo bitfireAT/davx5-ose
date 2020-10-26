@@ -39,7 +39,7 @@ object DavUtils {
     fun ARGBtoCalDAVColor(colorWithAlpha: Int): String {
         val alpha = (colorWithAlpha shr 24) and 0xFF
         val color = colorWithAlpha and 0xFFFFFF
-        return String.format("#%06X%02X", color, alpha)
+        return String.format(Locale.ROOT, "#%06X%02X", color, alpha)
     }
 
 

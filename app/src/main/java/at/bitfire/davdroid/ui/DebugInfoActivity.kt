@@ -19,6 +19,7 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
+import android.os.LocaleList
 import android.os.PowerManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
@@ -60,6 +61,7 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
 import java.io.*
+import java.util.*
 import java.util.logging.Level
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -325,10 +327,15 @@ class DebugInfoActivity: AppCompatActivity() {
                 }
 
                 // system info
+                val locales: Any = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                    LocaleList.getAdjustedDefault()
+                else
+                    Locale.getDefault()
                 writer.append(
-                        "SYSTEM INFORMATION\n\n" +
+                        "\nSYSTEM INFORMATION\n\n" +
                         "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
-                        "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n"
+                        "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n" +
+                        "Locale(s): $locales\n\n"
                 )
 
                 // connectivity

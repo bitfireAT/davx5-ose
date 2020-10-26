@@ -232,11 +232,15 @@ class HttpClient private constructor(
 
 
     private object UserAgentInterceptor: Interceptor {
-        // use Locale.US because numbers may be encoded as non-ASCII characters in other locales
-        private val userAgentDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
+        // use Locale.ROOT because numbers may be encoded as non-ASCII characters in other locales
+        private val userAgentDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.ROOT)
         private val userAgentDate = userAgentDateFormat.format(Date(BuildConfig.buildTime))
         private val userAgent = "${BuildConfig.userAgent}/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4jvm; " +
                 "okhttp/${OkHttp.VERSION}) Android/${Build.VERSION.RELEASE}"
+
+        init {
+            Logger.log.info("Will set \"User-Agent: $userAgent\" for further requests")
+        }
 
         override fun intercept(chain: Interceptor.Chain): Response {
             val locale = Locale.getDefault()
