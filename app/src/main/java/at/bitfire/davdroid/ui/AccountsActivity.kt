@@ -68,7 +68,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         }
         fab.show()
 
-        accountsDrawerHandler.initMenu(this, drawer_layout.nav_view.menu)
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -84,6 +83,8 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     override fun onResume() {
         super.onResume()
+
+        accountsDrawerHandler.initMenu(this, drawer_layout.nav_view.menu)
 
         onStatusChanged(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS)
         syncStatusObserver = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)

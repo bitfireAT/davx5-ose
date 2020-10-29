@@ -48,6 +48,7 @@ class SettingsManager private constructor(
     /**
      * Requests all providers to reload their settings.
      */
+    @AnyThread
     fun forceReload() {
         for (provider in providers)
             provider.forceReload()
@@ -73,6 +74,7 @@ class SettingsManager private constructor(
      * Notifies registered listeners about changes in the configuration.
      * Should be called by config providers when settings have changed.
      */
+    @AnyThread
     fun onSettingsChanged() {
         synchronized(observers) {
             for (observer in observers.mapNotNull { it.get() })

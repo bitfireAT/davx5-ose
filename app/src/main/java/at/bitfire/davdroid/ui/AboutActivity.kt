@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -68,7 +69,7 @@ class AboutActivity: AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.about_davdroid, menu)
+        menuInflater.inflate(R.menu.activity_about, menu)
         return true
     }
 
@@ -141,51 +142,25 @@ class AboutActivity: AppCompatActivity() {
 
     class LanguagesFragment: Fragment() {
 
-        val model by viewModels<TextFileModel>()
+        val model by viewModels<TranslationsModel>()
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
                 inflater.inflate(R.layout.about_languages, container, false)!!
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             model.initialize("translators.json", false)
-            model.plainText.observe(viewLifecycleOwner, { json ->
-                val jsonTranslations = JSONObject(json)
-                translators.adapter = TranslationsAdapter(jsonTranslations)
+            model.translations.observe(viewLifecycleOwner, { translations ->
+                translators.adapter = TranslationsAdapter(translations)
             })
 
             translators.layoutManager = LinearLayoutManager(requireActivity())
         }
 
-        class Translation(
-                val language: String,
-                val translators: Array<String>
-        )
-
         class TranslationsAdapter(
-                jsonTranslations: JSONObject
+                val translations: List<TranslationsModel.Translation>
         ): RecyclerView.Adapter<TranslationsAdapter.ViewHolder>() {
+
             class ViewHolder(val cardView: CardView): RecyclerView.ViewHolder(cardView)
-
-            private val translations = LinkedList<Translation>()
-
-            init {
-                for (langCode in jsonTranslations.keys()) {
-                    val jsonTranslators = jsonTranslations.getJSONArray(langCode)
-                    val translators = Array<String>(jsonTranslators.length()) {
-                        idx -> jsonTranslators.getString(idx)
-                    }
-
-                    val langTag = langCode.replace('_', '-')
-                    val language = Locale.forLanguageTag(langTag).displayName
-                    translations += Translation(language, translators)
-                }
-
-                // sort translations by localized language name
-                val collator = Collator.getInstance()
-                translations.sortWith({
-                    o1, o2 -> collator.compare(o1.language, o2.language)
-                })
-            }
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
                 val tv = LayoutInflater.from(parent.context).inflate(R.layout.about_translation, parent, false) as CardView
@@ -210,7 +185,7 @@ class AboutActivity: AppCompatActivity() {
     }
 
 
-    class TextFileModel(
+    open class TextFileModel(
             application: Application
     ): AndroidViewModel(application) {
 
@@ -236,5 +211,45 @@ class AboutActivity: AppCompatActivity() {
         }
 
     }
+
+    class TranslationsModel(
+            application: Application
+    ): TextFileModel(application) {
+
+        class Translation(
+                val language: String,
+                val translators: Array<String>
+        )
+
+        val translations = object: MediatorLiveData<List<Translation>>() {
+            init {
+                addSource(plainText) { rawJson ->
+                    // parse JSON
+                    val jsonTranslations = JSONObject(rawJson)
+                    val result = LinkedList<Translation>()
+                    for (langCode in jsonTranslations.keys()) {
+                        val jsonTranslators = jsonTranslations.getJSONArray(langCode)
+                        val translators = Array<String>(jsonTranslators.length()) {
+                            idx -> jsonTranslators.getString(idx)
+                        }
+
+                        val langTag = langCode.replace('_', '-')
+                        val language = Locale.forLanguageTag(langTag).displayName
+                        result += Translation(language, translators)
+                    }
+
+                    // sort translations by localized language name
+                    val collator = Collator.getInstance()
+                    result.sortWith({
+                        o1, o2 -> collator.compare(o1.language, o2.language)
+                    })
+
+                    postValue(result)
+                }
+            }
+        }
+
+    }
+
 
 }

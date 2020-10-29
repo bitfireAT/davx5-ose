@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid.settings
 
+import androidx.annotation.AnyThread
 import java.io.Writer
 
 /**
@@ -30,6 +31,7 @@ interface SettingsProvider {
 
     fun close()
 
+    @AnyThread
     fun forceReload()
 
     fun contains(key: String): Boolean
