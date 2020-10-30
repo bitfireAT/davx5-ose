@@ -41,6 +41,10 @@ class WifiPermissionsActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!PermissionUtils.WIFI_SSID_PERMISSIONS.all { perm -> PermissionUtils.declaresPermission(packageManager, perm) })
+            throw IllegalArgumentException("WiFi SSID restriction requires location permissions")
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val binding = DataBindingUtil.setContentView<ActivityWifiPermissionsBinding>(this, R.layout.activity_wifi_permissions)

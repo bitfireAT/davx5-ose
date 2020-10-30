@@ -182,7 +182,7 @@ class SettingsActivity: AppCompatActivity() {
 
             findPreference<EditTextPreference>(getString(R.string.settings_sync_wifi_only_ssids_key))!!.let {
                 model.syncWifiOnly.observe(viewLifecycleOwner, { wifiOnly ->
-                    it.isEnabled = wifiOnly
+                    it.isEnabled = wifiOnly && settings.isWritable(AccountSettings.KEY_WIFI_ONLY_SSIDS)
                 })
                 model.syncWifiOnlySSIDs.observe(viewLifecycleOwner, { onlySSIDs ->
                     checkWifiPermissions()

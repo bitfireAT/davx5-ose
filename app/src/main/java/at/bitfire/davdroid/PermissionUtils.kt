@@ -61,6 +61,18 @@ object PermissionUtils {
     }
 
     /**
+     * Whether this app declares the given permission (regardless of whether it has been granted or not).
+     *
+     * @param permisssion  permission to check
+     *
+     * @return *true* if this app declares [permission] in the manifest; *false* otherwise
+     */
+    fun declaresPermission(packageManager: PackageManager, permission: String): Boolean {
+        val info = packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, PackageManager.GET_PERMISSIONS)
+        return info.requestedPermissions.contains(permission)
+    }
+
+    /**
      * Checks whether at least one of the given permissions is granted.
      *
      * @param context context to check

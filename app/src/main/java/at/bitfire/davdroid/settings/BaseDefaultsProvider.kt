@@ -20,7 +20,7 @@ abstract class BaseDefaultsProvider(
     abstract val booleanDefaults: Map<String, Boolean>
     abstract val intDefaults: Map<String, Int>
     abstract val longDefaults: Map<String, Long>
-    abstract val stringDefaults: Map<String, String>
+    abstract val stringDefaults: Map<String, String?>
 
 
     override fun canWrite() = false
@@ -54,7 +54,7 @@ abstract class BaseDefaultsProvider(
 
 
     override fun dump(writer: Writer) {
-        val strValues = mutableMapOf<String, String>()
+        val strValues = mutableMapOf<String, String?>()
         strValues.putAll(booleanDefaults.mapValues { (_, value) -> value.toString() })
         strValues.putAll(intDefaults.mapValues { (_, value) -> value.toString() })
         strValues.putAll(longDefaults.mapValues { (_, value) -> value.toString() })

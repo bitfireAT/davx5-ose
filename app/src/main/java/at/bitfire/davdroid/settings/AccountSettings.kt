@@ -231,10 +231,11 @@ class AccountSettings(
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
             if (getSyncWifiOnly()) {
-                (if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
+                val strSsids = if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
                     settings.getString(KEY_WIFI_ONLY_SSIDS)
                 else
-                    accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS))?.split(',')
+                    accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS)
+                strSsids?.split(',')
             } else
                 null
     fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
