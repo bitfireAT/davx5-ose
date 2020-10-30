@@ -19,7 +19,13 @@ interface CollectionDao: SyncableDao<Collection> {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type")
     fun getByServiceAndType(serviceId: Long, type: String): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName, url")
+    /**
+     * Returns collections which
+     *   - support VEVENT and/or VTODO (= supported calendar collections), or
+     *   - have supportsVEVENT = supportsVTODO = null (= address books)
+     */
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type " +
+            "AND (supportsVTODO OR supportsVEVENT OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL))")
     fun pageByServiceAndType(serviceId: Long, type: String): DataSource.Factory<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync ORDER BY displayName, url")
