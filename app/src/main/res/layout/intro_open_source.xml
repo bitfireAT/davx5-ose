@@ -51,27 +51,29 @@
 
                     <TextView
                         android:id="@+id/heading"
+                        style="@style/TextAppearance.MaterialComponents.Headline6"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/image"
-                        app:layout_constraintBottom_toTopOf="@id/text"
-                        app:layout_constraintStart_toEndOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/end"
                         android:layout_marginTop="@dimen/card_margin_title_text"
-                        style="@style/TextAppearance.MaterialComponents.Headline6"
-                        android:text="@string/intro_open_source_title" />
+                        android:text="@string/intro_open_source_title"
+                        android:textAlignment="viewStart"
+                        app:layout_constraintBottom_toTopOf="@id/text"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/image" />
 
                     <TextView
                         android:id="@+id/text"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/heading"
-                        app:layout_constraintBottom_toTopOf="@id/moreInfo"
-                        app:layout_constraintStart_toEndOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/end"
                         android:layout_marginTop="@dimen/card_margin_title_text"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:text="@string/intro_open_source_text" />
+                        android:text="@string/intro_open_source_text"
+                        android:textAlignment="viewStart"
+                        app:layout_constraintBottom_toTopOf="@id/moreInfo"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/heading" />
 
                     <Button
                         android:id="@+id/moreInfo"
@@ -89,11 +91,12 @@
                         android:id="@+id/dontShow"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/moreInfo"
-                        app:layout_constraintStart_toEndOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/end"
                         android:checked="@={model.dontShow}"
-                        android:text="@string/intro_open_source_dont_show"/>
+                        android:text="@string/intro_open_source_dont_show"
+                        android:textAlignment="viewStart"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/moreInfo" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

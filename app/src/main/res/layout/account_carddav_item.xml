@@ -14,15 +14,15 @@
               android:layout_height="wrap_content"
               android:paddingTop="4dp"
               android:paddingBottom="4dp"
-              android:paddingLeft="8dp"
-              android:paddingRight="8dp"
+              android:paddingStart="8dp"
+              android:paddingEnd="8dp"
               android:gravity="center_vertical">
 
     <CheckBox
         android:id="@+id/sync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:clickable="false" />
@@ -36,15 +36,17 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="My Address Book"/>
+            tools:text="My Address Book" />
 
         <TextView
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="Address Book Description"/>
+            tools:text="Address Book Description" />
 
     </LinearLayout>
 
@@ -59,7 +61,7 @@
         android:id="@+id/action_overflow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="0dp"
+        android:paddingEnd="0dp"
         style="@style/Widget.AppCompat.ActionButton.Overflow"/>
 
 </LinearLayout>

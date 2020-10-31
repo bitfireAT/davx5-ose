@@ -126,21 +126,21 @@
                     android:id="@+id/support_vevent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
                     android:checked="@={model.supportVEVENT}"
                     android:text="@string/create_calendar_type_vevent"/>
                 <CheckBox
                     android:id="@+id/support_vtodo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
                     android:checked="@={model.supportVTODO}"
                     android:text="@string/create_calendar_type_vtodo"/>
                 <CheckBox
                     android:id="@+id/support_vjournal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
                     android:checked="@={model.supportVJOURNAL}"
                     android:text="@string/create_calendar_type_vjournal"/>
 

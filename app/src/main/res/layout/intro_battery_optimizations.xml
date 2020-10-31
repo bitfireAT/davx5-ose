@@ -34,22 +34,24 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@string/intro_battery_title"
-                        app:layout_constraintTop_toTopOf="parent"
+                        android:textAlignment="viewStart"
                         app:layout_constraintBottom_toTopOf="@id/batteryStatus"
+                        app:layout_constraintEnd_toStartOf="@id/batterySwitch"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/batterySwitch" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/batteryStatus"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/batteryHeading"
-                        app:layout_constraintBottom_toTopOf="@id/batteryText"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/batterySwitch"
-                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:text="@{model.whitelisted ? @string/intro_battery_whitelisted : @string/intro_battery_not_whitelisted}"
+                        android:textAlignment="viewStart"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:text="@{model.whitelisted ? @string/intro_battery_whitelisted : @string/intro_battery_not_whitelisted}" />
+                        app:layout_constraintBottom_toTopOf="@id/batteryText"
+                        app:layout_constraintEnd_toStartOf="@id/batterySwitch"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/batteryHeading" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/batterySwitch"
@@ -70,17 +72,19 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
                         android:text="@string/intro_battery_text"
+                        android:textAlignment="viewStart"
                         app:layout_constraintTop_toBottomOf="@id/batteryStatus" />
 
                     <CheckBox
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        app:layout_constraintTop_toBottomOf="@id/batteryText"
-                        android:enabled="@{!model.isWhitelisted()}"
                         android:checked="@={model.dontShowBattery}"
+                        android:enabled="@{!model.isWhitelisted()}"
+                        android:text="@string/intro_battery_dont_show"
+                        android:textAlignment="viewStart"
                         android:visibility="@{model.isWhitelisted() ? View.GONE : View.VISIBLE}"
-                        android:text="@string/intro_battery_dont_show" />
+                        app:layout_constraintTop_toBottomOf="@id/batteryText" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -102,19 +106,21 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/intro_autostart_title"
+                        android:textAlignment="viewStart"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/autostartText"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
                         android:layout_marginBottom="8dp"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:text="@string/intro_autostart_text"
-                        app:layout_constraintTop_toBottomOf="@id/autostartHeading"
-                        app:layout_constraintBottom_toTopOf="@id/autostartMoreInfo"/>
+                        android:textAlignment="viewStart"
+                        app:layout_constraintBottom_toTopOf="@id/autostartMoreInfo"
+                        app:layout_constraintTop_toBottomOf="@id/autostartHeading" />
 
                     <Button
                         android:id="@+id/autostartMoreInfo"
@@ -130,20 +136,22 @@
                         android:id="@+id/autostartDontShow"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/autostartMoreInfo"
                         android:checked="@={model.dontShowAutostart}"
-                        android:text="@string/intro_autostart_dont_show" />
+                        android:text="@string/intro_autostart_dont_show"
+                        android:textAlignment="viewStart"
+                        app:layout_constraintTop_toBottomOf="@id/autostartMoreInfo" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/infoLeaveUnchecked"
+                style="@style/TextAppearance.MaterialComponents.Body2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:text="@string/intro_leave_unchecked"/>
+                android:text="@string/intro_leave_unchecked"
+                android:textAlignment="viewStart" />
 
         </LinearLayout>
 

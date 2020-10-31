@@ -60,11 +60,12 @@
 
         <TextView
             android:id="@+id/copyright"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/TextAppearance.MaterialComponents.Body1"
-            android:text="@string/about_copyright" />
+            android:text="@string/about_copyright"
+            android:textAlignment="viewStart" />
 
         <TextView
             android:id="@+id/warranty"
