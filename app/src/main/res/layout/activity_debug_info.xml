@@ -46,8 +46,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         style="@style/TextAppearance.MaterialComponents.Body1"
-                        app:drawableStartCompat="@drawable/ic_share_action"
-                        app:drawableLeftCompat="@drawable/ic_share_action"
+                        app:drawableStartCompat="@drawable/ic_share_action_dark"
+                        app:drawableLeftCompat="@drawable/ic_share_action_dark"
                         android:drawablePadding="8dp"
                         app:drawableTint="@color/primaryTextColor"
                         android:text="@string/debug_info_use_share1"/>
