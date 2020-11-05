@@ -2,10 +2,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Регистрацията (вече) не съществува.</string>
   <string name="account_title_address_book">DAVx⁵ адресен указател</string>
   <string name="address_books_authority_title">Адресни указатели</string>
   <string name="help">Помощ</string>
   <string name="manage_accounts">Управление на регистрациите</string>
+  <string name="share">Сподели</string>
   <string name="notification_channel_general">Други важни съобщения</string>
   <string name="notification_channel_sync">Синхронизиране</string>
   <string name="notification_channel_sync_errors">Грешки при синхронизирането</string>
@@ -14,9 +16,21 @@
   <string name="notification_channel_sync_io_errors">Грешки с входа/изхода и мрежата.</string>
   <string name="notification_channel_sync_io_errors_desc">Проточване на времето, проблеми с връзката, и т.н. (обикновенно временни)</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">Твоите данни.  Твоят избор.</string>
+  <string name="intro_slogan2">Поеми контрол.</string>
+  <string name="intro_battery_not_whitelisted">Изключено (не се препоръчва)</string>
+  <string name="intro_battery_whitelisted">Включено (препоръчително)</string>
+  <string name="intro_autostart_title">%sсъвместимост</string>
+  <string name="intro_more_info">Допълнителна информация</string>
+  <string name="intro_tasks_text1">Ако сървърът ти поддържа задачи, те могат да бъдат синхронизирани с поддържано приложение:</string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[За някои функции, като под-задачи или повтарящи се задачи, <a href="https://www.davx5.com/faq/tasks/advanced-task-features">може да ти трябват допълнителни програми</a>.]]></string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Някои функции <a href="https://www.davx5.com/faq/tasks/advanced-task-features">(още) не се поддържат</a>.]]></string>
+  <string name="intro_open_source_title">Софтуер с отворен код</string>
   <!--PermissionsActivity-->
+  <string name="permissions_all_title">Всичко от изброеното долу</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
+  <string name="about_translations">Преводи</string>
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Версия %1$s (%2$d)</string>
   <string name="about_build_date">Компилирана на %s</string>
@@ -27,6 +41,7 @@
   <!--AccountsActivity-->
   <string name="navigation_drawer_subtitle">Адаптор за CalDAV/CardDAV синхронизиране</string>
   <string name="navigation_drawer_about">Относно / Лиценз</string>
+  <string name="install_email_client">Инсталирай програма за електронна поща</string>
   <string name="navigation_drawer_settings">Настройки</string>
   <string name="navigation_drawer_news_updates">Новини и нови версии</string>
   <string name="navigation_drawer_external_links">Външни препратки</string>
@@ -35,8 +50,10 @@
   <string name="navigation_drawer_faq">Често задавани въпроси</string>
   <string name="navigation_drawer_forums">Помощ и форум</string>
   <string name="navigation_drawer_donate">Дарения</string>
+  <string name="navigation_drawer_privacy_policy">Политика на личните данни</string>
   <string name="account_list_empty">Добре дошъл при  DAVx⁵!\n\nМоже да добавиш CalDAV/CardDAV регистрация сега.</string>
   <string name="accounts_global_sync_enable">Включи</string>
+  <string name="accounts_sync_all">Синхронизирай всички регистрации</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Откриването на услугите се провали</string>
   <string name="dav_service_refresh_couldnt_refresh">Не можах да опресня списъка на ресурсите</string>
@@ -59,6 +76,8 @@
   <string name="app_settings_notification_settings">Настройки за съобщенията</string>
   <string name="app_settings_notification_settings_summary">Управлявление на каналите за съобщения и техните настройки</string>
   <string name="app_settings_reset_hints_success">Всички подсказки ще се покажат отново</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">Синхронизиране с %s</string>
+  <string name="app_settings_tasks_provider_none">Не е инсталирана съвместима програма за задачи.</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -73,6 +92,7 @@
   <string name="account_rename">Преименовай регистрацията</string>
   <string name="account_rename_new_name">Данните, който не са синхронизирани със сървъра, може да се изпарят.  След преименоването е нужно ново синхронизаране.  Ново име на регистрацията:</string>
   <string name="account_rename_rename">Преименоване</string>
+  <string name="account_rename_couldnt_rename">Не можах да преименувам регистрацията.</string>
   <string name="account_delete">Изтриване на регистрация</string>
   <string name="account_delete_confirmation_title">Наистина ли да изтрия регистрацията?</string>
   <string name="account_delete_confirmation_text">Всички местни копия на адресни указатели, календари и списъци със задачи ще бъдат изтрити.</string>
@@ -84,6 +104,7 @@
   <string name="account_create_new_address_book">Създай нов адресен указател</string>
   <string name="account_refresh_calendar_list">Опресни списъка с календари</string>
   <string name="account_create_new_calendar">Създай нов календар</string>
+  <string name="account_no_webcal_handler_found">Няма инсталирана програма за Webcal абонамент.</string>
   <string name="account_install_icsx5">Инсталирай ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Добави регистрация</string>
@@ -101,10 +122,14 @@
   <string name="login_select_certificate">Избери сертификат</string>
   <string name="login_create_account">Създай регистрация</string>
   <string name="login_account_name">Име на регистрация</string>
+  <string name="login_account_name_info">Използвай електронна поща за име, защото Android ще използва името като адрес на организатора за събитията, които създаваш.  Не може да имаш две регистрации със същото име.</string>
   <string name="login_account_contact_group_method">Метод за съхранение на групи от контакти:</string>
   <string name="login_account_name_required">Изисква се име на регистрацията</string>
   <string name="login_account_name_already_taken">Това име на регистрация вече се използва</string>
   <string name="login_account_not_created">Регистрацията не можеше да бъде създадена</string>
+  <string name="login_type_advanced">Вход за напреднали потребители</string>
+  <string name="login_use_username_password">Използвай потребителско име/парола</string>
+  <string name="login_use_client_certificate">Използвай сертификат за удостоверяване</string>
   <string name="login_configuration_detection">Откриване на настройките</string>
   <string name="login_querying_server">Изчакай, разпитвам сървъра…</string>
   <string name="login_no_caldav_carddav">Не бяха открити CalDAV или CardDAV услуги.</string>
@@ -149,7 +174,11 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Събития преди повече от този брой дни в миналото ще бъдат пренебрегнати (може да бъде 0).  Остави празно за да се синхронизират всички събития.</string>
   <string name="settings_manage_calendar_colors">Управлявай цвета на календарите</string>
+  <string name="settings_manage_calendar_colors_on">Цветовете на календарите се нулират при всяко синхронизиране.</string>
+  <string name="settings_manage_calendar_colors_off">Цветовете на календарите могат да бъдат зададени от други приложения.</string>
   <string name="settings_event_colors">Поддръжка на цветове за събития</string>
+  <string name="settings_event_colors_on">Цветовете на събитията се синхронизират.</string>
+  <string name="settings_event_colors_off">Цветовете на събитията не се синхронизират.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод за съхранение на групи от контакти</string>
   <string name="settings_contact_group_method_change">Метод за съхранение на групи от контакти</string>
