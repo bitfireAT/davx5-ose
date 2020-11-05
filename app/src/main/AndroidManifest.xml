@@ -230,8 +230,8 @@
     <!-- package visiblity – which apps do we need to see? -->
     <queries>
         <!-- task providers -->
-        <provider android:authorities="org.dmfs.tasks" />
-        <provider android:authorities="org.tasks.opentasks" />
+        <package android:name="org.dmfs.tasks" />
+        <package android:name="org.tasks" />
 
         <!-- ICSx5 for Webcal feeds -->
         <package android:name="at.bitfire.icsdroid"/>
