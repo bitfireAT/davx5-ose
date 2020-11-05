@@ -2,10 +2,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Kontua ez da existitzen (dagoeneko)</string>
   <string name="account_title_address_book">DAVx⁵ Helbide liburua</string>
   <string name="address_books_authority_title">Helbide liburuak</string>
   <string name="help">Laguntza</string>
   <string name="manage_accounts">Kudeatu kontuak</string>
+  <string name="share">Partekatu</string>
   <string name="notification_channel_debugging">Arazten</string>
   <string name="notification_channel_general">Beste mezu garrantzitsu batzuk</string>
   <string name="notification_channel_sync">Sinkronizazioa</string>
@@ -18,7 +20,10 @@
   <string name="intro_slogan2">Har ezazu kontrola.</string>
   <string name="intro_battery_not_whitelisted">Desgaituta (ez gomendatuta)</string>
   <string name="intro_battery_whitelisted">Gaituta (gomendatuta)</string>
+  <string name="intro_autostart_title">%s bateragarritasuna</string>
   <string name="intro_more_info">Informazio gehiago</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_no_app_store">Ez dago denda aplikaziorik eskuragarri </string>
   <string name="intro_open_source_title">Kode irekiko softwarea</string>
   <!--PermissionsActivity-->
@@ -30,8 +35,14 @@
   <string name="permissions_calendar_title">Egutegiaren baimenak</string>
   <string name="permissions_calendar_status_off">Egutegi sinkronizaziorik ez (ez gomendatuta)</string>
   <string name="permissions_calendar_status_on">Egutegiaren sinkronizazioa posible</string>
+  <string name="permissions_opentasks_title">OpenTasks baimenak</string>
+  <string name="permissions_tasksorg_title">Tasks baimenak</string>
+  <string name="permissions_autoreset_title">Mantendu baimenak</string>
   <string name="permissions_app_settings">Aplikazioaren ezarpenak</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_location_permission">Kokapen baimena</string>
+  <string name="wifi_permissions_location_permission_on">Kokapen baimena emanda</string>
+  <string name="wifi_permissions_location_permission_off">Kokapen baimena ukatuta</string>
   <!--AboutActivity-->
   <string name="about_translations">Itzulpenak</string>
   <string name="about_libraries">Liburutegiak</string>
@@ -39,6 +50,8 @@
   <string name="about_build_date">%s(e)an konpilatuta</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Ezin izan da egunkari fitxategia sortu</string>
+  <string name="logging_notification_view_share">Ikusi/partekatu</string>
+  <string name="logging_notification_disable">Desgaitu</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_about">Honi buruz / Lizentzia</string>
   <string name="install_email_client">Instalatu e-mail bezero bat</string>

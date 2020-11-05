@@ -33,7 +33,7 @@
   <string name="intro_tasks_title">Поддержка задач</string>
   <string name="intro_tasks_text1">Если задачи поддерживаются вашим сервером, их можно синхронизировать при помощи соответствующего приложения:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Для некоторых возможностей, таких как подзадачи или повторяющиеся задачи, вам может понадобиться <a href="https://www.davx5.com/faq/tasks/advanced-task-features">дополнительные приложения</a>.]]></string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[Для некоторых возможностей, таких как подзадачи или повторяющиеся задачи, вам могут потребоваться <a href="https://www.davx5.com/faq/tasks/advanced-task-features">дополнительные приложения</a>.]]></string>
   <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Некоторые возможности <a href="https://www.davx5.com/faq/tasks/advanced-task-features">не поддерживаются</a> (пока).]]></string>
   <string name="intro_tasks_no_app_store">Магазин приложений недоступен</string>
@@ -41,6 +41,7 @@
   <string name="intro_open_source_title">ПО с открытым исходным кодом</string>
   <string name="intro_open_source_text">Мы рады, что вы используете %s, программное обеспечение с открытым исходным кодом. Разработка, сопровождение и поддержка - это тяжелая работа. Пожалуйста, подумайте о том, чтобы внести свой вклад (существует множество способов) или сделать пожертвование. Будем очень признательны!</string>
   <string name="intro_open_source_details">Как внести свой вклад/пожертвовать</string>
+  <string name="intro_open_source_dont_show">Не показывать в ближайшем будущем</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Разрешения</string>
   <string name="permissions_text">%s необходимы разрешения для корректной работы.</string>
@@ -65,10 +66,10 @@
   <string name="permissions_app_settings">Настройки приложения</string>
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Разрешения WiFi SSID</string>
-  <string name="wifi_permissions_intro">Для получения доступа к названию текущей WiFi (SSID), должны быть выполнены следующие условия:</string>
+  <string name="wifi_permissions_intro">Для получения доступа к названию текущей сети WiFi (SSID), должны быть выполнены следующие условия:</string>
   <string name="wifi_permissions_location_permission">Разрешение на определение местоположения</string>
   <string name="wifi_permissions_location_permission_on">Разрешение на определение местоположения предоставлено</string>
-  <string name="wifi_permissions_location_permission_off">Разрешение на определение местоположения отклонено</string>
+  <string name="wifi_permissions_location_permission_off">Разрешение на определение местоположения не предоставлено</string>
   <string name="wifi_permissions_background_location_permission">Разрешение на фоновое определение местоположения</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Настроено разрешение на определение местоположения <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Не настроено разрешение на определение местоположения <b>%s</b>]]></string>
@@ -203,6 +204,9 @@
   <string name="login_account_name_required">Требуется имя аккаунта</string>
   <string name="login_account_name_already_taken">Имя аккаунта уже используется</string>
   <string name="login_account_not_created">Аккаунт не может быть создан</string>
+  <string name="login_type_advanced">Расширенная авторизация (особые случаи использования)</string>
+  <string name="login_use_username_password">Использовать имя пользователя/пароль</string>
+  <string name="login_use_client_certificate">Использовать сертификат клиента</string>
   <string name="login_configuration_detection">Обнаружение конфигурации</string>
   <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>
   <string name="login_no_caldav_carddav">Не удалось найти службу CalDAV или CardDAV.</string>
@@ -230,11 +234,11 @@
   <string name="settings_sync_wifi_only_off">Не учитывать тип соединения</string>
   <string name="settings_sync_wifi_only_ssids">Ограничение WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Будет синхронизироваться только  %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Будет синхронизироваться только более %s (требуются активированные службы определения местоположения)</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Будет синхронизироваться только через %s (требуются активированные службы определения местоположения)</string>
   <string name="settings_sync_wifi_only_ssids_off">Будут использоваться все WiFi-подключения</string>
   <string name="settings_sync_wifi_only_ssids_message">Имена (SSID) разрешенных сетей WiFi, разделенные запятыми (оставьте пустым для всех)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ограничение WiFi SSID требует дополнительных настроек</string>
-  <string name="settings_sync_wifi_only_ssids_permissions_action">Управление</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Управлять</string>
   <string name="settings_more_info_faq">Дополнительная информация (FAQ)</string>
   <string name="settings_authentication">Аутентификация</string>
   <string name="settings_username">Имя пользователя</string>
@@ -306,6 +310,7 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
   <string name="debug_info_use_share1">Используйте действие Поделиться для отправки немодифицированных данных, особенно это касается запросов поддержки.</string>
+  <string name="debug_info_use_share2">Избегайте копирования, вставки или скриншотов, поскольку они затрудняют интерпретацию.</string>
   <string name="debug_info_attached">Отладочная информация, прикреплена к данному сообщению (требует поддержки вложений со стороны принимающего приложения).</string>
   <string name="debug_info_http_error">Ошибка HTTP</string>
   <string name="debug_info_server_error">Ошибка сервера</string>
