@@ -41,17 +41,16 @@
                     android:visibility="@{model.debugInfo == null ? View.VISIBLE : View.GONE}"
                     tools:visibility="visible" />
 
+
                     <TextView
-                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        app:drawableStartCompat="@drawable/ic_share_action_dark"
+                        app:drawableLeftCompat="@drawable/ic_share_action_dark"
                         android:drawablePadding="8dp"
-                        android:text="@string/debug_info_use_share1"
-                        android:textAlignment="viewStart"
-                        app:drawableLeftCompat="@drawable/ic_share_action"
-                        app:drawableStartCompat="@drawable/ic_share_action"
-                        app:drawableTint="@color/primaryTextColor" />
+                        android:text="@string/debug_info_use_share1"/>
 
                     <TextView
                         style="@style/TextAppearance.MaterialComponents.Body2"

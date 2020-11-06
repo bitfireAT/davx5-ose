@@ -41,6 +41,7 @@
   <string name="intro_open_source_title">Åben kilde program</string>
   <string name="intro_open_source_text">Vi er glade for at  %s bruges, som er åben kilde program. Udvikling, vedligehold og understøttelse er hårdt arbejde. Overvej at bidrage (der er flere måder) eller donere. Det vil blive meget værdsat!</string>
   <string name="intro_open_source_details">Hvordan man bidrager/donerer</string>
+  <string name="intro_open_source_dont_show">Hvis ikke i nærmeste fremtid</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Rettigheder</string>
   <string name="permissions_text">%s kræver rettigheder for at virke rigtig.</string>
@@ -59,13 +60,23 @@
   <string name="permissions_tasks_status_off">Ingen opgave synkronisering (ikke anbefalet)</string>
   <string name="permissions_tasks_status_on">Opgave synkronisering mulig</string>
   <string name="permissions_autoreset_title">Behold rettigheder</string>
+  <string name="permissions_autoreset_status_off">Rettigheder kan nulstilles automatisk (ikke anbefalet)</string>
+  <string name="permissions_autoreset_status_on">Rettigheder nulstilles ikke automatisk</string>
   <string name="permissions_app_settings_hint">Hvis en omskifter ikke virker, brug program opsætninger / rettigheder.</string>
   <string name="permissions_app_settings">Program opsætning</string>
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Trådløs SSID rettigheder</string>
+  <string name="wifi_permissions_intro">For at tilgå nuværende trådløs navn (SSID), skal følgende betingelser være opfyldt:</string>
   <string name="wifi_permissions_location_permission">Placering rettighed</string>
   <string name="wifi_permissions_location_permission_on">Placering rettighed tildelt</string>
   <string name="wifi_permissions_location_permission_off">Placering rettighed afvist</string>
+  <string name="wifi_permissions_background_location_permission">Baggrund placerings-rettighed</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Placering rettighed sat til <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Placering rettighed ikke sat til <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s bruger kun placering rettighed for at bestemme nuværende trådløs SSID for SSID begrænset konti. Dette sker selvom programmet kører i baggrund. Ingen placering data bliver opsamlet, gemt, behandlet eller sendt.</string>
+  <string name="wifi_permissions_location_enabled">Placering altid aktiveret</string>
+  <string name="wifi_permissions_location_enabled_on">Placering tjeneste er aktiveret</string>
+  <string name="wifi_permissions_location_enabled_off">Placering tjeneste er deaktiveret</string>
   <!--AboutActivity-->
   <string name="about_translations">Oversættelser</string>
   <string name="about_libraries">Biblioteker</string>
@@ -76,6 +87,9 @@
   <string name="about_translations_thanks"><![CDATA[<i>tak til: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kan ikke oprette log fil</string>
+  <string name="logging_notification_text">Logger alle %s aktiviteter</string>
+  <string name="logging_notification_view_share">Vis/del</string>
+  <string name="logging_notification_disable">Deaktivere</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Åbne navigationsvindue</string>
   <string name="navigation_drawer_close">Luk navigationsvindue</string>
@@ -190,6 +204,9 @@
   <string name="login_account_name_required">Kontonavn påkrævet</string>
   <string name="login_account_name_already_taken">Konto navn er taget</string>
   <string name="login_account_not_created">Konto kunne ikke oprettes</string>
+  <string name="login_type_advanced">Avanceret logind (særlige tilfælde)</string>
+  <string name="login_use_username_password">Brug brugernavn/adgangskode</string>
+  <string name="login_use_client_certificate">Brug klient certifikat</string>
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
   <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
@@ -220,6 +237,8 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Vil kun synkronisere over %s (aktiv placering tjenester påkrævet)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WiFi-forbindelser vil blive anvendt</string>
   <string name="settings_sync_wifi_only_ssids_message">Kommaseparerede navne (SSID\'er) over tilladte WiFi-netværk (efterlad blank for at bruge alle)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">Trådløs SSID begrænsning kræver yderligere opsætning</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Håndtere</string>
   <string name="settings_more_info_faq">Mere information (OSS)</string>
   <string name="settings_authentication">Adgangsgodkendelse</string>
   <string name="settings_username">Brugernavn</string>
@@ -286,6 +305,8 @@
   <string name="collection_properties_copy_url">Kopiere URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
+  <string name="debug_info_use_share1">Brug dele handling for at sende uændret data, specielt ved brugerhjælp forespørgsel.</string>
+  <string name="debug_info_use_share2">Undgå kopiere &amp; indsæt eller skærmbilleder da de gør fortolkning mere vanskelig.</string>
   <string name="debug_info_attached">Fejlsøge informationer vedhæftet denne meddelelse (kræver vedhæftning understøttelse hos modtagende program).</string>
   <string name="debug_info_http_error">HTTP fejl</string>
   <string name="debug_info_server_error">Server fejl</string>
@@ -304,6 +325,7 @@
   <string name="debug_info_involved_view">Vis med program</string>
   <string name="debug_info_logs_caption">Log</string>
   <string name="debug_info_logs_subtitle">Uddybende log er tilgængelig</string>
+  <string name="debug_info_logs_view">Vis logfiler</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Der er opstået en fejl.</string>
   <string name="exception_httpexception">Der er opstået en HTTP-fejl.</string>
