@@ -57,7 +57,10 @@ class WifiPermissionsActivity: AppCompatActivity() {
         }
 
         model.haveBackgroundLocation.observe(this) { status ->
-            val label = if (Build.VERSION.SDK_INT >= 30) packageManager.getBackgroundPermissionOptionLabel() else ""
+            val label = if (Build.VERSION.SDK_INT >= 30)
+                    packageManager.getBackgroundPermissionOptionLabel()
+                else
+                    getString(R.string.wifi_permissions_background_location_permission_label)
             binding.backgroundLocationStatus.text = HtmlCompat.fromHtml(getString(
                     if (status) R.string.wifi_permissions_background_location_permission_on else R.string.wifi_permissions_background_location_permission_off,
                     label
