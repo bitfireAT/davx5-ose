@@ -1,0 +1,6 @@
+* when an account is created, open it immediately after setup
+* don't ask for active location services on Android <9 / location permissions on Android 8.0
+* custom certificates: make it possible to trust different certificates with the same CN
+* don't sync Webcal-only calendars/tasks lists over CalDAV (may cause duplicate calendars)
+* better Android 11 compatibility
+* minor improvements and bug fixes
