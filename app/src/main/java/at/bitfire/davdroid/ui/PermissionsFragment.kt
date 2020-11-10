@@ -40,7 +40,7 @@ class PermissionsFragment: Fragment() {
 
         model.needAutoResetPermission.observe(viewLifecycleOwner, { keepPermissions ->
             if (keepPermissions == true && model.haveAutoResetPermission.value == false) {
-                Toast.makeText(requireActivity(), "Click Permissions > uncheck \"Remove permissions if app isn't used\"", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireActivity(), R.string.permissions_autoreset_instruction, Toast.LENGTH_LONG).show()
                 startActivity(Intent(Intent.ACTION_AUTO_REVOKE_PERMISSIONS, Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)))
             }
         })
