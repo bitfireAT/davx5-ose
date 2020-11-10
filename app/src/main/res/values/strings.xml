@@ -79,6 +79,7 @@
     <string name="permissions_autoreset_title">Keep permissions</string>
     <string name="permissions_autoreset_status_off">Permissions may be reset automatically (not recommended)</string>
     <string name="permissions_autoreset_status_on">Permissions won\'t be reset automatically</string>
+    <string name="permissions_autoreset_instruction">Click Permissions > uncheck \"Remove permissions if app isn\'t used\"</string>
     <string name="permissions_app_settings_hint">If a switch doesn\'t work, use app settings / Permissions.</string>
     <string name="permissions_app_settings">App settings</string>
 
