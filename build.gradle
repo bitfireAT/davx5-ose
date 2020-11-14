@@ -10,7 +10,7 @@ buildscript {
     ext.versions = [
         aboutLibraries: '8.3.0',
         appIntro: '6.0.0',
-        dav4jvm: 'a138c45',
+        dav4jvm: '2.1.2',
         dokka: '0.10.1',
         kotlin: '1.4.10',
         okhttp: '4.9.0',
@@ -25,7 +25,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:4.1.1'
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${versions.aboutLibraries}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokka}"
