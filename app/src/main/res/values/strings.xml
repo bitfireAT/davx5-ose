@@ -363,6 +363,7 @@
     <string name="collection_properties">Properties</string>
     <string name="collection_properties_url">Address (URL):</string>
     <string name="collection_properties_copy_url">Copy URL</string>
+    <string name="collection_properties_owner">Owner:</string>
 
     <!-- debugging and DebugInfoActivity -->
     <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>

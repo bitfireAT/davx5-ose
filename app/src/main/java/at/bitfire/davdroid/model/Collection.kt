@@ -34,6 +34,7 @@ data class Collection(
 
     var displayName: String? = null,
     var description: String? = null,
+    var owner: String? = null,
 
     // CalDAV only
     var color: Int? = null,
@@ -93,6 +94,11 @@ data class Collection(
                     displayName = it.displayName
             }
 
+            var owner: String? = null
+            dav[Owner::class.java]?.let {
+                owner = it.href
+            }
+
             var description: String? = null
             var color: Int? = null
             var timezone: String? = null
@@ -138,6 +144,7 @@ data class Collection(
                     privWriteContent = privWriteContent,
                     privUnbind = privUnbind,
                     displayName = displayName,
+                    owner = owner,
                     description = description,
                     color = color,
                     timezone = timezone,

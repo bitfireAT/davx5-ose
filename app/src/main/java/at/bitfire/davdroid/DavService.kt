@@ -53,6 +53,7 @@ class DavService: android.app.Service() {
                 ResourceType.NAME,
                 CurrentUserPrivilegeSet.NAME,
                 DisplayName.NAME,
+                Owner.NAME,
                 AddressbookDescription.NAME, SupportedAddressData.NAME,
                 CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME,
                 Source.NAME
@@ -309,6 +310,7 @@ class DavService: android.app.Service() {
                             info.homeSetId = homeSet.id
                             info.confirmed = true
                             Logger.log.log(Level.FINE, "Found collection", info)
+                            info.owner = response[Owner::class.java]?.href
 
                             // remember usable collections
                             if ((service.type == Service.TYPE_CARDDAV && info.type == Collection.TYPE_ADDRESSBOOK) ||

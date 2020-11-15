@@ -51,6 +51,25 @@
                 android:text="@{model.collection.url.toString()}"
                 tools:text="https://example.com/dav/url/user/12345/calendars/1234-1234-9834-31234-12/"/>
 
+            <TextView
+                android:id="@+id/owner_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:text="@string/collection_properties_owner"
+                android:labelFor="@id/owner" />
+
+            <TextView
+                android:id="@+id/owner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textSize="12sp"
+                android:textIsSelectable="true"
+                android:text="@{model.collection.owner.toString()}"
+                tools:text="/remote.php/dav/principals/users/sample-owner/"/>
+
         </LinearLayout>
 
     </ScrollView>
