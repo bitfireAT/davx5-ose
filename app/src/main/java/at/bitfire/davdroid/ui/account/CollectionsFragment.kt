@@ -117,6 +117,12 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                     onRefresh()
                     true
                 }
+                R.id.showOnlyPersonal -> {
+                    val showOnlyPersonal = !item.isChecked
+                    item.isChecked = showOnlyPersonal
+                    model.showOnlyPersonal.value = showOnlyPersonal
+                    true
+                }
                 else ->
                     false
             }
@@ -214,14 +220,24 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
         private lateinit var accountModel: AccountActivity.Model
         val serviceId = MutableLiveData<Long>()
+        val showOnlyPersonal = MutableLiveData<Boolean>(false)
         private lateinit var collectionType: String
 
         // cache task provider
         val taskProvider by lazy { TaskUtils.currentProvider(getApplication()) }
 
         val collections: LiveData<PagedList<Collection>> =
-                Transformations.switchMap(serviceId) { service ->
-                    db.collectionDao().pageByServiceAndType(service, collectionType).toLiveData(25)
+                Transformations.switchMap(showOnlyPersonal) { onlyPersonal ->
+                    if (onlyPersonal)
+                        // only personal collections
+                        Transformations.switchMap(serviceId) { _serviceId ->
+                            db.collectionDao().pagePersonalByServiceAndType(_serviceId, collectionType).toLiveData(25)
+                        }
+                    else
+                        // all collections
+                        Transformations.switchMap(serviceId) { _serviceId ->
+                            db.collectionDao().pageByServiceAndType(_serviceId, collectionType).toLiveData(25)
+                        }
                 }
 
         // observe DavService refresh status

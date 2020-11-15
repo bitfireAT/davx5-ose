@@ -154,11 +154,18 @@ class DavService: android.app.Service() {
         /**
          * Checks if the given URL defines home sets and adds them to the home set list.
          *
+         * @param personal Whether this is the "outer" call of the recursion.
+         *
+         * *true* = found home sets belong to the current-user-principal; recurse if
+         * calendar proxies or group memberships are found
+         *
+         * *false* = found home sets don't directly belong to the current-user-principal; don't recurse
+         *
          * @throws java.io.IOException
          * @throws HttpException
          * @throws at.bitfire.dav4jvm.exception.DavException
          */
-        fun queryHomeSets(client: OkHttpClient, url: HttpUrl, recurse: Boolean = true) {
+        fun queryHomeSets(client: OkHttpClient, url: HttpUrl, personal: Boolean = true) {
             val related = mutableSetOf<HttpUrl>()
 
             fun findRelated(root: HttpUrl, dav: Response) {
@@ -200,11 +207,11 @@ class DavService: android.app.Service() {
                                 for (href in homeSet.hrefs)
                                     dav.location.resolve(href)?.let {
                                         val foundUrl = UrlUtils.withTrailingSlash(it)
-                                        homeSets[foundUrl] = HomeSet(0, service.id, foundUrl)
+                                        homeSets[foundUrl] = HomeSet(0, service.id, personal, foundUrl)
                                     }
                             }
 
-                            if (recurse)
+                            if (personal)
                                 findRelated(dav.location, response)
                         }
                     } catch (e: HttpException) {
@@ -220,11 +227,11 @@ class DavService: android.app.Service() {
                                 for (href in homeSet.hrefs)
                                     dav.location.resolve(href)?.let {
                                         val foundUrl = UrlUtils.withTrailingSlash(it)
-                                        homeSets[foundUrl] = HomeSet(0, service.id, foundUrl)
+                                        homeSets[foundUrl] = HomeSet(0, service.id, personal, foundUrl)
                                     }
                             }
 
-                            if (recurse)
+                            if (personal)
                                 findRelated(dav.location, response)
                         }
                     } catch (e: HttpException) {
@@ -236,6 +243,7 @@ class DavService: android.app.Service() {
                 }
             }
 
+            // query related homesets (those that do not belong to the current-user-principal)
             for (resource in related)
                 queryHomeSets(client, resource, false)
         }

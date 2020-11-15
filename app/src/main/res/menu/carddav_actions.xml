@@ -10,6 +10,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/showOnlyPersonal"
+        android:title="@string/account_only_personal"
+        android:checkable="true" />
+
     <item android:id="@+id/refresh"
         android:title="@string/account_refresh_address_book_list"
         app:showAsAction="never"/>

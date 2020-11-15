@@ -9,8 +9,12 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:id="@+id/showOnlyPersonal"
+        android:title="@string/account_only_personal"
+        android:checkable="true" />
+
     <item android:id="@+id/refresh"
-          android:title="@string/account_refresh_calendar_list"/>
+          android:title="@string/account_refresh_calendar_list" />
 
     <item android:id="@+id/create"
           android:title="@string/account_create_new_calendar"/>

@@ -228,7 +228,7 @@ class AccountDetailsFragment : Fragment() {
             // insert home sets
             val homeSetDao = db.homeSetDao()
             for (homeSet in info.homeSets) {
-                homeSetDao.insertOrReplace(HomeSet(0, serviceId, homeSet))
+                homeSetDao.insertOrReplace(HomeSet(0, serviceId, true, homeSet))
             }
 
             // insert collections
