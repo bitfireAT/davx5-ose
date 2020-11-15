@@ -29,6 +29,12 @@ android {
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     compileOptions {
@@ -48,7 +54,11 @@ android {
     productFlavors {
         standard {
             versionName "3.3.7-beta1-ose"
-        }
+		}
+    }
+
+    sourceSets {
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
 
     buildTypes {
@@ -123,6 +133,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
+    androidTestImplementation "androidx.room:room-testing:$room_version"
 
     implementation 'com.jaredrummler:colorpicker:1.1.0'
     implementation "com.github.AppIntro:AppIntro:${versions.appIntro}"
