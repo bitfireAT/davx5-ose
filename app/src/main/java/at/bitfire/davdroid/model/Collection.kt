@@ -7,6 +7,7 @@ import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import org.apache.commons.lang3.StringUtils
 
 @Entity(tableName = "collection",
         foreignKeys = [
@@ -88,16 +89,8 @@ data class Collection(
                 privUnbind = privilegeSet.mayUnbind
             }
 
-            var displayName: String? = null
-            dav[DisplayName::class.java]?.let {
-                if (!it.displayName.isNullOrEmpty())
-                    displayName = it.displayName
-            }
-
-            var owner: String? = null
-            dav[Owner::class.java]?.let {
-                owner = it.href
-            }
+            val displayName = StringUtils.trimToNull(dav[DisplayName::class.java]?.displayName)
+            val owner = dav[Owner::class.java]?.href
 
             var description: String? = null
             var color: Int? = null

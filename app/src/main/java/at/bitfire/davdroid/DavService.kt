@@ -309,8 +309,8 @@ class DavService: android.app.Service() {
                             info.serviceId = serviceId
                             info.homeSetId = homeSet.id
                             info.confirmed = true
-                            Logger.log.log(Level.FINE, "Found collection", info)
                             info.owner = response[Owner::class.java]?.href
+                            Logger.log.log(Level.FINE, "Found collection", info)
 
                             // remember usable collections
                             if ((service.type == Service.TYPE_CARDDAV && info.type == Collection.TYPE_ADDRESSBOOK) ||
