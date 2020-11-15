@@ -22,6 +22,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.PermissionsActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -235,27 +236,41 @@ class AccountActivity: AppCompatActivity() {
         }
 
         private val db = AppDatabase.getInstance(application)
+        val accountSettings by lazy { AccountSettings(getApplication(), account) }
 
         val cardDavService = MutableLiveData<Long>()
         val calDavService = MutableLiveData<Long>()
+
+        val showOnlyPersonal = MutableLiveData<Boolean>()
+
 
         init {
             viewModelScope.launch(Dispatchers.IO) {
                 cardDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CARDDAV))
                 calDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CALDAV))
-            }
-        }
 
-        fun toggleSync(item: Collection) {
-            viewModelScope.launch(Dispatchers.IO + NonCancellable) {
-                val newItem = item.copy(sync = !item.sync)
-                db.collectionDao().update(newItem)
+                showOnlyPersonal.postValue(accountSettings.getShowOnlyPersonal())
             }
         }
 
         fun toggleReadOnly(item: Collection) {
             viewModelScope.launch(Dispatchers.IO + NonCancellable) {
                 val newItem = item.copy(forceReadOnly = !item.forceReadOnly)
+                db.collectionDao().update(newItem)
+            }
+        }
+
+        fun toggleShowOnlyPersonal() {
+            showOnlyPersonal.value?.let { oldValue ->
+                val newValue = !oldValue
+                accountSettings.setShowOnlyPersonal(newValue)
+                showOnlyPersonal.postValue(newValue)
+            }
+        }
+
+        fun toggleSync(item: Collection) {
+            viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+                val newItem = item.copy(sync = !item.sync)
                 db.collectionDao().update(newItem)
             }
         }

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
 import androidx.annotation.WorkerThread
@@ -24,6 +25,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -40,7 +42,13 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     val accountModel by activityViewModels<AccountActivity.Model>()
-    val model by viewModels<Model>()
+    val model by viewModels<Model> {
+        object: ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+                    Model(requireActivity().application, accountModel) as T
+        }
+    }
 
     abstract val noCollectionsStringId: Int
 
@@ -57,7 +65,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
         // don't get the activity ViewModel in onCreate(), it may crash
         model.initialize(
-                accountModel,
                 arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"),
                 arguments?.getString(EXTRA_COLLECTION_TYPE) ?: throw IllegalArgumentException("EXTRA_COLLECTION_TYPE required")
         )
@@ -111,6 +118,12 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         no_collections.setText(noCollectionsStringId)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        accountModel.showOnlyPersonal.value?.let { showOnlyPersonal ->
+            menu.findItem(R.id.showOnlyPersonal).isChecked = showOnlyPersonal
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem) =
             when (item.itemId) {
                 R.id.refresh -> {
@@ -118,9 +131,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                     true
                 }
                 R.id.showOnlyPersonal -> {
-                    val showOnlyPersonal = !item.isChecked
-                    item.isChecked = showOnlyPersonal
-                    model.showOnlyPersonal.value = showOnlyPersonal
+                    accountModel.toggleShowOnlyPersonal()
                     true
                 }
                 else ->
@@ -214,20 +225,21 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
 
-    class Model(application: Application): AndroidViewModel(application), DavService.RefreshingStatusListener, SyncStatusObserver {
+    class Model(
+            val context: Application,
+            val accountModel: AccountActivity.Model
+    ): ViewModel(), DavService.RefreshingStatusListener, SyncStatusObserver {
 
-        private val db = AppDatabase.getInstance(application)
+        private val db = AppDatabase.getInstance(context)
 
-        private lateinit var accountModel: AccountActivity.Model
         val serviceId = MutableLiveData<Long>()
-        val showOnlyPersonal = MutableLiveData<Boolean>(false)
         private lateinit var collectionType: String
 
         // cache task provider
-        val taskProvider by lazy { TaskUtils.currentProvider(getApplication()) }
+        val taskProvider by lazy { TaskUtils.currentProvider(context) }
 
         val collections: LiveData<PagedList<Collection>> =
-                Transformations.switchMap(showOnlyPersonal) { onlyPersonal ->
+                Transformations.switchMap(accountModel.showOnlyPersonal) { onlyPersonal ->
                     if (onlyPersonal)
                         // only personal collections
                         Transformations.switchMap(serviceId) { _serviceId ->
@@ -262,13 +274,11 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val isSyncPending = MutableLiveData<Boolean>()
 
 
-        fun initialize(accountModel: AccountActivity.Model, id: Long, collectionType: String) {
-            this.accountModel = accountModel
+        fun initialize(id: Long, collectionType: String) {
             this.collectionType = collectionType
             if (serviceId.value == null)
                 serviceId.value = id
 
-            val context = getApplication<Application>()
             if (context.bindService(Intent(context, DavService::class.java), svcConn, Context.BIND_AUTO_CREATE))
                 davServiceConn = svcConn
 
@@ -283,13 +293,13 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
             davService?.removeRefreshingStatusListener(this)
             davServiceConn?.let {
-                getApplication<Application>().unbindService(it)
+                context.unbindService(it)
                 davServiceConn = null
             }
         }
 
+
         fun refresh() {
-            val context = getApplication<Application>()
             val intent = Intent(context, DavService::class.java)
             intent.action = DavService.ACTION_REFRESH_COLLECTIONS
             intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, serviceId.value)
@@ -309,7 +319,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         }
 
         private fun checkSyncStatus() {
-            val context = getApplication<Application>()
             if (collectionType == Collection.TYPE_ADDRESSBOOK) {
                 val mainAuthority = context.getString(R.string.address_books_authority)
                 val mainSyncActive = ContentResolver.isSyncActive(accountModel.account, mainAuthority)

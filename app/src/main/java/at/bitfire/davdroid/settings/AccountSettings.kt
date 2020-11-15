@@ -82,21 +82,26 @@ class AccountSettings(
          */
         const val KEY_DEFAULT_ALARM = "default_alarm"
 
-        /* Whether DAVx5 sets the local calendar color to the value from service DB at every sync
-           value = null (not existing)     true (default)
-                   "0"                     false */
+        /** Whether DAVx5 sets the local calendar color to the value from service DB at every sync
+         value = *null* (not existing): true (default);
+                 "0"                    false */
         const val KEY_MANAGE_CALENDAR_COLORS = "manage_calendar_colors"
 
-        /* Whether DAVx5 populates and uses CalendarContract.Colors
-           value = null (not existing)     false (default)
-                   "1"                     true */
+        /** Whether DAVx5 populates and uses CalendarContract.Colors
+         value = *null* (not existing)   false (default);
+                 "1"                     true */
         const val KEY_EVENT_COLORS = "event_colors"
 
         /** Contact group method:
-        value = null (not existing)     groups as separate VCards (default)
-        "CATEGORIES"            groups are per-contact CATEGORIES
+         *null (not existing)*     groups as separate vCards (default);
+         "CATEGORIES"              groups are per-contact CATEGORIES
          */
         const val KEY_CONTACT_GROUP_METHOD = "contact_group_method"
+
+        /** UI preference: Show only personal collections
+         value = *null* (not existing)   show all collections (default);
+         "1"                             show only personal collections */
+        const val KEY_SHOW_ONLY_PERSONAL = "show_only_personal"
 
         const val SYNC_INTERVAL_MANUALLY = -1L
 
@@ -318,6 +323,16 @@ class AccountSettings(
 
     fun setGroupMethod(method: GroupMethod) {
         accountManager.setUserData(account, KEY_CONTACT_GROUP_METHOD, method.name)
+    }
+
+
+    // UI settings
+
+    fun getShowOnlyPersonal(): Boolean =
+            accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null
+
+    fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
+        accountManager.setUserData(account, KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
     }
 
 
