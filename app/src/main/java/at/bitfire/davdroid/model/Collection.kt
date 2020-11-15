@@ -35,7 +35,7 @@ data class Collection(
 
     var displayName: String? = null,
     var description: String? = null,
-    var owner: String? = null,
+    var owner: HttpUrl? = null,
 
     // CalDAV only
     var color: Int? = null,
@@ -90,7 +90,9 @@ data class Collection(
             }
 
             val displayName = StringUtils.trimToNull(dav[DisplayName::class.java]?.displayName)
-            val owner = dav[Owner::class.java]?.href
+            val owner = dav[Owner::class.java]?.href?.let { ownerHref ->
+                dav.href.resolve(ownerHref)
+            }
 
             var description: String? = null
             var color: Int? = null

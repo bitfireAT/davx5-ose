@@ -13,6 +13,7 @@
         <variable
             name="model"
             type="at.bitfire.davdroid.ui.account.CollectionInfoFragment.Model"/>
+        <import type="android.view.View"/>
     </data>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -57,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="4dp"
+                android:visibility="@{model.collection.owner != null ? View.VISIBLE : View.GONE}"
                 android:text="@string/collection_properties_owner"
                 android:labelFor="@id/owner" />
 
@@ -64,6 +66,7 @@
                 android:id="@+id/owner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="@{model.collection.owner != null ? View.VISIBLE : View.GONE}"
                 android:fontFamily="monospace"
                 android:textSize="12sp"
                 android:textIsSelectable="true"

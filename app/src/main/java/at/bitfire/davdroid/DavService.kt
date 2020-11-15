@@ -309,7 +309,7 @@ class DavService: android.app.Service() {
                             info.serviceId = serviceId
                             info.homeSetId = homeSet.id
                             info.confirmed = true
-                            info.owner = response[Owner::class.java]?.href
+                            info.owner = response[Owner::class.java]?.href?.let { response.href.resolve(it) }
                             Logger.log.log(Level.FINE, "Found collection", info)
 
                             // remember usable collections
