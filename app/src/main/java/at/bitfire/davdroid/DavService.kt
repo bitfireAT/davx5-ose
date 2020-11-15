@@ -258,11 +258,6 @@ class DavService: android.app.Service() {
             }
         }
 
-        fun saveResults() {
-            saveHomesets()
-            saveCollections()
-        }
-
         try {
             Logger.log.info("Refreshing ${service.type} collections of service #$service")
 
@@ -281,27 +276,29 @@ class DavService: android.app.Service() {
                     Logger.log.fine("Querying principal $principalUrl for home sets")
                     queryHomeSets(httpClient, principalUrl)
                 }
+                saveHomesets()
 
                 // now refresh homesets and their member collections
                 val itHomeSets = homeSets.iterator()
                 while (itHomeSets.hasNext()) {
-                    val homeSet = itHomeSets.next()
-                    Logger.log.fine("Listing home set ${homeSet.key}")
+                    val (homeSetUrl, homeSet) = itHomeSets.next()
+                    Logger.log.fine("Listing home set ${homeSetUrl}")
 
                     try {
-                        DavResource(httpClient, homeSet.key).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, relation ->
+                        DavResource(httpClient, homeSetUrl).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, relation ->
                             if (!response.isSuccess())
                                 return@propfind
 
                             if (relation == Response.HrefRelation.SELF) {
                                 // this response is about the homeset itself
-                                homeSet.value.displayName = response[DisplayName::class.java]?.displayName
-                                homeSet.value.privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind ?: true
+                                homeSet.displayName = response[DisplayName::class.java]?.displayName
+                                homeSet.privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind ?: true
                             }
 
                             // in any case, check whether the response is about a useable collection
                             val info = Collection.fromDavResponse(response) ?: return@propfind
                             info.serviceId = serviceId
+                            info.homeSetId = homeSet.id
                             info.confirmed = true
                             Logger.log.log(Level.FINE, "Found collection", info)
 
@@ -323,6 +320,9 @@ class DavService: android.app.Service() {
                     val (url, info) = itCollections.next()
                     if (!info.confirmed)
                         try {
+                            // this collection doesn't belong to a homeset anymore, otherwise it would have been confirmed
+                            info.homeSetId = null
+
                             DavResource(httpClient, url).propfind(0, *DAV_COLLECTION_PROPERTIES) { response, _ ->
                                 if (!response.isSuccess())
                                     return@propfind
@@ -345,8 +345,7 @@ class DavService: android.app.Service() {
                         }
                 }
             }
-
-            saveResults()
+            saveCollections()
 
         } catch(e: InvalidAccountException) {
             Logger.log.log(Level.SEVERE, "Invalid account", e)

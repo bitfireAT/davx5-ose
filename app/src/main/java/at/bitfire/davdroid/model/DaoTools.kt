@@ -35,7 +35,12 @@ class DaoTools<T: IdEntity>(dao: SyncableDao<T>): SyncableDao<T> by dao {
                 delete(old)
             }
         }
-        insert(remainingNew.values.toList())
+
+        val toInsert = remainingNew.values.toList()
+        val insertIds = insert(toInsert)
+        insertIds.withIndex().forEach { (idx, id) ->
+            toInsert[idx].id = id
+        }
     }
 
 }

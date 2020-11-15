@@ -10,10 +10,12 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 @Entity(tableName = "collection",
         foreignKeys = [
-            ForeignKey(entity = Service::class, parentColumns = arrayOf("id"), childColumns = arrayOf("serviceId"), onDelete = ForeignKey.CASCADE)
+            ForeignKey(entity = Service::class, parentColumns = arrayOf("id"), childColumns = arrayOf("serviceId"), onDelete = ForeignKey.CASCADE),
+            ForeignKey(entity = HomeSet::class, parentColumns = arrayOf("id"), childColumns = arrayOf("homeSetId"), onDelete = ForeignKey.SET_NULL)
         ],
         indices = [
-            Index("serviceId","type")
+            Index("serviceId","type"),
+            Index("homeSetId","type")
         ]
 )
 data class Collection(
@@ -21,6 +23,7 @@ data class Collection(
     override var id: Long = 0,
 
     var serviceId: Long = 0,
+    var homeSetId: Long? = null,
 
     var type: String,
     var url: HttpUrl,
