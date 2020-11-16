@@ -212,36 +212,29 @@ class SettingsActivity: AppCompatActivity() {
             val prefPassword = findPreference<EditTextPreference>("password")!!
             val prefCertAlias = findPreference<Preference>("certificate_alias")!!
             model.credentials.observe(viewLifecycleOwner, { credentials ->
-                if (credentials.userName != null && credentials.password != null) {
-                    prefUserName.isVisible = true
-                    prefUserName.summary = credentials.userName
-                    prefUserName.text = credentials.userName
-                    prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newUserName ->
-                        model.updateCredentials(Credentials(newUserName as String, credentials.password, credentials.certificateAlias))
-                        false
-                    }
+                prefUserName.summary = credentials.userName
+                prefUserName.text = credentials.userName
+                prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newUserName ->
+                    model.updateCredentials(Credentials(newUserName as String, credentials.password, credentials.certificateAlias))
+                    false
+                }
 
+                if (credentials.userName != null) {
                     prefPassword.isVisible = true
                     prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newPassword ->
                         model.updateCredentials(Credentials(credentials.userName, newPassword as String, credentials.certificateAlias))
                         false
                     }
-                } else {
-                    prefUserName.isVisible = false
-                    prefPassword.isVisible = false
-                }
-
-                if (credentials.certificateAlias != null) {
-                    prefCertAlias.isVisible = true
-                    prefCertAlias.summary = credentials.certificateAlias
-                    prefCertAlias.setOnPreferenceClickListener {
-                        KeyChain.choosePrivateKeyAlias(requireActivity(), { newAlias ->
-                            model.updateCredentials(Credentials(credentials.userName, credentials.password, newAlias))
-                        }, null, null, null, -1, credentials.certificateAlias)
-                        true
-                    }
                 } else
-                    prefCertAlias.isVisible = false
+                    prefPassword.isVisible = false
+
+                prefCertAlias.summary = credentials.certificateAlias ?: getString(R.string.settings_certificate_alias_empty)
+                prefCertAlias.setOnPreferenceClickListener {
+                    KeyChain.choosePrivateKeyAlias(requireActivity(), { newAlias ->
+                        model.updateCredentials(Credentials(credentials.userName, credentials.password, newAlias))
+                    }, null, null, null, -1, credentials.certificateAlias)
+                    true
+                }
             })
 
             // preference group: CalDAV

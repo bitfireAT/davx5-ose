@@ -295,6 +295,7 @@
     <string name="settings_enter_password">Enter your password:</string>
     <string name="settings_certificate_alias_key" translatable="false">certificate_alias</string>
     <string name="settings_certificate_alias">Client certificate alias</string>
+    <string name="settings_certificate_alias_empty">No certificate selected</string>
     <string name="settings_caldav_key" translatable="false">caldav</string>
     <string name="settings_caldav">CalDAV</string>
     <string name="settings_sync_time_range_past_key" translatable="false">time_range_past_days</string>
