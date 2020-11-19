@@ -16,6 +16,7 @@ import android.os.StrictMode
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
@@ -73,6 +74,9 @@ class App: Application(), Thread.UncaughtExceptionHandler {
 
             // check whether a tasks app is currently installed
             TasksWatcher.updateTaskSync(this@App)
+
+            // check/repair sync intervals
+            AccountSettings.repairSyncIntervals(this@App)
         }
     }
 

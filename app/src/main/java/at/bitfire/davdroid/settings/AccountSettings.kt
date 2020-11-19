@@ -57,7 +57,10 @@ class AccountSettings(
         const val CURRENT_VERSION = 11
         const val KEY_SETTINGS_VERSION = "version"
 
-        /** Stores the tasks sync interval (in minutes) so that it can be set again when the provider is switched */
+        const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
+        const val KEY_SYNC_INTERVAL_CALENDARS = "sync_interval_calendars"
+
+        /** Stores the tasks sync interval (in seconds) so that it can be set again when the provider is switched */
         const val KEY_SYNC_INTERVAL_TASKS = "sync_interval_tasks"
 
         const val KEY_USERNAME = "user_name"
@@ -118,6 +121,46 @@ class AccountSettings(
             }
 
             return bundle
+        }
+
+        fun repairSyncIntervals(context: Context) {
+            val addressBooksAuthority = context.getString(R.string.address_books_authority)
+            val taskAuthority = TaskUtils.currentProvider(context)?.authority
+
+            val am = AccountManager.get(context)
+            for (account in am.getAccountsByType(context.getString(R.string.account_type))) {
+                val settings = AccountSettings(context, account)
+
+                // repair address book sync
+                settings.getSavedAddressbooksSyncInterval()?.let { shouldBe ->
+                    val current = settings.getSyncInterval(addressBooksAuthority)
+                    if (current != shouldBe) {
+                        Logger.log.warning("${account.name}: $addressBooksAuthority sync interval should be $shouldBe but is $current -> setting to $current")
+                        settings.setSyncInterval(addressBooksAuthority, shouldBe)
+                    }
+                }
+
+                // repair calendar sync
+                settings.getSavedCalendarsSyncInterval()?.let { strInterval ->
+                    val shouldBe = strInterval.toLong()
+                    val current = settings.getSyncInterval(CalendarContract.AUTHORITY)
+                    if (current != shouldBe) {
+                        Logger.log.warning("${account.name}: ${CalendarContract.AUTHORITY} sync interval should be $shouldBe but is $current -> setting to $current")
+                        settings.setSyncInterval(CalendarContract.AUTHORITY, shouldBe)
+                    }
+                }
+
+                if (taskAuthority != null)
+                // repair calendar sync
+                    settings.getSavedTasksSyncInterval()?.let { strInterval ->
+                        val shouldBe = strInterval.toLong()
+                        val current = settings.getSyncInterval(taskAuthority)
+                        if (current != shouldBe) {
+                            Logger.log.warning("${account.name}: $taskAuthority sync interval should be $shouldBe but is $current -> setting to $current")
+                            settings.setSyncInterval(taskAuthority, shouldBe)
+                        }
+                    }
+            }
         }
 
     }
@@ -217,13 +260,19 @@ class AccountSettings(
         if (!success)
             return false
 
-        // store task sync interval in account settings (used when the provider is switched)
-        if (TaskProvider.ProviderName.values().any { it.authority == authority })
+        // store sync interval in account settings (used when the provider is switched)
+        if (authority == context.getString(R.string.address_books_authority))
+            accountManager.setUserData(account, KEY_SYNC_INTERVAL_ADDRESSBOOKS, seconds.toString())
+        else if (authority == CalendarContract.AUTHORITY)
+            accountManager.setUserData(account, KEY_SYNC_INTERVAL_CALENDARS, seconds.toString())
+        else if (TaskProvider.ProviderName.values().any { it.authority == authority })
             accountManager.setUserData(account, KEY_SYNC_INTERVAL_TASKS, seconds.toString())
 
         return true
     }
 
+    fun getSavedAddressbooksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_ADDRESSBOOKS)?.toLong()
+    fun getSavedCalendarsSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_CALENDARS)?.toLong()
     fun getSavedTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
 
     fun getSyncWifiOnly() =
