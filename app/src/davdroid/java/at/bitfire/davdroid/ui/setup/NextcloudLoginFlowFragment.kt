@@ -18,6 +18,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.HttpClient
@@ -35,6 +36,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URI
@@ -232,11 +234,23 @@ class NextcloudLoginFlowFragment: Fragment() {
 
         @WorkerThread
         private fun postForJson(url: HttpUrl, requestBody: RequestBody): JSONObject {
-            val postRq = Request.Builder()
-                    .url(url)
-                    .post(requestBody)
-                    .build()
-            val response = httpClient.okHttpClient.newCall(postRq).execute()
+            var response: Response? = null
+            var rqUrl = url
+            for (attempt in 1..DavResource.MAX_REDIRECTS) {
+                val postRq = Request.Builder()
+                        .url(rqUrl)
+                        .post(requestBody)
+                        .build()
+                response = httpClient.okHttpClient.newCall(postRq).execute()
+
+                if (response.isRedirect)
+                    rqUrl = response.header("Location")?.let { location ->
+                        rqUrl.resolve(location)
+                    } ?: throw DavException("Redirect without Location")
+                else
+                    break
+            }
+            requireNotNull(response)
 
             if (response.code != HttpURLConnection.HTTP_OK)
                 throw HttpException(response)
