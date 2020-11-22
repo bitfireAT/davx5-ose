@@ -69,7 +69,6 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
     }
 
     override fun buildEvent(recurrence: Event?, builder: BatchOperation.CpoBuilder) {
-        super.buildEvent(recurrence, builder)
         val event = requireNotNull(event)
 
         val buildException = recurrence != null
@@ -87,6 +86,8 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
             builder .withValue(Events._SYNC_ID, fileName)
                     .withValue(COLUMN_ETAG, eTag)
                     .withValue(COLUMN_SCHEDULE_TAG, scheduleTag)
+
+        super.buildEvent(recurrence, builder)
     }
 
 
