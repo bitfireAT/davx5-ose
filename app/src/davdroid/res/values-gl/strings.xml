@@ -71,6 +71,7 @@
   <string name="wifi_permissions_location_permission_on">Permiso de localización outorgado</string>
   <string name="wifi_permissions_location_permission_off">Permiso de localización denegado</string>
   <string name="wifi_permissions_background_location_permission">Permiso de localización en segundo plano</string>
+  <string name="wifi_permissions_background_location_permission_label">Permitir en todo momento</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Permiso de localización establecido a <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Permiso de localización non establecido a <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s utiliza o permiso de Localización só para determinar o SSID da WiFi para contas restrinxidas a uns SSIDs. Esto acontecerá incluso cando a app está en segundo plano. Non se recollen datos de localización, nin se gardan, procesan ou envían a ningún sitio.</string>

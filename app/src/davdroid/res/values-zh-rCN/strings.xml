@@ -62,6 +62,7 @@
   <string name="permissions_autoreset_title">保留权限</string>
   <string name="permissions_autoreset_status_off">权限可能被自动重置(不推荐)</string>
   <string name="permissions_autoreset_status_on">权限不会被自动重置</string>
+  <string name="permissions_autoreset_instruction">点击权限 &gt; 取消选择 “移除权限，如果应用未使用”</string>
   <string name="permissions_app_settings_hint">如果切换没有正常工作，请使用应用程序设置/权限</string>
   <string name="permissions_app_settings">应用设置</string>
   <!--WifiPermissionsActivity-->
@@ -71,6 +72,7 @@
   <string name="wifi_permissions_location_permission_on">已授予位置权限</string>
   <string name="wifi_permissions_location_permission_off">位置权限被拒</string>
   <string name="wifi_permissions_background_location_permission">后台位置权限</string>
+  <string name="wifi_permissions_background_location_permission_label">始终允许</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[位置权限设定为<b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[位置权限未设为%s<b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s 仅使用位置权限为 SSID 受限帐户确定当前 WiFi 的SSID。应用在后台运行时也会获取 SSID。位置数据不会被收集、存储、处理或发送到任何地方。</string>
@@ -176,6 +178,7 @@
   <string name="account_read_only">只读</string>
   <string name="account_calendar">日历</string>
   <string name="account_task_list">任务列表</string>
+  <string name="account_only_personal">只显示个人</string>
   <string name="account_refresh_address_book_list">刷新通讯录列表</string>
   <string name="account_create_new_address_book">创建通讯录</string>
   <string name="account_refresh_calendar_list">刷新日历列表</string>
@@ -207,6 +210,8 @@
   <string name="login_type_advanced">高级登录 (特殊用例)</string>
   <string name="login_use_username_password">使用用户名/密码</string>
   <string name="login_use_client_certificate">使用客户端证书</string>
+  <string name="login_no_certificate_found">没有找到证书</string>
+  <string name="login_install_certificate">安装证书</string>
   <string name="login_configuration_detection">正在配置</string>
   <string name="login_querying_server">正在与服务器通信，请稍等…</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>
@@ -247,6 +252,7 @@
   <string name="settings_password_summary">修改服务器密码</string>
   <string name="settings_enter_password">输入密码</string>
   <string name="settings_certificate_alias">客户端证书别名</string>
+  <string name="settings_certificate_alias_empty">没有证书被选中</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">旧日程时间限制</string>
   <string name="settings_sync_time_range_past_none">同步所有日程</string>
@@ -301,6 +307,7 @@
   <string name="collection_properties">属性</string>
   <string name="collection_properties_url">地址 (URL):</string>
   <string name="collection_properties_copy_url">复制 URL</string>
+  <string name="collection_properties_owner">所有者：</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">调试信息</string>
   <string name="debug_info_use_share1">使用“分享”操作发送未更改的数据，尤其对于支持请求。</string>

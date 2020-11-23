@@ -62,6 +62,7 @@
   <string name="permissions_autoreset_title">Utrzymaj uprawnienia</string>
   <string name="permissions_autoreset_status_off">Uprawnienia mogą zostać automatycznie zresetowane (nie zalecane)</string>
   <string name="permissions_autoreset_status_on">Uprawnienia nie będą automatycznie resetowane</string>
+  <string name="permissions_autoreset_instruction">Kliknij Uprawnienia &gt; odznacz \"Usuń uprawnienia jeśli aplikacja nie jest używana\"</string>
   <string name="permissions_app_settings_hint">Jeśli przełącznik nie działa użyj ustawień dla aplikacji/Uprawnienia.</string>
   <string name="permissions_app_settings">Ustawienia aplikacji</string>
   <!--WifiPermissionsActivity-->
@@ -71,6 +72,7 @@
   <string name="wifi_permissions_location_permission_on">Uprawnienie lokalizacji nadane</string>
   <string name="wifi_permissions_location_permission_off">Uprawnienie lokalizacji odebrane</string>
   <string name="wifi_permissions_background_location_permission">Uprawnienie lokalizacji w tle</string>
+  <string name="wifi_permissions_background_location_permission_label">Zezwól przez cały czas</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Uprawenienie lokalizacji ustawione dla wartości<b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Uprawenienie lokalizacji nie ustawione dla wartości<b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s uzywa uprawnień Lokalizacji tylko dla ustalenia obecnego WiFi\'s SSID dla kont z zatrzeżonym SSID. Będzie się to działo nawet gdy aplikacja działa w tle. Dane o lokalizacji nie są zbierane, zachowywane, przetwarzane ani nigdzie wysyłane.</string>
@@ -176,6 +178,7 @@
   <string name="account_read_only">tylko do odczytu</string>
   <string name="account_calendar">kalendarz</string>
   <string name="account_task_list">lista zadań</string>
+  <string name="account_only_personal">Pokaż tylko osobiste</string>
   <string name="account_refresh_address_book_list">Odśwież listę książek adresowych</string>
   <string name="account_create_new_address_book">Stwórz nową książkę adresową</string>
   <string name="account_refresh_calendar_list">Odśwież listę kalendarzy</string>
@@ -307,6 +310,7 @@
   <string name="collection_properties">Właściwości</string>
   <string name="collection_properties_url">Adres (URL):</string>
   <string name="collection_properties_copy_url">Kopiuj adres URL</string>
+  <string name="collection_properties_owner">Właściciel:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacje debugowania</string>
   <string name="debug_info_use_share1">Użyj akcji Udostępnij aby wysłać nie zmodyfikowane dane, szczególnie dla zgłoszeń wsparcia.</string>

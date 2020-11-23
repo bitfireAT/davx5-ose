@@ -62,6 +62,7 @@
   <string name="permissions_autoreset_title">Behold rettigheder</string>
   <string name="permissions_autoreset_status_off">Rettigheder kan nulstilles automatisk (ikke anbefalet)</string>
   <string name="permissions_autoreset_status_on">Rettigheder nulstilles ikke automatisk</string>
+  <string name="permissions_autoreset_instruction">Klik tilladelser &gt; fravælg \"Fjern tilladelser hvis program ikke bruges\"</string>
   <string name="permissions_app_settings_hint">Hvis en omskifter ikke virker, brug program opsætninger / rettigheder.</string>
   <string name="permissions_app_settings">Program opsætning</string>
   <!--WifiPermissionsActivity-->
@@ -71,6 +72,7 @@
   <string name="wifi_permissions_location_permission_on">Placering rettighed tildelt</string>
   <string name="wifi_permissions_location_permission_off">Placering rettighed afvist</string>
   <string name="wifi_permissions_background_location_permission">Baggrund placerings-rettighed</string>
+  <string name="wifi_permissions_background_location_permission_label">Tillad altid</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Placering rettighed sat til <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Placering rettighed ikke sat til <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s bruger kun placering rettighed for at bestemme nuværende trådløs SSID for SSID begrænset konti. Dette sker selvom programmet kører i baggrund. Ingen placering data bliver opsamlet, gemt, behandlet eller sendt.</string>
@@ -176,6 +178,7 @@
   <string name="account_read_only">skrivebeskyttet</string>
   <string name="account_calendar">kalender</string>
   <string name="account_task_list">opgave liste</string>
+  <string name="account_only_personal">Vis kun personlig</string>
   <string name="account_refresh_address_book_list">Opdatere adressebogslister</string>
   <string name="account_create_new_address_book">Oprette ny adressebog</string>
   <string name="account_refresh_calendar_list">Opdatere kalenderliste</string>
@@ -207,6 +210,8 @@
   <string name="login_type_advanced">Avanceret logind (særlige tilfælde)</string>
   <string name="login_use_username_password">Brug brugernavn/adgangskode</string>
   <string name="login_use_client_certificate">Brug klient certifikat</string>
+  <string name="login_no_certificate_found">Intet certifikat fundet</string>
+  <string name="login_install_certificate">Installere certifikat</string>
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
   <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
@@ -247,6 +252,7 @@
   <string name="settings_password_summary">Opdater adgangskoden, så den svarer til din server.</string>
   <string name="settings_enter_password">Indtast adgangskode:</string>
   <string name="settings_certificate_alias">Alias for klientcertifikat</string>
+  <string name="settings_certificate_alias_empty">Intet certifikat valgt</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsafgrænsning for tidligere begivenheder</string>
   <string name="settings_sync_time_range_past_none">Alle begivenheder vil blive synkroniseret</string>
@@ -303,6 +309,7 @@
   <string name="collection_properties">Egenskaber</string>
   <string name="collection_properties_url">Adresse (URL):</string>
   <string name="collection_properties_copy_url">Kopiere URL</string>
+  <string name="collection_properties_owner">Ejer:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
   <string name="debug_info_use_share1">Brug dele handling for at sende uændret data, specielt ved brugerhjælp forespørgsel.</string>
