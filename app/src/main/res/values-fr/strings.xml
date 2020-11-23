@@ -30,30 +30,55 @@
   <string name="intro_autostart_dont_show">J\'ai fait les réglages nécessaires. Ne me le rappelez plus.*</string>
   <string name="intro_leave_unchecked">* Laisser non coché pour un rappel ultérieur. Peut être réinitialisé dans les paramètres de l\'application / %s.</string>
   <string name="intro_more_info">Plus d\'informations</string>
-  <string name="intro_tasks_title">Support des tâches</string>
+  <string name="intro_tasks_title">Gestion des taches</string>
+  <string name="intro_tasks_text1">Si les tâches sont prises en charge par votre serveur, elles peuvent être synchronisées avec une application de tâches externe :</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[Pour certaines fonctionnalités comme les sous-tâches ou les tâches récurrentes, vous pouvez avoir besoin <a href="https://www.davx5.com/faq/tasks/advanced-task-features">d\'applications supplémentaires</a>.]]></string>
+  <string name="intro_tasks_tasks_org">Taches</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Certaines fonctionnalités <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ne sont pas (encore) prises en charge</a>.]]></string>
   <string name="intro_tasks_no_app_store">Pas de magasin d\'application disponible</string>
   <string name="intro_tasks_dont_show">Je n\'ai pas besoin de support des tâches.*</string>
   <string name="intro_open_source_title">Logiciels open-source</string>
   <string name="intro_open_source_text">Nous sommes heureux que vous utilisiez %s, qui est un logiciel open-source. Le développement, la maintenance et l\'assistance sont un travail difficile. Veuillez envisager de contribuer (il y a plusieurs façons de le faire) ou de faire un don. Ce serait très apprécié !</string>
   <string name="intro_open_source_details">Comment contribuer/donner</string>
+  <string name="intro_open_source_dont_show">Ne plus me montrer dans le futur</string>
   <!--PermissionsActivity-->
-  <string name="permissions_title">Permissions</string>
-  <string name="permissions_text">%s nécessite des permissions pour fonctionner correctement.</string>
-  <string name="permissions_all_title">Tout ce qui suit</string>
+  <string name="permissions_title">Autorisations</string>
+  <string name="permissions_text">%s nécessite des autorisations pour fonctionner correctement.</string>
+  <string name="permissions_all_title">Tout autoriser</string>
   <string name="permissions_all_status_off">A utiliser pour activer toutes les fonctionnalités (recommandé)</string>
   <string name="permissions_all_status_on">Toutes les autorisations accordées</string>
-  <string name="permissions_contacts_title">Permissions du carnet d\'adresses</string>
+  <string name="permissions_contacts_title">Autorisations d\'accès aux contacts</string>
   <string name="permissions_contacts_status_off">Pas de synchronisation du carnet d\'adresses (non recommandé)</string>
   <string name="permissions_contacts_status_on">Synchronisation du carnet d\'adresses possible</string>
-  <string name="permissions_calendar_title">Permissions du calendrier</string>
+  <string name="permissions_calendar_title">Autorisations du calendrier</string>
   <string name="permissions_calendar_status_off">Pas de synchronisation du calendrier (non recommandé)</string>
   <string name="permissions_calendar_status_on">Synchronisation du calendrier possible</string>
+  <string name="permissions_opentasks_title">Autorisations d\'OpenTasks</string>
+  <string name="permissions_tasksorg_title">Autorisations de Tasks</string>
   <string name="permissions_tasks_status_not_installed">Pas de synchronisation des tâches (non installé)</string>
   <string name="permissions_tasks_status_off">Pas de synchronisation des tâches (non recommandé)</string>
   <string name="permissions_tasks_status_on">Synchronisation des tâches possible</string>
-  <string name="permissions_app_settings_hint">Si un commutateur ne fonctionne pas, utiliser les paramètres de l\'application / Permissions.</string>
+  <string name="permissions_autoreset_title">Conserver les autorisations</string>
+  <string name="permissions_autoreset_status_off">Les autorisations peuvent être réinitialisées automatiquement (non recommandé)</string>
+  <string name="permissions_autoreset_status_on">Les autorisations ne seront pas réinitialisées automatiquement</string>
+  <string name="permissions_autoreset_instruction">Cliquez sur Autorisations &gt; décochez \"Supprimer les autorisations si l\'application n\'est pas utilisée\".</string>
+  <string name="permissions_app_settings_hint">Si un commutateur ne fonctionne pas, utiliser les paramètres de l\'application / Autorisations</string>
   <string name="permissions_app_settings">Paramètres de l\'application</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID autorisations</string>
+  <string name="wifi_permissions_intro">Pour pouvoir accéder au nom du WiFi actuel (SSID), ces conditions doivent être remplies :</string>
+  <string name="wifi_permissions_location_permission">Autorisation de localisation</string>
+  <string name="wifi_permissions_location_permission_on">Autorisation de localisation accordée</string>
+  <string name="wifi_permissions_location_permission_off">Autorisation de localisation refusée</string>
+  <string name="wifi_permissions_background_location_permission">Autorisation de localisation en arrière-plan</string>
+  <string name="wifi_permissions_background_location_permission_label">Autorisez tout le temps</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Autorisation de localisation réglée sur <b>%s</b> ]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Autorisation de localisation non réglée sur <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s utilise l\'autorisation de localisation uniquement pour déterminer le SSID du WiFi actuel pour les comptes à SSID restreint. Cela se produit même lorsque l\'application est en arrière-plan. Aucune donnée de localisation n\'est collectée, stockée, traitée ou envoyée nulle part.</string>
+  <string name="wifi_permissions_location_enabled">Localisation toujours activée</string>
+  <string name="wifi_permissions_location_enabled_on">Le service de localisation est activé</string>
+  <string name="wifi_permissions_location_enabled_off">Le service de localisation est désactivé</string>
   <!--AboutActivity-->
   <string name="about_translations">Traductions</string>
   <string name="about_libraries">Librairies</string>
@@ -64,6 +89,9 @@
   <string name="about_translations_thanks"><![CDATA[<i>Merci à : </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Impossible de créer le fichier journal</string>
+  <string name="logging_notification_text">Maintenant toutes les activités de %s seront enregistrées</string>
+  <string name="logging_notification_view_share">Voir/partager</string>
+  <string name="logging_notification_disable">Désactiver</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
   <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
@@ -104,7 +132,7 @@
   <string name="app_settings_override_proxy_host">Nom de l\'hôte du proxy HTTP</string>
   <string name="app_settings_override_proxy_port">Port du proxy HTTP</string>
   <string name="app_settings_security">Sécurité</string>
-  <string name="app_settings_security_app_permissions">Permissions de l\'application</string>
+  <string name="app_settings_security_app_permissions">Autorisations de l\'application</string>
   <string name="app_settings_security_app_permissions_summary">Consulter les autorisations requises pour la synchronisation</string>
   <string name="app_settings_distrust_system_certs">Révoquer les certificats du système</string>
   <string name="app_settings_distrust_system_certs_on">Les certificats du système et ceux ajoutés par l\'utilisateur ne seront pas  dignes de confiance</string>
@@ -118,16 +146,20 @@
   <string name="app_settings_reset_hints">Réinitialiser les astuces</string>
   <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vues précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
+  <string name="app_settings_integration">Intégration</string>
+  <string name="app_settings_tasks_provider">Applications de gestion de taches</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">Synchronisation avec %s</string>
+  <string name="app_settings_tasks_provider_none">Aucune application de tâches compatibles trouvée</string>
   <!--AccountActivity-->
-  <string name="account_carddav">CardDAV (les carnets d\'adresse) </string>
-  <string name="account_caldav">CalDAV (les agendas) </string>
-  <string name="account_webcal">WebCal (les anciens agenda)</string>
-  <string name="account_carddav_missing_permissions">Pas de synchronisation du carnet d\'adresses (permissions manquantes)</string>
-  <string name="account_caldav_missing_calendar_permissions">Pas de synchronisation du calendrier (permissions manquantes)</string>
-  <string name="account_caldav_missing_tasks_permissions">Pas de synchronisation des tâches (permissions manquantes)</string>
-  <string name="account_caldav_missing_permissions">Pas de synchronisation du calendrier et des tâches (permissions manquantes)</string>
-  <string name="account_webcal_missing_calendar_permissions">Impossible d\'accéder aux calendriers (permissions manquantes)</string>
-  <string name="account_permissions_action">Permissions</string>
+  <string name="account_carddav">Carnets d\'adresses</string>
+  <string name="account_caldav">Agendas</string>
+  <string name="account_webcal">WebCal</string>
+  <string name="account_carddav_missing_permissions">Pas de synchronisation du carnet d\'adresses (autorisations manquantes)</string>
+  <string name="account_caldav_missing_calendar_permissions">Pas de synchronisation du calendrier (autorisations manquantes)</string>
+  <string name="account_caldav_missing_tasks_permissions">Pas de synchronisation des tâches (autorisations manquantes)</string>
+  <string name="account_caldav_missing_permissions">Pas de synchronisation du calendrier et des tâches (autorisations manquantes)</string>
+  <string name="account_webcal_missing_calendar_permissions">Impossible d\'accéder aux calendriers (autorisations manquantes)</string>
+  <string name="account_permissions_action">Autorisations</string>
   <string name="account_no_address_books">Il n\'y a pas (encore) de carnet d\'adresses.</string>
   <string name="account_no_calendars">Il n\'y a pas (encore) de calendriers.</string>
   <string name="account_no_webcals">Il n\'y a pas (encore) d\'abonnement à des calendriers.</string>
@@ -138,6 +170,7 @@
   <string name="account_rename">Renommer le compte</string>
   <string name="account_rename_new_name">Les données locales non enregistrées pourraient être perdues. Une re-synchronisation est nécessaire après avoir renommé le compte. Nouveau nom du compte : </string>
   <string name="account_rename_rename">Renommer</string>
+  <string name="account_rename_couldnt_rename">Impossible de renommer le compte</string>
   <string name="account_delete">Supprimer le compte</string>
   <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte?</string>
   <string name="account_delete_confirmation_text">Toutes les copies locales des carnets d\'adresses, des calendriers et des listes de tâches seront supprimées.</string>
@@ -173,9 +206,13 @@
   <string name="login_account_name_required">Nom du compte requis</string>
   <string name="login_account_name_already_taken">Le nom du compte est déjà pris</string>
   <string name="login_account_not_created">Le compte n\'a pas pu être créé</string>
+  <string name="login_type_advanced">Connexion avancée (cas particuliers)</string>
+  <string name="login_use_username_password">Utiliser le nom d\'utilisateur/mot de passe</string>
+  <string name="login_use_client_certificate">Utiliser le certificat du client</string>
   <string name="login_configuration_detection">Détection de la configuration</string>
   <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur …</string>
   <string name="login_no_caldav_carddav">Aucun accès possible au service CalDAV ou CardDAV.</string>
+  <string name="login_username_password_wrong">Nom d\'utilisateur (courriel) / mot de passe incorrect ?</string>
   <string name="login_view_logs">Montrer les détails</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Paramètres: %s</string>
@@ -202,6 +239,8 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Ne synchronise que sur %s (nécessite des services de localisation actifs)</string>
   <string name="settings_sync_wifi_only_ssids_off">Toutes les connexions WiFi seront utilisées</string>
   <string name="settings_sync_wifi_only_ssids_message">Liste des points d\'accès WiFi (SSID) autorisés, séparés par des virgules. (Laissez vide pour tous)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">La restriction du SSID WiFi nécessite des réglages supplémentaires</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Gérer</string>
   <string name="settings_more_info_faq">Plus d\'informations (FAQ)</string>
   <string name="settings_authentication">Authentification</string>
   <string name="settings_username">Nom d\'utilisateur</string>
@@ -226,7 +265,11 @@
   <string name="settings_default_alarm_off">Aucun rappel par défaut</string>
   <string name="settings_default_alarm_message">Si des rappels par défaut doivent être créé pour des événements sans rappel: le nombre de minutes avant l\'événement. Laisser blanc pour désactiver les rappels par défaut.</string>
   <string name="settings_manage_calendar_colors">Choisir couleur du calendrier</string>
+  <string name="settings_manage_calendar_colors_on">Les couleurs du calendrier sont réinitialisées à chaque synchronisation</string>
+  <string name="settings_manage_calendar_colors_off">Les couleurs du calendrier peuvent être définies par d\'autres applications</string>
   <string name="settings_event_colors">Couleur associée aux événements</string>
+  <string name="settings_event_colors_on">Les couleurs des événements sont synchronisées</string>
+  <string name="settings_event_colors_off">Les couleurs des événements sont pas synchronisées</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Méthode pour les contacts de type groupe</string>
   <string-array name="settings_contact_group_method_entries">
@@ -264,12 +307,27 @@
   <string name="collection_properties_copy_url">Copier l\'URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
+  <string name="debug_info_use_share1">Utilisez l\'action Partager pour envoyer les données non modifiées, notamment pour les demandes d\'assistance.</string>
+  <string name="debug_info_use_share2">Évitez les copier-coller ou les captures d\'écran, car ils rendent l\'interprétation plus compliqué.</string>
+  <string name="debug_info_attached">Informations de débogage jointes à ce message (nécessite une application compatible).</string>
   <string name="debug_info_http_error">Erreur HTTP</string>
   <string name="debug_info_server_error">Erreur Serveur</string>
   <string name="debug_info_webdav_error">Erreur WebDAV</string>
   <string name="debug_info_io_error">Erreur I/O</string>
+  <string name="debug_info_http_403_description">La demande a été rejetée. Vérifiez les ressources impliquées et les informations de débogage pour plus de détails.</string>
+  <string name="debug_info_http_404_description">La ressource demandée n\'existe pas (plus). Vérifiez les ressources concernées et les informations de débogage pour plus de détails.</string>
+  <string name="debug_info_http_5xx_description">Un problème de serveur s\'est produit. Veuillez contacter le support de votre serveur.</string>
+  <string name="debug_info_unexpected_error">Une erreur inattendue s\'est produite. Voir les informations de débogage pour plus de détails.</string>
   <string name="debug_info_view_details">Voir les détails</string>
+  <string name="debug_info_subtitle">Les informations de débogage ont été collectées</string>
+  <string name="debug_info_involved_caption">Ressources impliquées</string>
+  <string name="debug_info_involved_subtitle">En rapport avec le problème</string>
+  <string name="debug_info_involved_remote">Ressource à distance :</string>
+  <string name="debug_info_involved_local">Ressource local :</string>
+  <string name="debug_info_involved_view">Voir avec l\'application</string>
   <string name="debug_info_logs_caption">Journaux</string>
+  <string name="debug_info_logs_subtitle">Des logs verbeux sont disponibles</string>
+  <string name="debug_info_logs_view">Voir les logs</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Une erreur est survenue.</string>
   <string name="exception_httpexception">Une erreur HTTP est survenue.</string>
@@ -278,6 +336,8 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">Autorisations DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
+  <string name="sync_error_tasks_too_old">%s trop vieux</string>
+  <string name="sync_error_tasks_required_version">Version minimale requise : %1$s</string>
   <string name="sync_error_authentication_failed">Echec d\'authentification (contrôler vos identifiants de connexion)</string>
   <string name="sync_error_io">Erreur de réseau ou d\'entrée / sortie - %s</string>
   <string name="sync_error_http_dav">Erreur de serveur HTTP - %s</string>

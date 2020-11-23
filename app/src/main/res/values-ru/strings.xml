@@ -62,6 +62,7 @@
   <string name="permissions_autoreset_title">Сохранить разрешения</string>
   <string name="permissions_autoreset_status_off">Разрешения могут быть сброшены автоматически (не рекомендуется)</string>
   <string name="permissions_autoreset_status_on">Разрешения не будут сброшены автоматически</string>
+  <string name="permissions_autoreset_instruction">Выберите Разрешения &gt; снимите флажок \"Удалить разрешения, если приложение не используется\".</string>
   <string name="permissions_app_settings_hint">Если переключатель не работает, используйте Настройки приложения / Разрешения.</string>
   <string name="permissions_app_settings">Настройки приложения</string>
   <!--WifiPermissionsActivity-->
@@ -71,6 +72,7 @@
   <string name="wifi_permissions_location_permission_on">Разрешение на определение местоположения предоставлено</string>
   <string name="wifi_permissions_location_permission_off">Разрешение на определение местоположения не предоставлено</string>
   <string name="wifi_permissions_background_location_permission">Разрешение на фоновое определение местоположения</string>
+  <string name="wifi_permissions_background_location_permission_label">Разрешать всегда</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Настроено разрешение на определение местоположения <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Не настроено разрешение на определение местоположения <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s использует разрешение на доступ к местоположению только для определения текущего SSID WiFi для аккацнтов с ограничениями SSID. Это будет происходить даже когда приложение находится в фоновом режиме. Никакие данные о местоположении не собираются, не хранятся, не обрабатываются и не отправляются куда-либо.</string>
@@ -176,6 +178,7 @@
   <string name="account_read_only">только для чтения</string>
   <string name="account_calendar">календарь</string>
   <string name="account_task_list">список задач</string>
+  <string name="account_only_personal">Показать только личные</string>
   <string name="account_refresh_address_book_list">Обновить список адресных книг</string>
   <string name="account_create_new_address_book">Создать новую адресную книгу</string>
   <string name="account_refresh_calendar_list">Обновить список календарей</string>
@@ -207,6 +210,8 @@
   <string name="login_type_advanced">Расширенная авторизация (особые случаи использования)</string>
   <string name="login_use_username_password">Использовать имя пользователя/пароль</string>
   <string name="login_use_client_certificate">Использовать сертификат клиента</string>
+  <string name="login_no_certificate_found">Сертификат не найден</string>
+  <string name="login_install_certificate">Установить сертификат</string>
   <string name="login_configuration_detection">Обнаружение конфигурации</string>
   <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>
   <string name="login_no_caldav_carddav">Не удалось найти службу CalDAV или CardDAV.</string>
@@ -247,6 +252,7 @@
   <string name="settings_password_summary">Обновить пароль</string>
   <string name="settings_enter_password">Введите свой пароль:</string>
   <string name="settings_certificate_alias">Псевдоним сертификата клиента</string>
+  <string name="settings_certificate_alias_empty">Сертификат не выбран</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Ограничение по времени для прошедших событий</string>
   <string name="settings_sync_time_range_past_none">Будут синхронизироваться все события</string>
@@ -307,6 +313,7 @@
   <string name="collection_properties">Свойства</string>
   <string name="collection_properties_url">Адрес (URL):</string>
   <string name="collection_properties_copy_url">Копировать URL</string>
+  <string name="collection_properties_owner">Владелец:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
   <string name="debug_info_use_share1">Используйте действие Поделиться для отправки немодифицированных данных, особенно это касается запросов поддержки.</string>

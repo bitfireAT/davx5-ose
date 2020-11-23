@@ -62,6 +62,7 @@
   <string name="permissions_autoreset_title">Berechtigungen behalten</string>
   <string name="permissions_autoreset_status_off">Berechtigungen können automatisch entzogen werden (nicht empfohlen)</string>
   <string name="permissions_autoreset_status_on">Berechtigungen werden nicht automatisch entzogen</string>
+  <string name="permissions_autoreset_instruction">Berechtigungen &gt; \"Berechtigungen entfernen, wenn die App nicht verwendet wird\" abwählen</string>
   <string name="permissions_app_settings_hint">Wenn ein Schalter nicht funktioniert, App-Einstellungen / Berechtigungen verwenden.</string>
   <string name="permissions_app_settings">App-Einstellungen</string>
   <!--WifiPermissionsActivity-->
@@ -71,6 +72,7 @@
   <string name="wifi_permissions_location_permission_on">Standort-Zugriff erlaubt</string>
   <string name="wifi_permissions_location_permission_off">Standort-Zugriff verweigert</string>
   <string name="wifi_permissions_background_location_permission">Hintergrund-Standort-Berechtigung</string>
+  <string name="wifi_permissions_background_location_permission_label">Immer zulassen</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Standort-Berechtigung auf <b>%s</b> gesetzt]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Standort-Berechtigung nicht auf <b>%s</b> gesetzt]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s verwendet die Standort-Berechtigung ausschließlich zum Bestimmen der aktuellen WLAN-SSID für SSID-beschränkte Accounts. Dies findet auch statt, wenn die App geschlossen ist bzw. im Hintergrund läuft. Standortdaten werden weder gesammelt, gespeichert, verarbeitet noch irgendwohin gesendet.</string>
