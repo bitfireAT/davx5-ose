@@ -30,12 +30,13 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
         const val COLUMN_FLAGS = Groups.SYNC4
 
-        /** marshaled list of member UIDs, as sent by server */
+        /** marshalled list of member UIDs, as sent by server */
         const val COLUMN_PENDING_MEMBERS = Groups.SYNC3
 
         /**
-         * Processes all groups with non-null {@link #COLUMN_PENDING_MEMBERS}: the pending memberships
-         * are (if possible) applied, keeping cached memberships in sync.
+         * Processes all groups with non-null [COLUMN_PENDING_MEMBERS]: the pending memberships
+         * are applied (if possible) to keep cached memberships in sync.
+         *
          * @param addressBook    address book to take groups from
          */
         fun applyPendingMemberships(addressBook: LocalAddressBook) {
