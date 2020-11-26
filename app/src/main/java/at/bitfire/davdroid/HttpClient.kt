@@ -46,10 +46,12 @@ class HttpClient private constructor(
 
         /** [OkHttpClient] singleton to build all clients from */
         val sharedClient: OkHttpClient = OkHttpClient.Builder()
-                // set timeouts
+                // Set timeouts. According to [AbstractThreadedSyncAdapter], when there is no network
+                // traffic within a minute, a sync will be cancelled.
                 .connectTimeout(15, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(120, TimeUnit.SECONDS)
+                .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
 
                 // keep TLS 1.0 and 1.1 for now; remove when major browsers have dropped it (probably 2020)
                 .connectionSpecs(listOf(
