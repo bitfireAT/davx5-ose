@@ -62,6 +62,7 @@
   <string name="permissions_autoreset_title">Manter permisos</string>
   <string name="permissions_autoreset_status_off">Os permisos poden restablecerse automáticamente (non recomendado)</string>
   <string name="permissions_autoreset_status_on">Os permisos non se restablecerán automáticamente</string>
+  <string name="permissions_autoreset_instruction">Preme en Permisos &gt; desmarca \"Eliminar permisos se a app non se usa\"</string>
   <string name="permissions_app_settings_hint">Se unha opción non funciona, use configuracións da aplicación / Permisos.</string>
   <string name="permissions_app_settings">Permisos da aplicación</string>
   <!--WifiPermissionsActivity-->
@@ -177,6 +178,7 @@
   <string name="account_read_only">só lectura</string>
   <string name="account_calendar">calendario</string>
   <string name="account_task_list">lista de tarefas</string>
+  <string name="account_only_personal">Mostrar só personal</string>
   <string name="account_refresh_address_book_list">Actualizar lista de libreta de enderezos</string>
   <string name="account_create_new_address_book">Crear nova libreta de enderezos</string>
   <string name="account_refresh_calendar_list">Actualizar lista de calendario</string>
@@ -208,6 +210,8 @@
   <string name="login_type_advanced">Conexión avanzada (casos especiais)</string>
   <string name="login_use_username_password">Usar nome de usuaria/contrasinal</string>
   <string name="login_use_client_certificate">Usar certificado cliente</string>
+  <string name="login_no_certificate_found">Non se atopa certificado</string>
+  <string name="login_install_certificate">Instalar certificado</string>
   <string name="login_configuration_detection">Detección da configuración</string>
   <string name="login_querying_server">Agarda por favor, consultando o servidor…</string>
   <string name="login_no_caldav_carddav">Non se atopou servizo CalDAV ou CardDAV.</string>
@@ -248,6 +252,7 @@
   <string name="settings_password_summary">Actualizar o contrasinal de acordo ao teu servidor.</string>
   <string name="settings_enter_password">Escribir contrasinal:</string>
   <string name="settings_certificate_alias">Alias do certificado cliente</string>
+  <string name="settings_certificate_alias_empty">Non hai certificado seleccionado</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Límite temporal para eventos pasados</string>
   <string name="settings_sync_time_range_past_none">Sincronizaranse todos os eventos</string>
@@ -304,6 +309,7 @@
   <string name="collection_properties">Propiedades</string>
   <string name="collection_properties_url">Enderezo (URL):</string>
   <string name="collection_properties_copy_url">Copiar URL</string>
+  <string name="collection_properties_owner">Propietaria:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Info depuración</string>
   <string name="debug_info_use_share1">Usa a acción Compartir para enviar datos non modificados, especialmente para solicitudes soportadas</string>
