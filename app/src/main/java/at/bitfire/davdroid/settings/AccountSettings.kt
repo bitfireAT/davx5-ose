@@ -377,8 +377,20 @@ class AccountSettings(
 
     // UI settings
 
-    fun getShowOnlyPersonal(): Boolean =
-            accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null
+    /**
+     * Whether only personal collections should be shown.
+     *
+     * @return [Pair] of values:
+     *
+     *   1. (first) whether only personal collections should be shown
+     *   2. (second) whether the user shall be able to change the setting (= setting not locked)
+     */
+    fun getShowOnlyPersonal(): Pair<Boolean, Boolean> =
+            when (settings.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+                0 -> Pair(false, false)
+                1 -> Pair(true, false)
+                else /* including -1 */ -> Pair(accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null, true)
+            }
 
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
         accountManager.setUserData(account, KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)

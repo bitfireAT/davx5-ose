@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.IBinder
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
 import androidx.annotation.WorkerThread
@@ -30,6 +29,8 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.SettingsManager
 import kotlinx.android.synthetic.main.account_collections.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -119,8 +120,15 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        accountModel.showOnlyPersonal.value?.let { showOnlyPersonal ->
-            menu.findItem(R.id.showOnlyPersonal).isChecked = showOnlyPersonal
+        val settings = SettingsManager.getInstance(requireActivity())
+
+        menu.findItem(R.id.showOnlyPersonal).let { showOnlyPersonal ->
+            accountModel.showOnlyPersonal.value?.let { value ->
+                showOnlyPersonal.isChecked = value
+            }
+            accountModel.showOnlyPersonal_writable.value?.let { writable ->
+                showOnlyPersonal.isEnabled = writable
+            }
         }
     }
 

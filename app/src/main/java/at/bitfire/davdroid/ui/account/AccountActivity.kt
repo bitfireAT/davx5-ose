@@ -242,6 +242,7 @@ class AccountActivity: AppCompatActivity() {
         val calDavService = MutableLiveData<Long>()
 
         val showOnlyPersonal = MutableLiveData<Boolean>()
+        val showOnlyPersonal_writable = MutableLiveData<Boolean>()
 
 
         init {
@@ -249,7 +250,10 @@ class AccountActivity: AppCompatActivity() {
                 cardDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CARDDAV))
                 calDavService.postValue(db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CALDAV))
 
-                showOnlyPersonal.postValue(accountSettings.getShowOnlyPersonal())
+                accountSettings.getShowOnlyPersonal().let { (value, locked) ->
+                    showOnlyPersonal.postValue(value)
+                    showOnlyPersonal_writable.postValue(locked)
+                }
             }
         }
 

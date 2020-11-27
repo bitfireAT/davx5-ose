@@ -93,7 +93,7 @@ class SettingsManager private constructor(
         for (provider in providers)
             try {
                 val value = reader(provider)
-                Logger.log.finer("${provider::class.java.simpleName}: value = $value")
+                Logger.log.finer("${provider::class.java.simpleName}: $key = $value")
                 if (value != null) {
                     Logger.log.fine("Looked up setting $key -> $value")
                     return value
