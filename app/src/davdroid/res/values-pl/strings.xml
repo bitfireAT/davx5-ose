@@ -210,6 +210,8 @@
   <string name="login_type_advanced">Logowanie zaawansowane (dla specjalnych zastosowań)</string>
   <string name="login_use_username_password">Użyj loginu/hasła</string>
   <string name="login_use_client_certificate">Użyj certyfikatu klienta</string>
+  <string name="login_no_certificate_found">Nie znaleziono certyfikatu</string>
+  <string name="login_install_certificate">Zainstaluj certyfikat</string>
   <string name="login_configuration_detection">Wykrywanie konfiguracji</string>
   <string name="login_querying_server">Proszę czekać, odpytywanie serwera…</string>
   <string name="login_no_caldav_carddav">Nie można znaleźć usługi CalDAV lub CardDAV.</string>
@@ -250,6 +252,7 @@
   <string name="settings_password_summary">Zaktualizuj hasło zgodnie z serwerem.</string>
   <string name="settings_enter_password">Wpisz hasło:</string>
   <string name="settings_certificate_alias">Alias certyfikatu klienta</string>
+  <string name="settings_certificate_alias_empty">Nie wybrano certyfikatu</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limit czasowy przeszłych wydarzeń</string>
   <string name="settings_sync_time_range_past_none">Wszystkie wydarzenia zostaną zsynchronizowane</string>
