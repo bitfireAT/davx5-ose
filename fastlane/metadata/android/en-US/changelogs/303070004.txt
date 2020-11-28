@@ -1,0 +1,5 @@
+* account view: new setting "show only personal collections" (shows only collections from homesets, especially useful with for instance eGroupware)
+* account view: show owner in collection properties (if available)
+* allow to select client certificates for existing accounts
+* save sync intervals and chech/repair them at app start and reboot
+* other improvements and bug fixes
