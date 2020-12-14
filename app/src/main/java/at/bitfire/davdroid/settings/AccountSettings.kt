@@ -577,7 +577,7 @@ class AccountSettings(
 
         // request sync of new address book account
         ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 1)
-        setSyncInterval(context.getString(R.string.address_books_authority), Constants.DEFAULT_SYNC_INTERVAL)
+        setSyncInterval(context.getString(R.string.address_books_authority), 4*3600)
     }
 
     /* Android 7.1.1 OpenTasks fix */

@@ -36,6 +36,7 @@ import at.bitfire.davdroid.model.HomeSet
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.ui.account.AccountActivity
@@ -167,6 +168,8 @@ class AccountDetailsFragment : Fragment() {
                 val db = AppDatabase.getInstance(context)
                 try {
                     val accountSettings = AccountSettings(context, account)
+                    val settings = SettingsManager.getInstance(context)
+                    val defaultSyncInterval = settings.getLong(Settings.DEFAULT_SYNC_INTERVAL)
 
                     val refreshIntent = Intent(context, DavService::class.java)
                     refreshIntent.action = DavService.ACTION_REFRESH_COLLECTIONS
@@ -185,7 +188,7 @@ class AccountDetailsFragment : Fragment() {
 
                         // set default sync interval and enable sync regardless of permissions
                         ContentResolver.setIsSyncable(account, addrBookAuthority, 1)
-                        accountSettings.setSyncInterval(addrBookAuthority, Constants.DEFAULT_SYNC_INTERVAL)
+                        accountSettings.setSyncInterval(addrBookAuthority, defaultSyncInterval)
                     } else
                         ContentResolver.setIsSyncable(account, addrBookAuthority, 0)
 
@@ -199,12 +202,12 @@ class AccountDetailsFragment : Fragment() {
 
                         // set default sync interval and enable sync regardless of permissions
                         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
-                        accountSettings.setSyncInterval(CalendarContract.AUTHORITY, Constants.DEFAULT_SYNC_INTERVAL)
+                        accountSettings.setSyncInterval(CalendarContract.AUTHORITY, defaultSyncInterval)
 
                         val taskProvider = TaskUtils.currentProvider(context)
                         if (taskProvider != null) {
                             ContentResolver.setIsSyncable(account, taskProvider.authority, 1)
-                            accountSettings.setSyncInterval(taskProvider.authority, Constants.DEFAULT_SYNC_INTERVAL)
+                            accountSettings.setSyncInterval(taskProvider.authority, defaultSyncInterval)
                             // further changes will be handled by TasksWatcher on app start or when tasks app is (un)installed
                         }
                     } else

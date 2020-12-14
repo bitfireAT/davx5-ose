@@ -22,7 +22,9 @@ class DefaultsProvider(
             Pair(Settings.OVERRIDE_PROXY_PORT, 8118)
     )
 
-    override val longDefaults = emptyMap<String, Long>()
+    override val longDefaults = mapOf<String, Long>(
+            Pair(Settings.DEFAULT_SYNC_INTERVAL, 4*3600)    /* 4 hours */
+    )
 
     override val stringDefaults = mapOf(
             Pair(Settings.OVERRIDE_PROXY_HOST, "localhost")

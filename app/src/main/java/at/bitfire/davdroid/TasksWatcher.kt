@@ -19,6 +19,8 @@ import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -71,7 +73,8 @@ class TasksWatcher(
                 ContentResolver.setIsSyncable(account, authority, 1)
                 try {
                     val settings = AccountSettings(context, account)
-                    val interval = settings.getSavedTasksSyncInterval() ?: Constants.DEFAULT_SYNC_INTERVAL
+                    val interval = settings.getSavedTasksSyncInterval() ?:
+                            SettingsManager.getInstance(context).getLong(Settings.DEFAULT_SYNC_INTERVAL)
                     settings.setSyncInterval(authority, interval)
                 } catch (e: InvalidAccountException) {
                     // account has already been removed
