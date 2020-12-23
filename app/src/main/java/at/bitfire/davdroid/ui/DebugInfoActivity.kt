@@ -343,10 +343,21 @@ class DebugInfoActivity: AppCompatActivity() {
                     writer.append("\nCONNECTVITY\n\n")
                     val activeNetwork = if (Build.VERSION.SDK_INT >= 23) connectivityManager.activeNetwork else null
                     connectivityManager.allNetworks.sortedByDescending { it == activeNetwork }.forEach { network ->
-                        val capabilities = connectivityManager.getNetworkCapabilities(network)!!
-                        writer  .append(if (network == activeNetwork) " ☒ " else " ☐ ")
-                                .append(capabilities.toString().replace('&',' '))
-                                .append('\n')
+                        val properties = connectivityManager.getLinkProperties(network)
+                        connectivityManager.getNetworkCapabilities(network)?.let { capabilities ->
+                            writer  .append(if (network == activeNetwork) " ☒ " else " ☐ ")
+                                    .append(properties?.interfaceName ?: "?")
+                                    .append("\n   - ")
+                                    .append(capabilities.toString().replace('&',' '))
+                                    .append('\n')
+                        }
+                        if (properties != null) {
+                            writer  .append("   - DNS: ")
+                                    .append(properties.dnsServers.map { it.hostAddress }.joinToString(", "))
+                            if (Build.VERSION.SDK_INT >= 28 && properties.isPrivateDnsActive)
+                                writer.append(" (private mode)")
+                            writer.append('\n')
+                        }
                     }
                     writer.append('\n')
 
