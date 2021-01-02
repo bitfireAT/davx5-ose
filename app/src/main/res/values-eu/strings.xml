@@ -14,26 +14,37 @@
   <string name="notification_channel_sync_errors">Sinkronizazio erroreak</string>
   <string name="notification_channel_sync_errors_desc">Sinkronizazioa gelditzen duten errore garrantzitsuak, esaterako ustekabeko zerbitzariaren erantzunak</string>
   <string name="notification_channel_sync_warnings">Sinkronizazio abisuak</string>
+  <string name="notification_channel_sync_warnings_desc">Fitxategi baliogabe moduko sinkronizazio arazo ez-kritikoak</string>
   <string name="notification_channel_sync_io_errors">Sare eta S/I erroreak</string>
+  <string name="notification_channel_sync_io_errors_desc">Denbora-mugak, konexio arazoak, etab. (normalean behin-behinekoak)</string>
   <!--IntroActivity-->
   <string name="intro_slogan1">Zure datuak. Zure aukera.</string>
   <string name="intro_slogan2">Har ezazu kontrola.</string>
   <string name="intro_battery_title">Sinkronizazio tarte erregularrak</string>
   <string name="intro_battery_not_whitelisted">Desgaituta (ez gomendatuta)</string>
   <string name="intro_battery_whitelisted">Gaituta (gomendatuta)</string>
+  <string name="intro_battery_text">Sinkronizazioa tarte erregularretan ahalbidetzeko, %s atzeko planoan exekutatzen utzi behar da. Bestela, Androidek sinkronizazioa gelditu dezake edozein unean.</string>
   <string name="intro_battery_dont_show">Ez ditut sinkronizazio tarte erregularrak behar.*</string>
   <string name="intro_autostart_title">%s bateragarritasuna</string>
+  <string name="intro_autostart_text">Gailu honek ziurrenik sinkronizazioa blokeatzen du. Hau jasaten baduzu, eskuz konpondu dezakezu soilik.</string>
+  <string name="intro_autostart_dont_show">Beharrezko ezarpenak bukatu ditut. Ez gogorarazi berriro.*</string>
+  <string name="intro_leave_unchecked">* Utzi aktibatu gabe gero gogorarazteko. Aplikazioaren ezarpenetan berrezarri daiteke / %s</string>
   <string name="intro_more_info">Informazio gehiago</string>
   <string name="intro_tasks_title">Tasks bateragarritasuna</string>
+  <string name="intro_tasks_text1">Zereginak zure zerbitzarian onartuta badaude, onartutako zeregin aplikazio batekin sinkronizatu daitezke:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[Azpizereginak edo zeregin errepikakorren bezalako ezaugarrientzako, posible da <a href="https://www.davx5.com/faq/tasks/advanced-task-features">aplikazio gehigarriak</a> behar izatea.]]></string>
   <string name="intro_tasks_tasks_org">Tasks</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Ezaugarri batzuk <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ez dira onartzen</a> (oraindik).]]></string>
   <string name="intro_tasks_no_app_store">Ez dago denda aplikaziorik eskuragarri </string>
   <string name="intro_tasks_dont_show">Ez dut zereginen funtzionalitatea behar.*</string>
   <string name="intro_open_source_title">Kode irekiko softwarea</string>
+  <string name="intro_open_source_text">%s erabiltzen duzula pozik gaude, software irekia delako. Garapen, mantentze eta laguntza lan gogorrak dira. Mesedez pentsatu kolaboratzen (modu asko daude) edo dohaintza bat. Asko eskertuko genuke!</string>
   <string name="intro_open_source_details">Nola lagundu/dirua eman</string>
   <string name="intro_open_source_dont_show">Ez erakutsi etorkizunean</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Baimenak</string>
+  <string name="permissions_text">%s baimenak behar ditu ondo funtzionatzeko.</string>
   <string name="permissions_all_title">Azpiko guztiak</string>
   <string name="permissions_all_status_off">Erabili hau ezaugarri guztiak gaitzeko (gomendatuta)</string>
   <string name="permissions_all_status_on">Baimen guztiak eman dira</string>
@@ -49,13 +60,22 @@
   <string name="permissions_tasks_status_off">Ez sinkronizatu zereginik (ez da gomendatzen)</string>
   <string name="permissions_tasks_status_on">Zereginen sinkronizazioa posible</string>
   <string name="permissions_autoreset_title">Mantendu baimenak</string>
+  <string name="permissions_autoreset_status_off">Baimenak automatikoki berezarri daitezke (ez gomendatuta)</string>
+  <string name="permissions_autoreset_status_on">Baimenak ez dira automatikoki berezarriko</string>
+  <string name="permissions_autoreset_instruction">Egin klik Baimenak atalean &gt; kendu marka \"Kendu baimenak aplikazioa ez bada erabiltzen\" aukeratik</string>
+  <string name="permissions_app_settings_hint">Interruptore batek funtzionatzen ez badu, erabili aplikazioaren ezarpenak / Baimenak.</string>
   <string name="permissions_app_settings">Aplikazioaren ezarpenak</string>
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID baimenak</string>
+  <string name="wifi_permissions_intro">Uneko WiFi izena (SSID) atzitzeko, baldintza hauek bete behar dira:</string>
   <string name="wifi_permissions_location_permission">Kokapen baimena</string>
   <string name="wifi_permissions_location_permission_on">Kokapen baimena emanda</string>
   <string name="wifi_permissions_location_permission_off">Kokapen baimena ukatuta</string>
+  <string name="wifi_permissions_background_location_permission">Atzeko planoko kokapen baimena</string>
   <string name="wifi_permissions_background_location_permission_label">Baimendu beti</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Kokapen baimena <b>%s</b>(e)ra ezarri da]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Kokapen baimena ez da <b>%s</b>(e)ra ezarri]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s zure kokapen baimena erabiltzen du uneko WiFi SSIDa SSIDz murriztatutako kontuen kontra egiaztatzeko. Hau aplikazioa atzeko planoan badago ere gertatuko da. Ez da kokapen daturik biltzen, gordetzen, prozesatzen edo inora bidaltzen.</string>
   <string name="wifi_permissions_location_enabled">Kokapena beti gaituta</string>
   <string name="wifi_permissions_location_enabled_on">Kokapen zerbitzua gaituta dago</string>
   <string name="wifi_permissions_location_enabled_off">Kokapen zerbitzua desgaituta dago</string>
@@ -64,12 +84,20 @@
   <string name="about_libraries">Liburutegiak</string>
   <string name="about_version">%1$s (%2$d) bertsioa</string>
   <string name="about_build_date">%s(e)an konpilatuta</string>
+  <string name="about_flavor_info">Bertsio hau Google Play bidez soilik banatu daiteke.</string>
+  <string name="about_license_info_no_warranty">Programa hau INOLAKO BERMERIK GABE dator. Software librea da, eta birbanatzeko baimena duzu baldintza batzuk kontuan hartuz.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Eskerrik asko: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Ezin izan da egunkari fitxategia sortu</string>
+  <string name="logging_notification_text">%s jarduera guztiak erregistratzen</string>
   <string name="logging_notification_view_share">Ikusi/partekatu</string>
   <string name="logging_notification_disable">Desgaitu</string>
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Ireki nabigatzeko menu lerrakorra </string>
+  <string name="navigation_drawer_close">Itxi nabigatzeko menu lerrakorra</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV sinkronizazio moldagailua</string>
   <string name="navigation_drawer_about">Honi buruz / Lizentzia</string>
+  <string name="navigation_drawer_beta_feedback">Beta iritzia</string>
   <string name="install_email_client">Instalatu e-mail bezero bat</string>
   <string name="install_browser">Instalatu web nabigatzaile bat</string>
   <string name="navigation_drawer_settings">Ezarpenak</string>
@@ -81,20 +109,43 @@
   <string name="navigation_drawer_forums">Laguntza / Foroak</string>
   <string name="navigation_drawer_donate">Dohaintza egin</string>
   <string name="navigation_drawer_privacy_policy">Pribatutasun gidalerroak</string>
+  <string name="account_list_no_internet">Ez dago internetik. Androidek ez du sinkronizaziorik egingo.</string>
+  <string name="account_list_empty">Ongi etorri DAVx⁵ aplikaziora!\n\nCalDAV/CardDAV kontu bat gehitu dezakezu orain.</string>
+  <string name="accounts_global_sync_disabled">Sistema osoko sinkronizazio automatikoa desgaituta dago</string>
   <string name="accounts_global_sync_enable">Gaitu</string>
   <string name="accounts_sync_all">Sinkronizatu kontu guztiak</string>
   <!--DavService-->
+  <string name="dav_service_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
+  <string name="dav_service_refresh_couldnt_refresh">Ezin izan da bilduma zerrenda freskatu</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ezarpenak</string>
   <string name="app_settings_debug">Arazketa</string>
   <string name="app_settings_show_debug_info">Erakutsi arazte informazioa</string>
+  <string name="app_settings_show_debug_info_details">Ikusi/partekatu software eta konfigurazio xehetasunak</string>
+  <string name="app_settings_logging">Erregistro xehatuak</string>
+  <string name="app_settings_logging_on">Erregistratzea gaituta dago</string>
+  <string name="app_settings_logging_off">Erregistratzea desgaituta dago</string>
   <string name="app_settings_connection">Konexioa</string>
+  <string name="app_settings_override_proxy">Gainidatzi proxy ezarpenak</string>
+  <string name="app_settings_override_proxy_on">Erabili proxy ezarpen pertsonalizatuak</string>
+  <string name="app_settings_override_proxy_off">Erabili sistemak lehenetsitako proxy ezarpenak</string>
   <string name="app_settings_override_proxy_host">HTTP proxy hostalari izena</string>
   <string name="app_settings_override_proxy_port">HTTP proxy portua</string>
   <string name="app_settings_security">Segurtasuna</string>
   <string name="app_settings_security_app_permissions">Aplikazioaren baimenak</string>
+  <string name="app_settings_security_app_permissions_summary">Berrikusi sinkronizaziorako beharrezkoak diren baimenak</string>
+  <string name="app_settings_distrust_system_certs">Mesfidatu sistemaren ziurtagiritaz</string>
+  <string name="app_settings_distrust_system_certs_on">Sistemako eta erabiltzaileak gehitutako CAk ez dira fidagarritzat hartuko</string>
+  <string name="app_settings_distrust_system_certs_off">Sistemako eta erabiltzaileak gehitutako CAk fidagarritzat hartuko dira (gomendatuta)</string>
+  <string name="app_settings_reset_certificates">Berezarri (mes)fidatutako ziurtagiriak</string>
+  <string name="app_settings_reset_certificates_summary">Ziurtagiri pertsonalizatu guztien fidagarritasuna berezartzen du</string>
+  <string name="app_settings_reset_certificates_success">Ziurtagiri pertsonalizatu guztiak garbitu dira</string>
   <string name="app_settings_user_interface">Erabiltzaile interfazea</string>
   <string name="app_settings_notification_settings">Jakinarazpen-ezarpenak</string>
+  <string name="app_settings_notification_settings_summary">Kudeatu jakinarazpen kanalak eta haien ezarpenak</string>
+  <string name="app_settings_reset_hints">Berezarri aholkuak</string>
+  <string name="app_settings_reset_hints_summary">Lehen baztertu diren aholkuak berriro gaitzen ditu</string>
+  <string name="app_settings_reset_hints_success">Aholku guztiak erakutsiko dira berriro</string>
   <string name="app_settings_integration">Integrazioa</string>
   <string name="app_settings_tasks_provider">Tasks aplikazioa</string>
   <string name="app_settings_tasks_provider_synchronizing_with">%s(r)ekin sinkronizatzen</string>
@@ -103,15 +154,26 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Kontaktu sinkronizaziorik ez (baimenak falta dira)</string>
+  <string name="account_caldav_missing_calendar_permissions">Egutegi sinkronizaziorik ez (baimenak falta dira)</string>
+  <string name="account_caldav_missing_tasks_permissions">Zeregin sinkronizaziorik ez (baimenak falta dira)</string>
+  <string name="account_caldav_missing_permissions">Egutegi eta zeregin sinkronizaziorik ez (baimenak falta dira)</string>
+  <string name="account_webcal_missing_calendar_permissions">Ezin dira egutegiak atzitu (baimenak falta dira)</string>
   <string name="account_permissions_action">Baimenak</string>
+  <string name="account_no_address_books">Ez dago helbide libururik (oraindik).</string>
+  <string name="account_no_calendars">Ez dago egutegirik (oraindik).</string>
+  <string name="account_no_webcals">Ez dago egutegi harpidetzarik (oraindik).</string>
+  <string name="account_swipe_down">Lerratu beherantz zerbitzariaren zerrenda freskatzeko.</string>
   <string name="account_synchronize_now">Sinkronizatu orain</string>
   <string name="account_synchronizing_now">Sinkronizatzen orain</string>
   <string name="account_settings">Kontuaren ezarpenak</string>
   <string name="account_rename">Berrizendatu kontua</string>
+  <string name="account_rename_new_name">Gorde gabeko datu lokalak baztertu daitezke. Berriro sinkronizatu behar da izena aldatu ostean. Kontuaren izen berria:</string>
   <string name="account_rename_rename">Berrizendatu</string>
   <string name="account_rename_couldnt_rename">Ezin izan da kontua berrizendatu</string>
   <string name="account_delete">Ezabatu kontua</string>
   <string name="account_delete_confirmation_title">Ezabatu kontua?</string>
+  <string name="account_delete_confirmation_text">Helbide liburu, egutegi eta zeregin zerrenden kopia lokal guztiak ezabatuko dira.</string>
   <string name="account_synchronize_this_collection">sinkronizatu kolekzio hau</string>
   <string name="account_read_only">irakurri-soilik</string>
   <string name="account_calendar">egutegia</string>
@@ -121,14 +183,17 @@
   <string name="account_create_new_address_book">Sortu helbide liburu berria</string>
   <string name="account_refresh_calendar_list">Freskatu egutegi zerrenda</string>
   <string name="account_create_new_calendar">Sortu egutegi berria</string>
+  <string name="account_no_webcal_handler_found">Ez da Webcal-ekin bateragarria den aplikaziorik aurkitu</string>
   <string name="account_install_icsx5">Instalatu ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Gehitu kontua</string>
   <string name="login_type_email">Saioa hasi helbide elektronikoarekin</string>
   <string name="login_email_address">Helbide elektornikoa</string>
+  <string name="login_email_address_error">Baliozko eposta beharrezkoa da</string>
   <string name="login_password">Pasahitza</string>
   <string name="login_password_required">Pasahitza beharrezkoa</string>
   <string name="login_type_url">Saioa hasi URL eta erabiltzaile izenarekin</string>
+  <string name="login_url_must_be_http_or_https">URLa http(s):// hasi behar da</string>
   <string name="login_user_name">Erabiltzaile izena</string>
   <string name="login_user_name_required">Erabiltzaile izena beharrezkoa</string>
   <string name="login_base_url">Oinarri URL</string>
@@ -137,6 +202,8 @@
   <string name="login_login">Saioa hasi</string>
   <string name="login_create_account">Sortu kontua</string>
   <string name="login_account_name">Kontuaren izena</string>
+  <string name="login_account_name_info">Erabili zure eposta helbidea kontu izen bezala Androidek kontuaren izena ANTOLATZAILE eremuan ezarriko duelako sortzen dituzun gertaerentzako. Ezin dituzu bi kontu izen berdinarekin eduki.</string>
+  <string name="login_account_contact_group_method">Kontaktuen taldekatze metodoa:</string>
   <string name="login_account_name_required">Kontuaren izena beharrezkoa</string>
   <string name="login_account_name_already_taken">Kontuaren izena hartuta dago</string>
   <string name="login_account_not_created">Ezin izan da kontua sortu</string>
@@ -153,17 +220,66 @@
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ezarpenak: %s</string>
   <string name="settings_sync">Sinkronizazioa</string>
+  <string name="settings_sync_interval_contacts">Kontaktuen sink. tartea</string>
+  <string name="settings_sync_summary_manually">Eskuz soilik</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">%d minuturo + berehala aldaketa lokaletan</string>
+  <string name="settings_sync_interval_calendars">Egutegien sink. tartea</string>
+  <string name="settings_sync_interval_tasks">Zereginen sink. tartea</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Eskuz soilik</item>
+    <item>15 minuturo</item>
+    <item>30 minuturo</item>
+    <item>Ordu batero</item>
+    <item>2 orduro</item>
+    <item>4 orduro</item>
+    <item>Egunero</item>
+  </string-array>
   <string name="settings_sync_wifi_only">Sinkronizatu soilik WiFi bidez</string>
+  <string name="settings_sync_wifi_only_on">Sinkronizazioa WiFi konexioetara murriztuta dago</string>
+  <string name="settings_sync_wifi_only_off">Konexio mota ez da kontuan hartzen</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID murriztapena</string>
+  <string name="settings_sync_wifi_only_ssids_on">%s(r)en bidez soilik sinkronizatuko du</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">%s(r)en bidez soilik sinkronizatuko du (kokapen zerbitzua gaituta behar du)</string>
+  <string name="settings_sync_wifi_only_ssids_off">WiFi konexio guztiak erabiliko dira</string>
+  <string name="settings_sync_wifi_only_ssids_message">Komaz banatutako izenak (SSIDak) baimendutako WiFi sareentzako (utzi hutsik denentzako)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID murriztapenak ezarpen gehiago behar ditu</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Kudeatu</string>
   <string name="settings_more_info_faq">Informazio gehiago (FAQ)</string>
   <string name="settings_authentication">Autentifikazioa</string>
   <string name="settings_username">Erabiltzaile izena</string>
   <string name="settings_enter_username">Sartu erabiltzaile izena:</string>
   <string name="settings_password">Pasahitza</string>
+  <string name="settings_password_summary">Eguneratu pasahitza zure zerbitzariaren arabera</string>
   <string name="settings_enter_password">Sartu zure pasahitza:</string>
+  <string name="settings_certificate_alias">Bezeroaren ziurtagiriaren aliasa</string>
+  <string name="settings_certificate_alias_empty">Ez da ziurtagiririk hautatu</string>
   <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Aurreko gertaeren denbora muga</string>
+  <string name="settings_sync_time_range_past_none">Ekintza guztiak sinkronizatuko dira</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Egun bat baino gehiago dituzten gertaerak ezikusiko dira</item>
+    <item quantity="other">%d egun baino gehiago dituzten gertaerak ezikusiko dira</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Orain dela egun hauek gertatu ziren gertaerak ezikusiko dira (0 izan daiteke). Utzi hutsik gertaera guztiak sinkronizatzeko.</string>
+  <string name="settings_default_alarm">Abisu lehentsia</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Abisu lehenetsia gertaera baino minutu bat lehenago</item>
+    <item quantity="other">Abisu lehenetsia %d minutu gertaera baino lehenago</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Ez dago abisu lehenetsirik sortuta</string>
+  <string name="settings_default_alarm_message">Abisu lehenetsiak sortu behar badira abisurik gabeko gertaerentzat: nahi den minutu kopurua gertaera baino lehen. Utzi hutsik abisu lehenetsiak desgaitzeko.</string>
   <string name="settings_manage_calendar_colors">Kudeatu egutegi koloreak</string>
+  <string name="settings_manage_calendar_colors_on">Egutegiaren koloreak sinkronizazio bakoitzean berrezarten dira</string>
+  <string name="settings_manage_calendar_colors_off">Egutegiaren koloreak beste aplikazio batzuetatik ezarri daitezke</string>
+  <string name="settings_event_colors">Gertaera kolore bateragarritasuna</string>
+  <string name="settings_event_colors_on">Gertaera koloreak sinkronizatuta daude</string>
+  <string name="settings_event_colors_off">Gertaera koloreak ez daude sinkronizatuta</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Kontaktu taldekatze metodoa</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Taldeak vCard banatuak dira</item>
+    <item>Taldeak kontaktu bakoitzeko kategoriak dira</item>
+  </string-array>
   <string name="settings_contact_group_method_change">Aldatu taldekatze metodoa</string>
   <!--collection management-->
   <string name="create_addressbook">Sortu helbide liburua</string>
@@ -186,23 +302,36 @@
   <string name="create_collection_create">Sortu</string>
   <string name="delete_collection">Ezabatu kolekzioa</string>
   <string name="delete_collection_confirm_title">Ziur zaude?</string>
+  <string name="delete_collection_confirm_warning">Bilduma hau (%s) eta bere datu guztiak behin betiko ezabatuko dira.</string>
+  <string name="delete_collection_data_shall_be_deleted">Datu hauek zerbitzaritik ezabatu beharko litzakete.</string>
   <string name="delete_collection_deleting_collection">Kolekzioa ezabatzen</string>
+  <string name="collection_force_read_only">Behartu irakurri-soilik</string>
   <string name="collection_properties">Propietateak</string>
   <string name="collection_properties_url">Helbidea (URL):</string>
   <string name="collection_properties_copy_url">Kopiatu URL</string>
   <string name="collection_properties_owner">Jabea:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Arazketa informazioa</string>
+  <string name="debug_info_use_share1">Erabili partekatze ekintza aldatu gabeko datuak bidaltzeko, laguntza eskaeretarako bereziki.</string>
+  <string name="debug_info_use_share2">Saiatu kopiatu eta itsatsi edo pantaila-argazkiak interpretazioa zailagoa egiten dutelako.</string>
+  <string name="debug_info_attached">Arazketa informazioa mezuan erantsiko da (hartuko dituen aplikazioak eranskinak onartu behar ditu).</string>
   <string name="debug_info_http_error">HTTP errorea</string>
   <string name="debug_info_server_error">Zerbitzari errorea</string>
   <string name="debug_info_webdav_error">WebDAV errorea</string>
   <string name="debug_info_io_error">S/I errorea</string>
+  <string name="debug_info_http_403_description">Eskaera ukatu egin da. Egiaztatu parte hartzen dituzten baliabideak eta arazketa informazioa xehetasun gehiagorako.</string>
+  <string name="debug_info_http_404_description">Eskatutako baliabidea ez dago (jada). Egiaztatu parte hartzen dituzten baliabideak eta arazketa informazioa xehetasun gehiagorako.</string>
+  <string name="debug_info_http_5xx_description">Zerbitzariak arazo bat izan du. Mesedez jarri harremanetan zure zerbitzariaren laguntzarekin.</string>
+  <string name="debug_info_unexpected_error">Ustekabeko errore bat gertatu da. Ikusi arazketa informazioa xehetasunentzako.</string>
   <string name="debug_info_view_details">Ikusi xehetasunak</string>
   <string name="debug_info_subtitle">Arazketa informazioa lortu da</string>
+  <string name="debug_info_involved_caption">Parte hartzen duten baliabideak</string>
+  <string name="debug_info_involved_subtitle">Arazoarekin erlazionatuta</string>
   <string name="debug_info_involved_remote">Kanpoko baliabidea:</string>
   <string name="debug_info_involved_local">Baliabide lokala:</string>
   <string name="debug_info_involved_view">Ikusi aplikazioarekin</string>
   <string name="debug_info_logs_caption">Egunkariak</string>
+  <string name="debug_info_logs_subtitle">Erregistro xehetuak eskuragarri daude</string>
   <string name="debug_info_logs_view">Ikusi egunkariak</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Errore bat gertatu da</string>
@@ -220,6 +349,10 @@
   <string name="sync_error_local_storage">Biltegiratze lokal errorea – %s</string>
   <string name="sync_error_retry">Saiatu berriz</string>
   <string name="sync_error_view_item">Ikusi elementua</string>
+  <string name="sync_invalid_contact">Kontaktu baliogabea jaso da zerbitzaritik</string>
+  <string name="sync_invalid_event">Gertaera baliogabea jaso da zerbitzaritik</string>
+  <string name="sync_invalid_task">Zeregin baliogabea jaso da zerbitzaritik</string>
+  <string name="sync_invalid_resources_ignoring">Baliabide baliogabe bat edo gehiago ezikusten</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Konexio segurtasuna</string>
   <string name="trust_certificate_unknown_certificate_found">DAVx⁵ aplikazioak ziurtagiri ezezagun bat aurkitu du. Fidagarritzat jo nahi duzu?</string>

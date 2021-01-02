@@ -178,6 +178,7 @@
   <string name="account_read_only">schreibgeschützt</string>
   <string name="account_calendar">Kalender</string>
   <string name="account_task_list">Aufgabenliste</string>
+  <string name="account_only_personal">Nur Eigene anzeigen</string>
   <string name="account_refresh_address_book_list">Adressbücher neu erkennen</string>
   <string name="account_create_new_address_book">Neues Adressbuch erstellen</string>
   <string name="account_refresh_calendar_list">Kalender neu erkennen</string>
@@ -209,6 +210,8 @@
   <string name="login_type_advanced">Erweiterter Login (für spezielle Anwendungsfälle)</string>
   <string name="login_use_username_password">Name/Passwort benutzen</string>
   <string name="login_use_client_certificate">Client-Zertifikat benutzen</string>
+  <string name="login_no_certificate_found">Kein Zertifikat gefunden</string>
+  <string name="login_install_certificate">Zertifikat installieren </string>
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
   <string name="login_no_caldav_carddav">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>
@@ -249,6 +252,7 @@
   <string name="settings_password_summary">Aktualisieren Sie Ihr Passwort gemäß den Server-Einstellungen.</string>
   <string name="settings_enter_password">Passwort eingeben:</string>
   <string name="settings_certificate_alias">Client-Zertifikat (Alias)</string>
+  <string name="settings_certificate_alias_empty">Kein Zertifikat ausgewählt </string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Abrufbeschränkung vergangener Termine</string>
   <string name="settings_sync_time_range_past_none">Alle Termine werden synchronisiert</string>
@@ -305,6 +309,7 @@
   <string name="collection_properties">Eigenschaften</string>
   <string name="collection_properties_url">Adresse (URL):</string>
   <string name="collection_properties_copy_url">URL kopieren</string>
+  <string name="collection_properties_owner">Besitzer:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
   <string name="debug_info_use_share1">Verwenden Sie Teilen, um die unveränderten Daten zu schicken – insbesondere für Support-Anfragen.</string>
