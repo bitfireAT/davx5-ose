@@ -17,6 +17,9 @@
   <!--AboutActivity-->
   <!--global settings-->
   <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Obriu el calaix de navegació</string>
+  <string name="navigation_drawer_close">Tanca el calaix de navegació</string>
+  <string name="navigation_drawer_subtitle">Adaptador de sincronització CalDAV / CardDAV</string>
   <string name="navigation_drawer_about">Quan a / Llicència</string>
   <string name="navigation_drawer_beta_feedback">Retroacció de la Beta</string>
   <string name="navigation_drawer_settings">Paràmetres</string>
@@ -27,6 +30,7 @@
   <string name="navigation_drawer_faq">Preguntes Freqüents</string>
   <string name="navigation_drawer_forums">Ajuda / Fòrums</string>
   <string name="navigation_drawer_donate">Fer donació</string>
+  <string name="account_list_empty">Benvingut a DAVx⁵! \n\n Ara podeu afegir un compte CalDAV / CardDAV.</string>
   <string name="accounts_global_sync_enable">Activar</string>
   <!--DavService-->
   <!--AppSettingsActivity-->
@@ -35,6 +39,8 @@
   <string name="app_settings_security">Seguretat</string>
   <string name="app_settings_user_interface">Interfície d’usuari</string>
   <string name="app_settings_reset_hints">Reiniciar pistes</string>
+  <string name="app_settings_reset_hints_summary">Torna a habilitar els consells que s\'han ignorat anteriorment</string>
+  <string name="app_settings_reset_hints_success">Es mostraran de nou tots els consells</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
@@ -46,6 +52,7 @@
   <string name="account_rename_rename">Canvia el nom</string>
   <string name="account_delete">Esborra el compte</string>
   <string name="account_delete_confirmation_title">Segur que vols esborrar el compte?</string>
+  <string name="account_delete_confirmation_text">Se suprimiran totes les còpies locals de llibretes d\'adreces, calendaris i llistes de tasques.</string>
   <string name="account_synchronize_this_collection">Sincronitzar aquesta col·lecció</string>
   <string name="account_read_only">Només de lectura</string>
   <string name="account_calendar">Calendari</string>
@@ -70,10 +77,21 @@
   <string name="login_login">Entrada</string>
   <string name="login_create_account">Crear compte</string>
   <string name="login_account_name">Nom del compte</string>
+  <string name="login_account_name_info">Utilitzeu la vostra adreça de correu electrònic com a nom del compte perquè Android utilitzarà el nom del compte com a camp ORGANITZADOR per als esdeveniments que creeu. No podeu tenir dos comptes amb el mateix nom.</string>
+  <string name="login_account_name_required">Nom del compte obligatori</string>
+  <string name="login_account_not_created">No s\'ha pogut crear el compte</string>
+  <string name="login_configuration_detection">Detecció de configuració</string>
+  <string name="login_querying_server">Espereu, consultant el servidor …</string>
+  <string name="login_no_caldav_carddav">No s\'ha pogut trobar el servei CalDAV o CardDAV.</string>
+  <string name="login_view_logs">Mostra els detalls</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Paràmetres: %s</string>
   <string name="settings_sync">Sincronització</string>
+  <string name="settings_sync_interval_contacts">Sincronització de contactes. Interval</string>
   <string name="settings_sync_summary_manually">Només a mà</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Cada %dminut(s) + immediatament en els canvis locals</string>
+  <string name="settings_sync_interval_calendars">Sincronització de calendaris. Interval</string>
+  <string name="settings_sync_interval_tasks">Sincronització de tasques. Interval</string>
   <string-array name="settings_sync_interval_names">
     <item>Només a mà</item>
     <item>Cada 15 minuts</item>
@@ -88,13 +106,44 @@
   <string name="settings_username">Nom d\'usuari/a</string>
   <string name="settings_enter_username">Escriu el nom d\'usuari/a:</string>
   <string name="settings_password">Contrasenya</string>
+  <string name="settings_password_summary">Actualitzeu la contrasenya segons el vostre servidor.</string>
   <string name="settings_enter_password">Escriu la teva contrasenya</string>
   <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Límit de temps dels esdeveniments passats</string>
+  <string name="settings_sync_time_range_past_none">Tots els esdeveniments se sincronitzaran</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Els esdeveniments de més d\'un dia passat seran ignorats</item>
+    <item quantity="other">Els esdeveniments de més de %d dies passats seran ignorats</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Els esdeveniments que superin aquest nombre de dies en el passat seran ignorats (poden ser 0). Deixeu-ho en blanc per sincronitzar tots els esdeveniments.</string>
   <string name="settings_manage_calendar_colors">Gestiona els colors del calendari</string>
   <string name="settings_carddav">CardDAV</string>
   <!--collection management-->
+  <string name="create_addressbook">Crea una llibreta d\'adreces</string>
+  <string name="create_addressbook_display_name_hint">La meva llibreta d\'adreces</string>
+  <string name="create_calendar">Crea un calendari</string>
+  <string name="create_calendar_time_zone">Fus horari</string>
+  <string name="create_calendar_type">Possibles entrades de calendari</string>
+  <string name="create_calendar_type_events_and_tasks">Combinat (esdeveniments i tasques)</string>
+  <string name="create_collection_color">Color</string>
+  <string name="create_collection_creating">S\'està creant una col·lecció</string>
+  <string name="create_collection_display_name">Títol</string>
+  <string name="create_collection_display_name_required">Cal un títol</string>
+  <string name="create_collection_description">Descripció</string>
+  <string name="create_collection_home_set">Ubicació d’emmagatzematge</string>
+  <string name="delete_collection">Suprimeix la col·lecció</string>
+  <string name="delete_collection_confirm_title">Estàs segur?</string>
+  <string name="delete_collection_confirm_warning">Aquesta col·lecció (%s) i totes les seves dades s’eliminaran definitivament.</string>
+  <string name="delete_collection_deleting_collection">S\'està suprimint la col·lecció</string>
   <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Informació de depuració</string>
   <!--ExceptionInfoFragment-->
+  <string name="exception">S\'ha produït un error.</string>
+  <string name="exception_httpexception">S\'ha produït un error HTTP.</string>
+  <string name="exception_ioexception">S\'ha produït un error d\'E/S.</string>
+  <string name="exception_show_details">Mostra els detalls</string>
   <!--sync adapters-->
+  <string name="sync_error_http_dav">Error del servidor HTTP: %s</string>
+  <string name="sync_error_local_storage">Error d\'emmagatzematge local: %s</string>
   <!--cert4android-->
 </resources>

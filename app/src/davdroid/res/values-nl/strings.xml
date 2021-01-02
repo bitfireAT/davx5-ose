@@ -62,6 +62,7 @@
   <string name="permissions_autoreset_title">Behoud machtigingen</string>
   <string name="permissions_autoreset_status_off">Machtigingen kunnen automatisch worden gereset (niet aanbevolen)</string>
   <string name="permissions_autoreset_status_on">Machtigingen worden niet automatisch gereset</string>
+  <string name="permissions_autoreset_instruction">Klik op Machtigingen &gt; vinkje uit bij \"Rechten verwijderen als app niet wordt gebruikt\"</string>
   <string name="permissions_app_settings_hint">Als een schakelaar niet werkt, gebruik dan app-instellingen / machtigingen.</string>
   <string name="permissions_app_settings">App instellingen</string>
   <!--WifiPermissionsActivity-->
@@ -71,6 +72,7 @@
   <string name="wifi_permissions_location_permission_on">Locatie machtiging verleend</string>
   <string name="wifi_permissions_location_permission_off">Locatie machtiging geweigerd</string>
   <string name="wifi_permissions_background_location_permission">Toestemming voor locatieservice in de achtergrond</string>
+  <string name="wifi_permissions_background_location_permission_label">Altijd toestaan</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Locatie machtiging ingesteld op <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Locatie machtiging niet ingesteld op <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%sgebruikt de locatiemachtiging alleen om de huidige WiFi-SSID voor SSID-beperkte accounts te bepalen. Dit gebeurt zelfs als de app zich op de achtergrond bevindt. Er worden geen locatiegegevens verzameld, opgeslagen, verwerkt of ergens naartoe verzonden.</string>
@@ -176,6 +178,7 @@
   <string name="account_read_only">alleen lezen</string>
   <string name="account_calendar">agenda</string>
   <string name="account_task_list">taken lijst</string>
+  <string name="account_only_personal">Alleen persoonlijk tonen</string>
   <string name="account_refresh_address_book_list">Adresboeken vernieuwen</string>
   <string name="account_create_new_address_book">Maak een nieuw adresboek</string>
   <string name="account_refresh_calendar_list">Agenda\'s vernieuwen</string>
@@ -207,6 +210,8 @@
   <string name="login_type_advanced">Geavanceerde login (speciale gevallen)</string>
   <string name="login_use_username_password">Gebruik gebruikersnaam/wachtwoord</string>
   <string name="login_use_client_certificate">Gebruik client certificaat</string>
+  <string name="login_no_certificate_found">Geen certificaat gevonden</string>
+  <string name="login_install_certificate">Installeer certificaat</string>
   <string name="login_configuration_detection">Configuratie detectie</string>
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_caldav_carddav">Kon geen CalDAV of CardDAV service vinden.</string>
@@ -247,6 +252,7 @@
   <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
   <string name="settings_enter_password">Wachtwoord invoeren:</string>
   <string name="settings_certificate_alias">Client certificaat alias </string>
+  <string name="settings_certificate_alias_empty">Geen certificaat geselecteerd</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tijdslimiet verleden afspraken</string>
   <string name="settings_sync_time_range_past_none">Alle afspraken worden gesynchronizeerd</string>
@@ -303,6 +309,7 @@
   <string name="collection_properties">Eigenschappen</string>
   <string name="collection_properties_url">Adres (URL):</string>
   <string name="collection_properties_copy_url">kopieer URL</string>
+  <string name="collection_properties_owner">Eigenaar:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
   <string name="debug_info_use_share1">Gebruik de actie Delen om de ongewijzigde gegevens te verzenden, vooral voor ondersteuningsverzoeken.</string>
