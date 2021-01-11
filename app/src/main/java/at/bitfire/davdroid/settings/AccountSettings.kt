@@ -128,39 +128,42 @@ class AccountSettings(
             val taskAuthority = TaskUtils.currentProvider(context)?.authority
 
             val am = AccountManager.get(context)
-            for (account in am.getAccountsByType(context.getString(R.string.account_type))) {
-                val settings = AccountSettings(context, account)
+            for (account in am.getAccountsByType(context.getString(R.string.account_type)))
+                try {
+                    val settings = AccountSettings(context, account)
 
-                // repair address book sync
-                settings.getSavedAddressbooksSyncInterval()?.let { shouldBe ->
-                    val current = settings.getSyncInterval(addressBooksAuthority)
-                    if (current != shouldBe) {
-                        Logger.log.warning("${account.name}: $addressBooksAuthority sync interval should be $shouldBe but is $current -> setting to $current")
-                        settings.setSyncInterval(addressBooksAuthority, shouldBe)
-                    }
-                }
-
-                // repair calendar sync
-                settings.getSavedCalendarsSyncInterval()?.let { strInterval ->
-                    val shouldBe = strInterval.toLong()
-                    val current = settings.getSyncInterval(CalendarContract.AUTHORITY)
-                    if (current != shouldBe) {
-                        Logger.log.warning("${account.name}: ${CalendarContract.AUTHORITY} sync interval should be $shouldBe but is $current -> setting to $current")
-                        settings.setSyncInterval(CalendarContract.AUTHORITY, shouldBe)
-                    }
-                }
-
-                if (taskAuthority != null)
-                // repair calendar sync
-                    settings.getSavedTasksSyncInterval()?.let { strInterval ->
-                        val shouldBe = strInterval.toLong()
-                        val current = settings.getSyncInterval(taskAuthority)
+                    // repair address book sync
+                    settings.getSavedAddressbooksSyncInterval()?.let { shouldBe ->
+                        val current = settings.getSyncInterval(addressBooksAuthority)
                         if (current != shouldBe) {
-                            Logger.log.warning("${account.name}: $taskAuthority sync interval should be $shouldBe but is $current -> setting to $current")
-                            settings.setSyncInterval(taskAuthority, shouldBe)
+                            Logger.log.warning("${account.name}: $addressBooksAuthority sync interval should be $shouldBe but is $current -> setting to $current")
+                            settings.setSyncInterval(addressBooksAuthority, shouldBe)
                         }
                     }
-            }
+
+                    // repair calendar sync
+                    settings.getSavedCalendarsSyncInterval()?.let { strInterval ->
+                        val shouldBe = strInterval.toLong()
+                        val current = settings.getSyncInterval(CalendarContract.AUTHORITY)
+                        if (current != shouldBe) {
+                            Logger.log.warning("${account.name}: ${CalendarContract.AUTHORITY} sync interval should be $shouldBe but is $current -> setting to $current")
+                            settings.setSyncInterval(CalendarContract.AUTHORITY, shouldBe)
+                        }
+                    }
+
+                    if (taskAuthority != null)
+                    // repair calendar sync
+                        settings.getSavedTasksSyncInterval()?.let { strInterval ->
+                            val shouldBe = strInterval.toLong()
+                            val current = settings.getSyncInterval(taskAuthority)
+                            if (current != shouldBe) {
+                                Logger.log.warning("${account.name}: $taskAuthority sync interval should be $shouldBe but is $current -> setting to $current")
+                                settings.setSyncInterval(taskAuthority, shouldBe)
+                            }
+                        }
+                } catch (ignored: InvalidAccountException) {
+                    // account doesn't exist (anymore)
+                }
         }
 
     }

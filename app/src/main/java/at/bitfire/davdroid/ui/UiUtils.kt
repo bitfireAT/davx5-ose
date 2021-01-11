@@ -18,6 +18,8 @@ import android.os.Build
 import android.widget.Toast
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
+import java.util.logging.Level
 
 object UiUtils {
 
@@ -27,13 +29,17 @@ object UiUtils {
     fun updateShortcuts(context: Context) {
         if (Build.VERSION.SDK_INT >= 25)
             context.getSystemService<ShortcutManager>()?.let { shortcutManager ->
-                shortcutManager.dynamicShortcuts = listOf(
-                        ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
-                                .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
-                                .setShortLabel(context.getString(R.string.accounts_sync_all))
-                                .setIntent(Intent(Intent.ACTION_SYNC, null, context, AccountsActivity::class.java))
-                                .build()
-                )
+                try {
+                    shortcutManager.dynamicShortcuts = listOf(
+                            ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
+                                    .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
+                                    .setShortLabel(context.getString(R.string.accounts_sync_all))
+                                    .setIntent(Intent(Intent.ACTION_SYNC, null, context, AccountsActivity::class.java))
+                                    .build()
+                    )
+                } catch(e: Exception) {
+                    Logger.log.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
+                }
             }
     }
 
