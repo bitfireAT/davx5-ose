@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="define_plu_dav4jvm"></string>
+    <string name="library_dav4jvm_libraryName">dav4jvm</string>
+    <string name="library_dav4jvm_libraryDescription">dav4jvm is a WebDAV/CalDAV/CardDAV library for JVM (Java/Kotlin).</string>
+    <string name="library_dav4jvm_libraryWebsite">https://gitlab.com/bitfireAT/dav4jvm</string>
+    <string name="library_dav4jvm_repositoryLink">https://gitlab.com/bitfireAT/dav4jvm</string>
+    <string name="library_dav4jvm_author">Ricki Hirner</string>
+    <string name="library_dav4jvm_licenseIds">mpl_2_0</string>
+    <string name="library_dav4jvm_isOpenSource">true</string>
+</resources>

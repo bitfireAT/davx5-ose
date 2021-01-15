@@ -106,6 +106,12 @@ android {
     }
 }
 
+aboutLibraries {
+    additionalLicenses {
+        mpl_2_0
+    }
+}
+
 dependencies {
     implementation project(':cert4android')
     implementation project(':ical4android')
