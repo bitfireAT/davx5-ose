@@ -9,11 +9,13 @@
 package at.bitfire.davdroid
 
 import android.accounts.Account
+import android.app.IntentService
 import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Intent
 import android.os.Binder
 import android.os.Bundle
+import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
@@ -27,9 +29,6 @@ import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.lang.ref.WeakReference
@@ -37,7 +36,8 @@ import java.util.*
 import java.util.logging.Level
 import kotlin.collections.*
 
-class DavService: android.app.Service() {
+@Suppress("DEPRECATION")
+class DavService: IntentService("DavService") {
 
     companion object {
         const val ACTION_REFRESH_COLLECTIONS = "refreshCollections"
@@ -61,41 +61,46 @@ class DavService: android.app.Service() {
 
     }
 
-    private val runningRefresh = HashSet<Long>()
-    private val refreshingStatusListeners = LinkedList<WeakReference<RefreshingStatusListener>>()
+    /**
+     * List of [Service] IDs for which the collections are currently refreshed
+     */
+    private val runningRefresh = Collections.synchronizedSet(HashSet<Long>())
+
+    /**
+     * Currently registered [RefreshingStatusListener]s, which will be notified
+     * when a collection refresh status changes
+     */
+    private val refreshingStatusListeners = Collections.synchronizedList(LinkedList<WeakReference<RefreshingStatusListener>>())
 
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.let {
-            val id = intent.getLongExtra(EXTRA_DAV_SERVICE_ID, -1)
+    @WorkerThread
+    override fun onHandleIntent(intent: Intent?) {
+        if (intent == null)
+            return
 
-            when (intent.action) {
-                ACTION_REFRESH_COLLECTIONS ->
-                    if (runningRefresh.add(id)) {
-                        refreshingStatusListeners.forEach { listener ->
-                            listener.get()?.onDavRefreshStatusChanged(id, true)
-                        }
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val db = AppDatabase.getInstance(this@DavService)
-                            db.runInTransaction {
-                                refreshCollections(db, id)
-                            }
-                        }
+        val id = intent.getLongExtra(EXTRA_DAV_SERVICE_ID, -1)
+
+        when (intent.action) {
+            ACTION_REFRESH_COLLECTIONS ->
+                if (runningRefresh.add(id)) {
+                    refreshingStatusListeners.forEach { listener ->
+                        listener.get()?.onDavRefreshStatusChanged(id, true)
                     }
 
-                ACTION_FORCE_SYNC -> {
-                    val uri = intent.data!!
-                    val authority = uri.authority!!
-                    val account = Account(
-                            uri.pathSegments[1],
-                            uri.pathSegments[0]
-                    )
-                    forceSync(authority, account)
+                    val db = AppDatabase.getInstance(this@DavService)
+                    refreshCollections(db, id)
                 }
+
+            ACTION_FORCE_SYNC -> {
+                val uri = intent.data!!
+                val authority = uri.authority!!
+                val account = Account(
+                        uri.pathSegments[1],
+                        uri.pathSegments[0]
+                )
+                forceSync(authority, account)
             }
         }
-
-        return START_NOT_STICKY
     }
 
 
@@ -115,14 +120,17 @@ class DavService: android.app.Service() {
         fun addRefreshingStatusListener(listener: RefreshingStatusListener, callImmediateIfRunning: Boolean) {
             refreshingStatusListeners += WeakReference<RefreshingStatusListener>(listener)
             if (callImmediateIfRunning)
-                runningRefresh.forEach { id -> listener.onDavRefreshStatusChanged(id, true) }
+                synchronized(runningRefresh) {
+                    for (id in runningRefresh)
+                        listener.onDavRefreshStatusChanged(id, true)
+                }
         }
 
         fun removeRefreshingStatusListener(listener: RefreshingStatusListener) {
             val iter = refreshingStatusListeners.iterator()
             while (iter.hasNext()) {
                 val item = iter.next().get()
-                if (listener == item)
+                if (item == listener || item == null)
                     iter.remove()
             }
         }
@@ -355,14 +363,16 @@ class DavService: android.app.Service() {
                 }
             }
 
-            saveHomesets()
+            db.runInTransaction {
+                saveHomesets()
 
-            // use refHomeSet (if available) to determine homeset ID
-            for (collection in collections.values)
-                collection.refHomeSet?.let { homeSet ->
-                    collection.homeSetId = homeSet.id
-                }
-            saveCollections()
+                // use refHomeSet (if available) to determine homeset ID
+                for (collection in collections.values)
+                    collection.refHomeSet?.let { homeSet ->
+                        collection.homeSetId = homeSet.id
+                    }
+                saveCollections()
+            }
 
         } catch(e: InvalidAccountException) {
             Logger.log.log(Level.SEVERE, "Invalid account", e)

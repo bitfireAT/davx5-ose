@@ -8,7 +8,7 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.*
 import android.widget.PopupMenu
-import androidx.annotation.WorkerThread
+import androidx.annotation.AnyThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -24,12 +24,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import kotlinx.android.synthetic.main.account_collections.*
 import kotlinx.coroutines.Dispatchers
@@ -314,18 +312,19 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             context.startService(intent)
         }
 
-        @WorkerThread
+        @AnyThread
         override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) {
             if (id == serviceId.value)
                 isRefreshing.postValue(refreshing)
         }
 
+        @AnyThread
         override fun onStatusChanged(which: Int) {
-            viewModelScope.launch(Dispatchers.Default) {
-                checkSyncStatus()
-            }
+            checkSyncStatus()
         }
 
+        @AnyThread
+        @Synchronized
         private fun checkSyncStatus() {
             if (collectionType == Collection.TYPE_ADDRESSBOOK) {
                 val mainAuthority = context.getString(R.string.address_books_authority)

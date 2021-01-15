@@ -1,5 +1,6 @@
 package at.bitfire.davdroid.model
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -12,13 +13,10 @@ interface ServiceDao {
     fun getByAccountAndType(accountName: String, type: String): Service?
 
     @Query("SELECT id FROM service WHERE accountName=:accountName AND type=:type")
-    fun getIdByAccountAndType(accountName: String, type: String): Long?
+    fun getIdByAccountAndType(accountName: String, type: String): LiveData<Long>
 
     @Query("SELECT * FROM service WHERE id=:id")
     fun get(id: Long): Service?
-
-    @Query("SELECT * FROM service WHERE type=:type")
-    fun getByType(type: String): List<Service>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(service: Service): Long
