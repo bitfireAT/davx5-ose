@@ -60,6 +60,10 @@ data class Collection(
 
 ): IdEntity() {
 
+    @Ignore
+    var refHomeSet: HomeSet? = null
+
+
     companion object {
 
         const val TYPE_ADDRESSBOOK = "ADDRESS_BOOK"

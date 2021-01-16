@@ -16,7 +16,7 @@ interface CollectionDao: SyncableDao<Collection> {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId")
     fun getByService(serviceId: Long): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName, url")
     fun getByServiceAndType(serviceId: Long, type: String): List<Collection>
 
     /**
@@ -25,10 +25,10 @@ interface CollectionDao: SyncableDao<Collection> {
      *   - have supportsVEVENT = supportsVTODO = null (= address books)
      */
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type " +
-            "AND (supportsVTODO OR supportsVEVENT OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL))")
+            "AND (supportsVTODO OR supportsVEVENT OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL)) ORDER BY displayName, URL")
     fun pageByServiceAndType(serviceId: Long, type: String): DataSource.Factory<Int, Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync ORDER BY displayName, url")
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync")
     fun getByServiceAndSync(serviceId: Long): List<Collection>
 
     @Query("SELECT collection.* FROM collection, homeset WHERE collection.serviceId=:serviceId AND type=:type AND homeSetId=homeset.id AND homeset.personal ORDER BY collection.displayName, collection.url")

@@ -16,7 +16,6 @@ import android.os.Binder
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.room.Transaction
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
@@ -36,6 +35,7 @@ import okhttp3.OkHttpClient
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
+import kotlin.collections.*
 
 class DavService: android.app.Service() {
 
@@ -76,7 +76,10 @@ class DavService: android.app.Service() {
                             listener.get()?.onDavRefreshStatusChanged(id, true)
                         }
                         CoroutineScope(Dispatchers.IO).launch {
-                            refreshCollections(id)
+                            val db = AppDatabase.getInstance(this@DavService)
+                            db.runInTransaction {
+                                refreshCollections(db, id)
+                            }
                         }
                     }
 
@@ -141,8 +144,7 @@ class DavService: android.app.Service() {
         ContentResolver.requestSync(account, authority, extras)
     }
 
-    private fun refreshCollections(serviceId: Long) {
-        val db = AppDatabase.getInstance(this)
+    private fun refreshCollections(db: AppDatabase, serviceId: Long) {
         val homeSetDao = db.homeSetDao()
         val collectionDao = db.collectionDao()
 
@@ -249,7 +251,6 @@ class DavService: android.app.Service() {
                 queryHomeSets(client, resource, false)
         }
 
-        @Transaction
         fun saveHomesets() {
             DaoTools(homeSetDao).syncAll(
                     homeSetDao.getByService(serviceId),
@@ -257,7 +258,6 @@ class DavService: android.app.Service() {
                     { it.url })
         }
 
-        @Transaction
         fun saveCollections() {
             DaoTools(collectionDao).syncAll(
                     collectionDao.getByService(serviceId),
@@ -285,7 +285,6 @@ class DavService: android.app.Service() {
                     Logger.log.fine("Querying principal $principalUrl for home sets")
                     queryHomeSets(httpClient, principalUrl)
                 }
-                saveHomesets()
 
                 // now refresh homesets and their member collections
                 val itHomeSets = homeSets.iterator()
@@ -307,7 +306,7 @@ class DavService: android.app.Service() {
                             // in any case, check whether the response is about a useable collection
                             val info = Collection.fromDavResponse(response) ?: return@propfind
                             info.serviceId = serviceId
-                            info.homeSetId = homeSet.id
+                            info.refHomeSet = homeSet
                             info.confirmed = true
                             info.owner = response[Owner::class.java]?.href?.let { response.href.resolve(it) }
                             Logger.log.log(Level.FINE, "Found collection", info)
@@ -348,13 +347,21 @@ class DavService: android.app.Service() {
                             }
                         } catch(e: HttpException) {
                             if (e.code in arrayOf(403, 404, 410))
-                            // delete collection only if it was not accessible (40x)
+                                // delete collection only if it was not accessible (40x)
                                 itCollections.remove()
                             else
                                 throw e
                         }
                 }
             }
+
+            saveHomesets()
+
+            // use refHomeSet (if available) to determine homeset ID
+            for (collection in collections.values)
+                collection.refHomeSet?.let { homeSet ->
+                    collection.homeSetId = homeSet.id
+                }
             saveCollections()
 
         } catch(e: InvalidAccountException) {
