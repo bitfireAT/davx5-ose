@@ -17,11 +17,16 @@ class CalendarsFragment: CollectionsFragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
             inflater.inflate(R.menu.caldav_actions, menu)
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.create_calendar).setVisible(model.hasWriteableCollections.value ?: false)
+        super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (super.onOptionsItemSelected(item))
             return true
 
-        if (item.itemId == R.id.create) {
+        if (item.itemId == R.id.create_calendar) {
             val intent = Intent(requireActivity(), CreateCalendarActivity::class.java)
             intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, accountModel.account)
             startActivity(intent)

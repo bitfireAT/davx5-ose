@@ -71,6 +71,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         model.isRefreshing.observe(viewLifecycleOwner, Observer { nowRefreshing ->
             swipe_refresh.isRefreshing = nowRefreshing
         })
+        model.hasWriteableCollections.observe(viewLifecycleOwner, Observer {
+            requireActivity().invalidateOptionsMenu()
+        })
         model.collections.observe(viewLifecycleOwner, Observer { collections ->
             val colors = collections.orEmpty()
                     .filterNotNull()
@@ -244,6 +247,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         // cache task provider
         val taskProvider by lazy { TaskUtils.currentProvider(context) }
 
+        val hasWriteableCollections: LiveData<Boolean> = Transformations.switchMap(serviceId) { service ->
+            db.homeSetDao().hasBindableByService(service)
+        }
         val collections: LiveData<PagedList<Collection>> =
                 Transformations.switchMap(accountModel.showOnlyPersonal) { onlyPersonal ->
                     if (onlyPersonal)
