@@ -20,10 +20,8 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.logging.Level
+import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 @Suppress("unused")
@@ -65,7 +63,7 @@ class App: Application(), Thread.UncaughtExceptionHandler {
         NotificationUtils.createChannels(this)
 
         // don't block UI for some background checks
-        CoroutineScope(Dispatchers.Default).launch {
+        thread {
             // create/update app shortcuts
             UiUtils.updateShortcuts(this@App)
 
@@ -77,6 +75,9 @@ class App: Application(), Thread.UncaughtExceptionHandler {
 
             // check/repair sync intervals
             AccountSettings.repairSyncIntervals(this@App)
+
+            // foreground service (possible workaround for devices which prevent DAVx5 from being started)
+            startService(Intent(ForegroundService.ACTION_FOREGROUND, null, this, ForegroundService::class.java))
         }
     }
 

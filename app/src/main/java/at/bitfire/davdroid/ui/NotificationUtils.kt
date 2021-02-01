@@ -25,6 +25,7 @@ object NotificationUtils {
     // notification IDs
     const val NOTIFY_EXTERNAL_FILE_LOGGING = 1
     const val NOTIFY_REFRESH_COLLECTIONS = 2
+    const val NOTIFY_FOREGROUND = 3
     const val NOTIFY_SYNC_ERROR = 10
     const val NOTIFY_INVALID_RESOURCE = 11
     const val NOTIFY_OPENTASKS = 20
@@ -34,6 +35,7 @@ object NotificationUtils {
     // notification channels
     const val CHANNEL_GENERAL = "general"
     const val CHANNEL_DEBUG = "debug"
+    const val CHANNEL_STATUS = "status"
 
     private const val CHANNEL_SYNC = "sync"
     const val CHANNEL_SYNC_ERRORS = "syncProblems"
@@ -51,6 +53,7 @@ object NotificationUtils {
             nm.createNotificationChannels(listOf(
                     NotificationChannel(CHANNEL_DEBUG, context.getString(R.string.notification_channel_debugging), NotificationManager.IMPORTANCE_HIGH),
                     NotificationChannel(CHANNEL_GENERAL, context.getString(R.string.notification_channel_general), NotificationManager.IMPORTANCE_DEFAULT),
+                    NotificationChannel(CHANNEL_STATUS, context.getString(R.string.notification_channel_status), NotificationManager.IMPORTANCE_LOW),
 
                     NotificationChannel(CHANNEL_SYNC_ERRORS, context.getString(R.string.notification_channel_sync_errors), NotificationManager.IMPORTANCE_DEFAULT).apply {
                         description = context.getString(R.string.notification_channel_sync_errors_desc)

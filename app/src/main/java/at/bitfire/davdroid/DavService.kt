@@ -40,6 +40,7 @@ import kotlin.collections.*
 class DavService: IntentService("DavService") {
 
     companion object {
+
         const val ACTION_REFRESH_COLLECTIONS = "refreshCollections"
         const val EXTRA_DAV_SERVICE_ID = "davServiceID"
 
@@ -72,7 +73,6 @@ class DavService: IntentService("DavService") {
      */
     private val refreshingStatusListeners = Collections.synchronizedList(LinkedList<WeakReference<RefreshingStatusListener>>())
 
-
     @WorkerThread
     override fun onHandleIntent(intent: Intent?) {
         if (intent == null)
@@ -100,6 +100,7 @@ class DavService: IntentService("DavService") {
                 )
                 forceSync(authority, account)
             }
+
         }
     }
 

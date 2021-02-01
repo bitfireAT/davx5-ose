@@ -25,6 +25,7 @@
 
     <string name="notification_channel_debugging">Debugging</string>
     <string name="notification_channel_general">Other important messages</string>
+    <string name="notification_channel_status">Low-priority status messages</string>
     <string name="notification_channel_sync">Synchronization</string>
     <string name="notification_channel_sync_errors">Synchronization errors</string>
     <string name="notification_channel_sync_errors_desc">Important errors which stop synchronization like unexpected server replies</string>
@@ -141,6 +142,10 @@
     <string name="dav_service_refresh_failed">Service detection failed</string>
     <string name="dav_service_refresh_couldnt_refresh">Couldn\'t refresh collection list</string>
 
+    <!-- ForegroundService -->
+    <string name="foreground_service_notify_title">Running in foreground</string>
+    <string name="foreground_service_notify_text">On some devices, this is necessary for automatic synchronization.</string>
+
     <!-- AppSettingsActivity -->
     <string name="app_settings">Settings</string>
     <string name="app_settings_debug">Debugging</string>
@@ -149,6 +154,8 @@
     <string name="app_settings_logging">Verbose logging</string>
     <string name="app_settings_logging_on">Logging is active</string>
     <string name="app_settings_logging_off">Logging is disabled</string>
+    <string name="app_settings_foreground_service">Keep in foreground</string>
+    <string name="app_settings_foreground_service_details">May help if your device prevents automatic synchronization</string>
     <string name="app_settings_connection">Connection</string>
     <string name="app_settings_override_proxy">Override proxy settings</string>
     <string name="app_settings_override_proxy_on">Use custom proxy settings</string>
