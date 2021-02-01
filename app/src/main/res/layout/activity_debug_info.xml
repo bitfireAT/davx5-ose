@@ -49,16 +49,9 @@
                         app:drawableStartCompat="@drawable/ic_share_action_dark"
                         app:drawableLeftCompat="@drawable/ic_share_action_dark"
                         android:drawablePadding="8dp"
+                        android:layout_marginBottom="8dp"
                         app:drawableTint="@color/primaryTextColor"
                         android:text="@string/debug_info_use_share1"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="16dp"
-                        style="@style/TextAppearance.MaterialComponents.Body2"
-                        android:text="@string/debug_info_use_share2"/>
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
