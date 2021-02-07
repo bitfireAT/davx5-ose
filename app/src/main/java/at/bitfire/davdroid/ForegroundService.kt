@@ -2,7 +2,9 @@ package at.bitfire.davdroid
 
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -18,16 +20,28 @@ class ForegroundService : Service() {
          */
         const val ACTION_FOREGROUND = "foreground"
 
+        fun isEnabled(context: Context): Boolean {
+            val settings = SettingsManager.getInstance(context)
+            return settings.getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
+        }
+
+        fun startIfEnabled(context: Context) {
+            if (isEnabled(context)) {
+                val serviceIntent = Intent(ForegroundService.ACTION_FOREGROUND, null, context, ForegroundService::class.java)
+                if (Build.VERSION.SDK_INT >= 26)
+                    context.startForegroundService(serviceIntent)
+                else
+                    context.startService(serviceIntent)
+            }
+        }
+
     }
 
 
     override fun onBind(intent: Intent?) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val settings = SettingsManager.getInstance(this)
-        val foreground = settings.getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
-
-        if (foreground) {
+        if (isEnabled(this)) {
             val settingsIntent = Intent(this, AppSettingsActivity::class.java).apply {
                 putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, Settings.FOREGROUND_SERVICE)
             }
