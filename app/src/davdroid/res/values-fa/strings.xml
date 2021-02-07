@@ -69,7 +69,6 @@
   <string name="wifi_permissions_location_permission_off">مجوز مکان رد شد</string>
   <string name="wifi_permissions_background_location_permission">مجوز مکان پس زمینه</string>
   <string name="wifi_permissions_background_location_permission_label">همیشه اجازه دهید</string>
-  <string name="wifi_permissions_background_location_disclaimer">s% فقط از مجوز مکان برای تعیین SSID WiFi فعلی برای حساب‌های محدود شده SSID استفاده می کند. حتی وقتی برنامه در پس زمینه باشد این اتفاق می افتد. هیچ مکانی از مکان جمع آوری ، ذخیره ، پردازش و یا ارسال نمی شود.</string>
   <string name="wifi_permissions_location_enabled">مکان همیشه فعال است</string>
   <string name="wifi_permissions_location_enabled_on">سرویس مکان فعال است</string>
   <string name="wifi_permissions_location_enabled_off">سرویس مکان غیرفعال است</string>
