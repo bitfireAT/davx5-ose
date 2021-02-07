@@ -117,6 +117,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">La détection du service a échoué</string>
   <string name="dav_service_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Paramètres</string>
   <string name="app_settings_debug">Débogage</string>
@@ -313,7 +314,6 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
   <string name="debug_info_use_share1">Utilisez l\'action Partager pour envoyer les données non modifiées, notamment pour les demandes d\'assistance.</string>
-  <string name="debug_info_use_share2">Évitez les copier-coller ou les captures d\'écran, car ils rendent l\'interprétation plus compliqué.</string>
   <string name="debug_info_attached">Informations de débogage jointes à ce message (nécessite une application compatible).</string>
   <string name="debug_info_http_error">Erreur HTTP</string>
   <string name="debug_info_server_error">Erreur Serveur</string>

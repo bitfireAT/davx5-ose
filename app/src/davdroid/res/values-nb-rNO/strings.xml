@@ -44,6 +44,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Tjenesteoppdagelse mislyktes</string>
   <string name="dav_service_refresh_couldnt_refresh">Kunne ikke gjenoppfriske innsamlingsliste</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Innstillinger</string>
   <string name="app_settings_debug">Feilretting</string>

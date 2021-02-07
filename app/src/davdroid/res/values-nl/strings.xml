@@ -117,6 +117,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Service herkenning is mislukt</string>
   <string name="dav_service_refresh_couldnt_refresh">Kon de collectie lijst niet vernieuwen</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Instellingen</string>
   <string name="app_settings_debug">Debuggen</string>
@@ -313,7 +314,6 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
   <string name="debug_info_use_share1">Gebruik de actie Delen om de ongewijzigde gegevens te verzenden, vooral voor ondersteuningsverzoeken.</string>
-  <string name="debug_info_use_share2">Vermijd kopiëren en plakken of schermafbeeldingen omdat ze de interpretatie moeilijker maken.</string>
   <string name="debug_info_attached">Debug-informatie wordt toegevoegd aan dit bericht (de ontvangende app moet bijlagen kunnen versturen).</string>
   <string name="debug_info_http_error">HTTP-fout</string>
   <string name="debug_info_server_error">Serverfout</string>

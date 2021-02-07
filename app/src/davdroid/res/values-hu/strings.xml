@@ -24,7 +24,7 @@
   <string name="intro_battery_not_whitelisted">Kikapcsolva (nem javasolt)</string>
   <string name="intro_battery_whitelisted">Bekapcsolva (javasolt)</string>
   <string name="intro_battery_text">A rendszeres ütemezett szinkronizáláshoz a %s számára engedélyezni kell a háttérben futást, különben az Android rendszer a szinkronizálást bármikor leállíthatja.</string>
-  <string name="intro_battery_dont_show">Nincs igénylem a rendszeres ütemezett szinkronizálást.*</string>
+  <string name="intro_battery_dont_show">Nincs szükségem rendszeres ütemezett szinkronizálásra.*</string>
   <string name="intro_autostart_title">%s kompatibilitás</string>
   <string name="intro_autostart_text">Ez az eszköz valószínűleg blokkolja a szinkronizálást.  Ha valóban, ez manuálisan megoldható.</string>
   <string name="intro_autostart_dont_show">Elvégeztem a szükséges beállításokat, nincs szükségem további figyelmeztetésre.*</string>
@@ -117,6 +117,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
   <string name="dav_service_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Beállítások</string>
   <string name="app_settings_debug">Hibakeresés</string>
@@ -313,11 +314,10 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Hibakeresési információ</string>
   <string name="debug_info_use_share1">Használd a Megosztás funkciót a nyers adatok elküldéséhez, kifejezetten támogatási kérésekhez.</string>
-  <string name="debug_info_use_share2">Kerüld a másolás-beillesztést illetve a képernyőképek használatát, mert nehezebbé teszik az értelmezést.</string>
   <string name="debug_info_attached">Hibakeresési információ csatolása ehhez az üzenethez (ha a fogadó alkalmazás támogatja a csatolmányokat).</string>
   <string name="debug_info_http_error">HTTP hiba</string>
   <string name="debug_info_server_error">Szerverhiba</string>
-  <string name="debug_info_webdav_error">WebDav hiba</string>
+  <string name="debug_info_webdav_error">WebDAV hiba</string>
   <string name="debug_info_io_error">I/O hiba</string>
   <string name="debug_info_http_403_description">A kérés megtagadva.  Ellenőrizze az érintett erőforrásokat és a hibakeresési információkat a további részletekért.</string>
   <string name="debug_info_http_404_description">Az igényelt erőforrás nem létezik (már).  Ellenőrizze az érintett erőforrásokat és a hibakeresési információkat a további részletekért.</string>
@@ -345,7 +345,7 @@
   <string name="sync_error_tasks_required_version">Legalacsonyabb szükséges verzió: %1$s</string>
   <string name="sync_error_authentication_failed">Authentikáció nem sikerült (ellenőrizze a hitelesítéshez megadott adatokat)</string>
   <string name="sync_error_io">Hálózati vagy I/O hiba – %s</string>
-  <string name="sync_error_http_dav">HTTP szerver oldali hiba - %s</string>
+  <string name="sync_error_http_dav">HTTP kiszolgálóhiba - %s</string>
   <string name="sync_error_local_storage">Tárhelyhiba - %s</string>
   <string name="sync_error_retry">Újbóli próbálkozás</string>
   <string name="sync_error_view_item">Elem megtekintése</string>

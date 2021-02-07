@@ -117,6 +117,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Сбой при обнаружении службы</string>
   <string name="dav_service_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отладка</string>
@@ -317,7 +318,6 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
   <string name="debug_info_use_share1">Используйте действие Поделиться для отправки немодифицированных данных, особенно это касается запросов поддержки.</string>
-  <string name="debug_info_use_share2">Избегайте копирования, вставки или скриншотов, поскольку они затрудняют интерпретацию.</string>
   <string name="debug_info_attached">Отладочная информация, прикреплена к данному сообщению (требует поддержки вложений со стороны принимающего приложения).</string>
   <string name="debug_info_http_error">Ошибка HTTP</string>
   <string name="debug_info_server_error">Ошибка сервера</string>

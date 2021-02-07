@@ -47,6 +47,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">サービスの検出に失敗しました</string>
   <string name="dav_service_refresh_couldnt_refresh">コレクション リストを更新できません</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">設定</string>
   <string name="app_settings_debug">デバッグ</string>

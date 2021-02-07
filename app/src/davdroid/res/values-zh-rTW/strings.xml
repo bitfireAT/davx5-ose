@@ -61,6 +61,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">未發現遠端服務</string>
   <string name="dav_service_refresh_couldnt_refresh">無法更新清單</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">設定</string>
   <string name="app_settings_debug">除錯</string>

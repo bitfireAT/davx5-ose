@@ -88,6 +88,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Falha na detecção do serviço</string>
   <string name="dav_service_refresh_couldnt_refresh">Não foi possível atualizar a lista da coleção</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Configurações</string>
   <string name="app_settings_debug">Depuração</string>

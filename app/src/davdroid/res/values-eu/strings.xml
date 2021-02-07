@@ -117,6 +117,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
   <string name="dav_service_refresh_couldnt_refresh">Ezin izan da bilduma zerrenda freskatu</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Ezarpenak</string>
   <string name="app_settings_debug">Arazketa</string>
@@ -313,7 +314,6 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Arazketa informazioa</string>
   <string name="debug_info_use_share1">Erabili partekatze ekintza aldatu gabeko datuak bidaltzeko, laguntza eskaeretarako bereziki.</string>
-  <string name="debug_info_use_share2">Saiatu kopiatu eta itsatsi edo pantaila-argazkiak interpretazioa zailagoa egiten dutelako.</string>
   <string name="debug_info_attached">Arazketa informazioa mezuan erantsiko da (hartuko dituen aplikazioak eranskinak onartu behar ditu).</string>
   <string name="debug_info_http_error">HTTP errorea</string>
   <string name="debug_info_server_error">Zerbitzari errorea</string>

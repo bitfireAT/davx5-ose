@@ -87,6 +87,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Fallita l\'individuazione dei servizi</string>
   <string name="dav_service_refresh_couldnt_refresh">Impossibile aggiornare la lista delle raccolte</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Impostazioni</string>
   <string name="app_settings_debug">Debug</string>
