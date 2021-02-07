@@ -10,6 +10,7 @@
   <string name="share">Compartir</string>
   <string name="notification_channel_debugging">Depurando</string>
   <string name="notification_channel_general">Outras mensaxes importantes</string>
+  <string name="notification_channel_status">Mensaxes de estado de baixa prioridade</string>
   <string name="notification_channel_sync">Sincronización</string>
   <string name="notification_channel_sync_errors">Fallos de sincronización</string>
   <string name="notification_channel_sync_errors_desc">Fallos importantes que deteñen a sincronización como respostas non agardadas do servidor</string>
@@ -117,6 +118,9 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Fallou a detección do servizo</string>
   <string name="dav_service_refresh_couldnt_refresh">Non se actualizou a lista da colección</string>
+  <!--ForegroundService-->
+  <string name="foreground_service_notify_title">A funcionar en primeiro plano</string>
+  <string name="foreground_service_notify_text">En algúns dispositivos esto é necesario para a sincronización automática.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Axustes</string>
   <string name="app_settings_debug">Depurando</string>
@@ -125,6 +129,8 @@
   <string name="app_settings_logging">Rexistro polo miúdo</string>
   <string name="app_settings_logging_on">O rexistro está activo</string>
   <string name="app_settings_logging_off">O rexistro está desactivado</string>
+  <string name="app_settings_foreground_service">Manter en primeiro plano</string>
+  <string name="app_settings_foreground_service_details">Podería ser útil se o dispositivo dificulta a sincronización automática</string>
   <string name="app_settings_connection">Conexión</string>
   <string name="app_settings_override_proxy">Sobrescribir os axustes do proxy</string>
   <string name="app_settings_override_proxy_on">Utilizar axustes de proxy personalizados</string>
@@ -313,7 +319,6 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Info depuración</string>
   <string name="debug_info_use_share1">Usa a acción Compartir para enviar datos non modificados, especialmente para solicitudes soportadas</string>
-  <string name="debug_info_use_share2">Evita copiar &amp; pegar ou capturas de pantalla porque son máis difíciles de interpretar.</string>
   <string name="debug_info_attached">Info de depuración anexa a esta mensaxe (require soporte de anexos na app receptora).</string>
   <string name="debug_info_http_error">Erro HTTP</string>
   <string name="debug_info_server_error">Fallo no servidor</string>

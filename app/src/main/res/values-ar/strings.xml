@@ -46,6 +46,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">فشل اكتشاف الخدمة</string>
   <string name="dav_service_refresh_couldnt_refresh">لم يتمكن التطبيق من تجديد قائمة المجموعة</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">الإعدادات</string>
   <string name="app_settings_debug">تصحيح العلل</string>

@@ -33,6 +33,7 @@
   <string name="account_list_empty">Benvingut a DAVx⁵! \n\n Ara podeu afegir un compte CalDAV / CardDAV.</string>
   <string name="accounts_global_sync_enable">Activar</string>
   <!--DavService-->
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Paràmetres</string>
   <string name="app_settings_debug">Depurador</string>

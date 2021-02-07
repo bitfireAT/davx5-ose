@@ -62,6 +62,7 @@
   <string name="permissions_autoreset_title">Ponechat oprávnění</string>
   <string name="permissions_autoreset_status_off">Oprávnění mohou být automaticky resetována (nedoporučeno)</string>
   <string name="permissions_autoreset_status_on">Oprávnění nebudou resetována automaticky</string>
+  <string name="permissions_autoreset_instruction">Klikně na Opravnění &gt; zruště zaškrtnutí \"Odebrat oprávnění pokud není aplikace používána\"</string>
   <string name="permissions_app_settings_hint">Pokud přepínač nefunguje, použijte nastavení aplikací / Oprávnění</string>
   <string name="permissions_app_settings">Nastavení aplikace</string>
   <!--WifiPermissionsActivity-->
@@ -71,6 +72,7 @@
   <string name="wifi_permissions_location_permission_on">Oprávnění pro přístup k poloze uděleno</string>
   <string name="wifi_permissions_location_permission_off">Oprávnění pro přístup k poloze odepřeno</string>
   <string name="wifi_permissions_background_location_permission">Oprávnění pro přístup k poloze na pozadí</string>
+  <string name="wifi_permissions_background_location_permission_label">Povolit napořád</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Oprávnění pro přístup k poloze nastaveno na <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Oprávnění pro přístup k poloze nenastaveno na <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s používá oprávnění k přístupu k poloze pouze pro zjišťování názvu (SSID) sítě, ke které jste právě připojení pro účely účtů, které jsou omezené právě na SSID. Toto se děje i když je aplikace spuštěná na pozadí. Žádná data o poloze nejsou shromažďována, ukládána, zpracovávána ani nikam odesílána.</string>
@@ -115,6 +117,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Vyhledání služby se nezdařilo</string>
   <string name="dav_service_refresh_couldnt_refresh">Nedaří se znovu načíst seznam sbírky</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Nastavení</string>
   <string name="app_settings_debug">Ladění</string>
@@ -176,6 +179,7 @@
   <string name="account_read_only">pouze pro čtení</string>
   <string name="account_calendar">kalendář</string>
   <string name="account_task_list">seznam úkolů</string>
+  <string name="account_only_personal">Zobrazit pouze osobní</string>
   <string name="account_refresh_address_book_list">Znovu načíst seznam adresářů kontaktů</string>
   <string name="account_create_new_address_book">Vytvořit nový adresář kontaktů</string>
   <string name="account_refresh_calendar_list">Znovu načíst seznam kalednářů</string>
@@ -207,6 +211,8 @@
   <string name="login_type_advanced">Pokročilé přihlašování (zvláštní případy použití)</string>
   <string name="login_use_username_password">Použít uživatelské jméno / heslo</string>
   <string name="login_use_client_certificate">Použít klientský certifikát</string>
+  <string name="login_no_certificate_found">Nebyl nalezen certifikát</string>
+  <string name="login_install_certificate">Instalovat certifikát</string>
   <string name="login_configuration_detection">Zjišťování nastavení</string>
   <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru…</string>
   <string name="login_no_caldav_carddav">Nedaří se nalézt službu CalDAV nebo CardDAV.</string>
@@ -247,6 +253,7 @@
   <string name="settings_password_summary">Aktualizovat heslo dle svého serveru.</string>
   <string name="settings_enter_password">Zadejte své heslo:</string>
   <string name="settings_certificate_alias">Alternativní název klientského certifikátu</string>
+  <string name="settings_certificate_alias_empty">Není vybrán certifikát</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Časový limit pro staré události</string>
   <string name="settings_sync_time_range_past_none">Synchronizovat všechny události</string>
@@ -307,10 +314,10 @@
   <string name="collection_properties">Vlastnosti</string>
   <string name="collection_properties_url">Adresa (URL):</string>
   <string name="collection_properties_copy_url">Zkopírovat URL adresu</string>
+  <string name="collection_properties_owner">Vlastník:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Ladící informace</string>
   <string name="debug_info_use_share1">Pro odeslání neupravených dat použijte akci Sdílet, hlavně v případě požadavků na podporu.</string>
-  <string name="debug_info_use_share2">Vyhněte se kopírování a vkládání nebo snímkům obrazovky, protože ztěžují interpretaci.</string>
   <string name="debug_info_attached">Ladící informace připojené k této správě (vyžaduje podporu pro přílohy na straně přijímající aplikace).</string>
   <string name="debug_info_http_error">Chyba HTTP</string>
   <string name="debug_info_server_error">Chyba serveru</string>

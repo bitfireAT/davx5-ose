@@ -46,6 +46,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Zaznava storitve ni uspela</string>
   <string name="dav_service_refresh_couldnt_refresh">Zbirke ni bilo mogoče osvežiti</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Nastavitve</string>
   <string name="app_settings_debug">Razhroščevalnik</string>

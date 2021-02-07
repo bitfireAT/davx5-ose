@@ -21,14 +21,31 @@
   <string name="intro_battery_not_whitelisted">Изключено (не се препоръчва)</string>
   <string name="intro_battery_whitelisted">Включено (препоръчително)</string>
   <string name="intro_autostart_title">%sсъвместимост</string>
+  <string name="intro_leave_unchecked">* Остави неизбрано за да ти напомня по-късно.  Може да бъде нулирано от настройките на приложението / %s.</string>
   <string name="intro_more_info">Допълнителна информация</string>
   <string name="intro_tasks_text1">Ако сървърът ти поддържа задачи, те могат да бъдат синхронизирани с поддържано приложение:</string>
   <string name="intro_tasks_opentasks_info"><![CDATA[За някои функции, като под-задачи или повтарящи се задачи, <a href="https://www.davx5.com/faq/tasks/advanced-task-features">може да ти трябват допълнителни програми</a>.]]></string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Някои функции <a href="https://www.davx5.com/faq/tasks/advanced-task-features">(още) не се поддържат</a>.]]></string>
   <string name="intro_open_source_title">Софтуер с отворен код</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">Разрешения</string>
+  <string name="permissions_text">На %sму трябват права за да работи изрядно.</string>
   <string name="permissions_all_title">Всичко от изброеното долу</string>
+  <string name="permissions_all_status_off">Използвай това за да включиш всички функции (препоръчано)</string>
+  <string name="permissions_contacts_status_off">Контакти не се синхронизират (не се препоръчва)</string>
+  <string name="permissions_contacts_status_on">Контактите могат да се синхронизират</string>
+  <string name="permissions_calendar_status_off">Календари не се синхронизират (не се препоръчва)</string>
+  <string name="permissions_calendar_status_on">Календарите могат да се синхронизират</string>
+  <string name="permissions_tasks_status_off">Задачи не се синхронизират (не се препоръчва)</string>
+  <string name="permissions_tasks_status_on">Задачите могат да се синхронизират</string>
+  <string name="permissions_app_settings_hint">Ако превключвател не работи, използвай настройките на приложението / Разрешения</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID разрешения</string>
+  <string name="wifi_permissions_intro">За да мога да прочета текущото име на WiFi мрежата (SSID) ми трябва:</string>
+  <string name="wifi_permissions_location_permission">Разрешения за местоположението</string>
+  <string name="wifi_permissions_location_permission_on">Има разрешение за местоположението</string>
+  <string name="wifi_permissions_location_permission_off">Липсва разрешение за местоположението</string>
+  <string name="wifi_permissions_background_location_disclaimer">%sизползва разрешението за местоположение за да може да прочете името на мрежата, когато се изисква синхронизиране само през определена мрежа.  Това се случва дори и когато приложението се изпълнява във фона.  Не се събират, съхраняват, обработват и разпространяват данни за местоположението.</string>
   <!--AboutActivity-->
   <string name="about_translations">Преводи</string>
   <string name="about_libraries">Библиотеки</string>
@@ -57,6 +74,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Откриването на услугите се провали</string>
   <string name="dav_service_refresh_couldnt_refresh">Не можах да опресня списъка на ресурсите</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
   <string name="app_settings_show_debug_info_details">Покажи/сподели детайли за софтуера и настройките</string>
@@ -70,11 +88,15 @@
   <string name="app_settings_override_proxy_host">Име на HTTP прокси сървъра</string>
   <string name="app_settings_override_proxy_port">Порт на HTTP  прокси</string>
   <string name="app_settings_security">Защита</string>
+  <string name="app_settings_security_app_permissions">Разрешения за приложението</string>
+  <string name="app_settings_security_app_permissions_summary">Прегледай разрешенията необходими за синхронизиране</string>
   <string name="app_settings_distrust_system_certs">Загуби доверието в системните сертификати</string>
   <string name="app_settings_distrust_system_certs_on">Издатели на сертификати познати на системата или добавени от потребителя няма да бъдат доверени</string>
   <string name="app_settings_distrust_system_certs_off">Издателите на сертификатите познати на системата или добавени от потребителя ще бъдат доверени (препоръчително)</string>
   <string name="app_settings_notification_settings">Настройки за съобщенията</string>
   <string name="app_settings_notification_settings_summary">Управлявление на каналите за съобщения и техните настройки</string>
+  <string name="app_settings_reset_hints">Помощни съобщения</string>
+  <string name="app_settings_reset_hints_summary">Всички подсказки, които са били разкарани, ще бъдат показани отново</string>
   <string name="app_settings_reset_hints_success">Всички подсказки ще се покажат отново</string>
   <string name="app_settings_tasks_provider_synchronizing_with">Синхронизиране с %s</string>
   <string name="app_settings_tasks_provider_none">Не е инсталирана съвместима програма за задачи.</string>
@@ -82,6 +104,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Контактите не се синхронизират (липсва разрешения)</string>
+  <string name="account_caldav_missing_calendar_permissions">Календарите те не се синхронизират (липсват разрешения)</string>
+  <string name="account_caldav_missing_tasks_permissions">Задачи те не се синхронизират (липсват разрешения)</string>
+  <string name="account_caldav_missing_permissions">Календари и задачи не се синхронизират (липсват разрешения)</string>
+  <string name="account_webcal_missing_calendar_permissions">Нямам достъп до календарите (липсващи разрешения)</string>
+  <string name="account_permissions_action">Разрешения</string>
   <string name="account_no_address_books">Няма адресни указатели (все още)</string>
   <string name="account_no_calendars">Няма календари (все още)</string>
   <string name="account_no_webcals">Няма абонаменти за календари (все още)</string>
@@ -133,7 +161,7 @@
   <string name="login_configuration_detection">Откриване на настройките</string>
   <string name="login_querying_server">Изчакай, разпитвам сървъра…</string>
   <string name="login_no_caldav_carddav">Не бяха открити CalDAV или CardDAV услуги.</string>
-  <string name="login_view_logs">Покажи подробности</string>
+  <string name="login_view_logs">Покажи подробностите</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Настройки: %s</string>
   <string name="settings_sync">Синхронизация</string>
@@ -159,6 +187,7 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Ще синхронизира само пред %s(изисква услуга за местоположението)</string>
   <string name="settings_sync_wifi_only_ssids_off">Всички WiFi връзки ще бъдат използвани</string>
   <string name="settings_sync_wifi_only_ssids_message">Списък на разделени със запетайка имена на мрежи (SSID WiFi) (остави празно за всички мрежи)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID ограниченията изискват допълнителни настройки.</string>
   <string name="settings_more_info_faq">Повече информация (често задавани въпроси)</string>
   <string name="settings_username">Потребителско име</string>
   <string name="settings_enter_username">Въведи потребитеско име:</string>
@@ -210,14 +239,16 @@
   <string name="collection_properties_url">Адрес (URL)</string>
   <string name="collection_properties_copy_url">Копирай адреса</string>
   <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_use_share1">Използвайте функцията за споделяне за да изпратите непроменени данни, особено ако имате въпрос за поддръжка.</string>
+  <string name="debug_info_view_details">Покажи подробностите</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Възникна грешка</string>
   <string name="exception_httpexception">Възникна HTTP грешка</string>
   <string name="exception_ioexception">Възникна входно-изходна грешка</string>
   <string name="exception_show_details">Покажи подробности</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵ права</string>
-  <string name="sync_error_permissions_text">Необходими са допълнителни права</string>
+  <string name="sync_error_permissions">DAVx⁵ разрешения</string>
+  <string name="sync_error_permissions_text">Необходими са допълнителни разрешения</string>
   <string name="sync_error_authentication_failed">Регистрирането се провали, провери потребителското име и паролата.</string>
   <string name="sync_error_io">Грешка с входа/изхода или мрежата – %s</string>
   <string name="sync_error_http_dav">Грешка с HTTP сървъра – %s</string>

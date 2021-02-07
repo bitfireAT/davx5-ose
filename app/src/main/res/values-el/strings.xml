@@ -50,6 +50,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Αποτυχία ανίχνευσης υπηρεσίας</string>
   <string name="dav_service_refresh_couldnt_refresh">Αδυναμία ανανέωσης της λίστας συλλογής</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Ρυθμίσεις</string>
   <string name="app_settings_debug">Αποσφαλμάτωση</string>

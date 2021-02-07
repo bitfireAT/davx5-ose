@@ -40,6 +40,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Откривање услуге није успело</string>
   <string name="dav_service_refresh_couldnt_refresh">Не могох да освежим списак збирки</string>
+  <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Поставке</string>
   <string name="app_settings_debug">Тражење грешака</string>

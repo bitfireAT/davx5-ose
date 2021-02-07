@@ -10,6 +10,7 @@
   <string name="share">分享</string>
   <string name="notification_channel_debugging">调试</string>
   <string name="notification_channel_general">其它重要消息</string>
+  <string name="notification_channel_status">低优先级状态消息</string>
   <string name="notification_channel_sync">同步</string>
   <string name="notification_channel_sync_errors">同步错误</string>
   <string name="notification_channel_sync_errors_desc">导致同步停止的重要错误，如异常的服务器响应</string>
@@ -117,6 +118,9 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">服务配置检测失败</string>
   <string name="dav_service_refresh_couldnt_refresh">无法刷新集合列表</string>
+  <!--ForegroundService-->
+  <string name="foreground_service_notify_title">运行于前台</string>
+  <string name="foreground_service_notify_text">在某些设备上，这是自动同步所必需的。 </string>
   <!--AppSettingsActivity-->
   <string name="app_settings">设置</string>
   <string name="app_settings_debug">调试</string>
@@ -125,6 +129,8 @@
   <string name="app_settings_logging">记录完整日志</string>
   <string name="app_settings_logging_on">日志记录已开启</string>
   <string name="app_settings_logging_off">日志记录已禁用</string>
+  <string name="app_settings_foreground_service">保持前台</string>
+  <string name="app_settings_foreground_service_details">如果你的设备阻止自动同步，这可能会有帮助</string>
   <string name="app_settings_connection">连接</string>
   <string name="app_settings_override_proxy">覆盖代理设置</string>
   <string name="app_settings_override_proxy_on">使用自定义代理设置</string>
@@ -311,7 +317,6 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">调试信息</string>
   <string name="debug_info_use_share1">使用“分享”操作发送未更改的数据，尤其对于支持请求。</string>
-  <string name="debug_info_use_share2">避免复制 &amp; 粘贴或截屏，因为它们让问题阐释变得更困难。</string>
   <string name="debug_info_attached">已附加调试信息到此消息(需要接收应用支持附件功能)</string>
   <string name="debug_info_http_error">HTTP错误</string>
   <string name="debug_info_server_error">服务器错误</string>

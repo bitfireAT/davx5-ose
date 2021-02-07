@@ -10,6 +10,7 @@
   <string name="share">Teilen</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
   <string name="notification_channel_general">Andere wichtige Mitteilungen</string>
+  <string name="notification_channel_status">Weniger wichtige Statusmitteilungen</string>
   <string name="notification_channel_sync">Synchronisierung</string>
   <string name="notification_channel_sync_errors">Synchronisierungsfehler</string>
   <string name="notification_channel_sync_errors_desc">Fehler, die zum Abbruch der Synchronisation führen, wie z.B. unerwartete Serverantworten</string>
@@ -117,6 +118,9 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Diensterkennung fehlgeschlagen</string>
   <string name="dav_service_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
+  <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Läuft im Vordergrund</string>
+  <string name="foreground_service_notify_text">Auf manchen Geräten für die automatische Synchronisierung benötigt</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Einstellungen</string>
   <string name="app_settings_debug">Fehlersuche</string>
@@ -125,6 +129,8 @@
   <string name="app_settings_logging">Ausführliche Protokollierung</string>
   <string name="app_settings_logging_on">Protokollierung läuft</string>
   <string name="app_settings_logging_off">Keine Protokollierung</string>
+  <string name="app_settings_foreground_service">Im Vordergrund bleiben</string>
+  <string name="app_settings_foreground_service_details">Kann helfen, wenn das Gerät automatische Synchronisierung verhindert</string>
   <string name="app_settings_connection">Verbindung</string>
   <string name="app_settings_override_proxy">Proxy-Einstellungen überschreiben</string>
   <string name="app_settings_override_proxy_on">Eigene Proxy-Einstellungen werden verwendet</string>
@@ -313,7 +319,6 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
   <string name="debug_info_use_share1">Verwenden Sie Teilen, um die unveränderten Daten zu schicken – insbesondere für Support-Anfragen.</string>
-  <string name="debug_info_use_share2">Copy &amp; paste und Bildschirmfotos vermeiden, da das Interpretieren damit schwieriger ist.</string>
   <string name="debug_info_attached">Debug-Informationen sind dieser Nachricht beigelegt (benötigt Unterstützung für Anhänge in der empfangenden App).</string>
   <string name="debug_info_http_error">HTTP-Fehler</string>
   <string name="debug_info_server_error">Serverfehler</string>

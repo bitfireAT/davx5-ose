@@ -10,6 +10,7 @@
   <string name="share">Udostępnij</string>
   <string name="notification_channel_debugging">Debugowanie</string>
   <string name="notification_channel_general">Inne ważne wiadomości</string>
+  <string name="notification_channel_status">Komunikaty statusu o niskim priorytecie</string>
   <string name="notification_channel_sync">Synchronizacja</string>
   <string name="notification_channel_sync_errors">Błędy synchronizacji</string>
   <string name="notification_channel_sync_errors_desc">Ważne błędy, które zatrzymują synchronizację, takie jak nieoczekiwane odpowiedzi serwera</string>
@@ -117,6 +118,9 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Wykrycie serwisu nie powiodło się</string>
   <string name="dav_service_refresh_couldnt_refresh">Nie można odświeżyć listy kolekcji</string>
+  <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Działa na pierwszym planie</string>
+  <string name="foreground_service_notify_text">Na niektórych urządzeniach jest to konieczne do automatycznej synchronizacji.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ustawienia</string>
   <string name="app_settings_debug">Debugowanie</string>
@@ -125,6 +129,8 @@
   <string name="app_settings_logging">Rozszerzone logowanie</string>
   <string name="app_settings_logging_on">Logowanie jest włączone</string>
   <string name="app_settings_logging_off">Logowanie jest wyłączone</string>
+  <string name="app_settings_foreground_service">Pozostań na pierwszym planie</string>
+  <string name="app_settings_foreground_service_details">Może pomóc, jeśli Twoje urządzenie uniemożliwia automatyczną synchronizację</string>
   <string name="app_settings_connection">Łączność</string>
   <string name="app_settings_override_proxy">Nadpisz ustawienia proxy</string>
   <string name="app_settings_override_proxy_on">Użyj niestandardowych ustawień proxy</string>
@@ -317,7 +323,6 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacje debugowania</string>
   <string name="debug_info_use_share1">Użyj akcji Udostępnij aby wysłać nie zmodyfikowane dane, szczególnie dla zgłoszeń wsparcia.</string>
-  <string name="debug_info_use_share2">Unikaj kopiuj &amp; wklej lub zrzutów ekranu ponieważ czynią one interpretację trudniejszą.</string>
   <string name="debug_info_attached">Informacja debugowania załączona do tej wiadomości (wymaga wsparcia dla załączników w odbierającej aplikacji).</string>
   <string name="debug_info_http_error">Błąd HTTP</string>
   <string name="debug_info_server_error">Błąd serwera</string>
