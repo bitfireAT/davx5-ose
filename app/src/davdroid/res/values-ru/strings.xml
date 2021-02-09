@@ -10,6 +10,7 @@
   <string name="share">Поделиться</string>
   <string name="notification_channel_debugging">Отладка</string>
   <string name="notification_channel_general">Другие важные сообщения</string>
+  <string name="notification_channel_status">Низкоприоритетные сообщения о состоянии</string>
   <string name="notification_channel_sync">Синхронизация</string>
   <string name="notification_channel_sync_errors">Ошибки синхронизации</string>
   <string name="notification_channel_sync_errors_desc">Важные ошибки, которые останавливают синхронизацию, например, неожиданные ответы сервера.</string>
@@ -118,6 +119,8 @@
   <string name="dav_service_refresh_failed">Сбой при обнаружении службы</string>
   <string name="dav_service_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
   <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Работает в фоновом режиме</string>
+  <string name="foreground_service_notify_text">На некоторых устройствах это необходимо для автоматической синхронизации.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отладка</string>
@@ -126,6 +129,8 @@
   <string name="app_settings_logging">Детальное журналирование</string>
   <string name="app_settings_logging_on">Журналирование активно</string>
   <string name="app_settings_logging_off">Журналирование отключено</string>
+  <string name="app_settings_foreground_service">Сохранять в фоновом режиме</string>
+  <string name="app_settings_foreground_service_details">Может помочь, если ваше устройство препятствует автоматической синхронизации</string>
   <string name="app_settings_connection">Подключение</string>
   <string name="app_settings_override_proxy">Переопределить настройки прокси</string>
   <string name="app_settings_override_proxy_on">Использовать пользовательские настройки прокси</string>
