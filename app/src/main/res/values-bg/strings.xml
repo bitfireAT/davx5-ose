@@ -29,7 +29,7 @@
   <string name="intro_open_source_title">Софтуер с отворен код</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Разрешения</string>
-  <string name="permissions_text">На %sму трябват права за да работи изрядно.</string>
+  <string name="permissions_text">На %s му трябват разрешения за да работи изрядно.</string>
   <string name="permissions_all_title">Всичко от изброеното долу</string>
   <string name="permissions_all_status_off">Използвай това за да включиш всички функции (препоръчано)</string>
   <string name="permissions_contacts_status_off">Контакти не се синхронизират (не се препоръчва)</string>
