@@ -405,6 +405,7 @@
             android:layout_gravity="bottom|right"
             android:layout_margin="@dimen/fab_margin"
             android:contentDescription="@string/share"
+            android:enabled="false"
             android:src="@drawable/ic_share_action"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

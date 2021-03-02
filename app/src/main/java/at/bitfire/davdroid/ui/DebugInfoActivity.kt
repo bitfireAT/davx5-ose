@@ -105,10 +105,6 @@ class DebugInfoActivity: AppCompatActivity() {
         binding.model = model
         binding.lifecycleOwner = this
 
-        binding.fab.setOnClickListener {
-            shareArchive()
-        }
-
         model.cause.observe(this, Observer { cause ->
             if (cause == null)
                 return@Observer
@@ -143,6 +139,11 @@ class DebugInfoActivity: AppCompatActivity() {
             }
             binding.causeView.setOnClickListener(showDebugInfo)
             binding.debugInfoView.setOnClickListener(showDebugInfo)
+
+            binding.fab.apply {
+                setOnClickListener { shareArchive() }
+                isEnabled = true
+            }
         })
 
         model.logFile.observe(this, { logs ->
