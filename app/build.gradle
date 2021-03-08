@@ -78,6 +78,7 @@ android {
         disable 'MissingTranslation', 'ExtraTranslation'    // translations from Transifex are not always up to date
         disable 'RtlEnabled', 'RtlHardcoded'                // RTL not supported yet
         disable 'Typos'
+        disable 'NullSafeMutableLiveData'                   // crashes lint since Mar 2021
     }
 
     dokka.configuration {
