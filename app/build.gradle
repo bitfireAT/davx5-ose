@@ -164,6 +164,6 @@ dependencies {
     androidTestImplementation 'junit:junit:4.13.1'
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
 
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
 }

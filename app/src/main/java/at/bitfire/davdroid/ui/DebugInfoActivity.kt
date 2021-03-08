@@ -577,11 +577,11 @@ class DebugInfoActivity: AppCompatActivity() {
                     AccountDumpInfo(CalendarContract.AUTHORITY, CalendarContract.Events.CONTENT_URI, "event(s)"),
                     AccountDumpInfo(ProviderName.OpenTasks.authority, TaskContract.Tasks.getContentUri(ProviderName.OpenTasks.authority), "OpenTasks task(s)"),
                     AccountDumpInfo(ProviderName.TasksOrg.authority, TaskContract.Tasks.getContentUri(ProviderName.TasksOrg.authority), "tasks.org task(s)"),
-                    AccountDumpInfo(ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI, "wrongly assigned contact(s)")
+                    AccountDumpInfo(ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI, "wrongly assigned raw contact(s)")
             )
 
             fun addressBookAccount() = listOf(
-                    AccountDumpInfo(ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI, "contact(s)")
+                    AccountDumpInfo(ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI, "raw contact(s)")
             )
 
         }
