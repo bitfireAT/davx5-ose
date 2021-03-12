@@ -283,7 +283,7 @@ class DavResourceFinder(
             principal = dav.requestedUrl.resolve(it)
         }
 
-        // Is it a calendar book and/or principal?
+        // Is it a calendar and/or principal?
         dav[ResourceType::class.java]?.let {
             if (it.types.contains(ResourceType.CALENDAR)) {
                 val info = Collection.fromDavResponse(dav)!!
@@ -300,7 +300,7 @@ class DavResourceFinder(
             for (href in homeSet.hrefs) {
                 dav.requestedUrl.resolve(href)?.let {
                     val location = UrlUtils.withTrailingSlash(it)
-                    log.info("Found calendar book home-set at $location")
+                    log.info("Found calendar home-set at $location")
                     config.homeSets += location
                 }
             }
