@@ -118,6 +118,7 @@ class HttpClient private constructor(
                     Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
                 }
 
+                // TODO don't instantiate CustomCertManager in .Builder (causes service leaks)
                 customCertManager(CustomCertManager(context, true /*BuildConfig.customCertsUI*/,
                         !(settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES))))
             }
@@ -181,42 +182,34 @@ class HttpClient private constructor(
 
             var keyManager: KeyManager? = null
             certificateAlias?.let { alias ->
-                try {
-                    val context = requireNotNull(context)
+                val context = requireNotNull(context)
 
-                    // get provider certificate and private key
-                    val certs = KeyChain.getCertificateChain(context, alias) ?: return@let
-                    val key = KeyChain.getPrivateKey(context, alias) ?: return@let
-                    logger.fine("Using provider certificate $alias for authentication (chain length: ${certs.size})")
+                // get provider certificate and private key
+                val certs = KeyChain.getCertificateChain(context, alias) ?: return@let
+                val key = KeyChain.getPrivateKey(context, alias) ?: return@let
+                logger.fine("Using provider certificate $alias for authentication (chain length: ${certs.size})")
 
-                    // create Android KeyStore (performs key operations without revealing secret data to DAVx5)
-                    val keyStore = KeyStore.getInstance("AndroidKeyStore")
-                    keyStore.load(null)
+                // create KeyManager
+                keyManager = object : X509ExtendedKeyManager() {
+                    override fun getServerAliases(p0: String?, p1: Array<out Principal>?): Array<String>? = null
+                    override fun chooseServerAlias(p0: String?, p1: Array<out Principal>?, p2: Socket?) = null
 
-                    // create KeyManager
-                    keyManager = object: X509ExtendedKeyManager() {
-                        override fun getServerAliases(p0: String?, p1: Array<out Principal>?): Array<String>? = null
-                        override fun chooseServerAlias(p0: String?, p1: Array<out Principal>?, p2: Socket?) = null
+                    override fun getClientAliases(p0: String?, p1: Array<out Principal>?) =
+                            arrayOf(alias)
 
-                        override fun getClientAliases(p0: String?, p1: Array<out Principal>?) =
-                                arrayOf(alias)
+                    override fun chooseClientAlias(p0: Array<out String>?, p1: Array<out Principal>?, p2: Socket?) =
+                            alias
 
-                        override fun chooseClientAlias(p0: Array<out String>?, p1: Array<out Principal>?, p2: Socket?) =
-                                alias
+                    override fun getCertificateChain(forAlias: String?) =
+                            certs.takeIf { forAlias == alias }
 
-                        override fun getCertificateChain(forAlias: String?) =
-                                certs.takeIf { forAlias == alias }
-
-                        override fun getPrivateKey(forAlias: String?) =
-                                key.takeIf { forAlias == alias }
-                    }
-
-                    // HTTP/2 doesn't support client certificates (yet)
-                    // see https://tools.ietf.org/html/draft-ietf-httpbis-http2-secondary-certs-04
-                    orig.protocols(listOf(Protocol.HTTP_1_1))
-                } catch (e: Exception) {
-                    logger.log(Level.SEVERE, "Couldn't set up provider certificate authentication", e)
+                    override fun getPrivateKey(forAlias: String?) =
+                            key.takeIf { forAlias == alias }
                 }
+
+                // HTTP/2 doesn't support client certificates (yet)
+                // see https://tools.ietf.org/html/draft-ietf-httpbis-http2-secondary-certs-04
+                orig.protocols(listOf(Protocol.HTTP_1_1))
             }
 
             val sslContext = SSLContext.getInstance("TLS")
