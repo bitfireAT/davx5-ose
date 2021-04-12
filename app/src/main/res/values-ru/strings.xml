@@ -119,8 +119,8 @@
   <string name="dav_service_refresh_failed">Сбой при обнаружении службы</string>
   <string name="dav_service_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
   <!--ForegroundService-->
-  <string name="foreground_service_notify_title">Работает в фоновом режиме</string>
-  <string name="foreground_service_notify_text">На некоторых устройствах это необходимо для автоматической синхронизации.</string>
+  <string name="foreground_service_notify_title">Запущен в приоритетном режиме</string>
+  <string name="foreground_service_notify_text">Для автоматической синхронизации на некоторых устройствах.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отладка</string>
@@ -129,7 +129,7 @@
   <string name="app_settings_logging">Детальное журналирование</string>
   <string name="app_settings_logging_on">Журналирование активно</string>
   <string name="app_settings_logging_off">Журналирование отключено</string>
-  <string name="app_settings_foreground_service">Сохранять в фоновом режиме</string>
+  <string name="app_settings_foreground_service">Приоритетный режим</string>
   <string name="app_settings_foreground_service_details">Может помочь, если ваше устройство препятствует автоматической синхронизации</string>
   <string name="app_settings_connection">Подключение</string>
   <string name="app_settings_override_proxy">Переопределить настройки прокси</string>

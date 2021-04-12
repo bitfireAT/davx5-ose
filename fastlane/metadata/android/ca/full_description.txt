@@ -1,0 +1,5 @@
+DAVx⁵ és una aplicació que permet administrar i sincronitzar CalDAV/CardDAV, i s'integra nativament amb les aplicacions de contactes/calendari.
+
+Es pot utilitzar amb un servidor propi, o bé amb un proveïdor de confiança que permeti mantenir els contactes, esdeveniments i tasques sota el teu control.
+
+Per obtenir més informació i una llista de servidors/serveis verificats, dirigeix-te al lloc web.

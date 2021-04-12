@@ -1,22 +1,23 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">همگام‌ساز سانا</string>
-  <string name="account_invalid">حساب کاربری موجود نیست</string>
-  <string name="account_title_address_book">کتاب آدرس سانا</string>
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">حساب کاربری موجود نیست (بیشتر از این)</string>
+  <string name="account_title_address_book">کتاب آدرس DAVx⁵</string>
   <string name="address_books_authority_title">کتاب آدرس</string>
   <string name="help">راهنما</string>
   <string name="manage_accounts">مدیریت حساب‌ها</string>
   <string name="share">اشتراک گذاری</string>
   <string name="notification_channel_debugging">خطایابی</string>
   <string name="notification_channel_general">پیام های مهم دیگر</string>
+  <string name="notification_channel_status">پیامهای وضعیت با اولویت پایین</string>
   <string name="notification_channel_sync">همگام‌سازی</string>
   <string name="notification_channel_sync_errors">خطای همگام‌سازی</string>
   <string name="notification_channel_sync_errors_desc">خطاهای مهمی که همگام سازی را مانند پاسخ های غیر منتظره سرور متوقف می کند</string>
   <string name="notification_channel_sync_warnings">هشدارهای همگام‌سازی</string>
   <string name="notification_channel_sync_warnings_desc">مشکلات همگام سازی مانند برخی از پرونده های نامعتبر</string>
   <string name="notification_channel_sync_io_errors">شبکه و خطاهای ورودی خروجی</string>
-  <string name="notification_channel_sync_io_errors_desc">مهلت زمانی ، مشکلات اتصال و غیره</string>
+  <string name="notification_channel_sync_io_errors_desc">مهلت زمانی ، مشکلات اتصال و غیره (اغلب موقت)</string>
   <!--IntroActivity-->
   <string name="intro_slogan1">داده های شما، انتخاب شما</string>
   <string name="intro_slogan2">کنترل را بدست بگیرید</string>
@@ -37,6 +38,8 @@
   <string name="intro_tasks_no_app_store">فروشگاه در دسترس نیست</string>
   <string name="intro_tasks_dont_show">من به پشتیبانی وظایف نیاز ندارم. *</string>
   <string name="intro_open_source_title">برنامه‌های متن باز</string>
+  <string name="intro_open_source_text">ما خوشحالیم که شما از %sکه یک نرم افزار منبع باز است استفاده می‌کنید. توسعه، نگهداری و پشتیبانی کار سختی است. لطفاً با یک کمک مالی (راه های زیادی وجود دارد) کمک کنید. بسیار ممنون می‌شویم!</string>
+  <string name="intro_open_source_details">نحوه کمک / اهدا</string>
   <string name="intro_open_source_dont_show">دیگر نشان داده نشود</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">مجوزها</string>
@@ -69,6 +72,7 @@
   <string name="wifi_permissions_location_permission_off">مجوز مکان رد شد</string>
   <string name="wifi_permissions_background_location_permission">مجوز مکان پس زمینه</string>
   <string name="wifi_permissions_background_location_permission_label">همیشه اجازه دهید</string>
+  <string name="wifi_permissions_background_location_disclaimer">%sفقط از مجوز مکان برای تعیین SSID WiFi فعلی برای حساب‌های محدود شده با SSID استفاده می‌کند. حتی وقتی برنامه در پس زمینه باشد این اتفاق می افتد. هیچ کدام اطلاعات مکانی  ، ذخیره ، پردازش و یا ارسال نمی شود.</string>
   <string name="wifi_permissions_location_enabled">مکان همیشه فعال است</string>
   <string name="wifi_permissions_location_enabled_on">سرویس مکان فعال است</string>
   <string name="wifi_permissions_location_enabled_off">سرویس مکان غیرفعال است</string>
@@ -102,7 +106,7 @@
   <string name="navigation_drawer_donate">کمک</string>
   <string name="navigation_drawer_privacy_policy">سیاست حفظ حریم خصوصی</string>
   <string name="account_list_no_internet">بدون اتصال به اینترنت. اندروید همگام سازی را اجرا نمی کند.</string>
-  <string name="account_list_empty">به همگام‌ساز سانا خوش آمدید</string>
+  <string name="account_list_empty">به همگام‌ساز DAVx⁵ خوش آمدید</string>
   <string name="accounts_global_sync_disabled">همگام سازی خودکار در کل سیستم غیرفعال است</string>
   <string name="accounts_global_sync_enable">فعال</string>
   <string name="accounts_sync_all">همگام سازی همه حساب‌ها</string>
@@ -110,6 +114,8 @@
   <string name="dav_service_refresh_failed">تشخیص سرویس ناموفق بود</string>
   <string name="dav_service_refresh_couldnt_refresh">لیست مجموعه به روز نشد</string>
   <!--ForegroundService-->
+  <string name="foreground_service_notify_title">در حال اجرا در پیش زمینه</string>
+  <string name="foreground_service_notify_text">در برخی از دستگاه ها ، این مورد برای همگام سازی خودکار لازم است.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">تنظیمات</string>
   <string name="app_settings_debug">اشکال زدایی</string>
@@ -118,6 +124,8 @@
   <string name="app_settings_logging">ورود به سیستم</string>
   <string name="app_settings_logging_on">ورود به سیستم فعال است</string>
   <string name="app_settings_logging_off">ورود به سیستم غیرفعال است</string>
+  <string name="app_settings_foreground_service">در پیش زمینه نگه دارید</string>
+  <string name="app_settings_foreground_service_details">اگر دستگاه شما از همگام سازی خودکار جلوگیری کند ، ممکن است کمک کند</string>
   <string name="app_settings_connection">ارتباط</string>
   <string name="app_settings_override_proxy">تنظیمات پروکسی را لغو کنید</string>
   <string name="app_settings_override_proxy_on">از تنظیمات پروکسی سفارشی استفاده کنید</string>
@@ -269,6 +277,10 @@
   <string name="settings_event_colors_off">رنگهای رویداد همگام سازی نمی شوند</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">روش گروه تماس</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>گروه‌ها کارت‌های مجازی جداگانه هستند</item>
+    <item>گروه ها دسته های هر مخاطب هستند</item>
+  </string-array>
   <string name="settings_contact_group_method_change">تغییر روش گروه</string>
   <!--collection management-->
   <string name="create_addressbook">ایجاد دفترچه آدرس</string>
@@ -327,7 +339,7 @@
   <string name="exception_ioexception">خطای ورودی خروجی رخ داده است.</string>
   <string name="exception_show_details">نمایش جزئیات</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">مجوزهای همگام‌ساز سانا</string>
+  <string name="sync_error_permissions">مجوزهای همگام‌ساز DAVx⁵</string>
   <string name="sync_error_permissions_text">مجوزهای اضافی لازم است</string>
   <string name="sync_error_tasks_too_old">%s خیلی قدیمی است</string>
   <string name="sync_error_tasks_required_version">حداقل نسخه مورد نیاز: %1$s</string>
@@ -342,6 +354,6 @@
   <string name="sync_invalid_task">کار نامعتبر از سرور دریافت شد</string>
   <string name="sync_invalid_resources_ignoring">نادیده گرفتن یک یا چند منبع نامعتبر</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">همگام ساز سانا: امنیت اتصال</string>
-  <string name="trust_certificate_unknown_certificate_found">همگام ساز سانا با یک گواهی ناشناخته روبرو شده است. آیا می خواهید به آن اعتماد کنید؟</string>
+  <string name="certificate_notification_connection_security">همگام ساز DAVx⁵: امنیت اتصال</string>
+  <string name="trust_certificate_unknown_certificate_found">همگام ساز DAVx⁵ با یک گواهی ناشناخته روبرو شده است. آیا می خواهید به آن اعتماد کنید؟</string>
 </resources>

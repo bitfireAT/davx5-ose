@@ -10,6 +10,7 @@
   <string name="share">Delen</string>
   <string name="notification_channel_debugging">Debuggen</string>
   <string name="notification_channel_general">Andere belangrijke berichten</string>
+  <string name="notification_channel_status">Statusberichten met lage prioriteit</string>
   <string name="notification_channel_sync">Synchroniseren</string>
   <string name="notification_channel_sync_errors">Synchronisatie fouten</string>
   <string name="notification_channel_sync_errors_desc">Belangrijke fouten die de synchronisatie stoppen zoals onverwachte server antwoorden</string>
@@ -118,6 +119,8 @@
   <string name="dav_service_refresh_failed">Service herkenning is mislukt</string>
   <string name="dav_service_refresh_couldnt_refresh">Kon de collectie lijst niet vernieuwen</string>
   <!--ForegroundService-->
+  <string name="foreground_service_notify_title">draait op de voorgrond</string>
+  <string name="foreground_service_notify_text">Op sommige apparaten is dit nodig voor automatische synchronisatie.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Instellingen</string>
   <string name="app_settings_debug">Debuggen</string>
@@ -126,6 +129,8 @@
   <string name="app_settings_logging">Uitvoerig/expliciet loggen.</string>
   <string name="app_settings_logging_on">Loggen is actief</string>
   <string name="app_settings_logging_off">Loggen is geactiveerd</string>
+  <string name="app_settings_foreground_service">op de voorgrond houden</string>
+  <string name="app_settings_foreground_service_details">Kan helpen als uw apparaat automatische synchronisatie verhindert</string>
   <string name="app_settings_connection">Verbinding</string>
   <string name="app_settings_override_proxy">Proxy instellingen overschrijven</string>
   <string name="app_settings_override_proxy_on">Eigen proxy instellingen gebruiken</string>

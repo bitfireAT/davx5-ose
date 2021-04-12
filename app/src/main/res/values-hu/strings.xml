@@ -10,6 +10,7 @@
   <string name="share">Megosztás</string>
   <string name="notification_channel_debugging">Hibakeresés</string>
   <string name="notification_channel_general">Egyéb fontos üzenetek</string>
+  <string name="notification_channel_status">Alacsony prioritású státuszüzenetek</string>
   <string name="notification_channel_sync">Szinkronizáció</string>
   <string name="notification_channel_sync_errors">Szinkronizációs hibák</string>
   <string name="notification_channel_sync_errors_desc">Fontos hibák amelyek miatt a szinkronizáció megszakad, például váratlan szerverválaszok</string>
@@ -118,6 +119,8 @@
   <string name="dav_service_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
   <string name="dav_service_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
   <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Futás előtérben</string>
+  <string name="foreground_service_notify_text">Egyes eszközökön erre szükség van az automatikus szinkronizáció működéséhez</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Beállítások</string>
   <string name="app_settings_debug">Hibakeresés</string>
@@ -126,6 +129,8 @@
   <string name="app_settings_logging">Részletes naplózás</string>
   <string name="app_settings_logging_on">Naplózás bekapcsolva</string>
   <string name="app_settings_logging_off">Naplózás kikapcsolva</string>
+  <string name="app_settings_foreground_service">Maradjon előtérben</string>
+  <string name="app_settings_foreground_service_details">Segíthet, ha az eszköz akadályozza az automatikus szinkronizációt</string>
   <string name="app_settings_connection">Kapcsolat</string>
   <string name="app_settings_override_proxy">Proxybeállítások felülírása</string>
   <string name="app_settings_override_proxy_on">Egyedi proxybeállítások</string>

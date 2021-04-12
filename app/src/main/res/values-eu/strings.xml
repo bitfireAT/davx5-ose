@@ -10,6 +10,7 @@
   <string name="share">Partekatu</string>
   <string name="notification_channel_debugging">Arazten</string>
   <string name="notification_channel_general">Beste mezu garrantzitsu batzuk</string>
+  <string name="notification_channel_status">Prioritate baxuko egoera mezuak</string>
   <string name="notification_channel_sync">Sinkronizazioa</string>
   <string name="notification_channel_sync_errors">Sinkronizazio erroreak</string>
   <string name="notification_channel_sync_errors_desc">Sinkronizazioa gelditzen duten errore garrantzitsuak, esaterako ustekabeko zerbitzariaren erantzunak</string>
@@ -118,6 +119,8 @@
   <string name="dav_service_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
   <string name="dav_service_refresh_couldnt_refresh">Ezin izan da bilduma zerrenda freskatu</string>
   <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Aurrealdean exekutatzen</string>
+  <string name="foreground_service_notify_text">Gailu batzuetan, hau beharrezkoa da sinkronizazio automatikorako.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ezarpenak</string>
   <string name="app_settings_debug">Arazketa</string>
@@ -126,6 +129,8 @@
   <string name="app_settings_logging">Erregistro xehatuak</string>
   <string name="app_settings_logging_on">Erregistratzea gaituta dago</string>
   <string name="app_settings_logging_off">Erregistratzea desgaituta dago</string>
+  <string name="app_settings_foreground_service">Mantendu aurrealdean</string>
+  <string name="app_settings_foreground_service_details">Zure gailuak sinkronizazio automatikoa galarazten badu lagundu dezake</string>
   <string name="app_settings_connection">Konexioa</string>
   <string name="app_settings_override_proxy">Gainidatzi proxy ezarpenak</string>
   <string name="app_settings_override_proxy_on">Erabili proxy ezarpen pertsonalizatuak</string>

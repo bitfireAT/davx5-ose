@@ -10,6 +10,7 @@
   <string name="share">Compartir</string>
   <string name="notification_channel_debugging">Depuración</string>
   <string name="notification_channel_general">Otros mensajes importantes</string>
+  <string name="notification_channel_status">Mensajes de baja prioridad</string>
   <string name="notification_channel_sync">Sincronización</string>
   <string name="notification_channel_sync_errors">Errores de sincronización</string>
   <string name="notification_channel_sync_errors_desc">Errores importantes que detienen la sincronización como respuestas inesperadas del servidor</string>
@@ -118,6 +119,8 @@
   <string name="dav_service_refresh_failed">Falló la detección del servicio</string>
   <string name="dav_service_refresh_couldnt_refresh">No se pudo refrescar lista de colección</string>
   <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Funcionando en primer plano.</string>
+  <string name="foreground_service_notify_text">En algunos dispositivos, esto es necesario para la sincronización automática.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ajustes</string>
   <string name="app_settings_debug">Depuración</string>
@@ -126,6 +129,8 @@
   <string name="app_settings_logging">Registro extendido</string>
   <string name="app_settings_logging_on">El registro está activo</string>
   <string name="app_settings_logging_off">El registro está deshabilitado</string>
+  <string name="app_settings_foreground_service">Mantener en primer plano.</string>
+  <string name="app_settings_foreground_service_details">Puede ayudar si tu dispositivo impide la sincronización automática.</string>
   <string name="app_settings_connection">Conexión</string>
   <string name="app_settings_override_proxy">Anular ajustes del proxy</string>
   <string name="app_settings_override_proxy_on">Usar ajustes personalizados del proxy</string>
