@@ -29,7 +29,7 @@
   <string name="intro_autostart_title">%s kompatybilność</string>
   <string name="intro_autostart_text">To urządzenie prawdopodobnie blokuje synchronizację. Jeśli ten problem Cię dotyczy, możesz go jedynie rozwiązać ręcznie.</string>
   <string name="intro_autostart_dont_show">Wprowadziłem potrzebne ustawienia. Nie przypominaj mi ponownie.*</string>
-  <string name="intro_leave_unchecked">* Pozostaw nie zaznaczone, aby otrzymać przypomnienie później. Możesz to zresetować w ustawieniach aplikacji/%s. </string>
+  <string name="intro_leave_unchecked">* Pozostaw nie zaznaczone, aby otrzymać przypomnienie później. Można zresetować w ustawieniach aplikacji wybierając %s.</string>
   <string name="intro_more_info">Więcej informacji</string>
   <string name="intro_tasks_title">Obsługa zadań</string>
   <string name="intro_tasks_text1">Jeśli zadania są wspierane przez Twój serwer, mogą być synchronizowane ze wspieraną aplikacją zadań:</string>
