@@ -1,7 +1,6 @@
 image: registry.gitlab.com/bitfireat/docker-android-emulator:latest
 
 before_script:
-  - curl -XPOST -d 'email=gitlab%40bitfire.at&password=$DAVTEST_TOKEN&action=Request+access' 'https://davtest.dev001.net/access/'
   - git submodule update --init --recursive
   - export GRADLE_USER_HOME=`pwd`/.gradle; chmod +x gradlew
 
@@ -13,6 +12,7 @@ test:
   tags:
     - privileged
   script:
+   - curl -d "email=gitlab%40bitfire.at&password=$DAVTEST_TOKEN&action=Request+access" -X POST "https://davtest.dev001.net/access/"
    - start-emulator.sh
    - ./gradlew app:check app:connectedCheck
   artifacts:
