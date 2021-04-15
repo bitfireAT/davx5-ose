@@ -1,0 +1,4 @@
+* sync VEVENT URL in a way that calendar apps can use it although it’s not natively supported by Android – currently supported by aCalendar+ (2.5 and newer)
+* authentication with client certificates: fix occasional HTTP/400 errors
+* debug info: allow sharing only after debug info is generated
+* library updates, new translations
