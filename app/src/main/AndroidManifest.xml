@@ -256,6 +256,12 @@
             <data android:scheme="content" android:host="com.android.calendar" />
         </intent>
 
+        <!-- Web browsers (to check whether a Web browser is installed before viewing a URL) -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+
         <!-- Custom Tabs support (e.g. Nextcloud Login Flow) -->
         <intent>
             <action android:name="android.support.customtabs.action.CustomTabsService" />
