@@ -339,7 +339,7 @@ class DavResourceFinder(
      * @return principal URL, or null if none found
      */
     @Throws(IOException::class, HttpException::class, DavException::class)
-    private fun discoverPrincipalUrl(domain: String, service: Service): HttpUrl? {
+    fun discoverPrincipalUrl(domain: String, service: Service): HttpUrl? {
         val scheme: String
         val fqdn: String
         var port = 443
