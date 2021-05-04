@@ -16,39 +16,43 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_height="match_parent"
-            android:layout_width="match_parent">
+            android:layout_width="match_parent" >
 
             <TextView
                 android:id="@+id/intro"
+                style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:text="@string/wifi_permissions_intro"
+                android:textAlignment="viewStart"
                 app:layout_constraintEnd_toEndOf="parent"
-                style="@style/TextAppearance.MaterialComponents.Body1"
-                android:text="@string/wifi_permissions_intro"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/locationTitle"
+                style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/intro"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/locationSwitch"
-                android:visibility="@{model.haveLocation != null ? View.VISIBLE : View.GONE}"
                 android:layout_marginTop="@dimen/card_margin_title_text"
-                style="@style/TextAppearance.MaterialComponents.Body1"
-                android:text="Location permission" />
+                android:text="Location permission"
+                android:textAlignment="viewStart"
+                android:visibility="@{model.haveLocation != null ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toStartOf="@id/locationSwitch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/intro" />
+
             <TextView
                 android:id="@+id/locationStatus"
+                style="@style/TextAppearance.MaterialComponents.Body2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/locationTitle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/locationSwitch"
+                android:text="@{model.haveLocation ? @string/wifi_permissions_location_permission_on : @string/wifi_permissions_location_permission_off}"
+                android:textAlignment="viewStart"
                 android:visibility="@{model.haveLocation != null ? View.VISIBLE : View.GONE}"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:text="@{model.haveLocation ? @string/wifi_permissions_location_permission_on : @string/wifi_permissions_location_permission_off}" />
+                app:layout_constraintEnd_toStartOf="@id/locationSwitch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/locationTitle" />
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/locationSwitch"
                 android:layout_width="wrap_content"
@@ -62,24 +66,27 @@
 
             <TextView
                 android:id="@+id/backgroundLocationTitle"
+                style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/locationStatus"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/backgroundLocationSwitch"
-                android:visibility="@{model.haveBackgroundLocation != null ? View.VISIBLE : View.GONE}"
                 android:layout_marginTop="@dimen/card_margin_title_text"
-                style="@style/TextAppearance.MaterialComponents.Body1"
-                android:text="@string/wifi_permissions_background_location_permission" />
+                android:text="@string/wifi_permissions_background_location_permission"
+                android:textAlignment="viewStart"
+                android:visibility="@{model.haveBackgroundLocation != null ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toStartOf="@id/backgroundLocationSwitch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/locationStatus" />
+
             <TextView
                 android:id="@+id/backgroundLocationStatus"
+                style="@style/TextAppearance.MaterialComponents.Body2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/backgroundLocationTitle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/backgroundLocationSwitch"
+                android:textAlignment="viewStart"
                 android:visibility="@{model.haveBackgroundLocation != null ? View.VISIBLE : View.GONE}"
-                style="@style/TextAppearance.MaterialComponents.Body2"
+                app:layout_constraintEnd_toStartOf="@id/backgroundLocationSwitch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/backgroundLocationTitle"
                 tools:text="@string/wifi_permissions_background_location_permission_off" />
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/backgroundLocationSwitch"
@@ -95,36 +102,40 @@
 
             <TextView
                 android:id="@+id/backgroundLocationDisclaimer"
+                style="@style/TextAppearance.MaterialComponents.Body2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@id/backgroundLocationStatus"
-                app:layout_constraintStart_toStartOf="parent"
+                android:text="@string/wifi_permissions_background_location_disclaimer"
+                android:textAlignment="viewStart"
                 android:visibility="@{model.haveBackgroundLocation != null ? View.VISIBLE : View.GONE}"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:text="@string/wifi_permissions_background_location_disclaimer"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/backgroundLocationStatus" />
 
             <TextView
                 android:id="@+id/locationEnabledTitle"
+                style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/backgroundLocationDisclaimer"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/locationEnabledSwitch"
-                android:visibility="@{model.isLocationEnabled != null ? View.VISIBLE : View.GONE}"
                 android:layout_marginTop="@dimen/card_margin_title_text"
-                style="@style/TextAppearance.MaterialComponents.Body1"
-                android:text="@string/wifi_permissions_location_enabled" />
+                android:text="@string/wifi_permissions_location_enabled"
+                android:textAlignment="viewStart"
+                android:visibility="@{model.isLocationEnabled != null ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toStartOf="@id/locationEnabledSwitch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/backgroundLocationDisclaimer" />
+
             <TextView
                 android:id="@+id/locationEnabledStatus"
+                style="@style/TextAppearance.MaterialComponents.Body2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/locationEnabledTitle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/locationEnabledSwitch"
+                android:text="@{model.isLocationEnabled ? @string/wifi_permissions_location_enabled_on : @string/wifi_permissions_location_enabled_off}"
+                android:textAlignment="viewStart"
                 android:visibility="@{model.isLocationEnabled != null ? View.VISIBLE : View.GONE}"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:text="@{model.isLocationEnabled ? @string/wifi_permissions_location_enabled_on : @string/wifi_permissions_location_enabled_off}" />
+                app:layout_constraintEnd_toStartOf="@id/locationEnabledSwitch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/locationEnabledTitle" />
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/locationEnabledSwitch"
                 android:layout_width="wrap_content"
@@ -137,13 +148,14 @@
 
             <TextView
                 android:id="@+id/settingsHint"
+                style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/locationEnabledStatus"
-                app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="16dp"
                 android:text="@string/permissions_app_settings_hint"
-                style="@style/TextAppearance.MaterialComponents.Body1"/>
+                android:textAlignment="viewStart"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/locationEnabledStatus" />
 
             <Button
                 android:layout_width="wrap_content"

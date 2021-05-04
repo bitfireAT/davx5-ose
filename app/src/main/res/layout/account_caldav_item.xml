@@ -13,14 +13,14 @@
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:paddingLeft="0dp"
-              android:paddingRight="8dp">
+              android:paddingStart="0dp"
+              android:paddingEnd="8dp">
 
     <View
         android:id="@+id/color"
         android:layout_width="8dp"
         android:layout_height="match_parent"
-        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
         tools:background="@color/primaryColor"/>
 
     <LinearLayout
@@ -39,7 +39,7 @@
             android:focusableInTouchMode="false"
             android:clickable="false"
             android:contentDescription="@string/account_synchronize_this_collection"
-            android:layout_marginRight="4dp"/>
+            android:layout_marginEnd="4dp"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -51,15 +51,17 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="viewStart"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="My Calendar"/>
+                tools:text="My Calendar" />
 
             <TextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="viewStart"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="Calendar Description"/>
+                tools:text="Calendar Description" />
 
         </LinearLayout>
 

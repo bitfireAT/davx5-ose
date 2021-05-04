@@ -41,6 +41,7 @@
                     android:visibility="@{model.debugInfo == null ? View.VISIBLE : View.GONE}"
                     tools:visibility="visible" />
 
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -96,7 +97,7 @@
                                 android:id="@+id/causeIcon"
                                 android:layout_width="44dp"
                                 android:layout_height="0dp"
-                                android:paddingRight="12dp"
+                                android:paddingEnd="12dp"
                                 android:layout_marginTop="@dimen/card_margin_title_text"
                                 app:layout_constraintTop_toBottomOf="@id/causeTheme"
                                 app:layout_constraintLeft_toLeftOf="@id/causeStart"
@@ -197,7 +198,7 @@
                                 android:id="@+id/debugInfoIcon"
                                 android:layout_width="44dp"
                                 android:layout_height="0dp"
-                                android:paddingRight="12dp"
+                                android:paddingEnd="12dp"
                                 android:layout_marginTop="@dimen/card_margin_title_text"
                                 app:layout_constraintTop_toBottomOf="@id/debugInfoTheme"
                                 app:layout_constraintLeft_toLeftOf="@id/debugInfoStart"
@@ -257,7 +258,7 @@
                                 android:id="@+id/resIcon"
                                 android:layout_width="44dp"
                                 android:layout_height="0dp"
-                                android:paddingRight="12dp"
+                                android:paddingEnd="12dp"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintRight_toLeftOf="@id/resCaption"
@@ -350,7 +351,7 @@
                                 android:id="@+id/logsIcon"
                                 android:layout_width="44dp"
                                 android:layout_height="0dp"
-                                android:paddingRight="12dp"
+                                android:paddingEnd="12dp"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintRight_toLeftOf="@id/logsCaption"

@@ -58,41 +58,44 @@
 
                     <TextView
                         android:id="@+id/heading"
+                        style="@style/TextAppearance.MaterialComponents.Headline6"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
-                        app:layout_constraintTop_toBottomOf="@id/image"
+                        android:text="@string/intro_tasks_title"
+                        android:textAlignment="viewStart"
                         app:layout_constraintBottom_toTopOf="@id/text1"
-                        app:layout_constraintStart_toStartOf="@id/start"
                         app:layout_constraintEnd_toStartOf="@id/end"
-                        style="@style/TextAppearance.MaterialComponents.Headline6"
-                        android:text="@string/intro_tasks_title" />
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/image" />
 
                     <TextView
                         android:id="@+id/text1"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
-                        app:layout_constraintTop_toBottomOf="@id/heading"
+                        android:text="@string/intro_tasks_text1"
+                        android:textAlignment="viewStart"
                         app:layout_constraintBottom_toTopOf="@id/openTasksRadio"
-                        app:layout_constraintStart_toStartOf="@id/start"
                         app:layout_constraintEnd_toEndOf="@id/end"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:text="@string/intro_tasks_text1"/>
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/heading" />
 
                     <RadioButton
                         android:id="@+id/openTasksRadio"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
-                        app:layout_constraintTop_toBottomOf="@id/text1"
-                        app:layout_constraintBottom_toTopOf="@id/tasksOrgRadio"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:clickable="@{model.openTasksInstalled}"
                         android:checked="@={model.openTasksSelected}"
-                        android:text="@string/intro_tasks_opentasks"/>
+                        android:clickable="@{model.openTasksInstalled}"
+                        android:text="@string/intro_tasks_opentasks"
+                        android:textAlignment="viewStart"
+                        app:layout_constraintBottom_toTopOf="@id/tasksOrgRadio"
+                        app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/text1" />
                     <TextView
                         android:id="@+id/openTasksInfo"
                         android:layout_width="0dp"
@@ -116,17 +119,18 @@
 
                     <RadioButton
                         android:id="@+id/tasksOrgRadio"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
-                        app:layout_constraintTop_toBottomOf="@id/openTasksInfo"
-                        app:layout_constraintBottom_toTopOf="@id/tasksOrgInfo"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/tasksOrgSwitch"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:clickable="@{model.tasksOrgInstalled}"
                         android:checked="@={model.tasksOrgSelected}"
-                        android:text="@string/intro_tasks_tasks_org"/>
+                        android:clickable="@{model.tasksOrgInstalled}"
+                        android:text="@string/intro_tasks_tasks_org"
+                        android:textAlignment="viewStart"
+                        app:layout_constraintBottom_toTopOf="@id/tasksOrgInfo"
+                        app:layout_constraintEnd_toStartOf="@id/tasksOrgSwitch"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/openTasksInfo" />
                     <TextView
                         android:id="@+id/tasksOrgInfo"
                         android:layout_width="0dp"
@@ -153,12 +157,13 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:visibility="@{model.openTasksInstalled ? View.GONE : View.VISIBLE}"
-                        app:layout_constraintTop_toBottomOf="@id/tasksOrgInfo"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintEnd_toEndOf="@id/end"
                         android:checked="@={model.dontShow}"
-                        android:text="@string/intro_tasks_dont_show" />
+                        android:text="@string/intro_tasks_dont_show"
+                        android:textAlignment="viewStart"
+                        android:visibility="@{model.openTasksInstalled ? View.GONE : View.VISIBLE}"
+                        app:layout_constraintEnd_toEndOf="@id/end"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/tasksOrgInfo" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -166,11 +171,12 @@
 
             <TextView
                 android:id="@+id/infoLeaveUnchecked"
+                style="@style/TextAppearance.MaterialComponents.Body2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:text="@string/intro_leave_unchecked"/>
+                android:text="@string/intro_leave_unchecked"
+                android:textAlignment="viewStart" />
 
         </LinearLayout>
 
