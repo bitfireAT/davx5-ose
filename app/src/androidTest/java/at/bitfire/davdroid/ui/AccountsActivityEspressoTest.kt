@@ -1,24 +1,20 @@
 package at.bitfire.davdroid.ui
 
-
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.PerformException
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
+import androidx.test.espresso.*
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.contrib.DrawerMatchers.isClosed
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.espresso.util.HumanReadables
 import androidx.test.espresso.util.TreeIterables
 import androidx.test.ext.junit.rules.activityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import at.bitfire.davdroid.R
 import org.hamcrest.Description
@@ -27,16 +23,13 @@ import org.hamcrest.Matchers
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.util.concurrent.TimeoutException
 
-
-@RunWith(AndroidJUnit4::class)
 @LargeTest
 class AccountsActivityEspressoTest {
 
-    @get:Rule var activityScenarioRule = activityScenarioRule<AccountsActivity>()
-
+    @get:Rule
+    val activityScenarioRule = activityScenarioRule<AccountsActivity>()
 
     private val username = "test"
     private val password = "test"
@@ -45,14 +38,7 @@ class AccountsActivityEspressoTest {
 
     @Test
     fun accountsActivityTest() {
-
-
-        onView(withId(R.id.takeControl)).check(matches(withText(R.string.intro_slogan2)))   // intro_welcome is the first fragment, check first if the String Resource "intro_slogan2" is shown.
-        onView(withId(R.id.next)).perform(click())                                          // change the fragment by clicking on the FAB
-        onView(withId(R.id.next)).perform(click())
-        onView(withId(R.id.next)).perform(click())
-        onView(withId(R.id.done)).perform(click())
-        onView(withText(R.string.account_list_empty)).check(matches(isDisplayed()))
+        skipIntroActivity()
 
         onView(withId(R.id.fab)).perform(click())
 
@@ -86,7 +72,6 @@ class AccountsActivityEspressoTest {
         onView(withText("test")).check(matches(withText("test")))
         onView(withText("test")).perform(click())
 
-
         // open the overflowMenu to delete the account
         val overflowMenuButton = onView(
                 Matchers.allOf(withContentDescription("More options"),
@@ -98,7 +83,6 @@ class AccountsActivityEspressoTest {
                         isDisplayed()))
         overflowMenuButton.perform(click())
 
-
         // click on the delete button
         onView(withText(R.string.account_delete)).perform(click())
         onView(withText(R.string.account_delete_confirmation_title)).check(matches(isDisplayed()))
@@ -107,25 +91,17 @@ class AccountsActivityEspressoTest {
 
         // doublecheck to make sure that the account doesn't exist anymore. The welcome text is displayed
         onView(withText(R.string.account_list_empty)).check(matches(withText(R.string.account_list_empty)))
-
     }
-
 
     @Test
     fun menuDrawerTest() {
-
-        onView(withId(R.id.takeControl)).check(matches(withText(R.string.intro_slogan2)))
-        onView(withId(R.id.next)).perform(click())                                          // change the fragment by clicking on the FAB
-        onView(withId(R.id.next)).perform(click())
-        onView(withId(R.id.next)).perform(click())
-        onView(withId(R.id.done)).perform(click())
-        onView(withText(R.string.account_list_empty)).check(matches(isDisplayed()))
+        skipIntroActivity()
 
         // TESTING ABOUT DIALOG
         // Open Drawer to click on navigation.
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT))) // Left Drawer should be closed.
-                .perform(DrawerActions.open()); // Open Drawer
+                .perform(DrawerActions.open()) // Open Drawer
         // check if about can be opened
         onView(withText(R.string.navigation_drawer_about)).perform(click())
         onView(withText(R.string.about_copyright)).check(matches(isDisplayed()))
@@ -135,7 +111,7 @@ class AccountsActivityEspressoTest {
         // Open Drawer to click on navigation.
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT))) // Left Drawer should be closed.
-                .perform(DrawerActions.open()); // Open Drawer
+                .perform(DrawerActions.open()) // Open Drawer
         // check if about can be opened
         onView(withText(R.string.navigation_drawer_settings)).perform(click())
         onView(withText(R.string.app_settings_show_debug_info)).check(matches(isDisplayed()))
@@ -145,14 +121,45 @@ class AccountsActivityEspressoTest {
         // Open Drawer to click on navigation.
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT))) // Left Drawer should be closed.
-                .perform(DrawerActions.open()); // Open Drawer
+                .perform(DrawerActions.open()) // Open Drawer
         // check if Website can be opened
-        onView(withText(R.string.navigation_drawer_website)).perform(click())
-
-
+        //onView(withText(R.string.navigation_drawer_website)).perform(click())
     }
 
-        /**
+
+    private fun childAtPosition(
+            parentMatcher: Matcher<View>, position: Int): Matcher<View> {
+
+        return object : TypeSafeMatcher<View>() {
+            override fun describeTo(description: Description) {
+                description.appendText("Child at position $position in parent ")
+                parentMatcher.describeTo(description)
+            }
+
+            public override fun matchesSafely(view: View): Boolean {
+                val parent = view.parent
+                return parent is ViewGroup && parentMatcher.matches(parent)
+                        && view == parent.getChildAt(position)
+            }
+        }
+    }
+
+    private fun skipIntroActivity() {
+        try {
+            onView(withId(R.id.takeControl)).check(matches(withText(R.string.intro_slogan2)))   // intro_welcome is the first fragment, check first if the String Resource "intro_slogan2" is shown.
+            // click through up to 5 intro fragments
+            for (i in 1..5)
+                try {
+                    onView(withId(R.id.next)).perform(click())
+                } catch (ignored: Exception) { }
+            onView(withId(R.id.done)).perform(click())
+        } catch (ignored: NoMatchingViewException) {
+            // the IntroActivity or some fragments of it may not show up every time
+        }
+        onView(withText(R.string.account_list_empty)).check(matches(isDisplayed()))
+    }
+
+    /**
      * This ViewAction tells espresso to wait till a certain view is found in the view hierarchy.
      * Source: https://www.repeato.app/espresso-wait-for-view/
      * @param viewId The id of the view to wait for.
@@ -195,21 +202,4 @@ class AccountsActivityEspressoTest {
         }
     }
 
-    private fun childAtPosition(
-            parentMatcher: Matcher<View>, position: Int): Matcher<View> {
-
-        return object : TypeSafeMatcher<View>() {
-            override fun describeTo(description: Description) {
-                description.appendText("Child at position $position in parent ")
-                parentMatcher.describeTo(description)
-            }
-
-            public override fun matchesSafely(view: View): Boolean {
-                val parent = view.parent
-                return parent is ViewGroup && parentMatcher.matches(parent)
-                        && view == parent.getChildAt(position)
-            }
-        }
-    }
 }
-
