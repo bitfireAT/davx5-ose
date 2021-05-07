@@ -1,5 +1,7 @@
 package at.bitfire.davdroid.settings
 
+import androidx.appcompat.app.AppCompatDelegate
+
 object Settings {
 
     const val FOREGROUND_SERVICE = "foreground_service"
@@ -15,6 +17,13 @@ object Settings {
      * Used to initialize an account.
      */
     const val DEFAULT_SYNC_INTERVAL = "default_sync_interval"
+
+    /**
+     * Preferred theme (light/dark). Value must be one of [AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM]
+     * (default if setting is missing), [AppCompatDelegate.MODE_NIGHT_NO] or [AppCompatDelegate.MODE_NIGHT_YES].
+     */
+    const val PREFERRED_THEME = "preferred_theme"
+    const val PREFERRED_THEME_DEFAULT = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 
     const val PREFERRED_TASKS_PROVIDER = "preferred_tasks_provider"
 

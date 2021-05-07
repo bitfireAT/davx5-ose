@@ -70,21 +70,21 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="@string/account_read_only"
-            app:srcCompat="@drawable/ic_remove_circle_dark"/>
+            app:srcCompat="@drawable/ic_remove_circle" />
 
         <ImageView
             android:id="@+id/events"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="@string/account_calendar"
-            app:srcCompat="@drawable/ic_today_dark"/>
+            app:srcCompat="@drawable/ic_today"/>
 
         <ImageView
             android:id="@+id/tasks"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="@string/account_task_list"
-            app:srcCompat="@drawable/ic_playlist_add_check_dark"/>
+            app:srcCompat="@drawable/ic_playlist_add_check"/>
 
         <ImageView
             android:id="@+id/action_overflow"

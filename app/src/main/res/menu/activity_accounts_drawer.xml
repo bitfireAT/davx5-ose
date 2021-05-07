@@ -12,18 +12,18 @@
 
     <item
         android:id="@+id/nav_about"
-        android:icon="@drawable/ic_info_dark"
+        android:icon="@drawable/ic_info"
         android:title="@string/navigation_drawer_about"/>
 
     <item
         android:id="@+id/nav_beta_feedback"
-        android:icon="@drawable/ic_forum_dark"
+        android:icon="@drawable/ic_forum"
         android:title="@string/navigation_drawer_beta_feedback"
         android:visible="false"/>
 
     <item
         android:id="@+id/nav_app_settings"
-        android:icon="@drawable/ic_settings_dark"
+        android:icon="@drawable/ic_settings"
         android:title="@string/navigation_drawer_settings"/>
 
     <item android:title="@string/navigation_drawer_news_updates">
@@ -40,28 +40,28 @@
         <menu>
             <item
                 android:id="@+id/nav_website"
-                android:icon="@drawable/ic_home_dark"
+                android:icon="@drawable/ic_home"
                 android:title="@string/navigation_drawer_website"/>
             <item
                 android:id="@+id/nav_manual"
-                android:icon="@drawable/ic_info_dark"
+                android:icon="@drawable/ic_info"
                 android:title="@string/navigation_drawer_manual"/>
             <item
                 android:id="@+id/nav_faq"
-                android:icon="@drawable/ic_help_dark"
+                android:icon="@drawable/ic_help"
                 android:title="@string/navigation_drawer_faq"/>
             <item
                 android:id="@+id/nav_forums"
-                android:icon="@drawable/ic_forum_dark"
+                android:icon="@drawable/ic_forum"
                 android:title="@string/navigation_drawer_forums"/>
             <item
                 android:id="@+id/nav_donate"
-                android:icon="@drawable/ic_attach_money_dark"
+                android:icon="@drawable/ic_attach_money"
                 android:title="@string/navigation_drawer_donate"
                 android:visible="false"/>
             <item
                 android:id="@+id/nav_privacy"
-                android:icon="@drawable/ic_cloud_off_dark"
+                android:icon="@drawable/ic_cloud_off"
                 android:title="@string/navigation_drawer_privacy_policy"/>
         </menu>
     </item>

@@ -14,10 +14,8 @@ import android.os.Build
 import android.os.Bundle
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.EditTextPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreferenceCompat
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.*
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.ForegroundService
@@ -62,9 +60,6 @@ class AppSettingsActivity: AppCompatActivity() {
 
         override fun onCreatePreferences(bundle: Bundle?, s: String?) {
             addPreferencesFromResource(R.xml.settings_app)
-            loadSettings()
-
-            settings.addOnChangeListener(this)
 
             // UI settings
             findPreference<Preference>("notification_settings")!!.apply {
@@ -96,8 +91,14 @@ class AppSettingsActivity: AppCompatActivity() {
             }
         }
 
-        override fun onDestroy() {
-            super.onDestroy()
+        override fun onStart() {
+            super.onStart()
+            settings.addOnChangeListener(this)
+            loadSettings()
+        }
+
+        override fun onStop() {
+            super.onStop()
             settings.removeOnChangeListener(this)
         }
 
@@ -108,7 +109,7 @@ class AppSettingsActivity: AppCompatActivity() {
                 isChecked = settings.getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
                 onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                     settings.putBoolean(Settings.FOREGROUND_SERVICE, newValue as Boolean)
-                    context.startService(Intent(ForegroundService.ACTION_FOREGROUND, null, context, ForegroundService::class.java))
+                    requireActivity().startService(Intent(ForegroundService.ACTION_FOREGROUND, null, requireActivity(), ForegroundService::class.java))
                     false
                 }
             }
@@ -167,10 +168,24 @@ class AppSettingsActivity: AppCompatActivity() {
             findPreference<SwitchPreferenceCompat>(Settings.DISTRUST_SYSTEM_CERTIFICATES)!!
                     .isChecked = settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
 
+            // user interface settings
+            findPreference<ListPreference>(Settings.PREFERRED_THEME)!!.apply {
+                val mode = settings.getIntOrNull(Settings.PREFERRED_THEME) ?: Settings.PREFERRED_THEME_DEFAULT
+                setValueIndex(entryValues.indexOf(mode.toString()))
+                summary = getString(R.string.app_settings_theme_summary, entry)
+
+                onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    val newMode = (newValue as String).toInt()
+                    AppCompatDelegate.setDefaultNightMode(newMode)
+                    settings.putInt(Settings.PREFERRED_THEME, newMode)
+                    false
+                }
+            }
+
             // integration settings
             findPreference<Preference>(Settings.PREFERRED_TASKS_PROVIDER)!!.apply {
-                val pm = context.packageManager
-                val taskProvider = TaskUtils.currentProvider(context)
+                val pm = requireActivity().packageManager
+                val taskProvider = TaskUtils.currentProvider(requireActivity())
                 if (taskProvider != null) {
                     val tasksAppInfo = pm.getApplicationInfo(taskProvider.packageName, 0)
                     val inset = (24*resources.displayMetrics.density).roundToInt()  // 24dp
@@ -180,7 +195,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     )
                     summary = getString(R.string.app_settings_tasks_provider_synchronizing_with, tasksAppInfo.loadLabel(pm))
                 } else {
-                    setIcon(R.drawable.ic_playlist_add_check_dark)
+                    setIcon(R.drawable.ic_playlist_add_check)
                     setSummary(R.string.app_settings_tasks_provider_none)
                 }
                 setOnPreferenceClickListener {
@@ -193,7 +208,8 @@ class AppSettingsActivity: AppCompatActivity() {
         override fun onSettingsChanged() {
             // loadSettings must run in UI thread
             CoroutineScope(Dispatchers.Main).launch {
-                loadSettings()
+                if (isAdded)
+                    loadSettings()
             }
         }
 

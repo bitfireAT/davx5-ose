@@ -115,7 +115,7 @@ class DetectConfigurationFragment: Fragment() {
 
             return MaterialAlertDialogBuilder(requireActivity())
                     .setTitle(R.string.login_configuration_detection)
-                    .setIcon(R.drawable.ic_error_dark)
+                    .setIcon(R.drawable.ic_error)
                     .setMessage(message)
                     .setNeutralButton(R.string.login_view_logs) { _, _ ->
                         val intent = Intent(activity, DebugInfoActivity::class.java)

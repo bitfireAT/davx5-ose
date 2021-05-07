@@ -46,7 +46,7 @@ class ExceptionInfoFragment: DialogFragment() {
         }
 
         val dialog = MaterialAlertDialogBuilder(requireActivity())
-                .setIcon(R.drawable.ic_error_dark)
+                .setIcon(R.drawable.ic_error)
                 .setTitle(title)
                 .setMessage(exception::class.java.name + "\n" + exception.localizedMessage)
                 .setNegativeButton(R.string.exception_show_details) { _, _ ->

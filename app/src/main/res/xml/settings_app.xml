@@ -14,7 +14,7 @@
         <Preference
             android:title="@string/app_settings_show_debug_info"
             android:summary="@string/app_settings_show_debug_info_details"
-            android:icon="@drawable/ic_bug_report_dark">
+            android:icon="@drawable/ic_bug_report">
             <intent
                 android:targetPackage="at.bitfire.davdroid"
                 android:targetClass="at.bitfire.davdroid.ui.DebugInfoActivity"/>
@@ -23,7 +23,7 @@
         <SwitchPreferenceCompat
             android:key="log_to_file"
             android:title="@string/app_settings_logging"
-            android:icon="@drawable/ic_adb_dark"
+            android:icon="@drawable/ic_adb"
             android:summaryOn="@string/app_settings_logging_on"
             android:summaryOff="@string/app_settings_logging_off"/>
 
@@ -83,9 +83,18 @@
 
         <Preference
             android:key="notification_settings"
-            android:icon="@drawable/ic_notifications_dark"
+            android:icon="@drawable/ic_notifications"
             android:title="@string/app_settings_notification_settings"
             android:summary="@string/app_settings_notification_settings_summary"/>
+
+        <ListPreference
+            android:key="preferred_theme"
+            android:icon="@drawable/ic_invert_colors"
+            android:title="@string/app_settings_theme_title"
+            android:summary="@string/app_settings_theme_summary"
+            android:entries="@array/app_settings_theme_names"
+            android:entryValues="@array/app_settings_theme_values"
+            android:persistent="false" />
 
         <Preference
             android:key="reset_hints"
@@ -98,7 +107,7 @@
 
         <Preference
             android:key="preferred_tasks_provider"
-            android:icon="@drawable/ic_playlist_add_check_dark"
+            android:icon="@drawable/ic_playlist_add_check"
             android:title="@string/app_settings_tasks_provider"
             android:summary="@string/app_settings_tasks_provider_synchronizing_with" />
 

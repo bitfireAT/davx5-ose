@@ -18,10 +18,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
+        android:paddingTop="12dp"
         android:gravity="center_vertical"
         android:visibility="gone"
-        app:drawableLeftCompat="@drawable/ic_signal_cellular_off_dark"
+        app:drawableLeftCompat="@drawable/ic_signal_cellular_off"
+        app:drawableTint="?android:attr/textColorPrimary"
         android:drawablePadding="8dp"
+        style="@style/TextAppearance.MaterialComponents.Body1"
         android:text="@string/account_list_no_internet"/>
 
     <androidx.recyclerview.widget.RecyclerView

@@ -13,10 +13,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.StrictMode
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
@@ -64,17 +67,20 @@ class App: Application(), Thread.UncaughtExceptionHandler {
 
         // don't block UI for some background checks
         thread {
+            // set light/dark mode
+            UiUtils.setTheme(this)
+
             // create/update app shortcuts
-            UiUtils.updateShortcuts(this@App)
+            UiUtils.updateShortcuts(this)
 
             // watch installed/removed apps
-            TasksWatcher(this@App)
+            TasksWatcher(this)
 
             // check whether a tasks app is currently installed
-            TasksWatcher.updateTaskSync(this@App)
+            TasksWatcher.updateTaskSync(this)
 
             // check/repair sync intervals
-            AccountSettings.repairSyncIntervals(this@App)
+            AccountSettings.repairSyncIntervals(this)
 
             // foreground service (possible workaround for devices which prevent DAVx5 from being started)
             ForegroundService.startIfEnabled(this)

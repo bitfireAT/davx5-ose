@@ -16,32 +16,18 @@ import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import java.util.logging.Level
 
 object UiUtils {
 
     const val SHORTCUT_SYNC_ALL = "syncAllAccounts"
     const val SNACKBAR_LENGTH_VERY_LONG = 5000          // 5s
-
-    fun updateShortcuts(context: Context) {
-        if (Build.VERSION.SDK_INT >= 25)
-            context.getSystemService<ShortcutManager>()?.let { shortcutManager ->
-                try {
-                    shortcutManager.dynamicShortcuts = listOf(
-                            ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
-                                    .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
-                                    .setShortLabel(context.getString(R.string.accounts_sync_all))
-                                    .setIntent(Intent(Intent.ACTION_SYNC, null, context, AccountsActivity::class.java))
-                                    .build()
-                    )
-                } catch(e: Exception) {
-                    Logger.log.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
-                }
-            }
-    }
 
     /**
      * Starts the [Intent.ACTION_VIEW] intent with the given URL, if possible.
@@ -65,6 +51,29 @@ object UiUtils {
         } else if (toastInstallBrowser)
             Toast.makeText(context, R.string.install_browser, Toast.LENGTH_LONG).show()
         return false
+    }
+
+    fun setTheme(context: Context) {
+        val settings = SettingsManager.getInstance(context)
+        val mode = settings.getIntOrNull(Settings.PREFERRED_THEME) ?: Settings.PREFERRED_THEME_DEFAULT
+        AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
+    fun updateShortcuts(context: Context) {
+        if (Build.VERSION.SDK_INT >= 25)
+            context.getSystemService<ShortcutManager>()?.let { shortcutManager ->
+                try {
+                    shortcutManager.dynamicShortcuts = listOf(
+                        ShortcutInfo.Builder(context, SHORTCUT_SYNC_ALL)
+                            .setIcon(Icon.createWithResource(context, R.drawable.ic_sync_shortcut))
+                            .setShortLabel(context.getString(R.string.accounts_sync_all))
+                            .setIntent(Intent(Intent.ACTION_SYNC, null, context, AccountsActivity::class.java))
+                            .build()
+                    )
+                } catch(e: Exception) {
+                    Logger.log.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
+                }
+            }
     }
 
 }

@@ -95,7 +95,7 @@ class AccountActivity: AppCompatActivity() {
 
     fun deleteAccount(menuItem: MenuItem) {
         MaterialAlertDialogBuilder(this)
-                .setIcon(R.drawable.ic_error_dark)
+                .setIcon(R.drawable.ic_error)
                 .setTitle(R.string.account_delete_confirmation_title)
                 .setMessage(R.string.account_delete_confirmation_text)
                 .setNegativeButton(android.R.string.no, null)

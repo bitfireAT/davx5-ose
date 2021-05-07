@@ -17,7 +17,7 @@
             android:key="@string/settings_sync_interval_contacts_key"
             android:persistent="false"
             android:title="@string/settings_sync_interval_contacts"
-            android:icon="@drawable/ic_contacts_dark"
+            android:icon="@drawable/ic_contacts"
             android:entries="@array/settings_sync_interval_names"
             android:entryValues="@array/settings_sync_interval_seconds"/>
 
@@ -25,7 +25,7 @@
             android:key="@string/settings_sync_interval_calendars_key"
             android:persistent="false"
             android:title="@string/settings_sync_interval_calendars"
-            android:icon="@drawable/ic_today_dark"
+            android:icon="@drawable/ic_today"
             android:entries="@array/settings_sync_interval_names"
             android:entryValues="@array/settings_sync_interval_seconds"/>
 
@@ -33,7 +33,7 @@
             android:key="@string/settings_sync_interval_tasks_key"
             android:persistent="false"
             android:title="@string/settings_sync_interval_tasks"
-            android:icon="@drawable/ic_playlist_add_check_dark"
+            android:icon="@drawable/ic_playlist_add_check"
             android:entries="@array/settings_sync_interval_names"
             android:entryValues="@array/settings_sync_interval_seconds"/>
 
@@ -41,7 +41,7 @@
             android:key="@string/settings_sync_wifi_only_key"
             android:persistent="false"
             android:title="@string/settings_sync_wifi_only"
-            android:icon="@drawable/ic_network_wifi_dark"
+            android:icon="@drawable/ic_network_wifi"
             android:summaryOn="@string/settings_sync_wifi_only_on"
             android:summaryOff="@string/settings_sync_wifi_only_off" />
 
@@ -83,7 +83,7 @@
             android:key="@string/settings_sync_time_range_past_key"
             android:persistent="false"
             android:title="@string/settings_sync_time_range_past"
-            android:icon="@drawable/ic_date_range_dark"
+            android:icon="@drawable/ic_date_range"
             android:dialogMessage="@string/settings_sync_time_range_past_message"
             android:inputType="number"/>
 
@@ -118,7 +118,7 @@
             android:key="@string/settings_contact_group_method_key"
             android:persistent="false"
             android:title="@string/settings_contact_group_method"
-            android:icon="@drawable/ic_group_dark"
+            android:icon="@drawable/ic_group"
             android:entries="@array/settings_contact_group_method_entries"
             android:entryValues="@array/settings_contact_group_method_values"/>
 

@@ -11,7 +11,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/syncAll"
-          android:icon="@drawable/ic_sync_action"
+          android:icon="@drawable/ic_sync"
           android:title="@string/accounts_sync_all"
           android:onClick="syncAllAccounts"
           app:showAsAction="ifRoom"/>

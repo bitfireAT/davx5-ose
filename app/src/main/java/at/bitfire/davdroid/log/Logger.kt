@@ -112,7 +112,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                 prefIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 val pendingPref = PendingIntent.getActivity(context, 0, prefIntent, PendingIntent.FLAG_UPDATE_CURRENT)
                 builder.addAction(NotificationCompat.Action.Builder(
-                        R.drawable.ic_settings_action,
+                        R.drawable.ic_settings,
                         context.getString(R.string.logging_notification_disable),
                         pendingPref
                 ).build())

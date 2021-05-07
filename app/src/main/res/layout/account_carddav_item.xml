@@ -55,7 +55,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:contentDescription="@string/account_read_only"
-        app:srcCompat="@drawable/ic_remove_circle_dark"/>
+        app:srcCompat="@drawable/ic_remove_circle"/>
 
     <ImageView
         android:id="@+id/action_overflow"

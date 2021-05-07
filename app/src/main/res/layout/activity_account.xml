@@ -46,6 +46,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:tooltipText="@string/account_synchronize_now"
-        app:srcCompat="@drawable/ic_sync_white" />
+        app:srcCompat="@drawable/ic_sync" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -47,8 +47,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         style="@style/TextAppearance.MaterialComponents.Body1"
-                        app:drawableStartCompat="@drawable/ic_share_action_dark"
-                        app:drawableLeftCompat="@drawable/ic_share_action_dark"
+                        app:drawableStartCompat="@drawable/ic_share_action"
+                        app:drawableLeftCompat="@drawable/ic_share_action"
                         android:drawablePadding="8dp"
                         android:layout_marginBottom="8dp"
                         app:drawableTint="@color/primaryTextColor"
@@ -103,7 +103,7 @@
                                 app:layout_constraintLeft_toLeftOf="@id/causeStart"
                                 app:layout_constraintRight_toLeftOf="@id/causeCaption"
                                 app:layout_constraintBottom_toBottomOf="@id/causeSubtitle"
-                                android:src="@drawable/ic_info_dark" />
+                                android:src="@drawable/ic_info" />
 
                             <TextView
                                 android:id="@+id/causeCaption"
@@ -204,7 +204,7 @@
                                 app:layout_constraintLeft_toLeftOf="@id/debugInfoStart"
                                 app:layout_constraintRight_toLeftOf="@id/debugInfoCaption"
                                 app:layout_constraintBottom_toBottomOf="@id/debugInfoSubtitle"
-                                android:src="@drawable/ic_bug_report_dark"/>
+                                android:src="@drawable/ic_bug_report"/>
 
                             <TextView
                                 android:id="@+id/debugInfoCaption"
@@ -263,7 +263,7 @@
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintRight_toLeftOf="@id/resCaption"
                                 app:layout_constraintBottom_toBottomOf="@id/resSubtitle"
-                                android:src="@drawable/ic_adb_dark"/>
+                                android:src="@drawable/ic_adb"/>
 
                             <TextView
                                 android:id="@+id/resCaption"
@@ -356,7 +356,7 @@
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintRight_toLeftOf="@id/logsCaption"
                                 app:layout_constraintBottom_toBottomOf="@id/logsSubtitle"
-                                android:src="@drawable/ic_adb_dark"/>
+                                android:src="@drawable/ic_adb"/>
 
                             <TextView
                                 android:id="@+id/logsCaption"

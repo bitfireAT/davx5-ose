@@ -13,7 +13,7 @@
     <group android:orderInCategory="100">
 
         <item android:id="@+id/settings"
-              android:icon="@drawable/ic_settings_action"
+              android:icon="@drawable/ic_settings"
               android:title="@string/account_settings"
               android:onClick="openAccountSettings"
               app:showAsAction="ifRoom"/>
