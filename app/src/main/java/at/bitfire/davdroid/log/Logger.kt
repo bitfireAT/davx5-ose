@@ -102,7 +102,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                 shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 val pendingShare = PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT)
                 builder.addAction(NotificationCompat.Action.Builder(
-                        R.drawable.ic_share_action,
+                        R.drawable.ic_share,
                         context.getString(R.string.logging_notification_view_share),
                         pendingShare
                 ).build())

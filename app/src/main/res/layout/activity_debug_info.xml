@@ -47,8 +47,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         style="@style/TextAppearance.MaterialComponents.Body1"
-                        app:drawableStartCompat="@drawable/ic_share_action"
-                        app:drawableLeftCompat="@drawable/ic_share_action"
+                        app:drawableStartCompat="@drawable/ic_share"
+                        app:drawableLeftCompat="@drawable/ic_share"
                         android:drawablePadding="8dp"
                         android:layout_marginBottom="8dp"
                         app:drawableTint="@color/primaryTextColor"
@@ -407,7 +407,7 @@
             android:layout_margin="@dimen/fab_margin"
             android:contentDescription="@string/share"
             android:enabled="false"
-            android:src="@drawable/ic_share_action"/>
+            android:src="@drawable/ic_share"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
