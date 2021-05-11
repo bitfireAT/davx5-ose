@@ -182,9 +182,9 @@
         <item>Dark</item>
     </string-array>
     <string-array name="app_settings_theme_values" translatable="false">
-        <item>-1</item>     <!-- AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -->
-        <item>1</item>      <!-- AppCompatDelegate.MODE_NIGHT_NO-->
-        <item>2</item>      <!-- AppCompatDelegate.MODE_NIGHT_YES -->
+        <item>-1</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
     <string name="app_settings_reset_hints">Reset hints</string>
     <string name="app_settings_reset_hints_summary">Re-enables hints which have been dismissed previously</string>
