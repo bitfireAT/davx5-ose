@@ -41,7 +41,6 @@
                     android:visibility="@{model.debugInfo == null ? View.VISIBLE : View.GONE}"
                     tools:visibility="visible" />
 
-
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -51,7 +50,7 @@
                         app:drawableLeftCompat="@drawable/ic_share"
                         android:drawablePadding="8dp"
                         android:layout_marginBottom="8dp"
-                        app:drawableTint="@color/primaryTextColor"
+                        app:drawableTint="?attr/colorControlNormal"
                         android:text="@string/debug_info_use_share1"/>
 
                     <com.google.android.material.card.MaterialCardView

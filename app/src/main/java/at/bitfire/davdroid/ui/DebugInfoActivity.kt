@@ -11,6 +11,7 @@ package at.bitfire.davdroid.ui
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Application
+import android.app.usage.UsageStatsManager
 import android.content.*
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -377,6 +378,14 @@ class DebugInfoActivity: AppCompatActivity() {
 
                 writer.append("\nCONFIGURATION\n\n")
                 // power saving
+                if (Build.VERSION.SDK_INT >= 28)
+                    context.getSystemService<UsageStatsManager>()?.let { statsManager ->
+                        val bucket = statsManager.appStandbyBucket
+                        writer.append("App standby bucket: $bucket")
+                            if (bucket > UsageStatsManager.STANDBY_BUCKET_ACTIVE)
+                                writer.append(" (RESTRICTED!)")
+                        writer.append('\n')
+                    }
                 if (Build.VERSION.SDK_INT >= 23)
                     context.getSystemService<PowerManager>()?.let { powerManager ->
                         writer.append("Power saving disabled: ")
