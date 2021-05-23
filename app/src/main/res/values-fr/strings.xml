@@ -253,7 +253,7 @@
   <string name="settings_password_summary">Mettre à jour le mot de passe </string>
   <string name="settings_enter_password">Saisissez votre mot de passe :</string>
   <string name="settings_certificate_alias">Alias ​​du certificat client</string>
-  <string name="settings_certificate_alias_empty">Aucun certificat sélectioné</string>
+  <string name="settings_certificate_alias_empty">Aucun certificat sélectionné</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite des événements passés</string>
   <string name="settings_sync_time_range_past_none">Tous les événements seront synchronisés</string>

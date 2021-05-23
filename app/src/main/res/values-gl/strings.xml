@@ -149,6 +149,13 @@
   <string name="app_settings_user_interface">Interface de usuaria</string>
   <string name="app_settings_notification_settings">Axustes das notificacións</string>
   <string name="app_settings_notification_settings_summary">Xestiona as canles de notificación e os seus axustes</string>
+  <string name="app_settings_theme_title">Elixe decorado</string>
+  <string name="app_settings_theme_summary">Decorado actual: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>Por defecto no sistema</item>
+    <item>Claro</item>
+    <item>Escuro</item>
+  </string-array>
   <string name="app_settings_reset_hints">Restablecer consellos</string>
   <string name="app_settings_reset_hints_summary">Restablece todos os consellos que foran desbotados anteriormente</string>
   <string name="app_settings_reset_hints_success">Mostraranse todos os consellos de novo</string>

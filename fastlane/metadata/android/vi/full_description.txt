@@ -1,0 +1,5 @@
+DAVx⁵ là một ứng dụng quản lý và đồng bộ hoá CalDAV/CardDAV dành cho Android, nó tích hợp với ứng dụng lịch/danh bạ của Android.
+
+Sử dụng nó với máy chủ của bạn hoặc với một người lưu trữ được tin cậy để giữ các danh bạ, sự kiện và công việc của bạn dưới quyền kiểm soát của bạn.
+
+Để biết thêm thông tin và xem một danh sách các máy chủ/dịch vụ đã được thử nghiệm, hãy xem trang web.

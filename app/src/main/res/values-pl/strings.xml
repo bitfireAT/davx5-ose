@@ -149,6 +149,13 @@
   <string name="app_settings_user_interface">Interfejs użytkownika</string>
   <string name="app_settings_notification_settings">Ustawienia powiadomień</string>
   <string name="app_settings_notification_settings_summary">Zarządzaj kanałami powiadomień i ich ustawieniami</string>
+  <string name="app_settings_theme_title">Wybierz motyw</string>
+  <string name="app_settings_theme_summary">Bieżący motyw: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>Domyślne ustawienie systemowe</item>
+    <item>Jasny</item>
+    <item>Ciemny</item>
+  </string-array>
   <string name="app_settings_reset_hints">Zresetuj podpowiedzi</string>
   <string name="app_settings_reset_hints_summary">Ponownie włącz wskazówki, które zostały usunięte wcześniej</string>
   <string name="app_settings_reset_hints_success">Wszystkie wskazówki pojawią się ponownie</string>

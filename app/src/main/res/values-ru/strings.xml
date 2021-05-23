@@ -149,6 +149,13 @@
   <string name="app_settings_user_interface">Интерфейс пользователя</string>
   <string name="app_settings_notification_settings">Настройки уведомлений</string>
   <string name="app_settings_notification_settings_summary">Управление каналами уведомлений и их настройками</string>
+  <string name="app_settings_theme_title">Выбор темы</string>
+  <string name="app_settings_theme_summary">Текущая тема: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>Системная</item>
+    <item>Светлая</item>
+    <item>Темная</item>
+  </string-array>
   <string name="app_settings_reset_hints">Включить подсказки</string>
   <string name="app_settings_reset_hints_summary">Включить подсказки, которые были отключены ранее</string>
   <string name="app_settings_reset_hints_success">Все подсказки будут показаны снова</string>

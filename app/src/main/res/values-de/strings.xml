@@ -149,6 +149,13 @@
   <string name="app_settings_user_interface">Oberfläche</string>
   <string name="app_settings_notification_settings">Benachrichtigungseinstellungen</string>
   <string name="app_settings_notification_settings_summary">Benachrichtigungskanäle und -einstellungen verwalten</string>
+  <string name="app_settings_theme_title">Aussehen wählen</string>
+  <string name="app_settings_theme_summary">Derzeitiges Aussehen: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>wie System</item>
+    <item>heller Stil</item>
+    <item>dunkler Stil</item>
+  </string-array>
   <string name="app_settings_reset_hints">Hinweise zurücksetzen</string>
   <string name="app_settings_reset_hints_summary">Hinweise, die deaktiviert wurden, wieder anzeigen</string>
   <string name="app_settings_reset_hints_success">Alle Hinweise werden wieder angezeigt</string>
