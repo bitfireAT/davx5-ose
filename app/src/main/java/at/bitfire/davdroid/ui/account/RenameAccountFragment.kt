@@ -145,7 +145,13 @@ class RenameAccountFragment: DialogFragment() {
 
             // update account name references in database
             val db = AppDatabase.getInstance(context)
-            db.serviceDao().renameAccount(oldAccount.name, newName)
+            try {
+                db.serviceDao().renameAccount(oldAccount.name, newName)
+            } catch (e: Exception) {
+                Toast.makeText(context, R.string.account_rename_couldnt_rename, Toast.LENGTH_LONG).show()
+                Logger.log.log(Level.SEVERE, "Couldn't update service DB", e)
+                return
+            }
 
             // update main account of address book accounts
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)

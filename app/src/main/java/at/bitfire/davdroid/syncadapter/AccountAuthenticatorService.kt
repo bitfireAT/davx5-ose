@@ -12,16 +12,10 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.WorkerThread
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.logging.Level
 
 
 /**
@@ -31,41 +25,6 @@ import java.util.logging.Level
  * and contains the corresponding cleanup code.
  */
 class AccountAuthenticatorService: Service(), OnAccountsUpdateListener {
-
-    companion object {
-
-        @WorkerThread
-        @Synchronized
-        fun cleanupAccounts(context: Context) {
-            Logger.log.info("Cleaning up orphaned accounts")
-
-            val accountManager = AccountManager.get(context)
-            val accountNames = accountManager.getAccountsByType(context.getString(R.string.account_type))
-                    .map { it.name }
-
-            // delete orphaned address book accounts
-            accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
-                    .map { LocalAddressBook(context, it, null) }
-                    .forEach {
-                        try {
-                            if (!accountNames.contains(it.mainAccount.name))
-                                it.delete()
-                        } catch(e: Exception) {
-                            Logger.log.log(Level.SEVERE, "Couldn't delete address book account", e)
-                        }
-                    }
-
-            // delete orphaned services in DB
-            val db = AppDatabase.getInstance(context)
-            val serviceDao = db.serviceDao()
-            if (accountNames.isEmpty())
-                serviceDao.deleteAll()
-            else
-                serviceDao.deleteExceptAccounts(accountNames.toTypedArray())
-        }
-
-    }
-
 
     private lateinit var accountManager: AccountManager
     private lateinit var accountAuthenticator: AccountAuthenticator
@@ -88,7 +47,7 @@ class AccountAuthenticatorService: Service(), OnAccountsUpdateListener {
 
     override fun onAccountsUpdated(accounts: Array<out Account>?) {
         CoroutineScope(Dispatchers.Default).launch {
-            cleanupAccounts(this@AccountAuthenticatorService)
+            AccountUtils.cleanupAccounts(this@AccountAuthenticatorService)
         }
     }
 
