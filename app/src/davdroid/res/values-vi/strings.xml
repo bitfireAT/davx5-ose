@@ -149,6 +149,13 @@
   <string name="app_settings_user_interface">Giao diện người dùng</string>
   <string name="app_settings_notification_settings">Cài đặt thông báo</string>
   <string name="app_settings_notification_settings_summary">Quản lý các kênh thông báo và cài đặt của chúng</string>
+  <string name="app_settings_theme_title">Chọn chủ đề</string>
+  <string name="app_settings_theme_summary">Chủ đề hiện tại: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>Mặc định hệ thống</item>
+    <item>Sáng</item>
+    <item>Tối</item>
+  </string-array>
   <string name="app_settings_reset_hints">Đặt lại các gợi ý</string>
   <string name="app_settings_reset_hints_summary">Bật lại các gợi ý đã bị bỏ qua trước đó</string>
   <string name="app_settings_reset_hints_success">Tất cả gợi ý sẽ được hiện lại</string>
@@ -257,9 +264,106 @@
   <string name="settings_password">Mật khẩu</string>
   <string name="settings_password_summary">Cập nhật mật khẩu theo như máy chủ của bạn.</string>
   <string name="settings_enter_password">Nhập mật khẩu:</string>
+  <string name="settings_certificate_alias">Bí danh chứng chỉ khách</string>
+  <string name="settings_certificate_alias_empty">Chưa chọn chứng chỉ nào</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Giới hạn thời gian cho sự kiện trong quá khứ</string>
+  <string name="settings_sync_time_range_past_none">Tất cả sự kiện sẽ được đồng bộ hoá</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="other">Các sự kiện cách đây hơn %d ngày trong quá khứ sẽ bị bỏ qua</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Các sự kiện cách đây hơn số ngày này trong quá khứ sẽ bị bỏ qua (có thể là 0). Để trống để đồng bộ hoá tất cả sự kiện.</string>
+  <string name="settings_default_alarm">Lời nhắc mặc định</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="other">Lời nhắc mặc định %d phút trước sự kiện</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Chưa có lời nhắc mặc định nào được tạo</string>
+  <string name="settings_default_alarm_message">Nếu các lời nhắc mặc định sẽ được tạo cho các sự kiện không cỏ lời nhắc: số phút được mong muốn trước sự kiện. Để trống để tắt lời nhắc mặc định.</string>
+  <string name="settings_manage_calendar_colors">Quản lý màu lịch</string>
+  <string name="settings_manage_calendar_colors_on">Màu lịch được đặt lại tại mỗi lần đồng bộ</string>
+  <string name="settings_manage_calendar_colors_off">Màu lịch cỏ thể được các ứng dụng khác đặt</string>
+  <string name="settings_event_colors">Hỗ trợ màu sự kiện</string>
+  <string name="settings_event_colors_on">Màu sự kiện được đồng bộ</string>
+  <string name="settings_event_colors_off">Màu sự kiện không được đồng bộ</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Phương pháp nhóm danh bạ</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Các nhóm là các tệp vCard riêng</item>
+    <item>Các nhóm là các hạng mục cho từng liên hệ</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Thay đổi phương pháp nhóm</string>
   <!--collection management-->
+  <string name="create_addressbook">Tạo sổ địa chỉ</string>
+  <string name="create_addressbook_display_name_hint">Sổ địa chỉ của tôi</string>
+  <string name="create_calendar">Tạo lịch</string>
+  <string name="create_calendar_time_zone">Múi giờ</string>
+  <string name="create_calendar_time_zone_required">Yêu cầu múi giờ</string>
+  <string name="create_calendar_type">Các mục của lịch có thể có</string>
+  <string name="create_calendar_type_vevent">Sự kiện</string>
+  <string name="create_calendar_type_vtodo">Công việc</string>
+  <string name="create_calendar_type_vjournal">Ghi chú / nhật ký</string>
+  <string name="create_calendar_type_events_and_tasks">Kết hợp (sự kiện và công việc)</string>
+  <string name="create_collection_color">Màu</string>
+  <string name="create_collection_creating">Đang tạo bộ sưu tập</string>
+  <string name="create_collection_display_name">Tiêu đề</string>
+  <string name="create_collection_display_name_required">Yêu cầu tiêu đề</string>
+  <string name="create_collection_description">Mô tả</string>
+  <string name="create_collection_optional">không bắt buộc</string>
+  <string name="create_collection_home_set">Vị trí kho lưu trữ</string>
+  <string name="create_collection_create">Tạo</string>
+  <string name="delete_collection">Xoá bộ sưu tập</string>
+  <string name="delete_collection_confirm_title">Bạn có chắc không?</string>
+  <string name="delete_collection_confirm_warning">Bộ sưu tập này (%s) và tất cả dữ liệu của nó sẽ bị xoá vĩnh viễn.</string>
+  <string name="delete_collection_data_shall_be_deleted">Những dữ liệu này sẽ bị xoá khỏi máy chủ.</string>
+  <string name="delete_collection_deleting_collection">Đang xoá bộ sưu tập</string>
+  <string name="collection_force_read_only">Buộc chỉ đọc</string>
+  <string name="collection_properties">Thuộc tính</string>
+  <string name="collection_properties_url">Địa chỉ (URL):</string>
+  <string name="collection_properties_copy_url">Sao chép URL</string>
+  <string name="collection_properties_owner">Chủ sở hữu:</string>
   <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Thông tin gỡ lỗi</string>
+  <string name="debug_info_use_share1">Sử dụng hành động Chia sẻ để gửi dữ liệu chưa sửa đổi, đặc biệt là đối với các yêu cầu hỗ trợ.</string>
+  <string name="debug_info_attached">Đã đính kèm thông tin gỡ lỗi vào tin nhắn này (yêu cầu ứng dụng nhận có hỗ trợ tệp đính kèm).</string>
+  <string name="debug_info_http_error">Lỗi HTTP</string>
+  <string name="debug_info_server_error">Lỗi máy chủ</string>
+  <string name="debug_info_webdav_error">Lỗi WebDAV</string>
+  <string name="debug_info_io_error">Lỗi I/O</string>
+  <string name="debug_info_http_403_description">Yêu cầu đã bị từ chối. Hãy xem các tài nguyên và thông tin gỡ lỗi có liên quan để biết thêm chi tiết.</string>
+  <string name="debug_info_http_404_description">Tài nguyên được yêu cầu không tồn tại (nữa). Hãy kiểm tra các tài nguyên và thông tin gỡ lỗi có liên quan để biết thêm chi tiết.</string>
+  <string name="debug_info_http_5xx_description">Đã xảy ra vấn đề của máy chủ. Vui lòng liên hệ bộ phận hỗ trợ của máy chủ.</string>
+  <string name="debug_info_unexpected_error">Đã xảy ra lỗi không mong đợi. Hãy xem thông tin gỡ lỗi để biết thêm chi tiết.</string>
+  <string name="debug_info_view_details">Xem chi tiết</string>
+  <string name="debug_info_subtitle">Đã thu thập thông tin gỡ lỗi</string>
+  <string name="debug_info_involved_caption">Tài nguyên có liên quan</string>
+  <string name="debug_info_involved_subtitle">Có liên quan đến vấn đề</string>
+  <string name="debug_info_involved_remote">Tài nguyên trên mạng:</string>
+  <string name="debug_info_involved_local">Tài nguyên cục bộ:</string>
+  <string name="debug_info_involved_view">Xem bằng ứng dụng</string>
+  <string name="debug_info_logs_caption">Nhật ký</string>
+  <string name="debug_info_logs_subtitle">Có nhật ký chi tiết</string>
+  <string name="debug_info_logs_view">Xem nhật ký</string>
   <!--ExceptionInfoFragment-->
+  <string name="exception">Đã xảy ra lỗi.</string>
+  <string name="exception_httpexception">Đã xảy ra lỗi HTTP.</string>
+  <string name="exception_ioexception">Đã xảy ra lỗi I/O.</string>
+  <string name="exception_show_details">Hiện chi tiết</string>
   <!--sync adapters-->
+  <string name="sync_error_permissions">Quyền của DAVx⁵</string>
+  <string name="sync_error_permissions_text">Yêu cầu quyền bổ sung</string>
+  <string name="sync_error_tasks_too_old">%s quá cũ</string>
+  <string name="sync_error_tasks_required_version">Phiên bản tối thiểu được yêu cầu: %1$s</string>
+  <string name="sync_error_authentication_failed">Xác thực thất bại (hãy kiểm tra thông tin đăng nhập)</string>
+  <string name="sync_error_io">Lỗi mạng hoặc I/O – %s</string>
+  <string name="sync_error_http_dav">Lỗi máy chủ HTTP – %s</string>
+  <string name="sync_error_local_storage">Lỗi kho lưu trữ cục bộ – %s</string>
+  <string name="sync_error_retry">Thử lại</string>
+  <string name="sync_error_view_item">Xem mục</string>
+  <string name="sync_invalid_contact">Đã nhận liên hệ không hợp lệ từ máy chủ</string>
+  <string name="sync_invalid_event">Đã nhận sự kiện không hợp lệ từ máy chủ</string>
+  <string name="sync_invalid_task">Đã nhận công việc không hợp lệ từ máy chủ</string>
+  <string name="sync_invalid_resources_ignoring">Đang bỏ qua một hoặc nhiều tài nguyên không hợp lệ</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Sự bảo mật của kết nối</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ đã gặp một chứng chỉ không xác định. Bạn có muốn tin tưởng nó không?</string>
 </resources>

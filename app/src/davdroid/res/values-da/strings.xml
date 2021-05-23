@@ -149,6 +149,13 @@
   <string name="app_settings_user_interface">Brugerflade</string>
   <string name="app_settings_notification_settings">Påmindelse opsætning</string>
   <string name="app_settings_notification_settings_summary">Håndtere påmindelse kanaler og deres opsætning</string>
+  <string name="app_settings_theme_title">Vælg tema</string>
+  <string name="app_settings_theme_summary">Nuværende tema: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>System standard</item>
+    <item>Lys</item>
+    <item>Mørk</item>
+  </string-array>
   <string name="app_settings_reset_hints">Nulstil vejledende pop op</string>
   <string name="app_settings_reset_hints_summary">Genaktivere tidligere lukket pop op</string>
   <string name="app_settings_reset_hints_success">Al vejledning vil blive vist igen</string>

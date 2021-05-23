@@ -149,6 +149,13 @@
   <string name="app_settings_user_interface">用户界面</string>
   <string name="app_settings_notification_settings">通知设置</string>
   <string name="app_settings_notification_settings_summary">管理通知渠道等设置</string>
+  <string name="app_settings_theme_title">选择主题</string>
+  <string name="app_settings_theme_summary">当前主题：%s</string>
+  <string-array name="app_settings_theme_names">
+    <item>系统默认</item>
+    <item>浅色</item>
+    <item>深色</item>
+  </string-array>
   <string name="app_settings_reset_hints">重设提示</string>
   <string name="app_settings_reset_hints_summary">重新显示之前忽略过的提示</string>
   <string name="app_settings_reset_hints_success">所有提示将会再次显示</string>
