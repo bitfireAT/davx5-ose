@@ -1,0 +1,6 @@
+* support for dark theme; new option to force light/dark theme
+* [CalDAV] assume 1 day/1 hour for Android events without dtEnd and duration (should not occur, but occurs)
+* [CardDAV] don’t convert TYPEs into explicit custom labels
+* [Android 11] fix problems when viewing URLs in some default browsers
+* minor improvements and bug fixes; updated translations
+
