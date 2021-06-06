@@ -9,28 +9,31 @@ import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.IntroWelcomeBinding
 import at.bitfire.davdroid.settings.SettingsManager
-import kotlinx.android.synthetic.main.intro_welcome.view.*
 
 class WelcomeFragment: Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val v = inflater.inflate(R.layout.intro_welcome, container, false)
+    private var _binding: IntroWelcomeBinding? = null
+    private val binding get() = _binding!!
 
-        if (true /* relevant for non-ose builds */) {
-            v.logo.apply {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = IntroWelcomeBinding.inflate(inflater, container, false)
+
+        if (true /* ose build */) {
+            binding.logo.apply {
                 alpha = 0f
                 animate()
                     .alpha(1f)
                     .setDuration(300)
             }
-            v.yourDataYourChoice.apply {
+            binding.yourDataYourChoice.apply {
                 translationX = -1000f
                 animate()
                     .translationX(0f)
                     .setDuration(300)
             }
-            v.takeControl.apply {
+            binding.takeControl.apply {
                 translationX = 1000f
                 animate()
                     .translationX(0f)
@@ -38,7 +41,12 @@ class WelcomeFragment: Fragment() {
             }
         }
 
-        return v
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 

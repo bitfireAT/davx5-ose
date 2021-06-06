@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.ActivityAccountBinding
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
@@ -27,7 +28,6 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.PermissionsActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_account.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -39,6 +39,7 @@ class AccountActivity: AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
+    private lateinit var binding: ActivityAccountBinding
     val model by viewModels<Model> {
         val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
                 ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
@@ -50,8 +51,10 @@ class AccountActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         title = model.account.name
-        setContentView(R.layout.activity_account)
-        setSupportActionBar(toolbar)
+
+        binding = ActivityAccountBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         model.accountExists.observe(this, Observer { accountExists ->
@@ -59,9 +62,9 @@ class AccountActivity: AppCompatActivity() {
                 finish()
         })
 
-        tab_layout.setupWithViewPager(view_pager)
+        binding.tabLayout.setupWithViewPager(binding.viewPager)
         val tabsAdapter = TabsAdapter(this)
-        view_pager.adapter = tabsAdapter
+        binding.viewPager.adapter = tabsAdapter
         model.cardDavService.observe(this, Observer {
             tabsAdapter.cardDavSvcId = it
         })
@@ -69,9 +72,9 @@ class AccountActivity: AppCompatActivity() {
             tabsAdapter.calDavSvcId = it
         })
 
-        sync.setOnClickListener {
+        binding.sync.setOnClickListener {
             DavUtils.requestSync(this, model.account)
-            Snackbar.make(view_pager, R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show()
+            Snackbar.make(binding.viewPager, R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show()
         }
     }
 

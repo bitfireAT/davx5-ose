@@ -9,6 +9,7 @@
 package at.bitfire.davdroid.ui
 
 import android.app.Application
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Spanned
@@ -17,7 +18,6 @@ import android.util.DisplayMetrics
 import android.view.*
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -32,12 +32,12 @@ import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.AboutBinding
+import at.bitfire.davdroid.databinding.AboutLanguagesBinding
+import at.bitfire.davdroid.databinding.AboutTranslationBinding
+import at.bitfire.davdroid.databinding.ActivityAboutBinding
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.LibsBuilder
-import kotlinx.android.synthetic.main.about.*
-import kotlinx.android.synthetic.main.about_languages.*
-import kotlinx.android.synthetic.main.about_translation.view.*
-import kotlinx.android.synthetic.main.activity_about.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.io.IOUtils
@@ -57,15 +57,20 @@ class AboutActivity: AppCompatActivity() {
 
     }
 
+    private lateinit var binding: ActivityAboutBinding
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_about)
 
-        setSupportActionBar(toolbar)
+        binding = ActivityAboutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        viewpager.adapter = TabsAdapter(supportFragmentManager)
-        tabs.setupWithViewPager(viewpager, false)
+        binding.viewpager.adapter = TabsAdapter(supportFragmentManager)
+        binding.tabs.setupWithViewPager(binding.viewpager, false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -115,67 +120,88 @@ class AboutActivity: AppCompatActivity() {
 
     class AppFragment: Fragment() {
 
+        private var _binding: AboutBinding? = null
+        private val binding get() = _binding!!
         val model by viewModels<TextFileModel>()
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-                inflater.inflate(R.layout.about, container, false)!!
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            _binding = AboutBinding.inflate(inflater, container, false)
+            return binding.root
+        }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            app_name.setText(R.string.app_name)
-            app_version.text = getString(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
-            build_time.text = getString(R.string.about_build_date, SimpleDateFormat.getDateInstance().format(BuildConfig.buildTime))
+            binding.appName.setText(R.string.app_name)
+            binding.appVersion.text = getString(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+            binding.buildTime.text = getString(R.string.about_build_date, SimpleDateFormat.getDateInstance().format(BuildConfig.buildTime))
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                icon.setImageDrawable(resources.getDrawableForDensity(R.mipmap.ic_launcher, DisplayMetrics.DENSITY_XXXHIGH, null))
+                binding.icon.setImageDrawable(resources.getDrawableForDensity(R.mipmap.ic_launcher, DisplayMetrics.DENSITY_XXXHIGH, null))
 
-            pixels.text = HtmlCompat.fromHtml(pixelsHtml, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            binding.pixels.text = HtmlCompat.fromHtml(pixelsHtml, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
             if (true /* open-source version */) {
-                warranty.setText(R.string.about_license_info_no_warranty)
+                binding.warranty.setText(R.string.about_license_info_no_warranty)
 
                 model.initialize("gplv3.html", true)
                 model.htmlText.observe(viewLifecycleOwner, { spanned ->
-                    license_text.text = spanned
+                    binding.licenseText.text = spanned
                 })
             }
+        }
+
+        override fun onDestroyView() {
+            super.onDestroyView()
+            _binding = null
         }
 
     }
 
     class LanguagesFragment: Fragment() {
 
+        private var _binding: AboutLanguagesBinding? = null
+        private val binding get() = _binding!!
         val model by viewModels<TranslationsModel>()
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-                inflater.inflate(R.layout.about_languages, container, false)!!
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+            _binding = AboutLanguagesBinding.inflate(inflater, container, false)
+            return binding.root
+        }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             model.initialize("translators.json", false)
             model.translations.observe(viewLifecycleOwner, { translations ->
-                translators.adapter = TranslationsAdapter(translations)
+                binding.translators.adapter = TranslationsAdapter(translations)
             })
 
-            translators.layoutManager = LinearLayoutManager(requireActivity())
+            binding.translators.layoutManager = LinearLayoutManager(requireActivity())
         }
+
+        override fun onDestroyView() {
+            super.onDestroyView()
+            _binding = null
+        }
+
 
         class TranslationsAdapter(
                 val translations: List<TranslationsModel.Translation>
         ): RecyclerView.Adapter<TranslationsAdapter.ViewHolder>() {
 
-            class ViewHolder(val cardView: CardView): RecyclerView.ViewHolder(cardView)
+            private lateinit var binding: AboutTranslationBinding
+
+            class ViewHolder(val context: Context, val binding: AboutTranslationBinding): RecyclerView.ViewHolder(binding.root)
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-                val tv = LayoutInflater.from(parent.context).inflate(R.layout.about_translation, parent, false) as CardView
-                return ViewHolder(tv)
+                binding = AboutTranslationBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                return ViewHolder(parent.context, binding)
             }
 
             override fun onBindViewHolder(holder: ViewHolder, position: Int) {
                 val translation = translations[position]
-                holder.cardView.apply {
+                holder.binding.apply {
                     language.text = translation.language
                     val profiles = translation.translators.map { "<a href='https://www.transifex.com/user/profile/$it'>$it</a>" }
                     translators.text = HtmlCompat.fromHtml(
-                            context.getString(R.string.about_translations_thanks, profiles.joinToString(", ")),
+                            holder.context.getString(R.string.about_translations_thanks, profiles.joinToString(", ")),
                             HtmlCompat.FROM_HTML_MODE_COMPACT)
                     translators.movementMethod = LinkMovementMethod.getInstance()
                 }

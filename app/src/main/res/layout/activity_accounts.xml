@@ -16,7 +16,9 @@
     android:layout_height="match_parent"
     tools:openDrawer="start">
 
-    <include layout="@layout/accounts_content"/>
+    <include
+        android:id="@+id/content"
+        layout="@layout/accounts_content"/>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"

@@ -4,9 +4,8 @@ import android.content.Intent
 import android.view.*
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.AccountCarddavItemBinding
 import at.bitfire.davdroid.model.Collection
-import kotlinx.android.synthetic.main.account_carddav_item.view.*
-import kotlinx.android.synthetic.main.account_collections.*
 
 class AddressBooksFragment: CollectionsFragment() {
 
@@ -36,10 +35,10 @@ class AddressBooksFragment: CollectionsFragment() {
 
     override fun checkPermissions() {
         if (PermissionUtils.havePermissions(requireActivity(), PermissionUtils.CONTACT_PERMISSIONS))
-            permissionsCard.visibility = View.GONE
+            binding.permissionsCard.visibility = View.GONE
         else {
-            permissionsText.setText(R.string.account_carddav_missing_permissions)
-            permissionsCard.visibility = View.VISIBLE
+            binding.permissionsText.setText(R.string.account_carddav_missing_permissions)
+            binding.permissionsCard.visibility = View.VISIBLE
         }
     }
 
@@ -49,26 +48,25 @@ class AddressBooksFragment: CollectionsFragment() {
     class AddressBookViewHolder(
             parent: ViewGroup,
             accountModel: AccountActivity.Model
-    ): CollectionViewHolder(parent, R.layout.account_carddav_item, accountModel) {
+    ): CollectionViewHolder<AccountCarddavItemBinding>(parent, AccountCarddavItemBinding.inflate(LayoutInflater.from(parent.context), parent, false), accountModel) {
 
         override fun bindTo(item: Collection) {
-            val v = itemView
-            v.sync.isChecked = item.sync
-            v.title.text = item.title()
+            binding.sync.isChecked = item.sync
+            binding.title.text = item.title()
 
             if (item.description.isNullOrBlank())
-                v.description.visibility = View.GONE
+                binding.description.visibility = View.GONE
             else {
-                v.description.text = item.description
-                v.description.visibility = View.VISIBLE
+                binding.description.text = item.description
+                binding.description.visibility = View.VISIBLE
             }
 
-            v.read_only.visibility = if (item.readOnly()) View.VISIBLE else View.GONE
+            binding.readOnly.visibility = if (item.readOnly()) View.VISIBLE else View.GONE
 
             itemView.setOnClickListener {
                 accountModel.toggleSync(item)
             }
-            v.action_overflow.setOnClickListener(CollectionPopupListener(accountModel, item))
+            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item))
         }
     }
 

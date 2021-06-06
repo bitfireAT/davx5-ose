@@ -23,13 +23,11 @@ import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.ActivityAccountsBinding
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.accounts_content.*
-import kotlinx.android.synthetic.main.activity_accounts.*
-import kotlinx.android.synthetic.main.activity_accounts.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,6 +40,8 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         const val REQUEST_INTRO = 0
     }
+
+    private lateinit var binding: ActivityAccountsBinding
 
     private var syncStatusSnackbar: Snackbar? = null
     private var syncStatusObserver: Any? = null
@@ -60,21 +60,23 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             }
         }
 
-        setContentView(R.layout.activity_accounts)
-        setSupportActionBar(toolbar)
+        binding = ActivityAccountsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        fab.setOnClickListener {
+        val content = binding.content
+        setSupportActionBar(binding.content.toolbar)
+        content.fab.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
-        fab.show()
+        content.fab.show()
 
         val toggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.addDrawerListener(toggle)
+                this, binding.drawerLayout, binding.content.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        nav_view.setNavigationItemSelectedListener(this)
-        nav_view.itemIconTintList = null
+        binding.navView.setNavigationItemSelectedListener(this)
+        binding.navView.itemIconTintList = null
 
         // handle "Sync all" intent from launcher shortcut
         if (savedInstanceState == null && intent.action == Intent.ACTION_SYNC)
@@ -84,7 +86,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onResume() {
         super.onResume()
 
-        accountsDrawerHandler.initMenu(this, drawer_layout.nav_view.menu)
+        accountsDrawerHandler.initMenu(this, binding.navView.menu)
 
         onStatusChanged(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS)
         syncStatusObserver = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
@@ -125,15 +127,15 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START))
-            drawer_layout.closeDrawer(GravityCompat.START)
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START))
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         else
             super.onBackPressed()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val processed = accountsDrawerHandler.onNavigationItemSelected(this, item)
-        drawer_layout.closeDrawer(GravityCompat.START)
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
         return processed
     }
 

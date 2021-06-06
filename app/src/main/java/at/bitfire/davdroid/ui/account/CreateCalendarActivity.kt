@@ -36,7 +36,6 @@ import at.bitfire.davdroid.ui.HomeSetAdapter
 import at.bitfire.ical4android.DateUtils
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
-import kotlinx.android.synthetic.main.activity_create_calendar.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.fortuna.ical4j.model.Calendar
@@ -63,7 +62,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         binding.color.setOnClickListener {
             ColorPickerDialog.newBuilder()
                     .setShowAlphaSlider(false)
-                    .setColor((color.background as ColorDrawable).color)
+                    .setColor((binding.color.background as ColorDrawable).color)
                     .show(this)
         }
 

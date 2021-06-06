@@ -33,39 +33,43 @@ import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.DavUtils.SyncStatus
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.AccountListBinding
+import at.bitfire.davdroid.databinding.AccountListItemBinding
 import at.bitfire.davdroid.ui.account.AccountActivity
-import kotlinx.android.synthetic.main.account_list.*
-import kotlinx.android.synthetic.main.account_list_item.view.*
 import java.text.Collator
 
 class AccountListFragment: Fragment() {
 
+    private var _binding: AccountListBinding? = null
+    private val binding get() = _binding!!
     val model by viewModels<Model>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.account_list, container, false)
+
+        _binding = AccountListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         model.networkAvailable.observe(viewLifecycleOwner, { networkAvailable ->
-            no_network_info.visibility = if (networkAvailable) View.GONE else View.VISIBLE
+            binding.noNetworkInfo.visibility = if (networkAvailable) View.GONE else View.VISIBLE
         })
 
         val accountAdapter = AccountAdapter(requireActivity())
-        list.apply {
+        binding.list.apply {
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = accountAdapter
         }
         model.accounts.observe(viewLifecycleOwner, { accounts ->
             if (accounts.isEmpty()) {
-                list.visibility = View.GONE
-                empty.visibility = View.VISIBLE
+                binding.list.visibility = View.GONE
+                binding.empty.visibility = View.VISIBLE
             } else {
-                list.visibility = View.VISIBLE
-                empty.visibility = View.GONE
+                binding.list.visibility = View.VISIBLE
+                binding.empty.visibility = View.GONE
             }
             accountAdapter.submitList(accounts)
             requireActivity().invalidateOptionsMenu()
@@ -82,6 +86,11 @@ class AccountListFragment: Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 
     class AccountAdapter(
             val activity: Activity
@@ -93,18 +102,18 @@ class AccountListFragment: Fragment() {
                         oldItem == newItem
             }
     ) {
-        class ViewHolder(val v: View): RecyclerView.ViewHolder(v)
+
+        class ViewHolder(val binding: AccountListItemBinding): RecyclerView.ViewHolder(binding.root)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val v = LayoutInflater.from(parent.context).inflate(R.layout.account_list_item, parent, false)
-            return ViewHolder(v)
+            val binding = AccountListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return ViewHolder(binding)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val v = holder.v
             val accountInfo = currentList[position]
 
-            v.setOnClickListener {
+            holder.binding.root.setOnClickListener {
                 val intent = Intent(activity, AccountActivity::class.java)
                 intent.putExtra(AccountActivity.EXTRA_ACCOUNT, accountInfo.account)
                 activity.startActivity(intent)
@@ -112,23 +121,23 @@ class AccountListFragment: Fragment() {
 
             when (accountInfo.status) {
                 SyncStatus.ACTIVE -> {
-                    v.progress.apply {
+                    holder.binding.progress.apply {
                         alpha = 1.0f
                         isIndeterminate = true
                         visibility = View.VISIBLE
                     }
                 }
                 SyncStatus.PENDING -> {
-                    v.progress.apply {
+                    holder.binding.progress.apply {
                         alpha = 0.4f
                         isIndeterminate = false
                         progress = 100
                         visibility = View.VISIBLE
                     }
                 }
-                else -> v.progress.visibility = View.INVISIBLE
+                else -> holder.binding.progress.visibility = View.INVISIBLE
             }
-            v.account_name.text = accountInfo.account.name
+            holder.binding.accountName.text = accountInfo.account.name
         }
     }
 

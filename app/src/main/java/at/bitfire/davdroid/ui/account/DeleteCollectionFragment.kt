@@ -56,7 +56,7 @@ class DeleteCollectionFragment: DialogFragment() {
         )
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = DeleteCollectionBinding.inflate(layoutInflater, null, false)
         binding.lifecycleOwner = this
         binding.model = model

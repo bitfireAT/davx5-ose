@@ -9,7 +9,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka'
 
@@ -48,7 +47,10 @@ android {
         jvmTarget = "1.8"
     }
 
-    buildFeatures.dataBinding = true
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
+    }
 
     flavorDimensions "distribution"
     productFlavors {

@@ -5,10 +5,9 @@ import android.view.*
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.resource.TaskUtils
-import kotlinx.android.synthetic.main.account_caldav_item.view.*
-import kotlinx.android.synthetic.main.account_collections.*
 
 class CalendarsFragment: CollectionsFragment() {
 
@@ -43,14 +42,14 @@ class CalendarsFragment: CollectionsFragment() {
         val tasksPermissions = taskProvider == null ||                                         // no task provider OR
                 PermissionUtils.havePermissions(requireActivity(), taskProvider.permissions)   // task permissions granted
         if (calendarPermissions && tasksPermissions)
-            permissionsCard.visibility = View.GONE
+            binding.permissionsCard.visibility = View.GONE
         else {
-            permissionsText.setText(when {
+            binding.permissionsText.setText(when {
                 !calendarPermissions && tasksPermissions -> R.string.account_caldav_missing_calendar_permissions
                 calendarPermissions && !tasksPermissions -> R.string.account_caldav_missing_tasks_permissions
                 else -> R.string.account_caldav_missing_permissions
             })
-            permissionsCard.visibility = View.VISIBLE
+            binding.permissionsCard.visibility = View.VISIBLE
         }
     }
     override fun createAdapter(): CollectionAdapter = CalendarAdapter(accountModel)
@@ -59,30 +58,29 @@ class CalendarsFragment: CollectionsFragment() {
     class CalendarViewHolder(
             parent: ViewGroup,
             accountModel: AccountActivity.Model
-    ): CollectionViewHolder(parent, R.layout.account_caldav_item, accountModel) {
+    ): CollectionViewHolder<AccountCaldavItemBinding>(parent, AccountCaldavItemBinding.inflate(LayoutInflater.from(parent.context), parent, false), accountModel) {
 
         override fun bindTo(item: Collection) {
-            val v = itemView
-            v.color.setBackgroundColor(item.color ?: Constants.DAVDROID_GREEN_RGBA)
+            binding.color.setBackgroundColor(item.color ?: Constants.DAVDROID_GREEN_RGBA)
 
-            v.sync.isChecked = item.sync
-            v.title.text = item.title()
+            binding.sync.isChecked = item.sync
+            binding.title.text = item.title()
 
             if (item.description.isNullOrBlank())
-                v.description.visibility = View.GONE
+                binding.description.visibility = View.GONE
             else {
-                v.description.text = item.description
-                v.description.visibility = View.VISIBLE
+                binding.description.text = item.description
+                binding.description.visibility = View.VISIBLE
             }
 
-            v.read_only.visibility = if (item.readOnly()) View.VISIBLE else View.GONE
-            v.events.visibility = if (item.supportsVEVENT == true) View.VISIBLE else View.GONE
-            v.tasks.visibility = if (item.supportsVTODO == true) View.VISIBLE else View.GONE
+            binding.readOnly.visibility = if (item.readOnly()) View.VISIBLE else View.GONE
+            binding.events.visibility = if (item.supportsVEVENT == true) View.VISIBLE else View.GONE
+            binding.tasks.visibility = if (item.supportsVTODO == true) View.VISIBLE else View.GONE
 
             itemView.setOnClickListener {
                 accountModel.toggleSync(item)
             }
-            v.action_overflow.setOnClickListener(CollectionPopupListener(accountModel, item))
+            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item))
         }
 
     }

@@ -21,15 +21,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.viewbinding.ViewBinding
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.AccountCollectionsBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
-import kotlinx.android.synthetic.main.account_collections.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -39,6 +40,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         const val EXTRA_SERVICE_ID = "serviceId"
         const val EXTRA_COLLECTION_TYPE = "collectionType"
     }
+
+    protected var _binding: AccountCollectionsBinding? = null
+    protected val binding get() = _binding!!
 
     val accountModel by activityViewModels<AccountActivity.Model>()
     val model by viewModels<Model> {
@@ -56,8 +60,10 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(R.layout.account_collections, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = AccountCollectionsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,7 +75,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         )
 
         model.isRefreshing.observe(viewLifecycleOwner, Observer { nowRefreshing ->
-            swipe_refresh.isRefreshing = nowRefreshing
+            binding.swipeRefresh.isRefreshing = nowRefreshing
         })
         model.hasWriteableCollections.observe(viewLifecycleOwner, Observer {
             requireActivity().invalidateOptionsMenu()
@@ -80,44 +86,44 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                     .mapNotNull { it.color }
                     .distinct()
                     .ifEmpty { listOf(Constants.DAVDROID_GREEN_RGBA) }
-            swipe_refresh.setColorSchemeColors(*colors.toIntArray())
+            binding.swipeRefresh.setColorSchemeColors(*colors.toIntArray())
         })
-        swipe_refresh.setOnRefreshListener(this)
+        binding.swipeRefresh.setOnRefreshListener(this)
 
         val updateProgress = Observer<Boolean> {
             if (model.isSyncActive.value == true) {
-                progress.isIndeterminate = true
-                progress.alpha = 1.0f
-                progress.visibility = View.VISIBLE
+                binding.progress.isIndeterminate = true
+                binding.progress.alpha = 1.0f
+                binding.progress.visibility = View.VISIBLE
             } else {
                 if (model.isSyncPending.value == true) {
-                    progress.visibility = View.VISIBLE
-                    progress.alpha = 0.2f
-                    progress.isIndeterminate = false
-                    progress.progress = 100
+                    binding.progress.visibility = View.VISIBLE
+                    binding.progress.alpha = 0.2f
+                    binding.progress.isIndeterminate = false
+                    binding.progress.progress = 100
                 } else
-                    progress.visibility = View.INVISIBLE
+                    binding.progress.visibility = View.INVISIBLE
             }
         }
         model.isSyncPending.observe(viewLifecycleOwner, updateProgress)
         model.isSyncActive.observe(viewLifecycleOwner, updateProgress)
 
         val adapter = createAdapter()
-        list.layoutManager = LinearLayoutManager(requireActivity())
-        list.adapter = adapter
+        binding.list.layoutManager = LinearLayoutManager(requireActivity())
+        binding.list.adapter = adapter
         model.collections.observe(viewLifecycleOwner, Observer { data ->
             adapter.submitList(data)
 
             if (data.isEmpty()) {
-                list.visibility = View.GONE
-                empty.visibility = View.VISIBLE
+                binding.list.visibility = View.GONE
+                binding.empty.visibility = View.VISIBLE
             } else {
-                list.visibility = View.VISIBLE
-                empty.visibility = View.GONE
+                binding.list.visibility = View.VISIBLE
+                binding.empty.visibility = View.GONE
             }
         })
 
-        no_collections.setText(noCollectionsStringId)
+        binding.noCollections.setText(noCollectionsStringId)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
@@ -156,23 +162,27 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         checkPermissions()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+
     protected abstract fun checkPermissions()
     protected abstract fun createAdapter(): CollectionAdapter
 
 
-    abstract class CollectionViewHolder(
+    abstract class CollectionViewHolder<T: ViewBinding>(
             parent: ViewGroup,
-            itemLayout: Int,
+            val binding: T,
             protected val accountModel: AccountActivity.Model
-    ): RecyclerView.ViewHolder(
-            LayoutInflater.from(parent.context).inflate(itemLayout, parent, false)
-    ) {
+    ): RecyclerView.ViewHolder(binding.root) {
         abstract fun bindTo(item: Collection)
     }
 
     abstract class CollectionAdapter(
             protected val accountModel: AccountActivity.Model
-    ): PagedListAdapter<Collection, CollectionViewHolder>(DIFF_CALLBACK) {
+    ): PagedListAdapter<Collection, CollectionViewHolder<*>>(DIFF_CALLBACK) {
 
         companion object {
             private val DIFF_CALLBACK = object: DiffUtil.ItemCallback<Collection>() {
@@ -184,7 +194,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             }
         }
 
-        override fun onBindViewHolder(holder: CollectionViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: CollectionViewHolder<*>, position: Int) {
             getItem(position)?.let { item ->
                 holder.bindTo(item)
             }

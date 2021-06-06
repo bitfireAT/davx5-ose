@@ -13,10 +13,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Calendars
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -28,12 +25,11 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.closeCompat
+import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.account_caldav_item.view.*
-import kotlinx.android.synthetic.main.account_collections.*
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
@@ -68,10 +64,10 @@ class WebcalFragment: CollectionsFragment() {
 
     override fun checkPermissions() {
         if (PermissionUtils.havePermissions(requireActivity(), PermissionUtils.CALENDAR_PERMISSIONS))
-            permissionsCard.visibility = View.GONE
+            binding.permissionsCard.visibility = View.GONE
         else {
-            permissionsText.setText(R.string.account_webcal_missing_calendar_permissions)
-            permissionsCard.visibility = View.VISIBLE
+            binding.permissionsText.setText(R.string.account_webcal_missing_calendar_permissions)
+            binding.permissionsCard.visibility = View.VISIBLE
         }
     }
 
@@ -82,25 +78,24 @@ class WebcalFragment: CollectionsFragment() {
             private val parent: ViewGroup,
             accountModel: AccountActivity.Model,
             private val webcalModel: WebcalModel
-    ): CollectionViewHolder(parent, R.layout.account_caldav_item, accountModel) {
+    ): CollectionViewHolder<AccountCaldavItemBinding>(parent, AccountCaldavItemBinding.inflate(LayoutInflater.from(parent.context), parent, false), accountModel) {
 
         override fun bindTo(item: Collection) {
-            val v = itemView
-            v.color.setBackgroundColor(item.color ?: Constants.DAVDROID_GREEN_RGBA)
+            binding.color.setBackgroundColor(item.color ?: Constants.DAVDROID_GREEN_RGBA)
 
-            v.sync.isChecked = item.sync
-            v.title.text = item.title()
+            binding.sync.isChecked = item.sync
+            binding.title.text = item.title()
 
             if (item.description.isNullOrBlank())
-                v.description.visibility = View.GONE
+                binding.description.visibility = View.GONE
             else {
-                v.description.text = item.description
-                v.description.visibility = View.VISIBLE
+                binding.description.text = item.description
+                binding.description.visibility = View.VISIBLE
             }
 
-            v.read_only.visibility = View.VISIBLE
-            v.events.visibility = if (item.supportsVEVENT == true) View.VISIBLE else View.GONE
-            v.tasks.visibility = if (item.supportsVTODO == true) View.VISIBLE else View.GONE
+            binding.readOnly.visibility = View.VISIBLE
+            binding.events.visibility = if (item.supportsVEVENT == true) View.VISIBLE else View.GONE
+            binding.tasks.visibility = if (item.supportsVTODO == true) View.VISIBLE else View.GONE
 
             itemView.setOnClickListener {
                 if (item.sync)
@@ -108,7 +103,7 @@ class WebcalFragment: CollectionsFragment() {
                 else
                     subscribe(item)
             }
-            v.action_overflow.setOnClickListener(CollectionPopupListener(accountModel, item))
+            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item))
         }
 
         private fun subscribe(item: Collection) {

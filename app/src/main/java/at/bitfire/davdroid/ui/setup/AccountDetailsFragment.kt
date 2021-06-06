@@ -24,7 +24,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
