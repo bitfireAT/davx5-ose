@@ -481,6 +481,7 @@ class DebugInfoActivity: AppCompatActivity() {
                     val zipFile = File(debugInfoDir, "davx5-debug.zip")
                     Logger.log.fine("Writing debug info to ${zipFile.absolutePath}")
                     ZipOutputStream(zipFile.outputStream().buffered()).use { zip ->
+                        zip.setLevel(9)
                         debugInfo.value?.let { debugInfo ->
                             zip.putNextEntry(ZipEntry("debug-info.txt"))
                             debugInfo.inputStream().use {
