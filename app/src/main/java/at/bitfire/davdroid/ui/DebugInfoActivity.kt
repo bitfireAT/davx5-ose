@@ -163,7 +163,7 @@ class DebugInfoActivity: AppCompatActivity() {
             val builder = ShareCompat.IntentBuilder.from(this)
                     .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
                     .setText(getString(R.string.debug_info_attached))
-                    .setType("application/zip")
+                    .setType("*/*")     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
                     .setStream(FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), zipFile))
             builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             builder.startChooser()
