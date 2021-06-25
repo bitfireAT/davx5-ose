@@ -391,7 +391,10 @@
     <!-- debugging and DebugInfoActivity -->
     <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>
     <string name="debug_info_title">Debug info</string>
-    <string name="debug_info_use_share1">Use the Share action to send the unmodified data, especially for support requests.</string>
+    <string name="debug_info_archive_caption">ZIP archive</string>
+    <string name="debug_info_archive_subtitle">Contains debug info and logs</string>
+    <string name="debug_info_archive_text">Share the archive to transfer it to a computer, to send it by email or to attach it to a support ticket.</string>
+    <string name="debug_info_archive_share">Share archive</string>
     <string name="debug_info_attached">Debug info attached to this message (requires attachment support of the receiving app).</string>
     <string name="debug_info_http_error">HTTP Error</string>
     <string name="debug_info_server_error">Server Error</string>

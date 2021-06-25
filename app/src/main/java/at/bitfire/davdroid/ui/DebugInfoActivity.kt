@@ -145,6 +145,7 @@ class DebugInfoActivity: AppCompatActivity() {
                 setOnClickListener { shareArchive() }
                 isEnabled = true
             }
+            binding.zipShare.setOnClickListener { shareArchive() }
         })
 
         model.logFile.observe(this, { logs ->
@@ -183,6 +184,7 @@ class DebugInfoActivity: AppCompatActivity() {
         val remoteResource = MutableLiveData<String>()
         val debugInfo = MutableLiveData<File>()
 
+        val zipProgress = MutableLiveData<Boolean>(false)
         val zipFile = MutableLiveData<File>()
 
         // private storage, not readable by others
@@ -473,11 +475,13 @@ class DebugInfoActivity: AppCompatActivity() {
             debugInfo.postValue(debugInfoFile)
         }
 
-        fun generateZip(callback: (File) -> Unit) {
+        fun generateZip(onSuccess: (File) -> Unit) {
             val context = getApplication<Application>()
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
+                    zipProgress.postValue(true)
+
                     val zipFile = File(debugInfoDir, "davx5-debug.zip")
                     Logger.log.fine("Writing debug info to ${zipFile.absolutePath}")
                     ZipOutputStream(zipFile.outputStream().buffered()).use { zip ->
@@ -501,13 +505,14 @@ class DebugInfoActivity: AppCompatActivity() {
                     }
 
                     withContext(Dispatchers.Main) {
-                        callback(zipFile)
+                        onSuccess(zipFile)
                     }
                 } catch(e: IOException) {
                     // creating attachment with debug info failed
                     Logger.log.log(Level.SEVERE, "Couldn't attach debug info", e)
                     Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show()
                 }
+                zipProgress.postValue(false)
             }
         }
 

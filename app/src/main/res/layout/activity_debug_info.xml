@@ -41,17 +41,102 @@
                     android:visibility="@{model.debugInfo == null ? View.VISIBLE : View.GONE}"
                     tools:visibility="visible" />
 
-                    <TextView
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        app:drawableStartCompat="@drawable/ic_share"
-                        app:drawableLeftCompat="@drawable/ic_share"
-                        android:drawablePadding="8dp"
                         android:layout_marginBottom="8dp"
-                        app:drawableTint="?attr/colorControlNormal"
-                        android:text="@string/debug_info_use_share1"/>
+                        android:visibility="@{model.debugInfo != null ? View.VISIBLE : View.GONE}">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/card_padding">
+
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/zipStart"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintGuide_begin="@dimen/card_padding" />
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/zipEnd"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintGuide_end="@dimen/card_padding" />
+
+                            <ProgressBar
+                                android:id="@+id/zipProgress"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                android:indeterminate="true"
+                                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                                android:visibility="@{model.zipProgress ? View.VISIBLE : View.GONE}"
+                                tools:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/zipIcon"
+                                android:layout_width="44dp"
+                                android:layout_height="0dp"
+                                android:paddingEnd="12dp"
+                                android:layout_marginTop="@dimen/card_margin_title_text"
+                                app:layout_constraintTop_toBottomOf="@id/zipProgress"
+                                app:layout_constraintLeft_toLeftOf="@id/zipStart"
+                                app:layout_constraintRight_toLeftOf="@id/zipCaption"
+                                app:layout_constraintBottom_toBottomOf="@id/zipSubtitle"
+                                android:src="@drawable/ic_share" />
+
+                            <TextView
+                                android:id="@+id/zipCaption"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintLeft_toRightOf="@id/zipIcon"
+                                app:layout_constraintTop_toTopOf="@id/zipIcon"
+                                app:layout_constraintRight_toRightOf="@id/zipEnd"
+                                app:layout_constraintBottom_toTopOf="@id/zipSubtitle"
+                                style="@style/TextAppearance.MaterialComponents.Headline6"
+                                android:text="@string/debug_info_archive_caption" />
+
+                            <TextView
+                                android:id="@+id/zipSubtitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintLeft_toRightOf="@id/zipIcon"
+                                app:layout_constraintTop_toBottomOf="@id/zipCaption"
+                                app:layout_constraintRight_toRightOf="@id/zipEnd"
+                                app:layout_constraintBottom_toTopOf="@id/zipText"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                                android:text="@string/debug_info_archive_subtitle" />
+
+                            <TextView
+                                android:id="@+id/zipText"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintTop_toBottomOf="@id/zipSubtitle"
+                                app:layout_constraintLeft_toLeftOf="@id/zipStart"
+                                app:layout_constraintRight_toRightOf="@id/zipEnd"
+                                android:layout_marginTop="@dimen/card_margin_title_text"
+                                style="@style/TextAppearance.MaterialComponents.Body1"
+                                android:text="@string/debug_info_archive_text"/>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/zipShare"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/card_margin_title_text"
+                                app:layout_constraintTop_toBottomOf="@id/zipText"
+                                app:layout_constraintLeft_toLeftOf="@id/zipStart"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                style="@style/Widget.MaterialComponents.Button.TextButton"
+                                android:enabled="@{model.debugInfo != null &amp;&amp; !model.zipProgress}"
+                                android:text="@string/debug_info_archive_share" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
@@ -164,7 +249,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/card_padding"
                             android:orientation="vertical">
-
 
                             <androidx.constraintlayout.widget.Guideline
                                 android:id="@+id/debugInfoStart"
@@ -405,7 +489,7 @@
             android:layout_gravity="bottom|right"
             android:layout_margin="@dimen/fab_margin"
             android:contentDescription="@string/share"
-            android:enabled="false"
+            android:enabled="@{model.debugInfo != null &amp;&amp; !model.zipProgress}"
             android:src="@drawable/ic_share"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
