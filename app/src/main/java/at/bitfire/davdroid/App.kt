@@ -13,13 +13,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.StrictMode
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.Settings
-import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
@@ -65,11 +62,12 @@ class App: Application(), Thread.UncaughtExceptionHandler {
 
         NotificationUtils.createChannels(this)
 
+        // set light/dark mode
+        UiUtils.setTheme(this)      // when this is called in the asynchronous thread below, it recreates
+                                    // some current activity and causes an IllegalStateException in rare cases
+
         // don't block UI for some background checks
         thread {
-            // set light/dark mode
-            UiUtils.setTheme(this)
-
             // create/update app shortcuts
             UiUtils.updateShortcuts(this)
 
