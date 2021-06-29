@@ -325,7 +325,10 @@
   <string name="collection_properties_owner">Besitzer:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
-  <string name="debug_info_use_share1">Verwenden Sie Teilen, um die unveränderten Daten zu schicken – insbesondere für Support-Anfragen.</string>
+  <string name="debug_info_archive_caption">ZIP-Archiv</string>
+  <string name="debug_info_archive_subtitle">Beinhaltet Debug-Info und Logs</string>
+  <string name="debug_info_archive_text">Das Archiv teilen, um es zu einem Rechner zu übertragen, per Email zu verschicken oder an ein Support-Ticket anzuhängen.</string>
+  <string name="debug_info_archive_share">Archiv teilen</string>
   <string name="debug_info_attached">Debug-Informationen sind dieser Nachricht beigelegt (benötigt Unterstützung für Anhänge in der empfangenden App).</string>
   <string name="debug_info_http_error">HTTP-Fehler</string>
   <string name="debug_info_server_error">Serverfehler</string>

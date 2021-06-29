@@ -149,6 +149,13 @@
   <string name="app_settings_user_interface">Gebruikers interface</string>
   <string name="app_settings_notification_settings">Notificatie settings</string>
   <string name="app_settings_notification_settings_summary">Beheer de notificatie kanalen en hun settings</string>
+  <string name="app_settings_theme_title">Selecteer thema</string>
+  <string name="app_settings_theme_summary">Huidige thema: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>Systeem standaard</item>
+    <item>Licht</item>
+    <item>Donker</item>
+  </string-array>
   <string name="app_settings_reset_hints">Hints resetten </string>
   <string name="app_settings_reset_hints_summary">Hints die al gezien zijn opnieuw weergeven</string>
   <string name="app_settings_reset_hints_success">Alle hints worden opnieuw weergegeven</string>
@@ -318,7 +325,6 @@
   <string name="collection_properties_owner">Eigenaar:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
-  <string name="debug_info_use_share1">Gebruik de actie Delen om de ongewijzigde gegevens te verzenden, vooral voor ondersteuningsverzoeken.</string>
   <string name="debug_info_attached">Debug-informatie wordt toegevoegd aan dit bericht (de ontvangende app moet bijlagen kunnen versturen).</string>
   <string name="debug_info_http_error">HTTP-fout</string>
   <string name="debug_info_server_error">Serverfout</string>

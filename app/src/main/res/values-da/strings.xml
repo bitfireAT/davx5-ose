@@ -325,7 +325,6 @@
   <string name="collection_properties_owner">Ejer:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
-  <string name="debug_info_use_share1">Brug dele handling for at sende uændret data, specielt ved brugerhjælp forespørgsel.</string>
   <string name="debug_info_attached">Fejlsøge informationer vedhæftet denne meddelelse (kræver vedhæftning understøttelse hos modtagende program).</string>
   <string name="debug_info_http_error">HTTP fejl</string>
   <string name="debug_info_server_error">Server fejl</string>

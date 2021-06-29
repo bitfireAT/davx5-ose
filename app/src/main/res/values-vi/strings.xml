@@ -323,7 +323,6 @@
   <string name="collection_properties_owner">Chủ sở hữu:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Thông tin gỡ lỗi</string>
-  <string name="debug_info_use_share1">Sử dụng hành động Chia sẻ để gửi dữ liệu chưa sửa đổi, đặc biệt là đối với các yêu cầu hỗ trợ.</string>
   <string name="debug_info_attached">Đã đính kèm thông tin gỡ lỗi vào tin nhắn này (yêu cầu ứng dụng nhận có hỗ trợ tệp đính kèm).</string>
   <string name="debug_info_http_error">Lỗi HTTP</string>
   <string name="debug_info_server_error">Lỗi máy chủ</string>

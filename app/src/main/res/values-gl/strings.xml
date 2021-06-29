@@ -325,7 +325,10 @@
   <string name="collection_properties_owner">Propietaria:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Info depuración</string>
-  <string name="debug_info_use_share1">Usa a acción Compartir para enviar datos non modificados, especialmente para solicitudes soportadas</string>
+  <string name="debug_info_archive_caption">Arquivo ZIP</string>
+  <string name="debug_info_archive_subtitle">Contén info de depuración e rexistros</string>
+  <string name="debug_info_archive_text">Comparte o arquivo para pasalo á computadora, envialo por email ou anexalo a un tícket de axuda</string>
+  <string name="debug_info_archive_share">Compartir arquivo</string>
   <string name="debug_info_attached">Info de depuración anexa a esta mensaxe (require soporte de anexos na app receptora).</string>
   <string name="debug_info_http_error">Erro HTTP</string>
   <string name="debug_info_server_error">Fallo no servidor</string>

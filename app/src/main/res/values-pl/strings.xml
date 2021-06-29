@@ -329,7 +329,10 @@
   <string name="collection_properties_owner">Właściciel:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacje debugowania</string>
-  <string name="debug_info_use_share1">Użyj akcji Udostępnij aby wysłać nie zmodyfikowane dane, szczególnie dla zgłoszeń wsparcia.</string>
+  <string name="debug_info_archive_caption">Archiwum ZIP</string>
+  <string name="debug_info_archive_subtitle">Zawiera informacje o debugowaniu i dzienniki</string>
+  <string name="debug_info_archive_text">Udostępnij archiwum, aby przenieść je na komputer, wysłać e-mailem lub dołączyć do zgłoszenia do pomocy technicznej.</string>
+  <string name="debug_info_archive_share">Udostępnij archiwum</string>
   <string name="debug_info_attached">Informacja debugowania załączona do tej wiadomości (wymaga wsparcia dla załączników w odbierającej aplikacji).</string>
   <string name="debug_info_http_error">Błąd HTTP</string>
   <string name="debug_info_server_error">Błąd serwera</string>
