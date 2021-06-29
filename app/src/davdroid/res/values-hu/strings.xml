@@ -318,7 +318,6 @@
   <string name="collection_properties_owner">Tulajdonos:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Hibakeresési információ</string>
-  <string name="debug_info_use_share1">Használd a Megosztás funkciót a nyers adatok elküldéséhez, kifejezetten támogatási kérésekhez.</string>
   <string name="debug_info_attached">Hibakeresési információ csatolása ehhez az üzenethez (ha a fogadó alkalmazás támogatja a csatolmányokat).</string>
   <string name="debug_info_http_error">HTTP hiba</string>
   <string name="debug_info_server_error">Szerverhiba</string>

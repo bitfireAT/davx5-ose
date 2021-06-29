@@ -318,7 +318,6 @@
   <string name="collection_properties_owner">Jabea:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Arazketa informazioa</string>
-  <string name="debug_info_use_share1">Erabili partekatze ekintza aldatu gabeko datuak bidaltzeko, laguntza eskaeretarako bereziki.</string>
   <string name="debug_info_attached">Arazketa informazioa mezuan erantsiko da (hartuko dituen aplikazioak eranskinak onartu behar ditu).</string>
   <string name="debug_info_http_error">HTTP errorea</string>
   <string name="debug_info_server_error">Zerbitzari errorea</string>

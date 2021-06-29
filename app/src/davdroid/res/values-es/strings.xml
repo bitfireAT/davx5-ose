@@ -318,7 +318,6 @@
   <string name="collection_properties_owner">Propietario:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Información de depuración</string>
-  <string name="debug_info_use_share1">Usa la acción Compartir para enviar los datos sin modificar, especialmente para los solicitudes de asistencia.</string>
   <string name="debug_info_attached">Información de depuración adjunta a este mensaje (requiere soporte de adjuntos de la aplicación receptora).</string>
   <string name="debug_info_http_error">Error HTTP</string>
   <string name="debug_info_server_error">Error del servidor</string>

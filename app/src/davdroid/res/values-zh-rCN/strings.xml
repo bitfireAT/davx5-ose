@@ -323,7 +323,10 @@
   <string name="collection_properties_owner">所有者：</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">调试信息</string>
-  <string name="debug_info_use_share1">使用“分享”操作发送未更改的数据，尤其对于支持请求。</string>
+  <string name="debug_info_archive_caption">ZIP 压缩文件</string>
+  <string name="debug_info_archive_subtitle">包含调试信息和日志</string>
+  <string name="debug_info_archive_text">共享压缩文件以将其传输到计算机上，通过电子邮件发送或将其附加到支持请求。</string>
+  <string name="debug_info_archive_share">分享压缩文件</string>
   <string name="debug_info_attached">已附加调试信息到此消息(需要接收应用支持附件功能)</string>
   <string name="debug_info_http_error">HTTP错误</string>
   <string name="debug_info_server_error">服务器错误</string>

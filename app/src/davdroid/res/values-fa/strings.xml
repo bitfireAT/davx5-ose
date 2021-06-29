@@ -313,7 +313,6 @@
   <string name="collection_properties_owner">مالک:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">اطلاعات اشکال زدایی</string>
-  <string name="debug_info_use_share1">برای ارسال داده های اصلاح نشده ، به ویژه برای درخواست های پشتیبانی ، ازبه اشتراک گذاری استفاده کنید.</string>
   <string name="debug_info_attached">اطلاعات اشکال زدایی پیوست شده به این پیام (نیاز به پشتیبانی پیوست از برنامه دریافت کننده دارد).</string>
   <string name="debug_info_http_error">خطای HTTP</string>
   <string name="debug_info_server_error">خطای سرور</string>

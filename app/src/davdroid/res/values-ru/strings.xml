@@ -264,7 +264,7 @@
   <string name="settings_password">Пароль</string>
   <string name="settings_password_summary">Обновить пароль</string>
   <string name="settings_enter_password">Введите свой пароль:</string>
-  <string name="settings_certificate_alias">Псевдоним сертификата клиента</string>
+  <string name="settings_certificate_alias">Привязка сертификата клиента</string>
   <string name="settings_certificate_alias_empty">Сертификат не выбран</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Ограничение по времени для прошедших событий</string>
@@ -329,7 +329,10 @@
   <string name="collection_properties_owner">Владелец:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
-  <string name="debug_info_use_share1">Используйте действие Поделиться для отправки немодифицированных данных, особенно это касается запросов поддержки.</string>
+  <string name="debug_info_archive_caption">ZIP-архив</string>
+  <string name="debug_info_archive_subtitle">Содержит отладочную информацию и журналы</string>
+  <string name="debug_info_archive_text">Поделитесь архивом, чтобы перенести его на компьютер, отправить по электронной почте или прикрепить к запросу в службу поддержки.</string>
+  <string name="debug_info_archive_share">Поделиться архивом</string>
   <string name="debug_info_attached">Отладочная информация, прикреплена к данному сообщению (требует поддержки вложений со стороны принимающего приложения).</string>
   <string name="debug_info_http_error">Ошибка HTTP</string>
   <string name="debug_info_server_error">Ошибка сервера</string>
