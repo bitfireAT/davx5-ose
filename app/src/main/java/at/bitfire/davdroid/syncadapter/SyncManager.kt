@@ -50,9 +50,7 @@ import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.util.*
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
-import java.util.concurrent.Future
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
@@ -810,23 +808,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
         else
             null
-    }
-
-
-    @Deprecated("Use Kotlin coroutines instead")
-    fun checkResults(results: MutableCollection<Future<*>>) {
-        val iter = results.iterator()
-        while (iter.hasNext()) {
-            val result = iter.next()
-            if (result.isDone) {
-                try {
-                    result.get()
-                } catch(e: ExecutionException) {
-                    throw e.cause!!
-                }
-                iter.remove()
-            }
-        }
     }
 
     protected fun notifyInvalidResource(e: Throwable, fileName: String) {
