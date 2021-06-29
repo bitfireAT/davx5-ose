@@ -40,10 +40,7 @@ import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.UsesThreadContextClassLoader
 import at.bitfire.vcard4android.ContactsStorageException
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import org.apache.commons.lang3.exception.ContextedException
@@ -91,10 +88,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * We use our own dispatcher to make sure that all threads have [Thread.getContextClassLoader] set,
      * which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]).
      */
-    private val workDispatcher = Executors.newFixedThreadPool(
-                // number of threads = number of CPUs, but max. 4
-                min(Runtime.getRuntime().availableProcessors(), 4)
-            ).asCoroutineDispatcher()
+    private val _workDispatcher = lazy {
+        Executors     // number of threads = number of CPUs, but max. 4
+            .newFixedThreadPool(min(Runtime.getRuntime().availableProcessors(), 4))
+            .asCoroutineDispatcher()
+    }
+    private val workDispatcher by _workDispatcher
 
     private val mainAccount = if (localCollection is LocalAddressBook)
         localCollection.mainAccount
@@ -113,6 +112,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     override fun close() {
         httpClient.close()
+
+        // shut down worker threads (only if the work dispatcher has been actually created)
+        if (_workDispatcher.isInitialized())
+            workDispatcher.close()
     }
 
 
