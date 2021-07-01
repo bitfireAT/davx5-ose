@@ -62,23 +62,20 @@
                     android:text="@={model.description}" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/homesets_title"
-                android:labelFor="@id/homeset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/create_collection_home_set"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@+id/description"
-                app:layout_constraintStart_toStartOf="parent" />
-            <Spinner
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/homeset"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:adapter="@{model.homeSets}"
-                android:selectedItemPosition="@={model.idxHomeSet}"
+                app:layout_constraintTop_toBottomOf="@+id/description"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/homesets_title" />
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:hint="@string/create_collection_home_set">
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:adapter="@{model.homeSets}"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
