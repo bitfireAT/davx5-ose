@@ -16,7 +16,8 @@ import org.apache.commons.lang3.StringUtils
         ],
         indices = [
             Index("serviceId","type"),
-            Index("homeSetId","type")
+            Index("homeSetId","type"),
+            Index("url")
         ]
 )
 data class Collection(

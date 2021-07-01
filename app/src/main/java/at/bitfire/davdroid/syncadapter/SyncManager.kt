@@ -29,7 +29,9 @@ import at.bitfire.dav4jvm.property.ScheduleTag
 import at.bitfire.dav4jvm.property.SyncToken
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.model.SyncStats
 import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -80,6 +82,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     init {
         // required for ServiceLoader -> ical4j -> ical4android
         Ical4Android.checkThreadContextClassLoader()
+
+        // log synchronization of this collection
     }
 
     /**
@@ -260,6 +264,16 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     notifyException(e, local, remote)
             }
         })
+
+        // log sync time
+        val db = AppDatabase.getInstance(context)
+        db.runInTransaction {
+            db.collectionDao().getByUrl(collectionURL.toString())?.let { collection ->
+                db.syncStatsDao().insertOrReplace(
+                    SyncStats(0, collection.id, authority, System.currentTimeMillis())
+                )
+            }
+        }
     }
 
 

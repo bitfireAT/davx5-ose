@@ -24,6 +24,6 @@ abstract class AndroidSingleton<T> {
         return newSingleton
     }
 
-    abstract fun createInstance(context: Context): T
+    abstract protected fun createInstance(context: Context): T
 
 }

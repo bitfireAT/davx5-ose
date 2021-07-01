@@ -18,14 +18,16 @@ import java.io.Writer
 @Database(entities = [
     Service::class,
     HomeSet::class,
-    Collection::class
-], exportSchema = true, version = 8)
+    Collection::class,
+    SyncStats::class
+], exportSchema = true, version = 9)
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
 
     abstract fun serviceDao(): ServiceDao
     abstract fun homeSetDao(): HomeSetDao
     abstract fun collectionDao(): CollectionDao
+    abstract fun syncStatsDao(): SyncStatsDao
 
     companion object: AndroidSingleton<AppDatabase>() {
 
@@ -39,6 +41,19 @@ abstract class AppDatabase: RoomDatabase() {
         // migrations
 
         val migrations: Array<Migration> = arrayOf(
+            object : Migration(8, 9) {
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    db.execSQL("CREATE TABLE syncstats (" +
+                            "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                            "collectionId INTEGER NOT NULL REFERENCES collection(id) ON DELETE CASCADE," +
+                            "authority TEXT NOT NULL," +
+                            "lastSync INTEGER NOT NULL)")
+                    db.execSQL("CREATE UNIQUE INDEX index_syncstats_collectionId_authority ON syncstats(collectionId, authority)")
+
+                    db.execSQL("CREATE INDEX index_collection_url ON collection(url)")
+                }
+            },
+
             object : Migration(7, 8) {
                 override fun migrate(db: SupportSQLiteDatabase) {
                     db.execSQL("ALTER TABLE homeset ADD COLUMN personal INTEGER NOT NULL DEFAULT 1")

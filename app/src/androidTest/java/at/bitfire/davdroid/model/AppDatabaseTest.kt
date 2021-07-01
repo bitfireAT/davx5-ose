@@ -22,6 +22,7 @@ class AppDatabaseTest {
 
     @Test
     fun testAllMigrations() {
+        // DB schema is available since version 8
         helper.createDatabase(TEST_DB, 8).close()
 
         Room.databaseBuilder(

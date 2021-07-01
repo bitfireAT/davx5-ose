@@ -16,11 +16,11 @@ object AccountUtils {
     @AnyThread
     @Synchronized
     fun cleanupAccounts(context: Context) {
-        Logger.log.info("Cleaning up orphaned accounts")
-
         val accountManager = AccountManager.get(context)
-        val accountNames = accountManager.getAccountsByType(context.getString(R.string.account_type))
-            .map { it.name }
+
+        val accounts = accountManager.getAccountsByType(context.getString(R.string.account_type))
+        val accountNames = accounts.map { it.name }
+        Logger.log.log(Level.INFO, "Cleaning up orphaned accounts. Current accounts:", accountNames)
 
         // delete orphaned address book accounts
         accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
