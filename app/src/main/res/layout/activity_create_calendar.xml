@@ -71,49 +71,52 @@
                     android:text="@={model.description}" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/homesets_title"
-                android:labelFor="@id/homeset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/create_collection_home_set"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@+id/description"
-                app:layout_constraintStart_toStartOf="parent" />
-            <Spinner
-                android:id="@+id/homeset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adapter="@{model.homeSets}"
-                android:selectedItemPosition="@={model.idxHomeSet}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/homesets_title" />
-
-            <TextView
-                android:id="@+id/timezone_title"
-                android:labelFor="@id/timezone"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:text="@string/create_calendar_time_zone"
-                app:layout_constraintTop_toBottomOf="@id/homeset"
-                app:layout_constraintStart_toStartOf="parent" />
-            <AutoCompleteTextView
-                android:id="@+id/timezone"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/homeset_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@={model.timezone}"
-                app:error="@{model.timezoneError}"
-                app:layout_constraintTop_toBottomOf="@+id/timezone_title"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/description"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:hint="@string/create_collection_home_set">
+                <AutoCompleteTextView
+                    android:id="@+id/homeset"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:adapter="@{model.homeSets}"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/timezone_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/homeset_layout"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:hint="@string/create_calendar_time_zone"
+                app:error="@{model.timezoneError}">
+                <AutoCompleteTextView
+                    android:id="@+id/timezone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:text="@={model.timezone}"
+                    android:adapter="@{model.timezones}"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/create_calendar_type"
                 app:error="@{model.typeError}"
-                app:layout_constraintTop_toBottomOf="@id/timezone"
+                app:layout_constraintTop_toBottomOf="@id/timezone_layout"
                 app:layout_constraintStart_toStartOf="parent"/>
             <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"

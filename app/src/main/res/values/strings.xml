@@ -376,6 +376,7 @@
     <string name="create_collection_description">Description</string>
     <string name="create_collection_optional">optional</string>
     <string name="create_collection_home_set">Storage location</string>
+    <string name="create_collection_home_set_required">Storage location is required</string>
     <string name="create_collection_create">Create</string>
     <string name="delete_collection">Delete collection</string>
     <string name="delete_collection_confirm_title">Are you sure?</string>

@@ -34,8 +34,14 @@ interface LocalResource<in TData: Any> {
      * (in this case, [fileName] is the remote file name).
      */
     val fileName: String?
+
+    /** remote ETag for the resource */
     var eTag: String?
+
+    /** remote Schedule-Tag for the resource */
     var scheduleTag: String?
+
+    /** bitfield of flags; currently either [FLAG_REMOTELY_PRESENT] or 0 */
     val flags: Int
 
     /**
@@ -69,18 +75,21 @@ interface LocalResource<in TData: Any> {
 
     /**
      * Adds the data object to the content provider and ensures that the dirty flag is clear.
+     *
      * @return content URI of the created row (e.g. event URI)
      */
     fun add(): Uri
 
     /**
      * Updates the data object in the content provider and ensures that the dirty flag is clear.
+     *
      * @return content URI of the updated row (e.g. event URI)
      */
     fun update(data: TData): Uri
 
     /**
      * Deletes the data object from the content provider.
+     *
      * @return number of affected rows
      */
     fun delete(): Int

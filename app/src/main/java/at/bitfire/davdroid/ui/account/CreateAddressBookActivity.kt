@@ -27,6 +27,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.model.HomeSet
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.ui.HomeSetAdapter
 import kotlinx.coroutines.Dispatchers
@@ -43,14 +44,20 @@ class CreateAddressBookActivity: AppCompatActivity() {
     private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
     val model by viewModels<Model>()
 
+    lateinit var binding: ActivityCreateAddressBookBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val binding = DataBindingUtil.setContentView<ActivityCreateAddressBookBinding>(this, R.layout.activity_create_address_book)
+        binding = DataBindingUtil.setContentView<ActivityCreateAddressBookBinding>(this, R.layout.activity_create_address_book)
         binding.lifecycleOwner = this
         binding.model = model
+
+        binding.homeset.setOnItemClickListener { parent, view, position, id ->
+            model.homeSet = parent.getItemAtPosition(position) as HomeSet?
+        }
 
         if (savedInstanceState == null)
             model.initialize(account)
@@ -74,8 +81,14 @@ class CreateAddressBookActivity: AppCompatActivity() {
         val args = Bundle()
         args.putString(CreateCollectionFragment.ARG_SERVICE_TYPE, Service.TYPE_CARDDAV)
 
-        val parent = model.homeSets.value?.getItem(model.idxHomeSet.value!!) ?: return
-        args.putString(CreateCollectionFragment.ARG_URL, parent.url.resolve(UUID.randomUUID().toString() + "/").toString())
+        val parent = model.homeSet
+        if (parent != null) {
+            binding.homeset.error = null
+            args.putString(CreateCollectionFragment.ARG_URL, parent.url.resolve(UUID.randomUUID().toString() + "/").toString())
+        } else {
+            binding.homeset.error = getString(R.string.create_collection_home_set_required)
+            ok = false
+        }
 
         val displayName = model.displayName.value
         if (displayName.isNullOrBlank()) {
@@ -112,7 +125,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         val description = MutableLiveData<String>()
 
         val homeSets = MutableLiveData<HomeSetAdapter>()
-        val idxHomeSet = MutableLiveData<Int>()
+        var homeSet: HomeSet? = null
 
         fun clearNameError(s: Editable) {
             displayNameError.value = null
@@ -134,10 +147,8 @@ class CreateAddressBookActivity: AppCompatActivity() {
                     adapter.addAll(homeSets)
                 }
 
-                if (!adapter.isEmpty) {
+                if (!adapter.isEmpty)
                     homeSets.postValue(adapter)
-                    idxHomeSet.postValue(0)
-                }
             }
         }
 

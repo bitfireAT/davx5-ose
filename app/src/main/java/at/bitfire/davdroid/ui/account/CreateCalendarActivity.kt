@@ -14,10 +14,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
 import android.widget.ArrayAdapter
-import android.widget.Filter
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +30,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityCreateCalendarBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.model.HomeSet
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.ui.HomeSetAdapter
 import at.bitfire.ical4android.DateUtils
@@ -40,6 +40,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.fortuna.ical4j.model.Calendar
 import org.apache.commons.lang3.StringUtils
+import java.time.ZoneId
+import java.time.format.TextStyle
 import java.util.*
 
 class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
@@ -51,11 +53,14 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
     private val account by lazy { intent.getParcelableExtra<Account>(CreateAddressBookActivity.EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
     val model by viewModels<Model>()
 
+    lateinit var binding: ActivityCreateCalendarBinding
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val binding = DataBindingUtil.setContentView<ActivityCreateCalendarBinding>(this, R.layout.activity_create_calendar)
+        binding = DataBindingUtil.setContentView<ActivityCreateCalendarBinding>(this, R.layout.activity_create_calendar)
         binding.lifecycleOwner = this
         binding.model = model
 
@@ -66,7 +71,9 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
                     .show(this)
         }
 
-        binding.timezone.setAdapter(model.timezones)
+        binding.homeset.setOnItemClickListener { parent, view, position, id ->
+            model.homeSet = parent.getItemAtPosition(position) as HomeSet?
+        }
 
         if (savedInstanceState == null)
             model.initialize(account)
@@ -100,8 +107,17 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         val args = Bundle()
         args.putString(CreateCollectionFragment.ARG_SERVICE_TYPE, Service.TYPE_CALDAV)
 
-        val parent = model.homeSets.value?.getItem(model.idxHomeSet.value!!) ?: return
-        args.putString(CreateCollectionFragment.ARG_URL, parent.url.resolve(UUID.randomUUID().toString() + "/").toString())
+        val parent = model.homeSet
+        if (parent != null) {
+            binding.homeset.error = null
+            args.putString(
+                CreateCollectionFragment.ARG_URL,
+                parent.url.resolve(UUID.randomUUID().toString() + "/").toString()
+            )
+        } else {
+            binding.homeset.error = getString(R.string.create_collection_home_set_required)
+            ok = false
+        }
 
         val displayName = model.displayName.value
         if (displayName.isNullOrBlank()) {
@@ -159,33 +175,27 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         }
     }
 
-    class TimeZoneAdapter(
-            context: Context
-    ): ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1) {
 
-        val tz: Array<String> = TimeZone.getAvailableIDs()
+    class TimeZoneAdapter(context: Context): ArrayAdapter<String>(context, R.layout.text_list_item, android.R.id.text1)  {
 
-        override fun getFilter(): Filter {
-            return object: Filter() {
-                override fun performFiltering(constraint: CharSequence?): FilterResults {
-                    val filtered = constraint?.let {
-                        tz.filter { it.contains(constraint, true) }
-                    } ?: listOf()
-                    val results = FilterResults()
-                    results.values = filtered
-                    results.count = filtered.size
-                    return results
-                }
-                override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-                    clear()
-                    @Suppress("UNCHECKED_CAST") addAll(results.values as List<String>)
-                    if (results.count >= 0)
-                        notifyDataSetChanged()
-                    else
-                        notifyDataSetInvalidated()
-                }
-            }
+        init {
+            addAll(TimeZone.getAvailableIDs().toList())
         }
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val tzId = getItem(position)!!
+            val tz = ZoneId.of(tzId)
+
+            val v: View
+            v = convertView ?: LayoutInflater.from(context).inflate(R.layout.text_list_item, parent, false)
+            v.findViewById<TextView>(android.R.id.text1).text = tz.id
+            v.findViewById<TextView>(android.R.id.text2).text = tz.getDisplayName(TextStyle.FULL, Locale.getDefault())
+
+            return v
+        }
+
+        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup) =
+            getView(position, convertView, parent)
 
     }
 
@@ -203,10 +213,10 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         val color = MutableLiveData<Int>()
 
         val homeSets = MutableLiveData<HomeSetAdapter>()
-        val idxHomeSet = MutableLiveData<Int>()
+        var homeSet: HomeSet? = null
 
         val timezones = TimeZoneAdapter(application)
-        val timezone = MutableLiveData<String>()
+        val timezone = MutableLiveData<String>(TimeZone.getDefault().id)
         val timezoneError = MutableLiveData<String>()
 
         val typeError = MutableLiveData<String>()
@@ -222,8 +232,6 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
             color.value = Constants.DAVDROID_GREEN_RGBA
 
-            timezone.value = TimeZone.getDefault().id
-
             supportVEVENT.value = true
             supportVTODO.value = true
             supportVJOURNAL.value = true
@@ -238,10 +246,8 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
                     adapter.addAll(homeSets)
                 }
 
-                if (!adapter.isEmpty) {
+                if (!adapter.isEmpty)
                     homeSets.postValue(adapter)
-                    idxHomeSet.postValue(0)
-                }
             }
         }
 
