@@ -109,13 +109,13 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
         val parent = model.homeSet
         if (parent != null) {
-            binding.homeset.error = null
+            binding.homesetLayout.error = null
             args.putString(
                 CreateCollectionFragment.ARG_URL,
                 parent.url.resolve(UUID.randomUUID().toString() + "/").toString()
             )
         } else {
-            binding.homeset.error = getString(R.string.create_collection_home_set_required)
+            binding.homesetLayout.error = getString(R.string.create_collection_home_set_required)
             ok = false
         }
 
@@ -137,10 +137,9 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         }
 
         val tzId = model.timezone.value
-        if (tzId.isNullOrBlank()) {
-            model.timezoneError.value = getString(R.string.create_calendar_time_zone_required)
+        if (tzId.isNullOrBlank())
             ok = false
-        } else {
+        else {
             DateUtils.ical4jTimeZone(tzId)?.let { tz ->
                 val cal = Calendar()
                 cal.components += tz.vTimeZone

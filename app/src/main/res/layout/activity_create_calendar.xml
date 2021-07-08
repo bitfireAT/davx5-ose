@@ -33,8 +33,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/create_collection_display_name"
-                app:errorEnabled="true"
                 app:error="@{model.displayNameError}"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -61,8 +61,10 @@
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:hint="@string/create_collection_description"
                 app:helperText="@string/create_collection_optional"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/display_name">
                 <com.google.android.material.textfield.TextInputEditText
@@ -78,7 +80,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/description"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:hint="@string/create_collection_home_set">
                 <AutoCompleteTextView
@@ -96,7 +97,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/homeset_layout"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:hint="@string/create_calendar_time_zone"
                 app:error="@{model.timezoneError}">

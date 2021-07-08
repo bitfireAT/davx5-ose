@@ -83,10 +83,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
         val parent = model.homeSet
         if (parent != null) {
-            binding.homeset.error = null
+            binding.homesetLayout.error = null
             args.putString(CreateCollectionFragment.ARG_URL, parent.url.resolve(UUID.randomUUID().toString() + "/").toString())
         } else {
-            binding.homeset.error = getString(R.string.create_collection_home_set_required)
+            binding.homesetLayout.error = getString(R.string.create_collection_home_set_required)
             ok = false
         }
 

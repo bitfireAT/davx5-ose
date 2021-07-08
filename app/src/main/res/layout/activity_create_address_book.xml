@@ -35,7 +35,6 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:hint="@string/create_collection_display_name"
                 app:error="@{model.displayNameError}"
-                app:errorEnabled="true"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -51,6 +50,7 @@
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:hint="@string/create_collection_description"
                 app:helperText="@string/create_collection_optional"
@@ -66,6 +66,7 @@
                 android:id="@+id/homeset_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 app:layout_constraintTop_toBottomOf="@+id/description"
                 app:layout_constraintStart_toStartOf="parent"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
