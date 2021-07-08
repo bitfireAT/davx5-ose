@@ -180,7 +180,6 @@
   <string name="create_addressbook_display_name_hint">Moj imenik</string>
   <string name="create_calendar">Ustvari koledar</string>
   <string name="create_calendar_time_zone">Časovna zona</string>
-  <string name="create_calendar_time_zone_required">Zahtevna je časovna zona</string>
   <string name="create_calendar_type">Mogoči koledarski vnosi</string>
   <string name="create_calendar_type_vevent">Dogodki</string>
   <string name="create_calendar_type_vtodo">Naloge</string>

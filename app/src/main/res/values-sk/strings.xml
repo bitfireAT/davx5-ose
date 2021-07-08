@@ -197,7 +197,6 @@
   <string name="create_addressbook_display_name_hint">Môj adresár</string>
   <string name="create_calendar">Vytvoriť kalendár</string>
   <string name="create_calendar_time_zone">Časová zóna</string>
-  <string name="create_calendar_time_zone_required">Vyžaduje sa časová zóna</string>
   <string name="create_calendar_type">Možné kalendárové položky</string>
   <string name="create_calendar_type_vevent">Udalosti</string>
   <string name="create_calendar_type_vtodo">Úlohy</string>

@@ -303,7 +303,6 @@
   <string name="create_addressbook_display_name_hint">Moja książka adresowa</string>
   <string name="create_calendar">Utwórz kalendarz</string>
   <string name="create_calendar_time_zone">Strefa czasowa</string>
-  <string name="create_calendar_time_zone_required">Wymagana strefa czasowa</string>
   <string name="create_calendar_type">Możliwe wpisy kalendarza</string>
   <string name="create_calendar_type_vevent">Wydarzenia</string>
   <string name="create_calendar_type_vtodo">Zadania</string>

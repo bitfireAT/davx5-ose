@@ -178,7 +178,6 @@
   <string name="create_addressbook_display_name_hint">دفتر عناويني</string>
   <string name="create_calendar">إنشاء تقويم</string>
   <string name="create_calendar_time_zone">المنطقة الزمنية</string>
-  <string name="create_calendar_time_zone_required">المنطقة الزمنية مطلوبة</string>
   <string name="create_calendar_type">المدخلات المحتملة للتقويم</string>
   <string name="create_calendar_type_vevent">أحداث</string>
   <string name="create_calendar_type_vtodo">مهام</string>

@@ -193,7 +193,6 @@
   <string name="create_addressbook_display_name_hint">Το βιβλίο διευθύνσεών μου</string>
   <string name="create_calendar">Δημιουργία ημερολογίου</string>
   <string name="create_calendar_time_zone">Ζώνη ώρας</string>
-  <string name="create_calendar_time_zone_required">Απαιτείται ζώνη ώρας</string>
   <string name="create_calendar_type">Πιθανές καταχωρήσεις ημερολογίου</string>
   <string name="create_calendar_type_vevent">Συμβάντα</string>
   <string name="create_calendar_type_vtodo">Εργασίες</string>

@@ -292,7 +292,6 @@
   <string name="create_addressbook_display_name_hint">Új címjegyzék</string>
   <string name="create_calendar">Naptár létrehozása</string>
   <string name="create_calendar_time_zone">Időzóna</string>
-  <string name="create_calendar_time_zone_required">Az időzóna megadása kötelező</string>
   <string name="create_calendar_type">Lehetséges naptárbejegyzések</string>
   <string name="create_calendar_type_vevent">Események</string>
   <string name="create_calendar_type_vtodo">Feladatok</string>

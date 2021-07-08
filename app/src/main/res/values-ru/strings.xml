@@ -303,7 +303,6 @@
   <string name="create_addressbook_display_name_hint">Моя адресная книга</string>
   <string name="create_calendar">Создать календарь</string>
   <string name="create_calendar_time_zone">Часовой пояс</string>
-  <string name="create_calendar_time_zone_required">Требуется часовой пояс</string>
   <string name="create_calendar_type">Возможные записи календаря</string>
   <string name="create_calendar_type_vevent">События</string>
   <string name="create_calendar_type_vtodo">Задачи</string>

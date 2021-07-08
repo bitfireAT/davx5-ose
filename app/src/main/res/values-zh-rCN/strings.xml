@@ -297,7 +297,6 @@
   <string name="create_addressbook_display_name_hint">我的通讯录</string>
   <string name="create_calendar">创建日历</string>
   <string name="create_calendar_time_zone">时区</string>
-  <string name="create_calendar_time_zone_required">请选择时区</string>
   <string name="create_calendar_type">可能使用的日历类型</string>
   <string name="create_calendar_type_vevent">事件</string>
   <string name="create_calendar_type_vtodo">任务</string>
@@ -310,6 +309,7 @@
   <string name="create_collection_description">描述</string>
   <string name="create_collection_optional">可选</string>
   <string name="create_collection_home_set">存储位置</string>
+  <string name="create_collection_home_set_required">存储位置是必需的</string>
   <string name="create_collection_create">创建</string>
   <string name="delete_collection">删除集合</string>
   <string name="delete_collection_confirm_title">你确定吗？</string>

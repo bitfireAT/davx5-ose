@@ -292,7 +292,6 @@
   <string name="create_addressbook_display_name_hint">Agendas</string>
   <string name="create_calendar">Crear calendario</string>
   <string name="create_calendar_time_zone">Huso horario</string>
-  <string name="create_calendar_time_zone_required">El huso horario es necesario</string>
   <string name="create_calendar_type">Posibles entradas de calendario</string>
   <string name="create_calendar_type_vevent">Eventos</string>
   <string name="create_calendar_type_vtodo">Tareas</string>

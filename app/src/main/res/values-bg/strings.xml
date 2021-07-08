@@ -2,29 +2,28 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
-  <string name="account_invalid">Регистрацията (вече) не съществува.</string>
+  <string name="account_invalid">Регистрацията (вече) не съществува</string>
   <string name="account_title_address_book">Адресник на DAVx⁵</string>
   <string name="address_books_authority_title">Адресници</string>
   <string name="help">Помощ</string>
-  <string name="manage_accounts">Управление на регистрациите</string>
+  <string name="manage_accounts">Управление на регистрации</string>
   <string name="share">Споделяне</string>
   <string name="notification_channel_debugging">Отстраняване на дефекти</string>
   <string name="notification_channel_general">Други важни съобщения</string>
   <string name="notification_channel_status">Съобщения за състоянието с нисък приоритет</string>
   <string name="notification_channel_sync">Синхронизиране</string>
-  <string name="notification_channel_sync_errors">Грешки при синхронизирането</string>
-  <string name="notification_channel_sync_errors_desc">Важни грешки, които спират синхронизирането, като неочакван отговор от сървъра</string>
-  <string name="notification_channel_sync_warnings">Предупреждения от синхронизирането</string>
-  <string name="notification_channel_sync_io_errors">Мрежови и входно-изходни грешки</string>
-  <string name="notification_channel_sync_io_errors_desc">Проточване на времето, проблеми с връзката, и т.н. (обикновенно временни)</string>
+  <string name="notification_channel_sync_errors">Грешки при синхронизиране</string>
+  <string name="notification_channel_sync_errors_desc">Важни грешки, спиращи синхронизирането, като неочакван отговор от сървъра</string>
+  <string name="notification_channel_sync_warnings">Предупреждения от синхронизиране</string>
+  <string name="notification_channel_sync_io_errors">Грешки с входа/изхода и мрежата</string>
   <!--IntroActivity-->
   <string name="intro_slogan1">Вашите данни. Вашият избор</string>
   <string name="intro_slogan2">Поемете контрола</string>
   <string name="intro_battery_title">Периодично синхронизиране</string>
   <string name="intro_battery_not_whitelisted">Изключено (не се препоръчва)</string>
   <string name="intro_battery_whitelisted">Включено (препоръчително)</string>
-  <string name="intro_battery_text">За да синхронизира периодично, на %s му трябва разрешение да работи във фона.  В противен случай Андроид може да прекъсне синхронизирането по всяко време.</string>
-  <string name="intro_battery_dont_show">Не ми трябва периодично синхронизиране.</string>
+  <string name="intro_battery_text">За да синхронизира периодично, на %s му трябва разрешение да работи на заден план. В противен случай Android може да прекъсне синхронизирането по всяко време.</string>
+  <string name="intro_battery_dont_show">Не желая периодично синхронизиране.*</string>
   <string name="intro_autostart_title">%s съвместимост</string>
   <string name="intro_autostart_text">Това устройство вероятно блокира синхронизирането.  Разблокирането става чрез ръчна промяна на настройки.</string>
   <string name="intro_autostart_dont_show">Направих необходимите промени.  Не ми напомняй повече.</string>
@@ -37,7 +36,7 @@
   <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Някои функции <a href="https://www.davx5.com/faq/tasks/advanced-task-features">(още) не се поддържат</a>.]]></string>
   <string name="intro_open_source_title">Приложение с отворен код</string>
-  <string name="intro_open_source_text">Радваме се, че използвате %s, което е софтуер с отворен код. Разработката и поддръжката му са тежка работа. Моля да допринесете (има много начини), например чрез дарение. Вашият жест ще бъде оценен.</string>
+  <string name="intro_open_source_text">Радваме се, че използвате %s. Това е софтуер с отворен код. Разработката, издръжката и поддръжката му са тежка работа. Моля да допринесете (има много начини), например чрез дарение. Вашият жест ще бъде оценен.</string>
   <string name="intro_open_source_details">Как да допринеса или даря</string>
   <string name="intro_open_source_dont_show">Без повторно показване в близко време</string>
   <!--PermissionsActivity-->
@@ -72,8 +71,8 @@
   <string name="about_build_date">Компилирано на %s</string>
   <string name="about_flavor_info">Тази версия може да се разпространява само чрез Google Play.</string>
   <string name="about_license_info_no_warranty">Тази програма няма абсолютно никаква гаранция.  Тя е свободен софтуер и можеш да я разпространяваш при определени условия.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Благодарение на: </i> %s]]></string>
   <!--global settings-->
-  <string name="logging_couldnt_create_file">Не можах да създада файл с протокола</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_subtitle">Адаптор за синхронизиране на CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Относно / лиценз</string>
@@ -89,8 +88,8 @@
   <string name="navigation_drawer_forums">Помощ и форум</string>
   <string name="navigation_drawer_donate">Дарения</string>
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
-  <string name="account_list_empty">Добре дошли при  DAVx⁵!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
-  <string name="accounts_global_sync_enable">Включи</string>
+  <string name="account_list_empty">Добре дошли при DAVx⁵!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
+  <string name="accounts_global_sync_enable">Включване</string>
   <string name="accounts_sync_all">Синхронизирай всички регистрации</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Откриването на услугите се провали</string>
@@ -120,6 +119,13 @@
   <string name="app_settings_distrust_system_certs_off">Издателите на сертификатите познати на системата или добавени от потребителя ще бъдат доверени (препоръчително)</string>
   <string name="app_settings_notification_settings">Настройки за съобщенията</string>
   <string name="app_settings_notification_settings_summary">Управлявление на каналите за съобщения и техните настройки</string>
+  <string name="app_settings_theme_title">Избери тема</string>
+  <string name="app_settings_theme_summary">Текуща тема: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>Според системата</item>
+    <item>Светла</item>
+    <item>Тъмна</item>
+  </string-array>
   <string name="app_settings_reset_hints">Помощни съобщения</string>
   <string name="app_settings_reset_hints_summary">Всички подсказки, които са били разкарани, ще бъдат показани отново</string>
   <string name="app_settings_reset_hints_success">Всички подсказки ще се покажат отново</string>
@@ -140,7 +146,7 @@
   <string name="account_no_calendars">Няма календари (все още)</string>
   <string name="account_no_webcals">Няма абонаменти за календари (все още)</string>
   <string name="account_swipe_down">Дръпни надолу за да освежиш списъка от сървъра.</string>
-  <string name="account_synchronize_now">Синхронизирай сега</string>
+  <string name="account_synchronize_now">Синхронизация</string>
   <string name="account_synchronizing_now">Сега се синхронизира</string>
   <string name="account_settings">Настройки на регистрацията</string>
   <string name="account_rename">Преименуване на регистрация</string>
@@ -244,7 +250,6 @@
   <string name="create_addressbook_display_name_hint">Моят адресник</string>
   <string name="create_calendar">Създай календар</string>
   <string name="create_calendar_time_zone">Часова зона</string>
-  <string name="create_calendar_time_zone_required">Изисква се часова зона</string>
   <string name="create_calendar_type">Възможни компоненти в календара</string>
   <string name="create_calendar_type_vevent">Събития</string>
   <string name="create_calendar_type_vtodo">Задачи</string>

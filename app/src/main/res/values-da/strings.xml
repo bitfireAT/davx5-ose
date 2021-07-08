@@ -299,7 +299,6 @@
   <string name="create_addressbook_display_name_hint">Min adressebog</string>
   <string name="create_calendar">Opret kalender</string>
   <string name="create_calendar_time_zone">Tid zone</string>
-  <string name="create_calendar_time_zone_required">Tid zone påkrævet</string>
   <string name="create_calendar_type">Mulige kalenderposte</string>
   <string name="create_calendar_type_vevent">Begivenheder</string>
   <string name="create_calendar_type_vtodo">Opgaver</string>
@@ -325,6 +324,10 @@
   <string name="collection_properties_owner">Ejer:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
+  <string name="debug_info_archive_caption">ZIP arkiv</string>
+  <string name="debug_info_archive_subtitle">Indeholder fejlsøge information og log</string>
+  <string name="debug_info_archive_text">Del arkivet for at overføre det til en computer, sende det via e-post eller vedhæfte til en brugerhjælp billet.</string>
+  <string name="debug_info_archive_share">Del arkiv</string>
   <string name="debug_info_attached">Fejlsøge informationer vedhæftet denne meddelelse (kræver vedhæftning understøttelse hos modtagende program).</string>
   <string name="debug_info_http_error">HTTP fejl</string>
   <string name="debug_info_server_error">Server fejl</string>

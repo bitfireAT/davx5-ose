@@ -299,7 +299,6 @@
   <string name="create_addressbook_display_name_hint">A miña libreta de enderezos</string>
   <string name="create_calendar">Crear calendario</string>
   <string name="create_calendar_time_zone">Fuso horario</string>
-  <string name="create_calendar_time_zone_required">Requírese o fuso horario</string>
   <string name="create_calendar_type">Entradas posibles no calendario</string>
   <string name="create_calendar_type_vevent">Eventos</string>
   <string name="create_calendar_type_vtodo">Tarefas</string>

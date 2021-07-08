@@ -1,1 +1,1 @@
-CalDAV/CardDAV синхронизиране и клиент
+Синхронизация и клиент за CalDAV/CardDAV
