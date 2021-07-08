@@ -172,7 +172,6 @@
   <string name="create_addressbook_display_name_hint">Min adressebok</string>
   <string name="create_calendar">Opprett kalender</string>
   <string name="create_calendar_time_zone">Tidssone</string>
-  <string name="create_calendar_time_zone_required">Tidssone kreves</string>
   <string name="create_calendar_type">Mulige kalenderhendelser</string>
   <string name="create_calendar_type_vevent">Hendelser</string>
   <string name="create_calendar_type_vtodo">Oppgaver</string>

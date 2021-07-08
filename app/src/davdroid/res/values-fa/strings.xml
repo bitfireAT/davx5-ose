@@ -287,7 +287,6 @@
   <string name="create_addressbook_display_name_hint">کتاب آدرس من</string>
   <string name="create_calendar">تقویم ایجاد کنید</string>
   <string name="create_calendar_time_zone">منطقه زمانی</string>
-  <string name="create_calendar_time_zone_required">منطقه زمانی لازم است</string>
   <string name="create_calendar_type">ورودی های احتمالی تقویم</string>
   <string name="create_calendar_type_vevent">مناسبت ها</string>
   <string name="create_calendar_type_vtodo">وظایف</string>

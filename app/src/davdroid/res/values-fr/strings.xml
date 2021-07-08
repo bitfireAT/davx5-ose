@@ -287,7 +287,6 @@
   <string name="create_addressbook_display_name_hint">Mon carnet d\'adresses</string>
   <string name="create_calendar">Créer un calendrier</string>
   <string name="create_calendar_time_zone">Fuseau horaire</string>
-  <string name="create_calendar_time_zone_required">Fuseau horaire requis</string>
   <string name="create_calendar_type">Entrées possibles de calendrier</string>
   <string name="create_calendar_type_vevent">Événements</string>
   <string name="create_calendar_type_vtodo">Tâches</string>

@@ -202,7 +202,6 @@
   <string name="create_addressbook_display_name_hint">我的通訊錄</string>
   <string name="create_calendar">創建行事曆</string>
   <string name="create_calendar_time_zone">時區</string>
-  <string name="create_calendar_time_zone_required">需要時區</string>
   <string name="create_calendar_type">獲取行事曆</string>
   <string name="create_calendar_type_vevent">事件</string>
   <string name="create_calendar_type_vtodo">任務</string>

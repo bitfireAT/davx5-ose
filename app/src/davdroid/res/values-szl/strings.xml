@@ -215,7 +215,6 @@
   <string name="create_addressbook_display_name_hint">Moja ksiōnżka adresowo</string>
   <string name="create_calendar">Stwōrz kalyndorz</string>
   <string name="create_calendar_time_zone">Strefa czasowo</string>
-  <string name="create_calendar_time_zone_required">Wymogano strefa czasowo</string>
   <string name="create_calendar_type">Możliwe wpisy kalyndorza</string>
   <string name="create_calendar_type_vevent">Zdarzynia</string>
   <string name="create_calendar_type_vtodo">Zadania</string>

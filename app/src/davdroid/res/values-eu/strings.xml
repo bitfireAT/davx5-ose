@@ -149,6 +149,13 @@
   <string name="app_settings_user_interface">Erabiltzaile interfazea</string>
   <string name="app_settings_notification_settings">Jakinarazpen-ezarpenak</string>
   <string name="app_settings_notification_settings_summary">Kudeatu jakinarazpen kanalak eta haien ezarpenak</string>
+  <string name="app_settings_theme_title">Hautatu gaia</string>
+  <string name="app_settings_theme_summary">Uneko gaia: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>Sistemaren lehenetsia</item>
+    <item>Argia</item>
+    <item>Iluna</item>
+  </string-array>
   <string name="app_settings_reset_hints">Berezarri aholkuak</string>
   <string name="app_settings_reset_hints_summary">Lehen baztertu diren aholkuak berriro gaitzen ditu</string>
   <string name="app_settings_reset_hints_success">Aholku guztiak erakutsiko dira berriro</string>
@@ -292,7 +299,6 @@
   <string name="create_addressbook_display_name_hint">Nire Helbide Liburua</string>
   <string name="create_calendar">Sortu egutegia</string>
   <string name="create_calendar_time_zone">Ordu-zona</string>
-  <string name="create_calendar_time_zone_required">Ordu-zona beharrezkoa da</string>
   <string name="create_calendar_type">Egutegi sarrera posibleak</string>
   <string name="create_calendar_type_vevent">Gertaerak</string>
   <string name="create_calendar_type_vtodo">Zereginak</string>
@@ -318,6 +324,10 @@
   <string name="collection_properties_owner">Jabea:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Arazketa informazioa</string>
+  <string name="debug_info_archive_caption">ZIP artxiboa</string>
+  <string name="debug_info_archive_subtitle">Arazte informazioa eta erregistroak ditu</string>
+  <string name="debug_info_archive_text">Partekatu artxiboa ordenagailu batera transferitzeko, e-posta edo ticket baten bidez bidaltzeko.</string>
+  <string name="debug_info_archive_share">Partekatu artxiboa</string>
   <string name="debug_info_attached">Arazketa informazioa mezuan erantsiko da (hartuko dituen aplikazioak eranskinak onartu behar ditu).</string>
   <string name="debug_info_http_error">HTTP errorea</string>
   <string name="debug_info_server_error">Zerbitzari errorea</string>

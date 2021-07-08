@@ -303,7 +303,6 @@
   <string name="create_addressbook_display_name_hint">Můj adresář</string>
   <string name="create_calendar">Vytvořit kalendář</string>
   <string name="create_calendar_time_zone">Časová zóna</string>
-  <string name="create_calendar_time_zone_required">Je třeba zadat časovou zónu</string>
   <string name="create_calendar_type">Možné položky kalendáře</string>
   <string name="create_calendar_type_vevent">Události</string>
   <string name="create_calendar_type_vtodo">Úkoly</string>

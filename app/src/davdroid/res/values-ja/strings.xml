@@ -178,7 +178,6 @@
   <string name="create_addressbook_display_name_hint">マイ アドレス帳</string>
   <string name="create_calendar">カレンダーを作成</string>
   <string name="create_calendar_time_zone">タイムゾーン</string>
-  <string name="create_calendar_time_zone_required">タイムゾーンが必要です</string>
   <string name="create_calendar_type">可能なカレンダーエントリー</string>
   <string name="create_calendar_type_vevent">イベント</string>
   <string name="create_calendar_type_vtodo">タスク</string>

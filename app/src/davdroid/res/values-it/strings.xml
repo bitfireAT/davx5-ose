@@ -255,7 +255,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="create_addressbook_display_name_hint">La mia rubrica</string>
   <string name="create_calendar">Crea calendario</string>
   <string name="create_calendar_time_zone">Fuso orario</string>
-  <string name="create_calendar_time_zone_required">Fuso orario richiesto</string>
   <string name="create_calendar_type_vevent">Eventi</string>
   <string name="create_calendar_type_vtodo">Attività</string>
   <string name="create_calendar_type_vjournal">Note / diario</string>

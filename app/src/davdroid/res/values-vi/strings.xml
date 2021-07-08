@@ -297,7 +297,6 @@
   <string name="create_addressbook_display_name_hint">Sổ địa chỉ của tôi</string>
   <string name="create_calendar">Tạo lịch</string>
   <string name="create_calendar_time_zone">Múi giờ</string>
-  <string name="create_calendar_time_zone_required">Yêu cầu múi giờ</string>
   <string name="create_calendar_type">Các mục của lịch có thể có</string>
   <string name="create_calendar_type_vevent">Sự kiện</string>
   <string name="create_calendar_type_vtodo">Công việc</string>
