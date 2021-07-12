@@ -57,7 +57,7 @@ class BatteryOptimizationsFragment: Fragment() {
         binding.autostartMoreInfo.setOnClickListener {
             UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
                     .appendPath("faq").appendPath("synchronization-is-not-run-as-expected")
-                    .appendQueryParameter("manufacturer", Build.MANUFACTURER.toLowerCase(Locale.ROOT)).build())
+                    .appendQueryParameter("manufacturer", Build.MANUFACTURER.lowercase(Locale.ROOT)).build())
         }
 
         binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
@@ -115,7 +115,7 @@ class BatteryOptimizationsFragment: Fragment() {
              * @see evilManufacturers
              */
             val manufacturerWarning =
-                    (evilManufacturers.contains(Build.MANUFACTURER.toLowerCase(Locale.ROOT)) || BuildConfig.DEBUG)
+                    (evilManufacturers.contains(Build.MANUFACTURER.lowercase(Locale.ROOT)) || BuildConfig.DEBUG)
 
             fun isWhitelisted(context: Context) =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

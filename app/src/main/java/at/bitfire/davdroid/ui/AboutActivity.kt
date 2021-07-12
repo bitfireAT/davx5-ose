@@ -124,7 +124,7 @@ class AboutActivity: AppCompatActivity() {
         private val binding get() = _binding!!
         val model by viewModels<TextFileModel>()
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
             _binding = AboutBinding.inflate(inflater, container, false)
             return binding.root
         }
@@ -268,9 +268,9 @@ class AboutActivity: AppCompatActivity() {
 
                     // sort translations by localized language name
                     val collator = Collator.getInstance()
-                    result.sortWith({
-                        o1, o2 -> collator.compare(o1.language, o2.language)
-                    })
+                    result.sortWith { o1, o2 ->
+                        collator.compare(o1.language, o2.language)
+                    }
 
                     postValue(result)
                 }

@@ -240,9 +240,9 @@ class AccountListFragment: Fragment() {
 
             val sortedAccounts = accountManager
                     .getAccountsByType(context.getString(R.string.account_type))
-                    .sortedArrayWith({ a, b ->
+                    .sortedArrayWith { a, b ->
                         collator.compare(a.name, b.name)
-                    })
+                    }
             val accountsWithInfo = sortedAccounts.map { account ->
                 AccountInfo(account, DavUtils.accountSyncStatus(context, syncAuthorities, account))
             }

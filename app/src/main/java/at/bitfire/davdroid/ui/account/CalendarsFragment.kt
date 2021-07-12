@@ -17,7 +17,7 @@ class CalendarsFragment: CollectionsFragment() {
             inflater.inflate(R.menu.caldav_actions, menu)
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.create_calendar).setVisible(model.hasWriteableCollections.value ?: false)
+        menu.findItem(R.id.create_calendar).isVisible = model.hasWriteableCollections.value ?: false
         super.onPrepareOptionsMenu(menu)
     }
 

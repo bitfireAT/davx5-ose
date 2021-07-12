@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.IntroWelcomeBinding
 import at.bitfire.davdroid.settings.SettingsManager
 

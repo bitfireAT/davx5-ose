@@ -63,7 +63,7 @@ object PermissionUtils {
     /**
      * Whether this app declares the given permission (regardless of whether it has been granted or not).
      *
-     * @param permisssion  permission to check
+     * @param permission  permission to check
      *
      * @return *true* if this app declares [permission] in the manifest; *false* otherwise
      */

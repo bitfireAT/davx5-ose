@@ -74,7 +74,7 @@ class AccountDetailsFragment : Fragment() {
 
         // CalDAV-specific
         config.calDAV?.let {
-            val accountNameAdapter = ArrayAdapter<String>(requireActivity(), android.R.layout.simple_list_item_1, it.emails)
+            val accountNameAdapter = ArrayAdapter(requireActivity(), android.R.layout.simple_list_item_1, it.emails)
             v.accountName.setAdapter(accountNameAdapter)
         }
 
@@ -101,7 +101,7 @@ class AccountDetailsFragment : Fragment() {
                         loginModel.credentials,
                         config,
                         GroupMethod.valueOf(groupMethodName)
-                ).observe(viewLifecycleOwner, Observer<Boolean> { success ->
+                ).observe(viewLifecycleOwner, Observer { success ->
                     if (success) {
                         // close Create account activity
                         requireActivity().finish()

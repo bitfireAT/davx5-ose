@@ -15,7 +15,7 @@ class AddressBooksFragment: CollectionsFragment() {
             inflater.inflate(R.menu.carddav_actions, menu)
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.create_address_book).setVisible(model.hasWriteableCollections.value ?: false)
+        menu.findItem(R.id.create_address_book).isVisible = model.hasWriteableCollections.value ?: false
         super.onPrepareOptionsMenu(menu)
     }
 

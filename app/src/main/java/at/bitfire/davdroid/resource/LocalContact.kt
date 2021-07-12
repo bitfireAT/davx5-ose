@@ -14,7 +14,6 @@ import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts.Data
-import androidx.annotation.RequiresApi
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.UnknownProperties

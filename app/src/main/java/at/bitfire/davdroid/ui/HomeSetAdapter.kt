@@ -19,8 +19,7 @@ class HomeSetAdapter(
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val data = getItem(position)!!
 
-        val v: View
-        v = convertView ?: LayoutInflater.from(context).inflate(R.layout.text_list_item, parent, false)
+        val v: View = convertView ?: LayoutInflater.from(context).inflate(R.layout.text_list_item, parent, false)
         v.findViewById<TextView>(android.R.id.text1).apply {
             text = data.displayName ?: DavUtils.lastSegmentOfUrl(data.url)
         }

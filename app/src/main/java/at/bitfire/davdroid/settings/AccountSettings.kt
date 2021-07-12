@@ -153,8 +153,7 @@ class AccountSettings(
                     }
 
                     // repair calendar sync
-                    settings.getSavedCalendarsSyncInterval()?.let { strInterval ->
-                        val shouldBe = strInterval.toLong()
+                    settings.getSavedCalendarsSyncInterval()?.let { shouldBe ->
                         val current = settings.getSyncInterval(CalendarContract.AUTHORITY)
                         if (current != shouldBe) {
                             Logger.log.warning("${account.name}: ${CalendarContract.AUTHORITY} sync interval should be $shouldBe but is $current -> setting to $current")
@@ -164,8 +163,7 @@ class AccountSettings(
 
                     if (taskAuthority != null)
                     // repair calendar sync
-                        settings.getSavedTasksSyncInterval()?.let { strInterval ->
-                            val shouldBe = strInterval.toLong()
+                        settings.getSavedTasksSyncInterval()?.let { shouldBe ->
                             val current = settings.getSyncInterval(taskAuthority)
                             if (current != shouldBe) {
                                 Logger.log.warning("${account.name}: $taskAuthority sync interval should be $shouldBe but is $current -> setting to $current")
@@ -249,7 +247,7 @@ class AccountSettings(
                         Logger.log.fine("Disabling automatic sync of $account/$authority")
                         ContentResolver.setSyncAutomatically(account, authority, false)
 
-                        /* return */ ContentResolver.getSyncAutomatically(account, authority) == false
+                        /* return */ !ContentResolver.getSyncAutomatically(account, authority)
                     }
                 } else {
                     {
@@ -263,7 +261,7 @@ class AccountSettings(
                 }
 
         // try up to 10 times with 100 ms pause
-        var success: Boolean = false
+        var success = false
         for (idxTry in 0 until 10) {
             success = setInterval()
             if (success)

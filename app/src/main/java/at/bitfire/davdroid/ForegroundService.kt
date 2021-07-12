@@ -27,7 +27,7 @@ class ForegroundService : Service() {
 
         fun startIfEnabled(context: Context) {
             if (isEnabled(context)) {
-                val serviceIntent = Intent(ForegroundService.ACTION_FOREGROUND, null, context, ForegroundService::class.java)
+                val serviceIntent = Intent(ACTION_FOREGROUND, null, context, ForegroundService::class.java)
                 if (Build.VERSION.SDK_INT >= 26)
                     context.startForegroundService(serviceIntent)
                 else

@@ -8,7 +8,6 @@
 
 package at.bitfire.davdroid.resource
 
-import android.content.ContentProviderOperation
 import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri

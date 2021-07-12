@@ -249,7 +249,7 @@ class AccountActivity: AppCompatActivity() {
         }
 
         private val db = AppDatabase.getInstance(application)
-        val accountManager = AccountManager.get(application)
+        val accountManager = AccountManager.get(application)!!
         val accountSettings by lazy { AccountSettings(getApplication(), account) }
 
         val accountExists = MutableLiveData<Boolean>()

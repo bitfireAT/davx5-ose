@@ -87,7 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none"
-                    android:adapter="@{model.homeSets}"/>
+                    app:adapter="@{model.homeSets}"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="none"
                     android:text="@={model.timezone}"
-                    android:adapter="@{model.timezones}"/>
+                    app:adapter="@{model.timezones}"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView

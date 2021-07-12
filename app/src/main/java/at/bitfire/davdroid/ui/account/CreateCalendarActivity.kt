@@ -60,7 +60,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding = DataBindingUtil.setContentView<ActivityCreateCalendarBinding>(this, R.layout.activity_create_calendar)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_create_calendar)
         binding.lifecycleOwner = this
         binding.model = model
 
@@ -185,8 +185,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             val tzId = getItem(position)!!
             val tz = ZoneId.of(tzId)
 
-            val v: View
-            v = convertView ?: LayoutInflater.from(context).inflate(R.layout.text_list_item, parent, false)
+            val v: View = convertView ?: LayoutInflater.from(context).inflate(R.layout.text_list_item, parent, false)
             v.findViewById<TextView>(android.R.id.text1).text = tz.id
             v.findViewById<TextView>(android.R.id.text2).text = tz.getDisplayName(TextStyle.FULL, Locale.getDefault())
 
@@ -215,7 +214,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         var homeSet: HomeSet? = null
 
         val timezones = TimeZoneAdapter(application)
-        val timezone = MutableLiveData<String>(TimeZone.getDefault().id)
+        val timezone = MutableLiveData(TimeZone.getDefault().id)
         val timezoneError = MutableLiveData<String>()
 
         val typeError = MutableLiveData<String>()

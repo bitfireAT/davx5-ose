@@ -51,7 +51,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding = DataBindingUtil.setContentView<ActivityCreateAddressBookBinding>(this, R.layout.activity_create_address_book)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_create_address_book)
         binding.lifecycleOwner = this
         binding.model = model
 

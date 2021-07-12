@@ -184,7 +184,7 @@ class DebugInfoActivity: AppCompatActivity() {
         val remoteResource = MutableLiveData<String>()
         val debugInfo = MutableLiveData<File>()
 
-        val zipProgress = MutableLiveData<Boolean>(false)
+        val zipProgress = MutableLiveData(false)
         val zipFile = MutableLiveData<File>()
 
         // private storage, not readable by others
@@ -232,7 +232,7 @@ class DebugInfoActivity: AppCompatActivity() {
                 remoteResource.postValue(remote)
 
                 generateDebugInfo(
-                        extras?.getParcelable<Account>(EXTRA_ACCOUNT),
+                        extras?.getParcelable(EXTRA_ACCOUNT),
                         extras?.getString(EXTRA_AUTHORITY),
                         throwable,
                         local,
@@ -241,7 +241,7 @@ class DebugInfoActivity: AppCompatActivity() {
             }
         }
 
-        fun generateDebugInfo(syncAccount: Account?, syncAuthority: String?, cause: Throwable?, localResource: String?, remoteResource: String?) {
+        private fun generateDebugInfo(syncAccount: Account?, syncAuthority: String?, cause: Throwable?, localResource: String?, remoteResource: String?) {
             val debugInfoFile = File(debugInfoDir, FILE_DEBUG_INFO)
             debugInfoFile.writer().buffered().use { writer ->
                 writer.append(ByteOrderMark.UTF_BOM)
@@ -356,7 +356,7 @@ class DebugInfoActivity: AppCompatActivity() {
                         }
                         if (properties != null) {
                             writer  .append("   - DNS: ")
-                                    .append(properties.dnsServers.map { it.hostAddress }.joinToString(", "))
+                                    .append(properties.dnsServers.joinToString(", ") { it.hostAddress })
                             if (Build.VERSION.SDK_INT >= 28 && properties.isPrivateDnsActive)
                                 writer.append(" (private mode)")
                             writer.append('\n')

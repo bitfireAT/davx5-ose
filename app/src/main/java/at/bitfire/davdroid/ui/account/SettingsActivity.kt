@@ -363,12 +363,12 @@ class SettingsActivity: AppCompatActivity() {
         private fun checkWifiPermissions() {
             if (model.syncWifiOnlySSIDs.value != null && !PermissionUtils.canAccessWifiSsid(requireActivity()))
                 Snackbar.make(requireView(), R.string.settings_sync_wifi_only_ssids_permissions_required, UiUtils.SNACKBAR_LENGTH_VERY_LONG)
-                        .setAction(R.string.settings_sync_wifi_only_ssids_permissions_action, {
+                        .setAction(R.string.settings_sync_wifi_only_ssids_permissions_action) {
                             val intent = Intent(requireActivity(), WifiPermissionsActivity::class.java)
                             intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, account)
                             startActivity(intent)
-                        })
-                        .show()
+                        }
+                    .show()
         }
 
     }

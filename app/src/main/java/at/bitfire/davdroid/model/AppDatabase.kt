@@ -203,7 +203,7 @@ abstract class AppDatabase: RoomDatabase() {
                     val cols = cursor.columnCount
                     // print rows
                     while (cursor.moveToNext()) {
-                        val values = Array<String?>(cols) { idx -> cursor.getStringOrNull(idx) }
+                        val values = Array(cols) { idx -> cursor.getStringOrNull(idx) }
                         table.addLine(*values)
                     }
                     writer.append(table.toString())

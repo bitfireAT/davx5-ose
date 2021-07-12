@@ -171,11 +171,11 @@ class HttpClient private constructor(
         }
 
         fun build(): HttpClient {
-            val trustManager = certManager ?: {
+            val trustManager = certManager ?: run {
                 val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
                 factory.init(null as KeyStore?)
                 factory.trustManagers.first() as X509TrustManager
-            }()
+            }
 
             val hostnameVerifier = certManager?.hostnameVerifier(OkHostnameVerifier)
                     ?: OkHostnameVerifier

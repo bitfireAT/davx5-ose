@@ -43,7 +43,7 @@ class CollectionInfoFragment: DialogFragment() {
 
     val model by viewModels<Model>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         arguments?.getLong(ARGS_COLLECTION_ID)?.let { id ->
             model.initialize(id)
         }

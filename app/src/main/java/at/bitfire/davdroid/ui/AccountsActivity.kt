@@ -148,7 +148,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     class Model(app: Application): AndroidViewModel(app), SyncStatusObserver {
 
         private var syncStatusObserver: Any? = null
-        val showSyncDisabled = MutableLiveData<Boolean>(false)
+        val showSyncDisabled = MutableLiveData(false)
 
         init {
             syncStatusObserver = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
