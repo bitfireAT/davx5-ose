@@ -10,6 +10,7 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.AccountManager
 import android.app.Activity
+import android.app.Application
 import android.content.ContentResolver
 import android.content.Intent
 import android.content.SyncStatusObserver
@@ -17,10 +18,13 @@ import android.content.pm.ShortcutManager
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountsBinding
@@ -33,7 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 
-class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, SyncStatusObserver {
+class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         val accountsDrawerHandler = DefaultAccountsDrawerHandler()
@@ -42,9 +46,9 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     }
 
     private lateinit var binding: ActivityAccountsBinding
+    private val model by viewModels<Model>()
 
     private var syncStatusSnackbar: Snackbar? = null
-    private var syncStatusObserver: Any? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,12 +67,29 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         binding = ActivityAccountsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val content = binding.content
-        setSupportActionBar(binding.content.toolbar)
-        content.fab.setOnClickListener {
+        binding.content.fab.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
-        content.fab.show()
+        binding.content.fab.show()
+
+        model.showSyncDisabled.observe(this) { syncDisabled ->
+            if (syncDisabled) {
+                val snackbar = Snackbar
+                    .make(binding.content.coordinator, R.string.accounts_global_sync_disabled, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.accounts_global_sync_enable) {
+                        ContentResolver.setMasterSyncAutomatically(true)
+                    }
+                snackbar.show()
+                syncStatusSnackbar = snackbar
+            } else {
+                syncStatusSnackbar?.let { snackbar ->
+                    snackbar.dismiss()
+                    syncStatusSnackbar = null
+                }
+            }
+        }
+
+        setSupportActionBar(binding.content.toolbar)
 
         val toggle = ActionBarDrawerToggle(
                 this, binding.drawerLayout, binding.content.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -85,37 +106,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     override fun onResume() {
         super.onResume()
-
         accountsDrawerHandler.initMenu(this, binding.navView.menu)
-
-        onStatusChanged(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS)
-        syncStatusObserver = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        syncStatusObserver?.let {
-            ContentResolver.removeStatusChangeListener(it)
-            syncStatusObserver = null
-        }
-    }
-
-    override fun onStatusChanged(which: Int) {
-        syncStatusSnackbar?.let {
-            it.dismiss()
-            syncStatusSnackbar = null
-        }
-
-        if (!ContentResolver.getMasterSyncAutomatically()) {
-            val snackbar = Snackbar
-                    .make(findViewById(R.id.coordinator), R.string.accounts_global_sync_disabled, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.accounts_global_sync_enable) {
-                        ContentResolver.setMasterSyncAutomatically(true)
-                    }
-            syncStatusSnackbar = snackbar
-            snackbar.show()
-        }
     }
 
 
@@ -150,6 +141,27 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         val accounts = allAccounts()
         for (account in accounts)
             DavUtils.requestSync(this, account)
+    }
+
+
+    class Model(app: Application): AndroidViewModel(app), SyncStatusObserver {
+
+        private var syncStatusObserver: Any? = null
+        val showSyncDisabled = MutableLiveData<Boolean>(false)
+
+        init {
+            syncStatusObserver = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
+            onStatusChanged(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS)
+        }
+
+        override fun onCleared() {
+            ContentResolver.removeStatusChangeListener(syncStatusObserver)
+        }
+
+        override fun onStatusChanged(which: Int) {
+            showSyncDisabled.postValue(!ContentResolver.getMasterSyncAutomatically())
+        }
+
     }
 
 }
