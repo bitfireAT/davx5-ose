@@ -19,6 +19,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.annotation.AnyThread
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
@@ -158,6 +159,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             ContentResolver.removeStatusChangeListener(syncStatusObserver)
         }
 
+        @AnyThread
         override fun onStatusChanged(which: Int) {
             showSyncDisabled.postValue(!ContentResolver.getMasterSyncAutomatically())
         }
