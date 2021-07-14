@@ -102,7 +102,7 @@
   <string name="install_email_client">Пожалуйста, установите почтовый клиент</string>
   <string name="install_browser">Пожалуйста, установите веб-браузер</string>
   <string name="navigation_drawer_settings">Настройки</string>
-  <string name="navigation_drawer_news_updates">Новости &amp; обновления</string>
+  <string name="navigation_drawer_news_updates">Новости и обновления</string>
   <string name="navigation_drawer_external_links">Внешние ссылки</string>
   <string name="navigation_drawer_website">Веб-сайт</string>
   <string name="navigation_drawer_manual">Руководство</string>
@@ -111,12 +111,12 @@
   <string name="navigation_drawer_donate">Пожертвовать</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
   <string name="account_list_no_internet">Нет подключения к интернету. Android не будет выполнять синхронизацию.</string>
-  <string name="account_list_empty">Добро пожаловать в DAVx⁵\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
+  <string name="account_list_empty">Добро пожаловать в DAVx⁵!\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
   <string name="accounts_global_sync_enable">Включить</string>
   <string name="accounts_sync_all">Синхронизировать все аккаунты</string>
   <!--DavService-->
-  <string name="dav_service_refresh_failed">Сбой при обнаружении службы</string>
+  <string name="dav_service_refresh_failed">Не удалось обнаружить службу</string>
   <string name="dav_service_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Запущен в приоритетном режиме</string>
@@ -208,17 +208,17 @@
   <string name="login_type_url">Войти с URL и именем пользователя</string>
   <string name="login_url_must_be_http_or_https">URL должен начинаться с http(s)://</string>
   <string name="login_user_name">Имя пользователя</string>
-  <string name="login_user_name_required">Требуется Имя пользователя</string>
+  <string name="login_user_name_required">Имя пользователя обязательно</string>
   <string name="login_base_url">Базовый URL</string>
   <string name="login_type_url_certificate">Войти с URL и сертификатом клиента</string>
   <string name="login_select_certificate">Выберите сертификат</string>
   <string name="login_login">Войти</string>
   <string name="login_create_account">Создать аккаунт</string>
-  <string name="login_account_name">Имя аккаунта</string>
+  <string name="login_account_name">Название аккаунта</string>
   <string name="login_account_name_info">Укажите ваш адрес email в качестве названия аккаунта, поскольку Android будет его использовать в поле ORGANIZER для создаваемых событий. У вас не может быть двух аккаунтов с тем же именем.</string>
   <string name="login_account_contact_group_method">Метод группировки контактов:</string>
-  <string name="login_account_name_required">Требуется имя аккаунта</string>
-  <string name="login_account_name_already_taken">Имя аккаунта уже используется</string>
+  <string name="login_account_name_required">Название аккаунта обязательно</string>
+  <string name="login_account_name_already_taken">Название аккаунта уже используется</string>
   <string name="login_account_not_created">Аккаунт не может быть создан</string>
   <string name="login_type_advanced">Расширенная авторизация (особые случаи использования)</string>
   <string name="login_use_username_password">Использовать имя пользователя/пароль</string>
@@ -275,7 +275,7 @@
     <item quantity="many">События старше %d дней будут игнорироваться</item>
     <item quantity="other">События старше %d дней будут игнорироваться</item>
   </plurals>
-  <string name="settings_sync_time_range_past_message">События старше указанного количества дней будут игнорироваться (может быть 0). Оставьте пустым для синхронизации всех событий.</string>
+  <string name="settings_sync_time_range_past_message">События, произошедшие ранее указанного количества дней, будут игнорироваться (может быть 0). Оставьте пустым, если хотите синхронизировать все события.</string>
   <string name="settings_default_alarm">Напоминание по умолчанию</string>
   <plurals name="settings_default_alarm_on">
     <item quantity="one">Напоминание по умолчанию за 1 минуту до события</item>
@@ -311,10 +311,11 @@
   <string name="create_collection_color">Цвет</string>
   <string name="create_collection_creating">Создание коллекции</string>
   <string name="create_collection_display_name">Название</string>
-  <string name="create_collection_display_name_required">Требуется название</string>
+  <string name="create_collection_display_name_required">Название обязательно</string>
   <string name="create_collection_description">Описание</string>
   <string name="create_collection_optional">опционально</string>
   <string name="create_collection_home_set">Место хранения</string>
+  <string name="create_collection_home_set_required">Место хранения обязательно</string>
   <string name="create_collection_create">Создать</string>
   <string name="delete_collection">Удалить коллекцию</string>
   <string name="delete_collection_confirm_title">Вы уверены?</string>
@@ -360,7 +361,7 @@
   <string name="sync_error_permissions">Разрешения DAVx⁵</string>
   <string name="sync_error_permissions_text">Требуются дополнительные разрешения</string>
   <string name="sync_error_tasks_too_old">Приложение %s устарело</string>
-  <string name="sync_error_tasks_required_version">Минимально требуемая версия: %1$s</string>
+  <string name="sync_error_tasks_required_version">Минимально необходимая версия: %1$s</string>
   <string name="sync_error_authentication_failed">Ошибка аутентификации (проверьте учетные данные)</string>
   <string name="sync_error_io">Ошибка сети или ввода/вывода – %s</string>
   <string name="sync_error_http_dav">Ошибка HTTP-сервера – %s</string>
@@ -373,5 +374,5 @@
   <string name="sync_invalid_resources_ignoring">Игнорирование одного или нескольких недействительных ресурсов</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: безопасность подключения</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ обнаружил неизвестный сертификат. Вы хотите ему доверять?</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ обнаружил неизвестный сертификат. Вы согласны ему доверять?</string>
 </resources>
