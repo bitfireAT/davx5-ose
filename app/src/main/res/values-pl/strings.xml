@@ -315,6 +315,7 @@
   <string name="create_collection_description">Opis</string>
   <string name="create_collection_optional">opcjonalnie</string>
   <string name="create_collection_home_set">Miejsce zapisu</string>
+  <string name="create_collection_home_set_required">Miejsce przechowywania jest wymagane</string>
   <string name="create_collection_create">Stwórz</string>
   <string name="delete_collection">Usuń kolekcję</string>
   <string name="delete_collection_confirm_title">Czy jesteś pewien?</string>
