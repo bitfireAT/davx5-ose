@@ -12,6 +12,8 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.text.Editable
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.RadioGroup
@@ -33,7 +35,6 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
     val loginWithUrlAndUsername = MutableLiveData<Boolean>()
     val loginAdvanced = MutableLiveData<Boolean>()
 
-    val baseUrlAdapter = MutableLiveData<LoginUrlAdapter>()
     val baseUrl = MutableLiveData<String>()
     val baseUrlError = MutableLiveData<String>()
 
@@ -94,11 +95,6 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
             loginWithEmailAddress.value = true
         username.value = givenUsername
         password.value = givenPassword
-
-        // load base URL presets
-        viewModelScope.launch(Dispatchers.IO) {
-            baseUrlAdapter.postValue(LoginUrlAdapter(getApplication()))
-        }
     }
 
 
@@ -113,6 +109,12 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
             InputStreamReader(context.assets.open("known-base-urls.txt")).use { reader ->
                 knownUrls.addAll(reader.readLines())
             }
+        }
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val v = super.getView(position, convertView, parent)
+            v.findViewById<View>(android.R.id.text2).visibility = View.GONE
+            return v
         }
 
         override fun getFilter(): Filter = object: Filter() {

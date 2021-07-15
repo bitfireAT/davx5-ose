@@ -42,6 +42,8 @@ class DefaultLoginCredentialsFragment : Fragment() {
         if (savedInstanceState == null)
             activity?.intent?.let { model.initialize(it) }
 
+        v.loginUrlBaseUrlEdittext.setAdapter(DefaultLoginCredentialsModel.LoginUrlAdapter(requireActivity()))
+
         v.selectCertificate.setOnClickListener {
             KeyChain.choosePrivateKeyAlias(requireActivity(), { alias ->
                 Handler(Looper.getMainLooper()).post {
