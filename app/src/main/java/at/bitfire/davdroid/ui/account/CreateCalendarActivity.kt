@@ -50,7 +50,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    private val account by lazy { intent.getParcelableExtra<Account>(CreateAddressBookActivity.EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
+    private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
     val model by viewModels<Model>()
 
     lateinit var binding: ActivityCreateCalendarBinding
@@ -71,9 +71,23 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
                     .show(this)
         }
 
+        val homeSetAdapter = HomeSetAdapter(this)
+        model.homeSets.observe(this) { homeSets ->
+            homeSetAdapter.clear()
+            if (homeSets.isNotEmpty()) {
+                homeSetAdapter.addAll(homeSets)
+                val firstHomeSet = homeSets.first()
+                binding.homeset.setText(firstHomeSet.url.toString(), false)
+                model.homeSet = firstHomeSet
+            }
+        }
+        binding.homeset.setAdapter(homeSetAdapter)
         binding.homeset.setOnItemClickListener { parent, view, position, id ->
             model.homeSet = parent.getItemAtPosition(position) as HomeSet?
         }
+
+        binding.timezone.setAdapter(TimeZoneAdapter(this))
+        binding.timezone.setText(TimeZone.getDefault().id, false)
 
         if (savedInstanceState == null)
             model.initialize(account)
@@ -136,7 +150,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             args.putInt(CreateCollectionFragment.ARG_COLOR, it)
         }
 
-        val tzId = model.timezone.value
+        val tzId = binding.timezone.text?.let { it.toString() }
         if (tzId.isNullOrBlank())
             ok = false
         else {
@@ -210,11 +224,9 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         val description = MutableLiveData<String>()
         val color = MutableLiveData<Int>()
 
-        val homeSets = MutableLiveData<HomeSetAdapter>()
+        val homeSets = MutableLiveData<List<HomeSet>>()
         var homeSet: HomeSet? = null
 
-        val timezones = TimeZoneAdapter(application)
-        val timezone = MutableLiveData(TimeZone.getDefault().id)
         val timezoneError = MutableLiveData<String>()
 
         val typeError = MutableLiveData<String>()
@@ -236,16 +248,10 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
-                val adapter = HomeSetAdapter(getApplication())
-
                 val db = AppDatabase.getInstance(getApplication())
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { service ->
-                    val homeSets = db.homeSetDao().getBindableByService(service.id)
-                    adapter.addAll(homeSets)
+                    homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
                 }
-
-                if (!adapter.isEmpty)
-                    homeSets.postValue(adapter)
             }
         }
 

@@ -55,6 +55,17 @@ class CreateAddressBookActivity: AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.model = model
 
+        val homeSetAdapter = HomeSetAdapter(this)
+        model.homeSets.observe(this) { homeSets ->
+            homeSetAdapter.clear()
+            if (homeSets.isNotEmpty()) {
+                homeSetAdapter.addAll(homeSets)
+                val firstHomeSet = homeSets.first()
+                binding.homeset.setText(firstHomeSet.url.toString(), false)
+                model.homeSet = firstHomeSet
+            }
+        }
+        binding.homeset.setAdapter(homeSetAdapter)
         binding.homeset.setOnItemClickListener { parent, view, position, id ->
             model.homeSet = parent.getItemAtPosition(position) as HomeSet?
         }
@@ -124,7 +135,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
         val description = MutableLiveData<String>()
 
-        val homeSets = MutableLiveData<HomeSetAdapter>()
+        val homeSets = MutableLiveData<List<HomeSet>>()
         var homeSet: HomeSet? = null
 
         fun clearNameError(s: Editable) {
@@ -139,16 +150,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
-                val adapter = HomeSetAdapter(getApplication())
-
                 val db = AppDatabase.getInstance(getApplication())
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
-                    val homeSets = db.homeSetDao().getBindableByService(service.id)
-                    adapter.addAll(homeSets)
+                    homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
                 }
-
-                if (!adapter.isEmpty)
-                    homeSets.postValue(adapter)
             }
         }
 

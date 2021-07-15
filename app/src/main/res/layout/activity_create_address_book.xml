@@ -75,8 +75,7 @@
                     android:id="@+id/homeset"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"
-                    app:adapter="@{model.homeSets}" />
+                    android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

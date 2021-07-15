@@ -1,5 +1,6 @@
 package at.bitfire.davdroid.ui
 
+import android.app.Application
 import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -10,11 +11,17 @@ import android.widget.Filter
 import android.widget.TextView
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.HomeSet
 
 class HomeSetAdapter(
         context: Context
 ): ArrayAdapter<HomeSet>(context, R.layout.text_list_item, android.R.id.text1) {
+
+    init {
+        if (context is Application)
+            throw IllegalArgumentException("Pass the Activity context, otherwise dark mode won't work")
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val data = getItem(position)!!
