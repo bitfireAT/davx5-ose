@@ -1,0 +1,29 @@
+[main]
+host = https://www.transifex.com
+
+[davx5.app]
+file_filter = app/src/main/res/values-<lang>/strings.xml
+minimum_perc = 0
+source_file = app/src/main/res/values/strings.xml
+source_lang = en
+trans.tr_TR = app/src/main/res/values-tr/strings.xml
+trans.zh_CN = app/src/main/res/values-zh/strings.xml
+type = ANDROID
+
+[davx5.metadata-short-description]
+file_filter = fastlane/metadata/android/<lang>/short_description.txt
+minimum_perc = 100
+source_file = fastlane/metadata/android/en-US/short_description.txt
+source_lang = en
+trans.sl_SI = fastlane/metadata/android/sl-SI/short_description.txt
+trans.zh_CN = fastlane/metadata/android/zh/short_description.txt
+type = TXT
+
+[davx5.metadata-full-description]
+file_filter = fastlane/metadata/android/<lang>/full_description.txt
+minimum_perc = 100
+source_file = fastlane/metadata/android/en-US/full_description.txt
+source_lang = en
+trans.sl_SI = fastlane/metadata/android/sl-SI/full_description.txt
+trans.zh_CN = fastlane/metadata/android/zh/full_description.txt
+type = TXT
