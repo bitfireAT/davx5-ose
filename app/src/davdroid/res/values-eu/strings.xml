@@ -226,7 +226,7 @@
   <string name="login_no_certificate_found">Ez da ziurtagiririk aurkitu</string>
   <string name="login_install_certificate">Instalatu ziurtagiria</string>
   <string name="login_configuration_detection">Konfigurazio detekzioa</string>
-  <string name="login_querying_server">Mesedez itxaron, zerbitzaria kontsultatzen…</string>
+  <string name="login_querying_server">Mesedez itxaron, zerbitzaria kontsultatzen...</string>
   <string name="login_no_caldav_carddav">Ezin izan da CalDAV edo CardDAV zerbitzua aurkitu.</string>
   <string name="login_username_password_wrong">Erabiltzaile-izena (eposta) / pasahitza txarto dago?</string>
   <string name="login_view_logs">Erakutsi xehetasunak</string>

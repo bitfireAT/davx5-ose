@@ -311,6 +311,7 @@
   <string name="create_collection_description">Descrición</string>
   <string name="create_collection_optional">optativo</string>
   <string name="create_collection_home_set">Localización do almacenamento</string>
+  <string name="create_collection_home_set_required">Requírese a localización da almacenaxe</string>
   <string name="create_collection_create">Crear</string>
   <string name="delete_collection">Eliminar colección</string>
   <string name="delete_collection_confirm_title">Quere eliminar?</string>

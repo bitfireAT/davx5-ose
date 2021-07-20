@@ -187,7 +187,7 @@
   <string name="login_account_not_created">No s\'ha pogut crear el compte</string>
   <string name="login_use_username_password">Utilitza nom d\'usuari/contrasenya</string>
   <string name="login_configuration_detection">Detecció de configuració</string>
-  <string name="login_querying_server">Espereu, consultant el servidor …</string>
+  <string name="login_querying_server">Espereu, consultant el servidor ...</string>
   <string name="login_no_caldav_carddav">No s\'ha pogut trobar el servei CalDAV o CardDAV.</string>
   <string name="login_view_logs">Mostra els detalls</string>
   <!--AccountSettingsActivity-->

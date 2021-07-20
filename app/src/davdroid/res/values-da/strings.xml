@@ -311,6 +311,7 @@
   <string name="create_collection_description">Beskrivelse</string>
   <string name="create_collection_optional">Valgfri</string>
   <string name="create_collection_home_set">Lager placering</string>
+  <string name="create_collection_home_set_required">Lagerplads er påkrævet</string>
   <string name="create_collection_create">Opret</string>
   <string name="delete_collection">Slet sæt</string>
   <string name="delete_collection_confirm_title">Er du sikker?</string>
