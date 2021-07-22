@@ -494,13 +494,24 @@ class DebugInfoActivity: AppCompatActivity() {
                             zip.closeEntry()
                         }
 
-                        // logs
-                        logFile.value?.let { logs ->
+                        val logs = logFile.value
+                        if (logs != null) {
+                            // verbose logs available
                             zip.putNextEntry(ZipEntry(logs.name))
                             logs.inputStream().use {
                                 IOUtils.copy(it, zip)
                             }
                             zip.closeEntry()
+                        } else {
+                            // logcat (short logs)
+                            try {
+                                Runtime.getRuntime().exec("logcat -d").also { logcat ->
+                                    zip.putNextEntry(ZipEntry("logcat.txt"))
+                                    IOUtils.copy(logcat.inputStream, zip)
+                                }
+                            } catch (e: Exception) {
+                                Logger.log.log(Level.SEVERE, "Couldn't attach logcat", e)
+                            }
                         }
                     }
 
