@@ -83,6 +83,10 @@ android {
         disable 'NullSafeMutableLiveData'                   // crashes lint since Mar 2021
     }
 
+    packagingOptions {
+        exclude 'META-INF/*.md'
+    }
+
     dokka.configuration {
         sourceLink {
             url = "https://gitlab.com/bitfireAT/davx5-ose/tree/master-ose/"
@@ -135,7 +139,7 @@ dependencies {
     implementation 'androidx.paging:paging-runtime-ktx:3.0.1'
     implementation 'androidx.preference:preference-ktx:1.1.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'com.google.android:flexbox:2.0.1'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.4.0'
 
     def room_version = '2.3.0'
