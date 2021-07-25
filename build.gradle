@@ -8,11 +8,11 @@
 
 buildscript {
     ext.versions = [
-        aboutLibraries: '8.9.0',
+        aboutLibraries: '8.9.1',
         appIntro: '6.1.0',
         dav4jvm: '7dda4ab5',
         dokka: '0.10.1',
-        kotlin: '1.5.20',
+        kotlin: '1.5.21',
         okhttp: '4.9.1',
         // latest Apache Commons versions that don't require Java 8 (Android 7)
         commonsCollections: '4.2',
@@ -42,7 +42,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://dl.bintray.com/google/flexbox-layout/' }
         maven { url 'https://jitpack.io' }
     }
 }
