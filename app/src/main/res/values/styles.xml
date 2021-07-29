@@ -10,6 +10,7 @@
 
     <!-- colors -->
 
+    <color name="grey100">#f5f5f5</color>
     <color name="grey200">#eeeeee</color>
     <color name="grey500">#9E9E9E</color>
     <color name="grey700">#616161</color>
@@ -28,8 +29,8 @@
     <color name="secondaryDarkColor">#c43c00</color>
     <color name="colorOnSecondary">@android:color/white</color>
 
-    <color name="primaryTextColor">#000000</color>
-    <color name="secondaryTextColor">#000000</color>
+    <color name="primaryTextColor">@color/grey900</color>
+    <color name="secondaryTextColor">@color/grey800</color>
 
     <color name="backgroundColor">@color/grey200</color>
     <color name="errorColor">@color/red700</color>
@@ -50,6 +51,9 @@
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
 
         <item name="colorError">@color/errorColor</item>
+
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
 
         <item name="android:colorBackground">@color/backgroundColor</item>
     </style>

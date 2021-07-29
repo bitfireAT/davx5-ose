@@ -34,7 +34,7 @@
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/card_margin_title_text"
+                android:layout_marginTop="16dp"
                 android:text="Location permission"
                 android:textAlignment="viewStart"
                 android:visibility="@{model.haveLocation != null ? View.VISIBLE : View.GONE}"
@@ -102,7 +102,9 @@
 
             <TextView
                 android:id="@+id/backgroundLocationDisclaimer"
-                style="@style/TextAppearance.MaterialComponents.Body2"
+                app:drawableStartCompat="@drawable/ic_info"
+                android:drawablePadding="8dp"
+                style="@style/TextAppearance.MaterialComponents.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -117,7 +119,7 @@
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/card_margin_title_text"
+                android:layout_marginTop="16dp"
                 android:text="@string/wifi_permissions_location_enabled"
                 android:textAlignment="viewStart"
                 android:visibility="@{model.isLocationEnabled != null ? View.VISIBLE : View.GONE}"
@@ -158,13 +160,13 @@
                 app:layout_constraintTop_toBottomOf="@id/locationEnabledStatus" />
 
             <Button
+                android:id="@+id/settingsBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 app:layout_constraintTop_toBottomOf="@id/settingsHint"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="8dp"
-                android:onClick="viewAppSettings"
                 android:text="@string/permissions_app_settings"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

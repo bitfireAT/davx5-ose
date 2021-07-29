@@ -136,14 +136,6 @@ class AccountActivity: AppCompatActivity() {
     }
 
 
-    // other actions
-
-    fun startPermissionsActivity(view: View) {
-        startActivity(Intent(this, PermissionsActivity::class.java))
-    }
-
-
-
     // adapter
 
     class TabsAdapter(

@@ -343,7 +343,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
                 // connectivity
                 context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
-                    writer.append("\nCONNECTVITY\n\n")
+                    writer.append("\nCONNECTIVITY\n\n")
                     val activeNetwork = if (Build.VERSION.SDK_INT >= 23) connectivityManager.activeNetwork else null
                     connectivityManager.allNetworks.sortedByDescending { it == activeNetwork }.forEach { network ->
                         val properties = connectivityManager.getLinkProperties(network)

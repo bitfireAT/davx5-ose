@@ -72,6 +72,10 @@ class WifiPermissionsActivity: AppCompatActivity() {
         }
         binding.backgroundLocationDisclaimer.text = getString(R.string.wifi_permissions_background_location_disclaimer, getString(R.string.app_name))
 
+        binding.settingsBtn.setOnClickListener {
+            PermissionUtils.showAppSettings(this)
+        }
+
         model.needLocationEnabled.observe(this) { needLocation ->
             if (needLocation != null && needLocation != model.isLocationEnabled.value) {
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -97,10 +101,6 @@ class WifiPermissionsActivity: AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         model.checkPermissions()
-    }
-
-    fun viewAppSettings(v: View) {
-        PermissionUtils.showAppSettings(this)
     }
 
 

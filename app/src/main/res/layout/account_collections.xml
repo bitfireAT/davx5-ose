@@ -52,8 +52,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:text="@string/account_permissions_action"
-                    android:onClick="startPermissionsActivity"/>
+                    android:text="@string/account_permissions_action" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 

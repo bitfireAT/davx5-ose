@@ -31,6 +31,7 @@ import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.PermissionsActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -62,6 +63,11 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = AccountCollectionsBinding.inflate(inflater, container, false)
+
+        binding.permissionsBtn.setOnClickListener {
+            startActivity(Intent(requireActivity(), PermissionsActivity::class.java))
+        }
+
         return binding.root
     }
 
