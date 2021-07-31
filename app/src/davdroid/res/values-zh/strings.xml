@@ -85,6 +85,7 @@
   <string name="about_libraries">程序库</string>
   <string name="about_version">版本 %1$s (%2$d)</string>
   <string name="about_build_date">编译于 %s</string>
+  <string name="about_copyright">©Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) 及贡献者</string>
   <string name="about_flavor_info">此版本只允许在 Google Play 上发行。</string>
   <string name="about_license_info_no_warranty">本程序不附带任何担保。这是一款自由软件，你可以有条件地传播它。</string>
   <string name="about_translations_thanks"><![CDATA[<i>谢谢：</i>%s]]></string>

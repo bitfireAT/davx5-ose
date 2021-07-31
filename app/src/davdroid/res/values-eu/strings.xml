@@ -85,6 +85,7 @@
   <string name="about_libraries">Liburutegiak</string>
   <string name="about_version">%1$s (%2$d) bertsioa</string>
   <string name="about_build_date">%s(e)an konpilatuta</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) eta kolaboratzaileak</string>
   <string name="about_flavor_info">Bertsio hau Google Play bidez soilik banatu daiteke.</string>
   <string name="about_license_info_no_warranty">Programa hau INOLAKO BERMERIK GABE dator. Software librea da, eta birbanatzeko baimena duzu baldintza batzuk kontuan hartuz.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Eskerrik asko: </i> %s]]></string>
@@ -311,6 +312,7 @@
   <string name="create_collection_description">Deskribapena</string>
   <string name="create_collection_optional">aukerazkoa</string>
   <string name="create_collection_home_set">Biltegiratze kokapena</string>
+  <string name="create_collection_home_set_required">Biltegiaren kokapena beharrezkoa da</string>
   <string name="create_collection_create">Sortu</string>
   <string name="delete_collection">Ezabatu kolekzioa</string>
   <string name="delete_collection_confirm_title">Ziur zaude?</string>
