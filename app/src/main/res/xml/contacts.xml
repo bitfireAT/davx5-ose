@@ -88,6 +88,8 @@
         <DataKind kind="event" dateWithTime="false" >
             <Type maxOccurs="1" type="birthday" yearOptional="true" />
             <Type maxOccurs="1" type="anniversary" yearOptional="true" />
+            <Type type="other" yearOptional="true" />
+            <Type type="custom" yearOptional="true" />
         </DataKind>
 
         <DataKind kind="relationship">

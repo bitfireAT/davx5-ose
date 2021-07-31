@@ -252,7 +252,7 @@ class ContactsSyncManager(
         Logger.log.log(Level.FINE, "Preparing upload of VCard ${resource.fileName}", contact)
 
         val os = ByteArrayOutputStream()
-        contact.write(if (hasVCard4) VCardVersion.V4_0 else VCardVersion.V3_0, groupMethod, os)
+        contact.writeVCard(if (hasVCard4) VCardVersion.V4_0 else VCardVersion.V3_0, groupMethod, os)
 
         os.toByteArray().toRequestBody(
                 if (hasVCard4) DavAddressBook.MIME_VCARD4 else DavAddressBook.MIME_VCARD3_UTF8
