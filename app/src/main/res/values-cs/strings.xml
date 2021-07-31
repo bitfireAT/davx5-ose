@@ -85,6 +85,7 @@
   <string name="about_libraries">Knihovny</string>
   <string name="about_version">Verze %1$s (%2$d)</string>
   <string name="about_build_date">Sestaveno %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) a přispěvatelé</string>
   <string name="about_flavor_info">Tuto verzi je možné šířit pouze přes Google Play.</string>
   <string name="about_license_info_no_warranty">Na tento program nejsou poskytovány ŽÁDNÉ ZÁRUKY. Jedná se o svobodný software a jeho šíření dál je vítáno, ovšem za podmínky, že stejné svobody zůstanou zachovány i všem dalším příjemcům.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Poděkování: </i> %s]]></string>
@@ -315,6 +316,7 @@
   <string name="create_collection_description">Popis</string>
   <string name="create_collection_optional">volitelné</string>
   <string name="create_collection_home_set">Umístění úložiště</string>
+  <string name="create_collection_home_set_required">Je třeba zadat umístění na úložišti</string>
   <string name="create_collection_create">Vytvořit</string>
   <string name="delete_collection">Smazat sadu</string>
   <string name="delete_collection_confirm_title">Opravdu to chcete?</string>
@@ -328,6 +330,10 @@
   <string name="collection_properties_owner">Vlastník:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Ladící informace</string>
+  <string name="debug_info_archive_caption">ZIP archiv</string>
+  <string name="debug_info_archive_subtitle">Obsahuje ladící informace a záznamy událostí</string>
+  <string name="debug_info_archive_text">Nasdílet archiv pro účely přenosu do počítače, ze kterého odeslat e-mailem nebo přiložit k žádosti o technickou podporu.</string>
+  <string name="debug_info_archive_share">Nasdílet archiv</string>
   <string name="debug_info_attached">Ladící informace připojené k této správě (vyžaduje podporu pro přílohy na straně přijímající aplikace).</string>
   <string name="debug_info_http_error">Chyba HTTP</string>
   <string name="debug_info_server_error">Chyba serveru</string>

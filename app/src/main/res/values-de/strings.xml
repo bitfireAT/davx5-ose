@@ -85,6 +85,7 @@
   <string name="about_libraries">Bibliotheken</string>
   <string name="about_version">Version %1$s (%2$d)</string>
   <string name="about_build_date">Erstellt am %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) und Mitwirkende</string>
   <string name="about_flavor_info">Diese Version ist nur zur Verteilung über Google Play bestimmt.</string>
   <string name="about_license_info_no_warranty">Dieses Programm wird OHNE JEDE GEWÄHRLEISTUNG bereitgestellt. Es ist freie Software – Sie können es also unter bestimmten Bedingungen weiterverbreiten.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Dank an: </i> %s]]></string>
@@ -311,6 +312,7 @@
   <string name="create_collection_description">Beschreibung</string>
   <string name="create_collection_optional">optional</string>
   <string name="create_collection_home_set">Speicherort</string>
+  <string name="create_collection_home_set_required">Speicherort wird benötigt</string>
   <string name="create_collection_create">Erstellen</string>
   <string name="delete_collection">Ordner löschen</string>
   <string name="delete_collection_confirm_title">Sind Sie sicher?</string>

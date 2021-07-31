@@ -85,6 +85,7 @@
   <string name="about_libraries">Biblioteki</string>
   <string name="about_version">Wersja %1$s (%2$d)</string>
   <string name="about_build_date">Skompilowano %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) i współpracownicy</string>
   <string name="about_flavor_info">Ta wersja jest przeznaczona do dystrybucji wyłączenie poprzez Google Play.</string>
   <string name="about_license_info_no_warranty">Ten program jest ABSOLUTNIE BEZ GWARANCJI. To jest wolne oprogramowanie i mile widziane jest dalsze rozpowszechnianie go zgodnie z warunkami licencji.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Dzięki życzliwości: </i> %s]]></string>

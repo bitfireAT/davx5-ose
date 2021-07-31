@@ -85,6 +85,7 @@
   <string name="about_libraries">Bibliotecas</string>
   <string name="about_version">Versión  %1$s (%2$d)</string>
   <string name="about_build_date">Compilada en %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) e colaboradoras</string>
   <string name="about_flavor_info">Esta versión só está dispoñible para distribución en Google Play.</string>
   <string name="about_license_info_no_warranty">Este programa non proporciona NINGUNHA GARANTÍA. É software libre, e convidámoste a redistribuílo baixo certas condicións.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Grazas a: </i> %s]]></string>
