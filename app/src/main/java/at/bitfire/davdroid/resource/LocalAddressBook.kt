@@ -336,7 +336,7 @@ class LocalAddressBook(
                 ids += cursor.getLong(0)
         }
 
-        return ids.map { findContactByID(it) }
+        return ids.map { findContactById(it) }
     }
 
 

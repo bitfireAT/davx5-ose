@@ -74,7 +74,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
                     // insert memberships
                     for (uid in members) {
                         Constants.log.fine("Assigning member: $uid")
-                        addressBook.findContactByUID(uid)?.let { member ->
+                        addressBook.findContactByUid(uid)?.let { member ->
                             member.addToGroup(batch, id)
                             changeContactIDs += member.id!!
                         } ?: Constants.log.warning("Group member not found: $uid")
@@ -83,7 +83,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                         // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
                         changeContactIDs
-                                .map { addressBook.findContactByID(it) }
+                                .map { addressBook.findContactById(it) }
                                 .forEach { it.updateHashCode(batch) }
 
                     // remove pending memberships
@@ -107,7 +107,10 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues)
-        : super(addressBook, values) {
+        : super(addressBook, values)
+
+    override fun initializeFromContentValues(values: ContentValues) {
+        super.initializeFromContentValues(values)
         flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
     }
 
@@ -123,7 +126,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
         val members = Parcel.obtain()
         try {
-            members.writeStringList(contact!!.members)
+            members.writeStringList(getContact().members)
             values.put(COLUMN_PENDING_MEMBERS, members.marshall())
         } finally {
             members.recycle()
@@ -147,7 +150,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
             values.put(AndroidContact.COLUMN_UID, uid)
             addressBook.provider!!.update(groupSyncUri(), values, null, null)
 
-            contact!!.uid = uid
+            _contact?.uid = uid
         }
 
         return "$uid.vcf"

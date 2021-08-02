@@ -16,7 +16,10 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts.Data
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.UnknownProperties
+import at.bitfire.davdroid.resource.datarow.CachedGroupMembershipHandler
+import at.bitfire.davdroid.resource.datarow.GroupMembershipHandler
+import at.bitfire.davdroid.resource.datarow.UnknownPropertiesBuilder
+import at.bitfire.davdroid.resource.datarow.UnknownPropertiesHandler
 import at.bitfire.vcard4android.*
 import ezvcard.Ezvcard
 import org.apache.commons.lang3.StringUtils
@@ -34,8 +37,8 @@ class LocalContact: AndroidContact, LocalAddress {
         const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
     }
 
-    private val cachedGroupMemberships = HashSet<Long>()
-    private val groupMemberships = HashSet<Long>()
+    internal val cachedGroupMemberships = HashSet<Long>()
+    internal val groupMemberships = HashSet<Long>()
 
     override var scheduleTag: String?
         get() = null
@@ -43,14 +46,25 @@ class LocalContact: AndroidContact, LocalAddress {
 
     override var flags: Int = 0
 
-    constructor(addressBook: AndroidAddressBook<LocalContact,*>, values: ContentValues)
-            : super(addressBook, values) {
-        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
-    }
 
-    constructor(addressBook: AndroidAddressBook<LocalContact,*>, contact: Contact, fileName: String?, eTag: String?, flags: Int)
+    constructor(addressBook: LocalAddressBook, values: ContentValues)
+            : super(addressBook, values)
+
+    constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, flags: Int)
             : super(addressBook, contact, fileName, eTag) {
         this.flags = flags
+    }
+
+    init {
+        processor.registerHandler(CachedGroupMembershipHandler(this))
+        processor.registerHandler(GroupMembershipHandler(this))
+        processor.registerHandler(UnknownPropertiesHandler)
+        processor.registerBuilderFactory(UnknownPropertiesBuilder.Factory)
+    }
+
+    override fun initializeFromContentValues(values: ContentValues) {
+        super.initializeFromContentValues(values)
+        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
     }
 
 
@@ -69,7 +83,7 @@ class LocalContact: AndroidContact, LocalAddress {
             values.put(COLUMN_UID, uid)
             addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
-            contact!!.uid = uid
+            getContact().uid = uid
         }
 
         return "$uid.vcf"
@@ -120,29 +134,6 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
 
-    override fun populateData(mimeType: String, row: ContentValues) {
-        when (mimeType) {
-            CachedGroupMembership.CONTENT_ITEM_TYPE ->
-                cachedGroupMemberships += row.getAsLong(CachedGroupMembership.GROUP_ID)
-            GroupMembership.CONTENT_ITEM_TYPE ->
-                groupMemberships += row.getAsLong(GroupMembership.GROUP_ROW_ID)
-            UnknownProperties.CONTENT_ITEM_TYPE ->
-                contact!!.unknownProperties = row.getAsString(UnknownProperties.UNKNOWN_PROPERTIES)
-        }
-    }
-
-    override fun insertDataRows(batch: BatchOperation) {
-        super.insertDataRows(batch)
-
-        contact!!.unknownProperties?.let { unknownProperties ->
-            val builder = insertDataBuilder(UnknownProperties.RAW_CONTACT_ID)
-                    .withValue(UnknownProperties.MIMETYPE, UnknownProperties.CONTENT_ITEM_TYPE)
-                    .withValue(UnknownProperties.UNKNOWN_PROPERTIES, unknownProperties)
-            batch.enqueue(builder)
-        }
-    }
-
-
     /**
      * Calculates a hash code from the contact's data (VCard) and group memberships.
      * Attention: re-reads {@link #contact} from the database, discarding all changes in memory
@@ -153,10 +144,10 @@ class LocalContact: AndroidContact, LocalAddress {
             throw IllegalStateException("dataHashCode() should not be called on Android != 7")
 
         // reset contact so that getContact() reads from database
-        contact = null
+        _contact = null
 
         // groupMemberships is filled by getContact()
-        val dataHash = contact!!.hashCode()
+        val dataHash = getContact().hashCode()
         val groupHash = groupMemberships.hashCode()
         Logger.log.finest("Calculated data hash = $dataHash, group memberships hash = $groupHash")
         return dataHash xor groupHash
@@ -228,7 +219,7 @@ class LocalContact: AndroidContact, LocalAddress {
      * @throws RemoteException on contacts provider errors
      */
     fun getCachedGroupMemberships(): Set<Long> {
-        contact
+        getContact()
         return cachedGroupMemberships
     }
 
@@ -239,7 +230,7 @@ class LocalContact: AndroidContact, LocalAddress {
      * @throws RemoteException on contacts provider errors
      */
     fun getGroupMemberships(): Set<Long> {
-        contact
+        getContact()
         return groupMemberships
     }
 
@@ -254,7 +245,7 @@ class LocalContact: AndroidContact, LocalAddress {
 
     object Factory: AndroidContactFactory<LocalContact> {
         override fun fromProvider(addressBook: AndroidAddressBook<LocalContact, *>, values: ContentValues) =
-                LocalContact(addressBook, values)
+                LocalContact(addressBook as LocalAddressBook, values)
     }
 
 }
