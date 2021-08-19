@@ -9,7 +9,6 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4jvm.DavCalendar
@@ -43,14 +42,14 @@ import java.util.logging.Level
  * Synchronization manager for CalDAV collections; handles tasks (VTODO)
  */
 class TasksSyncManager(
-        context: Context,
-        account: Account,
-        accountSettings: AccountSettings,
-        extras: Bundle,
-        authority: String,
-        syncResult: SyncResult,
-        localCollection: LocalTaskList
-): SyncManager<LocalTask, LocalTaskList, DavCalendar>(context, account, accountSettings, extras, authority, syncResult, localCollection) {
+    adapter: TasksSyncAdapterService.TasksSyncAdapter,
+    account: Account,
+    accountSettings: AccountSettings,
+    extras: Bundle,
+    authority: String,
+    syncResult: SyncResult,
+    localCollection: LocalTaskList
+): SyncManager<LocalTask, LocalTaskList, DavCalendar>(adapter, account, accountSettings, extras, authority, syncResult, localCollection) {
 
     override fun prepare(): Boolean {
         collectionURL = (localCollection.syncId ?: return false).toHttpUrlOrNull() ?: return false

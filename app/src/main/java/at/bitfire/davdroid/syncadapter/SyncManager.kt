@@ -11,7 +11,6 @@ package at.bitfire.davdroid.syncadapter
 import android.accounts.Account
 import android.app.PendingIntent
 import android.content.ContentUris
-import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.net.Uri
@@ -52,16 +51,14 @@ import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.util.*
-import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
-import kotlin.math.min
 
 @UsesThreadContextClassLoader
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
-        val context: Context,
+        val adapter: SyncAdapterService.SyncAdapter,
         val account: Account,
         val accountSettings: AccountSettings,
         val extras: Bundle,
@@ -69,6 +66,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         val syncResult: SyncResult,
         val localCollection: CollectionType
 ): AutoCloseable {
+
+    val context = adapter.context
+    val workDispatcher = adapter.workDispatcher
 
     enum class SyncAlgorithm {
         PROPFIND_REPORT,
@@ -85,17 +85,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         // log synchronization of this collection
     }
-
-    /**
-     * We use our own dispatcher to make sure that all threads have [Thread.getContextClassLoader] set,
-     * which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]).
-     */
-    private val _workDispatcher = lazy {
-        Executors     // number of threads = number of CPUs, but max. 4
-            .newFixedThreadPool(min(Runtime.getRuntime().availableProcessors(), 4))
-            .asCoroutineDispatcher()
-    }
-    private val workDispatcher by _workDispatcher
 
     private val mainAccount = if (localCollection is LocalAddressBook)
         localCollection.mainAccount
@@ -114,10 +103,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     override fun close() {
         httpClient.close()
-
-        // shut down worker threads (only if the work dispatcher has been actually created)
-        if (_workDispatcher.isInitialized())
-            workDispatcher.close()
     }
 
 

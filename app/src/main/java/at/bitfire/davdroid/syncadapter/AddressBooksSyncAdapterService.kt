@@ -24,18 +24,20 @@ import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
+import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
 
 class AddressBooksSyncAdapterService : SyncAdapterService() {
 
-    override fun syncAdapter() = AddressBooksSyncAdapter(this)
+    override fun syncAdapter() = AddressBooksSyncAdapter(this, workDispatcher)
 
 
     class AddressBooksSyncAdapter(
-            context: Context
-    ) : SyncAdapter(context) {
+            context: Context,
+            workDispatcher: CoroutineDispatcher,
+    ) : SyncAdapter(context, workDispatcher) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {

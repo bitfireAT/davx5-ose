@@ -28,6 +28,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.TaskProvider
+import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
@@ -38,12 +39,13 @@ import java.util.logging.Level
  */
 open class TasksSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = TasksSyncAdapter(this)
+    override fun syncAdapter() = TasksSyncAdapter(this, workDispatcher)
 
 
 	class TasksSyncAdapter(
-            context: Context
-    ): SyncAdapter(context) {
+            context: Context,
+            workDispatcher: CoroutineDispatcher
+    ): SyncAdapter(context, workDispatcher) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
@@ -70,7 +72,7 @@ open class TasksSyncAdapterService: SyncAdapterService() {
                         .sortedByDescending { priorityTaskLists.contains(it.id) }
                 for (taskList in taskLists) {
                     Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
-                    TasksSyncManager(context, account, accountSettings, extras, authority, syncResult, taskList).use {
+                    TasksSyncManager(this, account, accountSettings, extras, authority, syncResult, taskList).use {
                         it.performSync()
                     }
                 }

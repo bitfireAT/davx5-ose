@@ -9,7 +9,6 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4jvm.DavCalendar
@@ -44,14 +43,14 @@ import java.util.logging.Level
  * Synchronization manager for CalDAV collections; handles events (VEVENT)
  */
 class CalendarSyncManager(
-        context: Context,
+        adapter: CalendarsSyncAdapterService.CalendarsSyncAdapter,
         account: Account,
         accountSettings: AccountSettings,
         extras: Bundle,
         authority: String,
         syncResult: SyncResult,
         localCalendar: LocalCalendar
-): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(context, account, accountSettings, extras, authority, syncResult, localCalendar) {
+): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(adapter, account, accountSettings, extras, authority, syncResult, localCalendar) {
 
     override fun prepare(): Boolean {
         collectionURL = (localCollection.name ?: return false).toHttpUrlOrNull() ?: return false
