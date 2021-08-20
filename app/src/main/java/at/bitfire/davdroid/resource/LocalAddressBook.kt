@@ -23,6 +23,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.vcard4android.*
 import java.io.ByteArrayOutputStream
@@ -125,10 +126,15 @@ class LocalAddressBook(
      * Whether contact groups ([LocalGroup]) are included in query results
      * and are affected by updates/deletes on generic members.
      *
-     * For instance, if this option is disabled, [findDirty] will find only dirty [LocalContact]s,
+     * For instance, if groupMethod is GROUP_VCARDS, [findDirty] will find only dirty [LocalContact]s,
      * but if it is enabled, [findDirty] will find dirty [LocalContact]s and [LocalGroup]s.
      */
-    var includeGroups = true
+    val groupMethod: GroupMethod by lazy {
+        val accountSettings = AccountSettings(context, mainAccount)
+        accountSettings.getGroupMethod()
+    }
+    val includeGroups
+        get() = groupMethod == GroupMethod.GROUP_VCARDS
 
     private var _mainAccount: Account? = null
     /**

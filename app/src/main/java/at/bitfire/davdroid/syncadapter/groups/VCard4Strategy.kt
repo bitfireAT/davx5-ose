@@ -15,13 +15,13 @@ class VCard4Strategy(val syncManager: ContactsSyncManager): ContactGroupStrategy
 
     private val localCollection = syncManager.localCollection
 
-    override fun prepare() {
-        // we want to get groups as entries (group contacts) from the local collection
-        syncManager.localCollection.includeGroups = true
-    }
-
     override fun beforeUploadDirty() {
-        // mark groups with changed members as dirty
+        /* Mark groups with changed members as dirty:
+           1. Iterate over all dirty contacts.
+           2. Check whether group memberships have changed by comparing group memberships and cached group memberships.
+           3. Mark groups which have been added to/removed from the contact as dirty so that they will be uploaded.
+           4. Successful upload will reset dirty flag and update cached group memberships.
+         */
         val batch = BatchOperation(localCollection.provider!!)
         for (contact in localCollection.findDirtyContacts())
             try {
@@ -39,13 +39,7 @@ class VCard4Strategy(val syncManager: ContactsSyncManager): ContactGroupStrategy
         batch.commit()
     }
 
-    override fun beforeGenerateUpload(local: LocalAddress) {
-    }
-
     override fun verifyContactBeforeSaving(contact: Contact) {
-    }
-
-    override fun afterSavingContact(local: LocalAddress) {
     }
 
     override fun postProcess() {

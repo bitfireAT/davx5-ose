@@ -1,9 +1,9 @@
-package at.bitfire.davdroid.resource.datarow
+package at.bitfire.davdroid.resource.contactrow
 
 import android.content.ContentValues
 import at.bitfire.davdroid.model.UnknownProperties
 import at.bitfire.vcard4android.Contact
-import at.bitfire.vcard4android.datarow.DataRowHandler
+import at.bitfire.vcard4android.contactrow.DataRowHandler
 
 object UnknownPropertiesHandler: DataRowHandler() {
 

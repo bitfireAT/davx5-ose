@@ -16,10 +16,7 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts.Data
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.datarow.CachedGroupMembershipHandler
-import at.bitfire.davdroid.resource.datarow.GroupMembershipHandler
-import at.bitfire.davdroid.resource.datarow.UnknownPropertiesBuilder
-import at.bitfire.davdroid.resource.datarow.UnknownPropertiesHandler
+import at.bitfire.davdroid.resource.contactrow.*
 import at.bitfire.vcard4android.*
 import ezvcard.Ezvcard
 import org.apache.commons.lang3.StringUtils
@@ -27,6 +24,9 @@ import java.io.FileNotFoundException
 import java.util.*
 
 class LocalContact: AndroidContact, LocalAddress {
+
+    override val addressBook: LocalAddressBook
+        get() = super.addressBook as LocalAddressBook
 
     companion object {
         init {
@@ -59,6 +59,7 @@ class LocalContact: AndroidContact, LocalAddress {
         processor.registerHandler(CachedGroupMembershipHandler(this))
         processor.registerHandler(GroupMembershipHandler(this))
         processor.registerHandler(UnknownPropertiesHandler)
+        processor.registerBuilderFactory(GroupMembershipBuilder.Factory(addressBook))
         processor.registerBuilderFactory(UnknownPropertiesBuilder.Factory)
     }
 

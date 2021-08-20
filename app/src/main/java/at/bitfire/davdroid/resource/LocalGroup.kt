@@ -12,13 +12,13 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
 import android.os.Build
-import android.os.Parcel
 import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.vcard4android.*
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -29,7 +29,10 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
         const val COLUMN_FLAGS = Groups.SYNC4
 
-        /** marshalled list of member UIDs, as sent by server */
+        /** List of member UIDs, as sent by server. This list will be used to establish
+         *  the group memberships when all groups and contacts have been synchronized.
+         *  Use [PendingMemberships] to create/read the list. *null* when the memberships
+         *  of this group didn't change, so no new association is required. */
         const val COLUMN_PENDING_MEMBERS = Groups.SYNC3
 
         /**
@@ -41,14 +44,14 @@ class LocalGroup: AndroidGroup, LocalAddress {
         fun applyPendingMemberships(addressBook: LocalAddressBook) {
             addressBook.provider!!.query(
                     addressBook.groupsSyncUri(),
-                    arrayOf(Groups._ID, COLUMN_PENDING_MEMBERS),
+                    arrayOf(Groups._ID, Groups.TITLE, COLUMN_PENDING_MEMBERS),
                     "$COLUMN_PENDING_MEMBERS IS NOT NULL", null,
                     null
             )?.use { cursor ->
                 val batch = BatchOperation(addressBook.provider)
                 while (cursor.moveToNext()) {
                     val id = cursor.getLong(0)
-                    Constants.log.fine("Assigning members to group $id")
+                    val title = cursor.getString(1)
 
                     // required for workaround for Android 7 which sets DIRTY flag when only meta-data is changed
                     val changeContactIDs = HashSet<Long>()
@@ -60,24 +63,15 @@ class LocalGroup: AndroidGroup, LocalAddress {
                     }
 
                     // extract list of member UIDs
-                    val members = LinkedList<String>()
-                    val raw = cursor.getBlob(1)
-                    val parcel = Parcel.obtain()
-                    try {
-                        parcel.unmarshall(raw, 0, raw.size)
-                        parcel.setDataPosition(0)
-                        parcel.readStringList(members)
-                    } finally {
-                        parcel.recycle()
-                    }
+                    val pending = PendingMemberships.fromString(cursor.getString(2))
 
                     // insert memberships
-                    for (uid in members) {
-                        Constants.log.fine("Assigning member: $uid")
+                    for (uid in pending.uids) {
+                        Logger.log.fine("Assigning member $uid to group $title (#$id)")
                         addressBook.findContactByUid(uid)?.let { member ->
                             member.addToGroup(batch, id)
                             changeContactIDs += member.id!!
-                        } ?: Constants.log.warning("Group member not found: $uid")
+                        } ?: Logger.log.warning("Group member not found: $uid")
                     }
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
@@ -123,14 +117,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
     override fun contentValues(): ContentValues  {
         val values = super.contentValues()
         values.put(COLUMN_FLAGS, flags)
-
-        val members = Parcel.obtain()
-        try {
-            members.writeStringList(getContact().members)
-            values.put(COLUMN_PENDING_MEMBERS, members.marshall())
-        } finally {
-            members.recycle()
-        }
+        values.put(COLUMN_PENDING_MEMBERS, PendingMemberships(getContact().members).toString())
         return values
     }
 
@@ -175,7 +162,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
         // update cached group memberships
         val batch = BatchOperation(addressBook.provider!!)
 
-        // delete cached group memberships
+        // delete old cached group memberships
         batch.enqueue(BatchOperation.CpoBuilder
                 .newDelete(addressBook.syncAdapterURI(ContactsContract.Data.CONTENT_URI))
                 .withSelection(
@@ -249,6 +236,23 @@ class LocalGroup: AndroidGroup, LocalAddress {
                 members += cursor.getLong(0)
         }
         return members
+    }
+
+
+    // helper class for COLUMN_PENDING_MEMBERSHIPS blob
+
+    class PendingMemberships(
+        /** list of member UIDs that shall be assigned **/
+        val uids: List<String>
+    ) {
+
+        companion object {
+            fun fromString(value: String) =
+                PendingMemberships(value.split('\n'))
+        }
+
+        override fun toString() = uids.joinToString("\n")
+
     }
 
 

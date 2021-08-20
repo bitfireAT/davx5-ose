@@ -113,14 +113,12 @@ class ContactsSyncManager(
             }
         }
 
-        Logger.log.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
-        groupStrategy.prepare()
-
         collectionURL = localCollection.url.toHttpUrlOrNull() ?: return false
         davCollection = DavAddressBook(httpClient.okHttpClient, collectionURL)
 
         resourceDownloader = ResourceDownloader(davCollection.location)
 
+        Logger.log.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
         return true
     }
 
@@ -190,8 +188,6 @@ class ContactsSyncManager(
 
     override fun generateUpload(resource: LocalAddress): RequestBody =
         localExceptionContext(resource) {
-            groupStrategy.beforeGenerateUpload(resource)
-
             val contact: Contact
             if (resource is LocalContact)
                 contact = resource.getContact()
@@ -308,8 +304,6 @@ class ContactsSyncManager(
                 }
                 syncResult.stats.numInserts++
             }
-
-            groupStrategy.afterSavingContact(local!!)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 // workaround for Android 7 which sets DIRTY flag when only meta-data is changed

@@ -1,16 +1,11 @@
-package at.bitfire.davdroid.resource.datarow
+package at.bitfire.davdroid.resource.contactrow
 
 import android.net.Uri
-import android.provider.ContactsContract
-import android.provider.ContactsContract.CommonDataKinds.Email
 import at.bitfire.davdroid.model.UnknownProperties
 import at.bitfire.vcard4android.BatchOperation
-import at.bitfire.vcard4android.Constants
 import at.bitfire.vcard4android.Contact
-import at.bitfire.vcard4android.datarow.DataRowBuilder
-import ezvcard.parameter.EmailType
+import at.bitfire.vcard4android.contactrow.DataRowBuilder
 import java.util.*
-import java.util.logging.Level
 
 class UnknownPropertiesBuilder(mimeType: String, dataRowUri: Uri, rawContactId: Long?, contact: Contact)
     : DataRowBuilder(mimeType, dataRowUri, rawContactId, contact) {
