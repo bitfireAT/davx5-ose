@@ -10,6 +10,7 @@
   <string name="share">Partager</string>
   <string name="notification_channel_debugging">Débogage</string>
   <string name="notification_channel_general">Autres messages importants</string>
+  <string name="notification_channel_status">Messages d’état de faible priorité</string>
   <string name="notification_channel_sync">Synchronisation</string>
   <string name="notification_channel_sync_errors">Erreurs de synchronisation</string>
   <string name="notification_channel_sync_errors_desc">Erreurs importantes qui bloquent la synchronisation, telles que des réponses inattendues du serveur</string>
@@ -84,6 +85,7 @@
   <string name="about_libraries">Librairies</string>
   <string name="about_version">Version %1$s (%2$d)</string>
   <string name="about_build_date">Compilé sur %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) et les contributeurs</string>
   <string name="about_flavor_info">Cette version ne peut être distribuée que sur Google Play.</string>
   <string name="about_license_info_no_warranty">Ce programme est fourni sans AUCUNE GARANTIE. C\'est un logiciel libre, et vous êtes en droit de le redistribuer sous certaines conditions.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Merci à : </i> %s]]></string>
@@ -118,6 +120,8 @@
   <string name="dav_service_refresh_failed">La détection du service a échoué</string>
   <string name="dav_service_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
   <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Fonctionne au premier plan</string>
+  <string name="foreground_service_notify_text">Sur certains appareils, cela est nécessaire pour la synchronisation automatique.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Paramètres</string>
   <string name="app_settings_debug">Débogage</string>
@@ -126,6 +130,8 @@
   <string name="app_settings_logging">Journalisation verbeuse</string>
   <string name="app_settings_logging_on">La journalisation est activée</string>
   <string name="app_settings_logging_off">La journalisation est désactivée</string>
+  <string name="app_settings_foreground_service">Garder au premier plan</string>
+  <string name="app_settings_foreground_service_details">Peut aider si votre appareil empêche la synchronisation automatique</string>
   <string name="app_settings_connection">Connexion</string>
   <string name="app_settings_override_proxy">Ignorer les paramètres proxy</string>
   <string name="app_settings_override_proxy_on">Utiliser des paramètres proxy personnalisés</string>
@@ -144,6 +150,8 @@
   <string name="app_settings_user_interface">Interface utilisateur</string>
   <string name="app_settings_notification_settings">Paramètres de notification</string>
   <string name="app_settings_notification_settings_summary">Gérer les canaux de notification et leurs paramètres</string>
+  <string name="app_settings_theme_title">Sélectionner un thème</string>
+  <string name="app_settings_theme_summary">Thème actuel : %s</string>
   <string name="app_settings_reset_hints">Réinitialiser les astuces</string>
   <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vues précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
@@ -179,7 +187,7 @@
   <string name="account_read_only">En lecture seulement</string>
   <string name="account_calendar">calendrier</string>
   <string name="account_task_list">liste de tâche</string>
-  <string name="account_only_personal">Montrer uniquement les comptes personelles</string>
+  <string name="account_only_personal">N\'afficher que les comptes perso.</string>
   <string name="account_refresh_address_book_list">Actualiser la liste des carnets d\'adresses</string>
   <string name="account_create_new_address_book">Créer un nouveau carnet d\'adresses</string>
   <string name="account_refresh_calendar_list">Actualiser la liste des calendriers</string>
@@ -299,6 +307,7 @@
   <string name="create_collection_description">Description</string>
   <string name="create_collection_optional">facultatif</string>
   <string name="create_collection_home_set">Emplacement de stockage</string>
+  <string name="create_collection_home_set_required">Emplacement de stockage requis</string>
   <string name="create_collection_create">Créer</string>
   <string name="delete_collection">Supprimer la collection</string>
   <string name="delete_collection_confirm_title">Êtes-vous sur?</string>
@@ -312,6 +321,10 @@
   <string name="collection_properties_owner">Propriétaire :</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
+  <string name="debug_info_archive_caption">Archive ZIP</string>
+  <string name="debug_info_archive_subtitle">Contient des informations de débogage et des journaux</string>
+  <string name="debug_info_archive_text">Partagez l’archive pour la transférer sur un ordinateur, pour l’envoyer par e-mail ou pour la joindre à un ticket de support.</string>
+  <string name="debug_info_archive_share">Partager l\'archive</string>
   <string name="debug_info_attached">Informations de débogage jointes à ce message (nécessite une application compatible).</string>
   <string name="debug_info_http_error">Erreur HTTP</string>
   <string name="debug_info_server_error">Erreur Serveur</string>

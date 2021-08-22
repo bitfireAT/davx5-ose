@@ -244,6 +244,10 @@
   <string name="settings_event_colors_off">Цветовете на събитията не се синхронизират.</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Метод за съхранение на групи от контакти</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Групите са отделни vCards</item>
+    <item>Групите са категории във всеки контакт</item>
+  </string-array>
   <string name="settings_contact_group_method_change">Метод за съхранение на групи от контакти</string>
   <!--collection management-->
   <string name="create_addressbook">Нов адресник</string>

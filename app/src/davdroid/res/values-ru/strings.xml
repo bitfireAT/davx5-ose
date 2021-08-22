@@ -85,6 +85,7 @@
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Версия %1$s (%2$d)</string>
   <string name="about_build_date">Скомпилировано %s</string>
+  <string name="about_copyright">© Рикки Хирнер (Ricki Hirner), Бернхард Штокманн (Bernhard Stockmann) (bitfire web engineering GmbH) и контрибьюторы</string>
   <string name="about_flavor_info">Эта версия может распространяться только через Google Play.</string>
   <string name="about_license_info_no_warranty">Эта программа поставляется БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободное программное обеспечение и вы можете распространять его при соблюдении определенных условий.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Благодарность: </i> %s]]></string>

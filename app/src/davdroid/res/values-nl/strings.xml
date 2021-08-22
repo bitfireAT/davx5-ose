@@ -85,6 +85,7 @@
   <string name="about_libraries">Libraries</string>
   <string name="about_version">Versie%1$s (%2$d)</string>
   <string name="about_build_date">Gecompileerd op %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) en contributeurs</string>
   <string name="about_flavor_info">Deze versie is enkel beschikbaar over Google Play</string>
   <string name="about_license_info_no_warranty">Dit programma kom met ABSOLUUT GEEN GARANTIE. Het is gratis software, en je bent welkom dit te herdistribueren onder bepaalde voorwaarden.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Dankzij: </i> %s]]></string>
@@ -311,6 +312,7 @@
   <string name="create_collection_description">Omschrijving</string>
   <string name="create_collection_optional">Optioneel</string>
   <string name="create_collection_home_set">Opslag locatie</string>
+  <string name="create_collection_home_set_required">Opslaglocatie is verplicht</string>
   <string name="create_collection_create">Maak</string>
   <string name="delete_collection">Verwijder collectie</string>
   <string name="delete_collection_confirm_title">Weet je het zeker?</string>
@@ -324,6 +326,10 @@
   <string name="collection_properties_owner">Eigenaar:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
+  <string name="debug_info_archive_caption">ZIP archief</string>
+  <string name="debug_info_archive_subtitle">Bevat debuginformatie en logbestanden</string>
+  <string name="debug_info_archive_text">Deel het archief om het over te zetten naar een computer, om het te verzenden per e-mail of om het toe te voegen aan het support ticket.</string>
+  <string name="debug_info_archive_share">Deel archief</string>
   <string name="debug_info_attached">Debug-informatie wordt toegevoegd aan dit bericht (de ontvangende app moet bijlagen kunnen versturen).</string>
   <string name="debug_info_http_error">HTTP-fout</string>
   <string name="debug_info_server_error">Serverfout</string>
