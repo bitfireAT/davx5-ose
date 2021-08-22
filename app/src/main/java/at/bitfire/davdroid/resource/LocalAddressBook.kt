@@ -36,7 +36,7 @@ import java.util.logging.Level
  * address book" account for every CardDAV address book. These accounts are bound to a
  * DAVx5 main account.
  */
-class LocalAddressBook(
+open class LocalAddressBook(
         private val context: Context,
         account: Account,
         provider: ContentProviderClient?
@@ -129,7 +129,7 @@ class LocalAddressBook(
      * For instance, if groupMethod is GROUP_VCARDS, [findDirty] will find only dirty [LocalContact]s,
      * but if it is enabled, [findDirty] will find dirty [LocalContact]s and [LocalGroup]s.
      */
-    val groupMethod: GroupMethod by lazy {
+    open val groupMethod: GroupMethod by lazy {
         val accountSettings = AccountSettings(context, mainAccount)
         accountSettings.getGroupMethod()
     }
@@ -141,7 +141,7 @@ class LocalAddressBook(
      * The associated main account which this address book accounts belongs to.
      * @throws IllegalStateException when no main account is assigned
      */
-    var mainAccount: Account
+    open var mainAccount: Account
         get() {
             _mainAccount?.let { return it }
 

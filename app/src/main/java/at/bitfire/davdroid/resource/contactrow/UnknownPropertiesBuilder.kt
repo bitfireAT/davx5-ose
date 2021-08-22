@@ -7,8 +7,8 @@ import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.contactrow.DataRowBuilder
 import java.util.*
 
-class UnknownPropertiesBuilder(mimeType: String, dataRowUri: Uri, rawContactId: Long?, contact: Contact)
-    : DataRowBuilder(mimeType, dataRowUri, rawContactId, contact) {
+class UnknownPropertiesBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact)
+    : DataRowBuilder(Factory.mimeType(), dataRowUri, rawContactId, contact) {
 
     override fun build(): List<BatchOperation.CpoBuilder> {
         val result = LinkedList<BatchOperation.CpoBuilder>()
@@ -22,7 +22,7 @@ class UnknownPropertiesBuilder(mimeType: String, dataRowUri: Uri, rawContactId: 
     object Factory: DataRowBuilder.Factory<UnknownPropertiesBuilder> {
         override fun mimeType() = UnknownProperties.CONTENT_ITEM_TYPE
         override fun newInstance(dataRowUri: Uri, rawContactId: Long?, contact: Contact) =
-            UnknownPropertiesBuilder(mimeType(), dataRowUri, rawContactId, contact)
+            UnknownPropertiesBuilder(dataRowUri, rawContactId, contact)
     }
 
 }

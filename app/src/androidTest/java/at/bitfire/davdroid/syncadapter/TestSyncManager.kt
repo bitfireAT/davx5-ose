@@ -18,7 +18,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
 
-class TestSyncManager(
+/*class TestSyncManager(
         context: Context,
         account: Account,
         extras: Bundle,
@@ -97,4 +97,4 @@ class TestSyncManager(
         TODO("Not yet implemented")
     }
 
-}
+}*/

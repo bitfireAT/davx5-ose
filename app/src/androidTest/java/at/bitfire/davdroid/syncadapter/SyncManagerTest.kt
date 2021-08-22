@@ -22,7 +22,7 @@ import org.junit.*
 import org.junit.Assert.*
 import java.util.concurrent.TimeUnit
 
-class SyncManagerTest {
+/*class SyncManagerTest {
 
     companion object {
 
@@ -434,4 +434,4 @@ class SyncManagerTest {
         assertTrue(collection.entries.isEmpty())
     }
 
-}
+}*/

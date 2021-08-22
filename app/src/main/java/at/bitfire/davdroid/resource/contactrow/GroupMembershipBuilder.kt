@@ -9,8 +9,8 @@ import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.vcard4android.contactrow.DataRowBuilder
 import java.util.*
 
-class GroupMembershipBuilder(mimeType: String, dataRowUri: Uri, rawContactId: Long?, contact: Contact, val addressBook: LocalAddressBook)
-    : DataRowBuilder(mimeType, dataRowUri, rawContactId, contact) {
+class GroupMembershipBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, val addressBook: LocalAddressBook)
+    : DataRowBuilder(Factory.MIME_TYPE, dataRowUri, rawContactId, contact) {
 
     override fun build(): List<BatchOperation.CpoBuilder> {
         val result = LinkedList<BatchOperation.CpoBuilder>()
@@ -28,9 +28,12 @@ class GroupMembershipBuilder(mimeType: String, dataRowUri: Uri, rawContactId: Lo
 
 
     class Factory(val addressBook: LocalAddressBook): DataRowBuilder.Factory<GroupMembershipBuilder> {
-        override fun mimeType() = GroupMembership.CONTENT_ITEM_TYPE
+        companion object {
+            const val MIME_TYPE = GroupMembership.CONTENT_ITEM_TYPE
+        }
+        override fun mimeType() = MIME_TYPE
         override fun newInstance(dataRowUri: Uri, rawContactId: Long?, contact: Contact) =
-            GroupMembershipBuilder(mimeType(), dataRowUri, rawContactId, contact, addressBook)
+            GroupMembershipBuilder(dataRowUri, rawContactId, contact, addressBook)
     }
 
 }
