@@ -30,7 +30,7 @@ class GroupMembershipHandlerTest {
 
     @Before
     fun connect() {
-        val context = InstrumentationRegistry.getInstrumentation().context
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
         Assert.assertNotNull(provider)
 
