@@ -106,7 +106,7 @@ object PermissionUtils {
                 .setSmallIcon(R.drawable.ic_sync_problem_notify)
                 .setContentTitle(context.getString(R.string.sync_error_permissions))
                 .setContentText(context.getString(R.string.sync_error_permissions_text))
-                .setContentIntent(PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setContentIntent(PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .setAutoCancel(true)
                 .build()

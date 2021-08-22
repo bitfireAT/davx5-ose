@@ -50,7 +50,7 @@ class ForegroundService : Service() {
                     .setContentTitle(getString(R.string.foreground_service_notify_title))
                     .setContentText(getString(R.string.foreground_service_notify_text))
                     .setStyle(NotificationCompat.BigTextStyle())
-                    .setContentIntent(PendingIntent.getActivity(this, 0, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setContentIntent(PendingIntent.getActivity(this, 0, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
             startForeground(NotificationUtils.NOTIFY_FOREGROUND, builder.build())
             return START_STICKY
         } else {

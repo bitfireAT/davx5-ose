@@ -740,7 +740,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
                 .setSubText(mainAccount.name)
                 .setOnlyAlertOnce(true)
-                .setContentIntent(PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setContentIntent(PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
                 .setPriority(priority)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
         viewItemAction?.let { builder.addAction(it) }
@@ -785,7 +785,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         return NotificationCompat.Action(
                 android.R.drawable.ic_menu_rotate, context.getString(R.string.sync_error_retry),
-                PendingIntent.getService(context, 0, retryIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                PendingIntent.getService(context, 0, retryIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
     }
 
     private fun buildViewItemAction(local: ResourceType): NotificationCompat.Action? {
@@ -804,7 +804,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
         return if (intent != null && context.packageManager.resolveActivity(intent, 0) != null)
             NotificationCompat.Action(android.R.drawable.ic_menu_view, context.getString(R.string.sync_error_view_item),
-                    PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
         else
             null
     }
@@ -817,7 +817,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setContentTitle(notifyInvalidResourceTitle())
                 .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
                 .setSubText(mainAccount.name)
-                .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
                 .priority = NotificationCompat.PRIORITY_LOW

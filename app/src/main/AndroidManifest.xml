@@ -57,7 +57,8 @@
         <activity
             android:name=".ui.AccountsActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -102,7 +103,8 @@
         <activity
             android:name=".ui.setup.LoginActivity"
             android:label="@string/login_title"
-            android:parentActivityName=".ui.AccountsActivity">
+            android:parentActivityName=".ui.AccountsActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -219,7 +221,9 @@
                 android:resource="@xml/contacts"/>
         </service>
 
-        <receiver android:name=".BootCompletedReceiver">
+        <receiver
+            android:name=".BootCompletedReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

@@ -99,7 +99,7 @@ open class TasksSyncAdapterService: SyncAdapterService() {
 
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
                 if (intent.resolveActivity(pm) != null)
-                    notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
 
                 nm.notify(NotificationUtils.NOTIFY_OPENTASKS, notify.build())
                 syncResult.databaseError = true

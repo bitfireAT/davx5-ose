@@ -388,7 +388,7 @@ class DavService: IntentService("DavService") {
                     .setSmallIcon(R.drawable.ic_sync_problem_notify)
                     .setContentTitle(getString(R.string.dav_service_refresh_failed))
                     .setContentText(getString(R.string.dav_service_refresh_couldnt_refresh))
-                    .setContentIntent(PendingIntent.getActivity(this, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setContentIntent(PendingIntent.getActivity(this, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
                     .setSubText(account.name)
                     .setCategory(NotificationCompat.CATEGORY_ERROR)
                     .build()

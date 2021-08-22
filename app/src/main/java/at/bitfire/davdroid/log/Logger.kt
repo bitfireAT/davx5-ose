@@ -100,7 +100,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                 val shareIntent = Intent(Intent.ACTION_SEND, null, context, DebugInfoActivity::class.java)
                 shareIntent.putExtra(DebugInfoActivity.EXTRA_LOG_FILE, logFile.absolutePath)
                 shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                val pendingShare = PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                val pendingShare = PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 builder.addAction(NotificationCompat.Action.Builder(
                         R.drawable.ic_share,
                         context.getString(R.string.logging_notification_view_share),
@@ -110,7 +110,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                 val prefIntent = Intent(context, AppSettingsActivity::class.java)
                 prefIntent.putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, LOG_TO_FILE)
                 prefIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                val pendingPref = PendingIntent.getActivity(context, 0, prefIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                val pendingPref = PendingIntent.getActivity(context, 0, prefIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 builder.addAction(NotificationCompat.Action.Builder(
                         R.drawable.ic_settings,
                         context.getString(R.string.logging_notification_disable),
