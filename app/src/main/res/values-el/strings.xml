@@ -2,10 +2,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Ο λογαριασμός δεν υπάρχει (πια)</string>
   <string name="account_title_address_book">Βιβλίο διευθύνσεων DAVx⁵</string>
   <string name="address_books_authority_title">Βιβλία διευθύνσεων</string>
   <string name="help">Βοήθεια</string>
   <string name="manage_accounts">Διαχείριση λογαριασμών</string>
+  <string name="share">Διαμοιρασμός</string>
   <string name="notification_channel_debugging">Αποσφαλμάτωση</string>
   <string name="notification_channel_general">Άλλα σημαντικά μηνύματα</string>
   <string name="notification_channel_sync">Συγχρονισμός</string>
@@ -16,9 +18,13 @@
   <string name="notification_channel_sync_io_errors">Σφάλματα δικτύου και I/O</string>
   <string name="notification_channel_sync_io_errors_desc">Χρονικά όρια, προβλήματα σύνδεσης, κλπ. (συχνά προσωρινά)</string>
   <!--IntroActivity-->
+  <string name="intro_battery_not_whitelisted">Απενεργοποιημένο (δεν προτείνεται)</string>
+  <string name="intro_battery_whitelisted">Ενεργοποιημένο (προτείνεται)</string>
   <!--PermissionsActivity-->
+  <string name="permissions_all_title">Όλα τα παρακάτω</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
+  <string name="about_translations">Μεταφράσεις</string>
   <string name="about_libraries">Βιβλιοθήκες</string>
   <string name="about_version">Έκδοση %1$s (%2$d)</string>
   <string name="about_build_date">Μεταγλωττισμένο σε %s</string>
@@ -225,6 +231,7 @@
   <!--sync adapters-->
   <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
   <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>
+  <string name="sync_error_tasks_required_version">Ελάχιστη απαιτούμενη έκδοση: %1$s</string>
   <string name="sync_error_authentication_failed">Ο έλεγχος ταυτότητας απέτυχε (ελέγξτε τα διαπιστευτήρια σύνδεσης)</string>
   <string name="sync_error_io">Σφάλμα δικτύου ή I/O – %s</string>
   <string name="sync_error_http_dav">Σφάλμα διακομιστής HTTP – %s</string>

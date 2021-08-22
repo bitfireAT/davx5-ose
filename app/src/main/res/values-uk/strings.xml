@@ -2,12 +2,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Обліківки не існує (більше)</string>
   <string name="account_title_address_book">Адресна книга DAVx⁵</string>
   <string name="address_books_authority_title">Адресні книги</string>
   <string name="help">Допомога</string>
   <string name="manage_accounts">Керування обліковими записами</string>
   <string name="notification_channel_debugging">Зневадження</string>
   <string name="notification_channel_general">Інші важливі повідомлення</string>
+  <string name="notification_channel_status">Повідомлення з низьким пріоритетом</string>
   <string name="notification_channel_sync">Синхронізація</string>
   <string name="notification_channel_sync_errors">Помилки синхронізації</string>
   <string name="notification_channel_sync_errors_desc">Важливі помилки, що заважають синхронізації, наприклад несподівані</string>
@@ -16,9 +18,35 @@
   <string name="notification_channel_sync_io_errors">Помилка мережі та вводу/виводу</string>
   <string name="notification_channel_sync_io_errors_desc">Спливання часу відклику, проблеми зв\'язку, і т.п. (часто тимчасові)</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">Ваша дата. Ваш вибір.</string>
+  <string name="intro_slogan2">Візьміть під свій контроль.</string>
+  <string name="intro_battery_title">Інтервали регулярної синхронізації</string>
+  <string name="intro_battery_not_whitelisted">Вимкнено (не рекомендуєтсья)</string>
+  <string name="intro_battery_whitelisted">Дозволено (рекомендується)</string>
+  <string name="intro_battery_dont_show">Мені не потрібні інтервали регулярної синхронізації.*</string>
+  <string name="intro_more_info">Детальніше</string>
+  <string name="intro_tasks_title">Підтримка завдань</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_tasks_org">Завдання</string>
+  <string name="intro_tasks_dont_show">Мені не потрібна підтримка завдань.*</string>
+  <string name="intro_open_source_title">ПЗ з відкритим кодом</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">Дозволи</string>
+  <string name="permissions_all_status_off">Використовуйте це, щоб дозволити всі можливості (рекомендується)</string>
+  <string name="permissions_all_status_on">Усі дозволи надано</string>
+  <string name="permissions_calendar_title">Дозволи календаря</string>
+  <string name="permissions_calendar_status_off">Без синхронізації календаря (не рекомендується)</string>
+  <string name="permissions_calendar_status_on">Можлива синхронізація календаря</string>
+  <string name="permissions_opentasks_title">Дозволи OpenTasks</string>
+  <string name="permissions_tasksorg_title">Дозволи завдань</string>
+  <string name="permissions_tasks_status_not_installed">Без синхронізації завдань (не встановлено)</string>
+  <string name="permissions_tasks_status_off">Без синхронізації завдань (не рекомендується)</string>
+  <string name="permissions_tasks_status_on">Можлива синхронізація завдань</string>
+  <string name="permissions_app_settings">Налаштування застосунку</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">Дозволи SSID WiFi</string>
   <!--AboutActivity-->
+  <string name="about_translations">Переклади</string>
   <string name="about_libraries">Бібліотеки</string>
   <string name="about_version">Версія %1$s (%2$d)</string>
   <string name="about_build_date">Складено на %s</string>
@@ -26,6 +54,7 @@
   <string name="about_license_info_no_warranty">Цей програмний засіб постачається АБСОЛЮТНО БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ. Це вільне програмне забезпечення, і ви можете поширювати її, за деякими умовами.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Не вдалося створити файл звіту</string>
+  <string name="logging_notification_disable">Вимкнути</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Відкрити панель навігації</string>
   <string name="navigation_drawer_close">Закрити панель навігації</string>
@@ -47,6 +76,7 @@
   <string name="account_list_empty">Вітаємо у DAVx⁵!\n\nТепер можете додавати облікові записи CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Автоматичну синхронізацію вимкнено зі сторони системи</string>
   <string name="accounts_global_sync_enable">Увімкнути</string>
+  <string name="accounts_sync_all">Синхронізувати всі обліківки</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Не вдалося виявити сервіси</string>
   <string name="dav_service_refresh_couldnt_refresh">Не вдалося оновити перелік колекції</string>
@@ -66,6 +96,7 @@
   <string name="app_settings_override_proxy_host">Ім\'я хосту HTTP проксі</string>
   <string name="app_settings_override_proxy_port">Порт HTTP проксі</string>
   <string name="app_settings_security">Безпека</string>
+  <string name="app_settings_security_app_permissions">Дозволи застосунку</string>
   <string name="app_settings_distrust_system_certs">Не довіряти системним сертифікатам</string>
   <string name="app_settings_distrust_system_certs_on">Не довіряти системним та доданим користувачем сертифікатам</string>
   <string name="app_settings_distrust_system_certs_off">Довіряти системним та доданим користувачем сертифікатам (рекомендується)</string>
@@ -75,13 +106,23 @@
   <string name="app_settings_user_interface">Інтерфейс користувача</string>
   <string name="app_settings_notification_settings">Налаштування сповіщення</string>
   <string name="app_settings_notification_settings_summary">Керування каналами інформування та їх налаштуванням</string>
+  <string name="app_settings_theme_title">Вибрати тему</string>
+  <string name="app_settings_theme_summary">Чинна тема: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>Системна</item>
+    <item>Світла</item>
+    <item>Темна</item>
+  </string-array>
   <string name="app_settings_reset_hints">Скинути підказки</string>
   <string name="app_settings_reset_hints_summary">Включення підказок, які раніше були вимкнуті</string>
   <string name="app_settings_reset_hints_success">Всі підказки будуть показані знову</string>
+  <string name="app_settings_tasks_provider">Застосунок завдань</string>
+  <string name="app_settings_tasks_provider_none">Не знайдено сумісного застосунку завдань</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_permissions_action">Дозволи</string>
   <string name="account_no_address_books">Немає адресних книг (поки що).</string>
   <string name="account_no_calendars">Немає жодного календаря. (поки що)</string>
   <string name="account_no_webcals">Немає підписок на календар (поки що).</string>
@@ -92,6 +133,7 @@
   <string name="account_rename">Перейменувати обліковий запис</string>
   <string name="account_rename_new_name">Незбережені локальні дані можуть бути втрачені. Необхідно виконати синхронізацію після перейменування. Нова назва облікового запису:</string>
   <string name="account_rename_rename">Перейменувати</string>
+  <string name="account_rename_couldnt_rename">Не вдалося перейменувати облікувку</string>
   <string name="account_delete">Видалити запис</string>
   <string name="account_delete_confirmation_title">Дійсно видалити обліковий запис?</string>
   <string name="account_delete_confirmation_text">Всі локальні копії адресних книг, календарів та завдань будуть вилучені.</string>
@@ -127,9 +169,14 @@
   <string name="login_account_name_required">Потребує назви облікового запису</string>
   <string name="login_account_name_already_taken">Ім\'я запису вже зайняте</string>
   <string name="login_account_not_created">Обліковий запис не може бути створений</string>
+  <string name="login_use_username_password">Викор. імʼя користувача/пароль</string>
+  <string name="login_use_client_certificate">Викор. сертифікат клієнта</string>
+  <string name="login_no_certificate_found">Не знайдено сертифікат</string>
+  <string name="login_install_certificate">Встановити сертифікат</string>
   <string name="login_configuration_detection">Виявлення конфігурації</string>
   <string name="login_querying_server">Будь ласка, зачекайте, запит до серверу…</string>
   <string name="login_no_caldav_carddav">Не вдалося знайти  CalDAV чи CardDAV сервіс.</string>
+  <string name="login_username_password_wrong">Невірне імʼя користувача (електронна адреса)/пароль?</string>
   <string name="login_view_logs">Показати деталі</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Налаштування: %s</string>
@@ -156,6 +203,7 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Синхронізація відбуватиметься тільки через %s (вимагає ввімкнені служби локації)</string>
   <string name="settings_sync_wifi_only_ssids_off">Може використовуватись всі Wi-Fi з\'єднання</string>
   <string name="settings_sync_wifi_only_ssids_message">Назви (SSID) дозволених Wi-Fi мереж, розділені комами (залиште порожнім для всіх)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Керувати</string>
   <string name="settings_more_info_faq">Більше інформації (FAQ)</string>
   <string name="settings_authentication">Автентифікація</string>
   <string name="settings_username">Ім\'я користувача</string>
@@ -164,6 +212,7 @@
   <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
   <string name="settings_enter_password">Введіть Ваш пароль:</string>
   <string name="settings_certificate_alias">Прив\'язка сертифікату клієнта</string>
+  <string name="settings_certificate_alias_empty">Не вибрано сертифікат</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Інтервал синхронізації</string>
   <string name="settings_sync_time_range_past_none">Всі події будуть синхронізовані</string>
@@ -219,8 +268,15 @@
   <string name="collection_properties">Властивості</string>
   <string name="collection_properties_url">Адреса (URL):</string>
   <string name="collection_properties_copy_url">Скопіювати URL</string>
+  <string name="collection_properties_owner">Власник:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Інформація зневадження</string>
+  <string name="debug_info_archive_caption">Архів ZIP</string>
+  <string name="debug_info_http_error">Помилка HTTP</string>
+  <string name="debug_info_server_error">Помилка сервера</string>
+  <string name="debug_info_webdav_error">Помилка WebDAV</string>
+  <string name="debug_info_io_error">Помилка I/O</string>
+  <string name="debug_info_view_details">Переглянути деталі</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Трапилась помилка.</string>
   <string name="exception_httpexception">Трапилась помилка HTTP.</string>
