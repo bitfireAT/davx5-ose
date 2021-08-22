@@ -18,15 +18,15 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
 
-/*class TestSyncManager(
-        context: Context,
+class TestSyncManager(
+        adapter: TestSyncAdapter,
         account: Account,
         extras: Bundle,
         authority: String,
         syncResult: SyncResult,
         localCollection: LocalTestCollection,
         val mockWebServer: MockWebServer
-): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(context, account, AccountSettings(context, account), extras, authority, syncResult, localCollection) {
+): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(adapter, account, AccountSettings(adapter.context, account), extras, authority, syncResult, localCollection) {
 
     override fun prepare(): Boolean {
         collectionURL = mockWebServer.url("/")
@@ -97,4 +97,4 @@ import org.junit.Assert.assertEquals
         TODO("Not yet implemented")
     }
 
-}*/
+}

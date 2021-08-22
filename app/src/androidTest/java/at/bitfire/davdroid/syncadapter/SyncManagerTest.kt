@@ -22,7 +22,7 @@ import org.junit.*
 import org.junit.Assert.*
 import java.util.concurrent.TimeUnit
 
-/*class SyncManagerTest {
+class SyncManagerTest {
 
     companion object {
 
@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit
 
     private fun syncManager(collection: LocalTestCollection) =
             TestSyncManager(
-                    context,
+                    TestSyncAdapter(context),
                     account,
                     Bundle(),
                     "TestAuthority",
@@ -434,4 +434,4 @@ import java.util.concurrent.TimeUnit
         assertTrue(collection.entries.isEmpty())
     }
 
-}*/
+}
