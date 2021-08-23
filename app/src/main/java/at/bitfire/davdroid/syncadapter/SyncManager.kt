@@ -11,6 +11,7 @@ package at.bitfire.davdroid.syncadapter
 import android.accounts.Account
 import android.app.PendingIntent
 import android.content.ContentUris
+import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.net.Uri
@@ -58,17 +59,14 @@ import javax.net.ssl.SSLHandshakeException
 
 @UsesThreadContextClassLoader
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
-        val adapter: SyncAdapterService.SyncAdapter,
-        val account: Account,
-        val accountSettings: AccountSettings,
-        val extras: Bundle,
-        val authority: String,
-        val syncResult: SyncResult,
-        val localCollection: CollectionType
+    val context: Context,
+    val account: Account,
+    val accountSettings: AccountSettings,
+    val extras: Bundle,
+    val authority: String,
+    val syncResult: SyncResult,
+    val localCollection: CollectionType
 ): AutoCloseable {
-
-    val context = adapter.context
-    val workDispatcher = adapter.workDispatcher
 
     enum class SyncAlgorithm {
         PROPFIND_REPORT,
@@ -325,7 +323,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         var numUploaded = 0
 
         // upload dirty resources (parallelized)
-        runBlocking(workDispatcher) {
+        runBlocking(SyncAdapterService.workDispatcher) {
             for (local in localCollection.findDirty())
                 launch {
                     localExceptionContext(local) {
@@ -496,7 +494,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         val nDeleted = AtomicInteger()
         val nSkipped = AtomicInteger()
 
-        runBlocking(workDispatcher) {
+        runBlocking(SyncAdapterService.workDispatcher) {
             // download queue
             val toDownload = LinkedBlockingQueue<HttpUrl>()
             fun download(url: HttpUrl?) {

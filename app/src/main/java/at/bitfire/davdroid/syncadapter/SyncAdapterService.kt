@@ -21,22 +21,17 @@ import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.lang.ref.WeakReference
 import java.util.*
-import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
 abstract class SyncAdapterService: Service() {
 
     companion object {
-        /** Keep a list of running syncs to block multiple calls at the same time,
-         *  like run by some devices. Weak references are used for the case that a thread
-         *  is terminated and the `finally` block which cleans up [runningSyncs] is not
-         *  executed. */
-        private val runningSyncs = mutableListOf<WeakReference<Pair<String, Account>>>()
-
         /**
          * Specifies an list of IDs which are requested to be synchronized before
          * the other collections. For instance, if some calendars of a CalDAV
@@ -68,35 +63,34 @@ abstract class SyncAdapterService: Service() {
          * Useful if settings which modify parsing/local behavior have been changed.
          */
         const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
-    }
 
-    /**
-     * We use our own dispatcher to
-     *
-     *   - make sure that all threads have [Thread.getContextClassLoader] set, which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]),
-     *   - control the number of sync worker threads.
-     *
-     * Threads created by a service automatically have a contextClassLoader.
-     */
-    protected val workDispatcher =
-        Executors     // number of threads = number of CPUs/2, but max. 4
-            .newFixedThreadPool(Integer.min(Runtime.getRuntime().availableProcessors(), 4))
-            .asCoroutineDispatcher()
+        /** Keep a list of running syncs to block multiple calls at the same time,
+         *  like run by some devices. Weak references are used for the case that a thread
+         *  is terminated and the `finally` block which cleans up [runningSyncs] is not
+         *  executed. */
+        private val runningSyncs = mutableListOf<WeakReference<Pair<String, Account>>>()
+
+        /**
+         * We use our own dispatcher to
+         *
+         *   - make sure that all threads have [Thread.getContextClassLoader] set, which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]),
+         *   - control the global number of sync worker threads.
+         *
+         * Threads created by a service automatically have a contextClassLoader.
+         */
+        val workDispatcher =
+            ThreadPoolExecutor(0, Integer.min(Runtime.getRuntime().availableProcessors(), 6),
+                10, TimeUnit.SECONDS, LinkedBlockingQueue()).asCoroutineDispatcher()
+    }
 
 
     protected abstract fun syncAdapter(): AbstractThreadedSyncAdapter
 
     override fun onBind(intent: Intent?) = syncAdapter().syncAdapterBinder!!
 
-    override fun onDestroy() {
-        // shut down worker threads
-        workDispatcher.close()
-    }
-
 
     abstract class SyncAdapter(
-            context: Context,
-            val workDispatcher: CoroutineDispatcher
+            context: Context
     ): AbstractThreadedSyncAdapter(
             context,
             true    // isSyncable shouldn't be -1 because DAVx5 sets it to 0 or 1.

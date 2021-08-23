@@ -31,13 +31,10 @@ import java.util.logging.Level
 
 class AddressBooksSyncAdapterService : SyncAdapterService() {
 
-    override fun syncAdapter() = AddressBooksSyncAdapter(this, workDispatcher)
+    override fun syncAdapter() = AddressBooksSyncAdapter(this)
 
 
-    class AddressBooksSyncAdapter(
-            context: Context,
-            workDispatcher: CoroutineDispatcher,
-    ) : SyncAdapter(context, workDispatcher) {
+    class AddressBooksSyncAdapter(context: Context): SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {

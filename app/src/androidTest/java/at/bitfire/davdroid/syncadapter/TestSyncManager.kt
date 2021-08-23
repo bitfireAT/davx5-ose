@@ -19,14 +19,14 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
 
 class TestSyncManager(
-        adapter: TestSyncAdapter,
+        context: Context,
         account: Account,
         extras: Bundle,
         authority: String,
         syncResult: SyncResult,
         localCollection: LocalTestCollection,
         val mockWebServer: MockWebServer
-): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(adapter, account, AccountSettings(adapter.context, account), extras, authority, syncResult, localCollection) {
+): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(context, account, AccountSettings(context, account), extras, authority, syncResult, localCollection) {
 
     override fun prepare(): Boolean {
         collectionURL = mockWebServer.url("/")

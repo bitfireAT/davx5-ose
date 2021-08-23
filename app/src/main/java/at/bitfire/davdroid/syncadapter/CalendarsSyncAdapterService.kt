@@ -21,20 +21,16 @@ import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
-import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
 
 class CalendarsSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = CalendarsSyncAdapter(this, workDispatcher)
+    override fun syncAdapter() = CalendarsSyncAdapter(this)
 
 
-	class CalendarsSyncAdapter(
-        context: Context,
-        workDispatcher: CoroutineDispatcher
-    ): SyncAdapter(context, workDispatcher) {
+	class CalendarsSyncAdapter(context: Context): SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
@@ -60,7 +56,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
                         .sortedByDescending { priorityCalendars.contains(it.id) }
                 for (calendar in calendars) {
                     Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
-                    CalendarSyncManager(this, account, accountSettings, extras, authority, syncResult, calendar).use {
+                    CalendarSyncManager(context, account, accountSettings, extras, authority, syncResult, calendar).use {
                         it.performSync()
                     }
                 }

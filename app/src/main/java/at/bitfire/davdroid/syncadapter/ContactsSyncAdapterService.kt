@@ -18,7 +18,6 @@ import android.provider.ContactsContract
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
-import kotlinx.coroutines.CoroutineDispatcher
 import java.util.logging.Level
 
 class ContactsSyncAdapterService: SyncAdapterService() {
@@ -27,13 +26,10 @@ class ContactsSyncAdapterService: SyncAdapterService() {
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"
     }
 
-    override fun syncAdapter() = ContactsSyncAdapter(this, workDispatcher)
+    override fun syncAdapter() = ContactsSyncAdapter(this)
 
 
-	class ContactsSyncAdapter(
-            context: Context,
-            workDispatcher: CoroutineDispatcher
-    ): SyncAdapter(context, workDispatcher) {
+	class ContactsSyncAdapter(context: Context): SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
@@ -66,7 +62,7 @@ class ContactsSyncAdapterService: SyncAdapterService() {
                 Logger.log.info("Synchronizing address book: ${addressBook.url}")
                 Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
 
-                ContactsSyncManager(this, account, accountSettings, extras, authority, syncResult, provider, addressBook).use {
+                ContactsSyncManager(context, account, accountSettings, extras, authority, syncResult, provider, addressBook).use {
                     it.performSync()
                 }
             } catch(e: Exception) {

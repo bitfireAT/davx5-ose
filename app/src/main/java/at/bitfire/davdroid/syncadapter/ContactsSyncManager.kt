@@ -74,7 +74,7 @@ import java.util.logging.Level
  *   these "pending memberships" are assigned to the actual contacts and then cleaned up.
  */
 class ContactsSyncManager(
-    adapter: ContactsSyncAdapterService.ContactsSyncAdapter,
+    context: Context,
     account: Account,
     accountSettings: AccountSettings,
     extras: Bundle,
@@ -82,7 +82,7 @@ class ContactsSyncManager(
     syncResult: SyncResult,
     val provider: ContentProviderClient,
     localAddressBook: LocalAddressBook
-): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(adapter, account, accountSettings, extras, authority, syncResult, localAddressBook) {
+): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(context, account, accountSettings, extras, authority, syncResult, localAddressBook) {
 
     companion object {
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)

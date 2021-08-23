@@ -50,7 +50,7 @@ class SyncManagerTest {
 
     private fun syncManager(collection: LocalTestCollection) =
             TestSyncManager(
-                    TestSyncAdapter(context),
+                    context,
                     account,
                     Bundle(),
                     "TestAuthority",
