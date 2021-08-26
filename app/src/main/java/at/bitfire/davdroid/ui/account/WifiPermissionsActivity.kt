@@ -47,9 +47,10 @@ class WifiPermissionsActivity: AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val binding = DataBindingUtil.setContentView<ActivityWifiPermissionsBinding>(this, R.layout.activity_wifi_permissions)
+        val binding = ActivityWifiPermissionsBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.model = model
+        setContentView(binding.root)
 
         model.needLocation.observe(this) { needPermission ->
             if (needPermission && model.haveLocation.value == false)
@@ -58,7 +59,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
 
         model.haveBackgroundLocation.observe(this) { status ->
             val label = if (Build.VERSION.SDK_INT >= 30)
-                    packageManager.getBackgroundPermissionOptionLabel()
+                    packageManager.backgroundPermissionOptionLabel
                 else
                     getString(R.string.wifi_permissions_background_location_permission_label)
             binding.backgroundLocationStatus.text = HtmlCompat.fromHtml(getString(

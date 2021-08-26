@@ -35,7 +35,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Location permission"
+                android:text="@string/wifi_permissions_location_permission"
                 android:textAlignment="viewStart"
                 android:visibility="@{model.haveLocation != null ? View.VISIBLE : View.GONE}"
                 app:layout_constraintEnd_toStartOf="@id/locationSwitch"

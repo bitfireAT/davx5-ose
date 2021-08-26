@@ -87,7 +87,7 @@
     <!-- WifiPermissionsActivity -->
     <string name="wifi_permissions_label">WiFi SSID permissions</string>
     <string name="wifi_permissions_intro">To be able to access the current WiFi name (SSID), these conditions must be met:</string>
-    <string name="wifi_permissions_location_permission">Location permission</string>
+    <string name="wifi_permissions_location_permission">Precise location permission</string>
     <string name="wifi_permissions_location_permission_on">Location permission granted</string>
     <string name="wifi_permissions_location_permission_off">Location permission denied</string>
     <string name="wifi_permissions_background_location_permission">Background location permission</string>
