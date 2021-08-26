@@ -9,10 +9,12 @@ cache:
      - .gradle/
 
 test:
+  stage: test
   tags:
     - privileged
-  script:
+  before_script:
    - curl -d "email=gitlab%40bitfire.at&password=$DAVTEST_TOKEN&action=Request+access" -X POST "https://davtest.dev001.net/access/"
+  script:
    - start-emulator.sh
    - ./gradlew app:check app:connectedCheck
   artifacts:
@@ -22,6 +24,7 @@ test:
       - build/reports
 
 pages:
+  stage: deploy
   script:
     - ./gradlew app:dokka
     - mkdir public && mv app/build/dokka public
