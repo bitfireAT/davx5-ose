@@ -1,23 +1,22 @@
 package at.bitfire.davdroid.syncadapter.groups
 
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.syncadapter.ContactsSyncManager
 import at.bitfire.vcard4android.Contact
 
-class CategoriesStrategy(val syncManager: ContactsSyncManager): ContactGroupStrategy {
-
-    private val localCollection = syncManager.localCollection
+class CategoriesStrategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
 
     override fun beforeUploadDirty() {
         // groups with DELETED=1: set all members to dirty, then remove group
-        for (group in localCollection.findDeletedGroups()) {
+        for (group in addressBook.findDeletedGroups()) {
             Logger.log.fine("Finally removing group $group")
             group.markMembersDirty()
             group.delete()
         }
 
         // groups with DIRTY=1: mark all members as dirty, then clean DIRTY flag of group
-        for (group in localCollection.findDirtyGroups()) {
+        for (group in addressBook.findDirtyGroups()) {
             Logger.log.fine("Marking members of modified group $group as dirty")
             group.markMembersDirty()
             group.clearDirty(null, null)
@@ -34,7 +33,7 @@ class CategoriesStrategy(val syncManager: ContactsSyncManager): ContactGroupStra
 
     override fun postProcess() {
         Logger.log.info("Removing empty groups")
-        localCollection.removeEmptyGroups()
+        addressBook.removeEmptyGroups()
     }
 
 }

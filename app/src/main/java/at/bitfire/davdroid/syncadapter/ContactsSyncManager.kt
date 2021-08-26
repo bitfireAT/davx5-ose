@@ -92,8 +92,8 @@ class ContactsSyncManager(
 
     private var hasVCard4 = false
     private val groupStrategy = when (accountSettings.getGroupMethod()) {
-        GroupMethod.GROUP_VCARDS -> VCard4Strategy(this)
-        GroupMethod.CATEGORIES -> CategoriesStrategy(this)
+        GroupMethod.GROUP_VCARDS -> VCard4Strategy(localAddressBook)
+        GroupMethod.CATEGORIES -> CategoriesStrategy(localAddressBook)
     }
 
     /**
