@@ -15,6 +15,9 @@
 # ical4j: keep all iCalendar properties/parameters (used via reflection)
 -keep class net.fortuna.ical4j.** { *; }
 
+# XmlPullParser
+-keep class org.xmlpull.** { *; }
+
 # DAVx⁵ + libs
 -keep class at.bitfire.** { *; }       # all DAVx⁵ code is required
 
