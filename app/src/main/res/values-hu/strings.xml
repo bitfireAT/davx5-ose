@@ -69,7 +69,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID engedélyek</string>
   <string name="wifi_permissions_intro">A jelenlegi WiFi nevének (SSID) az eléréséhez a következő feltételeknek kell teljesülniük:</string>
-  <string name="wifi_permissions_location_permission">Helyadat engedélyek</string>
   <string name="wifi_permissions_location_permission_on">Helyadat engedélyek megadva</string>
   <string name="wifi_permissions_location_permission_off">Helyadat engedélyek megtagadva</string>
   <string name="wifi_permissions_background_location_permission">Helyadatok engedélyezése a a háttérben</string>

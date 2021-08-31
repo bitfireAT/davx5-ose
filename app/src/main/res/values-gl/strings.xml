@@ -12,8 +12,8 @@
   <string name="notification_channel_general">Outras mensaxes importantes</string>
   <string name="notification_channel_status">Mensaxes de estado de baixa prioridade</string>
   <string name="notification_channel_sync">Sincronización</string>
-  <string name="notification_channel_sync_errors">Fallos de sincronización</string>
-  <string name="notification_channel_sync_errors_desc">Fallos importantes que deteñen a sincronización como respostas non agardadas do servidor</string>
+  <string name="notification_channel_sync_errors">Fallos na sincronización</string>
+  <string name="notification_channel_sync_errors_desc">Erros importantes como respostas non agardadas do servidor que deteñen a sincronización</string>
   <string name="notification_channel_sync_warnings">Avisos sobre a sincronización</string>
   <string name="notification_channel_sync_warnings_desc">Problemas non-fatais de sincronización como certos ficheiros non válidos</string>
   <string name="notification_channel_sync_io_errors">Fallos de rede e I/O</string>
@@ -40,14 +40,14 @@
   <string name="intro_tasks_no_app_store">Sen tenda de apps dispoñible</string>
   <string name="intro_tasks_dont_show">Non necesito soporte para tarefas.*</string>
   <string name="intro_open_source_title">Software de código aberto</string>
-  <string name="intro_open_source_text">Encántanos que uses %s, que é software de código aberto. O desenvolvemento, mantemento e soporte son un traballo difícil. Considera contribuír (hai moitos xeitos) ou facer unha doazón. Sería de agradecer!</string>
+  <string name="intro_open_source_text">Encántanos que uses %s, que é software de código aberto. O desenvolvemento, mantemento e soporte son un traballo difícil. Considera colaborar (hai moitos xeitos) ou facer unha doazón. Sería de agradecer!</string>
   <string name="intro_open_source_details">Como contribuír/doar</string>
   <string name="intro_open_source_dont_show">Non mostrar no futuro próximo</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permisos</string>
-  <string name="permissions_text">1%s require permisos para funcionar axeitadamente.</string>
-  <string name="permissions_all_title">Todos os de arriba</string>
-  <string name="permissions_all_status_off">Use isto para habilitar todas as características (recomendado)</string>
+  <string name="permissions_text">%s require permisos para funcionar axeitadamente.</string>
+  <string name="permissions_all_title">Todos os de abaixo</string>
+  <string name="permissions_all_status_off">Usa isto para habilitar tódalas características (recomendado)</string>
   <string name="permissions_all_status_on">Todos os permisos concedidos</string>
   <string name="permissions_contacts_title">Permisos de contactos</string>
   <string name="permissions_contacts_status_off">Sen sincronización de contactos (non recomendado) </string>
@@ -56,7 +56,7 @@
   <string name="permissions_calendar_status_off">Sen sincronización de calendario (non se recomenda)</string>
   <string name="permissions_calendar_status_on">É posible sincronizar o calendario</string>
   <string name="permissions_opentasks_title">Permisos para OpenTasks</string>
-  <string name="permissions_tasksorg_title">Permisos para Tarefas</string>
+  <string name="permissions_tasksorg_title">Permisos para Tasks</string>
   <string name="permissions_tasks_status_not_installed">Sen sincronización de tarefas (non instalado) </string>
   <string name="permissions_tasks_status_off">Sen sincronización de tarefas (non se recomenda)</string>
   <string name="permissions_tasks_status_on">É posible sincronizar as tarefas</string>
@@ -64,12 +64,12 @@
   <string name="permissions_autoreset_status_off">Os permisos poden restablecerse automáticamente (non recomendado)</string>
   <string name="permissions_autoreset_status_on">Os permisos non se restablecerán automáticamente</string>
   <string name="permissions_autoreset_instruction">Preme en Permisos &gt; desmarca \"Eliminar permisos se a app non se usa\"</string>
-  <string name="permissions_app_settings_hint">Se unha opción non funciona, use configuracións da aplicación / Permisos.</string>
+  <string name="permissions_app_settings_hint">Se unha opción non funciona, usa axustes da aplicación / Permisos.</string>
   <string name="permissions_app_settings">Permisos da aplicación</string>
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Permisos WiFi SSID</string>
-  <string name="wifi_permissions_intro">Para poder acceder ó WiFi (SSID) actual, deben darse estas condicións:</string>
-  <string name="wifi_permissions_location_permission">Permiso de localización</string>
+  <string name="wifi_permissions_intro">Para poder acceder á WiFi (SSID) actual, deben darse estas condicións:</string>
+  <string name="wifi_permissions_location_permission">Permiso para localización precisa</string>
   <string name="wifi_permissions_location_permission_on">Permiso de localización outorgado</string>
   <string name="wifi_permissions_location_permission_off">Permiso de localización denegado</string>
   <string name="wifi_permissions_background_location_permission">Permiso de localización en segundo plano</string>

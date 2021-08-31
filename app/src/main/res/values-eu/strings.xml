@@ -69,7 +69,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID baimenak</string>
   <string name="wifi_permissions_intro">Uneko WiFi izena (SSID) atzitzeko, baldintza hauek bete behar dira:</string>
-  <string name="wifi_permissions_location_permission">Kokapen baimena</string>
   <string name="wifi_permissions_location_permission_on">Kokapen baimena emanda</string>
   <string name="wifi_permissions_location_permission_off">Kokapen baimena ukatuta</string>
   <string name="wifi_permissions_background_location_permission">Atzeko planoko kokapen baimena</string>

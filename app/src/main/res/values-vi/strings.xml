@@ -69,7 +69,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Quyền WiFi SSID</string>
   <string name="wifi_permissions_intro">Để có thể truy cập tên mạng WiFi hiện tại (SSID), những điều kiện này phải được đáp ứng:</string>
-  <string name="wifi_permissions_location_permission">Quyền vị trí</string>
   <string name="wifi_permissions_location_permission_on">Đã cấp quyền vị trí</string>
   <string name="wifi_permissions_location_permission_off">Đã từ chối quyền vị trí</string>
   <string name="wifi_permissions_background_location_permission">Quyền vị trí trong nền</string>

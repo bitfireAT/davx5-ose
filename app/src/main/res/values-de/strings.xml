@@ -69,7 +69,7 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WLAN-SSID-Berechtigungen</string>
   <string name="wifi_permissions_intro">Um auf den aktuellen WLAN-Namen (SSID) zugreifen zu können, müssen folgende Bedingungen erfüllt werden:</string>
-  <string name="wifi_permissions_location_permission">Standort-Berechtigung</string>
+  <string name="wifi_permissions_location_permission">Exakter Standort-Berechtigung</string>
   <string name="wifi_permissions_location_permission_on">Standort-Zugriff erlaubt</string>
   <string name="wifi_permissions_location_permission_off">Standort-Zugriff verweigert</string>
   <string name="wifi_permissions_background_location_permission">Hintergrund-Standort-Berechtigung</string>

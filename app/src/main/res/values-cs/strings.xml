@@ -69,7 +69,7 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Oprávnění k přístupu k názvům (SSID) WiFi sítí</string>
   <string name="wifi_permissions_intro">Aby bylo možné přistupovat k názvu (SSID) WiFi sítě, ke které jste připojení, je třeba, aby byly splněny tyto podmínky:</string>
-  <string name="wifi_permissions_location_permission">Oprávnění pro přístup k poloze</string>
+  <string name="wifi_permissions_location_permission">Oprávnění pro přístup k přesné poloze</string>
   <string name="wifi_permissions_location_permission_on">Oprávnění pro přístup k poloze uděleno</string>
   <string name="wifi_permissions_location_permission_off">Oprávnění pro přístup k poloze odepřeno</string>
   <string name="wifi_permissions_background_location_permission">Oprávnění pro přístup k poloze na pozadí</string>
