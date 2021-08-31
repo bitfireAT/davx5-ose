@@ -67,7 +67,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Permisos de l\'SSID del WiFi</string>
   <string name="wifi_permissions_intro">Per tal de poder accedir al nom de la xarxa de WiFi connectada (SSID), s\'han de complir els següents requisits:</string>
-  <string name="wifi_permissions_location_permission">Permís d\'ubicació</string>
   <string name="wifi_permissions_location_permission_on">Permís d\'ubicació concedit</string>
   <string name="wifi_permissions_location_permission_off">Permís d\'ubicació rebutjat</string>
   <string name="wifi_permissions_background_location_permission">Permís d\'ubicació en segon pla</string>

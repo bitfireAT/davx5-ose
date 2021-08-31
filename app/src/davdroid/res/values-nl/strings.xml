@@ -69,7 +69,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID machtigingen</string>
   <string name="wifi_permissions_intro">Om toegang te krijgen tot de huidige WiFi-naam (SSID), moet aan deze voorwaarden zijn voldaan:</string>
-  <string name="wifi_permissions_location_permission">Locatie machtigingen</string>
   <string name="wifi_permissions_location_permission_on">Locatie machtiging verleend</string>
   <string name="wifi_permissions_location_permission_off">Locatie machtiging geweigerd</string>
   <string name="wifi_permissions_background_location_permission">Toestemming voor locatieservice in de achtergrond</string>

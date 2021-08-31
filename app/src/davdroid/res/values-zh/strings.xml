@@ -69,7 +69,7 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID权限</string>
   <string name="wifi_permissions_intro">要访问当前的WiFi名称(SSID)，必须满足以下条件: </string>
-  <string name="wifi_permissions_location_permission">位置权限</string>
+  <string name="wifi_permissions_location_permission">精确位置权限</string>
   <string name="wifi_permissions_location_permission_on">已授予位置权限</string>
   <string name="wifi_permissions_location_permission_off">位置权限被拒</string>
   <string name="wifi_permissions_background_location_permission">后台位置权限</string>

@@ -69,7 +69,7 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Uprawnienia WiFi SSID</string>
   <string name="wifi_permissions_intro">Aby móc uzyskać dostęp do obecnej nazwy WiFi (SSID), następujące warunki muszą być spełnione:</string>
-  <string name="wifi_permissions_location_permission">Uprawnienia lokalizacji</string>
+  <string name="wifi_permissions_location_permission">Uprawnienie dokładnej lokalizacji</string>
   <string name="wifi_permissions_location_permission_on">Uprawnienie lokalizacji nadane</string>
   <string name="wifi_permissions_location_permission_off">Uprawnienie lokalizacji odebrane</string>
   <string name="wifi_permissions_background_location_permission">Uprawnienie lokalizacji w tle</string>

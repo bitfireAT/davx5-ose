@@ -60,7 +60,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID разрешения</string>
   <string name="wifi_permissions_intro">За да мога да прочета текущото име на WiFi мрежата (SSID) ми трябва:</string>
-  <string name="wifi_permissions_location_permission">Разрешения за местоположението</string>
   <string name="wifi_permissions_location_permission_on">Има разрешение за местоположението</string>
   <string name="wifi_permissions_location_permission_off">Липсва разрешение за местоположението</string>
   <string name="wifi_permissions_background_location_disclaimer">%sизползва разрешението за местоположение за да може да прочете името на мрежата, когато се изисква синхронизиране само през определена мрежа.  Това се случва дори и когато приложението се изпълнява във фона.  Не се събират, съхраняват, обработват и разпространяват данни за местоположението.</string>

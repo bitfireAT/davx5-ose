@@ -67,7 +67,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">مجوزهای SSID WiFi</string>
   <string name="wifi_permissions_intro">برای دسترسی به نام WiFi فعلی (SSID) ، باید این شرایط را داشته باشید:</string>
-  <string name="wifi_permissions_location_permission">مجوز مکان</string>
   <string name="wifi_permissions_location_permission_on">مجوز مکان اعطا شده است</string>
   <string name="wifi_permissions_location_permission_off">مجوز مکان رد شد</string>
   <string name="wifi_permissions_background_location_permission">مجوز مکان پس زمینه</string>

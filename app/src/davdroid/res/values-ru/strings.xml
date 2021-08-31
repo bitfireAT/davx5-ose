@@ -69,7 +69,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Разрешения WiFi SSID</string>
   <string name="wifi_permissions_intro">Для получения доступа к названию текущей сети WiFi (SSID), должны быть выполнены следующие условия:</string>
-  <string name="wifi_permissions_location_permission">Разрешение на определение местоположения</string>
   <string name="wifi_permissions_location_permission_on">Разрешение на определение местоположения предоставлено</string>
   <string name="wifi_permissions_location_permission_off">Разрешение на определение местоположения не предоставлено</string>
   <string name="wifi_permissions_background_location_permission">Разрешение на фоновое определение местоположения</string>

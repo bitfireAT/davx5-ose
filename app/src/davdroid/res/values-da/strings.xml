@@ -69,7 +69,7 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Trådløs SSID rettigheder</string>
   <string name="wifi_permissions_intro">For at tilgå nuværende trådløs navn (SSID), skal følgende betingelser være opfyldt:</string>
-  <string name="wifi_permissions_location_permission">Placering rettighed</string>
+  <string name="wifi_permissions_location_permission">Præcis placerings tilladelse</string>
   <string name="wifi_permissions_location_permission_on">Placering rettighed tildelt</string>
   <string name="wifi_permissions_location_permission_off">Placering rettighed afvist</string>
   <string name="wifi_permissions_background_location_permission">Baggrund placerings-rettighed</string>

@@ -69,7 +69,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Permisos del SSID WiFi</string>
   <string name="wifi_permissions_intro">Para poder acceder al nombre del WiFi actual (SSID), deben cumplirse estas condiciones:</string>
-  <string name="wifi_permissions_location_permission">Permiso de ubicación</string>
   <string name="wifi_permissions_location_permission_on">Permiso de ubicación concedido</string>
   <string name="wifi_permissions_location_permission_off">Permiso de ubicación denegado</string>
   <string name="wifi_permissions_background_location_permission">Permiso de ubicación en segundo plano</string>
