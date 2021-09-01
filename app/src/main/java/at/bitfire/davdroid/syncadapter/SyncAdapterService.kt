@@ -22,11 +22,13 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
 import kotlinx.coroutines.asCoroutineDispatcher
-import java.lang.ref.WeakReference
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 import java.util.logging.Level
 
 abstract class SyncAdapterService: Service() {
@@ -64,11 +66,9 @@ abstract class SyncAdapterService: Service() {
          */
         const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
 
-        /** Keep a list of running syncs to block multiple calls at the same time,
-         *  like run by some devices. Weak references are used for the case that a thread
-         *  is terminated and the `finally` block which cleans up [runningSyncs] is not
-         *  executed. */
-        private val runningSyncs = mutableListOf<WeakReference<Pair<String, Account>>>()
+        /** Keep a list of running syncs to block multiple calls at the same time, which
+         * should not occur but sometimes do occur. */
+        private val runningSyncs = ConcurrentHashMap<Pair<String, Account>, Lock>()
 
         /**
          * We use our own dispatcher to
@@ -117,31 +117,33 @@ abstract class SyncAdapterService: Service() {
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             Logger.log.log(Level.INFO, "$authority sync of $account has been initiated", extras.keySet().joinToString(", "))
 
-            // prevent multiple syncs of the same authority to be run for the same account
+            /*
+            Prevent multiple syncs of the same authority and account to run simultaneously.
+             */
             val currentSync = Pair(authority, account)
-            synchronized(runningSyncs) {
-                if (runningSyncs.any { it.get() == currentSync }) {
-                    Logger.log.warning("There's already another $authority sync running for $account, aborting")
-                    return
+            val currentSyncLock = runningSyncs.getOrPut(currentSync) { ReentrantLock() }
+            if (currentSyncLock.tryLock())
+                try {
+                    // required for ServiceLoader -> ical4j -> ical4android
+                    Thread.currentThread().contextClassLoader = context.classLoader
+
+                    try {
+                        if (/* always true in open-source edition */ true)
+                            sync(account, extras, authority, provider, syncResult)
+                    } catch (e: InvalidAccountException) {
+                        Logger.log.log(Level.WARNING, "Account was removed during synchronization", e)
+                    }
+
+                    Logger.log.log(Level.INFO, "Sync for $currentSync finished", syncResult)
+                } finally {
+                    currentSyncLock.unlock()
+                    // from now on, further threads can re-use the existing lock
+
+                    runningSyncs -= currentSync
+                    // from now on, further threads will create a new lock for the authority/account pair
                 }
-                runningSyncs += WeakReference(currentSync)
-            }
-
-            // required for ServiceLoader -> ical4j -> ical4android
-            Thread.currentThread().contextClassLoader = context.classLoader
-
-            try {
-                if (/* always true in open-source edition */ true)
-                    sync(account, extras, authority, provider, syncResult)
-            } catch (e: InvalidAccountException) {
-                Logger.log.log(Level.WARNING, "Account was removed during synchronization", e)
-            } finally {
-                synchronized(runningSyncs) {
-                    runningSyncs.removeAll { it.get() == null || it.get() == currentSync }
-                }
-            }
-
-            Logger.log.log(Level.INFO, "Sync for $currentSync finished", syncResult)
+            else
+                Logger.log.warning("There's already another $authority sync running for $account, aborting")
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
