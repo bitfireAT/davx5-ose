@@ -494,7 +494,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         val nDeleted = AtomicInteger()
         val nSkipped = AtomicInteger()
 
-        runBlocking(SyncAdapterService.workDispatcher) {
+        runBlocking {
             // download queue
             val toDownload = LinkedBlockingQueue<HttpUrl>()
             fun download(url: HttpUrl?) {
@@ -512,52 +512,54 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 }
             }
 
-            listRemote { response, relation ->
-                // ignore non-members
-                if (relation != Response.HrefRelation.MEMBER)
-                    return@listRemote
+            withContext(SyncAdapterService.workDispatcher) {    // structured concurrency: blocks until all inner coroutines are finished
+                listRemote { response, relation ->
+                    // ignore non-members
+                    if (relation != Response.HrefRelation.MEMBER)
+                        return@listRemote
 
-                // ignore collections
-                if (response[at.bitfire.dav4jvm.property.ResourceType::class.java]?.types?.contains(at.bitfire.dav4jvm.property.ResourceType.COLLECTION) == true)
-                    return@listRemote
+                    // ignore collections
+                    if (response[at.bitfire.dav4jvm.property.ResourceType::class.java]?.types?.contains(at.bitfire.dav4jvm.property.ResourceType.COLLECTION) == true)
+                        return@listRemote
 
-                val name = response.hrefName()
+                    val name = response.hrefName()
 
-                if (response.isSuccess()) {
-                    Logger.log.fine("Found remote resource: $name")
+                    if (response.isSuccess()) {
+                        Logger.log.fine("Found remote resource: $name")
 
-                    launch {
-                        localExceptionContext(localCollection.findByName(name)) { local ->
-                            if (local == null) {
-                                Logger.log.info("$name has been added remotely, queueing download")
-                                download(response.href)
-                                nInserted.incrementAndGet()
-                            } else {
-                                val localETag = local.eTag
-                                val remoteETag = response[GetETag::class.java]?.eTag
-                                        ?: throw DavException("Server didn't provide ETag")
-                                if (localETag == remoteETag) {
-                                    Logger.log.info("$name has not been changed on server (ETag still $remoteETag)")
-                                    nSkipped.incrementAndGet()
-                                } else {
-                                    Logger.log.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                        launch {
+                            localExceptionContext(localCollection.findByName(name)) { local ->
+                                if (local == null) {
+                                    Logger.log.info("$name has been added remotely, queueing download")
                                     download(response.href)
-                                    nUpdated.incrementAndGet()
-                                }
+                                    nInserted.incrementAndGet()
+                                } else {
+                                    val localETag = local.eTag
+                                    val remoteETag = response[GetETag::class.java]?.eTag
+                                            ?: throw DavException("Server didn't provide ETag")
+                                    if (localETag == remoteETag) {
+                                        Logger.log.info("$name has not been changed on server (ETag still $remoteETag)")
+                                        nSkipped.incrementAndGet()
+                                    } else {
+                                        Logger.log.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                                        download(response.href)
+                                        nUpdated.incrementAndGet()
+                                    }
 
-                                // mark as remotely present, so that this resource won't be deleted at the end
-                                local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                                    // mark as remotely present, so that this resource won't be deleted at the end
+                                    local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                                }
                             }
                         }
-                    }
 
-                } else if (response.status?.code == HttpURLConnection.HTTP_NOT_FOUND) {
-                    // collection sync: resource has been deleted on remote server
-                    launch {
-                        localExceptionContext(localCollection.findByName(name)) { local ->
-                            Logger.log.info("$name has been deleted on server, deleting locally")
-                            local?.delete()
-                            nDeleted.incrementAndGet()
+                    } else if (response.status?.code == HttpURLConnection.HTTP_NOT_FOUND) {
+                        // collection sync: resource has been deleted on remote server
+                        launch {
+                            localExceptionContext(localCollection.findByName(name)) { local ->
+                                Logger.log.info("$name has been deleted on server, deleting locally")
+                                local?.delete()
+                                nDeleted.incrementAndGet()
+                            }
                         }
                     }
                 }
