@@ -1,7 +1,7 @@
 package at.bitfire.davdroid.model
 
 import androidx.lifecycle.LiveData
-import androidx.paging.DataSource
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -9,6 +9,9 @@ import androidx.room.Query
 
 @Dao
 interface CollectionDao: SyncableDao<Collection> {
+
+    @Query("SELECT DISTINCT color FROM collection WHERE serviceId=:id")
+    fun colorsByService(id: Long): LiveData<List<Int>>
 
     @Query("SELECT * FROM collection WHERE id=:id")
     fun get(id: Long): Collection?
@@ -26,13 +29,13 @@ interface CollectionDao: SyncableDao<Collection> {
      */
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type " +
             "AND (supportsVTODO OR supportsVEVENT OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL)) ORDER BY displayName, URL")
-    fun pageByServiceAndType(serviceId: Long, type: String): DataSource.Factory<Int, Collection>
+    fun pageByServiceAndType(serviceId: Long, type: String): PagingSource<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync")
     fun getByServiceAndSync(serviceId: Long): List<Collection>
 
     @Query("SELECT collection.* FROM collection, homeset WHERE collection.serviceId=:serviceId AND type=:type AND homeSetId=homeset.id AND homeset.personal ORDER BY collection.displayName, collection.url")
-    fun pagePersonalByServiceAndType(serviceId: Long, type: String): DataSource.Factory<Int, Collection>
+    fun pagePersonalByServiceAndType(serviceId: Long, type: String): PagingSource<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE url=:url")
     fun getByUrl(url: String): Collection?

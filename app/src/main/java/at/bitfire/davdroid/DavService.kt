@@ -24,8 +24,8 @@ import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.*
+import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils

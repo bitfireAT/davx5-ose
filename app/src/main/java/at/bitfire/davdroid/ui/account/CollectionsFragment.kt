@@ -14,9 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
-import androidx.paging.PagedList
-import androidx.paging.PagedListAdapter
-import androidx.paging.toLiveData
+import androidx.paging.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +31,8 @@ import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.PermissionsActivity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -42,7 +42,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         const val EXTRA_COLLECTION_TYPE = "collectionType"
     }
 
-    protected var _binding: AccountCollectionsBinding? = null
+    private var _binding: AccountCollectionsBinding? = null
     protected val binding get() = _binding!!
 
     val accountModel by activityViewModels<AccountActivity.Model>()
@@ -54,12 +54,12 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         }
     }
 
-    abstract val noCollectionsStringId: Int
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
+
+    abstract val noCollectionsStringId: Int
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = AccountCollectionsBinding.inflate(inflater, container, false)
@@ -86,13 +86,10 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         model.hasWriteableCollections.observe(viewLifecycleOwner, Observer {
             requireActivity().invalidateOptionsMenu()
         })
-        model.collections.observe(viewLifecycleOwner, Observer { collections ->
-            val colors = collections.orEmpty()
-                    .filterNotNull()
-                    .mapNotNull { it.color }
-                    .distinct()
-                    .ifEmpty { listOf(Constants.DAVDROID_GREEN_RGBA) }
-            binding.swipeRefresh.setColorSchemeColors(*colors.toIntArray())
+        model.collectionsColors.observe(viewLifecycleOwner, Observer { colors: List<Int?> ->
+            val realColors = colors.filterNotNull()
+            if (realColors.isNotEmpty())
+                binding.swipeRefresh.setColorSchemeColors(*realColors.toIntArray())
         })
         binding.swipeRefresh.setOnRefreshListener(this)
 
@@ -117,17 +114,29 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val adapter = createAdapter()
         binding.list.layoutManager = LinearLayoutManager(requireActivity())
         binding.list.adapter = adapter
-        model.collections.observe(viewLifecycleOwner, Observer { data ->
-            adapter.submitList(data)
-
-            if (data.isEmpty()) {
-                binding.list.visibility = View.GONE
-                binding.empty.visibility = View.VISIBLE
-            } else {
-                binding.list.visibility = View.VISIBLE
-                binding.empty.visibility = View.GONE
+        model.collectionsPager.observe(viewLifecycleOwner, Observer { data ->
+            lifecycleScope.launch {
+                val colors = data.flow.map { pagingData ->
+                    pagingData.map { collection ->
+                        collection.color ?: Constants.DAVDROID_GREEN_RGBA
+                    }
+                }
+                data.flow.collectLatest { pagingData ->
+                    adapter.submitData(pagingData)
+                }
             }
         })
+        adapter.addLoadStateListener { loadStates ->
+            if (loadStates.refresh is LoadState.NotLoading) {
+                if (adapter.itemCount > 0) {
+                    binding.list.visibility = View.VISIBLE
+                    binding.empty.visibility = View.GONE
+                } else {
+                    binding.list.visibility = View.GONE
+                    binding.empty.visibility = View.VISIBLE
+                }
+            }
+        }
 
         binding.noCollections.setText(noCollectionsStringId)
     }
@@ -188,7 +197,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
     abstract class CollectionAdapter(
             protected val accountModel: AccountActivity.Model
-    ): PagedListAdapter<Collection, CollectionViewHolder<*>>(DIFF_CALLBACK) {
+    ): PagingDataAdapter<Collection, CollectionViewHolder<*>>(DIFF_CALLBACK) {
 
         companion object {
             private val DIFF_CALLBACK = object: DiffUtil.ItemCallback<Collection>() {
@@ -263,22 +272,27 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         // cache task provider
         val taskProvider by lazy { TaskUtils.currentProvider(context) }
 
-        val hasWriteableCollections: LiveData<Boolean> = Transformations.switchMap(serviceId) { service ->
-            db.homeSetDao().hasBindableByService(service)
-        }
-        val collections: LiveData<PagedList<Collection>> =
-                Transformations.switchMap(accountModel.showOnlyPersonal) { onlyPersonal ->
-                    if (onlyPersonal)
-                        // only personal collections
-                        Transformations.switchMap(serviceId) { _serviceId ->
-                            db.collectionDao().pagePersonalByServiceAndType(_serviceId, collectionType).toLiveData(25)
-                        }
-                    else
-                        // all collections
-                        Transformations.switchMap(serviceId) { _serviceId ->
-                            db.collectionDao().pageByServiceAndType(_serviceId, collectionType).toLiveData(25)
-                        }
+        val hasWriteableCollections: LiveData<Boolean> =
+            Transformations.switchMap(serviceId) { service ->
+                db.homeSetDao().hasBindableByService(service)
+            }
+        val collectionsColors: LiveData<List<Int>> =
+            Transformations.switchMap(serviceId) { service ->
+                db.collectionDao().colorsByService(service)
+            }
+        val collectionsPager: LiveData<Pager<Int, Collection>> =
+            Transformations.switchMap(accountModel.showOnlyPersonal) { onlyPersonal ->
+                Transformations.map(serviceId) { service ->
+                    Pager(PagingConfig(pageSize = 25)) {
+                        if (onlyPersonal)
+                            // show only personal collections
+                            db.collectionDao().pagePersonalByServiceAndType(service, collectionType)
+                        else
+                            // show all collections
+                            db.collectionDao().pageByServiceAndType(service, collectionType)
+                    }
                 }
+            }
 
         // observe DavService refresh status
         @Volatile

@@ -80,8 +80,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     init {
         // required for ServiceLoader -> ical4j -> ical4android
         Ical4Android.checkThreadContextClassLoader()
-
-        // log synchronization of this collection
     }
 
     private val mainAccount = if (localCollection is LocalAddressBook)

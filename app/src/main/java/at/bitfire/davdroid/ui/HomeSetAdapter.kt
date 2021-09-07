@@ -11,7 +11,6 @@ import android.widget.Filter
 import android.widget.TextView
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.HomeSet
 
 class HomeSetAdapter(

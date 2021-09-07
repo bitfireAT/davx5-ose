@@ -2,7 +2,6 @@ package at.bitfire.davdroid.syncadapter.groups
 
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.syncadapter.ContactsSyncManager
 import at.bitfire.vcard4android.Contact
 
 class CategoriesStrategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
