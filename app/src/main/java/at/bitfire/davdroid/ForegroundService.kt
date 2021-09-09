@@ -38,7 +38,7 @@ class ForegroundService : Service() {
     }
 
 
-    override fun onBind(intent: Intent?) = null
+    override fun onBind(intent: Intent?): Nothing? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (isEnabled(this)) {

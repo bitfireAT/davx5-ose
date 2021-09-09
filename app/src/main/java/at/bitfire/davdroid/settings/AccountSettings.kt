@@ -273,12 +273,16 @@ class AccountSettings(
             return false
 
         // store sync interval in account settings (used when the provider is switched)
-        if (authority == context.getString(R.string.address_books_authority))
-            accountManager.setUserData(account, KEY_SYNC_INTERVAL_ADDRESSBOOKS, seconds.toString())
-        else if (authority == CalendarContract.AUTHORITY)
-            accountManager.setUserData(account, KEY_SYNC_INTERVAL_CALENDARS, seconds.toString())
-        else if (TaskProvider.ProviderName.values().any { it.authority == authority })
-            accountManager.setUserData(account, KEY_SYNC_INTERVAL_TASKS, seconds.toString())
+        when {
+            authority == context.getString(R.string.address_books_authority) ->
+                accountManager.setUserData(account, KEY_SYNC_INTERVAL_ADDRESSBOOKS, seconds.toString())
+
+            authority == CalendarContract.AUTHORITY ->
+                accountManager.setUserData(account, KEY_SYNC_INTERVAL_CALENDARS, seconds.toString())
+
+            TaskProvider.ProviderName.values().any { it.authority == authority } ->
+                accountManager.setUserData(account, KEY_SYNC_INTERVAL_TASKS, seconds.toString())
+        }
 
         return true
     }

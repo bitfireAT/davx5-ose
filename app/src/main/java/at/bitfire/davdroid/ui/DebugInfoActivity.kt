@@ -188,7 +188,7 @@ class DebugInfoActivity: AppCompatActivity() {
         val zipFile = MutableLiveData<File>()
 
         // private storage, not readable by others
-        val debugInfoDir = File(context.filesDir, "debug")
+        private val debugInfoDir = File(context.filesDir, "debug")
 
         init {
             // create debug info directory

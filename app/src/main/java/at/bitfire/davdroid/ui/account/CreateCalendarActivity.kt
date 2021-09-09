@@ -150,7 +150,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             args.putInt(CreateCollectionFragment.ARG_COLOR, it)
         }
 
-        val tzId = binding.timezone.text?.let { it.toString() }
+        val tzId = binding.timezone.text?.toString()
         if (tzId.isNullOrBlank())
             ok = false
         else {

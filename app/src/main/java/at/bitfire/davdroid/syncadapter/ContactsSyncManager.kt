@@ -188,13 +188,11 @@ class ContactsSyncManager(
 
     override fun generateUpload(resource: LocalAddress): RequestBody =
         localExceptionContext(resource) {
-            val contact: Contact
-            if (resource is LocalContact)
-                contact = resource.getContact()
-            else if (resource is LocalGroup)
-                contact = resource.getContact()
-            else
-                throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
+            val contact: Contact = when (resource) {
+                is LocalContact -> resource.getContact()
+                is LocalGroup -> resource.getContact()
+                else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
+            }
 
             Logger.log.log(Level.FINE, "Preparing upload of vCard ${resource.fileName}", contact)
 

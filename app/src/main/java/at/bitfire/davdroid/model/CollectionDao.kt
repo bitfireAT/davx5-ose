@@ -40,9 +40,6 @@ interface CollectionDao: SyncableDao<Collection> {
     @Query("SELECT * FROM collection WHERE url=:url")
     fun getByUrl(url: String): Collection?
 
-    @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND sync")
-    fun observeHasSyncByService(serviceId: Long): LiveData<Boolean>
-
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVEVENT AND sync ORDER BY displayName, url")
     fun getSyncCalendars(serviceId: Long): List<Collection>
 

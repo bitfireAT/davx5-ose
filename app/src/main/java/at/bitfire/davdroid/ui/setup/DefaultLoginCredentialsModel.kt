@@ -20,10 +20,7 @@ import android.widget.RadioGroup
 import androidx.annotation.MainThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.InputStreamReader
 import java.util.regex.Pattern
 
@@ -120,13 +117,13 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
         override fun getFilter(): Filter = object: Filter() {
             override fun performFiltering(constraint: CharSequence): FilterResults {
                 val str = constraint.removePrefix("https://").toString()
-                var results = if (str.isEmpty())
+                val results = if (str.isEmpty())
                     knownUrls
                 else {
                     val regex = Pattern.compile("(\\.|\\b)" + Pattern.quote(str))
                     knownUrls.filter { url ->
                         regex.matcher(url).find()
-                    }.map { url -> "https://" + url }
+                    }.map { url -> "https://$url" }
                 }
                 return FilterResults().apply {
                     values = results

@@ -36,14 +36,14 @@ class TextTable(
 
         // first line
         sb.append("\n┌")
-        for (colIdx in 0 until headers.size)
+        for (colIdx in headers.indices)
             sb  .append(StringUtils.repeat('─', colWidths[colIdx] + 2))
                 .append(if (colIdx == headers.size - 1) '┐' else '┬')
         sb.append('\n')
 
         // header
         sb.append('│')
-        for (colIdx in 0 until headers.size)
+        for (colIdx in headers.indices)
             sb  .append(' ')
                 .append(StringUtils.rightPad(headers[colIdx], colWidths[colIdx] + 1))
                 .append('│')
@@ -51,7 +51,7 @@ class TextTable(
 
         // separator between header and body
         sb.append('├')
-        for (colIdx in 0 until headers.size) {
+        for (colIdx in headers.indices) {
             sb  .append(StringUtils.repeat('─', colWidths[colIdx] + 2))
                 .append(if (colIdx == headers.size - 1) '┤' else '┼')
         }
@@ -59,7 +59,7 @@ class TextTable(
 
         // body
         for (line in lines) {
-            for (colIdx in 0 until headers.size)
+            for (colIdx in headers.indices)
                 sb  .append("│ ")
                     .append(StringUtils.rightPad(line[colIdx], colWidths[colIdx] + 1))
             sb.append("│\n")
@@ -67,7 +67,7 @@ class TextTable(
 
         // last line
         sb.append("└")
-        for (colIdx in 0 until headers.size) {
+        for (colIdx in headers.indices) {
             sb  .append("─".repeat(colWidths[colIdx] + 2))
                 .append(if (colIdx == headers.size - 1) '┘' else '┴')
         }

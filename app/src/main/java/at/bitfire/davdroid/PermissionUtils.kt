@@ -28,12 +28,14 @@ object PermissionUtils {
     )
 
     val WIFI_SSID_PERMISSIONS =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ->
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-            else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 ->
                 arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
-            else
+            else ->
                 arrayOf()
+        }
 
     /**
      * Checks whether all conditions to access the current WiFi's SSID are met:
