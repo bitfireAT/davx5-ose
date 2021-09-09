@@ -64,7 +64,7 @@ class NextcloudLoginFlowFragment: Fragment() {
 
 
     @SuppressLint("SetJavaScriptEnabled")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = View(requireActivity())
 
         val entryUrl = requireActivity().intent.data ?: throw IllegalArgumentException("Intent data must be set to Login Flow URL")
