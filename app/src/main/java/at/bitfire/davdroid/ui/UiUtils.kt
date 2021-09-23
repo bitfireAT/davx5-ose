@@ -45,7 +45,7 @@ object UiUtils {
         if (toastInstallBrowser)
             intent.addCategory(Intent.CATEGORY_BROWSABLE)
 
-        if (intent.resolveActivity(context.packageManager) != null) {
+        if (context.packageManager.resolveActivity(intent, 0) != null) {
             context.startActivity(intent)
             return true
         } else if (toastInstallBrowser)
