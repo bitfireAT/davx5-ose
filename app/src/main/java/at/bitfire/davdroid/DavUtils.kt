@@ -34,6 +34,8 @@ object DavUtils {
         ACTIVE, PENDING, IDLE
     }
 
+    const val MIME_TYPE_ALL = "*/*"
+
 
     @Suppress("FunctionName")
     fun ARGBtoCalDAVColor(colorWithAlpha: Int): String {

@@ -31,9 +31,10 @@ import java.util.logging.Level
 
 object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
 
+    const val LOGGER_NAME = "davx5"
     private const val LOG_TO_FILE = "log_to_file"
 
-    val log: java.util.logging.Logger = java.util.logging.Logger.getLogger("davx5")
+    val log: java.util.logging.Logger = java.util.logging.Logger.getLogger(LOGGER_NAME)
 
     private lateinit var context: Application
     private lateinit var preferences: SharedPreferences

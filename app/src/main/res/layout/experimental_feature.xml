@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/experimental_feature"
+    app:drawableStartCompat="@drawable/ic_info"
+    android:drawablePadding="8dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginBottom="16dp"
+    android:layout_marginRight="8dp"
+    style="@style/TextAppearance.MaterialComponents.Body1" />

@@ -59,7 +59,7 @@ data class Collection(
     /** whether this collection has been selected for synchronization */
     var sync: Boolean = false
 
-): IdEntity() {
+): IdEntity {
 
     @Ignore
     var refHomeSet: HomeSet? = null

@@ -26,10 +26,12 @@ object NotificationUtils {
     const val NOTIFY_EXTERNAL_FILE_LOGGING = 1
     const val NOTIFY_REFRESH_COLLECTIONS = 2
     const val NOTIFY_FOREGROUND = 3
+    const val NOTIFY_DATABASE_CORRUPTED = 4
     const val NOTIFY_SYNC_ERROR = 10
     const val NOTIFY_INVALID_RESOURCE = 11
     const val NOTIFY_OPENTASKS = 20
     const val NOTIFY_PERMISSIONS = 21
+
     const val NOTIFY_LICENSE = 100
 
     // notification channels

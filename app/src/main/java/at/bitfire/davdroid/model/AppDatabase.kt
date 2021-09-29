@@ -1,17 +1,22 @@
 package at.bitfire.davdroid.model
 
+import android.accounts.AccountManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.database.sqlite.SQLiteQueryBuilder
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.database.getStringOrNull
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.davdroid.AndroidSingleton
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.AccountsActivity
+import at.bitfire.davdroid.ui.NotificationUtils
 import java.io.Writer
 
 @Suppress("ClassName")
@@ -19,8 +24,13 @@ import java.io.Writer
     Service::class,
     HomeSet::class,
     Collection::class,
-    SyncStats::class
-], exportSchema = true, version = 9)
+    SyncStats::class,
+    WebDavDocument::class,
+    WebDavMount::class
+], exportSchema = true, version = 11, autoMigrations = [
+    AutoMigration(from = 9, to = 10),
+    AutoMigration(from = 10, to = 11)
+])
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
 
@@ -28,6 +38,8 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun homeSetDao(): HomeSetDao
     abstract fun collectionDao(): CollectionDao
     abstract fun syncStatsDao(): SyncStatsDao
+    abstract fun webDavDocumentDao(): WebDavDocumentDao
+    abstract fun webDavMountDao(): WebDavMountDao
 
     companion object: AndroidSingleton<AppDatabase>() {
 
@@ -35,6 +47,26 @@ abstract class AppDatabase: RoomDatabase() {
                 Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
                     .addMigrations(*migrations)
                     .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
+                    .addCallback(object: Callback() {
+                        override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
+                            val nm = NotificationManagerCompat.from(context)
+                            val launcherIntent = Intent(context, AccountsActivity::class.java)
+                            val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_GENERAL)
+                                .setSmallIcon(R.drawable.ic_warning_notify)
+                                .setContentTitle(context.getString(R.string.database_destructive_migration_title))
+                                .setContentText(context.getString(R.string.database_destructive_migration_text))
+                                .setCategory(NotificationCompat.CATEGORY_ERROR)
+                                .setContentIntent(PendingIntent.getActivity(context, 0, launcherIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                                .setAutoCancel(true)
+                                .build()
+                            nm.notify(NotificationUtils.NOTIFY_DATABASE_CORRUPTED, notify)
+
+                            // remove all accounts because they're unfortunately useless without database
+                            val am = AccountManager.get(context)
+                            for (account in am.getAccountsByType(context.getString(R.string.account_type)))
+                                am.removeAccount(account, null, null)
+                        }
+                    })
                     .build()
 
 
@@ -188,7 +220,7 @@ abstract class AppDatabase: RoomDatabase() {
     }
 
 
-    fun dump(writer: Writer) {
+    fun dump(writer: Writer, ignoreTables: Array<String>) {
         val db = openHelper.readableDatabase
         db.beginTransactionNonExclusive()
 
@@ -196,17 +228,24 @@ abstract class AppDatabase: RoomDatabase() {
         db.query(SQLiteQueryBuilder.buildQueryString(false, "sqlite_master", arrayOf("name"), "type='table'", null, null, null, null)).use { cursorTables ->
             while (cursorTables.moveToNext()) {
                 val tableName = cursorTables.getString(0)
-
-                writer.append("$tableName\n")
-                db.query("SELECT * FROM $tableName").use { cursor ->
-                    val table = TextTable(*cursor.columnNames)
-                    val cols = cursor.columnCount
-                    // print rows
-                    while (cursor.moveToNext()) {
-                        val values = Array(cols) { idx -> cursor.getStringOrNull(idx) }
-                        table.addLine(*values)
+                if (ignoreTables.contains(tableName)) {
+                    writer.append("$tableName: ")
+                    db.query("SELECT COUNT(*) FROM $tableName").use { cursor ->
+                        if (cursor.moveToNext())
+                        writer.append("${cursor.getInt(0)} row(s), data not listed here\n\n")
                     }
-                    writer.append(table.toString())
+                } else {
+                    writer.append("$tableName\n")
+                    db.query("SELECT * FROM $tableName").use { cursor ->
+                        val table = TextTable(*cursor.columnNames)
+                        val cols = cursor.columnCount
+                        // print rows
+                        while (cursor.moveToNext()) {
+                            val values = Array(cols) { idx -> cursor.getStringOrNull(idx) }
+                            table.addLine(*values)
+                        }
+                        writer.append(table.toString())
+                    }
                 }
             }
             db.endTransaction()

@@ -324,12 +324,10 @@ class ContactsSyncManager(
             }
 
             // authenticate only against a certain host, and only upon request
-            val builder = HttpClient.Builder(context, baseUrl.host, accountSettings.credentials())
+            val client = HttpClient.Builder(context, baseUrl.host, accountSettings.credentials())
+                .followRedirects(true)      // allow redirects
+                .build()
 
-            // allow redirects
-            builder.followRedirects(true)
-
-            val client = builder.build()
             try {
                 val response = client.okHttpClient.newCall(Request.Builder()
                         .get()

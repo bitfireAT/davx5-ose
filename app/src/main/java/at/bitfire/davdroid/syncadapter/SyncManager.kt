@@ -82,7 +82,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         Ical4Android.checkThreadContextClassLoader()
     }
 
-    private val mainAccount = if (localCollection is LocalAddressBook)
+    protected val mainAccount = if (localCollection is LocalAddressBook)
         localCollection.mainAccount
     else
         account
@@ -889,6 +889,5 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         if (ex != null)
             handler(ex, local, remote)
     }
-
 
 }

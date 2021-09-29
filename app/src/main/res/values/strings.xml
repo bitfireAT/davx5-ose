@@ -19,9 +19,13 @@
     <string name="account_title_address_book">DAVx⁵ Address book</string>
     <string name="address_books_authority" translatable="false">at.bitfire.davdroid.addressbooks</string>
     <string name="address_books_authority_title">Address books</string>
+    <string name="experimental_feature">This is still an experimental feature!</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="share">Share</string>
+
+    <string name="database_destructive_migration_title">Database corrupted</string>
+    <string name="database_destructive_migration_text">All accounts have been removed locally.</string>
 
     <string name="notification_channel_debugging">Debugging</string>
     <string name="notification_channel_general">Other important messages</string>
@@ -125,6 +129,7 @@
     <string name="install_browser">Please install a Web browser</string>
     <string name="navigation_drawer_settings">Settings</string>
     <string name="navigation_drawer_news_updates">News &amp; updates</string>
+    <string name="navigation_drawer_tools">Tools</string>
     <string name="navigation_drawer_external_links">External links</string>
     <string name="navigation_drawer_website">Web site</string>
     <string name="navigation_drawer_manual">Manual</string>
@@ -193,7 +198,6 @@
     <string name="app_settings_tasks_provider">Tasks app</string>
     <string name="app_settings_tasks_provider_synchronizing_with">Synchronizing with %s</string>
     <string name="app_settings_tasks_provider_none">No compatible tasks app found</string>
-
 
     <!-- AccountActivity -->
     <string name="account_carddav">CardDAV</string>
@@ -420,6 +424,19 @@
     <string name="exception_httpexception">An HTTP error has occurred.</string>
     <string name="exception_ioexception">An I/O error has occurred.</string>
     <string name="exception_show_details">Show details</string>
+
+    <!-- WebDAV accounts -->
+    <string name="webdav_authority">at.bitfire.davdroid.webdav</string>
+    <string name="webdav_mounts_title">WebDAV mounts</string>
+    <string name="webdav_mounts_quota_used_available">Quota used: %s / available: %s</string>
+    <string name="webdav_mounts_share_content">Share content</string>
+    <string name="webdav_mounts_unmount">Unmount</string>
+    <string name="webdav_add_mount_title">Add WebDAV mount</string>
+    <string name="webdav_add_mount_display_name">Display name</string>
+    <string name="webdav_add_mount_url">WebDAV URL</string>
+    <string name="webdav_add_mount_username">User name</string>
+    <string name="webdav_add_mount_password">Password</string>
+    <string name="webdav_provider_root_title">WebDAV mount</string>
 
     <!-- sync adapters -->
     <string name="sync_error_permissions">DAVx⁵ permissions</string>

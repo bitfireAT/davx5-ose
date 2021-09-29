@@ -10,9 +10,9 @@ buildscript {
     ext.versions = [
         aboutLibraries: '8.9.1',
         appIntro: '6.1.0',
-        dav4jvm: '5c067a2f',
+        dav4jvm: '39e108ea',
         dokka: '0.10.1',
-        kotlin: '1.5.30',
+        kotlin: '1.5.31',
         okhttp: '4.9.1',
         // latest Apache Commons versions that don't require Java 8 (Android 7)
         commonsCollections: '4.2',

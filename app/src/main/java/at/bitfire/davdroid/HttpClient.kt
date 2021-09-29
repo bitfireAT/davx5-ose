@@ -62,11 +62,8 @@ class HttpClient private constructor(
                 // don't allow redirects by default, because it would break PROPFIND handling
                 .followRedirects(false)
 
-                // offer Brotli and gzip compression
-                .addInterceptor(BrotliInterceptor)
-
                 // add User-Agent to every request
-                .addNetworkInterceptor(UserAgentInterceptor)
+                .addInterceptor(UserAgentInterceptor)
 
                 .build()
     }
@@ -80,23 +77,24 @@ class HttpClient private constructor(
     class Builder(
             val context: Context? = null,
             accountSettings: AccountSettings? = null,
-            val logger: java.util.logging.Logger = Logger.log
+            val logger: java.util.logging.Logger? = Logger.log,
+            val loggerLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
     ) {
         private var certManager: CustomCertManager? = null
         private var certificateAlias: String? = null
-        private var cache: Cache? = null
+        private var offerCompression: Boolean = false
+
+        // default cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
+        private var cookieStore: CookieJar? = MemoryCookieStore()
 
         private val orig = sharedClient.newBuilder()
 
         init {
-            // add cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
-            orig.cookieJar(MemoryCookieStore())
-
             // add network logging, if requested
-            if (logger.isLoggable(Level.FINEST)) {
+            if (logger != null && logger.isLoggable(Level.FINEST)) {
                 val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
-                loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-                orig.addInterceptor(loggingInterceptor)
+                loggingInterceptor.level = loggerLevel
+                orig.addNetworkInterceptor(loggingInterceptor)
             }
 
             if (context != null) {
@@ -123,26 +121,35 @@ class HttpClient private constructor(
                         !(settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES))))
             }
 
-            // use account settings for authentication
+            // use account settings for authentication and cookies
             accountSettings?.let {
                 addAuthentication(null, it.credentials())
             }
         }
 
-        constructor(context: Context, host: String?, credentials: Credentials): this(context) {
-            addAuthentication(host, credentials)
+        constructor(context: Context, host: String?, credentials: Credentials?): this(context) {
+            if (credentials != null)
+                addAuthentication(host, credentials)
         }
 
-        fun withDiskCache(context: Context): Builder {
-            for (dir in arrayOf(context.externalCacheDir, context.cacheDir).filterNotNull()) {
-                if (dir.exists() && dir.canWrite()) {
-                    val cacheDir = File(dir, "HttpClient")
-                    cacheDir.mkdir()
-                    Logger.log.fine("Using disk cache: $cacheDir")
-                    orig.cache(Cache(cacheDir, DISK_CACHE_MAX_SIZE))
-                    break
-                }
+        fun addAuthentication(host: String?, credentials: Credentials, insecurePreemptive: Boolean = false): Builder {
+            if (credentials.userName != null && credentials.password != null) {
+                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.userName, credentials.password, insecurePreemptive)
+                orig.addNetworkInterceptor(authHandler)
+                    .authenticator(authHandler)
             }
+            if (credentials.certificateAlias != null)
+                certificateAlias = credentials.certificateAlias
+            return this
+        }
+
+        fun allowCompression(allow: Boolean): Builder {
+            offerCompression = allow
+            return this
+        }
+
+        fun cookieStore(store: CookieJar?): Builder {
+            cookieStore = store
             return this
         }
 
@@ -159,18 +166,28 @@ class HttpClient private constructor(
             return this
         }
 
-        fun addAuthentication(host: String?, credentials: Credentials): Builder {
-            if (credentials.userName != null && credentials.password != null) {
-                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.userName, credentials.password)
-                orig    .addNetworkInterceptor(authHandler)
-                        .authenticator(authHandler)
+        fun withDiskCache(context: Context): Builder {
+            for (dir in arrayOf(context.externalCacheDir, context.cacheDir).filterNotNull()) {
+                if (dir.exists() && dir.canWrite()) {
+                    val cacheDir = File(dir, "HttpClient")
+                    cacheDir.mkdir()
+                    Logger.log.fine("Using disk cache: $cacheDir")
+                    orig.cache(Cache(cacheDir, DISK_CACHE_MAX_SIZE))
+                    break
+                }
             }
-            if (credentials.certificateAlias != null)
-                certificateAlias = credentials.certificateAlias
             return this
         }
 
         fun build(): HttpClient {
+            cookieStore?.let {
+                orig.cookieJar(it)
+            }
+
+            if (offerCompression)
+                // offer Brotli and gzip compression
+                orig.addInterceptor(BrotliInterceptor)
+
             val trustManager = certManager ?: run {
                 val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
                 factory.init(null as KeyStore?)
@@ -187,7 +204,7 @@ class HttpClient private constructor(
                 // get provider certificate and private key
                 val certs = KeyChain.getCertificateChain(context, alias) ?: return@let
                 val key = KeyChain.getPrivateKey(context, alias) ?: return@let
-                logger.fine("Using provider certificate $alias for authentication (chain length: ${certs.size})")
+                logger?.fine("Using provider certificate $alias for authentication (chain length: ${certs.size})")
 
                 // create KeyManager
                 keyManager = object : X509ExtendedKeyManager() {

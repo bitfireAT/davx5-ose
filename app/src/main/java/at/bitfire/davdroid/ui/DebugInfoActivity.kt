@@ -463,7 +463,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
                 // database dump
                 writer.append("\nDATABASE DUMP\n\n")
-                AppDatabase.getInstance(context).dump(writer)
+                AppDatabase.getInstance(context).dump(writer, arrayOf("webdav_document"))
 
                 // app settings
                 writer.append("\nAPP SETTINGS\n\n")

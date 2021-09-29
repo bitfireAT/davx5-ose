@@ -8,6 +8,7 @@
 
 package at.bitfire.davdroid.ui
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
@@ -35,21 +36,23 @@ object UiUtils {
      * installed), this method does nothing.
      *
      * @param toastInstallBrowser whether to show "Please install a browser" toast when
-     * the Intent could not be resolved; will also add [Intent.CATEGORY_BROWSABLE] to the Intent
+     * the Intent could not be resolved
      *
      * @return true on success, false if the Intent could not be resolved (for instance, because
      * there is no user agent installed)
      */
     fun launchUri(context: Context, uri: Uri, action: String = Intent.ACTION_VIEW, toastInstallBrowser: Boolean = true): Boolean {
         val intent = Intent(action, uri)
-        if (toastInstallBrowser)
-            intent.addCategory(Intent.CATEGORY_BROWSABLE)
-
-        if (context.packageManager.resolveActivity(intent, 0) != null) {
+        try {
             context.startActivity(intent)
             return true
-        } else if (toastInstallBrowser)
+        } catch (e: ActivityNotFoundException) {
+            // no browser available
+        }
+
+        if (toastInstallBrowser)
             Toast.makeText(context, R.string.install_browser, Toast.LENGTH_LONG).show()
+
         return false
     }
 

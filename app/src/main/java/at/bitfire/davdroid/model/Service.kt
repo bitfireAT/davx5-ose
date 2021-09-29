@@ -12,13 +12,13 @@ import okhttp3.HttpUrl
         ])
 data class Service(
     @PrimaryKey(autoGenerate = true)
-    var id: Long,
+    override var id: Long,
 
     var accountName: String,
     var type: String,
 
     var principal: HttpUrl?
-) {
+): IdEntity {
 
     companion object {
         const val TYPE_CALDAV = "caldav"

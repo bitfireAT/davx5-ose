@@ -8,7 +8,7 @@ import okhttp3.HttpUrl
 
 @Entity(tableName = "homeset",
         foreignKeys = [
-            ForeignKey(entity = Service::class, parentColumns = arrayOf("id"), childColumns = arrayOf("serviceId"), onDelete = ForeignKey.CASCADE)
+            ForeignKey(entity = Service::class, parentColumns = ["id"], childColumns = ["serviceId"], onDelete = ForeignKey.CASCADE)
         ],
         indices = [
             // index by service; no duplicate URLs per service
@@ -31,4 +31,4 @@ data class HomeSet(
     var privBind: Boolean = true,
 
     var displayName: String? = null
-): IdEntity()
+): IdEntity
