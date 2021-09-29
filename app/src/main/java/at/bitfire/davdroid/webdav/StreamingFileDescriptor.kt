@@ -24,7 +24,8 @@ class StreamingFileDescriptor(
     val client: HttpClient,
     val url: HttpUrl,
     val mimeType: String?,
-    val cancellationSignal: CancellationSignal?
+    val cancellationSignal: CancellationSignal?,
+    val finishedCallback: () -> Unit
 ) {
 
     companion object {
@@ -57,6 +58,8 @@ class StreamingFileDescriptor(
                 readFd.close()
                 writeFd.close()
             } catch (ignored: IOException) {}
+
+            finishedCallback()
         }
 
         cancellationSignal?.setOnCancelListener {

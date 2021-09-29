@@ -106,10 +106,10 @@ class WebdavMountsActivity: AppCompatActivity() {
             if (info.rootDocument?.quotaUsed != null || info.rootDocument?.quotaAvailable != null) {
                 binding.quota.visibility = View.VISIBLE
                 binding.quota.text = context.getString(R.string.webdav_mounts_quota_used_available,
-                    info.rootDocument.quotaAvailable?.let {
+                    info.rootDocument.quotaUsed?.let {
                         FileUtils.byteCountToDisplaySize(it)
                     } ?: "?",
-                    info.rootDocument.quotaUsed?.let {
+                    info.rootDocument.quotaAvailable?.let {
                         FileUtils.byteCountToDisplaySize(it)
                     } ?: "?"
                 )

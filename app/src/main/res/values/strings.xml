@@ -428,7 +428,7 @@
     <!-- WebDAV accounts -->
     <string name="webdav_authority">at.bitfire.davdroid.webdav</string>
     <string name="webdav_mounts_title">WebDAV mounts</string>
-    <string name="webdav_mounts_quota_used_available">Quota used: %s / available: %s</string>
+    <string name="webdav_mounts_quota_used_available">Quota used: %1$s / available: %2$s</string>
     <string name="webdav_mounts_share_content">Share content</string>
     <string name="webdav_mounts_unmount">Unmount</string>
     <string name="webdav_add_mount_title">Add WebDAV mount</string>

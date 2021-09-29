@@ -1,5 +1,6 @@
 package at.bitfire.davdroid.webdav
 
+import android.annotation.TargetApi
 import android.content.Context
 import android.os.CancellationSignal
 import android.os.Handler
@@ -7,6 +8,7 @@ import android.os.HandlerThread
 import android.os.ProxyFileDescriptorCallback
 import android.system.ErrnoException
 import android.system.OsConstants
+import androidx.annotation.RequiresApi
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.exception.HttpException
@@ -20,6 +22,7 @@ import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.util.logging.Level
 
+@TargetApi(26)
 class RandomAccessCallback(
     val context: Context,
     val httpClient: HttpClient,

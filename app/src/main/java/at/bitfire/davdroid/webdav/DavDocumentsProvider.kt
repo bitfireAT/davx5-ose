@@ -22,7 +22,6 @@ import android.webkit.MimeTypeMap
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import at.bitfire.cert4android.CertUtils
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
@@ -41,8 +40,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.net.HttpURLConnection
-import java.security.MessageDigest
-import java.security.spec.MGF1ParameterSpec.SHA1
 import java.util.*
 import java.util.concurrent.*
 import java.util.logging.Level
@@ -312,31 +309,32 @@ class DavDocumentsProvider: DocumentsProvider() {
     override fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String): String {
         Logger.log.fine("WebDAV copyDocument $sourceDocumentId $targetParentDocumentId")
         val srcDoc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
-        val dstDoc = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
+        val dstFolder = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
         val name = srcDoc.name
 
-        if (srcDoc.mountId != dstDoc.mountId)
+        if (srcDoc.mountId != dstFolder.mountId)
             throw UnsupportedOperationException("Can't COPY between WebDAV servers")
 
-        var dstDocId = sourceDocumentId
+        val dstDocId: String
         httpClient(srcDoc.mountId).use { client ->
             val dav = DavResource(client.okHttpClient, srcDoc.toHttpUrl(db))
             try {
-                val dstUrl = dstDoc.toHttpUrl(db).newBuilder()
+                val dstUrl = dstFolder.toHttpUrl(db).newBuilder()
                     .addPathSegment(name)
                     .build()
                 dav.copy(dstUrl, false) {
                     // successfully copied
-                    dstDocId = documentDao.insertOrReplace(WebDavDocument(
-                        mountId = dstDoc.mountId,
-                        parentId = dstDoc.id,
-                        name = name,
-                        isDirectory = srcDoc.isDirectory,
-                        displayName = srcDoc.displayName,
-                        mimeType = srcDoc.mimeType,
-                        size = srcDoc.size
-                    )).toString()
                 }
+
+                dstDocId = documentDao.insertOrReplace(WebDavDocument(
+                    mountId = dstFolder.mountId,
+                    parentId = dstFolder.id,
+                    name = name,
+                    isDirectory = srcDoc.isDirectory,
+                    displayName = srcDoc.displayName,
+                    mimeType = srcDoc.mimeType,
+                    size = srcDoc.size
+                )).toString()
 
                 notifyFolderChanged(targetParentDocumentId)
             } catch (e: HttpException) {
@@ -428,9 +426,10 @@ class DavDocumentsProvider: DocumentsProvider() {
             try {
                 dav.move(newLocation, false) {
                     // successfully moved
-                    doc.parentId = dstParent.id
-                    documentDao.update(doc)
                 }
+
+                doc.parentId = dstParent.id
+                documentDao.update(doc)
 
                 notifyFolderChanged(sourceParentDocumentId)
                 notifyFolderChanged(targetParentDocumentId)
@@ -521,7 +520,11 @@ class DavDocumentsProvider: DocumentsProvider() {
             val accessor = RandomAccessCallback(context!!, client, url, doc.mimeType, fileInfo, signal)
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
-            val fd = StreamingFileDescriptor(context!!, client, url, doc.mimeType, signal)
+            val fd = StreamingFileDescriptor(context!!, client, url, doc.mimeType, signal) {
+                // called when transfer is finished
+                notifyFolderChanged(doc.parentId)
+            }
+
             if (readOnly)
                 fd.download()
             else
@@ -555,7 +558,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                             BitmapFactory.decodeStream(data)?.let { bitmap ->
                                 val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
                                 val baos = ByteArrayOutputStream()
-                                thumb.compress(Bitmap.CompressFormat.JPEG, 92, baos)
+                                thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
                                 result = baos.toByteArray()
                             }
                         }
@@ -616,26 +619,25 @@ class DavDocumentsProvider: DocumentsProvider() {
         context!!.contentResolver.notifyChange(buildChildDocumentsUri(authority, parentDocumentId), null)
     }
 
-    private fun sha1(s: String): String {
-        val md = MessageDigest.getInstance(SHA1.digestAlgorithm)
-        return CertUtils.hexString(md.digest(s.toByteArray()))
-    }
-
 
     private fun HttpException.throwForDocumentProvider(ignorePreconditionFailed: Boolean = false) {
         when (code) {
             HttpURLConnection.HTTP_UNAUTHORIZED -> {
-                // TODO edit mount
-                val intent = Intent(context!!, WebdavMountsActivity::class.java)
-                throw AuthenticationRequiredException(this, PendingIntent.getActivity(context!!, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                if (Build.VERSION.SDK_INT >= 26) {
+                    // TODO edit mount
+                    val intent = Intent(context!!, WebdavMountsActivity::class.java)
+                    throw AuthenticationRequiredException(this, PendingIntent.getActivity(context!!, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                }
             }
-            HttpURLConnection.HTTP_NOT_FOUND -> throw FileNotFoundException()
+            HttpURLConnection.HTTP_NOT_FOUND ->
+                throw FileNotFoundException()
             HttpURLConnection.HTTP_PRECON_FAILED ->
-                if (!ignorePreconditionFailed)
-                    throw this
-            else ->
-                throw this
+                if (ignorePreconditionFailed)
+                    return
         }
+
+        // re-throw
+        throw this
     }
 
 }

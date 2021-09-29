@@ -2,13 +2,17 @@ package at.bitfire.davdroid.webdav
 
 import android.content.Context
 import android.graphics.Point
+import android.os.Build
 import android.os.storage.StorageManager
+import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.WebDavDocument
+import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.*
 
+@WorkerThread
 class ThumbnailCache(context: Context) {
 
     val cache: DiskCache
@@ -16,8 +20,11 @@ class ThumbnailCache(context: Context) {
     init {
         val storageManager = ContextCompat.getSystemService(context, StorageManager::class.java)!!
         val cacheDir = File(context.cacheDir, "webdav/thumbnail")
-        val maxBytes = storageManager.getCacheQuotaBytes(storageManager.getUuidForPath(cacheDir)) / 2
-        Logger.log.info("Initializing WebDAV thumbnail cache with ${maxBytes/1024/1024} MB")
+        val maxBytes = if (Build.VERSION.SDK_INT >= 26)
+            storageManager.getCacheQuotaBytes(storageManager.getUuidForPath(cacheDir)) / 2
+        else
+            50*FileUtils.ONE_MB
+        Logger.log.info("Initializing WebDAV thumbnail cache with ${FileUtils.byteCountToDisplaySize(maxBytes)}")
 
         cache = DiskCache(cacheDir, maxBytes)
     }
