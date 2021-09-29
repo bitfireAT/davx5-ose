@@ -18,6 +18,7 @@ import android.widget.Toast
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 
 class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
 
@@ -37,17 +38,22 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
         when (item.itemId) {
             R.id.nav_about ->
                 activity.startActivity(Intent(activity, AboutActivity::class.java))
-            R.id.nav_app_settings ->
-                activity.startActivity(Intent(activity, AppSettingsActivity::class.java))
             R.id.nav_beta_feedback ->
                 if (!UiUtils.launchUri(activity, Uri.parse(BETA_FEEDBACK_URI), Intent.ACTION_SENDTO, false))
                     Toast.makeText(activity, R.string.install_email_client, Toast.LENGTH_LONG).show()
+            R.id.nav_app_settings ->
+                activity.startActivity(Intent(activity, AppSettingsActivity::class.java))
+
             R.id.nav_twitter ->
                 UiUtils.launchUri(activity,
                         Uri.parse("https://twitter.com/" + activity.getString(R.string.twitter_handle)))
             R.id.nav_website ->
                 UiUtils.launchUri(activity,
                         App.homepageUrl(activity))
+
+            R.id.nav_webdav_mounts ->
+                activity.startActivity(Intent(activity, WebdavMountsActivity::class.java))
+
             R.id.nav_manual ->
                 UiUtils.launchUri(activity,
                         App.homepageUrl(activity).buildUpon().appendPath("manual").build())
@@ -64,6 +70,7 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
             R.id.nav_privacy ->
                 UiUtils.launchUri(activity,
                         App.homepageUrl(activity).buildUpon().appendPath("privacy").build())
+
             else ->
                 return false
         }
