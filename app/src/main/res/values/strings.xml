@@ -19,7 +19,7 @@
     <string name="account_title_address_book">DAVx⁵ Address book</string>
     <string name="address_books_authority" translatable="false">at.bitfire.davdroid.addressbooks</string>
     <string name="address_books_authority_title">Address books</string>
-    <string name="experimental_feature">This is still an experimental feature!</string>
+    <string name="field_required">This field is required</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="share">Share</string>
@@ -434,8 +434,11 @@
     <string name="webdav_add_mount_title">Add WebDAV mount</string>
     <string name="webdav_add_mount_display_name">Display name</string>
     <string name="webdav_add_mount_url">WebDAV URL</string>
+    <string name="webdav_add_mount_url_invalid">Invalid URL</string>
     <string name="webdav_add_mount_username">User name</string>
     <string name="webdav_add_mount_password">Password</string>
+    <string name="webdav_add_mount_add">Add mount</string>
+    <string name="webdav_add_mount_no_support">No WebDAV service at this URL</string>
     <string name="webdav_provider_root_title">WebDAV mount</string>
 
     <!-- sync adapters -->

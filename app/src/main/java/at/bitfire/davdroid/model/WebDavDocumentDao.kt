@@ -28,17 +28,17 @@ interface WebDavDocumentDao: SyncableDao<WebDavDocument> {
     // complex operations
 
     @Transaction
-    fun getOrCreateRoot(mountId: Long, displayName: String): WebDavDocument {
-        getByParentAndName(mountId, null, "")?.let { existing ->
+    fun getOrCreateRoot(mount: WebDavMount): WebDavDocument {
+        getByParentAndName(mount.id, null, "")?.let { existing ->
             return existing
         }
 
         val newDoc = WebDavDocument(
-            mountId = mountId,
+            mountId = mount.id,
             parentId = null,
             name = "",
             isDirectory = true,
-            displayName = displayName
+            displayName = mount.name
         )
         val id = insertOrReplace(newDoc)
         newDoc.id = id

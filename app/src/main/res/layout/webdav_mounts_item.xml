@@ -10,12 +10,13 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:contentPadding="@dimen/card_padding">
+        android:backgroundTint="@color/colorOnSecondary">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_margin="@dimen/card_padding">
 
             <TextView
                 android:id="@+id/name"
@@ -38,32 +39,46 @@
                 style="@style/TextAppearance.MaterialComponents.Caption"
                 tools:text="https://www.example.com/" />
 
-            <TextView
-                android:id="@+id/quota"
+            <ProgressBar
+                android:id="@+id/quota_progress"
                 app:layout_constraintTop_toBottomOf="@id/url"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="Quota: 50 GB available / 50 GB used"/>
+                android:layout_marginTop="12dp"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:progress="50"
+                android:progressTint="@color/primaryColor" />
+
+            <TextView
+                android:id="@+id/quota"
+                app:layout_constraintTop_toBottomOf="@id/quota_progress"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Quota used: 50 GB / available: 50 GB"/>
 
             <Button
                 android:id="@+id/browse"
                 app:layout_constraintTop_toBottomOf="@id/quota"
                 app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="12dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:text="@string/webdav_mounts_share_content" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/unmount"
                 app:layout_constraintTop_toTopOf="@id/browse"
-                app:layout_constraintStart_toEndOf="@id/browse"
-                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="@id/browse"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:text="@string/webdav_mounts_unmount" />
+                app:srcCompat="@drawable/ic_eject"
+                app:tint="?android:attr/colorControlNormal"
+                android:backgroundTint="@color/colorOnSecondary"
+                android:contentDescription="@string/webdav_mounts_unmount" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

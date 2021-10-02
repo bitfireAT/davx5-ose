@@ -11,7 +11,11 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -42,9 +46,9 @@ class WebdavMountsActivity: AppCompatActivity() {
         val adapter = MountsAdapter(this, model)
         binding.list.adapter = adapter
         binding.list.layoutManager = LinearLayoutManager(this)
-        model.mountInfos.observe(this) { mounts ->
+        model.mountInfos.observe(this, Observer { mounts ->
             adapter.submitList(ArrayList(mounts))
-        }
+        })
 
         val browser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val uri = result.data?.data
@@ -58,11 +62,11 @@ class WebdavMountsActivity: AppCompatActivity() {
                 startActivity(Intent.createChooser(shareIntent, "Choose using app"))
             }
         }
-        model.browseIntent.observe(this) { intent ->
+        model.browseIntent.observe(this, Observer { intent ->
             if (intent != null) {
                 browser.launch(intent)
             }
-        }
+        })
 
         binding.add.setOnClickListener {
             startActivity(Intent(this, AddWebdavMountActivity::class.java))
@@ -103,18 +107,23 @@ class WebdavMountsActivity: AppCompatActivity() {
             binding.name.text = info.mount.name
             binding.url.text = info.mount.url.toString()
 
-            if (info.rootDocument?.quotaUsed != null || info.rootDocument?.quotaAvailable != null) {
+            val quotaUsed = info.rootDocument?.quotaUsed
+            val quotaAvailable = info.rootDocument?.quotaAvailable
+            if (quotaUsed != null && quotaAvailable != null) {
+                val quotaTotal = quotaUsed + quotaAvailable
+
+                binding.quotaProgress.visibility = View.VISIBLE
+                binding.quotaProgress.progress = (quotaUsed*100 / quotaTotal).toInt()
+
                 binding.quota.visibility = View.VISIBLE
                 binding.quota.text = context.getString(R.string.webdav_mounts_quota_used_available,
-                    info.rootDocument.quotaUsed?.let {
-                        FileUtils.byteCountToDisplaySize(it)
-                    } ?: "?",
-                    info.rootDocument.quotaAvailable?.let {
-                        FileUtils.byteCountToDisplaySize(it)
-                    } ?: "?"
+                    FileUtils.byteCountToDisplaySize(quotaUsed),
+                    FileUtils.byteCountToDisplaySize(quotaAvailable)
                 )
-            } else
+            } else {
+                binding.quotaProgress.visibility = View.GONE
                 binding.quota.visibility = View.GONE
+            }
 
             binding.browse.setOnClickListener {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
@@ -135,6 +144,8 @@ class WebdavMountsActivity: AppCompatActivity() {
 
     class Model(app: Application): AndroidViewModel(app) {
 
+        val authority = app.getString(R.string.webdav_authority)
+
         val db = AppDatabase.getInstance(app)
         val mountInfos = object: MediatorLiveData<List<MountInfo>>() {
             var mounts: List<WebDavMount>? = null
@@ -142,7 +153,14 @@ class WebdavMountsActivity: AppCompatActivity() {
             init {
                 addSource(db.webDavMountDao().getAllLive()) { newMounts ->
                     mounts = newMounts
-                    merge()
+
+                    viewModelScope.launch(Dispatchers.IO) {
+                        // query children of root document for every mount to show quota
+                        for (mount in newMounts)
+                            queryChildrenOfRoot(mount)
+
+                        merge()
+                    }
                 }
                 addSource(db.webDavDocumentDao().getRootsLive()) { newRoots ->
                     roots = newRoots
@@ -171,6 +189,14 @@ class WebdavMountsActivity: AppCompatActivity() {
 
                 // remove credentials, too
                 CredentialsStore(getApplication()).setCredentials(mount.id, null)
+            }
+        }
+
+
+        private fun queryChildrenOfRoot(mount: WebDavMount) {
+            val resolver = getApplication<Application>().contentResolver
+            db.webDavDocumentDao().getOrCreateRoot(mount).let { root ->
+                resolver.query(DocumentsContract.buildChildDocumentsUri(authority, root.id.toString()), null, null, null, null)?.close()
             }
         }
 

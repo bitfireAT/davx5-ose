@@ -115,7 +115,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         ))
 
         for (mount in mountDao.getAll()) {
-            val rootDocument = documentDao.getOrCreateRoot(mount.id, mount.name)
+            val rootDocument = documentDao.getOrCreateRoot(mount)
             Logger.log.info("Root ID: $rootDocument")
 
             roots.newRow().apply {
