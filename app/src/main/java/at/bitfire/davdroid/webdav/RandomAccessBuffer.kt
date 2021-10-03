@@ -34,11 +34,17 @@ class RandomAccessBuffer(
             val pageOffset = position.mod(PAGE_SIZE)
 
             Logger.log.fine("Reading page $pageIdx (offset=$pageOffset, transferred=$transferred)")
-            val pageData = getPage(pageIdx)
+            val pageData = getPage(pageIdx, pageOffset.toLong(), min(
+                PAGE_SIZE - pageOffset,         // read either until the possible end of the page ...
+                size - transferred              // .. or until the requested number of bytes is available
+            ))
 
-            val nrBytes = min(pageData.size - pageOffset, size - transferred)
+            val nrBytes = min(
+                pageData.size,                     // copy either until the end of the page ...
+                size - transferred              // ... or until the requested number of bytes has been copied
+            )
             Logger.log.fine("Transferring $nrBytes bytes from page $pageIdx (offset $pageOffset) to destination (offset $transferred)")
-            System.arraycopy(pageData, pageOffset, dst, transferred, nrBytes)
+            System.arraycopy(pageData, 0, dst, transferred, nrBytes)
             transferred += nrBytes
             position += nrBytes
 
@@ -48,14 +54,14 @@ class RandomAccessBuffer(
         return transferred
     }
 
-    private fun getPage(pageIdx: Long): ByteArray {
+    private fun getPage(pageIdx: Long, offset: Long, size: Int): ByteArray {
         if (documentState != null) {
             // we can only use the cache if we have ETag/Last-Modified
 
             val key = PageCache.Key(url, documentState, pageIdx)
-            return pageCache.get(key) {
+            return pageCache.get(key, offset, size) {
                 getPageDirect(pageIdx)
-            } ?: getPageDirect(pageIdx)
+            }!!
         }
 
         // caching not possible because of missing ETag/Last-Modified

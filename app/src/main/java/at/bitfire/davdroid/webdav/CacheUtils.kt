@@ -11,7 +11,7 @@ object CacheUtils {
         }
 
         val md5 = MessageDigest.getInstance("MD5").digest(str.toByteArray())
-        return md5.joinToString { b -> String.format("%02x", b) }
+        return md5.joinToString("") { b -> String.format("%02x", b) }
     }
 
 }

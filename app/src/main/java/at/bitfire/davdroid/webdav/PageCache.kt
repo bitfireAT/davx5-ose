@@ -43,7 +43,7 @@ class PageCache(
         cache = DiskCache(cacheDir, maxBytes)
     }
 
-    fun get(key: Key, generate: () -> ByteArray?) =
-        cache.get(key.asString(), generate)
+    fun get(key: Key, offset: Long = 0, maxSize: Int = Int.MAX_VALUE, generate: () -> ByteArray?) =
+        cache.get(key.asString(), offset, maxSize, generate)
 
 }

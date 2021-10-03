@@ -1,13 +1,23 @@
 package at.bitfire.davdroid.webdav
 
+import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.log.Logger
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import java.io.File
+import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.logging.Level
+import kotlin.math.min
 
 /**
  * Disk-based cache that maps [String]s to [ByteArray]s.
+ *
+ * @param cacheDir  directory where to put cache files
+ * @param maxSize   max. total cache size (approximately, may be exceeded for some time)
  */
 class DiskCache(
     val cacheDir: File,
@@ -18,11 +28,12 @@ class DiskCache(
         /**
          * after how many cache writes [trim] is called
          */
-        const val CLEANUP_RATE = 10
+        const val CLEANUP_RATE = 15
     }
 
     private val globalLock = Any()
     private val writeCounter = AtomicInteger()
+    private val workerScope = CoroutineScope(Dispatchers.IO + CoroutineName("DiskCache cleanup"))
 
 
     init {
@@ -30,30 +41,53 @@ class DiskCache(
             if (!cacheDir.mkdirs())
                 throw IllegalArgumentException("Couldn't create cache in $cacheDir")
 
-        trim()
+        workerScope.launch {
+            trim()
+        }
     }
 
 
-    fun get(key: String, generate: () -> ByteArray?): ByteArray? {
+    fun get(key: String, offset: Long = 0, maxSize: Int = Int.MAX_VALUE, generate: () -> ByteArray?): ByteArray? {
         synchronized(globalLock) {
             val file = File(cacheDir, key)
             if (file.exists()) {
                 // cache hit
-                val result = file.inputStream().use { input ->
-                    IOUtils.toByteArray(input)
+                file.inputStream().use { input ->
+                    if (offset != 0L)
+                        if (input.skip(offset) != offset)
+                            throw IllegalStateException("Couldn't skip first $offset bytes of $file")
+
+                    val size = min(
+                        maxSize.toLong(),
+                        file.length() - offset
+                    ).toInt()
+                    val buffer = ByteArray(size)
+                    input.read(buffer)
+                    return buffer
                 }
-
-                if (writeCounter.incrementAndGet().mod(CLEANUP_RATE) == 0)
-                    trim()
-
-                return result
             } else {
                 // file does't exist yet; cache miss
                 val result = generate() ?: return null
+
                 file.outputStream().use { output ->
-                    IOUtils.write(result, output)
+                    try {
+                        output.write(result)
+                    } catch (e: IOException) {
+                        // write error; disk full?
+                        Logger.log.log(Level.WARNING, "Couldn't write cache entry $key", e)
+                        file.delete()
+                    }
                 }
-                return result
+
+                if (writeCounter.incrementAndGet().mod(CLEANUP_RATE) == 0)
+                    workerScope.launch {
+                        trim()
+                    }
+
+                if (maxSize != -1)
+                    return result.copyOfRange(offset.toInt(), min(offset.toInt() + maxSize, result.size))
+                else
+                    return result
             }
         }
     }
@@ -67,12 +101,15 @@ class DiskCache(
             } else {
                 // file does't exist yet; cache MISS
                 val result = generate() ?: return null
+
                 file.outputStream().use { output ->
-                    IOUtils.write(result, output)
+                    output.write(result)
                 }
 
                 if (writeCounter.incrementAndGet().mod(CLEANUP_RATE) == 0)
-                    trim()
+                    workerScope.launch {
+                        trim()
+                    }
 
                 return file
             }
@@ -94,6 +131,7 @@ class DiskCache(
 
     fun keys(): Array<String> = cacheDir.list()!!
 
+    @WorkerThread
     fun trim(): Int {
         var removed = 0
         synchronized(globalLock) {

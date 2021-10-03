@@ -13,7 +13,8 @@ class DiskCacheTest {
 
     companion object {
         const val SOME_KEY = "key1"
-        val SOME_VALUE = ByteArray(15) { it.toByte() }
+        val SOME_VALUE_LENGTH = 15
+        val SOME_VALUE = ByteArray(SOME_VALUE_LENGTH) { it.toByte() }
         val SOME_OTHER_VALUE = ByteArray(30) { (it/2).toByte() }
 
         const val MAX_CACHE_MB = 10
@@ -50,6 +51,24 @@ class DiskCacheTest {
         assertArrayEquals(SOME_VALUE, cache.get(SOME_KEY) { SOME_VALUE })
 
         // non-null value should have been written to cache
+        assertEquals(1, cache.entries())
+        assertArrayEquals(SOME_VALUE, cache.get(SOME_KEY) { SOME_OTHER_VALUE })
+    }
+
+    @Test
+    fun testGet_NotNull_Partial() {
+        assertArrayEquals(ByteArray(2) { (it+1).toByte() }, cache.get(SOME_KEY, 1, 2) { SOME_VALUE })
+
+        // full non-null value should have been written to cache
+        assertEquals(1, cache.entries())
+        assertArrayEquals(SOME_VALUE, cache.get(SOME_KEY) { SOME_OTHER_VALUE })
+    }
+
+    @Test
+    fun testGet_NotNull_Partial_LargerThanSize() {
+        assertArrayEquals(ByteArray(SOME_VALUE_LENGTH - 1) { (it+1).toByte() }, cache.get(SOME_KEY, 1, SOME_VALUE_LENGTH*2) { SOME_VALUE })
+
+        // full non-null value should have been written to cache
         assertEquals(1, cache.entries())
         assertArrayEquals(SOME_VALUE, cache.get(SOME_KEY) { SOME_OTHER_VALUE })
     }
