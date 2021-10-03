@@ -29,6 +29,7 @@ object NotificationUtils {
     const val NOTIFY_DATABASE_CORRUPTED = 4
     const val NOTIFY_SYNC_ERROR = 10
     const val NOTIFY_INVALID_RESOURCE = 11
+    const val NOTIFY_WEBDAV_ACCESS = 12
     const val NOTIFY_OPENTASKS = 20
     const val NOTIFY_PERMISSIONS = 21
 

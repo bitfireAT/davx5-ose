@@ -439,6 +439,9 @@
     <string name="webdav_add_mount_password">Password</string>
     <string name="webdav_add_mount_add">Add mount</string>
     <string name="webdav_add_mount_no_support">No WebDAV service at this URL</string>
+    <string name="webdav_notification_access">Accessing WebDAV file</string>
+    <string name="webdav_notification_download">Downloading WebDAV file</string>
+    <string name="webdav_notification_upload">Uploading WebDAV file</string>
     <string name="webdav_provider_root_title">WebDAV mount</string>
 
     <!-- sync adapters -->

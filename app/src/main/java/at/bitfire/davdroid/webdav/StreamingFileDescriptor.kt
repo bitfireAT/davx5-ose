@@ -4,15 +4,20 @@ import android.content.Context
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import androidx.annotation.WorkerThread
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.NotificationUtils
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import okhttp3.internal.headersContentLength
 import okio.BufferedSink
 import org.apache.commons.io.FileUtils
 import java.io.IOException
@@ -32,6 +37,17 @@ class StreamingFileDescriptor(
         /** 1 MB transfer buffer */
         private const val BUFFER_SIZE = FileUtils.ONE_MB.toInt()
     }
+
+    val dav = DavResource(client.okHttpClient, url)
+
+    private val notificationManager = NotificationManagerCompat.from(context)
+    private val notification = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_STATUS)
+        .setPriority(NotificationCompat.PRIORITY_LOW)
+        .setCategory(NotificationCompat.CATEGORY_STATUS)
+        .setContentText(dav.fileName())
+        .setSmallIcon(R.drawable.ic_storage_notify)
+        .setOngoing(true)
+    val notificationTag = url.toString()
 
 
     fun download() = doStreaming(false)
@@ -59,6 +75,8 @@ class StreamingFileDescriptor(
                 writeFd.close()
             } catch (ignored: IOException) {}
 
+            notificationManager.cancel(notificationTag, NotificationUtils.NOTIFY_WEBDAV_ACCESS)
+
             finishedCallback()
         }
 
@@ -75,9 +93,25 @@ class StreamingFileDescriptor(
 
     @WorkerThread
     private fun downloadNow(writeFd: ParcelFileDescriptor) {
-        DavResource(client.okHttpClient, url).get(mimeType ?: DavUtils.MIME_TYPE_ALL, null) { response ->
+        dav.get(mimeType ?: DavUtils.MIME_TYPE_ALL, null) { response ->
             response.body?.use { body ->
                 if (response.isSuccessful) {
+                    val length = response.headersContentLength()
+
+                    notification.setContentTitle(context.getString(R.string.webdav_notification_download))
+                    if (length == -1L)
+                        // unknown file size, show notification now (no updates on progress)
+                        notificationManager.notify(
+                            notificationTag,
+                            NotificationUtils.NOTIFY_WEBDAV_ACCESS,
+                            notification
+                                .setProgress(100, 0, true)
+                                .build()
+                        )
+                    else
+                        // known file size
+                        notification.setSubText(FileUtils.byteCountToDisplaySize(length))
+
                     ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { output ->
                         val buffer = ByteArray(BUFFER_SIZE)
                         body.byteStream().use { source ->
@@ -87,6 +121,16 @@ class StreamingFileDescriptor(
                             var bytes = source.read(buffer)
                             var transferred = 0L
                             while (bytes != -1) {
+                                // update notification (if file size is known)
+                                if (length != -1L)
+                                    notificationManager.notify(
+                                        notificationTag,
+                                        NotificationUtils.NOTIFY_WEBDAV_ACCESS,
+                                        notification
+                                            .setProgress(100, (transferred*100/length).toInt(), false)
+                                            .build()
+                                    )
+
                                 // write chunk
                                 output.write(buffer, 0, bytes)
                                 transferred += bytes
@@ -110,19 +154,27 @@ class StreamingFileDescriptor(
             override fun contentType(): MediaType? = mimeType?.toMediaTypeOrNull()
             override fun isOneShot() = true
             override fun writeTo(sink: BufferedSink) {
+                notificationManager.notify(
+                    notificationTag,
+                    NotificationUtils.NOTIFY_WEBDAV_ACCESS,
+                    notification
+                        .setContentTitle(context.getString(R.string.webdav_notification_upload))
+                        .build()
+                )
+
                 ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
                     val buffer = ByteArray(BUFFER_SIZE)
                     var transferred = 0L
 
                     // read first chunk
-                    var size = input.read(buffer, 0, BUFFER_SIZE)
+                    var size = input.read(buffer)
                     while (size != -1) {
                         // write chunk
                         sink.write(buffer, 0, size)
                         transferred += size
 
                         // read next chunk
-                        size = input.read(buffer, 0, BUFFER_SIZE)
+                        size = input.read(buffer)
                     }
                     Logger.log.finer("Uploaded $transferred byte(s) to $url")
                 }

@@ -1,6 +1,7 @@
 package at.bitfire.davdroid.webdav
 
 import android.annotation.TargetApi
+import android.app.NotificationManager
 import android.content.Context
 import android.os.CancellationSignal
 import android.os.Handler
@@ -9,14 +10,19 @@ import android.os.ProxyFileDescriptorCallback
 import android.system.ErrnoException
 import android.system.OsConstants
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.NotificationUtils
 import okhttp3.Headers
 import okhttp3.HttpUrl
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import java.io.InterruptedIOException
 import java.net.HttpURLConnection
@@ -36,6 +42,17 @@ class RandomAccessCallback(
 
     private val fileSize = headResponse.size ?: throw IllegalArgumentException("Can only be used with given file size")
     private val documentState = headResponse.toDocumentState() ?: throw IllegalArgumentException("Can only be used with ETag/Last-Modified")
+
+    private val notificationManager = NotificationManagerCompat.from(context)
+    private val notification = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_STATUS)
+        .setPriority(NotificationCompat.PRIORITY_LOW)
+        .setCategory(NotificationCompat.CATEGORY_STATUS)
+        .setContentTitle(context.getString(R.string.webdav_notification_access))
+        .setContentText(dav.fileName())
+        .setSubText(FileUtils.byteCountToDisplaySize(fileSize))
+        .setSmallIcon(R.drawable.ic_storage_notify)
+        .setOngoing(true)
+    val notificationTag = url.toString()
 
     private val workerThread = HandlerThread(javaClass.name).apply { start() }
     val workerHandler: Handler = Handler(workerThread.looper)
@@ -57,6 +74,13 @@ class RandomAccessCallback(
 
     override fun onRead(offset: Long, size: Int, data: ByteArray): Int {
         Logger.log.fine("onRead $url $offset $size")
+
+        notificationManager.notify(
+            notificationTag,
+            NotificationUtils.NOTIFY_WEBDAV_ACCESS,
+            notification.setProgress(100, (offset*100/fileSize).toInt(), false).build()
+        )
+
         if (cancellationSignal?.isCanceled == true)
             throw ErrnoException("onRead", OsConstants.EINTR)
 
@@ -103,6 +127,8 @@ class RandomAccessCallback(
     override fun onRelease() {
         httpClient.close()
         workerThread.quitSafely()
+
+        notificationManager.cancel(notificationTag, NotificationUtils.NOTIFY_WEBDAV_ACCESS)
     }
 
 
