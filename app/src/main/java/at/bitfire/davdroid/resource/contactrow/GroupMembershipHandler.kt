@@ -8,6 +8,7 @@ import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.vcard4android.contactrow.DataRowHandler
 import org.apache.commons.lang3.StringUtils
+import java.io.FileNotFoundException
 
 class GroupMembershipHandler(val localContact: LocalContact): DataRowHandler() {
 
@@ -20,10 +21,14 @@ class GroupMembershipHandler(val localContact: LocalContact): DataRowHandler() {
         localContact.groupMemberships += groupId
 
         if (localContact.addressBook.groupMethod == GroupMethod.CATEGORIES) {
-            val group = localContact.addressBook.findGroupById(groupId)
-            StringUtils.trimToNull(group.getContact().displayName)?.let { groupName ->
-                Logger.log.fine("Adding membership in group $groupName as category")
-                contact.categories.add(groupName)
+            try {
+                val group = localContact.addressBook.findGroupById(groupId)
+                StringUtils.trimToNull(group.getContact().displayName)?.let { groupName ->
+                    Logger.log.fine("Adding membership in group $groupName as category")
+                    contact.categories.add(groupName)
+                }
+            } catch (ignored: FileNotFoundException) {
+                Logger.log.warning("Contact is member in group $groupId which doesn't exist anymore")
             }
         }
     }
