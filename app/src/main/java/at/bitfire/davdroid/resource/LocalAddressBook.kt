@@ -335,9 +335,8 @@ open class LocalAddressBook(
         val ids = HashSet<Long>()
         provider!!.query(syncAdapterURI(ContactsContract.Data.CONTENT_URI),
                 arrayOf(RawContacts.Data.RAW_CONTACT_ID),
-                "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?) OR (${CachedGroupMembership.MIMETYPE}=? AND ${CachedGroupMembership.GROUP_ID}=?)",
-                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupID.toString(), CachedGroupMembership.CONTENT_ITEM_TYPE, groupID.toString()),
-                null)?.use { cursor ->
+                "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?)",
+                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupID.toString()), null)?.use { cursor ->
             while (cursor.moveToNext())
                 ids += cursor.getLong(0)
         }

@@ -15,29 +15,33 @@ import org.junit.Assert.assertEquals
 
 class GroupMembershipBuilderTest {
 
-    @JvmField
-    @Rule
-    val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
+    companion object {
+        @JvmField
+        @ClassRule
+        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-    private lateinit var provider: ContentProviderClient
+        private lateinit var provider: ContentProviderClient
 
-    private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
-    private lateinit var addressBookGroupsAsVCards: LocalTestAddressBook
+        private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
+        private lateinit var addressBookGroupsAsVCards: LocalTestAddressBook
 
-    @Before
-    fun connect() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-        Assert.assertNotNull(provider)
+        @BeforeClass
+        @JvmStatic
+        fun connect() {
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            Assert.assertNotNull(provider)
 
-        addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
-        addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
-    }
+            addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
+            addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
+        }
 
-    @After
-    fun disconnect() {
-        @Suppress("DEPRECATION")
-        provider.release()
+        @AfterClass
+        @JvmStatic
+        fun disconnect() {
+            @Suppress("DEPRECATION")
+            provider.release()
+        }
     }
 
 
@@ -59,6 +63,7 @@ class GroupMembershipBuilderTest {
             categories += "TEST GROUP"
         }
         GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards).build().also { result ->
+            // group membership is constructed during post-processing
             assertEquals(0, result.size)
         }
     }

@@ -40,7 +40,6 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
     }
 
     override fun postProcess() {
-        Logger.log.info("Assigning memberships of downloaded contact groups")
         LocalGroup.applyPendingMemberships(addressBook)
     }
 

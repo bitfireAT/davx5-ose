@@ -16,26 +16,32 @@ import org.junit.Assert.assertArrayEquals
 
 class CachedGroupMembershipHandlerTest {
 
-    @JvmField
-    @Rule
-    val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
+    companion object {
 
-    private lateinit var provider: ContentProviderClient
-    private lateinit var addressBook: LocalTestAddressBook
+        @JvmField
+        @ClassRule
+        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-    @Before
-    fun connect() {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-        Assert.assertNotNull(provider)
+        private lateinit var provider: ContentProviderClient
+        private lateinit var addressBook: LocalTestAddressBook
 
-        addressBook = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
-    }
+        @BeforeClass
+        @JvmStatic
+        fun connect() {
+            val context = InstrumentationRegistry.getInstrumentation().context
+            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            Assert.assertNotNull(provider)
 
-    @After
-    fun disconnect() {
-        @Suppress("DEPRECATION")
-        provider.release()
+            addressBook = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun disconnect() {
+            @Suppress("DEPRECATION")
+            provider.release()
+        }
+
     }
 
 

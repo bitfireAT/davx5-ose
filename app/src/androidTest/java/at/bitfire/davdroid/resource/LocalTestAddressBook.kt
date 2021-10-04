@@ -11,11 +11,24 @@ class LocalTestAddressBook(
     override val groupMethod: GroupMethod
 ): LocalAddressBook(context, ACCOUNT, provider) {
 
-    override var mainAccount: Account = ACCOUNT
-        get() = throw NotImplementedError()
-
     companion object {
         val ACCOUNT = Account("LocalTestAddressBook", "at.bitfire.davdroid.test")
+    }
+
+    override var mainAccount: Account
+        get() = throw NotImplementedError()
+        set(value) = throw NotImplementedError()
+
+    override var readOnly: Boolean
+        get() = false
+        set(value) = throw NotImplementedError()
+
+
+    fun clear() {
+        for (contact in queryContacts(null, null))
+            contact.delete()
+        for (group in queryGroups(null, null))
+            group.delete()
     }
 
 }

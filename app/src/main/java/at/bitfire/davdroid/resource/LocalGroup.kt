@@ -31,8 +31,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
         /** List of member UIDs, as sent by server. This list will be used to establish
          *  the group memberships when all groups and contacts have been synchronized.
-         *  Use [PendingMemberships] to create/read the list. *null* when the memberships
-         *  of this group didn't change, so no new association is required. */
+         *  Use [PendingMemberships] to create/read the list. */
         const val COLUMN_PENDING_MEMBERS = Groups.SYNC3
 
         /**
@@ -42,6 +41,8 @@ class LocalGroup: AndroidGroup, LocalAddress {
          * @param addressBook    address book to take groups from
          */
         fun applyPendingMemberships(addressBook: LocalAddressBook) {
+            Logger.log.info("Assigning memberships of contact groups")
+
             addressBook.provider!!.query(
                     addressBook.groupsSyncUri(),
                     arrayOf(Groups._ID, Groups.TITLE, COLUMN_PENDING_MEMBERS),
@@ -50,28 +51,38 @@ class LocalGroup: AndroidGroup, LocalAddress {
             )?.use { cursor ->
                 val batch = BatchOperation(addressBook.provider)
                 while (cursor.moveToNext()) {
-                    val id = cursor.getLong(0)
-                    val title = cursor.getString(1)
+                    val groupId = cursor.getLong(0)
+                    val groupName = cursor.getString(1)
+                    val pendingMemberUids = PendingMemberships.fromString(cursor.getString(2)).uids
+                    val currentMembers = addressBook.getByGroupMembership(groupId)
 
                     // required for workaround for Android 7 which sets DIRTY flag when only meta-data is changed
                     val changeContactIDs = HashSet<Long>()
 
-                    // delete all memberships and cached memberships for this group
-                    for (contact in addressBook.getByGroupMembership(id)) {
-                        contact.removeGroupMemberships(batch)
-                        changeContactIDs += contact.id!!
+                    // process members which are currently in this group, but shouldn't be
+                    for (currentMember in currentMembers) {
+                        val uid = currentMember.getContact().uid ?: continue
+                        if (!pendingMemberUids.contains(uid)) {
+                            Logger.log.fine("$currentMember removed from group $groupName (#$groupId); removing group membership")
+                            currentMember.removeGroupMemberships(batch)
+
+                            // Android 7 hack
+                            changeContactIDs += currentMember.id!!
+                        }
                     }
 
-                    // extract list of member UIDs
-                    val pending = PendingMemberships.fromString(cursor.getString(2))
+                    // process members which should be in this group, but aren't
+                    for (missingMemberUid in pendingMemberUids - currentMembers.mapNotNull { it.getContact().uid }) {
+                        val missingMember = addressBook.findContactByUid(missingMemberUid)
+                        if (missingMember == null) {
+                            Logger.log.warning("Group $groupName (#$groupId) has member $missingMemberUid which is not found in the address book; ignoring")
+                            continue
+                        }
 
-                    // insert memberships
-                    for (uid in pending.uids) {
-                        Logger.log.fine("Assigning member $uid to group $title (#$id)")
-                        addressBook.findContactByUid(uid)?.let { member ->
-                            member.addToGroup(batch, id)
-                            changeContactIDs += member.id!!
-                        } ?: Logger.log.warning("Group member not found: $uid")
+                        Logger.log.fine("Assigning member $missingMember to group $groupName (#$groupId)")
+                        missingMember.addToGroup(batch, groupId)
+
+                        changeContactIDs += missingMember.id!!
                     }
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
@@ -79,11 +90,6 @@ class LocalGroup: AndroidGroup, LocalAddress {
                         changeContactIDs
                                 .map { addressBook.findContactById(it) }
                                 .forEach { it.updateHashCode(batch) }
-
-                    // remove pending memberships
-                    batch.enqueue(BatchOperation.CpoBuilder
-                            .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(Groups.CONTENT_URI, id)))
-                            .withValue(COLUMN_PENDING_MEMBERS, null))
 
                     batch.commit()
                 }
@@ -243,15 +249,17 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
     class PendingMemberships(
         /** list of member UIDs that shall be assigned **/
-        val uids: List<String>
+        val uids: Set<String>
     ) {
 
         companion object {
+            const val SEPARATOR = '\n'
+
             fun fromString(value: String) =
-                PendingMemberships(value.split('\n'))
+                PendingMemberships(value.split(SEPARATOR).toSet())
         }
 
-        override fun toString() = uids.joinToString("\n")
+        override fun toString() = uids.joinToString(SEPARATOR.toString())
 
     }
 
