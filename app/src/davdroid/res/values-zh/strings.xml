@@ -5,9 +5,12 @@
   <string name="account_invalid">帐户不再存在</string>
   <string name="account_title_address_book">DAVx⁵ 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>
+  <string name="field_required">此字段是必填项</string>
   <string name="help">帮助</string>
   <string name="manage_accounts">管理账户</string>
   <string name="share">分享</string>
+  <string name="database_destructive_migration_title">数据库损坏</string>
+  <string name="database_destructive_migration_text">所有帐户已在本地删除。</string>
   <string name="notification_channel_debugging">调试</string>
   <string name="notification_channel_general">其它重要消息</string>
   <string name="notification_channel_status">低优先级状态消息</string>
@@ -104,6 +107,7 @@
   <string name="install_browser">请安装网页浏览器</string>
   <string name="navigation_drawer_settings">设置</string>
   <string name="navigation_drawer_news_updates">最新消息</string>
+  <string name="navigation_drawer_tools">工具</string>
   <string name="navigation_drawer_external_links">外部链接</string>
   <string name="navigation_drawer_website">应用网站</string>
   <string name="navigation_drawer_manual">手册</string>
@@ -352,6 +356,23 @@
   <string name="exception_httpexception">出现 HTTP 错误</string>
   <string name="exception_ioexception">出现 I/O 错误</string>
   <string name="exception_show_details">显示详情</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">WebDAV 文件系统</string>
+  <string name="webdav_mounts_quota_used_available">已用配额：%1$s/可用容量：%2$s</string>
+  <string name="webdav_mounts_share_content">分享内容</string>
+  <string name="webdav_mounts_unmount">解除挂载</string>
+  <string name="webdav_add_mount_title">添加 WebDAV 文件系统</string>
+  <string name="webdav_add_mount_display_name">展示名称</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">无效 URL</string>
+  <string name="webdav_add_mount_username">用户名</string>
+  <string name="webdav_add_mount_password">密码</string>
+  <string name="webdav_add_mount_add">添加 WebDAV 网址</string>
+  <string name="webdav_add_mount_no_support">此 URL 无 WebDAV 服务</string>
+  <string name="webdav_notification_access">正在访问 WebDAV 文件</string>
+  <string name="webdav_notification_download">正在下载 WebDAV 文件</string>
+  <string name="webdav_notification_upload">正在上传 WebDAV 文件</string>
+  <string name="webdav_provider_root_title">WebDAV 文件系统</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>

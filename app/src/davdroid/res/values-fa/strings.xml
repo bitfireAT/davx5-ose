@@ -335,6 +335,7 @@
   <string name="exception_httpexception">خطای HTTP رخ داده است.</string>
   <string name="exception_ioexception">خطای ورودی خروجی رخ داده است.</string>
   <string name="exception_show_details">نمایش جزئیات</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">مجوزهای همگام‌ساز DAVx⁵</string>
   <string name="sync_error_permissions_text">مجوزهای اضافی لازم است</string>

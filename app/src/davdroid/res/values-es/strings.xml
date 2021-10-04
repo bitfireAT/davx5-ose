@@ -340,6 +340,7 @@
   <string name="exception_httpexception">Ha ocurrido un error HTTP.</string>
   <string name="exception_ioexception">Ha ocurrido un error I/O.</string>
   <string name="exception_show_details">Mostrar detalles</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">Permisos de DAVx⁵</string>
   <string name="sync_error_permissions_text">Permisos adicionales requeridos</string>

@@ -283,6 +283,7 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="exception_httpexception">Si è verificato un errore HTTP.</string>
   <string name="exception_ioexception">Si è verificato un errore di I/O.</string>
   <string name="exception_show_details">Mostra dettagli</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">Autorizzazioni DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorizzazioni addizionali richieste</string>

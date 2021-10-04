@@ -354,6 +354,7 @@
   <string name="exception_httpexception">Der er opstået en HTTP-fejl.</string>
   <string name="exception_ioexception">Der er opstået en I/O-fejl.</string>
   <string name="exception_show_details">Vis detaljer</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵-rettigheder</string>
   <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>

@@ -69,6 +69,7 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Quyền WiFi SSID</string>
   <string name="wifi_permissions_intro">Để có thể truy cập tên mạng WiFi hiện tại (SSID), những điều kiện này phải được đáp ứng:</string>
+  <string name="wifi_permissions_location_permission">Quyền vị trí chính xác</string>
   <string name="wifi_permissions_location_permission_on">Đã cấp quyền vị trí</string>
   <string name="wifi_permissions_location_permission_off">Đã từ chối quyền vị trí</string>
   <string name="wifi_permissions_background_location_permission">Quyền vị trí trong nền</string>
@@ -84,6 +85,7 @@
   <string name="about_libraries">Thư viện</string>
   <string name="about_version">Phiên bản %1$s (%2$d)</string>
   <string name="about_build_date">Biên dịch vào %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) và những người đóng góp</string>
   <string name="about_flavor_info">Phiên bản này chỉ đủ điều kiện để phân phối qua Google Play.</string>
   <string name="about_license_info_no_warranty">Chương trình này KHÔNG CÓ SỰ ĐẢM BẢO NÀO. Nó là phần mềm tự do, và bạn có thể tuỳ ý phân phối lại nó dưới các điều kiện cụ thể. </string>
   <string name="about_translations_thanks"><![CDATA[<i>Nhờ có: </i> %s]]></string>
@@ -308,6 +310,7 @@
   <string name="create_collection_description">Mô tả</string>
   <string name="create_collection_optional">không bắt buộc</string>
   <string name="create_collection_home_set">Vị trí kho lưu trữ</string>
+  <string name="create_collection_home_set_required">Yêu cầu quyền bộ nhớ</string>
   <string name="create_collection_create">Tạo</string>
   <string name="delete_collection">Xoá bộ sưu tập</string>
   <string name="delete_collection_confirm_title">Bạn có chắc không?</string>
@@ -321,6 +324,10 @@
   <string name="collection_properties_owner">Chủ sở hữu:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Thông tin gỡ lỗi</string>
+  <string name="debug_info_archive_caption">Tệp nén ZIP</string>
+  <string name="debug_info_archive_subtitle">Chứa thông tin gỡ lỗi và nhật ký</string>
+  <string name="debug_info_archive_text">Chia sẻ tệp nén để truyền sang máy tính, để gửi đi bằng email hoặc để đính kèm vào yêu cầu hỗ trợ.</string>
+  <string name="debug_info_archive_share">Chia sẻ tệp nén</string>
   <string name="debug_info_attached">Đã đính kèm thông tin gỡ lỗi vào tin nhắn này (yêu cầu ứng dụng nhận có hỗ trợ tệp đính kèm).</string>
   <string name="debug_info_http_error">Lỗi HTTP</string>
   <string name="debug_info_server_error">Lỗi máy chủ</string>
@@ -345,6 +352,7 @@
   <string name="exception_httpexception">Đã xảy ra lỗi HTTP.</string>
   <string name="exception_ioexception">Đã xảy ra lỗi I/O.</string>
   <string name="exception_show_details">Hiện chi tiết</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">Quyền của DAVx⁵</string>
   <string name="sync_error_permissions_text">Yêu cầu quyền bổ sung</string>

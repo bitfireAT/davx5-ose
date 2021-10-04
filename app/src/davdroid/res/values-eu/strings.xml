@@ -69,6 +69,7 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID baimenak</string>
   <string name="wifi_permissions_intro">Uneko WiFi izena (SSID) atzitzeko, baldintza hauek bete behar dira:</string>
+  <string name="wifi_permissions_location_permission">Kokapen zehatz baimena</string>
   <string name="wifi_permissions_location_permission_on">Kokapen baimena emanda</string>
   <string name="wifi_permissions_location_permission_off">Kokapen baimena ukatuta</string>
   <string name="wifi_permissions_background_location_permission">Atzeko planoko kokapen baimena</string>
@@ -353,6 +354,7 @@
   <string name="exception_httpexception">HTTP errore bat gertatu da.</string>
   <string name="exception_ioexception">S/I errore bat gertatu da.</string>
   <string name="exception_show_details">Erakutsi xehetasunak</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ baimenak</string>
   <string name="sync_error_permissions_text">Baimen gehigarriak beharrezkoak</string>

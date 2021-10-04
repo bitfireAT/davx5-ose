@@ -353,6 +353,7 @@
   <string name="exception_httpexception">Er is een HTTP fout opgetreden.</string>
   <string name="exception_ioexception">Er is een I/O fout opgetreden.</string>
   <string name="exception_show_details">Toon details</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
