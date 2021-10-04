@@ -207,6 +207,7 @@
   <string name="exception_httpexception">HTTP エラーが発生しました。</string>
   <string name="exception_ioexception">I/O エラーが発生しました。</string>
   <string name="exception_show_details">詳細を表示</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ アクセス許可</string>
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>

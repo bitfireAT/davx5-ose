@@ -69,7 +69,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID autorisations</string>
   <string name="wifi_permissions_intro">Pour pouvoir accéder au nom du WiFi actuel (SSID), ces conditions doivent être remplies :</string>
-  <string name="wifi_permissions_location_permission">Autorisation de localisation</string>
   <string name="wifi_permissions_location_permission_on">Autorisation de localisation accordée</string>
   <string name="wifi_permissions_location_permission_off">Autorisation de localisation refusée</string>
   <string name="wifi_permissions_background_location_permission">Autorisation de localisation en arrière-plan</string>
@@ -349,6 +348,7 @@
   <string name="exception_httpexception">Une erreur HTTP est survenue.</string>
   <string name="exception_ioexception">Une erreur I/O est survenue.</string>
   <string name="exception_show_details">Voir détails</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">Autorisations DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>

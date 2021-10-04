@@ -69,7 +69,6 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID machtigingen</string>
   <string name="wifi_permissions_intro">Om toegang te krijgen tot de huidige WiFi-naam (SSID), moet aan deze voorwaarden zijn voldaan:</string>
-  <string name="wifi_permissions_location_permission">Locatie machtigingen</string>
   <string name="wifi_permissions_location_permission_on">Locatie machtiging verleend</string>
   <string name="wifi_permissions_location_permission_off">Locatie machtiging geweigerd</string>
   <string name="wifi_permissions_background_location_permission">Toestemming voor locatieservice in de achtergrond</string>
@@ -354,6 +353,7 @@
   <string name="exception_httpexception">Er is een HTTP fout opgetreden.</string>
   <string name="exception_ioexception">Er is een I/O fout opgetreden.</string>
   <string name="exception_show_details">Toon details</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>

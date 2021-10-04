@@ -340,6 +340,7 @@
   <string name="exception_httpexception">HTTP hiba történt.</string>
   <string name="exception_ioexception">I/O hiba történt.</string>
   <string name="exception_show_details">Részletek megjelenítése</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ engedélyek </string>
   <string name="sync_error_permissions_text">További engedélyek szükségesek</string>

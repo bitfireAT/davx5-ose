@@ -7,6 +7,9 @@
   <string name="address_books_authority_title">Livros de endereços</string>
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gerenciar contas</string>
+  <string name="share">Partilhar</string>
+  <string name="database_destructive_migration_title">Base de dados corrompida</string>
+  <string name="database_destructive_migration_text">Todas as contas foram removidas localmente.</string>
   <string name="notification_channel_debugging">Depuração</string>
   <string name="notification_channel_general">Outras mensagens importantes</string>
   <string name="notification_channel_sync">Sincronização</string>
@@ -30,11 +33,13 @@
   <string name="intro_leave_unchecked">* Deixe desmarcado para ser lembrado mais tarde. Pode ser redefinido nas configurações do aplicativo / %s.</string>
   <string name="intro_more_info">Mais informações</string>
   <string name="intro_tasks_title">Suporte a tarefas</string>
+  <string name="intro_tasks_tasks_org">Tarefas</string>
   <string name="intro_tasks_no_app_store">Nenhuma loja de aplicativos disponível</string>
   <string name="intro_tasks_dont_show">Não preciso de suporte a tarefas.*</string>
   <string name="intro_open_source_title">Software Livre</string>
   <string name="intro_open_source_text">Estamos felizes por usar o %s, que é um software de código aberto. Desenvolvimento, manutenção e suporte são um trabalho árduo. Considere contribuir (existem várias maneiras) ou fazer uma doação. Seria muito apreciado!</string>
   <string name="intro_open_source_details">Como contribuir/doar</string>
+  <string name="intro_open_source_dont_show">Não mostrar no futuro próximo</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Permissões</string>
   <string name="permissions_text">%s requer permissões para trabalhar corretamente.</string>
@@ -47,12 +52,21 @@
   <string name="permissions_calendar_title">Permissões de calendário</string>
   <string name="permissions_calendar_status_off">Nenhum calendário sincronizado (não recomendado)</string>
   <string name="permissions_calendar_status_on">Possível sincronização de calendário</string>
+  <string name="permissions_tasksorg_title">Permissões das tarefas</string>
   <string name="permissions_tasks_status_not_installed">Nenhuma tarefa sincronizada (não instalado)</string>
   <string name="permissions_tasks_status_off">Nenhuma tarefa sincronizada (não recomendado)</string>
   <string name="permissions_tasks_status_on">Possível sincronização de tarefa</string>
+  <string name="permissions_autoreset_title">Manter as permissões</string>
+  <string name="permissions_autoreset_status_off">As permissões podem ser redefinidas automaticamente (não recomendado)</string>
+  <string name="permissions_autoreset_status_on">As permissões não serão redefinidas automaticamente</string>
   <string name="permissions_app_settings_hint">Se uma opção não funcionar, use as configurações / permissões do aplicativo.</string>
   <string name="permissions_app_settings">Configurações do aplicativo</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">Permissões WiFi SSID</string>
+  <string name="wifi_permissions_location_permission">Permissão de localização precisa</string>
+  <string name="wifi_permissions_location_permission_on">Permissão de localização concedida</string>
+  <string name="wifi_permissions_location_permission_off">Permissão de localização negada</string>
+  <string name="wifi_permissions_background_location_permission_label">Permitir o tempo todo</string>
   <!--AboutActivity-->
   <string name="about_translations">Traduções</string>
   <string name="about_libraries">Bibliotecas</string>
@@ -63,6 +77,8 @@
   <string name="about_translations_thanks"><![CDATA[<i>Agradecemos a: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Não foi possível criar o arquivo de log</string>
+  <string name="logging_notification_view_share">Ver/partilhar</string>
+  <string name="logging_notification_disable">Desativar</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Abrir a gaveta de navegação</string>
   <string name="navigation_drawer_close">Fechar gaveta de navegação</string>
@@ -73,6 +89,7 @@
   <string name="install_browser">Instale um navegador Web</string>
   <string name="navigation_drawer_settings">Configurações</string>
   <string name="navigation_drawer_news_updates">Novidades e atualizações</string>
+  <string name="navigation_drawer_tools">Ferramentas</string>
   <string name="navigation_drawer_external_links">Links externos</string>
   <string name="navigation_drawer_website">Site na Web</string>
   <string name="navigation_drawer_manual">Manual</string>
@@ -115,6 +132,8 @@
   <string name="app_settings_user_interface">Interface de usuário</string>
   <string name="app_settings_notification_settings">Configurações das notificações</string>
   <string name="app_settings_notification_settings_summary">Gerenciar os canais de notificação e suas configurações</string>
+  <string name="app_settings_theme_title">Escolha um tema</string>
+  <string name="app_settings_theme_summary">Tema atual: %s</string>
   <string name="app_settings_reset_hints">Restaurar sugestões</string>
   <string name="app_settings_reset_hints_summary">Restaura as sugestões que foram descartadas anteriormente</string>
   <string name="app_settings_reset_hints_success">Todas as sugestões serão exibidas novamente</string>
@@ -174,6 +193,7 @@
   <string name="login_account_name_required">É necessário um nome de conta</string>
   <string name="login_account_name_already_taken">O nome da conta já foi utilizado</string>
   <string name="login_account_not_created">A conta não pôde ser criada</string>
+  <string name="login_install_certificate">Instalar certificado</string>
   <string name="login_configuration_detection">Detecção de configuração</string>
   <string name="login_querying_server">Aguarde, procurando servidor…</string>
   <string name="login_no_caldav_carddav">Não foi possível encontrar o serviço CalDAV ou CardDAV.</string>
@@ -212,6 +232,7 @@
   <string name="settings_password_summary">Atualize a senha de acordo com seu servidor</string>
   <string name="settings_enter_password">Digite sua senha:</string>
   <string name="settings_certificate_alias">Nome do certificado do cliente</string>
+  <string name="settings_certificate_alias_empty">Nenhum certificado selecionado</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite de tempo para eventos passados</string>
   <string name="settings_sync_time_range_past_none">Todos os eventos serão sincronizados</string>
@@ -263,8 +284,11 @@
   <string name="collection_properties">Propriedades</string>
   <string name="collection_properties_url">Endereço (URL):</string>
   <string name="collection_properties_copy_url">Copiar URL</string>
+  <string name="collection_properties_owner">Proprietário:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informações de depuração</string>
+  <string name="debug_info_archive_caption">Arquivo ZIP</string>
+  <string name="debug_info_archive_share">Partilhar arquivo</string>
   <string name="debug_info_attached">Informações de depuração anexadas a esta mensagem (requer suporte a anexo pelo aplicativo receptor).</string>
   <string name="debug_info_http_error">Erro HTTP</string>
   <string name="debug_info_server_error">Erro do servidor</string>
@@ -288,9 +312,13 @@
   <string name="exception_httpexception">Ocorreu um erro de HTTP.</string>
   <string name="exception_ioexception">Ocorreu um erro de leitura/gravação.</string>
   <string name="exception_show_details">Mostrar detalhes</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_share_content">Partilhar conteúdo</string>
+  <string name="webdav_add_mount_password">Palavra passe</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Permissões do DAVx⁵</string>
   <string name="sync_error_permissions_text">É necessário permissões adicionais</string>
+  <string name="sync_error_tasks_required_version">Versão mínima exigida: %1$s</string>
   <string name="sync_error_authentication_failed">Falha de autenticação (verifique as credenciais)</string>
   <string name="sync_error_io">Erro de rede ou E/S – %s</string>
   <string name="sync_error_http_dav">Erro no servidor HTTP – %s</string>

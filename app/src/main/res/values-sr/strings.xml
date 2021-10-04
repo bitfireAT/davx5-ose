@@ -176,6 +176,7 @@
   <string name="exception_httpexception">Десила се ХТТП грешка.</string>
   <string name="exception_ioexception">Десила се У/И грешка.</string>
   <string name="exception_show_details">Прикажи детаље</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">ДАВдроид дозволе</string>
   <string name="sync_error_permissions_text">Потребне су додатне доволе</string>

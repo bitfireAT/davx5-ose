@@ -244,6 +244,7 @@
   <string name="exception_httpexception">Trefiōł sie błōnd HTTP.</string>
   <string name="exception_ioexception">Trefiōł sie błōnd I/O.</string>
   <string name="exception_show_details">Pokoż informacyje</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">Uprawniynia DAVx⁵</string>
   <string name="sync_error_permissions_text">Wymogane ekstra uprawniynia</string>

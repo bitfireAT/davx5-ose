@@ -282,6 +282,7 @@
   <string name="exception_httpexception">Трапилась помилка HTTP.</string>
   <string name="exception_ioexception">Трапилась помилка I/O.</string>
   <string name="exception_show_details">Показати подробиці</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">Дозволи DAVx⁵</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>

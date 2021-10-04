@@ -5,9 +5,12 @@
   <string name="account_invalid">Konto (już) nie istnieje</string>
   <string name="account_title_address_book">Książka adresowa DAVx⁵</string>
   <string name="address_books_authority_title">Książka adresowa</string>
+  <string name="field_required">To pole jest wymagane</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Zadządzaj kontami</string>
   <string name="share">Udostępnij</string>
+  <string name="database_destructive_migration_title">Uszkodzona baza danych</string>
+  <string name="database_destructive_migration_text">Wszystkie konta zostały usunięte lokalnie.</string>
   <string name="notification_channel_debugging">Debugowanie</string>
   <string name="notification_channel_general">Inne ważne wiadomości</string>
   <string name="notification_channel_status">Komunikaty statusu o niskim priorytecie</string>
@@ -104,6 +107,7 @@
   <string name="install_browser">Proszę zainstalować przeglądarkę internetową</string>
   <string name="navigation_drawer_settings">Ustawienia</string>
   <string name="navigation_drawer_news_updates">Nowości i aktualizacje</string>
+  <string name="navigation_drawer_tools">Narzędzia</string>
   <string name="navigation_drawer_external_links">Zewnętrzne odnośniki</string>
   <string name="navigation_drawer_website">Strona WWW</string>
   <string name="navigation_drawer_manual">Podręcznik</string>
@@ -358,6 +362,20 @@
   <string name="exception_httpexception">Wystąpił błąd HTTP.</string>
   <string name="exception_ioexception">Wystąpił błąd wejścia/wyjścia.</string>
   <string name="exception_show_details">Pokaż szczegóły</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">Punkty linkowania WebDAV</string>
+  <string name="webdav_mounts_quota_used_available">Limit użyty: %1$s / dostępny: %2$s</string>
+  <string name="webdav_mounts_share_content">Udostępnij zawartość</string>
+  <string name="webdav_mounts_unmount">Odlinkuj</string>
+  <string name="webdav_add_mount_title">Dodaj punkt linkowania WebDAV</string>
+  <string name="webdav_add_mount_display_name">Nazwa wyświetlana</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">Błędny URL</string>
+  <string name="webdav_add_mount_username">Nazwa użytkownika</string>
+  <string name="webdav_add_mount_password">Hasło</string>
+  <string name="webdav_add_mount_add">Dodaj link</string>
+  <string name="webdav_add_mount_no_support">Brak usługi WebDAV pod tym URL</string>
+  <string name="webdav_provider_root_title">Punkt linkowania WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Uprawnienia DAVx⁵</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>

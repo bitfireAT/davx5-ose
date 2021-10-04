@@ -8,6 +8,8 @@
   <string name="help">Axuda</string>
   <string name="manage_accounts">Xestionar contas</string>
   <string name="share">Compartir</string>
+  <string name="database_destructive_migration_title">Base de datos estragada</string>
+  <string name="database_destructive_migration_text">Foron eliminadas tódalas contas locais</string>
   <string name="notification_channel_debugging">Depurando</string>
   <string name="notification_channel_general">Outras mensaxes importantes</string>
   <string name="notification_channel_status">Mensaxes de estado de baixa prioridade</string>
@@ -104,6 +106,7 @@
   <string name="install_browser">Instala un navegador web</string>
   <string name="navigation_drawer_settings">Axustes</string>
   <string name="navigation_drawer_news_updates">Novas &amp; actualizacións</string>
+  <string name="navigation_drawer_tools">Ferramentas</string>
   <string name="navigation_drawer_external_links">Ligazóns externas</string>
   <string name="navigation_drawer_website">Sitio web</string>
   <string name="navigation_drawer_manual">Manual</string>
@@ -354,6 +357,17 @@
   <string name="exception_httpexception">Houbo un fallo HTTP.</string>
   <string name="exception_ioexception">Houbo un fallo I/O.</string>
   <string name="exception_show_details">Mostrar detalles</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">Montaxes WebDAV</string>
+  <string name="webdav_mounts_quota_used_available">Cota utilizada: %1$s / dispoñible: %2$s</string>
+  <string name="webdav_mounts_share_content">Compartir contido</string>
+  <string name="webdav_mounts_unmount">Desmontar</string>
+  <string name="webdav_add_mount_title">Engadir montaxe WebDAV</string>
+  <string name="webdav_add_mount_display_name">Nome mostrado</string>
+  <string name="webdav_add_mount_url">URL WebDAV</string>
+  <string name="webdav_add_mount_username">Nome de usuaria</string>
+  <string name="webdav_add_mount_password">Contrasinal</string>
+  <string name="webdav_provider_root_title">Montaxe WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Permisos DAVx⁵</string>
   <string name="sync_error_permissions_text">Precísanse permisos adicionais</string>

@@ -247,6 +247,7 @@
   <string name="exception_httpexception">S\'ha produït un error HTTP.</string>
   <string name="exception_ioexception">S\'ha produït un error d\'E/S.</string>
   <string name="exception_show_details">Mostra els detalls</string>
+  <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_http_dav">Error del servidor HTTP: %s</string>
   <string name="sync_error_local_storage">Error d\'emmagatzematge local: %s</string>

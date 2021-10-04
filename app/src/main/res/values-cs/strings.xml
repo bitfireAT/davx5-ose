@@ -5,9 +5,12 @@
   <string name="account_invalid">Účet (už) neexistuje</string>
   <string name="account_title_address_book">DAVx⁵ adresář kontaktů</string>
   <string name="address_books_authority_title">Adresáře kontaktů</string>
+  <string name="field_required">Tuto kolonku je třeba vyplnit</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
   <string name="share">Sdílet</string>
+  <string name="database_destructive_migration_title">Databáze rozbitá</string>
+  <string name="database_destructive_migration_text">Všechny účty byly lokálně odebrány.</string>
   <string name="notification_channel_debugging">Ladění</string>
   <string name="notification_channel_general">Ostatní důležité zprávy</string>
   <string name="notification_channel_status">Stavové zprávy nízké priority</string>
@@ -104,6 +107,7 @@
   <string name="install_browser">Nainstalujte si webový prohlížeč</string>
   <string name="navigation_drawer_settings">Nastavení</string>
   <string name="navigation_drawer_news_updates">Novinky a aktualizace</string>
+  <string name="navigation_drawer_tools">Nástroje</string>
   <string name="navigation_drawer_external_links">Externí odkazy</string>
   <string name="navigation_drawer_website">Webová stránka</string>
   <string name="navigation_drawer_manual">Příručka</string>
@@ -358,6 +362,23 @@
   <string name="exception_httpexception">Došlo k HTTP chybě.</string>
   <string name="exception_ioexception">Došlo k chybě vstupu/výstupu.</string>
   <string name="exception_show_details">Zobrazit podrobnosti</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">WebDAV připojení</string>
+  <string name="webdav_mounts_quota_used_available">Využitá kvóta: %1$s / k dispozici: %2$s</string>
+  <string name="webdav_mounts_share_content">Obsah sdílení</string>
+  <string name="webdav_mounts_unmount">Odpojit</string>
+  <string name="webdav_add_mount_title">Přidat WebDAV připojení</string>
+  <string name="webdav_add_mount_display_name">Zobrazovaný název</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">Neplatná URL</string>
+  <string name="webdav_add_mount_username">Uživatelské jméno</string>
+  <string name="webdav_add_mount_password">Heslo</string>
+  <string name="webdav_add_mount_add">Přidat připojení (mount)</string>
+  <string name="webdav_add_mount_no_support">Na této URL se nenachází žádná WebDAV služba</string>
+  <string name="webdav_notification_access">Přistupuje se k WebDAV souboru</string>
+  <string name="webdav_notification_download">Stahuje se WebDAV soubor</string>
+  <string name="webdav_notification_upload">Nahrává se WebDAV soubor</string>
+  <string name="webdav_provider_root_title">WebDAV připojení</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ oprávnění</string>
   <string name="sync_error_permissions_text">Vyžadována dodatečná oprávnění</string>
