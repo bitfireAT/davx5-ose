@@ -115,8 +115,6 @@ class StreamingFileDescriptor(
                     ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { output ->
                         val buffer = ByteArray(BUFFER_SIZE)
                         body.byteStream().use { source ->
-                            var currentPage = 0
-
                             // read first chunk
                             var bytes = source.read(buffer)
                             var transferred = 0L

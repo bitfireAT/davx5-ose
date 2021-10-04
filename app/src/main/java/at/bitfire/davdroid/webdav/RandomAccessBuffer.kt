@@ -65,20 +65,20 @@ class RandomAccessBuffer(
         }
 
         // caching not possible because of missing ETag/Last-Modified
-        return getPageDirect(pageIdx)
+        return getPageDirect(pageIdx, offset, size)
     }
 
-    private fun getPageDirect(pageIdx: Long): ByteArray {
-        val startPos = pageIdx * PAGE_SIZE
+    internal fun getPageDirect(pageIdx: Long, offset: Long = 0, size: Int = PAGE_SIZE): ByteArray {
+        val startPos = pageIdx * PAGE_SIZE + offset
         if (startPos >= fileLength)
-            throw IndexOutOfBoundsException("Can't get page after EOF ($startPos >= $fileLength)")
+            throw IndexOutOfBoundsException("Can't get page at or after EOF ($startPos >= $fileLength)")
 
-        val idxLast = min(startPos + PAGE_SIZE, fileLength)
+        val idxLast = min(startPos + size, fileLength)
 
-        val pageSize = (idxLast - startPos).toInt()
-        val buffer = ByteArray(pageSize)
-        if (reader.readDirect(startPos, pageSize, buffer) != pageSize)
-            throw DavException("Couldn't read $pageSize bytes from position $startPos (file size = $fileLength)")
+        val resultSize = (idxLast - startPos).toInt()
+        val buffer = ByteArray(resultSize)
+        if (reader.readDirect(startPos, resultSize, buffer) != resultSize)
+            throw DavException("Couldn't read $resultSize bytes from position $startPos (file size = $fileLength)")
         return buffer
     }
 

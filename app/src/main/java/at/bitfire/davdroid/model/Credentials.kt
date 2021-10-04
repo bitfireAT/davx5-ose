@@ -8,7 +8,7 @@
 
 package at.bitfire.davdroid.model
 
-class Credentials(
+data class Credentials(
         val userName: String? = null,
         val password: String? = null,
         val certificateAlias: String? = null

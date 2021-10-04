@@ -1,7 +1,6 @@
 package at.bitfire.davdroid.webdav
 
 import android.annotation.TargetApi
-import android.app.NotificationManager
 import android.content.Context
 import android.os.CancellationSignal
 import android.os.Handler
@@ -9,7 +8,6 @@ import android.os.HandlerThread
 import android.os.ProxyFileDescriptorCallback
 import android.system.ErrnoException
 import android.system.OsConstants
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
