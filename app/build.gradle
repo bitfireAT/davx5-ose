@@ -19,7 +19,7 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 400000001
+        versionCode 400000002
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 21        // Android 5
@@ -55,7 +55,7 @@ android {
     flavorDimensions "distribution"
     productFlavors {
         standard {
-            versionName "4.0-beta1-ose"
+            versionName "4.0-beta2-ose"
         }
     }
 
@@ -143,9 +143,10 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.4.0'
 
-    def room_version = '2.4.0-alpha04'
+    def room_version = '2.4.0-alpha05'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.room:room-paging:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     androidTestImplementation "androidx.room:room-testing:$room_version"
 
