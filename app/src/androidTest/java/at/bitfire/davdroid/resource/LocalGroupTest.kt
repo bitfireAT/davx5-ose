@@ -216,6 +216,24 @@ class LocalGroupTest {
 
 
     @Test
+    fun testMarkMembersDirty() {
+        val ab = addressBookGroupsAsCategories
+        val group = newGroup(ab)
+
+        val contact1 = LocalContact(ab, Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
+        contact1.add()
+
+        val batch = BatchOperation(ab.provider!!)
+        contact1.addToGroup(batch, group.id!!)
+        batch.commit()
+
+        assertEquals(0, ab.findDirty().size)
+        group.markMembersDirty()
+        assertEquals(contact1.id, ab.findDirty().first().id)
+    }
+
+
+    @Test
     fun testPrepareForUpload() {
         val group = newGroup()
         assertNull(group.getContact().uid)

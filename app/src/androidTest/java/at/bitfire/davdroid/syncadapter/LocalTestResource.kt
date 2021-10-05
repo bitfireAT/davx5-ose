@@ -1,6 +1,5 @@
 package at.bitfire.davdroid.syncadapter
 
-import android.net.Uri
 import at.bitfire.davdroid.resource.LocalResource
 
 class LocalTestResource: LocalResource<Any> {
@@ -28,16 +27,8 @@ class LocalTestResource: LocalResource<Any> {
         this.flags = flags
     }
 
-    override fun add(): Uri {
-        TODO("Not yet implemented")
-    }
-
-    override fun update(data: Any): Uri {
-        TODO("Not yet implemented")
-    }
-
-    override fun delete(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun add() = throw NotImplementedError()
+    override fun update(data: Any) = throw NotImplementedError()
+    override fun delete() = throw NotImplementedError()
 
 }

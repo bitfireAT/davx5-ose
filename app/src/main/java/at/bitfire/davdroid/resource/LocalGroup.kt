@@ -53,7 +53,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
                 while (cursor.moveToNext()) {
                     val groupId = cursor.getLong(0)
                     val groupName = cursor.getString(1)
-                    val pendingMemberUids = PendingMemberships.fromString(cursor.getString(2)).uids
+                    val pendingMemberUids = PendingMemberships.fromString(cursor.getString(2)).uids.toMutableSet()
                     val currentMembers = addressBook.getByGroupMembership(groupId)
 
                     // required for workaround for Android 7 which sets DIRTY flag when only meta-data is changed
@@ -62,6 +62,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
                     // process members which are currently in this group, but shouldn't be
                     for (currentMember in currentMembers) {
                         val uid = currentMember.getContact().uid ?: continue
+
                         if (!pendingMemberUids.contains(uid)) {
                             Logger.log.fine("$currentMember removed from group $groupName (#$groupId); removing group membership")
                             currentMember.removeGroupMemberships(batch)
@@ -69,10 +70,14 @@ class LocalGroup: AndroidGroup, LocalAddress {
                             // Android 7 hack
                             changeContactIDs += currentMember.id!!
                         }
+
+                        // UID is processed, remove from pendingMembers
+                        pendingMemberUids -= uid
                     }
+                    // now pendingMemberUids contains all UIDs which are not assigned yet
 
                     // process members which should be in this group, but aren't
-                    for (missingMemberUid in pendingMemberUids - currentMembers.mapNotNull { it.getContact().uid }) {
+                    for (missingMemberUid in pendingMemberUids) {
                         val missingMember = addressBook.findContactByUid(missingMemberUid)
                         if (missingMember == null) {
                             Logger.log.warning("Group $groupName (#$groupId) has member $missingMemberUid which is not found in the address book; ignoring")
@@ -82,6 +87,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
                         Logger.log.fine("Assigning member $missingMember to group $groupName (#$groupId)")
                         missingMember.addToGroup(batch, groupId)
 
+                        // Android 7 hack
                         changeContactIDs += missingMember.id!!
                     }
 

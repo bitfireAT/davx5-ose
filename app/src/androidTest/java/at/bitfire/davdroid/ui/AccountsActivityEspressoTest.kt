@@ -35,8 +35,6 @@ class AccountsActivityEspressoTest {
     private val password = "test"
     private val baseUrl = "https://davtest.dev001.net/radicale/htpasswd/"
 
-    // FIXME should work
-    /*
     @Test
     fun accountsActivityTest() {
         skipIntroActivity()
@@ -93,7 +91,6 @@ class AccountsActivityEspressoTest {
         // doublecheck to make sure that the account doesn't exist anymore. The welcome text is displayed
         onView(withText(R.string.account_list_empty)).check(matches(withText(R.string.account_list_empty)))
     }
-    */
 
     @Test
     fun menuDrawerTest() {

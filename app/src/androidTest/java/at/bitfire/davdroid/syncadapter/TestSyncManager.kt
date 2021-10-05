@@ -93,8 +93,7 @@ class TestSyncManager(
     override fun postProcess() {
     }
 
-    override fun notifyInvalidResourceTitle(): String {
-        TODO("Not yet implemented")
-    }
+    override fun notifyInvalidResourceTitle() =
+        throw NotImplementedError()
 
 }
