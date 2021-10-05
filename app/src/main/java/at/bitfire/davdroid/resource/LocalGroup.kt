@@ -43,62 +43,54 @@ class LocalGroup: AndroidGroup, LocalAddress {
         fun applyPendingMemberships(addressBook: LocalAddressBook) {
             Logger.log.info("Assigning memberships of contact groups")
 
-            addressBook.provider!!.query(
-                    addressBook.groupsSyncUri(),
-                    arrayOf(Groups._ID, Groups.TITLE, COLUMN_PENDING_MEMBERS),
-                    "$COLUMN_PENDING_MEMBERS IS NOT NULL", null,
-                    null
-            )?.use { cursor ->
-                val batch = BatchOperation(addressBook.provider)
-                while (cursor.moveToNext()) {
-                    val groupId = cursor.getLong(0)
-                    val groupName = cursor.getString(1)
-                    val pendingMemberUids = PendingMemberships.fromString(cursor.getString(2)).uids.toMutableSet()
-                    val currentMembers = addressBook.getByGroupMembership(groupId)
+            addressBook.allGroups { group ->
+                val groupId = group.id!!
+                val pendingMemberUids = group.pendingMemberships.toMutableSet()
+                val batch = BatchOperation(addressBook.provider!!)
 
-                    // required for workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                    val changeContactIDs = HashSet<Long>()
+                // required for workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+                val changeContactIDs = HashSet<Long>()
 
-                    // process members which are currently in this group, but shouldn't be
-                    for (currentMember in currentMembers) {
-                        val uid = currentMember.getContact().uid ?: continue
+                // process members which are currently in this group, but shouldn't be
+                for (currentMemberId in addressBook.getContactIdsByGroupMembership(groupId)) {
+                    val uid = addressBook.getContactUidFromId(currentMemberId) ?: continue
 
-                        if (!pendingMemberUids.contains(uid)) {
-                            Logger.log.fine("$currentMember removed from group $groupName (#$groupId); removing group membership")
-                            currentMember.removeGroupMemberships(batch)
-
-                            // Android 7 hack
-                            changeContactIDs += currentMember.id!!
-                        }
-
-                        // UID is processed, remove from pendingMembers
-                        pendingMemberUids -= uid
-                    }
-                    // now pendingMemberUids contains all UIDs which are not assigned yet
-
-                    // process members which should be in this group, but aren't
-                    for (missingMemberUid in pendingMemberUids) {
-                        val missingMember = addressBook.findContactByUid(missingMemberUid)
-                        if (missingMember == null) {
-                            Logger.log.warning("Group $groupName (#$groupId) has member $missingMemberUid which is not found in the address book; ignoring")
-                            continue
-                        }
-
-                        Logger.log.fine("Assigning member $missingMember to group $groupName (#$groupId)")
-                        missingMember.addToGroup(batch, groupId)
+                    if (!pendingMemberUids.contains(uid)) {
+                        Logger.log.fine("$currentMemberId removed from group $groupId; removing group membership")
+                        val currentMember = addressBook.findContactById(currentMemberId)
+                        currentMember.removeGroupMemberships(batch)
 
                         // Android 7 hack
-                        changeContactIDs += missingMember.id!!
+                        changeContactIDs += currentMemberId
                     }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                        // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                        changeContactIDs
-                                .map { addressBook.findContactById(it) }
-                                .forEach { it.updateHashCode(batch) }
-
-                    batch.commit()
+                    // UID is processed, remove from pendingMembers
+                    pendingMemberUids -= uid
                 }
+                // now pendingMemberUids contains all UIDs which are not assigned yet
+
+                // process members which should be in this group, but aren't
+                for (missingMemberUid in pendingMemberUids) {
+                    val missingMember = addressBook.findContactByUid(missingMemberUid)
+                    if (missingMember == null) {
+                        Logger.log.warning("Group $groupId has member $missingMemberUid which is not found in the address book; ignoring")
+                        continue
+                    }
+
+                    Logger.log.fine("Assigning member $missingMember to group $groupId")
+                    missingMember.addToGroup(batch, groupId)
+
+                    // Android 7 hack
+                    changeContactIDs += missingMember.id!!
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                    // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+                    changeContactIDs
+                            .map { addressBook.findContactById(it) }
+                            .forEach { it.updateHashCode(batch) }
+
+                batch.commit()
             }
         }
 
@@ -111,13 +103,14 @@ class LocalGroup: AndroidGroup, LocalAddress {
 
     override var flags: Int = 0
 
+    var pendingMemberships = setOf<String>()
 
-    constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues)
-        : super(addressBook, values)
 
-    override fun initializeFromContentValues(values: ContentValues) {
-        super.initializeFromContentValues(values)
+    constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, values: ContentValues) : super(addressBook, values) {
         flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
+        values.getAsString(COLUMN_PENDING_MEMBERS)?.let { members ->
+            pendingMemberships = PendingMemberships.fromString(members).uids
+        }
     }
 
     constructor(addressBook: AndroidAddressBook<out AndroidContact, LocalGroup>, contact: Contact, fileName: String?, eTag: String?, flags: Int)

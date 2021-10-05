@@ -47,12 +47,12 @@ class LocalContact: AndroidContact, LocalAddress {
     override var flags: Int = 0
 
 
-    constructor(addressBook: LocalAddressBook, values: ContentValues)
-            : super(addressBook, values)
+    constructor(addressBook: LocalAddressBook, values: ContentValues): super(addressBook, values) {
+        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
+    }
 
-    constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, flags: Int)
-            : super(addressBook, contact, fileName, eTag) {
-        this.flags = flags
+    constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, _flags: Int): super(addressBook, contact, fileName, eTag) {
+        flags = _flags
     }
 
     init {
@@ -61,11 +61,6 @@ class LocalContact: AndroidContact, LocalAddress {
         processor.registerHandler(UnknownPropertiesHandler)
         processor.registerBuilderFactory(GroupMembershipBuilder.Factory(addressBook))
         processor.registerBuilderFactory(UnknownPropertiesBuilder.Factory)
-    }
-
-    override fun initializeFromContentValues(values: ContentValues) {
-        super.initializeFromContentValues(values)
-        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
     }
 
 

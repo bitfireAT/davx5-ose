@@ -299,6 +299,27 @@ open class LocalAddressBook(
     }
 
 
+    fun getContactIdsByGroupMembership(groupId: Long): List<Long> {
+        val ids = LinkedList<Long>()
+        provider!!.query(syncAdapterURI(ContactsContract.Data.CONTENT_URI), arrayOf(GroupMembership.RAW_CONTACT_ID),
+            "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?)",
+            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupId.toString()), null)?.use { cursor ->
+            while (cursor.moveToNext())
+                ids += cursor.getLong(0)
+        }
+        return ids
+    }
+
+    fun getContactUidFromId(contactId: Long): String? {
+        provider!!.query(rawContactsSyncUri(), arrayOf(AndroidContact.COLUMN_UID),
+            "${RawContacts._ID}=?", arrayOf(contactId.toString()), null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.getString(0)
+        }
+        return null
+    }
+
+
     /**
      * Queries all contacts with DIRTY flag and checks whether their data checksum has changed, i.e.
      * if they're "really dirty" (= data has changed, not only metadata, which is not hashed).
@@ -329,19 +350,6 @@ open class LocalAddressBook(
             reallyDirty += findDirtyGroups().size
 
         return reallyDirty
-    }
-
-    fun getByGroupMembership(groupID: Long): List<LocalContact> {
-        val ids = HashSet<Long>()
-        provider!!.query(syncAdapterURI(ContactsContract.Data.CONTENT_URI),
-                arrayOf(RawContacts.Data.RAW_CONTACT_ID),
-                "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?)",
-                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupID.toString()), null)?.use { cursor ->
-            while (cursor.moveToNext())
-                ids += cursor.getLong(0)
-        }
-
-        return ids.map { findContactById(it) }
     }
 
 
