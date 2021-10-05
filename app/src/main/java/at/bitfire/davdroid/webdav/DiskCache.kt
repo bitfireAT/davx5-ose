@@ -47,6 +47,17 @@ class DiskCache(
     }
 
 
+    /**
+     * Gets the cached value with the given key. If the key is not in the cache, the value is being generated from the
+     * callback, stored in the cache and returned.
+     *
+     * @param key      key of the cached entry
+     * @param offset   used if only a part of the value is required
+     * @param maxSize  used if only a part of the value is required
+     * @param generate callback that generates the whole value (not only the part given by [offset] and [maxSize]!)
+     *
+     * @return the value (either taken from the cache or from [generate]), limited [offset]/[maxSize]
+     */
     fun get(key: String, offset: Long = 0, maxSize: Int = Int.MAX_VALUE, generate: () -> ByteArray?): ByteArray? {
         synchronized(globalLock) {
             val file = File(cacheDir, key)
@@ -92,6 +103,18 @@ class DiskCache(
         }
     }
 
+    /**
+     * Gets the file that contains the given key. If the key is not in the cache, the value is being generated from the
+     * callback, stored in the cache and the backing file is returned.
+     *
+     * It's not guaranteed that the file still exists when you're using it! For instance, it may have already
+     * been removed to keep the cache in size.
+     *
+     * @param key      key of the cached entry
+     * @param generate callback that generates the value
+     *
+     * @return the file that contains the value
+     */
     fun getFile(key: String, generate: () -> ByteArray?): File? {
         synchronized(globalLock) {
             val file = File(cacheDir, key)
@@ -131,6 +154,9 @@ class DiskCache(
 
     fun keys(): Array<String> = cacheDir.list()!!
 
+    /**
+     * Trims the cache to keep it smaller than [maxSize].
+     */
     @WorkerThread
     fun trim(): Int {
         var removed = 0
