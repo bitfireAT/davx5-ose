@@ -337,8 +337,9 @@ class DebugInfoActivity: AppCompatActivity() {
                 writer.append(
                         "\nSYSTEM INFORMATION\n\n" +
                         "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
-                        "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n" +
-                        "Locale(s): $locales\n\n"
+                        "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n" +
+                        "Locale(s): $locales\n" +
+                        "Time zone: ${TimeZone.getDefault().id}\n\n"
                 )
 
                 // connectivity
