@@ -156,13 +156,13 @@ class LocalGroup: AndroidGroup, LocalAddress {
         val values = ContentValues(3)
         if (fileName != null)
             values.put(COLUMN_FILENAME, fileName)
-        values.put(COLUMN_ETAG, eTag)
+        values.putNull(COLUMN_ETAG)     // don't save changed ETag but null, so that the group is downloaded again, so that pendingMembers is updated
         values.put(Groups.DIRTY, 0)
         update(values)
 
         if (fileName != null)
             this.fileName = fileName
-        this.eTag = eTag
+        this.eTag = null
 
         // update cached group memberships
         val batch = BatchOperation(addressBook.provider!!)
