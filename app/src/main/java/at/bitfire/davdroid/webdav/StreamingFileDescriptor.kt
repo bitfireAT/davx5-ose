@@ -30,7 +30,7 @@ class StreamingFileDescriptor(
     val url: HttpUrl,
     val mimeType: String?,
     val cancellationSignal: CancellationSignal?,
-    val finishedCallback: () -> Unit
+    val finishedCallback: OnSuccessCallback
 ) {
 
     companion object {
@@ -39,6 +39,7 @@ class StreamingFileDescriptor(
     }
 
     val dav = DavResource(client.okHttpClient, url)
+    var transferred: Long = 0
 
     private val notificationManager = NotificationManagerCompat.from(context)
     private val notification = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_STATUS)
@@ -77,7 +78,7 @@ class StreamingFileDescriptor(
 
             notificationManager.cancel(notificationTag, NotificationUtils.NOTIFY_WEBDAV_ACCESS)
 
-            finishedCallback()
+            finishedCallback.onSuccess(transferred)
         }
 
         cancellationSignal?.setOnCancelListener {
@@ -117,7 +118,6 @@ class StreamingFileDescriptor(
                         body.byteStream().use { source ->
                             // read first chunk
                             var bytes = source.read(buffer)
-                            var transferred = 0L
                             while (bytes != -1) {
                                 // update notification (if file size is known)
                                 if (length != -1L)
@@ -162,7 +162,6 @@ class StreamingFileDescriptor(
 
                 ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
                     val buffer = ByteArray(BUFFER_SIZE)
-                    var transferred = 0L
 
                     // read first chunk
                     var size = input.read(buffer)
@@ -181,6 +180,11 @@ class StreamingFileDescriptor(
         DavResource(client.okHttpClient, url).put(body) {
             // upload successful
         }
+    }
+
+
+    fun interface OnSuccessCallback {
+        fun onSuccess(transferred: Long)
     }
 
 }

@@ -495,7 +495,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         val client = httpClient(doc.mountId)
 
         val modeFlags = ParcelFileDescriptor.parseMode(mode)
-        val readOnly = when (mode) {
+        val readAccess = when (mode) {
             "r" -> true
             "w", "wt" -> false
             else -> throw UnsupportedOperationException("Mode $mode not supported by WebDAV")
@@ -512,7 +512,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         return if (
             Build.VERSION.SDK_INT >= 26 &&      // openProxyFileDescriptor exists since Android 8.0
-            readOnly &&                         // WebDAV doesn't support random write access natively
+            readAccess &&                       // WebDAV doesn't support random write access natively
             fileInfo.size != null &&            // file descriptor must return a useful value on getFileSize()
             (fileInfo.eTag != null || fileInfo.lastModified != null) &&     // we need a method to determine whether the document has changed during access
             fileInfo.supportsPartial != false   // WebDAV server must support random access
@@ -520,12 +520,21 @@ class DavDocumentsProvider: DocumentsProvider() {
             val accessor = RandomAccessCallback(context!!, client, url, doc.mimeType, fileInfo, signal)
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
-            val fd = StreamingFileDescriptor(context!!, client, url, doc.mimeType, signal) {
+            val fd = StreamingFileDescriptor(context!!, client, url, doc.mimeType, signal) { transferred ->
                 // called when transfer is finished
+
+                val now = System.currentTimeMillis()
+                if (!readAccess /* write access */) {
+                    // write access, update file size
+                    doc.size = transferred
+                    doc.lastModified = now
+                    documentDao.update(doc)
+                }
+
                 notifyFolderChanged(doc.parentId)
             }
 
-            if (readOnly)
+            if (readAccess)
                 fd.download()
             else
                 fd.upload()

@@ -1,11 +1,14 @@
 package at.bitfire.davdroid.model
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.provider.DocumentsContract.Document
+import android.webkit.MimeTypeMap
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import at.bitfire.davdroid.DavUtils.MIME_TYPE_OCTET_STREAM
 import okhttp3.HttpUrl
 import java.io.FileNotFoundException
 
@@ -49,6 +52,7 @@ data class WebDavDocument(
 
 ): IdEntity {
 
+    @SuppressLint("InlinedApi")
     fun toBundle(parent: WebDavDocument?): Bundle {
         if (parent?.isDirectory == false)
             throw IllegalArgumentException("Parent must be a directory")
@@ -68,7 +72,13 @@ data class WebDavDocument(
             if (mayBind != false)
                 flags += Document.FLAG_DIR_SUPPORTS_CREATE
         } else {
-            bundle.putString(Document.COLUMN_MIME_TYPE, mimeType)
+            val reportedMimeType = mimeType ?:
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                    MimeTypeMap.getFileExtensionFromUrl(name)
+                ) ?:
+                MIME_TYPE_OCTET_STREAM
+
+            bundle.putString(Document.COLUMN_MIME_TYPE, reportedMimeType)
             if (mimeType?.startsWith("image/") == true)
                 flags += Document.FLAG_SUPPORTS_THUMBNAIL
             if (mayWriteContent != false)

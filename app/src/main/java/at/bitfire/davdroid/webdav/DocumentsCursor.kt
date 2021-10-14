@@ -6,7 +6,7 @@ import android.provider.DocumentsContract
 
 class DocumentsCursor(columns: Array<out String>): MatrixCursor(columns) {
 
-    val documentsExtras = Bundle(1)
+    private val documentsExtras = Bundle(1)
 
     override fun getExtras() = documentsExtras
 

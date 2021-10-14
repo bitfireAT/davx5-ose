@@ -35,6 +35,7 @@ object DavUtils {
     }
 
     const val MIME_TYPE_ALL = "*/*"
+    const val MIME_TYPE_OCTET_STREAM = "application/octet-stream"
 
 
     @Suppress("FunctionName")
