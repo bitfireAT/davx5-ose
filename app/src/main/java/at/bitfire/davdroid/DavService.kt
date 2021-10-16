@@ -281,7 +281,7 @@ class DavService: IntentService("DavService") {
 
             // cancel previous notification
             NotificationManagerCompat.from(this)
-                    .cancel(service.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS)
+                    .cancel(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS)
 
             // create authenticating OkHttpClient (credentials taken from account settings)
             HttpClient.Builder(this, AccountSettings(this, account))
