@@ -17,10 +17,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.LocaleList
-import android.os.PowerManager
+import android.os.*
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.View
@@ -57,6 +54,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.ByteOrderMark
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
@@ -339,8 +337,15 @@ class DebugInfoActivity: AppCompatActivity() {
                         "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
                         "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n" +
                         "Locale(s): $locales\n" +
-                        "Time zone: ${TimeZone.getDefault().id}\n\n"
+                        "Time zone: ${TimeZone.getDefault().id}\n"
                 )
+                val filesPath = Environment.getDataDirectory()
+                val statFs = StatFs(filesPath.path)
+                writer.append("Internal memory ($filesPath): ")
+                    .append(FileUtils.byteCountToDisplaySize(statFs.availableBytes))
+                    .append(" free of ")
+                    .append(FileUtils.byteCountToDisplaySize(statFs.totalBytes))
+                    .append("\n\n")
 
                 // connectivity
                 context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
