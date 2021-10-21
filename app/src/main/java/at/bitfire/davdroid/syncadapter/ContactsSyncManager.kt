@@ -32,6 +32,7 @@ import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -91,6 +92,7 @@ class ContactsSyncManager(
     private val readOnly = localAddressBook.readOnly
 
     private var hasVCard4 = false
+    private var hasJCard = false
     private val groupStrategy = when (accountSettings.getGroupMethod()) {
         GroupMethod.GROUP_VCARDS -> VCard4Strategy(localAddressBook)
         GroupMethod.CATEGORIES -> CategoriesStrategy(localAddressBook)
@@ -129,6 +131,7 @@ class ContactsSyncManager(
                 if (relation == Response.HrefRelation.SELF) {
                     response[SupportedAddressData::class.java]?.let { supported ->
                         hasVCard4 = supported.hasVCard4()
+                        hasJCard = supported.hasJCard()
                     }
                     response[SupportedReportSet::class.java]?.let { supported ->
                         hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
@@ -197,10 +200,22 @@ class ContactsSyncManager(
             Logger.log.log(Level.FINE, "Preparing upload of vCard ${resource.fileName}", contact)
 
             val os = ByteArrayOutputStream()
-            val vCardVersion = if (hasVCard4) VCardVersion.V4_0 else VCardVersion.V3_0
-            contact.writeVCard(vCardVersion, os)
+            val mimeType: MediaType
+            when {
+                hasJCard -> {
+                    mimeType = DavAddressBook.MIME_JCARD
+                    contact.writeJCard(os)
+                }
+                hasVCard4 -> {
+                    mimeType = DavAddressBook.MIME_VCARD4
+                    contact.writeVCard(VCardVersion.V4_0, os)
+                }
+                else -> {
+                    mimeType = DavAddressBook.MIME_VCARD3_UTF8
+                    contact.writeVCard(VCardVersion.V3_0, os)
+                }
+            }
 
-            val mimeType = if (hasVCard4) DavAddressBook.MIME_VCARD4 else DavAddressBook.MIME_VCARD3_UTF8
             return@localExceptionContext(os.toByteArray().toRequestBody(mimeType))
         }
 
@@ -212,7 +227,23 @@ class ContactsSyncManager(
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} vCard(s): $bunch")
         remoteExceptionContext {
-            it.multiget(bunch, hasVCard4) { response, _ ->
+            val contentType: String?
+            val version: String?
+            when {
+                hasJCard -> {
+                    contentType = "application/vcard+json"
+                    version = "4.0"
+                }
+                hasVCard4 -> {
+                    contentType = "text/vcard"
+                    version = "4.0"
+                }
+                else -> {
+                    contentType = "text/vcard"
+                    version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
+                }
+            }
+            it.multiget(bunch, contentType, version) { response, _ ->
                 responseExceptionContext(response) {
                     if (!response.isSuccess()) {
                         Logger.log.warning("Received non-successful multiget response for ${response.href}")
@@ -223,10 +254,10 @@ class ContactsSyncManager(
                             ?: throw DavException("Received multi-get response without ETag")
 
                     val addressData = response[AddressData::class.java]
-                    val vCard = addressData?.vCard
+                    val card = addressData?.card
                             ?: throw DavException("Received multi-get response without address data")
 
-                    processVCard(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(vCard), resourceDownloader)
+                    processCard(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(card), hasJCard, resourceDownloader)
                 }
             }
         }
@@ -239,11 +270,11 @@ class ContactsSyncManager(
 
     // helpers
 
-    private fun processVCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
+    private fun processCard(fileName: String, eTag: String, reader: Reader, jCard: Boolean, downloader: Contact.Downloader) {
         Logger.log.info("Processing CardDAV resource $fileName")
 
         val contacts = try {
-            Contact.fromReader(reader, downloader)
+            Contact.fromReader(reader, jCard, downloader)
         } catch (e: CannotParseException) {
             Logger.log.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
             notifyInvalidResource(e, fileName)
