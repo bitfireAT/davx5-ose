@@ -35,6 +35,7 @@ import at.bitfire.davdroid.model.*
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import kotlinx.coroutines.*
 import okhttp3.CookieJar
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.ByteArrayOutputStream
@@ -375,7 +376,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                         mountId = parent.mountId,
                         parentId = parent.id,
                         name = newName,
-                        mimeType = mimeType,
+                        mimeType = mimeType.toMediaTypeOrNull(),
                         isDirectory = createDirectory
                     ))
 

@@ -8,8 +8,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.davdroid.DavUtils.MIME_TYPE_OCTET_STREAM
+import at.bitfire.davdroid.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import okhttp3.HttpUrl
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.FileNotFoundException
 
 @Entity(
@@ -38,7 +40,7 @@ data class WebDavDocument(
     var isDirectory: Boolean = false,
 
     var displayName: String? = null,
-    var mimeType: String? = null,
+    var mimeType: MediaType? = null,
     var eTag: String? = null,
     var lastModified: Long? = null,
     var size: Long? = null,
@@ -75,11 +77,11 @@ data class WebDavDocument(
             val reportedMimeType = mimeType ?:
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension(
                     MimeTypeMap.getFileExtensionFromUrl(name)
-                ) ?:
-                MIME_TYPE_OCTET_STREAM
+                )?.toMediaTypeOrNull() ?:
+                MEDIA_TYPE_OCTET_STREAM
 
-            bundle.putString(Document.COLUMN_MIME_TYPE, reportedMimeType)
-            if (mimeType?.startsWith("image/") == true)
+            bundle.putString(Document.COLUMN_MIME_TYPE, reportedMimeType.toString())
+            if (mimeType?.type == "image")
                 flags += Document.FLAG_SUPPORTS_THUMBNAIL
             if (mayWriteContent != false)
                 flags += Document.FLAG_SUPPORTS_WRITE

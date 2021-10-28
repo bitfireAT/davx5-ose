@@ -15,7 +15,6 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
 import okhttp3.HttpUrl
 import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.internal.headersContentLength
 import okio.BufferedSink
@@ -28,7 +27,7 @@ class StreamingFileDescriptor(
     val context: Context,
     val client: HttpClient,
     val url: HttpUrl,
-    val mimeType: String?,
+    val mimeType: MediaType?,
     val cancellationSignal: CancellationSignal?,
     val finishedCallback: OnSuccessCallback
 ) {
@@ -94,7 +93,7 @@ class StreamingFileDescriptor(
 
     @WorkerThread
     private fun downloadNow(writeFd: ParcelFileDescriptor) {
-        dav.get(mimeType ?: DavUtils.MIME_TYPE_ALL, null) { response ->
+        dav.get(mimeType?.toString() ?: DavUtils.MIME_TYPE_ACCEPT_ALL, null) { response ->
             response.body?.use { body ->
                 if (response.isSuccessful) {
                     val length = response.headersContentLength()
@@ -149,7 +148,7 @@ class StreamingFileDescriptor(
     @WorkerThread
     private fun uploadNow(readFd: ParcelFileDescriptor) {
         val body = object: RequestBody() {
-            override fun contentType(): MediaType? = mimeType?.toMediaTypeOrNull()
+            override fun contentType(): MediaType? = mimeType
             override fun isOneShot() = true
             override fun writeTo(sink: BufferedSink) {
                 notificationManager.notify(

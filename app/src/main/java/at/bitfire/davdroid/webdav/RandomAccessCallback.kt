@@ -20,6 +20,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
 import okhttp3.Headers
 import okhttp3.HttpUrl
+import okhttp3.MediaType
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import java.io.InterruptedIOException
@@ -31,7 +32,7 @@ class RandomAccessCallback(
     val context: Context,
     val httpClient: HttpClient,
     val url: HttpUrl,
-    val mimeType: String?,
+    val mimeType: MediaType?,
     val headResponse: HeadResponse,
     val cancellationSignal: CancellationSignal?
 ): ProxyFileDescriptorCallback(), RandomAccessBuffer.Reader {
@@ -95,7 +96,7 @@ class RandomAccessCallback(
                 headResponse.lastModified?.let { lastModified ->
                     Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
                 } ?: throw IllegalStateException("ETag/Last-Modified required for random access")
-            dav.getRange(mimeType ?: DavUtils.MIME_TYPE_ALL, offset, size, ifMatch) { response ->
+            dav.getRange(mimeType?.toString() ?: DavUtils.MIME_TYPE_ACCEPT_ALL, offset, size, ifMatch) { response ->
                 if (response.code == HttpURLConnection.HTTP_PRECON_FAILED)
                     // file has been modified while reading
                     throw ErrnoException("onRead", OsConstants.EBADF)

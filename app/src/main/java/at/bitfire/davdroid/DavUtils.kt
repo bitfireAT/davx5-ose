@@ -22,6 +22,8 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
 import okhttp3.HttpUrl
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import org.xbill.DNS.*
 import java.util.*
 
@@ -34,8 +36,11 @@ object DavUtils {
         ACTIVE, PENDING, IDLE
     }
 
-    const val MIME_TYPE_ALL = "*/*"
-    const val MIME_TYPE_OCTET_STREAM = "application/octet-stream"
+    const val MIME_TYPE_ACCEPT_ALL = "*/*"
+
+    val MEDIA_TYPE_JCARD = "application/vcard+json".toMediaType()
+    val MEDIA_TYPE_OCTET_STREAM = "application/octet-stream".toMediaType()
+    val MEDIA_TYPE_VCARD = "text/vcard".toMediaType()
 
 
     @Suppress("FunctionName")
@@ -203,5 +208,19 @@ object DavUtils {
 
         return result
     }
+
+
+    // extension methods
+
+    /**
+     * Compares MIME type and subtype of two MediaTypes. Does _not_ compare parameters
+     * like `charset` or `version`.
+     *
+     * @param other   MediaType to compare with
+     *
+     * @return *true* if type and subtype match; *false* if they don't
+     */
+    fun MediaType.sameTypeAs(other: MediaType) =
+        type == other.type && subtype == other.subtype
 
 }

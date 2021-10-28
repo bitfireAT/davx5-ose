@@ -18,6 +18,7 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.DavUtils.sameTypeAs
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -140,7 +141,8 @@ class ContactsSyncManager(
                 }
             }
 
-            Logger.log.info("Server supports vCard/4: $hasVCard4")
+            Logger.log.info("Server supports jCard: $hasJCard")
+            Logger.log.info("Server supports vCard4: $hasVCard4")
             Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
 
             syncState
@@ -231,15 +233,15 @@ class ContactsSyncManager(
             val version: String?
             when {
                 hasJCard -> {
-                    contentType = "application/vcard+json"
-                    version = "4.0"
+                    contentType = DavUtils.MEDIA_TYPE_JCARD.toString()
+                    version = VCardVersion.V4_0.version
                 }
                 hasVCard4 -> {
-                    contentType = "text/vcard"
-                    version = "4.0"
+                    contentType = DavUtils.MEDIA_TYPE_VCARD.toString()
+                    version = VCardVersion.V4_0.version
                 }
                 else -> {
-                    contentType = "text/vcard"
+                    contentType = DavUtils.MEDIA_TYPE_VCARD.toString()
                     version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
                 }
             }
@@ -253,11 +255,16 @@ class ContactsSyncManager(
                     val eTag = response[GetETag::class.java]?.eTag
                             ?: throw DavException("Received multi-get response without ETag")
 
+                    var isJCard = hasJCard      // assume that server has sent what we have requested (we ask for jCard only when the server advertises it)
+                    response[GetContentType::class.java]?.type?.let { type ->
+                        isJCard = type.sameTypeAs(DavUtils.MEDIA_TYPE_JCARD)
+                    }
+
                     val addressData = response[AddressData::class.java]
                     val card = addressData?.card
                             ?: throw DavException("Received multi-get response without address data")
 
-                    processCard(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(card), hasJCard, resourceDownloader)
+                    processCard(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(card), isJCard, resourceDownloader)
                 }
             }
         }
