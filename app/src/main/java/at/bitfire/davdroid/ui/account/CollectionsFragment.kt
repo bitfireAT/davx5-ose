@@ -49,7 +49,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     val model by viewModels<Model> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+            override fun <T: ViewModel> create(modelClass: Class<T>): T =
                     Model(requireActivity().application, accountModel) as T
         }
     }

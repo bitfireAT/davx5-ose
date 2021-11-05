@@ -234,7 +234,7 @@ class AccountActivity: AppCompatActivity() {
                 val account: Account
         ): ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>) =
+            override fun <T: ViewModel> create(modelClass: Class<T>) =
                     Model(application, account) as T
         }
 

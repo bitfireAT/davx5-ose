@@ -10,7 +10,7 @@ buildscript {
     ext.versions = [
         aboutLibraries: '8.9.1',
         appIntro: '6.1.0',
-        dav4jvm: '2a213b46',
+        dav4jvm: 'f1d9354a41',
         dokka: '0.10.1',
         kotlin: '1.5.31',
         okhttp: '4.9.1',
@@ -40,11 +40,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-
-        // dav4jvm (in case jitpack wouldn't work)
-        /*maven {
-            url "https://bitfireat.gitlab.io/dav4jvm/repo/"
-        }*/
 
         // AppIntro, dav4jvm
         maven { url "https://jitpack.io" }
