@@ -1,0 +1,61 @@
+name: Development tests
+on: [push, pull_request]
+jobs:
+  test:
+    name: Tests without emulator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 11
+          cache: 'gradle'
+      - uses: gradle/wrapper-validation-action@v1
+
+      - name: Run tests
+        run: ./gradlew app:check
+      - name: Archive results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: |
+            app/build/outputs/lint*
+            app/build/reports
+
+  test_on_emulator:
+    name: Tests with emulator
+    runs-on: privileged
+    container:
+      image: ghcr.io/bitfireat/docker-android-ci:main
+      options: --privileged
+      env:
+        ANDROID_HOME: /sdk
+        ANDROID_AVD_HOME: /root/.android/avd
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: gradle/wrapper-validation-action@v1
+
+      - name: Cache gradle dependencies
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-1
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+
+      - name: Start emulator
+        run: start-emulator.sh
+      - name: Run connected tests
+        run: ./gradlew app:connectedCheck
+      - name: Archive results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: |
+            app/build/reports
+
