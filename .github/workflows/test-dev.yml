@@ -15,7 +15,7 @@ jobs:
           cache: 'gradle'
       - uses: gradle/wrapper-validation-action@v1
 
-      - name: Run tests
+      - name: Check
         run: ./gradlew app:check
       - name: Archive results
         uses: actions/upload-artifact@v2
