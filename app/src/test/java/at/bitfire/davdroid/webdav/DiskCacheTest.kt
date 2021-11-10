@@ -13,7 +13,7 @@ class DiskCacheTest {
 
     companion object {
         const val SOME_KEY = "key1"
-        val SOME_VALUE_LENGTH = 15
+        const val SOME_VALUE_LENGTH = 15
         val SOME_VALUE = ByteArray(SOME_VALUE_LENGTH) { it.toByte() }
         val SOME_OTHER_VALUE = ByteArray(30) { (it/2).toByte() }
 
@@ -23,20 +23,19 @@ class DiskCacheTest {
 
     @Rule
     @JvmField
-    val cacheDir = TemporaryFolder()
+    val tempDir = TemporaryFolder()
 
     lateinit var cache: DiskCache
 
 
     @Before
     fun createCache() {
-        cacheDir.create()
-        cache = DiskCache(cacheDir.newFolder(), MAX_CACHE_SIZE)
+        cache = DiskCache(tempDir.newFolder(), MAX_CACHE_SIZE)
     }
 
     @After
     fun deleteCache() {
-        cacheDir.delete()
+        assertTrue(cache.cacheDir.deleteRecursively())
     }
 
 
@@ -114,7 +113,11 @@ class DiskCacheTest {
 
     @Test
     fun testTrim() {
+        assertEquals(0, cache.entries())
+
         cache.get(SOME_KEY) { SOME_VALUE }
+        assertEquals(1, cache.entries())
+
         cache.trim()
         assertEquals(1, cache.entries())
 

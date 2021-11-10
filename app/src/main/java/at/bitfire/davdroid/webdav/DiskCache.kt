@@ -41,9 +41,7 @@ class DiskCache(
             if (!cacheDir.mkdirs())
                 throw IllegalArgumentException("Couldn't create cache in $cacheDir")
 
-        workerScope.launch {
-            trim()
-        }
+        trim()
     }
 
 
