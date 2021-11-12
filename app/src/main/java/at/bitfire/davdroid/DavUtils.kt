@@ -9,7 +9,6 @@
 package at.bitfire.davdroid
 
 import android.accounts.Account
-import android.annotation.TargetApi
 import android.content.ContentResolver
 import android.content.Context
 import android.net.ConnectivityManager
@@ -25,7 +24,9 @@ import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import org.xbill.DNS.*
+import java.net.InetAddress
 import java.util.*
+import kotlin.collections.LinkedHashSet
 
 /**
  * Some WebDAV and related network utility methods
@@ -61,26 +62,44 @@ object DavUtils {
 
 
     fun prepareLookup(context: Context, lookup: Lookup) {
-        @TargetApi(Build.VERSION_CODES.O)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= 29) {
+            /* Since Android 10, there's a native DnsResolver API that allows to send SRV queries without
+               knowing which DNS serv0ers have to be used. DNS over TLS is now also supported. */
+            Logger.log.fine("Using Android 10+ DnsResolver")
+            lookup.setResolver(Android10Resolver())
+
+        } else if (Build.VERSION.SDK_INT >= 26) {
             /* Since Android 8, the system properties net.dns1, net.dns2, ... are not available anymore.
                The current version of dnsjava relies on these properties to find the default name servers,
                so we have to add the servers explicitly (fortunately, there's an Android API to
-               get the active DNS servers). */
+               get the DNS servers of the network connections). */
+           val dnsServers = LinkedList<InetAddress>()
+
             val connectivity = context.getSystemService<ConnectivityManager>()!!
-            val activeLink = connectivity.getLinkProperties(connectivity.activeNetwork)
-            if (activeLink != null) {
-                // get DNS servers of active network link and set them for dnsjava so that it can send SRV queries
-                val simpleResolvers = activeLink.dnsServers.map {
-                    Logger.log.fine("Using DNS server ${it.hostAddress}")
-                    val resolver = SimpleResolver()
-                    resolver.setAddress(it)
-                    resolver
+            connectivity.allNetworks.forEach { network ->
+                val active = connectivity.getNetworkInfo(network)?.isConnected ?: false
+                connectivity.getLinkProperties(network)?.let { link ->
+                    if (active)
+                        // active connection, insert at top of list
+                        dnsServers.addAll(0, link.dnsServers)
+                    else
+                        // inactive connection, insert at end of list
+                        dnsServers.addAll(link.dnsServers)
                 }
-                val resolver = ExtendedResolver(simpleResolvers.toTypedArray())
-                lookup.setResolver(resolver)
-            } else
-                Logger.log.severe("Couldn't determine DNS servers, dnsjava queries (SRV/TXT records) won't work")
+            }
+
+            // fallback: add Quad9 DNS (9.9.9.9) in case that other DNS works
+            dnsServers.add(InetAddress.getByAddress(byteArrayOf(9,9,9,9)))
+
+            val uniqueDnsServers = LinkedHashSet<InetAddress>(dnsServers)
+            val simpleResolvers = uniqueDnsServers.map { dns ->
+                Logger.log.fine("Adding DNS server ${dns.hostAddress}")
+                SimpleResolver().apply {
+                    setAddress(dns)
+                }
+            }
+            val resolver = ExtendedResolver(simpleResolvers.toTypedArray())
+            lookup.setResolver(resolver)
         }
     }
 

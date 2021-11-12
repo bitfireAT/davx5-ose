@@ -347,9 +347,11 @@ class DavResourceFinder(
 
         val query = "_${service.wellKnownName}s._tcp.$domain"
         log.fine("Looking up SRV records for $query")
+
         val srvLookup = Lookup(query, Type.SRV)
         DavUtils.prepareLookup(context, srvLookup)
         val srv = DavUtils.selectSRVRecord(srvLookup.run().orEmpty())
+
         if (srv != null) {
             // choose SRV record to use (query may return multiple SRV records)
             scheme = "https"
