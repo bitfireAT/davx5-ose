@@ -122,8 +122,10 @@ class DiskCacheTest {
         assertEquals(1, cache.entries())
 
         // add 11 x 1 MB
-        for (i in 0..MAX_CACHE_MB)
+        for (i in 0..MAX_CACHE_MB) {
             cache.get(i.toString()) { ByteArray(FileUtils.ONE_MB.toInt()) }
+            Thread.sleep(5)     // make sure that files are exactly sortable by modification date
+        }
         // now in cache: SOME_KEY (some bytes) and "0" .. "10" (1 MB each), i.e. 11 MB + some bytes in total
         assertEquals(MAX_CACHE_MB+2, cache.entries())
 
