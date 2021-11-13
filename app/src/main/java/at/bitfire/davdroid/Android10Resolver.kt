@@ -3,24 +3,28 @@ package at.bitfire.davdroid
 import android.net.DnsResolver
 import android.os.Build
 import androidx.annotation.RequiresApi
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
+import kotlinx.coroutines.runBlocking
 import org.xbill.DNS.Message
 import org.xbill.DNS.Resolver
 import org.xbill.DNS.ResolverListener
 import org.xbill.DNS.TSIG
 import java.util.*
-import java.util.concurrent.CompletableFuture
 
+/**
+ * dnsjava Resolver that uses Android's [DnsResolver] API, which is available since Android 10.
+ */
 @RequiresApi(Build.VERSION_CODES.Q)
-class Android10Resolver: Resolver {
+object Android10Resolver: Resolver {
 
     private val executor = Dispatchers.IO.asExecutor()
     private val resolver = DnsResolver.getInstance()
 
 
-    override fun send(query: Message): Message {
-        val future = CompletableFuture<Message>()
+    override fun send(query: Message): Message = runBlocking {
+        val future = CompletableDeferred<Message>()
 
         resolver.rawQuery(null, query.toWire(), DnsResolver.FLAG_EMPTY, executor, null, object: DnsResolver.Callback<ByteArray> {
             override fun onAnswer(rawAnswer: ByteArray, rcode: Int) {
@@ -32,7 +36,7 @@ class Android10Resolver: Resolver {
             }
         })
 
-        return future.get()
+        future.await()
     }
 
     override fun sendAsync(query: Message, listener: ResolverListener): Any {

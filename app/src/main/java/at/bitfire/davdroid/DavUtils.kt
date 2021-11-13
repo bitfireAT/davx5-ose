@@ -37,6 +37,8 @@ object DavUtils {
         ACTIVE, PENDING, IDLE
     }
 
+    val DNS_QUAD9 = InetAddress.getByAddress(byteArrayOf(9,9,9,9))
+
     const val MIME_TYPE_ACCEPT_ALL = "*/*"
 
     val MEDIA_TYPE_JCARD = "application/vcard+json".toMediaType()
@@ -64,9 +66,9 @@ object DavUtils {
     fun prepareLookup(context: Context, lookup: Lookup) {
         if (Build.VERSION.SDK_INT >= 29) {
             /* Since Android 10, there's a native DnsResolver API that allows to send SRV queries without
-               knowing which DNS serv0ers have to be used. DNS over TLS is now also supported. */
+               knowing which DNS servers have to be used. DNS over TLS is now also supported. */
             Logger.log.fine("Using Android 10+ DnsResolver")
-            lookup.setResolver(Android10Resolver())
+            lookup.setResolver(Android10Resolver)
 
         } else if (Build.VERSION.SDK_INT >= 26) {
             /* Since Android 8, the system properties net.dns1, net.dns2, ... are not available anymore.
@@ -88,8 +90,8 @@ object DavUtils {
                 }
             }
 
-            // fallback: add Quad9 DNS (9.9.9.9) in case that other DNS works
-            dnsServers.add(InetAddress.getByAddress(byteArrayOf(9,9,9,9)))
+            // fallback: add Quad9 DNS in case that no other DNS works
+            dnsServers.add(DNS_QUAD9)
 
             val uniqueDnsServers = LinkedHashSet<InetAddress>(dnsServers)
             val simpleResolvers = uniqueDnsServers.map { dns ->
