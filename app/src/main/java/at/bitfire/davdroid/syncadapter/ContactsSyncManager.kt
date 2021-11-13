@@ -132,7 +132,9 @@ class ContactsSyncManager(
                 if (relation == Response.HrefRelation.SELF) {
                     response[SupportedAddressData::class.java]?.let { supported ->
                         hasVCard4 = supported.hasVCard4()
-                        hasJCard = supported.hasJCard()
+
+                        // temporarily disable jCard because of https://github.com/nextcloud/server/issues/29693
+                        // hasJCard = supported.hasJCard()
                     }
                     response[SupportedReportSet::class.java]?.let { supported ->
                         hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
@@ -141,7 +143,7 @@ class ContactsSyncManager(
                 }
             }
 
-            Logger.log.info("Server supports jCard: $hasJCard")
+            // Logger.log.info("Server supports jCard: $hasJCard")
             Logger.log.info("Server supports vCard4: $hasVCard4")
             Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
 
