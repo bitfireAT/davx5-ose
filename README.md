@@ -20,7 +20,7 @@ News and updates: [@davx5app](https://twitter.com/davx5app) on Twitter
 
 Parts of DAVx⁵ have been outsourced into these libraries:
 
-* [cert4android](https://hublab.com/bitfireAT/cert4android) – custom certificate management
+* [cert4android](https://github.com/bitfireAT/cert4android) – custom certificate management
 * [dav4jvm](https://github.com/bitfireAT/dav4jvm) – WebDAV/CalDav/CardDAV framework
 * [ical4android](https://github.com/bitfireAT/ical4android) – iCalendar processing and Calendar Provider access
 * [vcard4android](https://github.com/bitfireAT/vcard4android) – vCard processing and Contacts Provider access
