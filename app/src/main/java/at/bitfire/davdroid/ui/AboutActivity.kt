@@ -110,8 +110,6 @@ class AboutActivity: AppCompatActivity() {
                                 .withLibraryModification("org_brotli__dec", Libs.LibraryFields.LIBRARY_NAME, "Brotli")
                                 .withLibraryModification("org_brotli__dec", Libs.LibraryFields.AUTHOR_NAME, "Google")
 
-                                .withExcludedLibraries("com_gitlab_bitfireAT__dav4jvm")
-
                                 .supportFragment()
                     }
                 }
