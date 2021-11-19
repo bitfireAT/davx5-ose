@@ -38,21 +38,9 @@ object Android10Resolver: Resolver {
         future.await()
     }
 
-    override fun sendAsync(query: Message, listener: ResolverListener): Any {
-        val id = Any()
-
-        resolver.rawQuery(null, query.toWire(), DnsResolver.FLAG_EMPTY, executor, null, object: DnsResolver.Callback<ByteArray> {
-            override fun onAnswer(rawAnswer: ByteArray, rcode: Int) {
-                listener.receiveMessage(id, Message(rawAnswer))
-            }
-
-            override fun onError(error: DnsResolver.DnsException) {
-                listener.handleException(id, error)
-            }
-        })
-
-        return id
-    }
+    override fun sendAsync(query: Message, listener: ResolverListener) =
+        // currently not used by dnsjava, so no need to implement it
+        throw NotImplementedError()
 
 
     override fun setPort(port: Int) {
