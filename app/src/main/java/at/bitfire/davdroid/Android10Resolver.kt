@@ -11,7 +11,6 @@ import org.xbill.DNS.Message
 import org.xbill.DNS.Resolver
 import org.xbill.DNS.ResolverListener
 import org.xbill.DNS.TSIG
-import java.util.*
 
 /**
  * dnsjava Resolver that uses Android's [DnsResolver] API, which is available since Android 10.
@@ -40,7 +39,7 @@ object Android10Resolver: Resolver {
     }
 
     override fun sendAsync(query: Message, listener: ResolverListener): Any {
-        val id = UUID.randomUUID()
+        val id = Any()
 
         resolver.rawQuery(null, query.toWire(), DnsResolver.FLAG_EMPTY, executor, null, object: DnsResolver.Callback<ByteArray> {
             override fun onAnswer(rawAnswer: ByteArray, rcode: Int) {
