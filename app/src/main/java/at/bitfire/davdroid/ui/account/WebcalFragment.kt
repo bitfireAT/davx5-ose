@@ -9,8 +9,6 @@ import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Calendars
 import android.view.*
@@ -19,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.viewModelScope
 import androidx.room.Transaction
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.Constants
@@ -30,6 +29,8 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
@@ -154,10 +155,6 @@ class WebcalFragment: CollectionsFragment() {
         private var initialized = false
         private var serviceId: Long = 0
 
-        private val workerThread = HandlerThread(javaClass.simpleName)
-        init { workerThread.start() }
-        val workerHandler = Handler(workerThread.looper)
-
         private val db = AppDatabase.getInstance(application)
         private val resolver = application.contentResolver
 
@@ -215,15 +212,17 @@ class WebcalFragment: CollectionsFragment() {
             private fun connect() {
                 unregisterObserver()
                 provider?.let { provider ->
-                    val newObserver = object: ContentObserver(workerHandler) {
+                    val newObserver = object: ContentObserver(null) {
                         override fun onChange(selfChange: Boolean) {
-                            queryCalendars(provider)
+                            viewModelScope.launch(Dispatchers.IO) {
+                                queryCalendars(provider)
+                            }
                         }
                     }
                     getApplication<Application>().contentResolver.registerContentObserver(Calendars.CONTENT_URI, false, newObserver)
                     observer = newObserver
 
-                    workerHandler.post {
+                    viewModelScope.launch(Dispatchers.IO) {
                         queryCalendars(provider)
                     }
                 }
@@ -277,7 +276,7 @@ class WebcalFragment: CollectionsFragment() {
         }
 
         fun unsubscribe(webcal: Collection) {
-            workerHandler.post {
+            viewModelScope.launch(Dispatchers.IO) {
                 // find first matching source (Webcal) URL
                 subscribedUrls.value?.entries?.firstOrNull { (_, source) ->
                     UrlUtils.equals(source, webcal.source!!)
