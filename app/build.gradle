@@ -10,7 +10,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion 31
@@ -85,31 +84,6 @@ android {
 
     packagingOptions {
         exclude 'META-INF/*.md'
-    }
-
-    dokka.configuration {
-        sourceLink {
-            url = "https://gitlab.com/bitfireAT/davx5-ose/tree/master-ose/"
-            lineSuffix = "#L"
-        }
-        jdkVersion = 8
-
-        externalDocumentationLink {
-            url = new URL("https://bitfireat.gitlab.io/cert4android/dokka/cert4android/")
-            packageListUrl = new URL("https://bitfireat.gitlab.io/cert4android/dokka/cert4android/package-list")
-        }
-        externalDocumentationLink {
-            url = new URL("https://bitfireat.gitlab.io/dav4jvm/dokka/dav4jvm/")
-            packageListUrl = new URL("https://bitfireat.gitlab.io/dav4jvm/dokka/dav4jvm/package-list")
-        }
-        externalDocumentationLink {
-            url = new URL("https://bitfireat.gitlab.io/ical4android/dokka/ical4android/")
-            packageListUrl = new URL("https://bitfireat.gitlab.io/ical4android/dokka/ical4android/package-list")
-        }
-        externalDocumentationLink {
-            url = new URL("https://bitfireat.gitlab.io/vcard4android/dokka/vcard4android/")
-            packageListUrl = new URL("https://bitfireat.gitlab.io/vcard4android/dokka/vcard4android/package-list")
-        }
     }
 }
 
