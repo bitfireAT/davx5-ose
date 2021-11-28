@@ -74,10 +74,15 @@ class RandomAccessCallback(
     override fun onRead(offset: Long, size: Int, data: ByteArray): Int {
         Logger.log.fine("onRead $url $offset $size")
 
+        val progress =
+            if (fileSize == 0L)     // avoid division by zero
+                100
+            else
+                (offset*100/fileSize).toInt()
         notificationManager.notify(
             notificationTag,
             NotificationUtils.NOTIFY_WEBDAV_ACCESS,
-            notification.setProgress(100, (offset*100/fileSize).toInt(), false).build()
+            notification.setProgress(100, progress, false).build()
         )
 
         if (cancellationSignal?.isCanceled == true)

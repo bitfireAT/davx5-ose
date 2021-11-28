@@ -28,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import org.apache.commons.collections4.CollectionUtils
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.logging.Level
@@ -165,12 +166,12 @@ class AddWebdavMountActivity: AppCompatActivity() {
             return true
         }
 
-        private fun hasWebDav(mount: WebDavMount, credentials: Credentials?): Boolean {
+        fun hasWebDav(mount: WebDavMount, credentials: Credentials?): Boolean {
             var supported = false
             HttpClient.Builder(getApplication(), null, credentials).build().use { client ->
                 val dav = DavResource(client.okHttpClient, mount.url)
                 dav.options { davCapabilities, _ ->
-                    if (davCapabilities.contains("1"))
+                    if (CollectionUtils.containsAny(davCapabilities, "1", "2", "3"))
                         supported = true
                 }
             }
