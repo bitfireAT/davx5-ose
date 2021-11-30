@@ -1,4 +1,4 @@
-package at.bitfire.davdroid.webdav
+package at.bitfire.davdroid.webdav.cache
 
 import java.net.URLEncoder
 import java.security.MessageDigest

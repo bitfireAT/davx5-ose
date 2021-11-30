@@ -1,15 +1,9 @@
-package at.bitfire.davdroid.webdav
+package at.bitfire.davdroid.webdav.cache
 
-import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.log.Logger
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import kotlin.math.min
 
@@ -31,17 +25,12 @@ class DiskCache(
         const val CLEANUP_RATE = 15
     }
 
-    private val globalLock = Any()
-    private val writeCounter = AtomicInteger()
-    private val workerScope = CoroutineScope(Dispatchers.IO + CoroutineName("DiskCache cleanup"))
-
+    private var writeCounter: Int = 0
 
     init {
         if (!cacheDir.isDirectory)
             if (!cacheDir.mkdirs())
                 throw IllegalArgumentException("Couldn't create cache in $cacheDir")
-
-        trim()
     }
 
 
@@ -57,7 +46,7 @@ class DiskCache(
      * @return the value (either taken from the cache or from [generate]), limited [offset]/[maxSize]
      */
     fun get(key: String, offset: Long = 0, maxSize: Int = Int.MAX_VALUE, generate: () -> ByteArray?): ByteArray? {
-        synchronized(globalLock) {
+        synchronized(this) {
             val file = File(cacheDir, key)
             if (file.exists()) {
                 // cache hit
@@ -88,10 +77,8 @@ class DiskCache(
                     }
                 }
 
-                if (writeCounter.incrementAndGet().mod(CLEANUP_RATE) == 0)
-                    workerScope.launch {
-                        trim()
-                    }
+                if (writeCounter++.mod(CLEANUP_RATE) == 0)
+                    trim()
 
                 if (maxSize != -1)
                     return result.copyOfRange(offset.toInt(), min(offset.toInt() + maxSize, result.size))
@@ -114,7 +101,7 @@ class DiskCache(
      * @return the file that contains the value
      */
     fun getFile(key: String, generate: () -> ByteArray?): File? {
-        synchronized(globalLock) {
+        synchronized(this) {
             val file = File(cacheDir, key)
             if (file.exists()) {
                 // cache HIT
@@ -127,10 +114,8 @@ class DiskCache(
                     output.write(result)
                 }
 
-                if (writeCounter.incrementAndGet().mod(CLEANUP_RATE) == 0)
-                    workerScope.launch {
-                        trim()
-                    }
+                if (writeCounter++.mod(CLEANUP_RATE) == 0)
+                    trim()
 
                 return file
             }
@@ -138,16 +123,14 @@ class DiskCache(
     }
 
 
+    @Synchronized
     fun clear() {
-        synchronized(globalLock) {
-            FileUtils.cleanDirectory(cacheDir)
-        }
+        FileUtils.cleanDirectory(cacheDir)
     }
 
+    @Synchronized
     fun entries(): Int {
-        synchronized(globalLock) {
-            return cacheDir.listFiles()!!.size
-        }
+        return cacheDir.listFiles()!!.size
     }
 
     fun keys(): Array<String> = cacheDir.list()!!
@@ -155,21 +138,19 @@ class DiskCache(
     /**
      * Trims the cache to keep it smaller than [maxSize].
      */
-    @WorkerThread
+    @Synchronized
     fun trim(): Int {
         var removed = 0
-        synchronized(globalLock) {
-            Logger.log.fine("Trimming disk cache to $maxSize bytes")
+        Logger.log.fine("Trimming disk cache to $maxSize bytes")
 
-            val files = cacheDir.listFiles()!!.toMutableList()
-            files.sortBy { file -> file.lastModified() }    // sort by modification time (ascending)
+        val files = cacheDir.listFiles()!!.toMutableList()
+        files.sortBy { file -> file.lastModified() }    // sort by modification time (ascending)
 
-            while (files.sumOf { file -> file.length() } > maxSize) {
-                val file = files.removeFirst()      // take first (= oldest) file
-                Logger.log.finer("Removing $file")
-                file.delete()
-                removed++
-            }
+        while (files.sumOf { file -> file.length() } > maxSize) {
+            val file = files.removeFirst()      // take first (= oldest) file
+            Logger.log.finer("Removing $file")
+            file.delete()
+            removed++
         }
         return removed
     }

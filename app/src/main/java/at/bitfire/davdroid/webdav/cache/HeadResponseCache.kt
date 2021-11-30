@@ -1,12 +1,16 @@
-package at.bitfire.davdroid.webdav
+package at.bitfire.davdroid.webdav.cache
 
 import android.util.LruCache
 import at.bitfire.davdroid.model.WebDavDocument
+import at.bitfire.davdroid.webdav.DocumentState
+import at.bitfire.davdroid.webdav.HeadResponse
 import java.util.*
 
-object HeadResponseCache {
+class HeadResponseCache {
 
-    const val MAX_SIZE = 10
+    companion object {
+        const val MAX_SIZE = 50
+    }
 
     data class Key(
         val docId: Long,

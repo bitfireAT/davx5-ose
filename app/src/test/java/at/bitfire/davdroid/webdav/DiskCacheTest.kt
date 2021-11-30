@@ -1,5 +1,6 @@
 package at.bitfire.davdroid.webdav
 
+import at.bitfire.davdroid.webdav.cache.DiskCache
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.junit.After

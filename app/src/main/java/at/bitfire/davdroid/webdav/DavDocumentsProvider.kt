@@ -11,10 +11,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.media.ThumbnailUtils
 import android.net.ConnectivityManager
-import android.os.Build
-import android.os.Bundle
-import android.os.CancellationSignal
-import android.os.ParcelFileDescriptor
+import android.os.*
 import android.os.storage.StorageManager
 import android.provider.DocumentsContract.*
 import android.provider.DocumentsProvider
@@ -33,6 +30,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.*
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
+import at.bitfire.davdroid.webdav.cache.HeadResponseCache
 import kotlinx.coroutines.*
 import okhttp3.CookieJar
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -63,6 +61,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         )
 
         const val MAX_NAME_ATTEMPTS = 5
+        const val THUMBNAIL_TIMEOUT = 15L
     }
 
     lateinit var authority: String
@@ -73,7 +72,8 @@ class DavDocumentsProvider: DocumentsProvider() {
     private val webdavMountsLive by lazy { mountDao.getAllLive() }
 
     private val credentialsStore by lazy { CredentialsStore(context!!) }
-    val cookieStore = mutableMapOf<Long, CookieJar>()
+    val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
+    val headResponseCache by lazy { HeadResponseCache() }
     val thumbnailCache by lazy { ThumbnailCache(context!!) }
 
     private val connectivityManager by lazy { ContextCompat.getSystemService(context!!, ConnectivityManager::class.java)!! }
@@ -98,7 +98,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     override fun shutdown() {
         webdavMountsLive.removeObserver(webDavMountsObserver)
-        executor.shutdownNow()
+        executor.shutdown()
     }
 
 
@@ -502,7 +502,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             else -> throw UnsupportedOperationException("Mode $mode not supported by WebDAV")
         }
 
-        val fileInfo = HeadResponseCache.get(doc) {
+        val fileInfo = headResponseCache.get(doc) {
             val deferredFileInfo = executor.submit(HeadInfoDownloader(client, url))
             signal?.setOnCancelListener {
                 deferredFileInfo.cancel(true)
@@ -518,8 +518,8 @@ class DavDocumentsProvider: DocumentsProvider() {
             (fileInfo.eTag != null || fileInfo.lastModified != null) &&     // we need a method to determine whether the document has changed during access
             fileInfo.supportsPartial != false   // WebDAV server must support random access
         ) {
-            val accessor = RandomAccessCallback(context!!, client, url, doc.mimeType, fileInfo, signal)
-            storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
+            val accessor = RandomAccessCallback.Wrapper(context!!, client, url, doc.mimeType, fileInfo, signal)
+            storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.callback!!.workerHandler)
         } else {
             val fd = StreamingFileDescriptor(context!!, client, url, doc.mimeType, signal) { transferred ->
                 // called when transfer is finished
@@ -584,7 +584,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
             val finalResult =
                 try {
-                    result.get(15, TimeUnit.SECONDS)
+                    result.get(THUMBNAIL_TIMEOUT, TimeUnit.SECONDS)
                 } catch (e: TimeoutException) {
                     Logger.log.warning("Couldn't generate thumbnail in time, cancelling")
                     result.cancel(true)

@@ -1,5 +1,6 @@
 package at.bitfire.davdroid.webdav
 
+import at.bitfire.davdroid.webdav.cache.CacheUtils
 import java.util.*
 
 data class DocumentState(

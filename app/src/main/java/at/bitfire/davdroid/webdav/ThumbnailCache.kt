@@ -8,6 +8,8 @@ import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.WebDavDocument
+import at.bitfire.davdroid.webdav.cache.CacheUtils
+import at.bitfire.davdroid.webdav.cache.DiskCache
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.*
