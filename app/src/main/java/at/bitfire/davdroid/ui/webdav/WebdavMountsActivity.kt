@@ -48,6 +48,10 @@ class WebdavMountsActivity: AppCompatActivity() {
         binding.list.layoutManager = LinearLayoutManager(this)
         model.mountInfos.observe(this, Observer { mounts ->
             adapter.submitList(ArrayList(mounts))
+
+            val hasMounts = mounts.isNotEmpty()
+            binding.list.visibility = if (hasMounts) View.VISIBLE else View.GONE
+            binding.empty.visibility = if (hasMounts) View.GONE else View.VISIBLE
         })
 
         val browser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -59,7 +63,7 @@ class WebdavMountsActivity: AppCompatActivity() {
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
                 contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                startActivity(Intent.createChooser(shareIntent, "Choose using app"))
+                startActivity(Intent.createChooser(shareIntent, null))
             }
         }
         model.browseIntent.observe(this, Observer { intent ->
