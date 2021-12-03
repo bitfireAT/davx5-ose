@@ -11,8 +11,8 @@ import androidx.core.database.getStringOrNull
 import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import at.bitfire.davdroid.AndroidSingleton
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.Singleton
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.AccountsActivity
@@ -41,33 +41,34 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun webDavDocumentDao(): WebDavDocumentDao
     abstract fun webDavMountDao(): WebDavMountDao
 
-    companion object: AndroidSingleton<AppDatabase>() {
+    companion object {
 
-        override fun createInstance(context: Context): AppDatabase =
-                Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
-                    .addMigrations(*migrations)
-                    .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
-                    .addCallback(object: Callback() {
-                        override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
-                            val nm = NotificationManagerCompat.from(context)
-                            val launcherIntent = Intent(context, AccountsActivity::class.java)
-                            val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_GENERAL)
-                                .setSmallIcon(R.drawable.ic_warning_notify)
-                                .setContentTitle(context.getString(R.string.database_destructive_migration_title))
-                                .setContentText(context.getString(R.string.database_destructive_migration_text))
-                                .setCategory(NotificationCompat.CATEGORY_ERROR)
-                                .setContentIntent(PendingIntent.getActivity(context, 0, launcherIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-                                .setAutoCancel(true)
-                                .build()
-                            nm.notify(NotificationUtils.NOTIFY_DATABASE_CORRUPTED, notify)
+        fun getInstance(context: Context) = Singleton.getInstance<AppDatabase>(context) {
+            Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
+                .addMigrations(*migrations)
+                .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
+                .addCallback(object: Callback() {
+                    override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
+                        val nm = NotificationManagerCompat.from(context)
+                        val launcherIntent = Intent(context, AccountsActivity::class.java)
+                        val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_GENERAL)
+                            .setSmallIcon(R.drawable.ic_warning_notify)
+                            .setContentTitle(context.getString(R.string.database_destructive_migration_title))
+                            .setContentText(context.getString(R.string.database_destructive_migration_text))
+                            .setCategory(NotificationCompat.CATEGORY_ERROR)
+                            .setContentIntent(PendingIntent.getActivity(context, 0, launcherIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                            .setAutoCancel(true)
+                            .build()
+                        nm.notify(NotificationUtils.NOTIFY_DATABASE_CORRUPTED, notify)
 
-                            // remove all accounts because they're unfortunately useless without database
-                            val am = AccountManager.get(context)
-                            for (account in am.getAccountsByType(context.getString(R.string.account_type)))
-                                am.removeAccount(account, null, null)
-                        }
-                    })
-                    .build()
+                        // remove all accounts because they're unfortunately useless without database
+                        val am = AccountManager.get(context)
+                        for (account in am.getAccountsByType(context.getString(R.string.account_type)))
+                            am.removeAccount(account, null, null)
+                    }
+                })
+                .build()
+        }
 
 
         // migrations

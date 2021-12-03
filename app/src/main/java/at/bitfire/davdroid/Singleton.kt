@@ -3,7 +3,15 @@ package at.bitfire.davdroid
 import android.content.Context
 import java.lang.ref.WeakReference
 
+/**
+ * A singleton registry that guarantees that there is not more than one instance per class.
+ *
+ * It uses weak references so that as soon as the singletons are not used anymore, they can be
+ * freed by GC.
+ */
 object Singleton {
+
+    private val currentlyCreating = HashSet<Class<*>>()
 
     private val singletons = mutableMapOf<Any, WeakReference<Any>>()
 
@@ -18,6 +26,11 @@ object Singleton {
 
 
     @Synchronized
+    fun dropAll() {
+        singletons.clear()
+    }
+
+    @Synchronized
     fun<T> getInstance(clazz: Class<T>, createInstance: () -> T): T {
         var cached = singletons[clazz]
         if (cached != null && cached.get() == null) {
@@ -30,10 +43,19 @@ object Singleton {
             @Suppress("UNCHECKED_CAST")
             return cached.get() as T
 
-        // create new singleton
-        val newInstance = createInstance()
-        singletons[clazz] = WeakReference(newInstance)
-        return newInstance
+        // CREATE NEW SINGLETON
+        // prevent recursive creation
+        if (currentlyCreating.contains(clazz))
+            throw IllegalStateException("Singleton.getInstance must not be called recursively")
+        currentlyCreating += clazz
+        // actually create the instance
+        try {
+            val newInstance = createInstance()
+            singletons[clazz] = WeakReference(newInstance)
+            return newInstance
+        } finally {
+            currentlyCreating -= clazz
+        }
     }
 
 }
