@@ -53,6 +53,8 @@ import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
@@ -96,6 +98,22 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected lateinit var davCollection: RemoteType
 
     protected var hasCollectionSync = false
+
+    /**
+     * We use our own dispatcher to
+     *
+     *   - make sure that all threads have [Thread.getContextClassLoader] set, which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]),
+     *   - control the global number of sync worker threads.
+     *
+     * Threads created by a service automatically have a contextClassLoader.
+     */
+    val workDispatcher = Singleton.getInstanceByKey("SyncManager.workDispatcher") {
+        ThreadPoolExecutor(
+            0, Integer.min(Runtime.getRuntime().availableProcessors(), 6),
+            10, TimeUnit.SECONDS, LinkedBlockingQueue()
+        ).asCoroutineDispatcher()
+    }
+
 
     override fun close() {
         httpClient.close()
@@ -321,7 +339,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         var numUploaded = 0
 
         // upload dirty resources (parallelized)
-        runBlocking(SyncAdapterService.workDispatcher) {
+        runBlocking(workDispatcher) {
             for (local in localCollection.findDirty())
                 launch {
                     localExceptionContext(local) {
@@ -510,7 +528,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 }
             }
 
-            withContext(SyncAdapterService.workDispatcher) {    // structured concurrency: blocks until all inner coroutines are finished
+            withContext(workDispatcher) {    // structured concurrency: blocks until all inner coroutines are finished
                 listRemote { response, relation ->
                     // ignore non-members
                     if (relation != Response.HrefRelation.MEMBER)

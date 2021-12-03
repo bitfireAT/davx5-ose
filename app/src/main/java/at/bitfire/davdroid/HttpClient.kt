@@ -44,28 +44,33 @@ class HttpClient private constructor(
         /** max. size of disk cache (10 MB) */
         const val DISK_CACHE_MAX_SIZE: Long = 10*1024*1024
 
-        /** [OkHttpClient] singleton to build all clients from */
-        val sharedClient: OkHttpClient = OkHttpClient.Builder()
+        /** Base Builder to build all clients from. Use rarely; [OkHttpClient]s should
+         * be reused as much as possible. */
+        fun baseBuilder() =
+            OkHttpClient.Builder()
                 // Set timeouts. According to [AbstractThreadedSyncAdapter], when there is no network
                 // traffic within a minute, a sync will be cancelled.
                 .connectTimeout(15, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(120, TimeUnit.SECONDS)
-                .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
+                .pingInterval(
+                    45,
+                    TimeUnit.SECONDS
+                )     // avoid cancellation because of missing traffic; only works for HTTP/2
 
                 // keep TLS 1.0 and 1.1 for now; remove when major browsers have dropped it (probably 2020)
-                .connectionSpecs(listOf(
+                .connectionSpecs(
+                    listOf(
                         ConnectionSpec.CLEARTEXT,
                         ConnectionSpec.COMPATIBLE_TLS
-                ))
+                    )
+                )
 
                 // don't allow redirects by default, because it would break PROPFIND handling
                 .followRedirects(false)
 
                 // add User-Agent to every request
                 .addInterceptor(UserAgentInterceptor)
-
-                .build()
     }
 
 
@@ -87,7 +92,7 @@ class HttpClient private constructor(
         // default cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
         private var cookieStore: CookieJar? = MemoryCookieStore()
 
-        private val orig = sharedClient.newBuilder()
+        private val orig = baseBuilder()
 
         init {
             // add network logging, if requested

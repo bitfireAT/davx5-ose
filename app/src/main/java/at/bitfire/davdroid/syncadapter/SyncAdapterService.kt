@@ -19,6 +19,7 @@ import androidx.core.content.getSystemService
 import at.bitfire.davdroid.ConcurrentUtils
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.PermissionUtils
+import at.bitfire.davdroid.Singleton
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
@@ -63,18 +64,6 @@ abstract class SyncAdapterService: Service() {
          * Useful if settings which modify parsing/local behavior have been changed.
          */
         const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
-
-        /**
-         * We use our own dispatcher to
-         *
-         *   - make sure that all threads have [Thread.getContextClassLoader] set, which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]),
-         *   - control the global number of sync worker threads.
-         *
-         * Threads created by a service automatically have a contextClassLoader.
-         */
-        val workDispatcher =
-            ThreadPoolExecutor(0, Integer.min(Runtime.getRuntime().availableProcessors(), 6),
-                10, TimeUnit.SECONDS, LinkedBlockingQueue()).asCoroutineDispatcher()
     }
 
 

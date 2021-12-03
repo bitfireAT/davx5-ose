@@ -11,16 +11,29 @@ import java.lang.ref.WeakReference
  */
 object Singleton {
 
-    private val currentlyCreating = HashSet<Class<*>>()
+    private val currentlyCreating = HashSet<Any>()
 
     private val singletons = mutableMapOf<Any, WeakReference<Any>>()
 
 
+    /**
+     * Gets a singleton instance of the class, using the Class [T] as key.
+     *
+     * This method is thread-safe.
+     */
     inline fun<reified T> getInstance(noinline createInstance: () -> T): T =
-        getInstance(T::class.java, createInstance)
+        getInstanceByKey(T::class.java, createInstance)
 
+    /**
+     * Gets a singleton instance of the class, using the Class [T] as key.
+     *
+     * Accepts an Android Context, which is used to determine the [Context.getApplicationContext].
+     * The application Context is then passed to [createInstance].
+     *
+     * This method is thread-safe.
+     */
     inline fun<reified T> getInstance(context: Context, noinline createInstance: (appContext: Context) -> T): T =
-        getInstance(T::class.java) {
+        getInstanceByKey(T::class.java) {
             createInstance(context.applicationContext)
         }
 
@@ -30,9 +43,19 @@ object Singleton {
         singletons.clear()
     }
 
+    /**
+     * Gets a singleton instance of the class (using a given key).
+     *
+     * This method is thread-safe.
+     *
+     * @param key             unique key (only one instance is created for this key)
+     * @param createInstance  creates the instance
+     *
+     * @throws IllegalStateException  when called recursively with the same key
+     */
     @Synchronized
-    fun<T> getInstance(clazz: Class<T>, createInstance: () -> T): T {
-        var cached = singletons[clazz]
+    fun<T> getInstanceByKey(key: Any, createInstance: () -> T): T {
+        var cached = singletons[key]
         if (cached != null && cached.get() == null) {
             singletons.remove(cached)
             cached = null
@@ -45,16 +68,16 @@ object Singleton {
 
         // CREATE NEW SINGLETON
         // prevent recursive creation
-        if (currentlyCreating.contains(clazz))
+        if (currentlyCreating.contains(key))
             throw IllegalStateException("Singleton.getInstance must not be called recursively")
-        currentlyCreating += clazz
+        currentlyCreating += key
         // actually create the instance
         try {
             val newInstance = createInstance()
-            singletons[clazz] = WeakReference(newInstance)
+            singletons[key] = WeakReference(newInstance)
             return newInstance
         } finally {
-            currentlyCreating -= clazz
+            currentlyCreating -= key
         }
     }
 
