@@ -1,3 +1,7 @@
+####################################################################################################
+# Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+####################################################################################################
+
 at.bitfire.davdroid.ui.intro.WelcomeFragment$Factory
 at.bitfire.davdroid.ui.intro.TasksFragmentFactory
 at.bitfire.davdroid.ui.intro.PermissionsFragmentFactory
