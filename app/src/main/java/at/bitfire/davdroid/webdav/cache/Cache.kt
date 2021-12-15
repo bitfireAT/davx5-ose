@@ -1,7 +1,5 @@
 package at.bitfire.davdroid.webdav.cache
 
-import java.io.InputStream
-
 interface Cache<K> {
 
     fun get(key: K): ByteArray?

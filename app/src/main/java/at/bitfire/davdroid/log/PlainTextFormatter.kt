@@ -8,7 +8,6 @@
 
 package at.bitfire.davdroid.log
 
-import android.util.Log
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.commons.lang3.time.DateFormatUtils

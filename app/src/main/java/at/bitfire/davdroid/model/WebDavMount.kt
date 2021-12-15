@@ -3,7 +3,6 @@ package at.bitfire.davdroid.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Entity(tableName = "webdav_mount")
 data class WebDavMount(

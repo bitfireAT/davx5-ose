@@ -30,7 +30,6 @@ import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
-import net.fortuna.ical4j.model.component.VEvent
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody

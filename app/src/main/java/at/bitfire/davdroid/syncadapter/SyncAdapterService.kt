@@ -19,15 +19,10 @@ import androidx.core.content.getSystemService
 import at.bitfire.davdroid.ConcurrentUtils
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.PermissionUtils
-import at.bitfire.davdroid.Singleton
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
-import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.*
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
 abstract class SyncAdapterService: Service() {

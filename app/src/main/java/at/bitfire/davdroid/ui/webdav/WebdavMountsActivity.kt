@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.DocumentsContract
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -20,12 +18,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityWebdavMountsBinding
 import at.bitfire.davdroid.databinding.WebdavMountsItemBinding
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.WebDavDocument
 import at.bitfire.davdroid.model.WebDavMount
+import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,6 +75,18 @@ class WebdavMountsActivity: AppCompatActivity() {
         binding.add.setOnClickListener {
             startActivity(Intent(this, AddWebdavMountActivity::class.java))
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.activity_webdav_mounts, menu)
+        return true
+    }
+
+    fun onShowHelp(item: MenuItem) {
+        UiUtils.launchUri(this,
+            App.homepageUrl(this).buildUpon()
+                .appendEncodedPath("manual/webdav_mounts.html")
+                .build())
     }
 
 
