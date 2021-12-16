@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -14,16 +17,32 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <TextView
+        <LinearLayout
             android:id="@+id/empty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            style="@style/TextAppearance.MaterialComponents.Headline6"
-            android:text="@string/webdav_add_mount_empty" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                style="@style/TextAppearance.MaterialComponents.Headline6"
+                android:text="@string/webdav_mounts_empty" />
+
+            <TextView
+                android:id="@+id/webdav_mounts_see_manual"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:text="@string/webdav_add_mount_empty_more_info" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

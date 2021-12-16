@@ -9,10 +9,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.DocumentsContract
+import android.text.method.LinkMovementMethod
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -46,6 +48,9 @@ class WebdavMountsActivity: AppCompatActivity() {
 
         binding = ActivityWebdavMountsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.webdavMountsSeeManual.text = HtmlCompat.fromHtml(getString(R.string.webdav_add_mount_empty_more_info, helpUrl()), 0)
+        binding.webdavMountsSeeManual.movementMethod = LinkMovementMethod.getInstance()
 
         val adapter = MountsAdapter(this, model)
         binding.list.adapter = adapter
@@ -87,11 +92,13 @@ class WebdavMountsActivity: AppCompatActivity() {
     }
 
     fun onShowHelp(item: MenuItem) {
-        UiUtils.launchUri(this,
-            App.homepageUrl(this).buildUpon()
-                .appendEncodedPath("manual/webdav_mounts.html")
-                .build())
+        UiUtils.launchUri(this, helpUrl())
     }
+
+    private fun helpUrl() =
+        App.homepageUrl(this).buildUpon()
+            .appendEncodedPath("manual/webdav_mounts.html")
+            .build()
 
 
     data class MountInfo(
