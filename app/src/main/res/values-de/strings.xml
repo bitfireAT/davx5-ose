@@ -196,7 +196,7 @@
   <string name="account_read_only">schreibgeschützt</string>
   <string name="account_calendar">Kalender</string>
   <string name="account_task_list">Aufgabenliste</string>
-  <string name="account_only_personal">Nur Eigene anzeigen</string>
+  <string name="account_only_personal">Nur eigene anzeigen</string>
   <string name="account_refresh_address_book_list">Adressbücher neu erkennen</string>
   <string name="account_create_new_address_book">Neues Adressbuch erstellen</string>
   <string name="account_refresh_calendar_list">Kalender neu erkennen</string>
@@ -364,6 +364,8 @@
   <string name="webdav_mounts_share_content">Inhalt teilen</string>
   <string name="webdav_mounts_unmount">Aushängen</string>
   <string name="webdav_add_mount_title">WebDAV-Zugang hinzufügen</string>
+  <string name="webdav_mounts_empty">Greifen Sie mit einem WebDAV-Zugang direkt auf Ihre Cloud-Dateien zu!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[In der Anleitung erfahren Sie mehr darüber, <a href="%1$s">wie WebDAV-Zugänge funktionieren</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Anzeigename</string>
   <string name="webdav_add_mount_url">WebDAV-Adresse</string>
   <string name="webdav_add_mount_url_invalid">Ungültige Adresse</string>

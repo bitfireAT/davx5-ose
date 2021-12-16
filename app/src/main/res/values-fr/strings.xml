@@ -42,7 +42,7 @@
   <string name="intro_open_source_title">Logiciels open-source</string>
   <string name="intro_open_source_text">Nous sommes heureux que vous utilisiez %s, qui est un logiciel open-source. Le développement, la maintenance et l\'assistance sont un travail difficile. Veuillez envisager de contribuer (il y a plusieurs façons de le faire) ou de faire un don. Ce serait très apprécié !</string>
   <string name="intro_open_source_details">Comment contribuer/donner</string>
-  <string name="intro_open_source_dont_show">Ne plus me montrer dans le futur</string>
+  <string name="intro_open_source_dont_show">Ne plus afficher dans le futur</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Autorisations</string>
   <string name="permissions_text">%s nécessite des autorisations pour fonctionner correctement.</string>
@@ -224,7 +224,7 @@
   <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur …</string>
   <string name="login_no_caldav_carddav">Aucun accès possible au service CalDAV ou CardDAV.</string>
   <string name="login_username_password_wrong">Nom d\'utilisateur (courriel) / mot de passe incorrect ?</string>
-  <string name="login_view_logs">Montrer les détails</string>
+  <string name="login_view_logs">Afficher les détails</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Paramètres: %s</string>
   <string name="settings_sync">Synchronisation</string>

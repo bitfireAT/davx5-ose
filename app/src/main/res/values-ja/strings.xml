@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">アカウントがありません</string>
   <string name="account_title_address_book">DAVx⁵ アドレス帳</string>
   <string name="address_books_authority_title">アドレス帳</string>
   <string name="help">ヘルプ</string>

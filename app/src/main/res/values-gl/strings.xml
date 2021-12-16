@@ -5,6 +5,7 @@
   <string name="account_invalid">A conta non existe (definitivamente)</string>
   <string name="account_title_address_book">DAVx⁵ libreta de enderezos</string>
   <string name="address_books_authority_title">Libretas de enderezos</string>
+  <string name="field_required">Este campo é requerido</string>
   <string name="help">Axuda</string>
   <string name="manage_accounts">Xestionar contas</string>
   <string name="share">Compartir</string>
@@ -365,8 +366,14 @@
   <string name="webdav_add_mount_title">Engadir montaxe WebDAV</string>
   <string name="webdav_add_mount_display_name">Nome mostrado</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
+  <string name="webdav_add_mount_url_invalid">URL inválido</string>
   <string name="webdav_add_mount_username">Nome de usuaria</string>
   <string name="webdav_add_mount_password">Contrasinal</string>
+  <string name="webdav_add_mount_add">Engadir montaxe</string>
+  <string name="webdav_add_mount_no_support">Neste URL non hai ningún servizo WebDAV</string>
+  <string name="webdav_notification_access">Accedendo ao ficheiro WebDAV</string>
+  <string name="webdav_notification_download">Descargando ficheiro WebDAV</string>
+  <string name="webdav_notification_upload">Subindo ficheiro WebDAV</string>
   <string name="webdav_provider_root_title">Montaxe WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Permisos DAVx⁵</string>

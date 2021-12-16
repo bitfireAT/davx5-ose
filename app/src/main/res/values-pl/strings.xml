@@ -267,7 +267,7 @@
   <string name="settings_username">Nazwa użytkownika</string>
   <string name="settings_enter_username">Wpisz nazwę użytkownika:</string>
   <string name="settings_password">Hasło</string>
-  <string name="settings_password_summary">Zaktualizuj hasło zgodnie z serwerem.</string>
+  <string name="settings_password_summary">Zaktualizuj hasło zgodnie z serwerem</string>
   <string name="settings_enter_password">Wpisz hasło:</string>
   <string name="settings_certificate_alias">Alias certyfikatu klienta</string>
   <string name="settings_certificate_alias_empty">Nie wybrano certyfikatu</string>
@@ -375,6 +375,9 @@
   <string name="webdav_add_mount_password">Hasło</string>
   <string name="webdav_add_mount_add">Dodaj link</string>
   <string name="webdav_add_mount_no_support">Brak usługi WebDAV pod tym URL</string>
+  <string name="webdav_notification_access">Uzyskiwanie dostępu do pliku WebDAV</string>
+  <string name="webdav_notification_download">Pobieranie pliku WebDAV</string>
+  <string name="webdav_notification_upload">Wgrywanie pliku WebDAV</string>
   <string name="webdav_provider_root_title">Punkt linkowania WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Uprawnienia DAVx⁵</string>

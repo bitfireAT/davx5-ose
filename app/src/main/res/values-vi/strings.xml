@@ -5,9 +5,12 @@
   <string name="account_invalid">Tài khoản không tồn tại (nữa)</string>
   <string name="account_title_address_book">Sổ địa chỉ của DAVx⁵</string>
   <string name="address_books_authority_title">Sổ địa chỉ</string>
+  <string name="field_required">Trường này là bắt buộc</string>
   <string name="help">Trợ giúp</string>
   <string name="manage_accounts">Quản lý các tài khoản</string>
   <string name="share">Chia sẻ</string>
+  <string name="database_destructive_migration_title">Cơ sở dữ liệu đã bị lỗi</string>
+  <string name="database_destructive_migration_text">Tất cả tài khoản đã bị xóa ở cục bộ.</string>
   <string name="notification_channel_debugging">Gỡ lỗi</string>
   <string name="notification_channel_general">Thông báo quan trọng khác</string>
   <string name="notification_channel_status">Thông báo trạng thái ưu tiên thấp</string>
@@ -104,6 +107,7 @@
   <string name="install_browser">Vui lòng cài đặt một trình duyệt web</string>
   <string name="navigation_drawer_settings">Cài đặt</string>
   <string name="navigation_drawer_news_updates">Tin tức &amp; cập nhật</string>
+  <string name="navigation_drawer_tools">Công cụ</string>
   <string name="navigation_drawer_external_links">Liên kết ngoài</string>
   <string name="navigation_drawer_website">Trang web</string>
   <string name="navigation_drawer_manual">Hướng dẫn</string>
@@ -353,6 +357,22 @@
   <string name="exception_ioexception">Đã xảy ra lỗi I/O.</string>
   <string name="exception_show_details">Hiện chi tiết</string>
   <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">Nơi gắn WebDAV</string>
+  <string name="webdav_mounts_quota_used_available">Hạn mức đã sử dụng: %1$s / có sẵn: %2$s</string>
+  <string name="webdav_mounts_share_content">Chia sẻ nội dung</string>
+  <string name="webdav_mounts_unmount">Bỏ gắn</string>
+  <string name="webdav_add_mount_title">Thêm nơi gắn WebDAV</string>
+  <string name="webdav_add_mount_display_name">Tên hiển thị</string>
+  <string name="webdav_add_mount_url">URL WebDAV</string>
+  <string name="webdav_add_mount_url_invalid">URL không hợp lệ</string>
+  <string name="webdav_add_mount_username">Tên người dùng</string>
+  <string name="webdav_add_mount_password">Mật khẩu</string>
+  <string name="webdav_add_mount_add">Thêm nơi gắn</string>
+  <string name="webdav_add_mount_no_support">Không có dịch vụ WebDAV tại URL này</string>
+  <string name="webdav_notification_access">Đang truy cập tệp WebDAV</string>
+  <string name="webdav_notification_download">Đang tải xuống tệp WebDAV</string>
+  <string name="webdav_notification_upload">Đang tải lên tệp WebDAV</string>
+  <string name="webdav_provider_root_title">Nơi gắn WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Quyền của DAVx⁵</string>
   <string name="sync_error_permissions_text">Yêu cầu quyền bổ sung</string>
