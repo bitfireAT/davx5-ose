@@ -5,6 +5,7 @@
   <string name="account_invalid">Аккаунт не существует (больше)</string>
   <string name="account_title_address_book">Адресная книга DAVx⁵</string>
   <string name="address_books_authority_title">Адресные книги</string>
+  <string name="field_required">Это поле является обязательным</string>
   <string name="help">Помощь</string>
   <string name="manage_accounts">Управление аккаунтами</string>
   <string name="share">Поделиться</string>
@@ -369,8 +370,14 @@
   <string name="webdav_add_mount_title">Добавить соединение WebDAV</string>
   <string name="webdav_add_mount_display_name">Отображаемое имя</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">Некорректный URL</string>
   <string name="webdav_add_mount_username">Имя пользователя</string>
   <string name="webdav_add_mount_password">Пароль</string>
+  <string name="webdav_add_mount_add">Добавить соединение</string>
+  <string name="webdav_add_mount_no_support">Служба WebDAV отсутствует на данном URL</string>
+  <string name="webdav_notification_access">Доступ к файлу WebDAV</string>
+  <string name="webdav_notification_download">Загрузка файла WebDAV</string>
+  <string name="webdav_notification_upload">Выгрузка файла WebDAV</string>
   <string name="webdav_provider_root_title">Соединение WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Разрешения DAVx⁵</string>

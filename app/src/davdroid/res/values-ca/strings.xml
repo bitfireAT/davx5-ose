@@ -222,6 +222,7 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Els esdeveniments que superin aquest nombre de dies en el passat seran ignorats (poden ser 0). Deixeu-ho en blanc per sincronitzar tots els esdeveniments.</string>
   <string name="settings_manage_calendar_colors">Gestiona els colors del calendari</string>
+  <string name="settings_manage_calendar_colors_on">Els colors del calendari es reinicialitzen a cada sincronització</string>
   <string name="settings_carddav">CardDAV</string>
   <!--collection management-->
   <string name="create_addressbook">Crea una llibreta d\'adreces</string>
@@ -236,6 +237,7 @@
   <string name="create_collection_display_name_required">Cal un títol</string>
   <string name="create_collection_description">Descripció</string>
   <string name="create_collection_home_set">Ubicació d’emmagatzematge</string>
+  <string name="create_collection_create">Crear</string>
   <string name="delete_collection">Suprimeix la col·lecció</string>
   <string name="delete_collection_confirm_title">Estàs segur?</string>
   <string name="delete_collection_confirm_warning">Aquesta col·lecció (%s) i totes les seves dades s’eliminaran definitivament.</string>

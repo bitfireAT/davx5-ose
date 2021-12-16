@@ -5,9 +5,12 @@
   <string name="account_invalid">Konto findes ikke mere</string>
   <string name="account_title_address_book">DAVx⁵ adressebog</string>
   <string name="address_books_authority_title">Adressebøger</string>
+  <string name="field_required">Feltet er påkrævet</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrere konti</string>
   <string name="share">Dele</string>
+  <string name="database_destructive_migration_title">Database ødelagt</string>
+  <string name="database_destructive_migration_text">Alle konti er fjernet lokalt.</string>
   <string name="notification_channel_debugging">Fejlsøgning</string>
   <string name="notification_channel_general">Andre vigtige beskeder</string>
   <string name="notification_channel_status">Lav-prioritet status beskeder</string>
@@ -104,6 +107,7 @@
   <string name="install_browser">Installere netlæser</string>
   <string name="navigation_drawer_settings">Opsætning</string>
   <string name="navigation_drawer_news_updates">Nyheder &amp; opdateringer</string>
+  <string name="navigation_drawer_tools">Værktøj</string>
   <string name="navigation_drawer_external_links">Eksterne henvisninger</string>
   <string name="navigation_drawer_website">Netsted</string>
   <string name="navigation_drawer_manual">Manual</string>
@@ -355,6 +359,22 @@
   <string name="exception_ioexception">Der er opstået en I/O-fejl.</string>
   <string name="exception_show_details">Vis detaljer</string>
   <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">WebDAV monteringspunkter</string>
+  <string name="webdav_mounts_quota_used_available">Mængde brugt: %1$s / tilgængelig: %2$s</string>
+  <string name="webdav_mounts_share_content">Del indhold</string>
+  <string name="webdav_mounts_unmount">Afmontere</string>
+  <string name="webdav_add_mount_title">Tilføj WebDAV monteringspunkt</string>
+  <string name="webdav_add_mount_display_name">Vis navn</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">Ugyldig URL</string>
+  <string name="webdav_add_mount_username">Brugernavn</string>
+  <string name="webdav_add_mount_password">Adgangskode</string>
+  <string name="webdav_add_mount_add">Tilføj monteringspunkt</string>
+  <string name="webdav_add_mount_no_support">Ingen WebDAV tjeneste på URL\'en</string>
+  <string name="webdav_notification_access">Tilgå WebDAV fil</string>
+  <string name="webdav_notification_download">Hent WebDAV fil</string>
+  <string name="webdav_notification_upload">Overfør WebDAV fil</string>
+  <string name="webdav_provider_root_title">Montere WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵-rettigheder</string>
   <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>

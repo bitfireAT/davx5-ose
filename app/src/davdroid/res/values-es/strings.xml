@@ -5,9 +5,12 @@
   <string name="account_invalid">La cuenta (ya) no existe</string>
   <string name="account_title_address_book">Agenda DAVx⁵</string>
   <string name="address_books_authority_title">Agendas</string>
+  <string name="field_required">Este campo es requerido</string>
   <string name="help">Ayuda</string>
   <string name="manage_accounts">Administrar cuentas</string>
   <string name="share">Compartir</string>
+  <string name="database_destructive_migration_title">Base de datos corrompida</string>
+  <string name="database_destructive_migration_text">Toda las cuentas han sido eliminadas localmente.</string>
   <string name="notification_channel_debugging">Depuración</string>
   <string name="notification_channel_general">Otros mensajes importantes</string>
   <string name="notification_channel_status">Mensajes de baja prioridad</string>
@@ -69,6 +72,7 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Permisos del SSID WiFi</string>
   <string name="wifi_permissions_intro">Para poder acceder al nombre del WiFi actual (SSID), deben cumplirse estas condiciones:</string>
+  <string name="wifi_permissions_location_permission">Permiso de ubicación precisa</string>
   <string name="wifi_permissions_location_permission_on">Permiso de ubicación concedido</string>
   <string name="wifi_permissions_location_permission_off">Permiso de ubicación denegado</string>
   <string name="wifi_permissions_background_location_permission">Permiso de ubicación en segundo plano</string>
@@ -84,6 +88,7 @@
   <string name="about_libraries">Bibliotecas</string>
   <string name="about_version">Versión %1$s (%2$d)</string>
   <string name="about_build_date">Compilada en %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) y colaboradores </string>
   <string name="about_flavor_info">Esta versión sólo está disponible para distribución en Google Play. </string>
   <string name="about_license_info_no_warranty">Este programa viene sin NINGÚN TIPO DE GARANTÍA. Es software libre, y cualquier contribución es bienvenida y redistribuida bajo ciertas condiciones.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Agradecimientos para: </i> %s]]></string>
@@ -102,6 +107,7 @@
   <string name="install_browser">Por favor, instale un navegador web</string>
   <string name="navigation_drawer_settings">Ajustes</string>
   <string name="navigation_drawer_news_updates">Noticias y actualizaciones</string>
+  <string name="navigation_drawer_tools">Herramientas</string>
   <string name="navigation_drawer_external_links">Enlaces externos</string>
   <string name="navigation_drawer_website">Sitio web</string>
   <string name="navigation_drawer_manual">Manual</string>
@@ -148,6 +154,13 @@
   <string name="app_settings_user_interface">Interfaz de usuario</string>
   <string name="app_settings_notification_settings">Ajustes de notificación</string>
   <string name="app_settings_notification_settings_summary">Administrar notificación de canales y sus ajustes</string>
+  <string name="app_settings_theme_title">Seleccionar tema</string>
+  <string name="app_settings_theme_summary">Tema actual: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>Por defecto del sistema</item>
+    <item>Claro</item>
+    <item>Oscuro</item>
+  </string-array>
   <string name="app_settings_reset_hints">Restablecer advertencias</string>
   <string name="app_settings_reset_hints_summary">Habilita las advertencias que han sido rechazadas con anterioridad</string>
   <string name="app_settings_reset_hints_success">Todas las advertencias se mostrarán nuevamente</string>
@@ -303,6 +316,7 @@
   <string name="create_collection_description">Descripción </string>
   <string name="create_collection_optional">opcional</string>
   <string name="create_collection_home_set">Ubicación del almacenamiento</string>
+  <string name="create_collection_home_set_required">Se requiere ubicación de almacenamiento</string>
   <string name="create_collection_create">Crear</string>
   <string name="delete_collection">Eliminar colección</string>
   <string name="delete_collection_confirm_title">¿Estás seguro/a?</string>
@@ -316,6 +330,10 @@
   <string name="collection_properties_owner">Propietario:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Información de depuración</string>
+  <string name="debug_info_archive_caption">Archivo ZIP</string>
+  <string name="debug_info_archive_subtitle">Contiene información de depuración y registro</string>
+  <string name="debug_info_archive_text">Comparte el archivo para transferirlo al ordenador, para enviarlo por email o para adjuntarlo a un ticket de soporte.</string>
+  <string name="debug_info_archive_share">Compartir archivo</string>
   <string name="debug_info_attached">Información de depuración adjunta a este mensaje (requiere soporte de adjuntos de la aplicación receptora).</string>
   <string name="debug_info_http_error">Error HTTP</string>
   <string name="debug_info_server_error">Error del servidor</string>
@@ -341,6 +359,22 @@
   <string name="exception_ioexception">Ha ocurrido un error I/O.</string>
   <string name="exception_show_details">Mostrar detalles</string>
   <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">Montajes WebDAV</string>
+  <string name="webdav_mounts_quota_used_available">Cuota usada: %1$s/ disponible: %2$s</string>
+  <string name="webdav_mounts_share_content">Compartir contenido</string>
+  <string name="webdav_mounts_unmount">Desmontar</string>
+  <string name="webdav_add_mount_title">Agregar montaje WebDAV</string>
+  <string name="webdav_add_mount_display_name">Mostrar nombre</string>
+  <string name="webdav_add_mount_url">URL WebDAV</string>
+  <string name="webdav_add_mount_url_invalid">URL inválida</string>
+  <string name="webdav_add_mount_username">Nombre de usuario</string>
+  <string name="webdav_add_mount_password">Contraseña</string>
+  <string name="webdav_add_mount_add">Agregar montaje</string>
+  <string name="webdav_add_mount_no_support">No hay un servicio WebDAV en esta URL</string>
+  <string name="webdav_notification_access">Accediendo al fichero WebDAV</string>
+  <string name="webdav_notification_download">Descargando el fichero WebDAV</string>
+  <string name="webdav_notification_upload">Subiendo fichero WebDAV</string>
+  <string name="webdav_provider_root_title">Montaje WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Permisos de DAVx⁵</string>
   <string name="sync_error_permissions_text">Permisos adicionales requeridos</string>
