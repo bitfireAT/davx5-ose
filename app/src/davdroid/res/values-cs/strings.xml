@@ -368,6 +368,8 @@
   <string name="webdav_mounts_share_content">Obsah sdílení</string>
   <string name="webdav_mounts_unmount">Odpojit</string>
   <string name="webdav_add_mount_title">Přidat WebDAV připojení</string>
+  <string name="webdav_mounts_empty">Přímo přistupujte ke svým souborům v cloudu přidáním WebDAV připojení!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Viz příručka <a href="%1$s">jak fungují WebDAV připojení</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Zobrazovaný název</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Neplatná URL</string>

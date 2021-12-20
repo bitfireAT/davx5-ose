@@ -362,6 +362,8 @@
   <string name="webdav_mounts_share_content">Chia sẻ nội dung</string>
   <string name="webdav_mounts_unmount">Bỏ gắn</string>
   <string name="webdav_add_mount_title">Thêm nơi gắn WebDAV</string>
+  <string name="webdav_mounts_empty">Truy cập trực tiếp các tệp trên đám mây bằng cách thêm nơi gắn WebDAV!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Hãy xem hướng dẫn để biết <a href="%1$s">cách nơi gắn WebDAV hoạt động</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Tên hiển thị</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL không hợp lệ</string>

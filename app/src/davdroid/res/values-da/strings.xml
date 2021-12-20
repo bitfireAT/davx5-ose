@@ -8,7 +8,7 @@
   <string name="field_required">Feltet er påkrævet</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrere konti</string>
-  <string name="share">Dele</string>
+  <string name="share">Del</string>
   <string name="database_destructive_migration_title">Database ødelagt</string>
   <string name="database_destructive_migration_text">Alle konti er fjernet lokalt.</string>
   <string name="notification_channel_debugging">Fejlsøgning</string>
@@ -17,7 +17,7 @@
   <string name="notification_channel_sync">Synkronisering</string>
   <string name="notification_channel_sync_errors">Synkroniserings-fejl</string>
   <string name="notification_channel_sync_errors_desc">Vigtige fejl, der stopper synkronisering, som ikke forventet server svar</string>
-  <string name="notification_channel_sync_warnings">Synkronisering  advarsler</string>
+  <string name="notification_channel_sync_warnings">Synkroniserings advarsler</string>
   <string name="notification_channel_sync_warnings_desc">Ikke kritisk synkroniserig problem som bestemte ugyldige filer</string>
   <string name="notification_channel_sync_io_errors">Netværks- og I/O-fejl</string>
   <string name="notification_channel_sync_io_errors_desc">Tidsudløb, forbindelse problemer m.m. (ofte midlertidig)</string>
@@ -103,7 +103,7 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / licens</string>
   <string name="navigation_drawer_beta_feedback">Beta tilbagemelding</string>
-  <string name="install_email_client">Installere e-post klient</string>
+  <string name="install_email_client">Installér e-mail klient</string>
   <string name="install_browser">Installere netlæser</string>
   <string name="navigation_drawer_settings">Opsætning</string>
   <string name="navigation_drawer_news_updates">Nyheder &amp; opdateringer</string>
@@ -114,7 +114,7 @@
   <string name="navigation_drawer_faq">OSS</string>
   <string name="navigation_drawer_forums">Hjælp / fora</string>
   <string name="navigation_drawer_donate">Donation</string>
-  <string name="navigation_drawer_privacy_policy">Privatliv retningslinje</string>
+  <string name="navigation_drawer_privacy_policy">Privatlivs politik</string>
   <string name="account_list_no_internet">Ingen internetforbindelse. Android kører ikke synkronisering.</string>
   <string name="account_list_empty">Velkommen til DAVx⁵!\n\nDu kan nu tilføje en CalDAV/CardDAV konto.</string>
   <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
@@ -129,12 +129,12 @@
   <!--AppSettingsActivity-->
   <string name="app_settings">Indstillinger</string>
   <string name="app_settings_debug">Fejlsøgning</string>
-  <string name="app_settings_show_debug_info">Vis fejlsøgning information</string>
+  <string name="app_settings_show_debug_info">Vis fejlsøgnings information</string>
   <string name="app_settings_show_debug_info_details">Vis/del software og opsætningsoplysninger</string>
   <string name="app_settings_logging">Uddybende logning</string>
   <string name="app_settings_logging_on">Logning er aktiv</string>
   <string name="app_settings_logging_off">Logning er deaktiveret</string>
-  <string name="app_settings_foreground_service">Hold i forgrund</string>
+  <string name="app_settings_foreground_service">Hold i forgrunden</string>
   <string name="app_settings_foreground_service_details">Kan hjælpe hvis enhed forhindrer automatisk synkronisering</string>
   <string name="app_settings_connection">Forbindelse</string>
   <string name="app_settings_override_proxy">Tilsidesæt proxyindstillinger</string>
@@ -148,12 +148,12 @@
   <string name="app_settings_distrust_system_certs">Stol ikke på systemcertifikater</string>
   <string name="app_settings_distrust_system_certs_on">System og brugertilføjede CA\'er vil ikke blive betroet</string>
   <string name="app_settings_distrust_system_certs_off">System og brugertilføjede CA\'er vil blive betroet (anbefalet)</string>
-  <string name="app_settings_reset_certificates">Nulstille betroede / ikke betroede certifikater</string>
+  <string name="app_settings_reset_certificates">Nulstil betroede / ikke betroede certifikater</string>
   <string name="app_settings_reset_certificates_summary">Nulstiller tilliden til brugerdefinerede certifikater</string>
   <string name="app_settings_reset_certificates_success">Alle brugerdefinerede certifikater er blevet rydet</string>
   <string name="app_settings_user_interface">Brugerflade</string>
-  <string name="app_settings_notification_settings">Påmindelse opsætning</string>
-  <string name="app_settings_notification_settings_summary">Håndtere påmindelse kanaler og deres opsætning</string>
+  <string name="app_settings_notification_settings">Notifikations indstillinger</string>
+  <string name="app_settings_notification_settings_summary">Håndtér notifikationskanaler og deres opsætning</string>
   <string name="app_settings_theme_title">Vælg tema</string>
   <string name="app_settings_theme_summary">Nuværende tema: %s</string>
   <string-array name="app_settings_theme_names">
@@ -204,23 +204,23 @@
   <string name="account_no_webcal_handler_found">Der er ikke fundet noget program der kan håndtere Webcal.</string>
   <string name="account_install_icsx5">Installere ICSx⁵</string>
   <!--AddAccountActivity-->
-  <string name="login_title">Tilføje konto</string>
-  <string name="login_type_email">Logge ind med e-post adresse</string>
-  <string name="login_email_address">E-post adresse</string>
-  <string name="login_email_address_error">Gyldig e-post adresse påkrævet</string>
+  <string name="login_title">Tilføj konto</string>
+  <string name="login_type_email">Log ind med e-mail adresse</string>
+  <string name="login_email_address">E-mail adresse</string>
+  <string name="login_email_address_error">Gyldig e-mail adresse påkrævet</string>
   <string name="login_password">Adgangskode</string>
   <string name="login_password_required">Adgangskode påkrævet</string>
-  <string name="login_type_url">Logge ind med URL og brugernavn</string>
+  <string name="login_type_url">Log ind med URL og brugernavn</string>
   <string name="login_url_must_be_http_or_https">URL skal starte med http(s)://</string>
   <string name="login_user_name">Brugernavn</string>
   <string name="login_user_name_required">Brugernavn påkrævet</string>
   <string name="login_base_url">Basis URL</string>
-  <string name="login_type_url_certificate">Logge ind med URL og klientcertifikat</string>
+  <string name="login_type_url_certificate">Log ind med URL og klientcertifikat</string>
   <string name="login_select_certificate">Vælge certifikat</string>
-  <string name="login_login">Logge ind</string>
+  <string name="login_login">Log ind</string>
   <string name="login_create_account">Oprette konto</string>
   <string name="login_account_name">Kontonavn</string>
-  <string name="login_account_name_info">Brug e-post adresse som kontonavn da Android bruger kontonavn til ORGANIZER-felt for oprettede aktiviteter. Man kan ikke have to konti med samme navn.</string>
+  <string name="login_account_name_info">Brug e-mail adresse som kontonavn da Android bruger kontonavn til ORGANIZER-felt for oprettede aktiviteter. Man kan ikke have to konti med samme navn.</string>
   <string name="login_account_contact_group_method">Gruppering af kontakter:</string>
   <string name="login_account_name_required">Kontonavn påkrævet</string>
   <string name="login_account_name_already_taken">Konto navn er taget</string>
@@ -233,7 +233,7 @@
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
   <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
-  <string name="login_username_password_wrong">Brugernavn (e-post adresse) / adgangskode forkert?</string>
+  <string name="login_username_password_wrong">Brugernavn (e-mail adresse) / adgangskode forkert?</string>
   <string name="login_view_logs">Vis detaljer</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Indstillinger: %s</string>
@@ -331,18 +331,18 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
   <string name="debug_info_archive_caption">ZIP arkiv</string>
-  <string name="debug_info_archive_subtitle">Indeholder fejlsøge information og log</string>
-  <string name="debug_info_archive_text">Del arkivet for at overføre det til en computer, sende det via e-post eller vedhæfte til en brugerhjælp billet.</string>
+  <string name="debug_info_archive_subtitle">Indeholder fejlsøgnings information og log</string>
+  <string name="debug_info_archive_text">Del arkivet for at overføre det til en computer, sende det via e-mail eller vedhæfte til en support sag.</string>
   <string name="debug_info_archive_share">Del arkiv</string>
   <string name="debug_info_attached">Fejlsøge informationer vedhæftet denne meddelelse (kræver vedhæftning understøttelse hos modtagende program).</string>
   <string name="debug_info_http_error">HTTP fejl</string>
   <string name="debug_info_server_error">Server fejl</string>
   <string name="debug_info_webdav_error">WebDAV fejl</string>
   <string name="debug_info_io_error">Ind/ud fejl</string>
-  <string name="debug_info_http_403_description">Anmodning blev afvist. Tjek involverede ressourcer og fejlsøge oplysninger for detaljer.</string>
-  <string name="debug_info_http_404_description">Den ønskede ressource findes ikke. Kontrollere involverede ressourcer og fejlsøge oplysninger for detaljer.</string>
+  <string name="debug_info_http_403_description">Anmodning blev afvist. Tjek involverede ressourcer og fejlsøgnings oplysninger for detaljer.</string>
+  <string name="debug_info_http_404_description">Den ønskede ressource findes ikke. Kontrollér involverede ressourcer og fejlsøgnings oplysninger for detaljer.</string>
   <string name="debug_info_http_5xx_description">Der opstod et problem på server siden. Kontakt server brugerhjælp.</string>
-  <string name="debug_info_unexpected_error">En uventet fejl er opstået. Se fejlsøge oplysninger for detaljer.</string>
+  <string name="debug_info_unexpected_error">En uventet fejl er opstået. Se fejlsøgnings info for detaljer.</string>
   <string name="debug_info_view_details">Vis detaljer</string>
   <string name="debug_info_subtitle">Fejlsøgnings information er indsamlet</string>
   <string name="debug_info_involved_caption">Involveret ressourcer</string>
@@ -364,6 +364,8 @@
   <string name="webdav_mounts_share_content">Del indhold</string>
   <string name="webdav_mounts_unmount">Afmontere</string>
   <string name="webdav_add_mount_title">Tilføj WebDAV monteringspunkt</string>
+  <string name="webdav_mounts_empty">Tilføj en WebDAV mount for at tilgå dine filer i skyen</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Se manualen for <a href="%1$s">hvordan WebDAV mounts virker</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Vis navn</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Ugyldig URL</string>
