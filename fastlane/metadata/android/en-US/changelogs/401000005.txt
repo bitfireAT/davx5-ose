@@ -1,0 +1,5 @@
+- improve WebDAV access and cache
+- debug info: show available/total storage memory
+- improve SRV record resolving (especially on Android ≥10)
+- fixed a bug when the FN field was not present in a contacts vcard 4
+- minor optimizations and bug fixes
