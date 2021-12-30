@@ -1,7 +1,9 @@
 
+[![Website](https://img.shields.io/website?style=flat-square&up_color=%237cb342&url=https%3A%2F%2Fwww.davx5.com)](https://www.davx5.com/)
+[![Twitter](https://img.shields.io/twitter/follow/davx5app?color=%237cb342&label=%40davx5app&style=flat-square)](https://twitter.com/davx5app)
+[![F-Droid](https://img.shields.io/f-droid/v/at.bitfire.davdroid?style=flat-square)](https://f-droid.org/packages/at.bitfire.davdroid/)
+[![License](https://img.shields.io/github/license/bitfireAT/davx5-ose?style=flat-square)](https://github.com/bitfireAT/davx5-ose/blob/main/LICENSE)
 [![Development tests](https://github.com/bitfireAT/davx5-ose/actions/workflows/test-dev.yml/badge.svg)](https://github.com/bitfireAT/davx5-ose/actions/workflows/test-dev.yml)
-[![License](https://img.shields.io/github/license/bitfireAT/davx5-ose)](https://github.com/bitfireAT/davx5-ose/blob/main/LICENSE)
-[![F-Droid](https://img.shields.io/f-droid/v/at.bitfire.davdroid)](https://f-droid.org/packages/at.bitfire.davdroid/)
 
 ![DAVx⁵ logo](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
