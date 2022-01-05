@@ -220,6 +220,7 @@
   <string name="login_login">Log ind</string>
   <string name="login_create_account">Oprette konto</string>
   <string name="login_account_name">Kontonavn</string>
+  <string name="login_account_avoid_apostrophe">Du kan ikke bruge anførelsestegn (\') på alle mobiler.</string>
   <string name="login_account_name_info">Brug e-mail adresse som kontonavn da Android bruger kontonavn til ORGANIZER-felt for oprettede aktiviteter. Man kan ikke have to konti med samme navn.</string>
   <string name="login_account_contact_group_method">Gruppering af kontakter:</string>
   <string name="login_account_name_required">Kontonavn påkrævet</string>

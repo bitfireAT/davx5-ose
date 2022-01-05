@@ -77,7 +77,7 @@
   <string name="wifi_permissions_background_location_permission_label">Разрешаване във всички случаи</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Разрешението за местоположението е <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Разрешението за местоположението не е <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_disclaimer">%sизползва разрешението за местоположение за достъп до името на мрежата, когато се изисква синхронизиране само през определена мрежа. Това се случва дори и когато приложението се изпълнява във фонов ражим. Не се събират, съхраняват, обработват и разпространяват данни за местоположението.</string>
+  <string name="wifi_permissions_background_location_disclaimer">%sизползва разрешението за местоположение за достъп до името на мрежата, когато се изисква синхронизиране само през определена мрежа. Това се случва дори и когато приложението се изпълнява във фонов режим. Не се събират, съхраняват, обработват и разпространяват данни за местоположението.</string>
   <string name="wifi_permissions_location_enabled">Винаги включено местоположение</string>
   <string name="wifi_permissions_location_enabled_on">Услугата за местоположението е включена</string>
   <string name="wifi_permissions_location_enabled_off">Услугата за местоположението е изключена</string>

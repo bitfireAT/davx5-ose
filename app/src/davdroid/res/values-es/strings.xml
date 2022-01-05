@@ -364,6 +364,8 @@
   <string name="webdav_mounts_share_content">Compartir contenido</string>
   <string name="webdav_mounts_unmount">Desmontar</string>
   <string name="webdav_add_mount_title">Agregar montaje WebDAV</string>
+  <string name="webdav_mounts_empty">Accede directamente a tus archivos en la nube agregando un punto de montaje WebDAV</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Mira el manual para <a href="%1$s">cómo funcionan los puntos de montaje WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Mostrar nombre</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL inválida</string>
