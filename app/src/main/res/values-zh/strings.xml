@@ -362,6 +362,8 @@
   <string name="webdav_mounts_share_content">分享内容</string>
   <string name="webdav_mounts_unmount">解除挂载</string>
   <string name="webdav_add_mount_title">添加 WebDAV 文件系统</string>
+  <string name="webdav_mounts_empty">通过添加 WebDAV 挂载直接访问您的云文件！</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[查看<a href="%1$s">WebDAV 工作方式</a>的手册。</string>]]></string>
   <string name="webdav_add_mount_display_name">展示名称</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">无效 URL</string>

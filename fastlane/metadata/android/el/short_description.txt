@@ -1,1 +1,1 @@
-Συγχρονισμός CalDAV/CardDAV και πελάτης
+Συγχρονισμός CalDAV/CardDAV με πελάτη

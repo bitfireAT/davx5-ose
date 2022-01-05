@@ -5,11 +5,15 @@
   <string name="account_invalid">Ο λογαριασμός δεν υπάρχει (πια)</string>
   <string name="account_title_address_book">Βιβλίο διευθύνσεων DAVx⁵</string>
   <string name="address_books_authority_title">Βιβλία διευθύνσεων</string>
+  <string name="field_required">Αυτό το πεδίο είναι απαραίτητο </string>
   <string name="help">Βοήθεια</string>
   <string name="manage_accounts">Διαχείριση λογαριασμών</string>
   <string name="share">Διαμοιρασμός</string>
+  <string name="database_destructive_migration_title">Υπάρχει σφάλμα στην βάση δεδομένων</string>
+  <string name="database_destructive_migration_text">Όλοι οι λογαριασμοί έχουν διαγραφεί τοπικά</string>
   <string name="notification_channel_debugging">Αποσφαλμάτωση</string>
   <string name="notification_channel_general">Άλλα σημαντικά μηνύματα</string>
+  <string name="notification_channel_status">Μηνύματα κατάστασης χαμηλής προτεραιότητας</string>
   <string name="notification_channel_sync">Συγχρονισμός</string>
   <string name="notification_channel_sync_errors">Σφάλματα συγχρονισμού</string>
   <string name="notification_channel_sync_errors_desc">Σημαντικά σφάλματα τα οποία σταματούν τον συγχρονισμό, όπως οι απροσδόκητες απαντήσεις του διακομιστή</string>
@@ -18,28 +22,58 @@
   <string name="notification_channel_sync_io_errors">Σφάλματα δικτύου και I/O</string>
   <string name="notification_channel_sync_io_errors_desc">Χρονικά όρια, προβλήματα σύνδεσης, κλπ. (συχνά προσωρινά)</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">Τα δεδομένα σου. Οι επιλογές σου.</string>
+  <string name="intro_slogan2">Πάρε τον έλεγχο.</string>
+  <string name="intro_battery_title">Τακτά διαστήματα συγχρονισμού</string>
   <string name="intro_battery_not_whitelisted">Απενεργοποιημένο (δεν προτείνεται)</string>
   <string name="intro_battery_whitelisted">Ενεργοποιημένο (προτείνεται)</string>
+  <string name="intro_battery_text">Για συγχρονισμό σε τακτικά διαστήματα, πρέπει να επιτραπεί στο %s να λειτουργεί στο παρασκήνιο. Αλλιώς, το Android μπορεί να παύση τον συγχρονισμό ανά πάσα στιγμή.</string>
+  <string name="intro_battery_dont_show">Δεν χρειάζομαι τακτικά διαστήματα συγχρονισμού.*</string>
+  <string name="intro_autostart_title">%s Συμβατότητα</string>
+  <string name="intro_autostart_text">Αυτή η συσκευή πιθανόν δεν επιτρέπει τον συγχρονισμό. Εάν αυτό σας επηρεάζει αρνητικά, μπορείτε να το λύσετε μόνο χειροκίνητα.</string>
+  <string name="intro_autostart_dont_show">Έχω κάνει τις απαιτούμενες ρυθμίσεις. Δεν θέλω άλλες υπενθυμίσεις.*</string>
+  <string name="intro_leave_unchecked">Άφησε απενεργοποιημένες τις υπενθυμίσεις. Μπορούν να επαναφερθούν στις ρυθμίσεις εφαρμογών / %s.</string>
   <string name="intro_more_info">Περισσότερες πληροφορίες</string>
+  <string name="intro_tasks_title">Υποστήριξη εργασιών</string>
+  <string name="intro_tasks_text1">Εάν οι εργασίες υποστηρίζονται από τον server σας, μπορούν να συγχρονιστούν με μια υποστηριζόμενη εφαρμογή εργασιών:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_tasks_org">Εργασίες</string>
+  <string name="intro_tasks_no_app_store">Δεν υπάρχει διαθέσιμο κατάστημα εφαρμογών</string>
+  <string name="intro_tasks_dont_show">Δεν χρειάζομαι υποστήριξη εργασιών.*</string>
   <string name="intro_open_source_title">Λογισμικό ανοικτού κώδικα</string>
+  <string name="intro_open_source_dont_show">Μην το εμφανίσεις στο προσεχές μέλλον</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Δικαιώματα</string>
+  <string name="permissions_text">Το %sχρειάζεται δικαιώματα για να λειτουργήσει σωστά. </string>
   <string name="permissions_all_title">Όλα τα παρακάτω</string>
+  <string name="permissions_all_status_off">Χρησιμοποίησε αυτό για να ενεργοποιήσεις όλες τις λειτουργίες (προτείνεται)</string>
   <string name="permissions_all_status_on">Χορηγήθηκαν όλα τα δικαιώματα</string>
+  <string name="permissions_contacts_title">Δικαιώματα επαφών</string>
+  <string name="permissions_contacts_status_off">Μη συγχρονισμός επαφών (δεν προτείνεται)</string>
+  <string name="permissions_contacts_status_on">Ο Συγχρονισμός επαφών είναι δυνατός</string>
   <string name="permissions_calendar_title">Δικαιώματα ημερολογίου</string>
+  <string name="permissions_calendar_status_off">Μη συγχρονισμός ημερολογίου (δεν προτείνεται)</string>
+  <string name="permissions_calendar_status_on">Ο Συγχρονισμός ημερολογίου είναι δυνατός</string>
   <string name="permissions_opentasks_title">Δικαιώματα OpenTasks</string>
   <string name="permissions_tasksorg_title">Δικαιώματα εργασιών</string>
+  <string name="permissions_tasks_status_off">Μη συγχρονισμός εργασιών (δεν προτείνεται)</string>
   <string name="permissions_autoreset_title">Διατήρηση δικαιωμάτων</string>
+  <string name="permissions_autoreset_status_off">Τα δικαιώματα μπορούν να επαναφερθούν αυτόματα (δεν προτείνεται)</string>
   <string name="permissions_app_settings">Ρυθμίσεις εφαρμογής</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_location_permission">Δικαίωμα ακριβούς εντοπισμού</string>
+  <string name="wifi_permissions_location_permission_on">Ενεργοποιήθηκε το δικαίωμα εντοπισμού</string>
+  <string name="wifi_permissions_location_permission_off">Απενεργοποιήθηκε το δικαίωμα εντοπισμού</string>
+  <string name="wifi_permissions_background_location_permission">Δικαίωμα εντοπισμού στο παρασκήνιο</string>
   <string name="wifi_permissions_background_location_permission_label">Να επιτρέπεται συνέχεια</string>
+  <string name="wifi_permissions_location_enabled_on">Η υπηρεσία εντοπισμού είναι ενεργοποιημένη</string>
+  <string name="wifi_permissions_location_enabled_off">Η υπηρεσία εντοπισμού είναι απενεργοποιημένη</string>
   <!--AboutActivity-->
   <string name="about_translations">Μεταφράσεις</string>
   <string name="about_libraries">Βιβλιοθήκες</string>
   <string name="about_version">Έκδοση %1$s (%2$d)</string>
   <string name="about_build_date">Μεταγλωττισμένο σε %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) και συνεργάτες</string>
   <string name="about_flavor_info">Αυτή η έκδοση είναι κατάλληλη μόνο για διανομή μέσω του Google Play.</string>
   <string name="about_license_info_no_warranty">Αυτό το πρόγραμμα συνοδεύεται χωρις ΚΑΜΙΑ ΕΓΓΥΗΣΗ. Είναι ελεύθερο λογισμικό και είστε ευπρόσδεκτοι να το αναδιανείμετε υπό ορισμένες προϋποθέσεις.</string>
   <!--global settings-->
@@ -56,6 +90,7 @@
   <string name="install_browser">Παρακαλούμε εγκαταστήστε έναν περιηγητή ιστού</string>
   <string name="navigation_drawer_settings">Ρυθμίσεις</string>
   <string name="navigation_drawer_news_updates">Νέα &amp; ενημερώσεις</string>
+  <string name="navigation_drawer_tools">Εργαλεία</string>
   <string name="navigation_drawer_external_links">Εξωτερικοί σύνδεσμοι</string>
   <string name="navigation_drawer_website">Ιστότοπος</string>
   <string name="navigation_drawer_manual">Χειροκίνητα</string>
@@ -73,6 +108,7 @@
   <string name="dav_service_refresh_couldnt_refresh">Αδυναμία ανανέωσης της λίστας συλλογής</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Εκτέλεση στο προσκήνιο</string>
+  <string name="foreground_service_notify_text">Σε κάποιες συσκευές, αυτό είναι απαραίτητο για τον αυτόματο συγχρονισμό</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Ρυθμίσεις</string>
   <string name="app_settings_debug">Αποσφαλμάτωση</string>
@@ -107,10 +143,15 @@
   <string name="app_settings_integration">Ενσωμάτωση</string>
   <string name="app_settings_tasks_provider">Εφαρμογή εργασιών</string>
   <string name="app_settings_tasks_provider_synchronizing_with">Γίνεται συγχρονισμός με %s</string>
+  <string name="app_settings_tasks_provider_none">Δεν βρέθηκε συμβατή εφαρμογή εργασιών</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Μη συγχρονισμός επαφών (έλλειψη δικαιωμάτων)</string>
+  <string name="account_caldav_missing_calendar_permissions">Μη συγχρονισμός ημερολογίου (έλλειψη δικαιωμάτων)</string>
+  <string name="account_caldav_missing_tasks_permissions">Μη συγχρονισμός εργασιών (έλλειψη δικαιωμάτων)</string>
+  <string name="account_caldav_missing_permissions">Μη συγχρονισμός ημερολογίου και εργασιών (έλλειψη δικαιωμάτων)</string>
   <string name="account_permissions_action">Δικαιώματα</string>
   <string name="account_no_address_books">Δεν υπάρχουν βιβλία διευθύνσεων (ακόμα).</string>
   <string name="account_no_calendars">Δεν υπάρχουν ημερολόγια (ακόμα).</string>
@@ -191,6 +232,7 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Θα συγχρονίζεται μόνο μέσω %s (απαιτεί ενεργές υπηρεσίες τοποθεσίας)</string>
   <string name="settings_sync_wifi_only_ssids_off">Θα χρησιμοποιηθούν όλες οι συνδέσεις WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">Ονόματα που χωρίζονται με κόμμα (SSIDs) των επιτρεπόμενων δικτύων WiFi (αφήστε κενό για όλους)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Διαχείριση</string>
   <string name="settings_more_info_faq">Περισσότερες πληροφορίες (FAQ)</string>
   <string name="settings_authentication">Πιστοποίηση</string>
   <string name="settings_username">Όνομα χρήστη</string>
@@ -251,13 +293,17 @@
   <string name="collection_properties">Ιδιότητες</string>
   <string name="collection_properties_url">Διεύθυνση (URL):</string>
   <string name="collection_properties_copy_url">Αντιγραφή URL</string>
+  <string name="collection_properties_owner">Ιδιοκτήτης</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Πληροφορίες αποσφαλμάτωσης</string>
+  <string name="debug_info_archive_caption">ZIP αρχείο αρχειοθέτησης</string>
+  <string name="debug_info_archive_share">Διαμοίρασε το αρχείο αρχειοθέτησης</string>
   <string name="debug_info_http_error">Σφάλμα HTTP</string>
   <string name="debug_info_server_error">Σφάλμα διακομιστή</string>
   <string name="debug_info_webdav_error">Σφάλμα WebDAV</string>
   <string name="debug_info_io_error">Σφάλμα I/O</string>
   <string name="debug_info_view_details">Προβολή λεπτομερειών</string>
+  <string name="debug_info_involved_subtitle">Σχετικά με το πρόβλημα</string>
   <string name="debug_info_logs_caption">Ιστορικό</string>
   <string name="debug_info_logs_view">Προβολή ιστορικού</string>
   <!--ExceptionInfoFragment-->
@@ -266,9 +312,15 @@
   <string name="exception_ioexception">Παρουσιάστηκε σφάλμα I/O.</string>
   <string name="exception_show_details">Εμφάνιση λεπτομερειών</string>
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Όνομα χρήστη</string>
+  <string name="webdav_add_mount_password">Κωδικός πρόσβασης</string>
+  <string name="webdav_notification_access">Πρόσβαση σε αρχείο WebDAV</string>
+  <string name="webdav_notification_download">Kαταφόρτωση αρχείου WebDAV</string>
+  <string name="webdav_notification_upload">Ανέβασμα αρχείου WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
   <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>
+  <string name="sync_error_tasks_too_old">Παλιά έκδοση %s</string>
   <string name="sync_error_tasks_required_version">Ελάχιστη απαιτούμενη έκδοση: %1$s</string>
   <string name="sync_error_authentication_failed">Ο έλεγχος ταυτότητας απέτυχε (ελέγξτε τα διαπιστευτήρια σύνδεσης)</string>
   <string name="sync_error_io">Σφάλμα δικτύου ή I/O – %s</string>

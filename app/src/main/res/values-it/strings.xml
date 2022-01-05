@@ -365,6 +365,8 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="webdav_mounts_share_content">Condividi i contenuti</string>
   <string name="webdav_mounts_unmount">Disinstallazioni</string>
   <string name="webdav_add_mount_title">Aggiungi installazioni WedDAV</string>
+  <string name="webdav_mounts_empty">Accedi direttamente ai tuoi file nel cloud aggiungendo un supporto WebDAV!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Leggi il manuale per vedere <a href="%1$s">come funzionano i supporti WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Nome del display</string>
   <string name="webdav_add_mount_url">URL WebDVA</string>
   <string name="webdav_add_mount_url_invalid">URL non valido</string>

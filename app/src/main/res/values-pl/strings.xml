@@ -368,6 +368,8 @@
   <string name="webdav_mounts_share_content">Udostępnij zawartość</string>
   <string name="webdav_mounts_unmount">Odlinkuj</string>
   <string name="webdav_add_mount_title">Dodaj punkt linkowania WebDAV</string>
+  <string name="webdav_mounts_empty">Uzyskaj bezpośredni dostęp do plików w chmurze, dodając montowanie WebDAV!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Zobacz instrukcję obsługi, aby dowiedzieć się, <a href="%1$s">jak działają montowania WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Nazwa wyświetlana</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Błędny URL</string>

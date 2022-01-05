@@ -5,9 +5,12 @@
   <string name="account_invalid">Le compte n’existe plus (désormais)</string>
   <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
   <string name="address_books_authority_title">Carnets d\'adresses</string>
+  <string name="field_required">Ce champs est requis</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
   <string name="share">Partager</string>
+  <string name="database_destructive_migration_title">Base de données corrompue</string>
+  <string name="database_destructive_migration_text">Tous les comptes ont été supprimés localement.</string>
   <string name="notification_channel_debugging">Débogage</string>
   <string name="notification_channel_general">Autres messages importants</string>
   <string name="notification_channel_status">Messages d’état de faible priorité</string>
@@ -69,6 +72,7 @@
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">WiFi SSID autorisations</string>
   <string name="wifi_permissions_intro">Pour pouvoir accéder au nom du WiFi actuel (SSID), ces conditions doivent être remplies :</string>
+  <string name="wifi_permissions_location_permission">Permission de localisation précise</string>
   <string name="wifi_permissions_location_permission_on">Autorisation de localisation accordée</string>
   <string name="wifi_permissions_location_permission_off">Autorisation de localisation refusée</string>
   <string name="wifi_permissions_background_location_permission">Autorisation de localisation en arrière-plan</string>
@@ -103,6 +107,7 @@
   <string name="install_browser">Veuillez installer un navigateur</string>
   <string name="navigation_drawer_settings">Paramètres</string>
   <string name="navigation_drawer_news_updates">Actualités &amp; mises à jour</string>
+  <string name="navigation_drawer_tools">Outils</string>
   <string name="navigation_drawer_external_links">Liens externes</string>
   <string name="navigation_drawer_website">Site Web</string>
   <string name="navigation_drawer_manual">Manuel</string>
@@ -349,6 +354,17 @@
   <string name="exception_ioexception">Une erreur I/O est survenue.</string>
   <string name="exception_show_details">Voir détails</string>
   <!--WebDAV accounts-->
+  <string name="webdav_mounts_quota_used_available">Quota utitlisé : %1$s / disponible : %2$s</string>
+  <string name="webdav_mounts_share_content">Partager le contenu</string>
+  <string name="webdav_add_mount_url">URL WebDAV</string>
+  <string name="webdav_add_mount_url_invalid">URL incorrecte</string>
+  <string name="webdav_add_mount_username">Nom d\'utilisateur</string>
+  <string name="webdav_add_mount_password">Mot de passe</string>
+  <string name="webdav_add_mount_add">Ajouter un point de montage</string>
+  <string name="webdav_add_mount_no_support">Aucun service WebDAV à cette URL</string>
+  <string name="webdav_notification_access">Accès au fichier WebDAV</string>
+  <string name="webdav_notification_download">Téléchargement du fichier WebDAV</string>
+  <string name="webdav_notification_upload">Téléversement du fichier WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Autorisations DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>

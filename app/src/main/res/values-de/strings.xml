@@ -220,6 +220,7 @@
   <string name="login_login">Anmelden</string>
   <string name="login_create_account">Konto anlegen</string>
   <string name="login_account_name">Kontoname</string>
+  <string name="login_account_avoid_apostrophe">Auf manchen Geräten führt die Verwendung von einfachen Anführungszeichen (\') zu Problemen.</string>
   <string name="login_account_name_info">Verwenden Sie Ihre E-Mail-Adresse als Kontonamen, da Android den Kontonamen als ORGANIZER einsetzt. Es kann allerdings keine zwei Konten mit dem gleichen Namen geben.</string>
   <string name="login_account_contact_group_method">Kontaktgruppen-Methode:</string>
   <string name="login_account_name_required">Kontoname wird benötigt</string>

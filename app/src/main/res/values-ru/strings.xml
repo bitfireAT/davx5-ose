@@ -363,22 +363,24 @@
   <string name="exception_ioexception">Произошла ошибка ввода/вывода.</string>
   <string name="exception_show_details">Показать детали</string>
   <!--WebDAV accounts-->
-  <string name="webdav_mounts_title">Соединения WebDAV</string>
+  <string name="webdav_mounts_title">Точки монтирования WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Использованная квота: %1$s / доступно: %2$s</string>
   <string name="webdav_mounts_share_content">Поделиться контентом</string>
-  <string name="webdav_mounts_unmount">Отсоединить</string>
-  <string name="webdav_add_mount_title">Добавить соединение WebDAV</string>
+  <string name="webdav_mounts_unmount">Отмонтировать</string>
+  <string name="webdav_add_mount_title">Добавить точку монтирования WebDAV</string>
+  <string name="webdav_mounts_empty">Прямой доступ к вашим облачным файлам с помощью точки монтирования WebDAV!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Ознакомьтесь с руководством, чтобы узнать <a href="%1$s">как работают точки монтирования WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Отображаемое имя</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Некорректный URL</string>
   <string name="webdav_add_mount_username">Имя пользователя</string>
   <string name="webdav_add_mount_password">Пароль</string>
-  <string name="webdav_add_mount_add">Добавить соединение</string>
+  <string name="webdav_add_mount_add">Добавить точку монтирования</string>
   <string name="webdav_add_mount_no_support">Служба WebDAV отсутствует на данном URL</string>
   <string name="webdav_notification_access">Доступ к файлу WebDAV</string>
   <string name="webdav_notification_download">Загрузка файла WebDAV</string>
   <string name="webdav_notification_upload">Выгрузка файла WebDAV</string>
-  <string name="webdav_provider_root_title">Соединение WebDAV</string>
+  <string name="webdav_provider_root_title">Точка монтирования WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Разрешения DAVx⁵</string>
   <string name="sync_error_permissions_text">Требуются дополнительные разрешения</string>
