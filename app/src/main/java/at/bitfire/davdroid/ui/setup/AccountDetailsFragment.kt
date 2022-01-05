@@ -138,8 +138,10 @@ class AccountDetailsFragment : Fragment() {
 
         val name = MutableLiveData<String>()
         val nameError = MutableLiveData<String>()
+        val showApostropheWarning = MutableLiveData<Boolean>(false)
 
-        fun clearNameError(s: Editable) {
+        fun validateAccountName(s: Editable) {
+            showApostropheWarning.value = s.toString().contains('\'')
             nameError.value = null
         }
 
