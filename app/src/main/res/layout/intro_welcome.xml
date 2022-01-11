@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="android.view.View" />
@@ -20,7 +21,8 @@
             android:src="@mipmap/ic_launcher"
             app:layout_constraintBottom_toTopOf="@id/logoLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="ContentDescription" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/logoLayout"
@@ -39,7 +41,7 @@
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/arial_black"
                 android:lineSpacingMultiplier="1.39"
-                android:text="infomaniak"
+                android:text="@string/infomaniak_intro_welcome_logo_title"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/primaryColor"
                 android:textSize="30sp"
@@ -56,7 +58,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:lineSpacingMultiplier="1.20"
-                android:text="Sync"
+                android:text="@string/infomaniak_intro_welcome_logo_subtitle"
                 android:textColor="@color/infomaniakTextSecondary"
                 android:textSize="25sp"
                 app:layout_constraintBottom_toBottomOf="parent"

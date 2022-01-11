@@ -18,6 +18,8 @@
     <string name="infomaniak_install_button">Install</string>
     <string name="infomaniak_installed_button">Installed</string>
 
+    <string name="infomaniak_intro_welcome_logo_title" translatable="false">infomaniak</string>
+    <string name="infomaniak_intro_welcome_logo_subtitle" translatable="false">Sync</string>
     <string name="infomaniak_intro_welcome_title">Synchronise your contacts and Workspace calendars on your device</string>
     <string name="infomaniak_intro_welcome_subtitle">View your contacts and calendars from your Android devices wherever you are.</string>
     <string name="infomaniak_fragment_tasks_title">Do you want to synchronise your tasks on your device?</string>
