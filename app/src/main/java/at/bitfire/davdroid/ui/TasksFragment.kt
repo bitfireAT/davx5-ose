@@ -62,7 +62,7 @@ class TasksFragment: Fragment() {
                 model.selectPreferredProvider(ProviderName.TasksOrg)
         }
 
-        binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
+//        binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
 
         return binding.root
     }
@@ -97,6 +97,7 @@ class TasksFragment: Fragment() {
 
         val settings = SettingsManager.getInstance(app)
 
+        val showInstallTasks = MutableLiveData<Boolean>() // kSync
         val currentProvider = MutableLiveData<ProviderName>()
         val openTasksInstalled = MutableLiveData<Boolean>()
         val openTasksRequested = MutableLiveData<Boolean>()

@@ -38,7 +38,7 @@
 
     <!-- app theme -->
 
-    <style name="AppTheme.Base" parent="Theme.MaterialComponents.DayNight"/>
+    <style name="AppTheme.Base" parent="Theme.MaterialComponents.Light.DarkActionBar"/>
     <style name="AppTheme" parent="AppTheme.Base">
         <!-- see https://github.com/material-components/material-components-android/blob/master/docs/theming/Color.md for component color names -->
         <item name="colorPrimary">@color/primaryColor</item>
@@ -52,8 +52,10 @@
 
         <item name="colorError">@color/errorColor</item>
 
-        <item name="android:textColorPrimary">@color/primaryTextColor</item>
-        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <item name="android:textColor">@color/infomaniakText</item>
+        <item name="android:textColorHint">@color/infomaniakTextSecondary</item>
+        <item name="android:textColorPrimary">@color/infomaniakTitle</item>
+        <item name="android:textColorSecondary">@color/infomaniakTextSecondary</item>
 
         <item name="android:colorBackground">@color/backgroundColor</item>
     </style>
@@ -63,6 +65,16 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="LoginToolbarTheme" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+    </style>
+
+    <style name="CardViewInfomaniak" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/infomaniakBackgroundCard</item>
+        <item name="cardCornerRadius">@dimen/radiusInfomaniak</item>
+        <item name="cardElevation">0dp</item>
+    </style>
 
     <!-- AddAccountActivity -->
 

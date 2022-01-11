@@ -12,171 +12,142 @@
     <ScrollView
         android:id="@+id/frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?android:attr/colorBackground">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/activity_margin">
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/marginStandardMediumInfomaniak"
+                android:layout_marginTop="42dp"
+                android:src="@drawable/ic_ksync_tasks"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/marginStandardMediumInfomaniak"
+                android:layout_marginVertical="@dimen/marginStandardInfomaniak"
+                android:gravity="center_horizontal"
+                android:text="@string/infomaniak_fragment_tasks_title"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="@color/infomaniakTitle" />
+
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/CardViewInfomaniak"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/marginStandardMediumInfomaniak">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/card_padding">
-
-                    <at.bitfire.davdroid.ui.widget.CropImageView
-                        android:id="@+id/image"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxHeight="@dimen/card_theme_max_height"
-                        app:layout_constraintVertical_chainStyle="packed"
-                        app:layout_constraintVertical_bias="0"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toTopOf="@id/heading"
-                        android:adjustViewBounds="true"
-                        app:srcCompat="@drawable/intro_tasks"
-                        app:verticalOffsetPercent=".55" />
-
-                    <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/start"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintGuide_begin="@dimen/card_padding" />
-                    <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/end"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintGuide_end="@dimen/card_padding" />
+                    android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/heading"
-                        style="@style/TextAppearance.MaterialComponents.Headline6"
+                        android:id="@+id/activateTasksHeading"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:text="@string/intro_tasks_title"
-                        android:textAlignment="viewStart"
-                        app:layout_constraintBottom_toTopOf="@id/text1"
-                        app:layout_constraintEnd_toStartOf="@id/end"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/image" />
+                        android:layout_marginStart="@dimen/marginStandardInfomaniak"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/infomaniak_fragment_tasks_text"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textColor="@color/infomaniakTitle"
+                        app:layout_constraintBottom_toBottomOf="@id/activateTasksSwitch"
+                        app:layout_constraintEnd_toStartOf="@id/activateTasksSwitch"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/activateTasksSwitch" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/activateTasksSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="4dp"
+                        android:layout_marginEnd="10dp"
+                        android:checked="@={model.showInstallTasks}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/activateTasksHeading"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/CardViewInfomaniak"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/marginStandardMediumInfomaniak"
+                android:layout_marginVertical="@dimen/marginStandardInfomaniak"
+                android:visibility="@{model.showInstallTasks ? View.VISIBLE : View.GONE}">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
                     <TextView
                         android:id="@+id/text1"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:text="@string/intro_tasks_text1"
-                        android:textAlignment="viewStart"
-                        app:layout_constraintBottom_toTopOf="@id/openTasksRadio"
-                        app:layout_constraintEnd_toEndOf="@id/end"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/heading" />
+                        android:layout_marginHorizontal="@dimen/marginStandardInfomaniak"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/infomaniak_fragment_tasks_explanation"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                    <RadioButton
-                        android:id="@+id/openTasksRadio"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/openTasksLogo"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_marginStart="@dimen/marginStandardInfomaniak"
+                        android:layout_marginTop="@dimen/marginStandardMediumInfomaniak"
+                        android:layout_marginBottom="@dimen/marginStandardInfomaniak"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/text1">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_opentasks"
+                            tools:ignore="ContentDescription" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        android:id="@+id/text2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:checked="@={model.openTasksSelected}"
-                        android:clickable="@{model.openTasksInstalled}"
+                        android:layout_marginStart="@dimen/marginStandardMediumInfomaniak"
                         android:text="@string/intro_tasks_opentasks"
-                        android:textAlignment="viewStart"
-                        app:layout_constraintBottom_toTopOf="@id/tasksOrgRadio"
-                        app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/text1" />
-                    <TextView
-                        android:id="@+id/openTasksInfo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/openTasksRadio"
-                        app:layout_constraintBottom_toTopOf="@id/tasksOrgRadio"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/end"
-                        style="@style/TextAppearance.MaterialComponents.Body2"
-                        app:html="@{@string/intro_tasks_opentasks_info}"/>
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/openTasksSwitch"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        app:layout_constraintBottom_toBottomOf="@id/openTasksLogo"
+                        app:layout_constraintEnd_toStartOf="@+id/installOpenTasksButton"
+                        app:layout_constraintStart_toEndOf="@id/openTasksLogo"
+                        app:layout_constraintTop_toTopOf="@id/openTasksLogo" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/installOpenTasksButton"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="@={model.openTasksRequested}"
-                        android:clickable="@{!model.openTasksInstalled}"
-                        app:layout_constraintTop_toTopOf="@id/openTasksRadio"
-                        app:layout_constraintBottom_toBottomOf="@id/openTasksRadio"
-                        app:layout_constraintStart_toEndOf="@id/openTasksRadio"
-                        app:layout_constraintEnd_toEndOf="@id/end"/>
-
-                    <RadioButton
-                        android:id="@+id/tasksOrgRadio"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:checked="@={model.tasksOrgSelected}"
-                        android:clickable="@{model.tasksOrgInstalled}"
-                        android:text="@string/intro_tasks_tasks_org"
-                        android:textAlignment="viewStart"
-                        app:layout_constraintBottom_toTopOf="@id/tasksOrgInfo"
-                        app:layout_constraintEnd_toStartOf="@id/tasksOrgSwitch"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/openTasksInfo" />
-                    <TextView
-                        android:id="@+id/tasksOrgInfo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/tasksOrgRadio"
-                        app:layout_constraintBottom_toTopOf="@id/dontShow"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/end"
-                        style="@style/TextAppearance.MaterialComponents.Body2"
-                        app:html="@{@string/intro_tasks_tasks_org_info}" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/tasksOrgSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="@={model.tasksOrgRequested}"
-                        android:clickable="@{!model.tasksOrgInstalled}"
-                        app:layout_constraintTop_toTopOf="@id/tasksOrgRadio"
-                        app:layout_constraintBottom_toBottomOf="@id/tasksOrgRadio"
-                        app:layout_constraintStart_toEndOf="@id/tasksOrgRadio"
-                        app:layout_constraintEnd_toEndOf="@id/end"/>
-
-                    <CheckBox
-                        android:id="@+id/dontShow"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:checked="@={model.dontShow}"
-                        android:text="@string/intro_tasks_dont_show"
-                        android:textAlignment="viewStart"
-                        android:visibility="@{model.openTasksInstalled ? View.GONE : View.VISIBLE}"
-                        app:layout_constraintEnd_toEndOf="@id/end"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/tasksOrgInfo" />
+                        android:layout_marginEnd="@dimen/marginStandardMediumInfomaniak"
+                        android:drawableEnd="@{!model.openTasksInstalled ? null : @drawable/ic_check_circle}"
+                        android:enabled="@{!model.openTasksInstalled}"
+                        android:text="@{!model.openTasksInstalled ? @string/infomaniak_install_button : @string/infomaniak_installed_button}"
+                        app:layout_constraintBottom_toBottomOf="@id/text2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/text2" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:id="@+id/infoLeaveUnchecked"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/intro_leave_unchecked"
-                android:textAlignment="viewStart" />
 
         </LinearLayout>
 
