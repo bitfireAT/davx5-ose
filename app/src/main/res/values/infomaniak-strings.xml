@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="infomaniak_login_initialization">Initialization …</string>
+    <string name="infomaniak_login_retrieving_account_information">Retrieving account information…</string>
+    <string name="infomaniak_login_generating_an_application_password">Generating an application password…</string>
+    <string name="infomaniak_login_finalising">Finalising…</string>
+
+    <string name="infomaniak_account_welcome_add_first_account">Click on + to add a WorkSpace account.</string>
+
+    <string name="infomaniak_navigation_drawer_manual">Manual (Original)</string>
+
+    <string name="infomaniak_startup_battery_optimization">Background synchronisation</string>
+    <string name="infomaniak_startup_battery_optimization_message">For automatic background synchronisation of your contacts and calendars, it is necessary to disable the Android \"Battery optimisation\" option for Infomaniak Sync.</string>
+
+    <string name="infomaniak_about_infomaniak_copyright"><![CDATA[Infomaniak Sync enables you to sync the contacts and calendars in WorkSpace, Infomaniak\'s webmail service. <br>This application is a fork of the OpenSource <a href=\'https://www.davx5.com/\'>DAVx⁵</a> solution.]]></string>
+
+    <string name="infomaniak_install_button">Install</string>
+    <string name="infomaniak_installed_button">Installed</string>
+
+    <string name="infomaniak_intro_welcome_title">Synchronise your contacts and Workspace calendars on your device</string>
+    <string name="infomaniak_intro_welcome_subtitle">View your contacts and calendars from your Android devices wherever you are.</string>
+    <string name="infomaniak_fragment_tasks_title">Do you want to synchronise your tasks on your device?</string>
+    <string name="infomaniak_fragment_tasks_text">I want to synchronise my tasks</string>
+    <string name="infomaniak_fragment_tasks_explanation">To synchronise your tasks, you need to install the following application</string>
+    <string name="infomaniak_fragment_permissions_autoreset_heading">Remove permissions if app isn’t used</string>
+    <string name="infomaniak_fragment_permissions_autoreset_info">If this option is enabled, permissions will be deleted after a while and synchronisation will no longer work.</string>
+    <string name="infomaniak_fragment_battery_heading">Allow the application to run in the background</string>
+    <string name="infomaniak_fragment_battery_autostart_text">Your device is probably blocking synchronisation in the background despite the above option being enabled. Please follow this guide to change your synchronisation in the background settings. Otherwise, you may need to manually synchronise your data from the application.</string>
+    <string name="infomaniak_fragment_battery_autostart_button">View the guide</string>
+    <string name="infomaniak_fragment_battery_autostart_dontshow">I’ve taken the appropriate steps</string>
+
+</resources>

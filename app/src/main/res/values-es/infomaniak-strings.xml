@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="infomaniak_login_initialization">Inicialización …</string>
+    <string name="infomaniak_login_retrieving_account_information">Recuperando información de la cuenta …</string>
+    <string name="infomaniak_login_generating_an_application_password">Generando una contraseña de aplicación …</string>
+    <string name="infomaniak_login_finalising">Finalización …</string>
+
+    <string name="infomaniak_account_welcome_add_first_account">Pulsa + para agregar una cuenta de WorkSpace.</string>
+
+    <string name="infomaniak_navigation_drawer_manual">Manual (Original)</string>
+
+    <string name="infomaniak_startup_battery_optimization">Sincronización en segundo plano</string>
+    <string name="infomaniak_startup_battery_optimization_message">Para sincronizar automáticamente tus contactos y agendas en segundo plano, es necesario desactivar la opción "Optimización de la batería" de Android para Infomaniak Sync.</string>
+
+    <string name="infomaniak_about_infomaniak_copyright"><![CDATA[Infomaniak Sync permite sincronizar los contactos y los calendarios de WorkSpace, el webmail del proveedor de alojamiento Infomaniak.<br>Esta aplicación es un fork de la solución OpenSource <a href=\'https://www.davx5.com/\'>DAVx⁵</a>.]]></string>
+
+    <string name="infomaniak_install_button">Instalar</string>
+    <string name="infomaniak_installed_button">Instalado</string>
+
+    <string name="infomaniak_intro_welcome_title">Sincronizar tus contactos y tus calendarios Workspace en tu dispositivo</string>
+    <string name="infomaniak_intro_welcome_subtitle">Consulta tus contactos y calendarios allá donde estés directamente desde tus dispositivos Android.</string>
+    <string name="infomaniak_fragment_tasks_title">¿Deseas sincronizar tus tareas en el dispositivo?</string>
+    <string name="infomaniak_fragment_tasks_text">Deseo sincronizar mis tareas</string>é
+    <string name="infomaniak_fragment_tasks_explanation">Para sincronizar tus tareas, debes instalar la siguiente aplicación</string>
+    <string name="infomaniak_fragment_permissions_autoreset_heading">Quitar permisos si la aplicación no se utiliza</string>
+    <string name="infomaniak_fragment_permissions_autoreset_info">Si está activada esta opción, se eliminarán las autorizaciones tras un tiempo y la sincronización ya no funcionará.</string>
+    <string name="infomaniak_fragment_battery_heading">Autorizar el funcionamiento en segundo plano de la aplicación</string>
+    <string name="infomaniak_fragment_battery_autostart_text">Probablemente, tu dispositivo está bloqueando la sincronización en segundo plano, a pesar de tener la opción anterior activada. Sigue esta guía para modificar tus parámetros de sincronización en segundo plano. Si no, podrías tener que sincronizar manualmente tus datos desde la aplicación.</string>
+    <string name="infomaniak_fragment_battery_autostart_button">Consultar la guía (inglés)</string>
+    <string name="infomaniak_fragment_battery_autostart_dontshow">He hecho lo necesario</string>
+
+</resources>

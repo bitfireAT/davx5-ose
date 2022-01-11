@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.intro
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.R
@@ -52,7 +53,8 @@ class IntroActivity: AppIntro2() {
             if (mode == ShowMode.SHOW || (mode == ShowMode.SHOW_NOT_ALONE && showAll))
                 addSlide(factory.create())
 
-        setBarColor(ResourcesCompat.getColor(resources, R.color.primaryDarkColor, null))
+        setIndicatorColor(ContextCompat.getColor(this, R.color.primaryColor), ContextCompat.getColor(this, R.color.grey700))
+//        setBarColor(ResourcesCompat.getColor(resources, R.color.primaryDarkColor, null))
         isSkipButtonEnabled = false
     }
 
