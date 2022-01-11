@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Account inesistente (o cancellato)</string>
-  <string name="account_title_address_book">Rubrica DAVx⁵</string>
+  <string name="account_title_address_book">Rubrica kSync</string>
   <string name="address_books_authority_title">Rubriche</string>
   <string name="field_required">Questo campo è necessario</string>
   <string name="help">Aiuto</string>
@@ -116,7 +116,7 @@
   <string name="navigation_drawer_donate">Donazione</string>
   <string name="navigation_drawer_privacy_policy">Politica sulla riservatezza</string>
   <string name="account_list_no_internet">Nessuna connessione Internet. Android non eseguirà la sincronizzazione.</string>
-  <string name="account_list_empty">Benvenuto a DAVx⁵!\n\nÈ ora possibile aggiungere account CalDAV/CardDAV.</string>
+  <string name="account_list_empty">Benvenuto a kSync!\n\nÈ ora possibile aggiungere account CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">La sincronizzazione automatica dell\'intero sistema è disabilitata</string>
   <string name="accounts_global_sync_enable">Attiva</string>
   <string name="accounts_sync_all">Sincronizzazione di tutti gli account</string>
@@ -379,7 +379,7 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="webdav_notification_upload">Caricare file WebDAV</string>
   <string name="webdav_provider_root_title">Installazione WebDAV</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">Autorizzazioni DAVx⁵</string>
+  <string name="sync_error_permissions">Autorizzazioni kSync</string>
   <string name="sync_error_permissions_text">Autorizzazioni addizionali richieste</string>
   <string name="sync_error_tasks_too_old">%s troppo vecchio</string>
   <string name="sync_error_tasks_required_version">Versione minima richiesta %1$s</string>
@@ -394,6 +394,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="sync_invalid_task">Attività non valida ricevuta dal server</string>
   <string name="sync_invalid_resources_ignoring">Una o più risorse non valide ignorate</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: sicurezza della connessione</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ ha trovato un certificato sconosciuto. Ritenerlo affidabile?</string>
+  <string name="certificate_notification_connection_security">kSync: sicurezza della connessione</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync ha trovato un certificato sconosciuto. Ritenerlo affidabile?</string>
 </resources>

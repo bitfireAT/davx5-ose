@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Konto nicht (mehr) vorhanden</string>
-  <string name="account_title_address_book">DAVx⁵-Adressbuch</string>
+  <string name="account_title_address_book">kSync-Adressbuch</string>
   <string name="address_books_authority_title">Adressbücher</string>
   <string name="field_required">Feld wird benötigt</string>
   <string name="help">Hilfe</string>
@@ -379,7 +379,7 @@
   <string name="webdav_notification_upload">WebDAV-Upload</string>
   <string name="webdav_provider_root_title">WebDAV-Zugang</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵-Berechtigungen</string>
+  <string name="sync_error_permissions">kSync-Berechtigungen</string>
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
   <string name="sync_error_tasks_too_old">%s zu alt</string>
   <string name="sync_error_tasks_required_version">Benötigte Mindestversion: %1$s</string>
@@ -394,6 +394,6 @@
   <string name="sync_invalid_task">Ungültige Aufgabe vom Server erhalten</string>
   <string name="sync_invalid_resources_ignoring">Eine/mehrere ungültige Ressourcen ignoriert</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Verbindungssicherheit</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ ist auf ein unbekanntes Zertifikat gestoßen. Ist dieses vertrauenswürdig?</string>
+  <string name="certificate_notification_connection_security">kSync: Verbindungssicherheit</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync ist auf ein unbekanntes Zertifikat gestoßen. Ist dieses vertrauenswürdig?</string>
 </resources>
