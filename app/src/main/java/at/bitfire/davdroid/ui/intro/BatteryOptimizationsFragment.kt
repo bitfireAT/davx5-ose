@@ -53,18 +53,21 @@ class BatteryOptimizationsFragment: Fragment() {
                        android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                        Uri.parse("package:" + BuildConfig.APPLICATION_ID)
                ), REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-        })
-        binding.batteryText.text = getString(R.string.intro_battery_text, getString(R.string.app_name))
 
-        binding.autostartHeading.text = getString(R.string.intro_autostart_title, WordUtils.capitalize(Build.MANUFACTURER))
-        binding.autostartText.setText(R.string.intro_autostart_text)
+            model.showManufacturerWarning.value = shouldBeWhitelisted && Model.manufacturerWarning // kSync
+        })
+//        binding.batteryText.text = getString(R.string.intro_battery_text, getString(R.string.app_name))
+
+//        binding.autostartHeading.text = getString(R.string.intro_autostart_title, WordUtils.capitalize(Build.MANUFACTURER))
+//        binding.autostartText.setText(R.string.intro_autostart_text)
         binding.autostartMoreInfo.setOnClickListener {
-            UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
-                    .appendPath("faq").appendPath("synchronization-is-not-run-as-expected")
-                    .appendQueryParameter("manufacturer", Build.MANUFACTURER.lowercase(Locale.ROOT)).build())
+//            UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
+//                    .appendPath("faq").appendPath("synchronization-is-not-run-as-expected")
+//                    .appendQueryParameter("manufacturer", Build.MANUFACTURER.lowercase(Locale.ROOT)).build())
+            UiUtils.launchUri(requireActivity(), Uri.parse("https://dontkillmyapp.com/")) // kSync
         }
 
-        binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
+//        binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
 
         return binding.root
     }
@@ -133,6 +136,7 @@ class BatteryOptimizationsFragment: Fragment() {
 
         val shouldBeWhitelisted = MutableLiveData<Boolean>()
         val isWhitelisted = MutableLiveData<Boolean>()
+        val showManufacturerWarning = MutableLiveData<Boolean>() // kSync
         val dontShowBattery = object: ObservableBoolean() {
             override fun get() = settings.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) == false
             override fun set(dontShowAgain: Boolean) {

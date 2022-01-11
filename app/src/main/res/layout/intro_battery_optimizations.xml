@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -10,19 +11,37 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?android:attr/colorBackground"
         android:paddingBottom="@dimen/appintro2_bottombar_height">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/activity_margin">
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
 
-            <com.google.android.material.card.MaterialCardView
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:contentPadding="@dimen/card_padding">
+                android:layout_marginHorizontal="@dimen/marginStandardMediumInfomaniak"
+                android:layout_marginTop="42dp"
+                android:src="@drawable/ic_ksync_battery_optimizations"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/marginStandardMediumInfomaniak"
+                android:layout_marginVertical="@dimen/marginStandardInfomaniak"
+                android:gravity="center_horizontal"
+                android:text="@string/infomaniak_startup_battery_optimization"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="@color/infomaniakTitle" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/CardViewInfomaniak"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/marginStandardMediumInfomaniak">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -30,128 +49,113 @@
 
                     <TextView
                         android:id="@+id/batteryHeading"
-                        style="@style/TextAppearance.MaterialComponents.Headline6"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/intro_battery_title"
-                        android:textAlignment="viewStart"
-                        app:layout_constraintBottom_toTopOf="@id/batteryStatus"
+                        android:layout_marginStart="@dimen/marginStandardInfomaniak"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/infomaniak_fragment_battery_heading"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textColor="@color/infomaniakTitle"
                         app:layout_constraintEnd_toStartOf="@id/batterySwitch"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/batteryStatus"
-                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="@{model.whitelisted ? @string/intro_battery_whitelisted : @string/intro_battery_not_whitelisted}"
-                        android:textAlignment="viewStart"
-                        android:textColor="?android:attr/textColorSecondary"
-                        app:layout_constraintBottom_toTopOf="@id/batteryText"
-                        app:layout_constraintEnd_toStartOf="@id/batterySwitch"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/batteryHeading" />
+                        app:layout_constraintTop_toTopOf="@id/batterySwitch" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/batterySwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="10dp"
                         android:checked="@={model.shouldBeWhitelisted}"
                         android:clickable="@{!model.whitelisted}"
                         android:enabled="@{!model.dontShowBattery}"
-                        app:layout_constraintBottom_toBottomOf="@id/batteryStatus"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/batteryHeading"
-                        app:layout_constraintTop_toTopOf="@id/batteryHeading" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/batteryText"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:text="@string/intro_battery_text"
-                        android:textAlignment="viewStart"
-                        app:layout_constraintTop_toBottomOf="@id/batteryStatus" />
-
-                    <CheckBox
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:checked="@={model.dontShowBattery}"
-                        android:enabled="@{!model.isWhitelisted()}"
-                        android:text="@string/intro_battery_dont_show"
-                        android:textAlignment="viewStart"
-                        android:visibility="@{model.isWhitelisted() ? View.GONE : View.VISIBLE}"
-                        app:layout_constraintTop_toBottomOf="@id/batteryText" />
+                        android:layout_marginHorizontal="@dimen/marginStandardInfomaniak"
+                        android:layout_marginTop="@dimen/marginStandardMediumInfomaniak"
+                        android:layout_marginBottom="@dimen/marginStandardInfomaniak"
+                        android:text="@string/infomaniak_startup_battery_optimization_message"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/batteryHeading" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/CardViewInfomaniak"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:visibility="@{model.Companion.manufacturerWarning ? View.VISIBLE : View.GONE}"
-                app:contentPadding="@dimen/card_padding">
+                android:layout_marginVertical="@dimen/marginStandardInfomaniak"
+                android:layout_marginStart="@dimen/marginStandardMediumInfomaniak"
+                android:layout_marginEnd="@dimen/marginStandardMediumInfomaniak"
+                android:visibility="@{model.showManufacturerWarning ? View.VISIBLE : View.GONE}">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/autostartHeading"
-                        style="@style/TextAppearance.MaterialComponents.Headline6"
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/warning"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/intro_autostart_title"
-                        android:textAlignment="viewStart"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_margin="@dimen/marginStandardInfomaniak"
+                        android:src="@drawable/ic_baseline_warning"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@android:color/holo_red_light"
+                        tools:ignore="ContentDescription" />
 
                     <TextView
                         android:id="@+id/autostartText"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:layout_marginBottom="8dp"
-                        android:text="@string/intro_autostart_text"
-                        android:textAlignment="viewStart"
-                        app:layout_constraintBottom_toTopOf="@id/autostartMoreInfo"
-                        app:layout_constraintTop_toBottomOf="@id/autostartHeading" />
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="@dimen/marginStandardInfomaniak"
+                        android:text="@string/infomaniak_fragment_battery_autostart_text"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/warning"
+                        app:layout_constraintTop_toTopOf="@id/warning" />
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/autostartMoreInfo"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/intro_more_info"
-                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/infomaniak_fragment_battery_autostart_button"
+                        app:layout_constrainedWidth="true"
                         app:layout_constraintBottom_toTopOf="@id/autostartDontShow"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/warning"
                         app:layout_constraintTop_toBottomOf="@id/autostartText" />
 
                     <CheckBox
                         android:id="@+id/autostartDontShow"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/marginStandardMediumInfomaniak"
                         android:checked="@={model.dontShowAutostart}"
-                        android:text="@string/intro_autostart_dont_show"
-                        android:textAlignment="viewStart"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="@string/infomaniak_fragment_battery_autostart_dontshow"
+                        android:textColor="@color/infomaniakTitle"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/autostartMoreInfo"
                         app:layout_constraintTop_toBottomOf="@id/autostartMoreInfo" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:id="@+id/infoLeaveUnchecked"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/intro_leave_unchecked"
-                android:textAlignment="viewStart" />
 
         </LinearLayout>
 
