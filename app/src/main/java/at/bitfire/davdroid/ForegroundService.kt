@@ -52,14 +52,16 @@ class ForegroundService : Service() {
          * Starts the foreground service when enabled in the app settings and applicable.
          */
         fun startIfActive(context: Context) {
-            if (foregroundServiceActivated(context) && batteryOptimizationWhitelisted(context)) {
-                val serviceIntent = Intent(ACTION_FOREGROUND, null, context, ForegroundService::class.java)
-                if (Build.VERSION.SDK_INT >= 26)
-                    context.startForegroundService(serviceIntent)
-                else
-                    context.startService(serviceIntent)
-            } else
-                notifyBatteryOptimization(context)
+            if (foregroundServiceActivated(context)) {
+                if (batteryOptimizationWhitelisted(context)) {
+                    val serviceIntent = Intent(ACTION_FOREGROUND, null, context, ForegroundService::class.java)
+                    if (Build.VERSION.SDK_INT >= 26)
+                        context.startForegroundService(serviceIntent)
+                    else
+                        context.startService(serviceIntent)
+                } else
+                    notifyBatteryOptimization(context)
+            }
         }
 
         private fun notifyBatteryOptimization(context: Context) {
