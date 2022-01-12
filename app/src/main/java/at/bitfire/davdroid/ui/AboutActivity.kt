@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui
 
 import android.app.Application
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Spanned
@@ -75,7 +76,7 @@ class AboutActivity: AppCompatActivity() {
     }
 
     fun showWebsite(item: MenuItem) {
-        UiUtils.launchUri(this, App.homepageUrl(this))
+        UiUtils.launchUri(this, Uri.parse("https://www.infomaniak.com"))
     }
 
 
@@ -127,6 +128,10 @@ class AboutActivity: AppCompatActivity() {
             binding.appName.setText(R.string.app_name)
             binding.appVersion.text = getString(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
             binding.buildTime.text = getString(R.string.about_build_date, SimpleDateFormat.getDateInstance().format(BuildConfig.buildTime))
+
+            binding.infomaniakCopyright.isClickable = true
+            binding.infomaniakCopyright.movementMethod = LinkMovementMethod.getInstance()
+            binding.infomaniakCopyright.text = HtmlCompat.fromHtml(getString(R.string.infomaniak_about_infomaniak_copyright), HtmlCompat.FROM_HTML_MODE_LEGACY)
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 binding.icon.setImageDrawable(resources.getDrawableForDensity(R.mipmap.ic_launcher, DisplayMetrics.DENSITY_XXXHIGH, null))

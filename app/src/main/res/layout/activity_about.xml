@@ -20,7 +20,7 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TabLayout.Colored" />
+            style="@style/Widget.MaterialComponents.TabLayout.PrimarySurface" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

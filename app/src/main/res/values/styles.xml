@@ -22,7 +22,7 @@
     <color name="primaryColor">#0098FF</color>
     <color name="primaryLightColor">#aee571</color>
     <color name="primaryDarkColor">#FF0079CC</color>
-    <color name="colorOnPrimary">@android:color/black</color>
+    <color name="colorOnPrimary">@android:color/white</color>
 
     <color name="secondaryColor">#0098FF</color>
     <color name="secondaryLightColor">#ff9e40</color>
