@@ -2,7 +2,7 @@
 <resources>
 
     <color name="colorOnPrimary">@android:color/white</color>
-    <color name="colorOnSecondary">@android:color/black</color>
+<!--    <color name="colorOnSecondary">@android:color/black</color> So that the FAB plus icon matches color with kDrive -->
 
     <color name="primaryTextColor">@android:color/white</color>
     <color name="secondaryTextColor">@color/grey100</color>
