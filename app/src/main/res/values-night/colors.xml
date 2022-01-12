@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <color name="appintro_background_color" tools:override="true">@color/infomaniakBackground</color>
+    <color name="appintro_default_fab_background_color" tools:override="true">@color/primaryColor</color>
+    <color name="appintro_ripple_color" tools:override="true">@color/infomaniakText</color>
+    <color name="infomaniakBackground">#131415</color>
+    <color name="infomaniakBackgroundCard">#2D2E30</color>
+    <color name="infomaniakText">#9E9E9E</color>
+    <color name="infomaniakTextSecondary">#FFFFFF</color>
+    <color name="infomaniakTitle">#FFFFFF</color>
+
+</resources>
