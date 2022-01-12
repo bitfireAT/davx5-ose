@@ -77,7 +77,7 @@ class App: Application(), Thread.UncaughtExceptionHandler {
             AccountSettings.repairSyncIntervals(this)
 
             // foreground service (possible workaround for devices which prevent DAVx5 from being started)
-            ForegroundService.startIfEnabled(this)
+            ForegroundService.startIfActive(this)
         }
     }
 

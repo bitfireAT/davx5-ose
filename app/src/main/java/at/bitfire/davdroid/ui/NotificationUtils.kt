@@ -23,6 +23,7 @@ object NotificationUtils {
     const val NOTIFY_REFRESH_COLLECTIONS = 2
     const val NOTIFY_FOREGROUND = 3
     const val NOTIFY_DATABASE_CORRUPTED = 4
+    const val NOTIFY_BATTERY_OPTIMIZATION = 5
     const val NOTIFY_SYNC_ERROR = 10
     const val NOTIFY_INVALID_RESOURCE = 11
     const val NOTIFY_WEBDAV_ACCESS = 12
