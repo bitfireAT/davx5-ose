@@ -38,7 +38,7 @@
 
     <!-- app theme -->
 
-    <style name="AppTheme.Base" parent="Theme.MaterialComponents.Light.DarkActionBar"/>
+    <style name="AppTheme.Base" parent="Theme.MaterialComponents.DayNight.DarkActionBar"/>
     <style name="AppTheme" parent="AppTheme.Base">
         <!-- see https://github.com/material-components/material-components-android/blob/master/docs/theming/Color.md for component color names -->
         <item name="colorPrimary">@color/primaryColor</item>
