@@ -27,9 +27,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:progressTint="?attr/colorOnSecondary"
+                android:progressTint="?attr/colorPrimary"
                 android:indeterminate="true"
-                android:indeterminateTint="?attr/colorOnSecondary"/>
+                android:indeterminateTint="?attr/colorPrimary"/>
 
             <ImageView
                 android:layout_width="48dp"
@@ -37,8 +37,9 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                app:tint="?attr/colorOnSecondary"
-                app:srcCompat="@drawable/ic_account_circle_white" />
+                app:tint="@color/primaryTextColor"
+                app:srcCompat="@drawable/ic_account_circle_white"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/account_name"
@@ -49,7 +50,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textColor="?attr/colorOnSecondary"
+                android:textColor="@color/infomaniakText"
                 tools:text="Account Name"/>
 
         </LinearLayout>

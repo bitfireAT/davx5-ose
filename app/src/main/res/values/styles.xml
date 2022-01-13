@@ -92,6 +92,12 @@
 
     <!-- widgets -->
 
-    <color name="cardview_background">@color/secondaryLightColor</color>
+    <color name="cardview_background">@color/infomaniakBackgroundCard</color>
+
+    <!-- kSync -->
+
+    <style name="progressbar_white" parent="@style/Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@android:color/white</item>
+    </style>
 
 </resources>
