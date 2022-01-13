@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:key="sync"
@@ -45,7 +46,9 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/settings_authentication">
+    <!-- kSync -->
+    <PreferenceCategory android:title="@string/settings_authentication"
+        app:isPreferenceVisible="false">
 
         <EditTextPreference
             android:key="@string/settings_username_key"
