@@ -26,7 +26,7 @@
                 android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TabLayout.Colored" />
+                style="@style/Widget.MaterialComponents.TabLayout.PrimarySurface" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -46,6 +46,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:tooltipText="@string/account_synchronize_now"
-        app:srcCompat="@drawable/ic_sync" />
+        app:srcCompat="@drawable/ic_sync"
+        android:contentDescription="@string/account_synchronize_now" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
