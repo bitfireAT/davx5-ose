@@ -8,7 +8,9 @@
     <item android:id="@+id/properties"
         android:title="@string/collection_properties"/>
 
+    <!--kSync-->
     <item android:id="@+id/delete_collection"
-        android:title="@string/delete_collection"/>
+        android:title="@string/delete_collection"
+        android:visible="false"/>
 
 </menu>

@@ -243,7 +243,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                         isVisible = false
                 }
             }
-            popup.menu.findItem(R.id.delete_collection).isVisible = item.privUnbind
+            popup.menu.findItem(R.id.delete_collection).isVisible = false //kSync
 
             popup.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
