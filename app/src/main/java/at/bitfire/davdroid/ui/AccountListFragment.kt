@@ -16,6 +16,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.*
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
@@ -29,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.DavUtils.SyncStatus
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.StorageLowReceiver
 import at.bitfire.davdroid.databinding.AccountListBinding
 import at.bitfire.davdroid.databinding.AccountListItemBinding
 import at.bitfire.davdroid.ui.account.AccountActivity
@@ -50,9 +52,23 @@ class AccountListFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        model.networkAvailable.observe(viewLifecycleOwner, { networkAvailable ->
+        model.networkAvailable.observe(viewLifecycleOwner) { networkAvailable ->
             binding.noNetworkInfo.visibility = if (networkAvailable) View.GONE else View.VISIBLE
-        })
+        }
+        binding.manageConnections.setOnClickListener {
+            val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
+            if (intent.resolveActivity(requireActivity().packageManager) != null)
+                startActivity(intent)
+        }
+
+        StorageLowReceiver.getInstance(requireActivity()).storageLow.observe(viewLifecycleOwner) { storageLow ->
+            binding.lowStorageInfo.visibility = if (storageLow) View.VISIBLE else View.GONE
+        }
+        binding.manageStorage.setOnClickListener {
+            val intent = Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
+            if (intent.resolveActivity(requireActivity().packageManager) != null)
+                startActivity(intent)
+        }
 
         val accountAdapter = AccountAdapter(requireActivity())
         binding.list.apply {
