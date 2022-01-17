@@ -16,6 +16,7 @@
     <color name="background">#F4F6FD</color>
     <color name="backgroundCardview">@color/appBar</color>
     <color name="backgroundSecondary">#242424</color>
-    <color name="popupRipple">#42FFFFFF</color>
+    <color name="iconColor">#88969F</color>
     <color name="popupText">#FFFFFF</color>
+    <color name="ripple">#33ffffff</color>
 </resources>

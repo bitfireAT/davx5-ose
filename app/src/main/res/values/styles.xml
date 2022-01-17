@@ -60,6 +60,7 @@
         <item name="actionBarPopupTheme">@style/PopupThemeInfomaniak</item>
         <item name="actionBarStyle">@style/ActionBarInfomaniak</item>
         <item name="android:colorBackground">@color/backgroundColor</item>
+        <item name="colorControlHighlight">@color/ripple</item>
         <item name="popupTheme">@style/PopupThemeInfomaniak</item>
     </style>
 
@@ -124,6 +125,13 @@
         <item name="android:buttonTint">@color/checkbox_color</item>
         <item name="android:textColor">@color/popupText</item>
         <item name="background">@drawable/background_popup</item>
-        <item name="colorControlHighlight">@color/popupRipple</item>
+        <item name="colorControlHighlight">@color/ripple</item>
+    </style>
+
+    <!-- kSync -->
+    <style name="DrawerThemeInfomaniak">
+        <item name="android:background">@color/backgroundCardview</item>
+        <item name="itemIconTint">@color/iconColor</item>
+        <item name="itemTextColor">@color/infomaniakTitle</item>
     </style>
 </resources>

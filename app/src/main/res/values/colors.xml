@@ -16,6 +16,7 @@
     <color name="background">#131415</color>
     <color name="backgroundCardview">#FFFFFF</color>
     <color name="backgroundSecondary">#EBEEFB</color>
-    <color name="popupRipple">#42000000</color>
+    <color name="iconColor">#85A2B6</color>
     <color name="popupText">#333333</color>
+    <color name="ripple">#1f000000</color>
 </resources>
