@@ -11,4 +11,11 @@
     <color name="infomaniakTextSecondary">#9F9F9F</color>
     <color name="infomaniakTitle">#303030</color>
 
+    <color name="appBar">@color/primaryColor</color>
+    <color name="appBarTextColor">@color/colorOnPrimary</color>
+    <color name="background">#131415</color>
+    <color name="backgroundCardview">#FFFFFF</color>
+    <color name="backgroundSecondary">#EBEEFB</color>
+    <color name="popupRipple">#42000000</color>
+    <color name="popupText">#333333</color>
 </resources>

@@ -20,13 +20,16 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:popupTheme="?attr/actionBarPopupTheme" />
+                app:popupTheme="?attr/actionBarPopupTheme"
+                style="@style/ActionBarInfomaniak"
+                tools:menu="@menu/carddav_actions"
+                tools:title="Title" />
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TabLayout.PrimarySurface" />
+                style="@style/TabsLayoutInfomaniak" />
 
         </com.google.android.material.appbar.AppBarLayout>
 

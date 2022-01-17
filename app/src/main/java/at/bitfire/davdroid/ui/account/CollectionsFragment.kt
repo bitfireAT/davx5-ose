@@ -228,7 +228,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
         override fun onClick(anchor: View) {
             val fragmentManager = (anchor.context as AppCompatActivity).supportFragmentManager
-            val popup = PopupMenu(anchor.context, anchor, Gravity.RIGHT)
+            val wrapper: Context = ContextThemeWrapper(anchor.context, R.style.PopupThemeInfomaniak) // kSync
+            val popup = PopupMenu(wrapper, anchor, Gravity.RIGHT)
             popup.inflate(R.menu.account_collection_operations)
 
             with(popup.menu.findItem(R.id.force_read_only)) {

@@ -21,7 +21,7 @@
 
     <color name="primaryColor">#0098FF</color>
     <color name="primaryLightColor">#aee571</color>
-    <color name="primaryDarkColor">#FF0079CC</color>
+    <color name="primaryDarkColor">@color/appBar</color>
     <color name="colorOnPrimary">@android:color/white</color>
 
     <color name="secondaryColor">#0098FF</color>
@@ -38,7 +38,7 @@
 
     <!-- app theme -->
 
-    <style name="AppTheme.Base" parent="Theme.MaterialComponents.DayNight.DarkActionBar"/>
+    <style name="AppTheme.Base" parent="Theme.MaterialComponents.Light.DarkActionBar"/>
     <style name="AppTheme" parent="AppTheme.Base">
         <!-- see https://github.com/material-components/material-components-android/blob/master/docs/theming/Color.md for component color names -->
         <item name="colorPrimary">@color/primaryColor</item>
@@ -57,7 +57,10 @@
         <item name="android:textColorPrimary">@color/infomaniakTitle</item>
         <item name="android:textColorSecondary">@color/infomaniakTextSecondary</item>
 
+        <item name="actionBarPopupTheme">@style/PopupThemeInfomaniak</item>
+        <item name="actionBarStyle">@style/ActionBarInfomaniak</item>
         <item name="android:colorBackground">@color/backgroundColor</item>
+        <item name="popupTheme">@style/PopupThemeInfomaniak</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -100,4 +103,27 @@
         <item name="android:indeterminateTint">@android:color/white</item>
     </style>
 
+    <!-- kSync -->
+    <style name="ActionBarInfomaniak" parent="Widget.MaterialComponents.ActionBar.Solid">
+        <item name="android:background">@color/appBar</item>
+        <item name="background">@color/appBar</item>
+    </style>
+
+    <!-- kSync -->
+    <style name="TabsLayoutInfomaniak" parent="Widget.MaterialComponents.TabLayout.Colored">
+        <item name="android:background">@color/appBar</item>
+        <item name="tabIndicatorColor">@android:color/white</item>
+        <item name="tabRippleColor">@android:color/transparent</item>
+        <item name="tabSelectedTextColor">@android:color/white</item>
+        <item name="tabTextColor">#AAFFFFFF</item>
+    </style>
+
+    <!-- kSync -->
+    <style name="PopupThemeInfomaniak" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:backgroundTint">@color/backgroundCardview</item>
+        <item name="android:buttonTint">@color/checkbox_color</item>
+        <item name="android:textColor">@color/popupText</item>
+        <item name="background">@drawable/background_popup</item>
+        <item name="colorControlHighlight">@color/popupRipple</item>
+    </style>
 </resources>
