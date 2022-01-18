@@ -13,6 +13,7 @@ android {
 
     defaultConfig {
         applicationId 'com.infomaniak.sync'
+        resValue 'string', 'application_id', applicationId
 
         versionCode 401000005
         versionName '4.1'		// check suffixes, too

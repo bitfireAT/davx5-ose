@@ -9,7 +9,7 @@
             android:summary="@string/app_settings_show_debug_info_details"
             android:icon="@drawable/ic_bug_report">
             <intent
-                android:targetPackage="at.bitfire.davdroid"
+                android:targetPackage="@string/application_id"
                 android:targetClass="at.bitfire.davdroid.ui.DebugInfoActivity"/>
         </Preference>
 
