@@ -108,6 +108,7 @@
     <style name="ActionBarInfomaniak" parent="Widget.MaterialComponents.ActionBar.Solid">
         <item name="android:background">@color/appBar</item>
         <item name="background">@color/appBar</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
     <!-- kSync -->
