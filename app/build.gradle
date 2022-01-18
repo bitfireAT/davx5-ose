@@ -12,7 +12,7 @@ android {
     buildToolsVersion '30.0.3'
 
     defaultConfig {
-        applicationId "at.bitfire.davdroid"
+        applicationId 'com.infomaniak.sync'
 
         versionCode 401000005
         versionName '4.1'		// check suffixes, too
