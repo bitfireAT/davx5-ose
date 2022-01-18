@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Ο λογαριασμός δεν υπάρχει (πια)</string>
-  <string name="account_title_address_book">Βιβλίο διευθύνσεων DAVx⁵</string>
+  <string name="account_title_address_book">Βιβλίο διευθύνσεων kSync</string>
   <string name="address_books_authority_title">Βιβλία διευθύνσεων</string>
   <string name="field_required">Αυτό το πεδίο είναι απαραίτητο </string>
   <string name="help">Βοήθεια</string>
@@ -99,7 +99,7 @@
   <string name="navigation_drawer_donate">Δωρεά</string>
   <string name="navigation_drawer_privacy_policy">Πολιτική απορρήτου</string>
   <string name="account_list_no_internet">Δεν υπάρχει σύνδεση στο Διαδίκτυο. Το Android δεν θα πραγματοποιήσει συγχρονισμό.</string>
-  <string name="account_list_empty">Καλώς ήρθατε στο DAVx⁵!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
+  <string name="account_list_empty">Καλώς ήρθατε στο kSync!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Ο αυτόματος συγχρονισμός σε όλο το σύστημα είναι απενεργοποιημένος</string>
   <string name="accounts_global_sync_enable">Ενεργοποίηση</string>
   <string name="accounts_sync_all">Συγχρονισμός όλων των λογαριασμών</string>
@@ -318,7 +318,7 @@
   <string name="webdav_notification_download">Kαταφόρτωση αρχείου WebDAV</string>
   <string name="webdav_notification_upload">Ανέβασμα αρχείου WebDAV</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
+  <string name="sync_error_permissions">Δικαιώματα kSync</string>
   <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>
   <string name="sync_error_tasks_too_old">Παλιά έκδοση %s</string>
   <string name="sync_error_tasks_required_version">Ελάχιστη απαιτούμενη έκδοση: %1$s</string>
@@ -333,6 +333,6 @@
   <string name="sync_invalid_task">Έλαβε μη έγκυρη εργασία από το διακομιστή</string>
   <string name="sync_invalid_resources_ignoring">Αγνόηση ενός ή περισσοτέρων μη έγκυρων πόρων</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Ασφάλεια σύνδεσης</string>
-  <string name="trust_certificate_unknown_certificate_found">Το DAVx⁵ εντόπισε ένα άγνωστο πιστοποιητικό. Θέλετε να το εμπιστεύεστε;</string>
+  <string name="certificate_notification_connection_security">kSync: Ασφάλεια σύνδεσης</string>
+  <string name="trust_certificate_unknown_certificate_found">Το kSync εντόπισε ένα άγνωστο πιστοποιητικό. Θέλετε να το εμπιστεύεστε;</string>
 </resources>

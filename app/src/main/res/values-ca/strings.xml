@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">El compte no existeix (eliminat)</string>
-  <string name="account_title_address_book">DAVx⁵ Llibreta d’Adreces</string>
+  <string name="account_title_address_book">kSync Llibreta d’Adreces</string>
   <string name="address_books_authority_title">Llibreta d’adreces</string>
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gestiona comptes</string>
@@ -101,7 +101,7 @@
   <string name="navigation_drawer_donate">Fer donació</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
   <string name="account_list_no_internet">Sense conexió a internet. Android no executarà la sincronització</string>
-  <string name="account_list_empty">Benvingut a DAVx⁵! \n\n Ara podeu afegir un compte CalDAV / CardDAV.</string>
+  <string name="account_list_empty">Benvingut a kSync! \n\n Ara podeu afegir un compte CalDAV / CardDAV.</string>
   <string name="accounts_global_sync_enable">Activar</string>
   <string name="accounts_sync_all">Sincronitza tots els comptes</string>
   <!--DavService-->

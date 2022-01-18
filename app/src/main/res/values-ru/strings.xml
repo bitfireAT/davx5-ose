@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Аккаунт не существует (больше)</string>
-  <string name="account_title_address_book">Адресная книга DAVx⁵</string>
+  <string name="account_title_address_book">Адресная книга kSync</string>
   <string name="address_books_authority_title">Адресные книги</string>
   <string name="field_required">Это поле является обязательным</string>
   <string name="help">Помощь</string>
@@ -116,7 +116,7 @@
   <string name="navigation_drawer_donate">Пожертвовать</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
   <string name="account_list_no_internet">Нет подключения к интернету. Android не будет выполнять синхронизацию.</string>
-  <string name="account_list_empty">Добро пожаловать в DAVx⁵!\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
+  <string name="account_list_empty">Добро пожаловать в kSync!\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
   <string name="accounts_global_sync_enable">Включить</string>
   <string name="accounts_sync_all">Синхронизировать все аккаунты</string>
@@ -382,7 +382,7 @@
   <string name="webdav_notification_upload">Выгрузка файла WebDAV</string>
   <string name="webdav_provider_root_title">Точка монтирования WebDAV</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">Разрешения DAVx⁵</string>
+  <string name="sync_error_permissions">Разрешения kSync</string>
   <string name="sync_error_permissions_text">Требуются дополнительные разрешения</string>
   <string name="sync_error_tasks_too_old">Приложение %s устарело</string>
   <string name="sync_error_tasks_required_version">Минимально необходимая версия: %1$s</string>
@@ -397,6 +397,6 @@
   <string name="sync_invalid_task">Получена недействительная задача от сервера</string>
   <string name="sync_invalid_resources_ignoring">Игнорирование одного или нескольких недействительных ресурсов</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: безопасность подключения</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ обнаружил неизвестный сертификат. Вы согласны ему доверять?</string>
+  <string name="certificate_notification_connection_security">kSync: безопасность подключения</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync обнаружил неизвестный сертификат. Вы согласны ему доверять?</string>
 </resources>

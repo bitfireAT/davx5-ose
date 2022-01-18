@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">A felhasználói fiók (már) nem létezik</string>
-  <string name="account_title_address_book">DAVx⁵ címjegyzék</string>
+  <string name="account_title_address_book">kSync címjegyzék</string>
   <string name="address_books_authority_title">Címjegyzékek</string>
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
@@ -110,7 +110,7 @@
   <string name="navigation_drawer_donate">Támogatás</string>
   <string name="navigation_drawer_privacy_policy">Adatvédelmi politika</string>
   <string name="account_list_no_internet">Nincs Internet-elérés.  Az Android rendszer nem fogja elvégezni a szinkronizálst</string>
-  <string name="account_list_empty">Üdvözöljük a DAVx⁵ felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
+  <string name="account_list_empty">Üdvözöljük a kSync felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
   <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
   <string name="accounts_global_sync_enable">Bekapcsolás</string>
   <string name="accounts_sync_all">Az összes fiók szinkronizálása</string>
@@ -342,7 +342,7 @@
   <string name="exception_show_details">Részletek megjelenítése</string>
   <!--WebDAV accounts-->
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵ engedélyek </string>
+  <string name="sync_error_permissions">kSync engedélyek </string>
   <string name="sync_error_permissions_text">További engedélyek szükségesek</string>
   <string name="sync_error_tasks_too_old">%s túl régi</string>
   <string name="sync_error_tasks_required_version">Legalacsonyabb szükséges verzió: %1$s</string>
@@ -357,6 +357,6 @@
   <string name="sync_invalid_task">A szerver érvénytelen feladatot küldött</string>
   <string name="sync_invalid_resources_ignoring">Egy vagy több érvénytelen erőforrás kihagyva</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: kapcsolatbiztonság</string>
+  <string name="certificate_notification_connection_security">kSync: kapcsolatbiztonság</string>
   <string name="trust_certificate_unknown_certificate_found">Egy eddig ismeretlen tanúsítvány érkezett.  Megbízhatónak kívánja elfogadni?</string>
 </resources>

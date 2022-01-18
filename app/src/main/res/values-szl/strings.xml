@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
-  <string name="account_title_address_book">Ksiōnżka adresowo DAVx⁵</string>
+  <string name="app_name">kSync</string>
+  <string name="account_title_address_book">Ksiōnżka adresowo kSync</string>
   <string name="address_books_authority_title">Ksiōnżka adresowo</string>
   <string name="help">Pōmoc</string>
   <string name="manage_accounts">Zarzōndzej kōntami</string>
@@ -50,7 +50,7 @@
   <string name="navigation_drawer_open">Ôtwōrz myni nawigacyje</string>
   <string name="navigation_drawer_close">Zawrzij myni nawigacyje</string>
   <string name="navigation_drawer_subtitle">Adapter synchrōnizacyje CalDAV/CardDAV</string>
-  <string name="navigation_drawer_about">Ô DAVx⁵ / Licyncyjo</string>
+  <string name="navigation_drawer_about">Ô kSync / Licyncyjo</string>
   <string name="navigation_drawer_beta_feedback">Przekoż ôpinijo</string>
   <string name="install_email_client">Zainstaluj klijynt emaila</string>
   <string name="install_browser">Zainstaluj przeglōndarka internetowo</string>
@@ -64,7 +64,7 @@
   <string name="navigation_drawer_donate">Dowka</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
   <string name="account_list_no_internet">Brak połōnczynio z internetym. Android niy bydzie synchrōnizować.</string>
-  <string name="account_list_empty">Witōmy w DAVx⁵!\n\nMożesz teroz przidać kōnto CalDAV/CardDAV.</string>
+  <string name="account_list_empty">Witōmy w kSync!\n\nMożesz teroz przidać kōnto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Autōmatyczno synchrōnizacyjo dlo cołkigo systymu je zastawiōno</string>
   <string name="accounts_global_sync_enable">Włōncz</string>
   <!--DavService-->
@@ -246,7 +246,7 @@
   <string name="exception_show_details">Pokoż informacyje</string>
   <!--WebDAV accounts-->
   <!--sync adapters-->
-  <string name="sync_error_permissions">Uprawniynia DAVx⁵</string>
+  <string name="sync_error_permissions">Uprawniynia kSync</string>
   <string name="sync_error_permissions_text">Wymogane ekstra uprawniynia</string>
   <string name="sync_error_authentication_failed">Autoryzacyjo sie niy podarziła (dej pozōr na dane logowanio)</string>
   <string name="sync_error_io">Feler necu abo I/O – %s</string>
@@ -259,6 +259,6 @@
   <string name="sync_invalid_task">Dostane zadanie ze serwera je niynoleżne</string>
   <string name="sync_invalid_resources_ignoring">Ignorowanie jednego abo wiyncyj niynoleżnych zasobōw</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Bezpieczyństwo połōnczynio</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ trefiōł niyznōmy certyfikat. Chcesz go przidać?</string>
+  <string name="certificate_notification_connection_security">kSync: Bezpieczyństwo połōnczynio</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync trefiōł niyznōmy certyfikat. Chcesz go przidać?</string>
 </resources>

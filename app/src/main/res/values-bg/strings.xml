@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Регистрацията (вече) не съществува</string>
-  <string name="account_title_address_book">Адресник на DAVx⁵</string>
+  <string name="account_title_address_book">Адресник на kSync</string>
   <string name="address_books_authority_title">Адресници</string>
   <string name="field_required">Задължително поле</string>
   <string name="help">Помощ</string>
@@ -114,7 +114,7 @@
   <string name="navigation_drawer_donate">Дарения</string>
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
   <string name="account_list_no_internet">Няма връзка с интернет. Android няма да извършва синхронизации.</string>
-  <string name="account_list_empty">Добре дошли при DAVx⁵!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
+  <string name="account_list_empty">Добре дошли при kSync!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_enable">Включване</string>
   <string name="accounts_sync_all">Синхронизиране на всички сметки</string>
   <!--DavService-->
@@ -351,7 +351,7 @@
   <string name="webdav_add_mount_no_support">Няма услуга на WebDAV на адреса</string>
   <string name="webdav_provider_root_title">Дял на WebDAV</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">Разрешения на DAVx⁵</string>
+  <string name="sync_error_permissions">Разрешения на kSync</string>
   <string name="sync_error_permissions_text">Необходими са допълнителни разрешения</string>
   <string name="sync_error_tasks_too_old">Приложението %s е твърде старо</string>
   <string name="sync_error_tasks_required_version">Минимално необходимо издание: %1$s</string>
@@ -365,6 +365,6 @@
   <string name="sync_invalid_task">Получен е недействителен файл от сървъра</string>
   <string name="sync_invalid_resources_ignoring">Пренебрегване на сбъркани данни</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Защита на връзката</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ се натъкна на непознат сертификат.  Ще му се довериш ли?</string>
+  <string name="certificate_notification_connection_security">kSync: Защита на връзката</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync се натъкна на непознат сертификат.  Ще му се довериш ли?</string>
 </resources>

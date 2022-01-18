@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Kontua ez da existitzen (dagoeneko)</string>
-  <string name="account_title_address_book">DAVx⁵ Helbide liburua</string>
+  <string name="account_title_address_book">kSync Helbide liburua</string>
   <string name="address_books_authority_title">Helbide liburuak</string>
   <string name="help">Laguntza</string>
   <string name="manage_accounts">Kudeatu kontuak</string>
@@ -112,7 +112,7 @@
   <string name="navigation_drawer_donate">Dohaintza egin</string>
   <string name="navigation_drawer_privacy_policy">Pribatutasun gidalerroak</string>
   <string name="account_list_no_internet">Ez dago internetik. Androidek ez du sinkronizaziorik egingo.</string>
-  <string name="account_list_empty">Ongi etorri DAVx⁵ aplikaziora!\n\nCalDAV/CardDAV kontu bat gehitu dezakezu orain.</string>
+  <string name="account_list_empty">Ongi etorri kSync aplikaziora!\n\nCalDAV/CardDAV kontu bat gehitu dezakezu orain.</string>
   <string name="accounts_global_sync_disabled">Sistema osoko sinkronizazio automatikoa desgaituta dago</string>
   <string name="accounts_global_sync_enable">Gaitu</string>
   <string name="accounts_sync_all">Sinkronizatu kontu guztiak</string>
@@ -356,7 +356,7 @@
   <string name="exception_show_details">Erakutsi xehetasunak</string>
   <!--WebDAV accounts-->
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵ baimenak</string>
+  <string name="sync_error_permissions">kSync baimenak</string>
   <string name="sync_error_permissions_text">Baimen gehigarriak beharrezkoak</string>
   <string name="sync_error_tasks_too_old">%s zaharregia</string>
   <string name="sync_error_tasks_required_version">Beharrezko bertsio minimoa: %1$s</string>
@@ -371,6 +371,6 @@
   <string name="sync_invalid_task">Zeregin baliogabea jaso da zerbitzaritik</string>
   <string name="sync_invalid_resources_ignoring">Baliabide baliogabe bat edo gehiago ezikusten</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Konexio segurtasuna</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ aplikazioak ziurtagiri ezezagun bat aurkitu du. Fidagarritzat jo nahi duzu?</string>
+  <string name="certificate_notification_connection_security">kSync: Konexio segurtasuna</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync aplikazioak ziurtagiri ezezagun bat aurkitu du. Fidagarritzat jo nahi duzu?</string>
 </resources>

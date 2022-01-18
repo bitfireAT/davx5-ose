@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
-  <string name="account_title_address_book">DAVx⁵ دفتر عناوين</string>
+  <string name="app_name">kSync</string>
+  <string name="account_title_address_book">kSync دفتر عناوين</string>
   <string name="address_books_authority_title">دفاتر العناوين</string>
   <string name="help">مساعدة</string>
   <string name="manage_accounts">إدارة الحسابات</string>
@@ -40,7 +40,7 @@
   <string name="navigation_drawer_faq">الأسئلة الشائعة</string>
   <string name="navigation_drawer_forums">المساعدة / المنتدى</string>
   <string name="navigation_drawer_donate">تبرَّع</string>
-  <string name="account_list_empty">مرحباً بك في DAVx⁵ !\n\n يمكنك إضافة حساب CalDAV أو CardDAV الآن.</string>
+  <string name="account_list_empty">مرحباً بك في kSync !\n\n يمكنك إضافة حساب CalDAV أو CardDAV الآن.</string>
   <string name="accounts_global_sync_disabled">تم تعطيل المزامنة التلقائية على مستوى النظام</string>
   <string name="accounts_global_sync_enable">تفعيل</string>
   <!--DavService-->
@@ -208,7 +208,7 @@
   <string name="exception_ioexception">حدث خطأ في الإدخال/الإخراج.</string>
   <string name="exception_show_details">عرض التفاصيل</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">أذونات DAVx⁵</string>
+  <string name="sync_error_permissions">أذونات kSync</string>
   <string name="sync_error_permissions_text">مطلوب أذونات إضافية</string>
   <string name="sync_error_authentication_failed">فشلت المصادقة (تحقق من بيانات تسجيل الدخول)</string>
   <string name="sync_error_io">خطأ شبكة أو الإدخال/الإخراج - %s</string>
@@ -221,6 +221,6 @@
   <string name="sync_invalid_task">استلام مهمة غير صالحة من الخادم</string>
   <string name="sync_invalid_resources_ignoring">جرى تجاهل مورد غير صالح واحد أو أكثر</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: أمن الاتصال</string>
-  <string name="trust_certificate_unknown_certificate_found">عثر DAVx⁵ على شهادة غير معروفة. هل تريد الوثوق بها؟</string>
+  <string name="certificate_notification_connection_security">kSync: أمن الاتصال</string>
+  <string name="trust_certificate_unknown_certificate_found">عثر kSync على شهادة غير معروفة. هل تريد الوثوق بها؟</string>
 </resources>

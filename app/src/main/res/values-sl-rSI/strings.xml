@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
-  <string name="account_title_address_book">DAVx⁵ imenik</string>
+  <string name="app_name">kSync</string>
+  <string name="account_title_address_book">kSync imenik</string>
   <string name="address_books_authority_title">Seznami s stiki</string>
   <string name="help">Pomoč</string>
   <string name="manage_accounts">Urejanje prijav</string>
@@ -40,7 +40,7 @@
   <string name="navigation_drawer_faq">Pogosta vprašanja</string>
   <string name="navigation_drawer_forums">Pomoč / forumi</string>
   <string name="navigation_drawer_donate">Prispevaj</string>
-  <string name="account_list_empty">Dobrodošli v DAVx⁵!\n\nZdaj lahko dodate CalDAV/CardDAV račun.</string>
+  <string name="account_list_empty">Dobrodošli v kSync!\n\nZdaj lahko dodate CalDAV/CardDAV račun.</string>
   <string name="accounts_global_sync_disabled">Sistemska avtomatska sinhronizacija je izklopljena</string>
   <string name="accounts_global_sync_enable">Omogoči</string>
   <!--DavService-->
@@ -210,7 +210,7 @@
   <string name="exception_ioexception">I/O napaka se je zgodila.</string>
   <string name="exception_show_details">Pokaži podrobnosti</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵ dovoljenja</string>
+  <string name="sync_error_permissions">kSync dovoljenja</string>
   <string name="sync_error_permissions_text">Dodatna dovoljenja so zahtevana</string>
   <string name="sync_error_authentication_failed">Avtentikacija ni uspela (preverite podatke prijave)</string>
   <string name="sync_error_io">Omrežna ali I/O napaka -- %s</string>
@@ -223,6 +223,6 @@
   <string name="sync_invalid_task">S strežnika so bili prejeti neveljavni dogodki</string>
   <string name="sync_invalid_resources_ignoring">Eden ali več neveljavnih virov bo ignoriranih</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵:  Varnost povezave</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ je naletel na neznan certifikat. Ali mu zaupate?</string>
+  <string name="certificate_notification_connection_security">kSync:  Varnost povezave</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync je naletel na neznan certifikat. Ali mu zaupate?</string>
 </resources>

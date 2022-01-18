@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="help">Yardım</string>
   <string name="manage_accounts">Hesapları yönet</string>
   <!--IntroActivity-->
@@ -21,7 +21,7 @@
   <string name="navigation_drawer_website">Web sitesi</string>
   <string name="navigation_drawer_faq">SSS</string>
   <string name="navigation_drawer_donate">Bağış yap</string>
-  <string name="account_list_empty">DAVx⁵\'e hoşgeldin!\n\nŞimdi bir CalDAV/CardDAV hesabı ekleyebilirsin.</string>
+  <string name="account_list_empty">kSync\'e hoşgeldin!\n\nŞimdi bir CalDAV/CardDAV hesabı ekleyebilirsin.</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Servis keşfi başarısız</string>
   <string name="dav_service_refresh_couldnt_refresh">Kolleksiyon listesi yenilenemedi</string>
@@ -113,7 +113,7 @@
   <string name="exception_show_details">Detayları göster</string>
   <!--WebDAV accounts-->
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵ izinleri</string>
+  <string name="sync_error_permissions">kSync izinleri</string>
   <string name="sync_error_permissions_text">Ek izinler zorunludur</string>
   <!--cert4android-->
 </resources>
