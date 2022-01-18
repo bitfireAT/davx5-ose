@@ -109,7 +109,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                     binding.progress.isIndeterminate = false
                     binding.progress.progress = 100
                 } else
-                    binding.progress.visibility = View.INVISIBLE
+                    binding.progress.visibility = View.GONE // kSync
             }
         }
         model.isSyncPending.observe(viewLifecycleOwner, updateProgress)
