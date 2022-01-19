@@ -22,7 +22,9 @@ android {
         minSdkVersion 21        // Android 5
         targetSdkVersion 31     // Android 12
 
-        buildConfigField "String", "userAgent", "\"DAVx5\""
+        buildConfigField "String", "userAgent", "\"kSync\""
+
+        buildConfigField "String", "CLIENT_ID", '"CE011334-F75A-4263-9F9F-45FC5A142F59"'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -146,4 +148,8 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
+
+    // kSync
+    implementation 'com.github.Infomaniak:android-login:2.3.0'
+    implementation 'com.google.code.gson:gson:2.8.9'
 }

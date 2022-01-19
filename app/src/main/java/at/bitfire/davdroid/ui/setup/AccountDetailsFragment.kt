@@ -46,10 +46,12 @@ class AccountDetailsFragment : Fragment() {
 
     val loginModel by activityViewModels<LoginModel>()
     val model by viewModels<AccountDetailsModel>()
+    lateinit var binding: LoginAccountDetailsBinding
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = LoginAccountDetailsBinding.inflate(inflater, container, false)
+        binding = v
         v.lifecycleOwner = viewLifecycleOwner
         v.details = model
 
@@ -131,6 +133,10 @@ class AccountDetailsFragment : Fragment() {
         return v.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        binding.createAccount.callOnClick()
+    }
 
     class AccountDetailsModel(
             application: Application

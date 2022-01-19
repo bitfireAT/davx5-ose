@@ -14,6 +14,7 @@ import android.content.pm.ShortcutManager
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.AnyThread
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -22,6 +23,7 @@ import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountsBinding
@@ -29,6 +31,7 @@ import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.infomaniak.lib.login.InfomaniakLogin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,6 +43,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         val accountsDrawerHandler = DefaultAccountsDrawerHandler()
 
         const val REQUEST_INTRO = 0
+        private const val WEB_VIEW_LOGIN_REQ = 1
     }
 
     private lateinit var binding: ActivityAccountsBinding
@@ -47,6 +51,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     private var syncStatusSnackbar: Snackbar? = null
 
+    private lateinit var infomaniakLogin: InfomaniakLogin
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +69,16 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         binding = ActivityAccountsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // kSync
+        infomaniakLogin = InfomaniakLogin(
+                context = this,
+                clientID = BuildConfig.CLIENT_ID,
+                appUID = BuildConfig.APPLICATION_ID
+        )
+
         binding.content.fab.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
+//            startActivity(Intent(this, LoginActivity::class.java))
+            infomaniakLogin.startWebViewLogin(WEB_VIEW_LOGIN_REQ)
         }
         binding.content.fab.show()
 
@@ -110,6 +123,18 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_INTRO && resultCode == Activity.RESULT_CANCELED)
             finish()
+        else if (requestCode == WEB_VIEW_LOGIN_REQ && resultCode == RESULT_OK) {
+            val code = data?.extras?.getString(InfomaniakLogin.CODE_TAG)
+            if (!code.isNullOrBlank()) {
+                val intent = Intent(this, LoginActivity::class.java).apply {
+                    putExtra("code", code)
+                }
+                startActivity(intent)
+            } else {
+                val translatedError = data?.extras?.getString(InfomaniakLogin.ERROR_TRANSLATED_TAG)
+                Toast.makeText(this, translatedError, Toast.LENGTH_LONG).show()
+            }
+        }
         else
             super.onActivityResult(requestCode, resultCode, data)
     }
