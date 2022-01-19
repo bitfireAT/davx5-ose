@@ -71,7 +71,7 @@
 
     <style name="WebViewTheme" parent="AppTheme">
         <item name="colorCloseIcon">@android:color/white</item>
-        <item name="themeLoginToolbar">@style/LoginToolbarTheme</item>
+        <item name="themeLoginToolbar">@style/ActionBarInfomaniak</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
