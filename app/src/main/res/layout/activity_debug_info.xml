@@ -255,19 +255,6 @@
                                 android:orientation="vertical"
                                 app:layout_constraintGuide_end="@dimen/card_padding" />
 
-                            <at.bitfire.davdroid.ui.widget.CropImageView
-                                android:id="@+id/debugInfoTheme"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:maxHeight="@dimen/card_theme_max_height"
-                                app:layout_constraintVertical_chainStyle="packed"
-                                app:layout_constraintVertical_bias="0"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintLeft_toLeftOf="parent"
-                                app:layout_constraintBottom_toTopOf="@id/debugInfoIcon"
-                                android:adjustViewBounds="true"
-                                app:verticalOffsetPercent=".85"
-                                app:srcCompat="@drawable/undraw_server_down" />
 
                             <ImageView
                                 android:id="@+id/debugInfoIcon"
@@ -275,7 +262,7 @@
                                 android:layout_height="0dp"
                                 android:paddingEnd="12dp"
                                 android:layout_marginTop="@dimen/card_margin_title_text"
-                                app:layout_constraintTop_toBottomOf="@id/debugInfoTheme"
+                                app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintLeft_toLeftOf="@id/debugInfoStart"
                                 app:layout_constraintRight_toLeftOf="@id/debugInfoCaption"
                                 app:layout_constraintBottom_toBottomOf="@id/debugInfoSubtitle"
