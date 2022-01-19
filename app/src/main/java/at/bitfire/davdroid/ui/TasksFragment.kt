@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.observe
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityTasksBinding
@@ -62,7 +63,20 @@ class TasksFragment: Fragment() {
                 model.selectPreferredProvider(ProviderName.TasksOrg)
         }
 
-        binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
+        // kSync
+        model.showInstallTasks.observe(viewLifecycleOwner) { showInstallTasks ->
+            model.dontShow.set(!showInstallTasks)
+        }
+        model.showInstallTasks.value = model.dontShow.get() || model.currentProvider.value != null
+
+        // kSync
+        binding.installOpenTasksButton.setOnClickListener {
+            installApp(ProviderName.OpenTasks.packageName)
+        }
+        // kSync
+        model.selectPreferredProvider(ProviderName.OpenTasks)
+
+//        binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
 
         return binding.root
     }
@@ -97,6 +111,7 @@ class TasksFragment: Fragment() {
 
         val settings = SettingsManager.getInstance(app)
 
+        val showInstallTasks = MutableLiveData<Boolean>() // kSync
         val currentProvider = MutableLiveData<ProviderName>()
         val openTasksInstalled = MutableLiveData<Boolean>()
         val openTasksRequested = MutableLiveData<Boolean>()

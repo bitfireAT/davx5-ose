@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Konto (już) nie istnieje</string>
-  <string name="account_title_address_book">Książka adresowa DAVx⁵</string>
+  <string name="account_title_address_book">Książka adresowa kSync</string>
   <string name="address_books_authority_title">Książka adresowa</string>
   <string name="field_required">To pole jest wymagane</string>
   <string name="help">Pomoc</string>
@@ -116,7 +116,7 @@
   <string name="navigation_drawer_donate">Wesprzyj finansowo</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
   <string name="account_list_no_internet">Brak połączenia z Internetem. Android nie wykona synchronizacji.</string>
-  <string name="account_list_empty">Witamy w DAVx⁵!\n\nMożesz teraz dodać konto CalDAV/CardDAV.</string>
+  <string name="account_list_empty">Witamy w kSync!\n\nMożesz teraz dodać konto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Automatyczna synchronizacja dla całego systemu jest wyłączona</string>
   <string name="accounts_global_sync_enable">Włącz</string>
   <string name="accounts_sync_all">Synchronizuj wszystkie konta</string>
@@ -382,7 +382,7 @@
   <string name="webdav_notification_upload">Wgrywanie pliku WebDAV</string>
   <string name="webdav_provider_root_title">Punkt linkowania WebDAV</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">Uprawnienia DAVx⁵</string>
+  <string name="sync_error_permissions">Uprawnienia kSync</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>
   <string name="sync_error_tasks_too_old">%s zbyt stary/a</string>
   <string name="sync_error_tasks_required_version">Minimalna wymagana wersja: %1$s</string>
@@ -397,6 +397,6 @@
   <string name="sync_invalid_task">Otrzymano błędne zadanie z serwera</string>
   <string name="sync_invalid_resources_ignoring">Zignorowano jeden lub więcej nieważnych zasobów</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Bezpieczeństwo połączenia</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ napotkał nieznany certyfikat. Czy chcesz go dodać?</string>
+  <string name="certificate_notification_connection_security">kSync: Bezpieczeństwo połączenia</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync napotkał nieznany certyfikat. Czy chcesz go dodać?</string>
 </resources>

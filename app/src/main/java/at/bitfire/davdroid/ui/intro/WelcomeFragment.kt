@@ -23,7 +23,8 @@ class WelcomeFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = IntroWelcomeBinding.inflate(inflater, container, false)
 
-        if (true /* ose build */) {
+        // Not in kSync
+        /*if (true /* ose build */) {
             binding.logo.apply {
                 alpha = 0f
                 animate()
@@ -42,7 +43,7 @@ class WelcomeFragment: Fragment() {
                     .translationX(0f)
                     .setDuration(300)
             }
-        }
+        }*/
 
         return binding.root
     }

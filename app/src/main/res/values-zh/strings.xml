@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">帐户不再存在</string>
-  <string name="account_title_address_book">DAVx⁵ 通讯录</string>
+  <string name="account_title_address_book">kSync 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>
   <string name="field_required">此字段是必填项</string>
   <string name="help">帮助</string>
@@ -116,7 +116,7 @@
   <string name="navigation_drawer_donate">捐助</string>
   <string name="navigation_drawer_privacy_policy">隐私政策</string>
   <string name="account_list_no_internet">无网络连接。Android 将不会运行同步。</string>
-  <string name="account_list_empty">欢迎使用 DAVx⁵！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
+  <string name="account_list_empty">欢迎使用 kSync！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
   <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
   <string name="accounts_global_sync_enable">启用</string>
   <string name="accounts_sync_all">同步所有账户</string>
@@ -376,7 +376,7 @@
   <string name="webdav_notification_upload">正在上传 WebDAV 文件</string>
   <string name="webdav_provider_root_title">WebDAV 文件系统</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵ 权限</string>
+  <string name="sync_error_permissions">kSync 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>
   <string name="sync_error_tasks_too_old">%s太旧</string>
   <string name="sync_error_tasks_required_version">最低要求版本: %1$s</string>
@@ -391,6 +391,6 @@
   <string name="sync_invalid_task">从服务器收到无效的任务项</string>
   <string name="sync_invalid_resources_ignoring">正在忽略若干无效资源</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: 连接安全性</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ 遇到了未知证书。你是否要信任该证书？</string>
+  <string name="certificate_notification_connection_security">kSync: 连接安全性</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync 遇到了未知证书。你是否要信任该证书？</string>
 </resources>

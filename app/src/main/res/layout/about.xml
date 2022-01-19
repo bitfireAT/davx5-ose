@@ -50,6 +50,12 @@
             android:text="@string/about_build_date" />
 
         <TextView
+            android:id="@+id/infomaniak_copyright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
             android:id="@+id/copyright"
             style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="wrap_content"

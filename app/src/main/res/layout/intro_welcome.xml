@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="android.view.View" />
@@ -8,60 +9,95 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/appintro2_bottombar_height"
-        android:orientation="vertical"
         android:gravity="center"
-        android:background="@color/primaryDarkColor">
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/appintro2_bottombar_height">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             android:id="@+id/logo"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="48dp"
-            app:layout_constraintBottom_toTopOf="@id/yourDataYourChoice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/marginStandardInfomaniak"
+            android:src="@mipmap/ic_launcher"
+            app:layout_constraintBottom_toTopOf="@id/logoLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_weight="2"
-            app:srcCompat="@drawable/ic_launcher_foreground" />
+            tools:ignore="ContentDescription" />
 
-        <TextView
-            android:id="@+id/yourDataYourChoice"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintVertical_weight="1"
-            app:layout_constraintTop_toBottomOf="@id/logo"
-            app:layout_constraintBottom_toTopOf="@+id/takeControl"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:gravity="center_horizontal|bottom"
-            app:autoSizeTextType="uniform"
-            app:autoSizeMaxTextSize="34sp"
-            android:paddingStart="32dp"
-            android:paddingEnd="32dp"
-            android:maxLines="1"
-            style="@style/TextAppearance.MaterialComponents.Subtitle1"
-            android:textColor="@android:color/white"
-            android:text="@string/intro_slogan1"/>
-
-        <TextView
-            android:id="@+id/takeControl"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintVertical_weight="1"
-            app:layout_constraintTop_toBottomOf="@id/yourDataYourChoice"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/logoLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:paddingStart="32dp"
-            android:paddingEnd="32dp"
-            android:gravity="center_horizontal"
-            app:autoSizeTextType="uniform"
-            app:autoSizeMaxTextSize="48sp"
-            android:maxLines="1"
-            style="@style/TextAppearance.MaterialComponents.Headline5"
-            android:textColor="@android:color/white"
-            android:text="@string/intro_slogan2"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/arial_black"
+                android:lineSpacingMultiplier="1.39"
+                android:text="@string/infomaniak_intro_welcome_logo_title"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/primaryColor"
+                android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:lineSpacingMultiplier="1.20"
+                android:text="@string/infomaniak_intro_welcome_logo_subtitle"
+                android:textColor="@color/infomaniakTextSecondary"
+                android:textSize="25sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/textView2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginStandardInfomaniak"
+            android:layout_marginTop="@dimen/marginStandardInfomaniak"
+            android:layout_marginEnd="@dimen/marginStandardInfomaniak"
+            android:gravity="center"
+            android:text="@string/infomaniak_intro_welcome_title"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textColor="@color/infomaniakTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logoLayout" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginStandardInfomaniak"
+            android:layout_marginTop="@dimen/marginStandardInfomaniak"
+            android:layout_marginEnd="@dimen/marginStandardInfomaniak"
+            android:gravity="center"
+            android:text="@string/infomaniak_intro_welcome_subtitle"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

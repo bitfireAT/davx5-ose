@@ -26,7 +26,7 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
     override fun initMenu(context: Context, menu: Menu) {
         if (BuildConfig.VERSION_NAME.contains("-alpha") || BuildConfig.VERSION_NAME.contains("-beta") || BuildConfig.VERSION_NAME.contains("-rc"))
             menu.findItem(R.id.nav_beta_feedback).isVisible = true
-        if (/* ose */ true)
+        if (/* kSync */ false)
             menu.findItem(R.id.nav_donate).isVisible = true
     }
 
@@ -45,7 +45,7 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
                         Uri.parse("https://twitter.com/" + activity.getString(R.string.twitter_handle)))
             R.id.nav_website ->
                 UiUtils.launchUri(activity,
-                        App.homepageUrl(activity))
+                        Uri.parse("https://www.infomaniak.com"))
 
             R.id.nav_webdav_mounts ->
                 activity.startActivity(Intent(activity, WebdavMountsActivity::class.java))
@@ -55,7 +55,7 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
                         App.homepageUrl(activity).buildUpon().appendPath("manual").build())
             R.id.nav_faq ->
                 UiUtils.launchUri(activity,
-                        App.homepageUrl(activity).buildUpon().appendPath("faq").build())
+                        Uri.parse("https://faq.infomaniak.com/2302"))
             R.id.nav_forums ->
                 UiUtils.launchUri(activity,
                         App.homepageUrl(activity).buildUpon().appendPath("forums").build())

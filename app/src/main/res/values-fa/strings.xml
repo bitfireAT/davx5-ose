@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">حساب کاربری موجود نیست (بیشتر از این)</string>
-  <string name="account_title_address_book">کتاب آدرس DAVx⁵</string>
+  <string name="account_title_address_book">کتاب آدرس kSync</string>
   <string name="address_books_authority_title">کتاب آدرس</string>
   <string name="help">راهنما</string>
   <string name="manage_accounts">مدیریت حساب‌ها</string>
@@ -105,7 +105,7 @@
   <string name="navigation_drawer_donate">کمک</string>
   <string name="navigation_drawer_privacy_policy">سیاست حفظ حریم خصوصی</string>
   <string name="account_list_no_internet">بدون اتصال به اینترنت. اندروید همگام سازی را اجرا نمی کند.</string>
-  <string name="account_list_empty">به همگام‌ساز DAVx⁵ خوش آمدید</string>
+  <string name="account_list_empty">به همگام‌ساز kSync خوش آمدید</string>
   <string name="accounts_global_sync_disabled">همگام سازی خودکار در کل سیستم غیرفعال است</string>
   <string name="accounts_global_sync_enable">فعال</string>
   <string name="accounts_sync_all">همگام سازی همه حساب‌ها</string>
@@ -337,7 +337,7 @@
   <string name="exception_show_details">نمایش جزئیات</string>
   <!--WebDAV accounts-->
   <!--sync adapters-->
-  <string name="sync_error_permissions">مجوزهای همگام‌ساز DAVx⁵</string>
+  <string name="sync_error_permissions">مجوزهای همگام‌ساز kSync</string>
   <string name="sync_error_permissions_text">مجوزهای اضافی لازم است</string>
   <string name="sync_error_tasks_too_old">%s خیلی قدیمی است</string>
   <string name="sync_error_tasks_required_version">حداقل نسخه مورد نیاز: %1$s</string>
@@ -352,6 +352,6 @@
   <string name="sync_invalid_task">کار نامعتبر از سرور دریافت شد</string>
   <string name="sync_invalid_resources_ignoring">نادیده گرفتن یک یا چند منبع نامعتبر</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">همگام ساز DAVx⁵: امنیت اتصال</string>
-  <string name="trust_certificate_unknown_certificate_found">همگام ساز DAVx⁵ با یک گواهی ناشناخته روبرو شده است. آیا می خواهید به آن اعتماد کنید؟</string>
+  <string name="certificate_notification_connection_security">همگام ساز kSync: امنیت اتصال</string>
+  <string name="trust_certificate_unknown_certificate_found">همگام ساز kSync با یک گواهی ناشناخته روبرو شده است. آیا می خواهید به آن اعتماد کنید؟</string>
 </resources>

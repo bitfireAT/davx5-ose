@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory android:title="@string/app_settings_debug">
 
@@ -8,7 +9,7 @@
             android:summary="@string/app_settings_show_debug_info_details"
             android:icon="@drawable/ic_bug_report">
             <intent
-                android:targetPackage="at.bitfire.davdroid"
+                android:targetPackage="@string/application_id"
                 android:targetClass="at.bitfire.davdroid.ui.DebugInfoActivity"/>
         </Preference>
 
@@ -26,7 +27,9 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/app_settings_connection">
+    <!-- kSync -->
+    <PreferenceCategory android:title="@string/app_settings_connection"
+        app:isPreferenceVisible="false">
 
         <SwitchPreferenceCompat
             android:key="override_proxy"
@@ -48,7 +51,9 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/app_settings_security">
+    <!-- kSync -->
+    <PreferenceCategory android:title="@string/app_settings_security"
+        app:isPreferenceVisible="false">
 
         <SwitchPreferenceCompat
             android:key="distrust_system_certs"

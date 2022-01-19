@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
-  <string name="account_title_address_book">DAVx⁵ adresár</string>
+  <string name="app_name">kSync</string>
+  <string name="account_title_address_book">kSync adresár</string>
   <string name="address_books_authority_title">Adresáre</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovať používateľské účty</string>
@@ -44,7 +44,7 @@
   <string name="navigation_drawer_donate">Darovať</string>
   <string name="navigation_drawer_privacy_policy">Zásady bezpečnosti</string>
   <string name="account_list_no_internet">Žiadne pripojenie do internetu. Android nestpustí synchronizáciu.</string>
-  <string name="account_list_empty">Vitajte v programe DAVx⁵!\n\nTeraz môžete pridať používateľský účet pre CalDAV/CardDAV .</string>
+  <string name="account_list_empty">Vitajte v programe kSync!\n\nTeraz môžete pridať používateľský účet pre CalDAV/CardDAV .</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizácia platná pre celý systém je zakázaná</string>
   <string name="accounts_global_sync_enable">Povoliť</string>
   <!--DavService-->
@@ -227,7 +227,7 @@
   <string name="exception_ioexception">Vyskytla sa V/V chyba.</string>
   <string name="exception_show_details">Zobraziť detaily</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">Oprávnenia DAVx⁵ </string>
+  <string name="sync_error_permissions">Oprávnenia kSync </string>
   <string name="sync_error_permissions_text">Vyžadujú sa dodatočné oprávnenia</string>
   <string name="sync_error_authentication_failed">Overenie zlyhalo  (skontroluje prihlasovacie údaje)</string>
   <string name="sync_error_io">Sieťová alebo V/V chyba – %s</string>
@@ -240,6 +240,6 @@
   <string name="sync_invalid_task">Úloha prijatá zo servera nie je platná</string>
   <string name="sync_invalid_resources_ignoring">Ignoruje sa jeden alebo viac neplatných zdrojov</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Zabezpečenie spojenia</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ zistil neznámy certifikát. Prajete si dôverovať mu?</string>
+  <string name="certificate_notification_connection_security">kSync: Zabezpečenie spojenia</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync zistil neznámy certifikát. Prajete si dôverovať mu?</string>
 </resources>

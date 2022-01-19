@@ -64,7 +64,7 @@ class OpenSourceFragment: Fragment() {
     class Factory: IIntroFragmentFactory {
 
         override fun shouldBeShown(context: Context, settingsManager: SettingsManager) =
-                if (System.currentTimeMillis() > (settingsManager.getLongOrNull(SETTING_NEXT_DONATION_POPUP) ?: 0))
+                if (false) // kSync
                     IIntroFragmentFactory.ShowMode.SHOW
                 else
                     IIntroFragmentFactory.ShowMode.DONT_SHOW

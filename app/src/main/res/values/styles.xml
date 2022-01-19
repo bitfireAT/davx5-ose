@@ -19,12 +19,12 @@
     <color name="red400">#EF5350</color>
     <color name="red700">#d32f2f</color>
 
-    <color name="primaryColor">#7cb342</color>
+    <color name="primaryColor">#0098FF</color>
     <color name="primaryLightColor">#aee571</color>
-    <color name="primaryDarkColor">#4b830d</color>
-    <color name="colorOnPrimary">@android:color/black</color>
+    <color name="primaryDarkColor">@color/appBar</color>
+    <color name="colorOnPrimary">@android:color/white</color>
 
-    <color name="secondaryColor">#ff6d00</color>
+    <color name="secondaryColor">#0098FF</color>
     <color name="secondaryLightColor">#ff9e40</color>
     <color name="secondaryDarkColor">#c43c00</color>
     <color name="colorOnSecondary">@android:color/white</color>
@@ -52,10 +52,16 @@
 
         <item name="colorError">@color/errorColor</item>
 
-        <item name="android:textColorPrimary">@color/primaryTextColor</item>
-        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <item name="android:textColor">@color/infomaniakTitle</item>
+        <item name="android:textColorHint">@color/infomaniakTextSecondary</item>
+        <item name="android:textColorPrimary">@color/infomaniakTitle</item>
+        <item name="android:textColorSecondary">@color/infomaniakTitle</item>
 
+        <item name="actionBarPopupTheme">@style/PopupThemeInfomaniak</item>
+        <item name="actionBarStyle">@style/ActionBarInfomaniak</item>
         <item name="android:colorBackground">@color/backgroundColor</item>
+        <item name="colorControlHighlight">@color/ripple</item>
+        <item name="popupTheme">@style/PopupThemeInfomaniak</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -63,6 +69,16 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="LoginToolbarTheme" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+    </style>
+
+    <style name="CardViewInfomaniak" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/infomaniakBackgroundCard</item>
+        <item name="cardCornerRadius">@dimen/radiusInfomaniak</item>
+        <item name="cardElevation">0dp</item>
+    </style>
 
     <!-- AddAccountActivity -->
 
@@ -80,6 +96,43 @@
 
     <!-- widgets -->
 
-    <color name="cardview_background">@color/secondaryLightColor</color>
+    <color name="cardview_background">@color/infomaniakBackgroundCard</color>
 
+    <!-- kSync -->
+
+    <style name="progressbar_white" parent="@style/Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@android:color/white</item>
+    </style>
+
+    <!-- kSync -->
+    <style name="ActionBarInfomaniak" parent="Widget.MaterialComponents.ActionBar.Solid">
+        <item name="android:background">@color/appBar</item>
+        <item name="background">@color/appBar</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+    </style>
+
+    <!-- kSync -->
+    <style name="TabsLayoutInfomaniak" parent="Widget.MaterialComponents.TabLayout.Colored">
+        <item name="android:background">@color/appBar</item>
+        <item name="tabIndicatorColor">@android:color/white</item>
+        <item name="tabRippleColor">@android:color/transparent</item>
+        <item name="tabSelectedTextColor">@android:color/white</item>
+        <item name="tabTextColor">#AAFFFFFF</item>
+    </style>
+
+    <!-- kSync -->
+    <style name="PopupThemeInfomaniak" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:backgroundTint">@color/backgroundCardview</item>
+        <item name="android:buttonTint">@color/checkbox_color</item>
+        <item name="android:textColor">@color/popupText</item>
+        <item name="background">@drawable/background_popup</item>
+        <item name="colorControlHighlight">@color/ripple</item>
+    </style>
+
+    <!-- kSync -->
+    <style name="DrawerThemeInfomaniak">
+        <item name="android:background">@color/backgroundCardview</item>
+        <item name="itemIconTint">@color/iconColor</item>
+        <item name="itemTextColor">@color/infomaniakTitle</item>
+    </style>
 </resources>

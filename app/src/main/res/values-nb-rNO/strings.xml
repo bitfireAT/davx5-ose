@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
-  <string name="account_title_address_book">DAVx⁵-adressebok</string>
+  <string name="app_name">kSync</string>
+  <string name="account_title_address_book">kSync-adressebok</string>
   <string name="address_books_authority_title">Adressebøker</string>
   <string name="help">Hjelp</string>
   <string name="manage_accounts">Behandle kontoer</string>
@@ -38,7 +38,7 @@
   <string name="navigation_drawer_faq">O-S-S</string>
   <string name="navigation_drawer_forums">Hjelp / Forum</string>
   <string name="navigation_drawer_donate">Doner</string>
-  <string name="account_list_empty">Velkommen til DAVx⁵.\n\nDu kan legge til en CalDAV/CardDAV-konto nå.</string>
+  <string name="account_list_empty">Velkommen til kSync.\n\nDu kan legge til en CalDAV/CardDAV-konto nå.</string>
   <string name="accounts_global_sync_disabled">Systemomspennende automatisk synkronisering avskrudd</string>
   <string name="accounts_global_sync_enable">Skru på</string>
   <!--DavService-->
@@ -201,7 +201,7 @@
   <string name="exception_ioexception">En I/O-feil har inntruffet.</string>
   <string name="exception_show_details">Vis detaljer</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵-tilganger</string>
+  <string name="sync_error_permissions">kSync-tilganger</string>
   <string name="sync_error_permissions_text">Ytterligere tilganger kreves</string>
   <string name="sync_error_io">Nettverk- og I/O-feil - %s</string>
   <string name="sync_error_http_dav">HTTP-tjenerfeil - %s</string>
@@ -209,6 +209,6 @@
   <string name="sync_error_retry">Forsøk igjen</string>
   <string name="sync_invalid_contact">Fikk ugyldig kontakt fra server</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Tilkoblingssikkerhet</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ har støtt på et ukjent sertifikat. Har du tiltro til det?</string>
+  <string name="certificate_notification_connection_security">kSync: Tilkoblingssikkerhet</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync har støtt på et ukjent sertifikat. Har du tiltro til det?</string>
 </resources>

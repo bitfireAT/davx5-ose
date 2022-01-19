@@ -13,4 +13,10 @@
 
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
 
+    <!--  kSync  -->
+    <dimen name="marginStandardInfomaniak">20dp</dimen>
+    <dimen name="marginStandardMediumInfomaniak">14dp</dimen>
+    <dimen name="radiusInfomaniak">10dp</dimen>
+
+    <dimen name="cardViewRadius">6dp</dimen>
 </resources>

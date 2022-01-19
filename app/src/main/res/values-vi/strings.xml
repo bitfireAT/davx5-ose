@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Tài khoản không tồn tại (nữa)</string>
-  <string name="account_title_address_book">Sổ địa chỉ của DAVx⁵</string>
+  <string name="account_title_address_book">Sổ địa chỉ của kSync</string>
   <string name="address_books_authority_title">Sổ địa chỉ</string>
   <string name="field_required">Trường này là bắt buộc</string>
   <string name="help">Trợ giúp</string>
@@ -116,7 +116,7 @@
   <string name="navigation_drawer_donate">Quyên góp</string>
   <string name="navigation_drawer_privacy_policy">Chính sách riêng tư</string>
   <string name="account_list_no_internet">Không có kết nối internet. Android sẽ không chạy đồng bộ hoá.</string>
-  <string name="account_list_empty">Chào mừng đến DAVx⁵!\n\nBạn có thể thêm một tài khoản CalDAV/CardDAV ngay.</string>
+  <string name="account_list_empty">Chào mừng đến kSync!\n\nBạn có thể thêm một tài khoản CalDAV/CardDAV ngay.</string>
   <string name="accounts_global_sync_disabled">Đồng bộ hoá tự động trên toàn hệ thống bị tắt</string>
   <string name="accounts_global_sync_enable">Bật</string>
   <string name="accounts_sync_all">Đồng bộ tất cả tài khoản</string>
@@ -376,7 +376,7 @@
   <string name="webdav_notification_upload">Đang tải lên tệp WebDAV</string>
   <string name="webdav_provider_root_title">Nơi gắn WebDAV</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">Quyền của DAVx⁵</string>
+  <string name="sync_error_permissions">Quyền của kSync</string>
   <string name="sync_error_permissions_text">Yêu cầu quyền bổ sung</string>
   <string name="sync_error_tasks_too_old">%s quá cũ</string>
   <string name="sync_error_tasks_required_version">Phiên bản tối thiểu được yêu cầu: %1$s</string>
@@ -391,6 +391,6 @@
   <string name="sync_invalid_task">Đã nhận công việc không hợp lệ từ máy chủ</string>
   <string name="sync_invalid_resources_ignoring">Đang bỏ qua một hoặc nhiều tài nguyên không hợp lệ</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Sự bảo mật của kết nối</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ đã gặp một chứng chỉ không xác định. Bạn có muốn tin tưởng nó không?</string>
+  <string name="certificate_notification_connection_security">kSync: Sự bảo mật của kết nối</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync đã gặp một chứng chỉ không xác định. Bạn có muốn tin tưởng nó không?</string>
 </resources>

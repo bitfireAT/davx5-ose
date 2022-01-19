@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- kSync -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <color name="appintro_background_color" tools:override="true">@color/infomaniakBackground</color>
+    <color name="appintro_default_fab_background_color" tools:override="true">@color/primaryColor</color>
+    <color name="appintro_ripple_color" tools:override="true">@color/infomaniakText</color>
+    <color name="infomaniakBackground">#131415</color>
+    <color name="infomaniakBackgroundCard">#2D2E30</color>
+    <color name="infomaniakText">#9E9E9E</color>
+    <color name="infomaniakTextSecondary">#FFFFFF</color>
+    <color name="infomaniakTitle">#FFFFFF</color>
+
+    <color name="appBar">#2D2E30</color>
+    <color name="appBarTextColor">@android:color/white</color>
+    <color name="background">#F4F6FD</color>
+    <color name="backgroundCardview">@color/appBar</color>
+    <color name="backgroundSecondary">#242424</color>
+    <color name="iconColor">#88969F</color>
+    <color name="popupText">#FFFFFF</color>
+    <color name="ripple">#33ffffff</color>
+</resources>

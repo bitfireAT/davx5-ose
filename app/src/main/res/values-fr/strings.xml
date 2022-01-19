@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Le compte n’existe plus (désormais)</string>
-  <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
+  <string name="account_title_address_book">Carnet d\'adresses kSync</string>
   <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="field_required">Ce champs est requis</string>
   <string name="help">Aide</string>
@@ -116,7 +116,7 @@
   <string name="navigation_drawer_donate">Faire un don</string>
   <string name="navigation_drawer_privacy_policy">Politique de confidentialité</string>
   <string name="account_list_no_internet">Pas de connectivité Internet. Android ne pourra pas exécuter la synchronisation.</string>
-  <string name="account_list_empty">Bienvenue sur DAVx⁵!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
+  <string name="account_list_empty">Bienvenue sur kSync!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
   <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
   <string name="accounts_global_sync_enable">Activer</string>
   <string name="accounts_sync_all">Synchroniser tous les comptes</string>
@@ -366,7 +366,7 @@
   <string name="webdav_notification_download">Téléchargement du fichier WebDAV</string>
   <string name="webdav_notification_upload">Téléversement du fichier WebDAV</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">Autorisations DAVx⁵</string>
+  <string name="sync_error_permissions">Autorisations kSync</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
   <string name="sync_error_tasks_too_old">%s trop vieux</string>
   <string name="sync_error_tasks_required_version">Version minimale requise : %1$s</string>
@@ -381,6 +381,6 @@
   <string name="sync_invalid_task">Reçu une tâche invalide du serveur</string>
   <string name="sync_invalid_resources_ignoring">Ignorer une ou plusieurs ressources non valides</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵ : Sécurité de la connexion</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ a rencontré un certificat inconnu. Voulez-vous lui faire confiance?</string>
+  <string name="certificate_notification_connection_security">kSync : Sécurité de la connexion</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync a rencontré un certificat inconnu. Voulez-vous lui faire confiance?</string>
 </resources>

@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Konto findes ikke mere</string>
-  <string name="account_title_address_book">DAVx⁵ adressebog</string>
+  <string name="account_title_address_book">kSync adressebog</string>
   <string name="address_books_authority_title">Adressebøger</string>
   <string name="field_required">Feltet er påkrævet</string>
   <string name="help">Hjælp</string>
@@ -116,7 +116,7 @@
   <string name="navigation_drawer_donate">Donation</string>
   <string name="navigation_drawer_privacy_policy">Privatlivs politik</string>
   <string name="account_list_no_internet">Ingen internetforbindelse. Android kører ikke synkronisering.</string>
-  <string name="account_list_empty">Velkommen til DAVx⁵!\n\nDu kan nu tilføje en CalDAV/CardDAV konto.</string>
+  <string name="account_list_empty">Velkommen til kSync!\n\nDu kan nu tilføje en CalDAV/CardDAV konto.</string>
   <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
   <string name="accounts_global_sync_enable">Aktivere</string>
   <string name="accounts_sync_all">Synkronisere alle konti</string>
@@ -379,7 +379,7 @@
   <string name="webdav_notification_upload">Overfør WebDAV fil</string>
   <string name="webdav_provider_root_title">Montere WebDAV</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵-rettigheder</string>
+  <string name="sync_error_permissions">kSync-rettigheder</string>
   <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>
   <string name="sync_error_tasks_too_old">%s for gammel</string>
   <string name="sync_error_tasks_required_version">Påkrævet version: %1$s</string>
@@ -394,6 +394,6 @@
   <string name="sync_invalid_task">Modtaget ugyldig opgave fra server</string>
   <string name="sync_invalid_resources_ignoring">Ignorere en eller flere ugyldige kilder</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Forbindelsessikkerhed</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ er stødt på et ukendt certifikat. Vil du stole på det? </string>
+  <string name="certificate_notification_connection_security">kSync: Forbindelsessikkerhed</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync er stødt på et ukendt certifikat. Vil du stole på det? </string>
 </resources>

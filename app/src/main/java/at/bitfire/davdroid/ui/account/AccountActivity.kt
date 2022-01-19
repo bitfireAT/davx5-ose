@@ -169,7 +169,7 @@ class AccountActivity: AppCompatActivity() {
 
             if (calDavSvcId != null) {
                 idxCalDav = currentIndex++
-                idxWebcal = currentIndex
+                idxWebcal = null //kSync
             } else {
                 idxCalDav = null
                 idxWebcal = null

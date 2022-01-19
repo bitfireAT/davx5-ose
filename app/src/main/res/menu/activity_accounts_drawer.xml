@@ -18,7 +18,9 @@
         android:icon="@drawable/ic_settings"
         android:title="@string/navigation_drawer_settings"/>
 
-    <item android:title="@string/navigation_drawer_news_updates">
+    <item
+        android:title="@string/navigation_drawer_news_updates"
+        android:visible="false" >
         <menu>
             <item
                 android:id="@+id/nav_twitter"
@@ -28,7 +30,9 @@
         </menu>
     </item>
 
-    <item android:title="@string/navigation_drawer_tools">
+    <item
+        android:title="@string/navigation_drawer_tools"
+        android:visible="false" >
         <menu>
             <item
                 android:id="@+id/nav_webdav_mounts"
@@ -46,7 +50,7 @@
             <item
                 android:id="@+id/nav_manual"
                 android:icon="@drawable/ic_info"
-                android:title="@string/navigation_drawer_manual"/>
+                android:title="@string/infomaniak_navigation_drawer_manual"/>
             <item
                 android:id="@+id/nav_faq"
                 android:icon="@drawable/ic_help"
@@ -54,7 +58,8 @@
             <item
                 android:id="@+id/nav_forums"
                 android:icon="@drawable/ic_forum"
-                android:title="@string/navigation_drawer_forums"/>
+                android:title="@string/navigation_drawer_forums"
+                android:visible="false"/>
             <item
                 android:id="@+id/nav_donate"
                 android:icon="@drawable/ic_attach_money"
@@ -63,7 +68,8 @@
             <item
                 android:id="@+id/nav_privacy"
                 android:icon="@drawable/ic_cloud_off"
-                android:title="@string/navigation_drawer_privacy_policy"/>
+                android:title="@string/navigation_drawer_privacy_policy"
+                android:visible="false"/>
         </menu>
     </item>
 

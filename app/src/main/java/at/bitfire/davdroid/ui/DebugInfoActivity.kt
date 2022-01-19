@@ -156,6 +156,7 @@ class DebugInfoActivity: AppCompatActivity() {
     fun shareArchive() {
         model.generateZip { zipFile ->
             val builder = ShareCompat.IntentBuilder.from(this)
+                    .setEmailTo(Array(1) { "support@infomaniak.com" }) // kSync
                     .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
                     .setText(getString(R.string.debug_info_attached))
                     .setType("*/*")     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
@@ -484,7 +485,7 @@ class DebugInfoActivity: AppCompatActivity() {
                 try {
                     zipProgress.postValue(true)
 
-                    val zipFile = File(debugInfoDir, "davx5-debug.zip")
+                    val zipFile = File(debugInfoDir, "kSync-debug.zip")
                     Logger.log.fine("Writing debug info to ${zipFile.absolutePath}")
                     ZipOutputStream(zipFile.outputStream().buffered()).use { zip ->
                         zip.setLevel(9)

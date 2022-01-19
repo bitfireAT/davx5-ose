@@ -10,13 +10,16 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:theme="?attr/actionBarTheme" >
 
         <androidx.appcompat.widget.Toolbar
-            android:theme="?attr/actionBarTheme"
             android:id="@+id/toolbar"
+            android:layout_height="?attr/actionBarSize"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"/>
+            android:theme="@style/ActionBarInfomaniak"
+            tools:menu="@menu/activity_accounts"
+            tools:title="Title"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

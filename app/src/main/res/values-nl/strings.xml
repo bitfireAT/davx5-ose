@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Account bestaat niet (of niet meer)</string>
-  <string name="account_title_address_book">DAVx⁵ Adresboek</string>
+  <string name="account_title_address_book">kSync Adresboek</string>
   <string name="address_books_authority_title">Adresboeken</string>
   <string name="field_required">Dit veld is verplicht</string>
   <string name="help">Help</string>
@@ -116,7 +116,7 @@
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
   <string name="account_list_no_internet">Geen internetverbinding. Android zal geen synchronisatie uitvoeren.</string>
-  <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAv account toevoegen.</string>
+  <string name="account_list_empty">Welkom bij kSync!\n\nJe kunt nu een CalDAV/CardDAv account toevoegen.</string>
   <string name="accounts_global_sync_disabled">Systeembrede automatische synchronisatie is uitgeschakeld</string>
   <string name="accounts_global_sync_enable">Inschakelen</string>
   <string name="accounts_sync_all">Alle accounts synchroniseren</string>
@@ -376,7 +376,7 @@
   <string name="webdav_notification_upload">WebDAV-bestand uploaden</string>
   <string name="webdav_provider_root_title">WebDAV-koppeling</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵ rechten</string>
+  <string name="sync_error_permissions">kSync rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
   <string name="sync_error_tasks_too_old">%ste oud</string>
   <string name="sync_error_tasks_required_version">Minimaal vereiste versie: %1$s</string>
@@ -391,6 +391,6 @@
   <string name="sync_invalid_task">Ongeldige taak ontvangen van server</string>
   <string name="sync_invalid_resources_ignoring">Ik negeer nu een of meer invalid resources</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Verbinding beveiliging</string>
+  <string name="certificate_notification_connection_security">kSync: Verbinding beveiliging</string>
   <string name="trust_certificate_unknown_certificate_found">Davdroid is benaderd door een onbekend certificaat. Vertrouwd u dit?</string>
 </resources>
