@@ -47,12 +47,12 @@ class AccountDetailsFragment : Fragment() {
 
     val loginModel by activityViewModels<LoginModel>()
     val model by viewModels<AccountDetailsModel>()
-    lateinit var binding: LoginAccountDetailsBinding
+    lateinit var binding: LoginAccountDetailsBinding // kSync
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = LoginAccountDetailsBinding.inflate(inflater, container, false)
-        binding = v
+        binding = v // kSync
         v.lifecycleOwner = viewLifecycleOwner
         v.details = model
 
@@ -86,8 +86,11 @@ class AccountDetailsFragment : Fragment() {
                 val am = AccountManager.get(requireActivity())
                 if (am.getAccountsByType(getString(R.string.account_type)).any { it.name == name }) {
                     model.nameError.value = getString(R.string.login_account_name_already_taken)
+
+                    // kSync
                     Toast.makeText(context, R.string.login_account_name_already_taken,Toast.LENGTH_LONG).show()
                     activity?.finish()
+
                     return@setOnClickListener
                 }
 
@@ -136,6 +139,7 @@ class AccountDetailsFragment : Fragment() {
         return v.root
     }
 
+    // kSync
     override fun onStart() {
         super.onStart()
         binding.createAccount.callOnClick()

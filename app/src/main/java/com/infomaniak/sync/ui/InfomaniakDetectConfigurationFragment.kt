@@ -51,7 +51,6 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
 
     private val loginModel by activityViewModels<LoginModel>()
     private val detectConfigurationModel by viewModels<DetectConfigurationFragment.DetectConfigurationModel>()
-
     private lateinit var binding: InfomaniakLoadingViewBinding
 
     lateinit var code: String
@@ -94,10 +93,7 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
                                     .commit()
                             else
                                 parentFragmentManager.beginTransaction()
-                                    .add(
-                                        DetectConfigurationFragment.NothingDetectedFragment(),
-                                        null
-                                    )
+                                    .add(DetectConfigurationFragment.NothingDetectedFragment(), null)
                                     .commit()
                         })
                 }
