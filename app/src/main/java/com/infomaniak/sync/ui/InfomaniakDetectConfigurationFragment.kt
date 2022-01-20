@@ -182,19 +182,19 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
                 val accounts: Array<Account> = AccountManager.get(context).getAccountsByType(getString(R.string.account_type))
 
                 var numberSameName = 1
-                var tempDisplayName = infomaniakUser.display_name
+                var tempDisplayName = infomaniakUser.displayName
                 var i = 0
                 while (i < accounts.size) {
                     val account = accounts[i]
                     if (account.name == tempDisplayName) {
-                        tempDisplayName = infomaniakUser.display_name + " $numberSameName"
+                        tempDisplayName = infomaniakUser.displayName + " $numberSameName"
                         numberSameName++
                         i = 0
                     } else {
                         i++
                     }
                 }
-                infomaniakUser.display_name = tempDisplayName
+                infomaniakUser.displayName = tempDisplayName
 
                 val formater = SimpleDateFormat("EEEE MMM d yyyy HH:mm:ss", Locale.getDefault())
 

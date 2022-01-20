@@ -1,8 +1,12 @@
 package com.infomaniak.sync.model
 
+import com.google.gson.annotations.SerializedName
+
 class ErrorAPI {
-    val error_code: Int = 0
-    val error_type: String? = null
+    @SerializedName("error_code")
+    val errorCode: Int = 0
+    @SerializedName("error_type")
+    val errorType: String? = null
     val error: String? = null
     val reason: String? = null
 }
