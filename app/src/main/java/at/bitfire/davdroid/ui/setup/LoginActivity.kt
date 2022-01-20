@@ -7,12 +7,14 @@ package at.bitfire.davdroid.ui.setup
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
+import com.infomaniak.sync.ui.InfomaniakDetectConfigurationFragment
 import java.util.*
 
 /**
@@ -41,7 +43,7 @@ class LoginActivity: AppCompatActivity() {
 
     }
 
-    private val loginFragmentLoader = ServiceLoader.load(LoginCredentialsFragment::class.java)!!
+//    private val loginFragmentLoader = ServiceLoader.load(LoginCredentialsFragment::class.java)!!
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,15 +52,25 @@ class LoginActivity: AppCompatActivity() {
         if (savedInstanceState == null) {
             // first call, add first login fragment
             var fragment: Fragment? = null
-            for (factory in loginFragmentLoader)
-                fragment = fragment ?: factory.getFragment(intent)
+//            for (factory in loginFragmentLoader)
+//                fragment = fragment ?: factory.getFragment(intent)
+
+            if (intent != null) {
+                val code = intent.getStringExtra("code")
+                if (!code.isNullOrBlank()) {
+                    fragment = InfomaniakDetectConfigurationFragment.newInstance(code)
+                }
+            }
 
             if (fragment != null) {
                 supportFragmentManager.beginTransaction()
                         .replace(android.R.id.content, fragment)
                         .commit()
-            } else
+            } else {
                 Logger.log.severe("Couldn't create LoginFragment")
+                Toast.makeText(this, getString(R.string.an_error_has_occurred), Toast.LENGTH_LONG).show()
+                onBackPressed()
+            }
         }
     }
 

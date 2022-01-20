@@ -46,6 +46,7 @@
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
             android:adjustViewBounds="true"
+            android:visibility="gone"
             app:srcCompat="@drawable/accounts_background"/>
 
         <ImageView
@@ -62,7 +63,7 @@
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.092"
+            app:layout_constraintVertical_bias="0.292"
             tools:ignore="ContentDescription" />
 
         <androidx.constraintlayout.widget.ConstraintLayout

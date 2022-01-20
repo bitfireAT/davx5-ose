@@ -167,6 +167,7 @@
                                 app:layout_constraintBottom_toTopOf="@id/causeIcon"
                                 android:adjustViewBounds="true"
                                 app:verticalOffsetPercent=".85"
+                                android:visibility="gone"
                                 app:srcCompat="@drawable/undraw_server_down" />
 
                             <ImageView
@@ -267,6 +268,7 @@
                                 app:layout_constraintBottom_toTopOf="@id/debugInfoIcon"
                                 android:adjustViewBounds="true"
                                 app:verticalOffsetPercent=".85"
+                                android:visibility="gone"
                                 app:srcCompat="@drawable/undraw_server_down" />
 
                             <ImageView
