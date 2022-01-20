@@ -51,8 +51,10 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
 
     private val loginModel by activityViewModels<LoginModel>()
     private val detectConfigurationModel by viewModels<DetectConfigurationFragment.DetectConfigurationModel>()
-    lateinit var code: String
+
     private lateinit var binding: InfomaniakLoadingViewBinding
+
+    lateinit var code: String
 
     companion object {
         fun newInstance(code: String) = InfomaniakDetectConfigurationFragment().apply {

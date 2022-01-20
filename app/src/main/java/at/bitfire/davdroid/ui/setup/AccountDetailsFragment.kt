@@ -87,7 +87,7 @@ class AccountDetailsFragment : Fragment() {
                 if (am.getAccountsByType(getString(R.string.account_type)).any { it.name == name }) {
                     model.nameError.value = getString(R.string.login_account_name_already_taken)
                     Toast.makeText(context, R.string.login_account_name_already_taken,Toast.LENGTH_LONG).show()
-                    activity!!.finish()
+                    activity?.finish()
                     return@setOnClickListener
                 }
 
