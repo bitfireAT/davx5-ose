@@ -57,6 +57,9 @@ class CalendarSyncManager(
         // if there are dirty exceptions for events, mark their master events as dirty, too
         localCollection.processDirtyExceptions()
 
+        // now find dirty events that have no instances and set them to deleted
+        localCollection.deleteDirtyEventsWithoutInstances()
+
         return true
     }
 

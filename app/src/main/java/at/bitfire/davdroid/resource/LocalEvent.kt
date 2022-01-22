@@ -4,7 +4,11 @@
 
 package at.bitfire.davdroid.resource
 
+import android.accounts.Account
+import android.content.ContentProviderClient
+import android.content.ContentUris
 import android.content.ContentValues
+import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.ical4android.*
@@ -23,6 +27,111 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         const val COLUMN_FLAGS = Events.SYNC_DATA2
         const val COLUMN_SEQUENCE = Events.SYNC_DATA3
         const val COLUMN_SCHEDULE_TAG = Events.SYNC_DATA4
+
+        /**
+         * Marks the event as deleted
+         * @param eventID
+         */
+        fun markAsDeleted(provider: ContentProviderClient, account: Account, eventID: Long) {
+            provider.update(
+                AndroidCalendar.syncAdapterURI(
+                    ContentUris.withAppendedId(
+                        Events.CONTENT_URI,
+                        eventID
+                    ), account
+                ),
+                ContentValues(1).apply {
+                    put(Events.DELETED, 1)
+                },
+                null,null
+            )
+        }
+
+        /**
+         * Finds the amount of direct instances this event has (without exceptions); used by [numInstances]
+         * to find the number of instances of exceptions.
+         *
+         * The number of returned instances may vary with the Android version.
+         *
+         * @return number of direct event instances (not counting instances of exceptions); *null* if
+         * the number can't be determined or if the event has no last date (recurring event without last instance)
+         */
+        fun numDirectInstances(provider: ContentProviderClient, account: Account, eventID: Long): Int? {
+            // query event to get first and last instance
+            var first: Long? = null
+            var last: Long? = null
+            provider.query(
+                AndroidCalendar.syncAdapterURI(
+                    ContentUris.withAppendedId(
+                        Events.CONTENT_URI,
+                        eventID
+                    ), account
+                ),
+                arrayOf(Events.DTSTART, Events.LAST_DATE), null, null, null
+            )?.use { cursor ->
+                cursor.moveToNext()
+                if (!cursor.isNull(0))
+                    first = cursor.getLong(0)
+                if (!cursor.isNull(1))
+                    last = cursor.getLong(1)
+            }
+            // if this event doesn't have a last occurence, it's endless and always has instances
+            if (first == null || last == null)
+                return null
+
+            /* We can't use Long.MIN_VALUE and Long.MAX_VALUE because Android generates the instances
+             on the fly and it doesn't accept those values. So we use the first/last actual occurence
+             of the event (calculated by Android). */
+            val instancesUri = AndroidCalendar.syncAdapterURI(CalendarContract.Instances.CONTENT_URI, account)
+                .buildUpon()
+                .appendPath(first.toString())       // begin timestamp
+                .appendPath(last.toString())        // end timestamp
+                .build()
+
+            var numInstances = 0
+            provider.query(
+                instancesUri, null,
+                "${CalendarContract.Instances.EVENT_ID}=?", arrayOf(eventID.toString()),
+                null
+            )?.use { cursor ->
+                numInstances += cursor.count
+            }
+            return numInstances
+        }
+
+        /**
+         * Finds the total number of instances this event has (including instances of exceptions)
+         *
+         * The number of returned instances may vary with the Android version.
+         *
+         * @return number of direct event instances (not counting instances of exceptions); *null* if
+         * the number can't be determined or if the event has no last date (recurring event without last instance)
+         */
+        fun numInstances(provider: ContentProviderClient, account: Account, eventID: Long): Int? {
+            // num instances of the main event
+            var numInstances = numDirectInstances(provider, account, eventID) ?: return null
+
+            // add the number of instances of every main event's exception
+            provider.query(
+                AndroidCalendar.syncAdapterURI(Events.CONTENT_URI, account),
+                arrayOf(Events._ID),
+                "${Events.ORIGINAL_ID}=?", // get exception events of the main event
+                arrayOf("$eventID"), null
+            )?.use { exceptionsEventCursor ->
+                while (exceptionsEventCursor.moveToNext()) {
+                    val exceptionEventID = exceptionsEventCursor.getLong(0)
+                    val exceptionInstances = numDirectInstances(provider, account, exceptionEventID)
+
+                    if (exceptionInstances == null)
+                        // number of instances of exception can't be determined; so the total number of instances is also unclear
+                        return null
+
+                    numInstances += exceptionInstances
+                }
+            }
+            return numInstances
+        }
+
     }
 
     override var fileName: String? = null

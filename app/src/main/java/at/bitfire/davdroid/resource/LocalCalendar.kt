@@ -81,6 +81,7 @@ class LocalCalendar private constructor(
 
             return values
         }
+
     }
 
     override val tag: String
@@ -242,6 +243,33 @@ class LocalCalendar private constructor(
                         .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
                         .withValue(Events.DIRTY, 0))
                 batch.commit()
+            }
+        }
+    }
+
+    /**
+     * Marks dirty events (which are not already marked as deleted) which got no valid instances as "deleted"
+     *
+     * @return number of affected events
+     */
+    fun deleteDirtyEventsWithoutInstances() {
+        provider.query(
+            syncAdapterURI(Events.CONTENT_URI),
+            arrayOf(Events._ID),
+            "${Events.DIRTY} AND NOT ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",    // Get dirty main events (and no exception events)
+            null, null
+        )?.use { cursor ->
+            while (cursor.moveToNext()) {
+                val eventID = cursor.getLong(0)
+
+                // get number of instances
+                val numEventInstances = LocalEvent.numInstances(provider, account, eventID)
+
+                // delete event if there are no instances
+                if (numEventInstances == 0) {
+                    Logger.log.info("Marking event #$eventID without instances as deleted")
+                    LocalEvent.markAsDeleted(provider, account, eventID)
+                }
             }
         }
     }
