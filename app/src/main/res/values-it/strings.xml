@@ -123,6 +123,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Fallita l\'individuazione dei servizi</string>
   <string name="dav_service_refresh_couldnt_refresh">Impossibile aggiornare la lista delle raccolte</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Esecuzione in primo piano</string>
   <string name="foreground_service_notify_text">Su alcuni dispositivi, questo è necessario per la sincronizzazione automatica.</string>
@@ -220,6 +221,7 @@
   <string name="login_login">Login</string>
   <string name="login_create_account">Crea account</string>
   <string name="login_account_name">Nome account</string>
+  <string name="login_account_avoid_apostrophe">L\'utilizzo di apostrofi (\') potrebbe causare problemi su alcuni dispositivi.</string>
   <string name="login_account_name_info">Inserisci il tuo indirizzo email come nome dell\'account in quanto Android userà il nome dell\'account nel campo ORGANIZER degli eventi creati. Non è possibile avere due account con nome uguale.</string>
   <string name="login_account_contact_group_method">Metodo del contact group:</string>
   <string name="login_account_name_required">Richiesto il nome dell\'account</string>
@@ -359,6 +361,7 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="exception_httpexception">Si è verificato un errore HTTP.</string>
   <string name="exception_ioexception">Si è verificato un errore di I/O.</string>
   <string name="exception_show_details">Mostra dettagli</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Installazioni WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Quantità utilizzata: %1$s / disponibile: %2$s</string>

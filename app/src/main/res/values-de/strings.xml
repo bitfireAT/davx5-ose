@@ -123,6 +123,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Diensterkennung fehlgeschlagen</string>
   <string name="dav_service_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Läuft im Vordergrund</string>
   <string name="foreground_service_notify_text">Auf manchen Geräten für die automatische Synchronisierung benötigt</string>
@@ -359,6 +360,7 @@
   <string name="exception_httpexception">Ein HTTP-Fehler ist aufgetreten.</string>
   <string name="exception_ioexception">Ein E/A-Fehler ist aufgetreten.</string>
   <string name="exception_show_details">Details anzeigen</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV-Zugänge</string>
   <string name="webdav_mounts_quota_used_available">Speicher belegt: %1$s / verfügbar: %2$s</string>

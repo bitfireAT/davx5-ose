@@ -112,6 +112,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">تشخیص سرویس ناموفق بود</string>
   <string name="dav_service_refresh_couldnt_refresh">لیست مجموعه به روز نشد</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">در حال اجرا در پیش زمینه</string>
   <string name="foreground_service_notify_text">در برخی از دستگاه ها ، این مورد برای همگام سازی خودکار لازم است.</string>
@@ -335,6 +336,7 @@
   <string name="exception_httpexception">خطای HTTP رخ داده است.</string>
   <string name="exception_ioexception">خطای ورودی خروجی رخ داده است.</string>
   <string name="exception_show_details">نمایش جزئیات</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">مجوزهای همگام‌ساز DAVx⁵</string>

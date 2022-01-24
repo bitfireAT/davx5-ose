@@ -116,6 +116,7 @@
   <string name="navigation_drawer_donate">Doar</string>
   <string name="navigation_drawer_privacy_policy">Política de Privacidade</string>
   <string name="account_list_no_internet">Sen conexión a internet. Android non sincronizará.</string>
+  <string name="account_list_low_storage">Queda pouco espazo, Android non executará a sincronización.</string>
   <string name="account_list_empty">Benvida a DAVx⁵!\n\nXa podes engadir unha conta CalDAV/CardDAV</string>
   <string name="accounts_global_sync_disabled">A sincronización global automática do sistema está desactivada</string>
   <string name="accounts_global_sync_enable">Activar</string>
@@ -123,6 +124,9 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Fallou a detección do servizo</string>
   <string name="dav_service_refresh_couldnt_refresh">Non se actualizou a lista da colección</string>
+  <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Non pode executarse en segundo plano</string>
+  <string name="battery_optimization_notify_text">Require ter permiso para optimizacións de batería</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">A funcionar en primeiro plano</string>
   <string name="foreground_service_notify_text">En algúns dispositivos esto é necesario para a sincronización automática.</string>
@@ -134,6 +138,9 @@
   <string name="app_settings_logging">Rexistro polo miúdo</string>
   <string name="app_settings_logging_on">O rexistro está activo</string>
   <string name="app_settings_logging_off">O rexistro está desactivado</string>
+  <string name="app_settings_battery_optimization">Optimización da batería</string>
+  <string name="app_settings_battery_optimization_whitelisted">DAVx5 ten permiso (recomendado)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">DAVx5 non ten permiso (non recomendado)</string>
   <string name="app_settings_foreground_service">Manter en primeiro plano</string>
   <string name="app_settings_foreground_service_details">Podería ser útil se o dispositivo dificulta a sincronización automática</string>
   <string name="app_settings_connection">Conexión</string>
@@ -220,6 +227,7 @@
   <string name="login_login">Conectar</string>
   <string name="login_create_account">Crear conta</string>
   <string name="login_account_name">Nome da conta</string>
+  <string name="login_account_avoid_apostrophe">O uso de apóstrofes (\') pode causar problemas nalgúns dispositivos, según nos informan.</string>
   <string name="login_account_name_info">Utiliza o teu enderezo de correo electrónico como nome de conta xa que Android utilizará o nome da conta como campo ORGANIZADOR para os eventos que cree. Non poderás ter dúas contas co mesmo nome.</string>
   <string name="login_account_contact_group_method">Método para agrupar contacto:</string>
   <string name="login_account_name_required">Nome de conta requerido</string>
@@ -358,6 +366,9 @@
   <string name="exception_httpexception">Houbo un fallo HTTP.</string>
   <string name="exception_ioexception">Houbo un fallo I/O.</string>
   <string name="exception_show_details">Mostrar detalles</string>
+  <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Sincronización en pausa</string>
+  <string name="storage_low_notify_text">Case non queda espazo libre</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Montaxes WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Cota utilizada: %1$s / dispoñible: %2$s</string>

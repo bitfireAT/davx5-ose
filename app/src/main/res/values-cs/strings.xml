@@ -116,6 +116,7 @@
   <string name="navigation_drawer_donate">Obdarovat</string>
   <string name="navigation_drawer_privacy_policy">Ochrana soukromí</string>
   <string name="account_list_no_internet">Bez připojení k Internetu. Systém Android synchronizaci nespustí.</string>
+  <string name="account_list_low_storage">Zbývá málo místa na úložišti. Systém Android nespustí synchronizaci.</string>
   <string name="account_list_empty">Vítejte v aplikaci DAVx⁵!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizace v rámci celého systému je vypnutá</string>
   <string name="accounts_global_sync_enable">Zapnout</string>
@@ -123,6 +124,9 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Vyhledání služby se nezdařilo</string>
   <string name="dav_service_refresh_couldnt_refresh">Nedaří se znovu načíst seznam sady</string>
+  <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Běh na pozadí není zařízením umožňován</string>
+  <string name="battery_optimization_notify_text">Je zapotřebí zařadit na seznam výjimek z optimalizace akumulátoru</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Spuštěné v popředí</string>
   <string name="foreground_service_notify_text">Na některých zařízeních je toto nezbytné aby fungovala automatická synchronizace.</string>
@@ -134,6 +138,9 @@
   <string name="app_settings_logging">Podrobnější zaznamenávání událostí</string>
   <string name="app_settings_logging_on">Zaznamenávání událostí je aktivní</string>
   <string name="app_settings_logging_off">Zaznamenávání událostí je vypnuté</string>
+  <string name="app_settings_battery_optimization">Optimalizace akumulátoru</string>
+  <string name="app_settings_battery_optimization_whitelisted">DAVx5 je zařazeno na seznam výjimek (doporučeno)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">DAVx5 není zařazeno na seznam výjimek (doporučeno)</string>
   <string name="app_settings_foreground_service">Ponechat spuštěné v popředí</string>
   <string name="app_settings_foreground_service_details">Může pomoci pokud snaha zařízení o úsporu energie překáží automatické synchronizaci</string>
   <string name="app_settings_connection">Připojení</string>
@@ -220,6 +227,7 @@
   <string name="login_login">Přihlášení</string>
   <string name="login_create_account">Vytvořit účet</string>
   <string name="login_account_name">Název účtu</string>
+  <string name="login_account_avoid_apostrophe">Použití apostrofů (\') bylo u některých zařízení hlášeno jako problematické.</string>
   <string name="login_account_name_info">Pro jméno účtu použijte svou e-mailovou adresu, protože Android bude brát jméno účtu jako údaj pro ORGANIZÁTORA vytvořených událostí. Nelze mít dva účty stejného jména.</string>
   <string name="login_account_contact_group_method">Metoda seskupování kontaktů:</string>
   <string name="login_account_name_required">Je třeba zadat název pro účet</string>
@@ -362,6 +370,9 @@
   <string name="exception_httpexception">Došlo k HTTP chybě.</string>
   <string name="exception_ioexception">Došlo k chybě vstupu/výstupu.</string>
   <string name="exception_show_details">Zobrazit podrobnosti</string>
+  <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Synchronizace pozastavena</string>
+  <string name="storage_low_notify_text">Nezbývá téměř žádné volné místo</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV připojení</string>
   <string name="webdav_mounts_quota_used_available">Využitá kvóta: %1$s / k dispozici: %2$s</string>

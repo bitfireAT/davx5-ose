@@ -116,6 +116,7 @@
   <string name="navigation_drawer_donate">Пожертвовать</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
   <string name="account_list_no_internet">Нет подключения к интернету. Android не будет выполнять синхронизацию.</string>
+  <string name="account_list_low_storage">Место для хранения мало. Android не будет выполнять синхронизацию.</string>
   <string name="account_list_empty">Добро пожаловать в DAVx⁵!\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
   <string name="accounts_global_sync_enable">Включить</string>
@@ -123,6 +124,9 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Не удалось обнаружить службу</string>
   <string name="dav_service_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
+  <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Невозможно запустить в приоритетном режиме</string>
+  <string name="battery_optimization_notify_text">Необходимо добавить в белый список оптимизации батареи</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Запущен в приоритетном режиме</string>
   <string name="foreground_service_notify_text">Для автоматической синхронизации на некоторых устройствах.</string>
@@ -134,6 +138,9 @@
   <string name="app_settings_logging">Детальное журналирование</string>
   <string name="app_settings_logging_on">Журналирование активно</string>
   <string name="app_settings_logging_off">Журналирование отключено</string>
+  <string name="app_settings_battery_optimization">Оптимизация батареи</string>
+  <string name="app_settings_battery_optimization_whitelisted">DAVx5 внесен в белый список (рекомендуется)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">DAVx5 не внесен в белый список (не рекомендуется)</string>
   <string name="app_settings_foreground_service">Приоритетный режим</string>
   <string name="app_settings_foreground_service_details">Может помочь, если ваше устройство препятствует автоматической синхронизации</string>
   <string name="app_settings_connection">Подключение</string>
@@ -220,6 +227,7 @@
   <string name="login_login">Войти</string>
   <string name="login_create_account">Создать аккаунт</string>
   <string name="login_account_name">Название аккаунта</string>
+  <string name="login_account_avoid_apostrophe">По имеющимся данным, использование апострофов (\') вызывает проблемы на некоторых устройствах.</string>
   <string name="login_account_name_info">Укажите ваш адрес email в качестве названия аккаунта, поскольку Android будет его использовать в поле ORGANIZER для создаваемых событий. У вас не может быть двух аккаунтов с тем же именем.</string>
   <string name="login_account_contact_group_method">Метод группировки контактов:</string>
   <string name="login_account_name_required">Название аккаунта обязательно</string>
@@ -362,6 +370,9 @@
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
   <string name="exception_ioexception">Произошла ошибка ввода/вывода.</string>
   <string name="exception_show_details">Показать детали</string>
+  <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Синхронизация приостановлена</string>
+  <string name="storage_low_notify_text">Почти не осталось свободного места</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Точки монтирования WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Использованная квота: %1$s / доступно: %2$s</string>

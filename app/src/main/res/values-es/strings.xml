@@ -123,6 +123,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Falló la detección del servicio</string>
   <string name="dav_service_refresh_couldnt_refresh">No se pudo refrescar lista de colección</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Funcionando en primer plano.</string>
   <string name="foreground_service_notify_text">En algunos dispositivos, esto es necesario para la sincronización automática.</string>
@@ -358,6 +359,7 @@
   <string name="exception_httpexception">Ha ocurrido un error HTTP.</string>
   <string name="exception_ioexception">Ha ocurrido un error I/O.</string>
   <string name="exception_show_details">Mostrar detalles</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Montajes WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Cuota usada: %1$s/ disponible: %2$s</string>

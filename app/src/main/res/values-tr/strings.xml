@@ -25,6 +25,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Servis keşfi başarısız</string>
   <string name="dav_service_refresh_couldnt_refresh">Kolleksiyon listesi yenilenemedi</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Ayarlar</string>
@@ -111,6 +112,7 @@
   <string name="exception_httpexception">Bir HTTP hatası oluştu.</string>
   <string name="exception_ioexception">Bir I/O hatası oluştu.</string>
   <string name="exception_show_details">Detayları göster</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ izinleri</string>
