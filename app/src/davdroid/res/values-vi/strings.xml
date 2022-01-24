@@ -123,6 +123,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Dò tìm dịch vụ thất bại</string>
   <string name="dav_service_refresh_couldnt_refresh">Không thể làm mới danh sách bộ sưu tập</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Đang chạy ở trước</string>
   <string name="foreground_service_notify_text">Trên một số thiết bị, điều này là cần thiết để đồng bộ hoá tự động.</string>
@@ -220,6 +221,7 @@
   <string name="login_login">Đăng nhập</string>
   <string name="login_create_account">Tạo tài khoản</string>
   <string name="login_account_name">Tên tài khoản</string>
+  <string name="login_account_avoid_apostrophe">Việc sử dụng dấu nháy đơn đã được báo cáo là gây ra vấn đề ở một số thiết bị.</string>
   <string name="login_account_name_info">Sử dụng địa chỉ email của bạn làm tên tài khoản vì Android sẽ sử dụng tên tài khoản làm trường ORGANIZER cho các sự kiện bạn tạo. Bạn không thể có hai tài khoản với cùng một tên.</string>
   <string name="login_account_contact_group_method">Phương pháp nhóm danh bạ:</string>
   <string name="login_account_name_required">Yêu cầu tên tài khoản</string>
@@ -356,6 +358,7 @@
   <string name="exception_httpexception">Đã xảy ra lỗi HTTP.</string>
   <string name="exception_ioexception">Đã xảy ra lỗi I/O.</string>
   <string name="exception_show_details">Hiện chi tiết</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Nơi gắn WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Hạn mức đã sử dụng: %1$s / có sẵn: %2$s</string>

@@ -56,16 +56,25 @@
   <string name="permissions_calendar_status_on">Ο Συγχρονισμός ημερολογίου είναι δυνατός</string>
   <string name="permissions_opentasks_title">Δικαιώματα OpenTasks</string>
   <string name="permissions_tasksorg_title">Δικαιώματα εργασιών</string>
+  <string name="permissions_tasks_status_not_installed">Μη συγχρονισμός εργασιών (δεν είναι εγκατεστημένο)</string>
   <string name="permissions_tasks_status_off">Μη συγχρονισμός εργασιών (δεν προτείνεται)</string>
+  <string name="permissions_tasks_status_on">Ο Συγχρονισμός εργασιών είναι διαθέσιμος</string>
   <string name="permissions_autoreset_title">Διατήρηση δικαιωμάτων</string>
   <string name="permissions_autoreset_status_off">Τα δικαιώματα μπορούν να επαναφερθούν αυτόματα (δεν προτείνεται)</string>
+  <string name="permissions_autoreset_status_on">Τα δικαιώματα δεν θα επαναφερθούν αυτόματα</string>
   <string name="permissions_app_settings">Ρυθμίσεις εφαρμογής</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">Δικαιώματα WiFi SSID</string>
+  <string name="wifi_permissions_intro">Για να είναι δυνατή η πρόσβαση σε αυτό το WiFi (SSID), χρειάζεται να πληρούνται οι παρακάτω προϋποθέσεις:</string>
   <string name="wifi_permissions_location_permission">Δικαίωμα ακριβούς εντοπισμού</string>
   <string name="wifi_permissions_location_permission_on">Ενεργοποιήθηκε το δικαίωμα εντοπισμού</string>
   <string name="wifi_permissions_location_permission_off">Απενεργοποιήθηκε το δικαίωμα εντοπισμού</string>
   <string name="wifi_permissions_background_location_permission">Δικαίωμα εντοπισμού στο παρασκήνιο</string>
   <string name="wifi_permissions_background_location_permission_label">Να επιτρέπεται συνέχεια</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Το δικαίωμα στον εντοπισμό είναι <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Το δικαίωμα στον εντοπισμό δεν είναι <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s χρησιμοποιεί την υπηρεσία εντοπισμού μόνο για να προσδιορίσει το SSID του τρέχοντος WIFI για λογαριασμούς με περιορισμούς σε SSIDs. Αυτό γίνεται ακόμα και όταν η εφαρμογή βρίσκεται στο παρασκήνιο. Κανένα δεδομένο εντοπισμού δεν συλλέγεται, καταχωρείται, επεξεργάζεται η αποστέλνεται οπουδήποτε.</string>
+  <string name="wifi_permissions_location_enabled">Η υπηρεσία εντοπισμού είναι πάντα ενεργοποιημένη</string>
   <string name="wifi_permissions_location_enabled_on">Η υπηρεσία εντοπισμού είναι ενεργοποιημένη</string>
   <string name="wifi_permissions_location_enabled_off">Η υπηρεσία εντοπισμού είναι απενεργοποιημένη</string>
   <!--AboutActivity-->
@@ -78,6 +87,7 @@
   <string name="about_license_info_no_warranty">Αυτό το πρόγραμμα συνοδεύεται χωρις ΚΑΜΙΑ ΕΓΓΥΗΣΗ. Είναι ελεύθερο λογισμικό και είστε ευπρόσδεκτοι να το αναδιανείμετε υπό ορισμένες προϋποθέσεις.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Αδυναμία δημιουργίας αρχείου ιστορικού</string>
+  <string name="logging_notification_text">Τώρα γίνεται η καταγραφή όλων των δραστηριοτήτων του %s</string>
   <string name="logging_notification_view_share">Προβολή/διαμοιρασμός</string>
   <string name="logging_notification_disable">Απενεργοποίηση</string>
   <!--AccountsActivity-->
@@ -106,6 +116,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Αποτυχία ανίχνευσης υπηρεσίας</string>
   <string name="dav_service_refresh_couldnt_refresh">Αδυναμία ανανέωσης της λίστας συλλογής</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Εκτέλεση στο προσκήνιο</string>
   <string name="foreground_service_notify_text">Σε κάποιες συσκευές, αυτό είναι απαραίτητο για τον αυτόματο συγχρονισμό</string>
@@ -118,6 +129,7 @@
   <string name="app_settings_logging_on">Η καταγραφή είναι ενεργή</string>
   <string name="app_settings_logging_off">Η καταγραφή είναι απενεργοποιημένη</string>
   <string name="app_settings_foreground_service">Διατήρηση στο προσκήνιο</string>
+  <string name="app_settings_foreground_service_details">Μπορεί να βοηθήσει εάν η συσκευή σας δεν επιτρέπει αυτόματο συγχρονισμό</string>
   <string name="app_settings_connection">Σύνδεση</string>
   <string name="app_settings_override_proxy">Παράκαμψη ρυθμίσεων διαμεσολαβητή</string>
   <string name="app_settings_override_proxy_on">Χρήση προσαρμοσμένων ρυθμίσεων διαμεσολαβητή</string>
@@ -126,6 +138,7 @@
   <string name="app_settings_override_proxy_port">Πόρτα διαμεσολαβητή HTTP</string>
   <string name="app_settings_security">Ασφάλεια</string>
   <string name="app_settings_security_app_permissions">Δικαιώματα εφαρμογής</string>
+  <string name="app_settings_security_app_permissions_summary">Αναθεώρηση των δικαιωμάτων που χρειάζονται για τον συγχρονισμό</string>
   <string name="app_settings_distrust_system_certs">Ακύρωση αξιοπιστίας πιστοποιητικών συστήματος</string>
   <string name="app_settings_distrust_system_certs_on">Τα πιστοποιητικά που προστέθηκαν από το σύστημα και τον χρήστη δεν θα είναι αξιόπιστα</string>
   <string name="app_settings_distrust_system_certs_off">Τα πιστοποιητικά που προστέθηκαν από το σύστημα και τον χρήστη θα είναι αξιόπιστα (συνιστάται)</string>
@@ -137,6 +150,11 @@
   <string name="app_settings_notification_settings_summary">Διαχείριση καναλιών ειδοποιήσεων και των ρυθμίσεών τους</string>
   <string name="app_settings_theme_title">Επιλογή θέματος</string>
   <string name="app_settings_theme_summary">Τρέχον θέμα: %s</string>
+  <string-array name="app_settings_theme_names">
+    <item>Προεπιλογή Συστήματος</item>
+    <item>Φωτεινό</item>
+    <item>Σκοτεινό</item>
+  </string-array>
   <string name="app_settings_reset_hints">Επαναφορά συμβουλών</string>
   <string name="app_settings_reset_hints_summary">Ενεργοποιεί ξανά τις συμβουλές που έχουν απορριφθεί προηγουμένως</string>
   <string name="app_settings_reset_hints_success">Όλες οι συμβουλές θα εμφανιστούν ξανά</string>
@@ -152,6 +170,7 @@
   <string name="account_caldav_missing_calendar_permissions">Μη συγχρονισμός ημερολογίου (έλλειψη δικαιωμάτων)</string>
   <string name="account_caldav_missing_tasks_permissions">Μη συγχρονισμός εργασιών (έλλειψη δικαιωμάτων)</string>
   <string name="account_caldav_missing_permissions">Μη συγχρονισμός ημερολογίου και εργασιών (έλλειψη δικαιωμάτων)</string>
+  <string name="account_webcal_missing_calendar_permissions">Δεν υπάρχει πρόσβαση στα ημερολόγια (έλλειψη δικαιωμάτων)</string>
   <string name="account_permissions_action">Δικαιώματα</string>
   <string name="account_no_address_books">Δεν υπάρχουν βιβλία διευθύνσεων (ακόμα).</string>
   <string name="account_no_calendars">Δεν υπάρχουν ημερολόγια (ακόμα).</string>
@@ -194,6 +213,7 @@
   <string name="login_login">Είσοδος</string>
   <string name="login_create_account">Δημιουργία λογαριασμού</string>
   <string name="login_account_name">Όνομα λογαριασμού</string>
+  <string name="login_account_avoid_apostrophe">Η χρήση αποστρόφων (\'), έχει παρατηρηθεί ότι δημιουργεί προβλήματα σε κάποιες συσκευές.</string>
   <string name="login_account_name_info">Χρησιμοποιήστε τη διεύθυνση ηλεκτρονικού ταχυδρομείου ως όνομα λογαριασμού, επειδή το Android θα χρησιμοποιεί το όνομα του λογαριασμού ως πεδίο ORGANIZER για τα συμβάντα που δημιουργείτε. Δεν μπορείτε να έχετε δύο λογαριασμούς με το ίδιο όνομα.</string>
   <string name="login_account_contact_group_method">Μέθοδος ομάδας επαφών:</string>
   <string name="login_account_name_required">Απαιτείται όνομα λογαριασμού</string>
@@ -206,6 +226,7 @@
   <string name="login_configuration_detection">Ανίχνευση ρυθμίσεων</string>
   <string name="login_querying_server">Περιμένετε, γίνεται ερώτημα στο διακομιστή...</string>
   <string name="login_no_caldav_carddav">Αδυναμία εύρεσης υπηρεσίας CalDAV ή CardDAV.</string>
+  <string name="login_username_password_wrong">Λάθος ονομασία χρήστη (διεύθυνση ηλ. ταχυδρομείου) / συνθηματικού</string>
   <string name="login_view_logs">Εμφάνιση λεπτομερειών</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ρυθμίσεις: %s</string>
@@ -232,6 +253,7 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Θα συγχρονίζεται μόνο μέσω %s (απαιτεί ενεργές υπηρεσίες τοποθεσίας)</string>
   <string name="settings_sync_wifi_only_ssids_off">Θα χρησιμοποιηθούν όλες οι συνδέσεις WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">Ονόματα που χωρίζονται με κόμμα (SSIDs) των επιτρεπόμενων δικτύων WiFi (αφήστε κενό για όλους)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">Ο περιορισμός WiFi SSID χρειάζεται επιπλέον ρυθμίσεις</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Διαχείριση</string>
   <string name="settings_more_info_faq">Περισσότερες πληροφορίες (FAQ)</string>
   <string name="settings_authentication">Πιστοποίηση</string>
@@ -258,7 +280,11 @@
   <string name="settings_default_alarm_off">Δεν δημιουργούνται προεπιλεγμένες υπενθυμίσεις</string>
   <string name="settings_default_alarm_message">Εάν δημιουργούνται προεπιλεγμένες υπενθυμίσεις για συμβάντα χωρίς υπενθύμιση: επιθυμητός αριθμός λεπτών πριν από το συμβάν. Αφήστε κενό για να απενεργοποιήσετε τις προεπιλεγμένες υπενθυμίσεις.</string>
   <string name="settings_manage_calendar_colors">Διαχείριση χρωμάτων ημερολογίου</string>
+  <string name="settings_manage_calendar_colors_on">Τα χρώματα των ημερολογίων επανέρχονται σε κάθε συγχρονισμό</string>
+  <string name="settings_manage_calendar_colors_off">Τα χρώματα ημερολογίων μπορούν να δηλωθούν από άλλες εφαρμογές</string>
   <string name="settings_event_colors">Υποστήριξη χρώματος στα συμβάντα</string>
+  <string name="settings_event_colors_on">Τα χρώματα συμβάντων έχουν συγχρονιστεί</string>
+  <string name="settings_event_colors_off">Τα χρώματα συμβάντων δεν έχουν συγχρονιστεί</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Αλλαγή μεθόδου ομάδας</string>
   <string-array name="settings_contact_group_method_entries">
@@ -283,6 +309,7 @@
   <string name="create_collection_description">Περιγραφή</string>
   <string name="create_collection_optional">προαιρετικό</string>
   <string name="create_collection_home_set">Τοποθεσία αποθήκευσης</string>
+  <string name="create_collection_home_set_required">Η τοποθεσία αποθήκευσης είναι απαραίτητη</string>
   <string name="create_collection_create">Δημιουργία</string>
   <string name="delete_collection">Διαγραφή συλλογής</string>
   <string name="delete_collection_confirm_title">Είστε σίγουρος;</string>
@@ -297,6 +324,7 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Πληροφορίες αποσφαλμάτωσης</string>
   <string name="debug_info_archive_caption">ZIP αρχείο αρχειοθέτησης</string>
+  <string name="debug_info_archive_subtitle">Περιέχει πληροφορίες εντοπισμού σφαλμάτων και αρχεία καταγραφής συστήματος</string>
   <string name="debug_info_archive_share">Διαμοίρασε το αρχείο αρχειοθέτησης</string>
   <string name="debug_info_http_error">Σφάλμα HTTP</string>
   <string name="debug_info_server_error">Σφάλμα διακομιστή</string>
@@ -304,6 +332,7 @@
   <string name="debug_info_io_error">Σφάλμα I/O</string>
   <string name="debug_info_view_details">Προβολή λεπτομερειών</string>
   <string name="debug_info_involved_subtitle">Σχετικά με το πρόβλημα</string>
+  <string name="debug_info_involved_view">Προβολή με την εφαρμογή</string>
   <string name="debug_info_logs_caption">Ιστορικό</string>
   <string name="debug_info_logs_view">Προβολή ιστορικού</string>
   <!--ExceptionInfoFragment-->
@@ -311,12 +340,24 @@
   <string name="exception_httpexception">Παρουσιάστηκε σφάλμα HTTP.</string>
   <string name="exception_ioexception">Παρουσιάστηκε σφάλμα I/O.</string>
   <string name="exception_show_details">Εμφάνιση λεπτομερειών</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">Βάσεις WebDAV</string>
+  <string name="webdav_mounts_quota_used_available">Χώρος αποθήκευσης: %1$s / διαθέσιμα: %2$s</string>
+  <string name="webdav_mounts_unmount">Αποπροσάρτηση</string>
+  <string name="webdav_add_mount_title">Προσθήκη βάσης WebDAV</string>
+  <string name="webdav_mounts_empty">Απευθείας πρόσβαση στα αρχεία σας στο cloud δημιουργώντας μία προσάρτηση WebDAV</string>
+  <string name="webdav_add_mount_display_name">Εμφανιζόμενο όνομα</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">Μη έγκυρο URL</string>
   <string name="webdav_add_mount_username">Όνομα χρήστη</string>
   <string name="webdav_add_mount_password">Κωδικός πρόσβασης</string>
+  <string name="webdav_add_mount_add">Προσθήκη βάσης</string>
+  <string name="webdav_add_mount_no_support">Δεν υπάρχει υπηρεσία WebDAV σε αυτό το URL</string>
   <string name="webdav_notification_access">Πρόσβαση σε αρχείο WebDAV</string>
   <string name="webdav_notification_download">Kαταφόρτωση αρχείου WebDAV</string>
   <string name="webdav_notification_upload">Ανέβασμα αρχείου WebDAV</string>
+  <string name="webdav_provider_root_title">Bάση WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
   <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>

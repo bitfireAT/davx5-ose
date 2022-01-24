@@ -123,6 +123,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Registrering af tjeneste kunne ikke foretages</string>
   <string name="dav_service_refresh_couldnt_refresh">Kunne ikke opdatere samling liste</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Kører i forgrund</string>
   <string name="foreground_service_notify_text">På nogle enheder er dette nødvendigt for automatisk synkronisering.</string>
@@ -359,6 +360,7 @@
   <string name="exception_httpexception">Der er opstået en HTTP-fejl.</string>
   <string name="exception_ioexception">Der er opstået en I/O-fejl.</string>
   <string name="exception_show_details">Vis detaljer</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV monteringspunkter</string>
   <string name="webdav_mounts_quota_used_available">Mængde brugt: %1$s / tilgængelig: %2$s</string>

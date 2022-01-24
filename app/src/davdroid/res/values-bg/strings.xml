@@ -120,6 +120,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Откриването на услугите се провали</string>
   <string name="dav_service_refresh_couldnt_refresh">Грешка при презареждане</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Работи на преден план</string>
   <string name="foreground_service_notify_text">На някои устройства това е необходимо, за да работи автоматичното синхронизиране.</string>
@@ -336,6 +337,7 @@
   <string name="exception_httpexception">Възникна грешка на HTTP.</string>
   <string name="exception_ioexception">Възникна грешка с входа/изхода.</string>
   <string name="exception_show_details">Подробности</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Дялове на WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Използвана квота: %1$s / налична: %2$s</string>

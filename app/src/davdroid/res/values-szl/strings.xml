@@ -70,6 +70,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Niy szło ôdświyżyć serwisu</string>
   <string name="dav_service_refresh_couldnt_refresh">Niy szło ôdświyżyć listy kolekcyje</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Sztelōnki</string>
@@ -244,6 +245,7 @@
   <string name="exception_httpexception">Trefiōł sie błōnd HTTP.</string>
   <string name="exception_ioexception">Trefiōł sie błōnd I/O.</string>
   <string name="exception_show_details">Pokoż informacyje</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">Uprawniynia DAVx⁵</string>

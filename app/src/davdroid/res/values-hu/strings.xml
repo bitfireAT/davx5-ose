@@ -117,6 +117,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
   <string name="dav_service_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Futás előtérben</string>
   <string name="foreground_service_notify_text">Egyes eszközökön erre szükség van az automatikus szinkronizáció működéséhez</string>
@@ -340,6 +341,7 @@
   <string name="exception_httpexception">HTTP hiba történt.</string>
   <string name="exception_ioexception">I/O hiba történt.</string>
   <string name="exception_show_details">Részletek megjelenítése</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ engedélyek </string>
