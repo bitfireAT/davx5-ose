@@ -69,17 +69,14 @@ android {
         }
     }
 
-    lintOptions {
-        disable 'GoogleAppIndexingWarning'                  // we don't need Google indexing, thanks
-        disable 'ImpliedQuantity', 'MissingQuantity'        // quantities from Transifex may vary
-        disable 'MissingTranslation', 'ExtraTranslation'    // translations from Transifex are not always up to date
-        disable 'RtlEnabled', 'RtlHardcoded'                // RTL not supported yet
-        disable 'Typos'
-        disable 'NullSafeMutableLiveData'                   // crashes lint since Mar 2021
+    lint {
+        disable 'GoogleAppIndexingWarning', 'ImpliedQuantity', 'MissingQuantity', 'MissingTranslation', 'ExtraTranslation', 'RtlEnabled', 'RtlHardcoded', 'Typos', 'NullSafeMutableLiveData'
     }
 
     packagingOptions {
-        exclude 'META-INF/*.md'
+        resources {
+            excludes += ['META-INF/*.md']
+        }
     }
 }
 
