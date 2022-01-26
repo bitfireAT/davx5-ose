@@ -16,9 +16,9 @@ import android.provider.CalendarContract.Events
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.ical4android.AndroidCalendar
-import at.bitfire.ical4android.AndroidCalendar.Companion.syncAdapterURI
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.MiscUtils.ContentProviderClientHelper.closeCompat
+import at.techbee.jtx.JtxContract.asSyncAdapter
 import net.fortuna.ical4j.model.Date
 import net.fortuna.ical4j.model.DateList
 import net.fortuna.ical4j.model.parameter.Value
@@ -293,7 +293,7 @@ class LocalEventTest {
 
         // Get the status of whether the event is deleted
         provider.query(
-            syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!), account),
+            ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!).asSyncAdapter(account),
             arrayOf(Events.DELETED),
             null,
             null, null
@@ -340,7 +340,7 @@ class LocalEventTest {
         val eventId = localEvent.id!!
 
         // set event as dirty
-        provider.update(ContentUris.withAppendedId(calendar.eventsSyncURI(), eventId), ContentValues(1).apply {
+        provider.update(ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId), ContentValues(1).apply {
             put(Events.DIRTY, 1)
         }, null, null)
 
@@ -349,7 +349,7 @@ class LocalEventTest {
 
         // verify that event is now marked as deleted
         provider.query(
-            ContentUris.withAppendedId(calendar.eventsSyncURI(), eventId),
+            ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId),
             arrayOf(Events.DELETED), null, null, null
         )!!.use { cursor ->
             cursor.moveToNext()
@@ -369,7 +369,7 @@ class LocalEventTest {
         val eventId = localEvent.id!!
 
         // set event as dirty
-        provider.update(ContentUris.withAppendedId(calendar.eventsSyncURI(), eventId), ContentValues(1).apply {
+        provider.update(ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId), ContentValues(1).apply {
             put(Events.DIRTY, 1)
         }, null, null)
 
@@ -378,7 +378,7 @@ class LocalEventTest {
 
         // verify that event is not marked as deleted
         provider.query(
-            ContentUris.withAppendedId(calendar.eventsSyncURI(), eventId),
+            ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId),
             arrayOf(Events.DELETED), null, null, null
         )!!.use { cursor ->
             cursor.moveToNext()

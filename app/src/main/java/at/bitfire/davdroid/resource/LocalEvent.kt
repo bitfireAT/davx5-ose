@@ -12,6 +12,7 @@ import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.ical4android.*
+import at.bitfire.ical4android.MiscUtils.UriHelper.asSyncAdapter
 import net.fortuna.ical4j.model.property.ProdId
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -34,12 +35,10 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
          */
         fun markAsDeleted(provider: ContentProviderClient, account: Account, eventID: Long) {
             provider.update(
-                AndroidCalendar.syncAdapterURI(
-                    ContentUris.withAppendedId(
-                        Events.CONTENT_URI,
-                        eventID
-                    ), account
-                ),
+                ContentUris.withAppendedId(
+                    Events.CONTENT_URI,
+                    eventID
+                ).asSyncAdapter(account),
                 ContentValues(1).apply {
                     put(Events.DELETED, 1)
                 },
@@ -61,12 +60,10 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
             var first: Long? = null
             var last: Long? = null
             provider.query(
-                AndroidCalendar.syncAdapterURI(
-                    ContentUris.withAppendedId(
-                        Events.CONTENT_URI,
-                        eventID
-                    ), account
-                ),
+                ContentUris.withAppendedId(
+                    Events.CONTENT_URI,
+                    eventID
+                ).asSyncAdapter(account),
                 arrayOf(Events.DTSTART, Events.LAST_DATE), null, null, null
             )?.use { cursor ->
                 cursor.moveToNext()
@@ -82,7 +79,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
             /* We can't use Long.MIN_VALUE and Long.MAX_VALUE because Android generates the instances
              on the fly and it doesn't accept those values. So we use the first/last actual occurence
              of the event (calculated by Android). */
-            val instancesUri = AndroidCalendar.syncAdapterURI(CalendarContract.Instances.CONTENT_URI, account)
+            val instancesUri = CalendarContract.Instances.CONTENT_URI.asSyncAdapter(account)
                 .buildUpon()
                 .appendPath(first.toString())       // begin timestamp
                 .appendPath(last.toString())        // end timestamp
@@ -113,7 +110,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
 
             // add the number of instances of every main event's exception
             provider.query(
-                AndroidCalendar.syncAdapterURI(Events.CONTENT_URI, account),
+                Events.CONTENT_URI.asSyncAdapter(account),
                 arrayOf(Events._ID),
                 "${Events.ORIGINAL_ID}=?", // get exception events of the main event
                 arrayOf("$eventID"), null

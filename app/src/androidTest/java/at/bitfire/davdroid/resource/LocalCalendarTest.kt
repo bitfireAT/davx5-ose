@@ -17,6 +17,7 @@ import androidx.test.rule.GrantPermissionRule
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.MiscUtils.ContentProviderClientHelper.closeCompat
+import at.bitfire.ical4android.MiscUtils.UriHelper.asSyncAdapter
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId
@@ -94,7 +95,7 @@ class LocalCalendarTest {
         val eventId = localEvent.id!!
 
         // set event as dirty
-        provider.update(ContentUris.withAppendedId(calendar.eventsSyncURI(), eventId), ContentValues(1).apply {
+        provider.update(ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId), ContentValues(1).apply {
             put(Events.DIRTY, 1)
         }, null, null)
 
@@ -103,7 +104,7 @@ class LocalCalendarTest {
 
         // verify that event is now marked as deleted
         provider.query(
-            ContentUris.withAppendedId(calendar.eventsSyncURI(), eventId),
+            ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId),
             arrayOf(Events.DELETED), null, null, null
         )!!.use { cursor ->
             cursor.moveToNext()
@@ -123,7 +124,7 @@ class LocalCalendarTest {
         val eventId = localEvent.id!!
 
         // set event as dirty
-        provider.update(ContentUris.withAppendedId(calendar.eventsSyncURI(), eventId), ContentValues(1).apply {
+        provider.update(ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId), ContentValues(1).apply {
             put(Events.DIRTY, 1)
         }, null, null)
 
@@ -132,7 +133,7 @@ class LocalCalendarTest {
 
         // verify that event is not marked as deleted
         provider.query(
-            ContentUris.withAppendedId(calendar.eventsSyncURI(), eventId),
+            ContentUris.withAppendedId(Events.CONTENT_URI.asSyncAdapter(account), eventId),
             arrayOf(Events.DELETED), null, null, null
         )!!.use { cursor ->
             cursor.moveToNext()
