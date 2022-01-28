@@ -116,6 +116,7 @@
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
   <string name="account_list_no_internet">Geen internetverbinding. Android zal geen synchronisatie uitvoeren.</string>
+  <string name="account_list_low_storage">Te weinig opslagruimte beschikbaar. Android zal geen synchronisatie uitvoeren.</string>
   <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAv account toevoegen.</string>
   <string name="accounts_global_sync_disabled">Systeembrede automatische synchronisatie is uitgeschakeld</string>
   <string name="accounts_global_sync_enable">Inschakelen</string>
@@ -124,6 +125,8 @@
   <string name="dav_service_refresh_failed">Service herkenning is mislukt</string>
   <string name="dav_service_refresh_couldnt_refresh">Kon de collectie lijst niet vernieuwen</string>
   <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Kan niet op de voorgrond draaien</string>
+  <string name="battery_optimization_notify_text">Op de batterij optimalisatie witte lijst zetten wordt vereist</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">draait op de voorgrond</string>
   <string name="foreground_service_notify_text">Op sommige apparaten is dit nodig voor automatische synchronisatie.</string>
@@ -135,6 +138,9 @@
   <string name="app_settings_logging">Uitvoerig/expliciet loggen.</string>
   <string name="app_settings_logging_on">Loggen is actief</string>
   <string name="app_settings_logging_off">Loggen is geactiveerd</string>
+  <string name="app_settings_battery_optimization">Batterij optimalisatie</string>
+  <string name="app_settings_battery_optimization_whitelisted">DAVx5 staat op de witte lijst (aanbevolen)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">DAVx5 staat niet op de witte lijst (niet aanbevolen)</string>
   <string name="app_settings_foreground_service">op de voorgrond houden</string>
   <string name="app_settings_foreground_service_details">Kan helpen als uw apparaat automatische synchronisatie verhindert</string>
   <string name="app_settings_connection">Verbinding</string>
@@ -221,6 +227,7 @@
   <string name="login_login">Login</string>
   <string name="login_create_account">Account aanmaken</string>
   <string name="login_account_name">Accountnaam</string>
+  <string name="login_account_avoid_apostrophe">Er is gemeld dat het gebruik van apostrofs (\') op sommige apparaten problemen kan veroorzaken.</string>
   <string name="login_account_name_info">Gebruik je e-mailadres als account-naam, want Android zal deze gebruiken als ORGANIZER veld voor afspraken die je maakt. Je kunt geen 2 accounts met dezelfde naam hebben.</string>
   <string name="login_account_contact_group_method">Methode voor groepen contacten:</string>
   <string name="login_account_name_required">Accountnaam vereist</string>
@@ -360,12 +367,16 @@
   <string name="exception_ioexception">Er is een I/O fout opgetreden.</string>
   <string name="exception_show_details">Toon details</string>
   <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Synchronisatie gepauzeerd</string>
+  <string name="storage_low_notify_text">Bijna geen vrije ruimte meer</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV-koppelingen</string>
   <string name="webdav_mounts_quota_used_available">Quotum gebruikt: %1$s / Beschikbaar: %2$s</string>
   <string name="webdav_mounts_share_content">Inhoud delen</string>
   <string name="webdav_mounts_unmount">Ontkoppelen</string>
   <string name="webdav_add_mount_title">WebDAV-koppeling toevoegen</string>
+  <string name="webdav_mounts_empty">Verkrijg directe toegang tot uw cloudbestanden door een WebDAV-koppeling toe te voegen!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Zie de handleiding voor <a href="%1$s">hoe WebDAV-koppelingen werken</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Weergavenaam</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Ongeldige URL</string>
