@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
-  <string name="account_invalid">Konto findes ikke mere</string>
+  <string name="account_invalid">Konto findes ikke (længere)</string>
   <string name="account_title_address_book">DAVx⁵ adressebog</string>
   <string name="address_books_authority_title">Adressebøger</string>
   <string name="field_required">Feltet er påkrævet</string>
