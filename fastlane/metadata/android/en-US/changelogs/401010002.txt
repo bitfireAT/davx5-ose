@@ -1,0 +1,5 @@
+* add warning to avoid apostrophes in account names
+* show a warning when disk space is low, which will stop synchronization
+* delete dirty events without instances before syncing
+* minor optimizations and bug fixes
+
