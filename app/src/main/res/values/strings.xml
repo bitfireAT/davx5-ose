@@ -419,7 +419,7 @@
     <string name="exception_show_details">Show details</string>
 
     <!-- WebDAV accounts -->
-    <string name="webdav_authority" translatable="false">at.bitfire.davdroid.webdav</string>
+    <string name="webdav_authority" translatable="false">com.infomaniak.sync.webdav</string>
     <string name="webdav_mounts_title">WebDAV mounts</string>
     <string name="webdav_mounts_quota_used_available">Quota used: %1$s / available: %2$s</string>
     <string name="webdav_mounts_share_content">Share content</string>
