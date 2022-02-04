@@ -116,6 +116,7 @@
   <string name="navigation_drawer_donate">捐助</string>
   <string name="navigation_drawer_privacy_policy">隐私政策</string>
   <string name="account_list_no_internet">无网络连接。Android 将不会运行同步。</string>
+  <string name="account_list_low_storage">存储空间低。Android 将不会运行同步。</string>
   <string name="account_list_empty">欢迎使用 kSync！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
   <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
   <string name="accounts_global_sync_enable">启用</string>
@@ -123,6 +124,9 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">服务配置检测失败</string>
   <string name="dav_service_refresh_couldnt_refresh">无法刷新集合列表</string>
+  <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">无法在前台运行</string>
+  <string name="battery_optimization_notify_text">需要在电池优化中排除本应用</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">运行于前台</string>
   <string name="foreground_service_notify_text">在某些设备上，这是自动同步所必需的。 </string>
@@ -134,6 +138,9 @@
   <string name="app_settings_logging">记录完整日志</string>
   <string name="app_settings_logging_on">日志记录已开启</string>
   <string name="app_settings_logging_off">日志记录已禁用</string>
+  <string name="app_settings_battery_optimization">电池优化</string>
+  <string name="app_settings_battery_optimization_whitelisted">将 DAVx5 加入白名单（推荐）</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">不将 DAVx5 加入白名单（不推荐）</string>
   <string name="app_settings_foreground_service">保持前台</string>
   <string name="app_settings_foreground_service_details">如果你的设备阻止自动同步，这可能会有帮助</string>
   <string name="app_settings_connection">连接</string>
@@ -220,6 +227,7 @@
   <string name="login_login">登录</string>
   <string name="login_create_account">创建账户</string>
   <string name="login_account_name">账户显示名</string>
+  <string name="login_account_avoid_apostrophe">据报告，使用撇号(\')会在一些设备上造成问题</string>
   <string name="login_account_name_info">请使用你的邮箱地址作为帐户名，因为 Android 会将你创建的日历事件的创建者项设置为帐户名。你不能拥有多个帐户名相同的账户。</string>
   <string name="login_account_contact_group_method">联系人分组方式</string>
   <string name="login_account_name_required">请输入账户名</string>
@@ -356,6 +364,9 @@
   <string name="exception_httpexception">出现 HTTP 错误</string>
   <string name="exception_ioexception">出现 I/O 错误</string>
   <string name="exception_show_details">显示详情</string>
+  <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">同步已暂停</string>
+  <string name="storage_low_notify_text">几乎没有剩余的空间了</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV 文件系统</string>
   <string name="webdav_mounts_quota_used_available">已用配额：%1$s/可用容量：%2$s</string>

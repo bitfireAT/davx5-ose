@@ -73,11 +73,14 @@ class App: Application(), Thread.UncaughtExceptionHandler {
             // check whether a tasks app is currently installed
             TasksWatcher.updateTaskSync(this)
 
+            // watch storage because low storage means synchronization is stopped
+            StorageLowReceiver.getInstance(this)
+
             // check/repair sync intervals
             AccountSettings.repairSyncIntervals(this)
 
             // foreground service (possible workaround for devices which prevent DAVx5 from being started)
-            ForegroundService.startIfEnabled(this)
+            ForegroundService.startIfActive(this)
         }
     }
 

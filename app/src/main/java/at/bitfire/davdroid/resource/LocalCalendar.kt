@@ -20,6 +20,7 @@ import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
 import at.bitfire.ical4android.BatchOperation
 import at.bitfire.ical4android.DateUtils
+import at.bitfire.ical4android.MiscUtils.UriHelper.asSyncAdapter
 import java.util.*
 import java.util.logging.Level
 
@@ -81,6 +82,7 @@ class LocalCalendar private constructor(
 
             return values
         }
+
     }
 
     override val tag: String
@@ -148,7 +150,7 @@ class LocalCalendar private constructor(
     override fun markNotDirty(flags: Int): Int {
         val values = ContentValues(1)
         values.put(LocalEvent.COLUMN_FLAGS, flags)
-        return provider.update(eventsSyncURI(), values,
+        return provider.update(Events.CONTENT_URI.asSyncAdapter(account), values,
                 "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL",
                 arrayOf(id.toString()))
     }
@@ -156,7 +158,7 @@ class LocalCalendar private constructor(
     override fun removeNotDirtyMarked(flags: Int): Int {
         var deleted = 0
         // list all non-dirty events with the given flags and delete every row + its exceptions
-        provider.query(eventsSyncURI(), arrayOf(Events._ID),
+        provider.query(Events.CONTENT_URI.asSyncAdapter(account), arrayOf(Events._ID),
                 "${Events.CALENDAR_ID}=? AND NOT ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NULL AND ${LocalEvent.COLUMN_FLAGS}=?",
                 arrayOf(id.toString(), flags.toString()), null)?.use { cursor ->
             val batch = BatchOperation(provider)
@@ -164,7 +166,7 @@ class LocalCalendar private constructor(
                 val id = cursor.getLong(0)
                 // delete event and possible exceptions (content provider doesn't delete exceptions itself)
                 batch.enqueue(BatchOperation.CpoBuilder
-                        .newDelete(eventsSyncURI())
+                        .newDelete(Events.CONTENT_URI.asSyncAdapter(account))
                         .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString())))
             }
             deleted = batch.commit()
@@ -175,7 +177,7 @@ class LocalCalendar private constructor(
     override fun forgetETags() {
         val values = ContentValues(1)
         values.putNull(LocalEvent.COLUMN_ETAG)
-        provider.update(eventsSyncURI(), values, "${Events.CALENDAR_ID}=?",
+        provider.update(Events.CONTENT_URI.asSyncAdapter(account), values, "${Events.CALENDAR_ID}=?",
                 arrayOf(id.toString()))
     }
 
@@ -184,7 +186,7 @@ class LocalCalendar private constructor(
         // process deleted exceptions
         Logger.log.info("Processing deleted exceptions")
         provider.query(
-                syncAdapterURI(Events.CONTENT_URI),
+                Events.CONTENT_URI.asSyncAdapter(account),
                 arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
                 "${Events.CALENDAR_ID}=? AND ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NOT NULL",
                 arrayOf(id.toString()), null)?.use { cursor ->
@@ -197,7 +199,7 @@ class LocalCalendar private constructor(
 
                 // get original event's SEQUENCE
                 provider.query(
-                        syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)),
+                        ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(account),
                         arrayOf(LocalEvent.COLUMN_SEQUENCE),
                         null, null, null)?.use { cursor2 ->
                     if (cursor2.moveToNext()) {
@@ -206,14 +208,14 @@ class LocalCalendar private constructor(
 
                         // re-schedule original event and set it to DIRTY
                         batch.enqueue(BatchOperation.CpoBuilder
-                                .newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                                .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(account))
                                 .withValue(LocalEvent.COLUMN_SEQUENCE, originalSequence + 1)
                                 .withValue(Events.DIRTY, 1))
                     }
                 }
 
                 // completely remove deleted exception
-                batch.enqueue(BatchOperation.CpoBuilder.newDelete(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id))))
+                batch.enqueue(BatchOperation.CpoBuilder.newDelete(ContentUris.withAppendedId(Events.CONTENT_URI, id).asSyncAdapter(account)))
                 batch.commit()
             }
         }
@@ -221,7 +223,7 @@ class LocalCalendar private constructor(
         // process dirty exceptions
         Logger.log.info("Processing dirty exceptions")
         provider.query(
-                syncAdapterURI(Events.CONTENT_URI),
+                Events.CONTENT_URI.asSyncAdapter(account),
                 arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
                 "${Events.CALENDAR_ID}=? AND ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NOT NULL",
                 arrayOf(id.toString()), null)?.use { cursor ->
@@ -234,14 +236,41 @@ class LocalCalendar private constructor(
                 val batch = BatchOperation(provider)
                 // original event to DIRTY
                 batch.enqueue(BatchOperation.CpoBuilder
-                        .newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, originalID)))
+                        .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, originalID).asSyncAdapter(account))
                         .withValue(Events.DIRTY, 1))
                 // increase SEQUENCE and set DIRTY to 0
                 batch.enqueue(BatchOperation.CpoBuilder
-                        .newUpdate(syncAdapterURI(ContentUris.withAppendedId(Events.CONTENT_URI, id)))
+                        .newUpdate(ContentUris.withAppendedId(Events.CONTENT_URI, id).asSyncAdapter(account))
                         .withValue(LocalEvent.COLUMN_SEQUENCE, sequence + 1)
                         .withValue(Events.DIRTY, 0))
                 batch.commit()
+            }
+        }
+    }
+
+    /**
+     * Marks dirty events (which are not already marked as deleted) which got no valid instances as "deleted"
+     *
+     * @return number of affected events
+     */
+    fun deleteDirtyEventsWithoutInstances() {
+        provider.query(
+            Events.CONTENT_URI.asSyncAdapter(account),
+            arrayOf(Events._ID),
+            "${Events.DIRTY} AND NOT ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",    // Get dirty main events (and no exception events)
+            null, null
+        )?.use { cursor ->
+            while (cursor.moveToNext()) {
+                val eventID = cursor.getLong(0)
+
+                // get number of instances
+                val numEventInstances = LocalEvent.numInstances(provider, account, eventID)
+
+                // delete event if there are no instances
+                if (numEventInstances == 0) {
+                    Logger.log.info("Marking event #$eventID without instances as deleted")
+                    LocalEvent.markAsDeleted(provider, account, eventID)
+                }
             }
         }
     }

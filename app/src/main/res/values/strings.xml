@@ -130,6 +130,7 @@
     <string name="navigation_drawer_donate">Donate</string>
     <string name="navigation_drawer_privacy_policy">Privacy policy</string>
     <string name="account_list_no_internet">No Internet connectivity. Android will not run synchronization.</string>
+    <string name="account_list_low_storage">Storage space low. Android will not run synchronization.</string>
     <string name="account_list_empty">Welcome to kSync!\n\nYou can add a CalDAV/CardDAV account now.</string>
     <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
     <string name="accounts_global_sync_enable">Enable</string>
@@ -138,6 +139,10 @@
     <!-- DavService -->
     <string name="dav_service_refresh_failed">Service detection failed</string>
     <string name="dav_service_refresh_couldnt_refresh">Couldn\'t refresh collection list</string>
+
+    <!-- Battery Optimization -->
+    <string name="battery_optimization_notify_title">Can not run in foreground</string>
+    <string name="battery_optimization_notify_text">Battery optimization whitelisting required</string>
 
     <!-- ForegroundService -->
     <string name="foreground_service_notify_title">Running in foreground</string>
@@ -151,6 +156,9 @@
     <string name="app_settings_logging">Verbose logging</string>
     <string name="app_settings_logging_on">Logging is active</string>
     <string name="app_settings_logging_off">Logging is disabled</string>
+    <string name="app_settings_battery_optimization">Battery optimization</string>
+    <string name="app_settings_battery_optimization_whitelisted">DAVx5 is whitelisted (recommended)</string>
+    <string name="app_settings_battery_optimization_not_whitelisted">DAVx5 is not whitelisted (not recommended)</string>
     <string name="app_settings_foreground_service">Keep in foreground</string>
     <string name="app_settings_foreground_service_details">May help if your device prevents automatic synchronization</string>
     <string name="app_settings_connection">Connection</string>
@@ -417,6 +425,10 @@
     <string name="exception_httpexception">An HTTP error has occurred.</string>
     <string name="exception_ioexception">An I/O error has occurred.</string>
     <string name="exception_show_details">Show details</string>
+
+    <!-- StorageLowReceiver -->
+    <string name="storage_low_notify_title">Synchronization paused</string>
+    <string name="storage_low_notify_text">Almost no free space left</string>
 
     <!-- WebDAV accounts -->
     <string name="webdav_authority" translatable="false">com.infomaniak.sync.webdav</string>

@@ -6,8 +6,11 @@ package at.bitfire.davdroid.ui
 
 import android.content.Intent
 import android.graphics.drawable.InsetDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -52,6 +55,10 @@ class AppSettingsActivity: AppCompatActivity() {
     class SettingsFragment: PreferenceFragmentCompat(), SettingsManager.OnChangeListener {
 
         val settings by lazy { SettingsManager.getInstance(requireActivity()) }
+
+        val onBatteryOptimizationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            loadSettings()
+        }
 
 
         override fun onCreatePreferences(bundle: Bundle?, s: String?) {
@@ -101,8 +108,28 @@ class AppSettingsActivity: AppCompatActivity() {
         @UiThread
         private fun loadSettings() {
             // debug settings
+            findPreference<SwitchPreferenceCompat>(Settings.BATTERY_OPTIMIZATION)!!.apply {
+                // battery optimization exists since Android 6 (API level 23)
+                if (Build.VERSION.SDK_INT >= 23) {
+                    val powerManager = requireActivity().getSystemService(PowerManager::class.java)
+                    val whitelisted = powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
+                    isChecked = whitelisted
+                    isEnabled = !whitelisted
+                    onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, nowChecked ->
+                        if (nowChecked as Boolean)
+                            onBatteryOptimizationResult.launch(Intent(
+                                android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                                Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                            ))
+                        false
+                    }
+                } else
+                    isVisible = false
+            }
+
             findPreference<SwitchPreferenceCompat>(Settings.FOREGROUND_SERVICE)!!.apply {
                 isChecked = settings.getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
+                isEnabled = settings.getBooleanOrNull(Settings.BATTERY_OPTIMIZATION) == true
                 onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                     settings.putBoolean(Settings.FOREGROUND_SERVICE, newValue as Boolean)
                     requireActivity().startService(Intent(ForegroundService.ACTION_FOREGROUND, null, requireActivity(), ForegroundService::class.java))
@@ -208,7 +235,6 @@ class AppSettingsActivity: AppCompatActivity() {
                     loadSettings()
             }
         }
-
 
         private fun resetHints() {
             val settings = SettingsManager.getInstance(requireActivity())

@@ -38,7 +38,10 @@ import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.UsesThreadContextClassLoader
 import at.bitfire.vcard4android.ContactsStorageException
-import kotlinx.coroutines.*
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import org.apache.commons.lang3.exception.ContextedException
@@ -125,6 +128,16 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             if (!prepare()) {
                 Logger.log.info("No reason to synchronize, aborting")
                 return@unwrapExceptions
+            }
+
+            // log sync time
+            val db = AppDatabase.getInstance(context)
+            db.runInTransaction {
+                db.collectionDao().getByUrl(collectionURL.toString())?.let { collection ->
+                    db.syncStatsDao().insertOrReplace(
+                        SyncStats(0, collection.id, authority, System.currentTimeMillis())
+                    )
+                }
             }
 
             Logger.log.info("Querying server capabilities")
@@ -259,16 +272,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     notifyException(e, local, remote)
             }
         })
-
-        // log sync time
-        val db = AppDatabase.getInstance(context)
-        db.runInTransaction {
-            db.collectionDao().getByUrl(collectionURL.toString())?.let { collection ->
-                db.syncStatsDao().insertOrReplace(
-                    SyncStats(0, collection.id, authority, System.currentTimeMillis())
-                )
-            }
-        }
     }
 
 

@@ -48,6 +48,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">サービスの検出に失敗しました</string>
   <string name="dav_service_refresh_couldnt_refresh">コレクション リストを更新できません</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">設定</string>
@@ -208,6 +209,7 @@
   <string name="exception_httpexception">HTTP エラーが発生しました。</string>
   <string name="exception_ioexception">I/O エラーが発生しました。</string>
   <string name="exception_show_details">詳細を表示</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">kSync アクセス許可</string>

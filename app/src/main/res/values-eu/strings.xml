@@ -119,6 +119,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
   <string name="dav_service_refresh_couldnt_refresh">Ezin izan da bilduma zerrenda freskatu</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Aurrealdean exekutatzen</string>
   <string name="foreground_service_notify_text">Gailu batzuetan, hau beharrezkoa da sinkronizazio automatikorako.</string>
@@ -354,6 +355,7 @@
   <string name="exception_httpexception">HTTP errore bat gertatu da.</string>
   <string name="exception_ioexception">S/I errore bat gertatu da.</string>
   <string name="exception_show_details">Erakutsi xehetasunak</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">kSync baimenak</string>

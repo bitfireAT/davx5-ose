@@ -40,6 +40,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Откривање услуге није успело</string>
   <string name="dav_service_refresh_couldnt_refresh">Не могох да освежим списак збирки</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Поставке</string>
@@ -176,6 +177,7 @@
   <string name="exception_httpexception">Десила се ХТТП грешка.</string>
   <string name="exception_ioexception">Десила се У/И грешка.</string>
   <string name="exception_show_details">Прикажи детаље</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">ДАВдроид дозволе</string>

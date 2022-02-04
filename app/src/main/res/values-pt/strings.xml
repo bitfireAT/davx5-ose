@@ -105,6 +105,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Falha na detecção do serviço</string>
   <string name="dav_service_refresh_couldnt_refresh">Não foi possível atualizar a lista da coleção</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Configurações</string>
@@ -312,6 +313,7 @@
   <string name="exception_httpexception">Ocorreu um erro de HTTP.</string>
   <string name="exception_ioexception">Ocorreu um erro de leitura/gravação.</string>
   <string name="exception_show_details">Mostrar detalhes</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_share_content">Partilhar conteúdo</string>
   <string name="webdav_add_mount_password">Palavra passe</string>

@@ -80,6 +80,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Не вдалося виявити сервіси</string>
   <string name="dav_service_refresh_couldnt_refresh">Не вдалося оновити перелік колекції</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Налаштування</string>
@@ -282,6 +283,7 @@
   <string name="exception_httpexception">Трапилась помилка HTTP.</string>
   <string name="exception_ioexception">Трапилась помилка I/O.</string>
   <string name="exception_show_details">Показати подробиці</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_permissions">Дозволи kSync</string>

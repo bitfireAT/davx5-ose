@@ -106,6 +106,7 @@
   <string name="accounts_sync_all">Sincronitza tots els comptes</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Falla del servei de detecció</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Executant-se en segon pla</string>
   <string name="foreground_service_notify_text">En alguns dispositius, això és necessari per la sincronització automàtica</string>
@@ -249,6 +250,7 @@
   <string name="exception_httpexception">S\'ha produït un error HTTP.</string>
   <string name="exception_ioexception">S\'ha produït un error d\'E/S.</string>
   <string name="exception_show_details">Mostra els detalls</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <!--sync adapters-->
   <string name="sync_error_http_dav">Error del servidor HTTP: %s</string>

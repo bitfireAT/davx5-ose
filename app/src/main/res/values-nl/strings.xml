@@ -123,6 +123,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Service herkenning is mislukt</string>
   <string name="dav_service_refresh_couldnt_refresh">Kon de collectie lijst niet vernieuwen</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">draait op de voorgrond</string>
   <string name="foreground_service_notify_text">Op sommige apparaten is dit nodig voor automatische synchronisatie.</string>
@@ -358,6 +359,7 @@
   <string name="exception_httpexception">Er is een HTTP fout opgetreden.</string>
   <string name="exception_ioexception">Er is een I/O fout opgetreden.</string>
   <string name="exception_show_details">Toon details</string>
+  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV-koppelingen</string>
   <string name="webdav_mounts_quota_used_available">Quotum gebruikt: %1$s / Beschikbaar: %2$s</string>

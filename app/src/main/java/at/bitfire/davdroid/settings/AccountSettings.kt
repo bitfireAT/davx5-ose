@@ -39,6 +39,7 @@ import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
 import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
+import at.techbee.jtx.JtxContract.asSyncAdapter
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.property.Url
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -438,7 +439,7 @@ class AccountSettings(
             context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
                 // Attention: CalendarProvider does NOT limit the results of the ExtendedProperties query
                 // to the given account! So all extended properties will be processed number-of-accounts times.
-                val extUri = AndroidCalendar.syncAdapterURI(ExtendedProperties.CONTENT_URI, account)
+                val extUri = ExtendedProperties.CONTENT_URI.asSyncAdapter(account)
 
                 provider.query(extUri, arrayOf(
                         ExtendedProperties._ID,     // idx 0
@@ -450,7 +451,7 @@ class AccountSettings(
                         val rawValue = cursor.getString(2)
 
                         val uri by lazy {
-                            AndroidCalendar.syncAdapterURI(ContentUris.withAppendedId(ExtendedProperties.CONTENT_URI, id), account)
+                            ContentUris.withAppendedId(ExtendedProperties.CONTENT_URI, id).asSyncAdapter(account)
                         }
 
                         when (cursor.getString(1)) {
@@ -519,7 +520,7 @@ class AccountSettings(
      **/
     private fun update_9_10() {
         TaskProvider.acquire(context, OpenTasks)?.use { provider ->
-            val tasksUri = TaskProvider.syncAdapterUri(provider.tasksUri(), account)
+            val tasksUri = provider.tasksUri().asSyncAdapter(account)
             val emptyETag = ContentValues(1)
             emptyETag.putNull(LocalTask.COLUMN_ETAG)
             provider.client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
@@ -528,7 +529,7 @@ class AccountSettings(
         @SuppressLint("Recycle")
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
             context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-                provider.update(AndroidCalendar.syncAdapterURI(CalendarContract.Calendars.CONTENT_URI, account),
+                provider.update(CalendarContract.Calendars.CONTENT_URI.asSyncAdapter(account),
                         AndroidCalendar.calendarBaseValues, null, null)
                 provider.closeCompat()
             }
@@ -558,7 +559,7 @@ class AccountSettings(
         TaskProvider.acquire(context, OpenTasks)?.use { provider ->
             // ETag is now in sync_version instead of sync1
             // UID  is now in _uid         instead of sync2
-            provider.client.query(TaskProvider.syncAdapterUri(provider.tasksUri(), account),
+            provider.client.query(provider.tasksUri().asSyncAdapter(account),
                     arrayOf(TaskContract.Tasks._ID, TaskContract.Tasks.SYNC1, TaskContract.Tasks.SYNC2),
                     "${TaskContract.Tasks.ACCOUNT_TYPE}=? AND ${TaskContract.Tasks.ACCOUNT_NAME}=?",
                     arrayOf(account.type, account.name), null)!!.use { cursor ->
@@ -573,7 +574,7 @@ class AccountSettings(
                     values.putNull(TaskContract.Tasks.SYNC2)
                     Logger.log.log(Level.FINER, "Updating task $id", values)
                     provider.client.update(
-                            TaskProvider.syncAdapterUri(ContentUris.withAppendedId(provider.tasksUri(), id), account),
+                            ContentUris.withAppendedId(provider.tasksUri(), id).asSyncAdapter(account),
                             values, null, null)
                 }
             }

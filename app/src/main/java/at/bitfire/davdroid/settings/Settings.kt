@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 
 object Settings {
 
+    const val BATTERY_OPTIMIZATION = "battery_optimization"
     const val FOREGROUND_SERVICE = "foreground_service"
 
     const val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
