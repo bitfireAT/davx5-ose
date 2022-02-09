@@ -32,7 +32,7 @@ interface CollectionDao: SyncableDao<Collection> {
      *   - have supportsVEVENT = supportsVTODO = null (= address books)
      */
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type " +
-            "AND (supportsVTODO OR supportsVEVENT OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL)) ORDER BY displayName, URL")
+            "AND (supportsVTODO OR supportsVEVENT OR supportsVJOURNAL OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL AND supportsVJOURNAL IS NULL)) ORDER BY displayName, URL")
     fun pageByServiceAndType(serviceId: Long, type: String): PagingSource<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync")
@@ -46,6 +46,9 @@ interface CollectionDao: SyncableDao<Collection> {
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVEVENT AND sync ORDER BY displayName, url")
     fun getSyncCalendars(serviceId: Long): List<Collection>
+
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND (supportsVTODO OR supportsVJOURNAL) AND sync ORDER BY displayName, url")
+    fun getSyncJtxCollections(serviceId: Long): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVTODO AND sync ORDER BY displayName, url")
     fun getSyncTaskLists(serviceId: Long): List<Collection>

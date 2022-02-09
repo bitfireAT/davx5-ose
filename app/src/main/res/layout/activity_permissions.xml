@@ -288,6 +288,42 @@
                         android:checked="@={model.needTasksOrgPermissions}" />
 
                     <TextView
+                        android:id="@+id/jtxHeading"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        android:text="@string/permissions_jtx_title"
+                        android:textAlignment="viewStart"
+                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toTopOf="@id/jtxStatus"
+                        app:layout_constraintEnd_toStartOf="@id/jtxSwitch"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/tasksOrgStatus" />
+
+                    <TextView
+                        android:id="@+id/jtxStatus"
+                        style="@style/TextAppearance.MaterialComponents.Body2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{model.haveJtxPermissions != null ? (model.haveJtxPermissions ? @string/permissions_jtx_status_on : @string/permissions_jtx_status_off) : @string/permissions_jtx_status_not_installed}"
+                        android:textAlignment="viewStart"
+                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toStartOf="@id/jtxSwitch"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/jtxHeading" />
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/jtxSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        app:layout_constraintTop_toTopOf="@id/jtxHeading"
+                        app:layout_constraintBottom_toBottomOf="@id/jtxStatus"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
+                        android:clickable="@{!model.haveJtxPermissions}"
+                        android:checked="@={model.needJtxPermissions}" />
+
+                    <TextView
                         android:id="@+id/appSettingsHint"
                         style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
@@ -297,7 +333,7 @@
                         android:textAlignment="viewStart"
                         app:layout_constraintEnd_toEndOf="@id/end"
                         app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/tasksOrgSwitch" />
+                        app:layout_constraintTop_toBottomOf="@id/jtxSwitch" />
 
                     <Button
                         android:id="@+id/appSettings"

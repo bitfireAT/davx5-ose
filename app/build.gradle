@@ -23,6 +23,7 @@ android {
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunnerArgument "notAnnotation", "androidx.test.filters.FlakyTest"
 
         kapt {
             arguments {

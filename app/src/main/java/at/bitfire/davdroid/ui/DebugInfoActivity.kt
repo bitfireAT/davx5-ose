@@ -46,6 +46,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.ical4android.MiscUtils.ContentProviderClientHelper.closeCompat
 import at.bitfire.ical4android.TaskProvider.ProviderName
+import at.techbee.jtx.JtxContract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -284,6 +285,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
                     val packageNames = mutableSetOf(      // we always want info about these packages:
                             BuildConfig.APPLICATION_ID,            // DAVx5
+                            ProviderName.JtxBoard.packageName,     // jtx Board
                             ProviderName.OpenTasks.packageName,    // OpenTasks
                             ProviderName.TasksOrg.packageName      // tasks.org
                     )
@@ -603,6 +605,7 @@ class DebugInfoActivity: AppCompatActivity() {
             fun mainAccount(context: Context) = listOf(
                     AccountDumpInfo(context.getString(R.string.address_books_authority), null, null),
                     AccountDumpInfo(CalendarContract.AUTHORITY, CalendarContract.Events.CONTENT_URI, "event(s)"),
+                    AccountDumpInfo(ProviderName.JtxBoard.authority, JtxContract.JtxICalObject.CONTENT_URI, "jtx Board ICalObject(s)"),
                     AccountDumpInfo(ProviderName.OpenTasks.authority, TaskContract.Tasks.getContentUri(ProviderName.OpenTasks.authority), "OpenTasks task(s)"),
                     AccountDumpInfo(ProviderName.TasksOrg.authority, TaskContract.Tasks.getContentUri(ProviderName.TasksOrg.authority), "tasks.org task(s)"),
                     AccountDumpInfo(ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI, "wrongly assigned raw contact(s)")

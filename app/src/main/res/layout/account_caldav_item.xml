@@ -79,6 +79,13 @@
             app:srcCompat="@drawable/ic_playlist_add_check"/>
 
         <ImageView
+            android:id="@+id/journals"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/account_journal"
+            app:srcCompat="@drawable/ic_journals"/>
+
+        <ImageView
             android:id="@+id/action_overflow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

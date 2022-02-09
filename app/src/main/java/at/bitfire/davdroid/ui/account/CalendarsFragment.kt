@@ -80,6 +80,7 @@ class CalendarsFragment: CollectionsFragment() {
             binding.readOnly.visibility = if (item.readOnly()) View.VISIBLE else View.GONE
             binding.events.visibility = if (item.supportsVEVENT == true) View.VISIBLE else View.GONE
             binding.tasks.visibility = if (item.supportsVTODO == true) View.VISIBLE else View.GONE
+            binding.journals.visibility = if (item.supportsVJOURNAL == true) View.VISIBLE else View.GONE
 
             itemView.setOnClickListener {
                 accountModel.toggleSync(item)

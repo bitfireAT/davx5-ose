@@ -12,6 +12,7 @@ import android.content.ContentValues
 import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
+import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.ical4android.AndroidCalendar
@@ -113,6 +114,7 @@ class LocalCalendarTest {
     }
 
     @Test
+    @FlakyTest(detail = "Fails when calendar storage is accessed the first time; probably some initialization thread")
     fun testDeleteDirtyEventsWithoutInstances_Recurring_Instances() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")

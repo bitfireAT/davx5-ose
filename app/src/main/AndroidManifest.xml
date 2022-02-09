@@ -163,6 +163,17 @@
                 android:resource="@xml/sync_calendars"/>
         </service>
         <service
+            android:name=".syncadapter.JtxSyncAdapterService"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_notes"/>
+        </service>
+        <service
             android:name=".syncadapter.OpenTasksSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
@@ -265,6 +276,7 @@
     <!-- package visiblity – which apps do we need to see? -->
     <queries>
         <!-- task providers -->
+        <package android:name="at.techbee.jtx" />
         <package android:name="org.dmfs.tasks" />
         <package android:name="org.tasks" />
 

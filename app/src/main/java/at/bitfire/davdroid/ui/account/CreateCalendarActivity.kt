@@ -167,7 +167,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         } else
             model.typeError.value = null
 
-        if (!supportsVEVENT || !supportsVTODO || !supportsVJOURNAL) {
+        if (supportsVEVENT || supportsVTODO || supportsVJOURNAL) {
             // only if there's at least one component set not supported; don't include
             // information about supported components otherwise (means: everything supported)
             args.putBoolean(CreateCollectionFragment.ARG_SUPPORTS_VEVENT, supportsVEVENT)

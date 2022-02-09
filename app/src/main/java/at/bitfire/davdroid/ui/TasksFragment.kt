@@ -62,6 +62,18 @@ class TasksFragment: Fragment() {
                 model.selectPreferredProvider(ProviderName.TasksOrg)
         }
 
+
+        model.jtxRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
+            if (shallBeInstalled && model.jtxInstalled.value == false) {
+                model.jtxRequested.value = false
+                installApp(ProviderName.JtxBoard.packageName)
+            }
+        }
+        model.jtxSelected.observe(viewLifecycleOwner) { selected ->
+            if (selected && model.currentProvider.value != ProviderName.JtxBoard)
+                model.selectPreferredProvider(ProviderName.JtxBoard)
+        }
+
         binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
 
         return binding.root
@@ -104,6 +116,9 @@ class TasksFragment: Fragment() {
         val tasksOrgInstalled = MutableLiveData<Boolean>()
         val tasksOrgRequested = MutableLiveData<Boolean>()
         val tasksOrgSelected = MutableLiveData<Boolean>()
+        val jtxInstalled = MutableLiveData<Boolean>()
+        val jtxRequested = MutableLiveData<Boolean>()
+        val jtxSelected = MutableLiveData<Boolean>()
         val tasksWatcher = object: PackageChangedReceiver(app) {
             override fun onReceive(context: Context?, intent: Intent?) {
                 checkInstalled()
@@ -146,6 +161,11 @@ class TasksFragment: Fragment() {
             tasksOrgInstalled.postValue(tasksOrg)
             tasksOrgRequested.postValue(tasksOrg)
             tasksOrgSelected.postValue(taskProvider == ProviderName.TasksOrg)
+
+            val jtxBoard = isInstalled(ProviderName.JtxBoard.packageName)
+            jtxInstalled.postValue(jtxBoard)
+            jtxRequested.postValue(jtxBoard)
+            jtxSelected.postValue(taskProvider == ProviderName.JtxBoard)
         }
 
         private fun isInstalled(packageName: String): Boolean =

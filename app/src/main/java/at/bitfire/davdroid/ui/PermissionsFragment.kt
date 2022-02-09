@@ -64,6 +64,10 @@ class PermissionsFragment: Fragment() {
             if (needTasksOrg == true && model.haveTasksOrgPermissions.value == false)
                 requestPermissions(TaskProvider.PERMISSIONS_TASKS_ORG, 0)
         })
+        model.needJtxPermissions.observe(viewLifecycleOwner, { needJtx ->
+            if (needJtx == true && model.haveJtxPermissions.value == false)
+                requestPermissions(TaskProvider.PERMISSIONS_JTX, 0)
+        })
         model.needAllPermissions.observe(viewLifecycleOwner, { needAll ->
             if (needAll && model.haveAllPermissions.value == false) {
                 val all = mutableSetOf(*CONTACT_PERMISSIONS, *CALENDAR_PERMISSIONS)
@@ -71,6 +75,8 @@ class PermissionsFragment: Fragment() {
                     all.addAll(TaskProvider.PERMISSIONS_OPENTASKS)
                 if (model.haveTasksOrgPermissions.value != null)
                     all.addAll(TaskProvider.PERMISSIONS_TASKS_ORG)
+                if (model.haveJtxPermissions.value != null)
+                    all.addAll(TaskProvider.PERMISSIONS_JTX)
                 requestPermissions(all.toTypedArray(), 0)
             }
         })
@@ -107,6 +113,8 @@ class PermissionsFragment: Fragment() {
         val needOpenTasksPermissions = MutableLiveData<Boolean>()
         val haveTasksOrgPermissions = MutableLiveData<Boolean>()
         val needTasksOrgPermissions = MutableLiveData<Boolean>()
+        val haveJtxPermissions = MutableLiveData<Boolean>()
+        val needJtxPermissions = MutableLiveData<Boolean>()
         val tasksWatcher = object: PackageChangedReceiver(app) {
             @MainThread
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -167,12 +175,24 @@ class PermissionsFragment: Fragment() {
                 haveTasksOrgPermissions.value = null
                 needTasksOrgPermissions.value = null
             }
+            // jtx Board
+            val jtxAvailable = pm.resolveContentProvider(ProviderName.JtxBoard.authority, 0) != null
+            var jtxPermissions: Boolean? = null
+            if (jtxAvailable) {
+                jtxPermissions = havePermissions(getApplication(), TaskProvider.PERMISSIONS_JTX)
+                haveJtxPermissions.value = jtxPermissions
+                needJtxPermissions.value = jtxPermissions
+            } else {
+                haveJtxPermissions.value = null
+                needJtxPermissions.value = null
+            }
 
             // "all permissions" switch
             val allPermissions = contactPermissions &&
                     calendarPermissions &&
                     (!openTasksAvailable || openTasksPermissions == true) &&
-                    (!tasksOrgAvailable || tasksOrgPermissions == true)
+                    (!tasksOrgAvailable || tasksOrgPermissions == true) &&
+                    (!jtxAvailable || jtxPermissions == true)
             haveAllPermissions.value = allPermissions
             needAllPermissions.value = allPermissions
         }
