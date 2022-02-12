@@ -21,6 +21,8 @@
 # DAVx⁵ + libs
 -keep class at.bitfire.** { *; }       # all DAVx⁵ code is required
 
+-keep class com.infomaniak.** { *; }       # all Infomaniak code is required
+
 # we use enum classes (https://www.guardsquare.com/en/products/proguard/manual/examples#enumerations)
 -keepclassmembers,allowoptimization enum * {
     public static **[] values();

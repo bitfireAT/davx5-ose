@@ -1,1 +1,1 @@
-CalDAV/CardDAV-Synchronisierung und -Client
+Synchronisieren Sie automatisch Ihre Kontakte und Kalender

@@ -1,5 +1,7 @@
-DAVx⁵ est une application de gestion et de synchronisation CalDAV / CardDAV pour Android qui s'intègre de manière native aux applications de calendrier / contact Android.
+Infomaniak Sync permet de synchroniser les contacts et les calendriers entre le WorkSpace d'Infomaniak et vos appareils Android.
 
-Utilisez-le avec votre propre serveur ou avec un hébergeur de confiance pour garder vos contacts, événements et tâches sous votre contrôle.
+Grâce à cette app, vous pourrez donc consultez vos contacts et calendriers où que vous soyez directement depuis vos appareils Android.
 
-Pour plus d'informations et une liste des serveurs / services testés, consultez le site Web.
+Basée sur la solution Open Source DAVx⁵, cette application garantit la confidentialité de vos données personnelles
+
+Pour en savoir plus à propos du WorkSpace d'Infomaniak : https://www.infomaniak.com/fr/outils-professionnels/workspace
