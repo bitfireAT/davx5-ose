@@ -8,7 +8,7 @@
 
 buildscript {
     ext.versions = [
-        aboutLibraries: '8.9.1',
+        aboutLibraries: '8.9.4',
         appIntro: '6.1.0',
         dav4jvm: 'fe62f70',
         kotlin: '1.6.10',
