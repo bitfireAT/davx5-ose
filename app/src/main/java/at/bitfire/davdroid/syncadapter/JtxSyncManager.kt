@@ -49,28 +49,20 @@ class JtxSyncManager(
         return true
     }
 
-    override fun queryCapabilities(): SyncState? =
+    override fun queryCapabilities() =
         remoteExceptionContext {
             var syncState: SyncState? = null
-            it.propfind(0, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
-                    response[SupportedReportSet::class.java]?.let { supported ->
-                        hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
-                    }
+            it.propfind(0, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                if (relation == Response.HrefRelation.SELF)
                     syncState = syncState(response)
-                }
             }
-
-            Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
             syncState
         }
 
     override fun generateUpload(resource: LocalJtxICalObject): RequestBody = localExceptionContext(resource) {
         Logger.log.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
-
         val os = ByteArrayOutputStream()
         resource.write(os)
-
         os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
     }
 
@@ -112,7 +104,6 @@ class JtxSyncManager(
     override fun postProcess() {
         /* related-to entries must be updated. The linkedICalObjectId is set to 0 for synced entries as we cannot be sure that the linked entry is already
         there when the related-to entry is written. therefore we have to update it here in the postProcess() method.  */
-
         localCollection.updateRelatedTo()
     }
 

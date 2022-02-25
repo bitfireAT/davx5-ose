@@ -5,23 +5,18 @@ package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.app.PendingIntent
-import android.content.*
-import android.content.pm.PackageManager
-import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.Context
+import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.AppDatabase
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.model.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
@@ -69,31 +64,7 @@ open class TasksSyncAdapterService: SyncAdapterService() {
                     }
                 }
             } catch (e: TaskProvider.ProviderTooOldException) {
-                val nm = NotificationManagerCompat.from(context)
-                val message = context.getString(R.string.sync_error_tasks_required_version, e.provider.minVersionName)
-
-                val pm = context.packageManager
-                val tasksAppInfo = pm.getPackageInfo(e.provider.packageName, 0)
-                val tasksAppLabel = tasksAppInfo.applicationInfo.loadLabel(pm)
-
-                val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
-                        .setSmallIcon(R.drawable.ic_sync_problem_notify)
-                        .setContentTitle(context.getString(R.string.sync_error_tasks_too_old, tasksAppLabel))
-                        .setContentText(message)
-                        .setSubText("$tasksAppLabel ${e.installedVersionName}")
-                        .setCategory(NotificationCompat.CATEGORY_ERROR)
-
-                try {
-                    val icon = pm.getApplicationIcon(e.provider.packageName)
-                    if (icon is BitmapDrawable)
-                        notify.setLargeIcon(icon.bitmap)
-                } catch(ignored: PackageManager.NameNotFoundException) {}
-
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
-                if (intent.resolveActivity(pm) != null)
-                    notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-
-                nm.notify(NotificationUtils.NOTIFY_OPENTASKS, notify.build())
+                SyncUtils.notifyProviderTooOld(context, e)
                 syncResult.databaseError = true
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't sync task lists", e)

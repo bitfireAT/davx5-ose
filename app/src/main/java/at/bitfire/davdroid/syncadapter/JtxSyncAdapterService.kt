@@ -7,6 +7,7 @@ package at.bitfire.davdroid.syncadapter
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
+import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncResult
 import android.os.Build
@@ -27,27 +28,44 @@ class JtxSyncAdapterService: SyncAdapterService() {
 
     override fun syncAdapter() = JtxSyncAdapter(this)
 
-
     class JtxSyncAdapter(context: Context): SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
-            val accountSettings = AccountSettings(context, account)
 
-            // make sure account can be seen by task provider
-            if (Build.VERSION.SDK_INT >= 26)
-                AccountManager.get(context).setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
+            try {
+                // check whether jtx Board is new enough
+                TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
 
-            //sync list of collections
-            updateLocalCollections(account, provider)
+                // make sure account can be seen by task provider
+                if (Build.VERSION.SDK_INT >= 26)
+                    AccountManager.get(context).setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
 
-            // sync contents of collections
-            val collections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
-            for (collection in collections) {
-                Logger.log.info("Synchronizing $collection")
-                JtxSyncManager(context, account, accountSettings, extras, authority, syncResult, collection).use {
-                    it.performSync()
+                /* don't run sync if
+                   - sync conditions (e.g. "sync only in WiFi") are not met AND
+                   - this is is an automatic sync (i.e. manual syncs are run regardless of sync conditions)
+                 */
+                val accountSettings = AccountSettings(context, account)
+                if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
+                    return
+
+                //sync list of collections
+                updateLocalCollections(account, provider)
+
+                // sync contents of collections
+                val collections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
+                for (collection in collections) {
+                    Logger.log.info("Synchronizing $collection")
+                    JtxSyncManager(context, account, accountSettings, extras, authority, syncResult, collection).use {
+                        it.performSync()
+                    }
                 }
+
+            } catch (e: TaskProvider.ProviderTooOldException) {
+                SyncUtils.notifyProviderTooOld(context, e)
+            } catch (e: Exception) {
+                Logger.log.log(Level.SEVERE, "Couldn't sync jtx collections", e)
             }
+            Logger.log.info("jtx sync complete")
         }
 
         private fun updateLocalCollections(account: Account, client: ContentProviderClient) {
@@ -81,7 +99,6 @@ class JtxSyncAdapterService: SyncAdapterService() {
                 LocalJtxCollection.create(account, client, info)
             }
         }
-
     }
 
 }
