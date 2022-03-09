@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.settings
 
 import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SettingsManagerTest {
@@ -14,11 +14,14 @@ class SettingsManagerTest {
     val settingsManager by lazy { SettingsManager.getInstance(InstrumentationRegistry.getInstrumentation().targetContext) }
 
     @Test
-    fun testContainsKey() {
+    fun testContainsKey_NotExisting() {
         assertFalse(settingsManager.containsKey("notExisting"))
+    }
 
+    @Test
+    fun testContainsKey_Existing() {
         // provided by DefaultsProvider
-        assertTrue(settingsManager.containsKey(Settings.OVERRIDE_PROXY))
+        assertEquals(Settings.PROXY_TYPE_SYSTEM, settingsManager.getInt(Settings.PROXY_TYPE))
     }
 
 }

@@ -20,6 +20,7 @@ import android.provider.ContactsContract
 import android.util.Base64
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TasksWatcher
@@ -62,7 +63,7 @@ class AccountSettings(
 
     companion object {
 
-        const val CURRENT_VERSION = 12
+        const val CURRENT_VERSION = 13
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
@@ -426,6 +427,45 @@ class AccountSettings(
                 Logger.log.log(Level.SEVERE, "Couldn't update account settings", e)
             }
         }
+    }
+
+
+    @Suppress("unused","FunctionName")
+    /**
+     * Not a per-account migration, but not a database migration, too, so it fits best there.
+     * Best future solution would be that SettingsManager manages versions and migrations.
+     *
+     * Updates proxy settings from override_proxy_* to proxy_type, proxy_host, proxy_port.
+     */
+    private fun update_12_13() {
+        // proxy settings are managed by SharedPreferencesProvider
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+        // old setting names
+        val overrideProxy = "override_proxy"
+        val overrideProxyHost = "override_proxy_host"
+        val overrideProxyPort = "override_proxy_port"
+
+        val edit = preferences.edit()
+        if (preferences.contains(overrideProxy)) {
+            if (preferences.getBoolean(overrideProxy, false))
+                // override_proxy set, migrate to proxy_type = HTTP
+                edit.putInt(Settings.PROXY_TYPE, Settings.PROXY_TYPE_HTTP)
+            edit.remove(overrideProxy)
+        }
+        if (preferences.contains(overrideProxyHost)) {
+            preferences.getString(overrideProxyHost, null)?.let { host ->
+                edit.putString(Settings.PROXY_HOST, host)
+            }
+            edit.remove(overrideProxyHost)
+        }
+        if (preferences.contains(overrideProxyPort)) {
+            val port = preferences.getInt(overrideProxyPort, 0)
+            if (port != 0)
+                edit.putInt(Settings.PROXY_PORT, port)
+            edit.remove(overrideProxyPort)
+        }
+        edit.apply()
     }
 
 
