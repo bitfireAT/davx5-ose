@@ -23,6 +23,8 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.model.*
 import at.bitfire.davdroid.model.Collection
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import okhttp3.HttpUrl
@@ -150,6 +152,9 @@ class DavService: IntentService("DavService") {
     }
 
     private fun refreshCollections(db: AppDatabase, serviceId: Long) {
+        val settings = SettingsManager.getInstance(this)
+        val syncAllCollections = settings.getBoolean(Settings.SYNC_ALL_COLLECTIONS)
+
         val homeSetDao = db.homeSetDao()
         val collectionDao = db.collectionDao()
 
@@ -313,6 +318,10 @@ class DavService: IntentService("DavService") {
                             info.serviceId = serviceId
                             info.refHomeSet = homeSet
                             info.confirmed = true
+
+                            // whether new collections are selected for synchronization by default (controlled by managed setting)
+                            info.sync = syncAllCollections
+
                             info.owner = response[Owner::class.java]?.href?.let { response.href.resolve(it) }
                             Logger.log.log(Level.FINE, "Found collection", info)
 

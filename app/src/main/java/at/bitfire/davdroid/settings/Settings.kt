@@ -36,4 +36,7 @@ object Settings {
 
     const val PREFERRED_TASKS_PROVIDER = "preferred_tasks_provider"
 
+    /** whether detected collections are selected for synchronization for default */
+    const val SYNC_ALL_COLLECTIONS = "sync_all_collections"
+    
 }
