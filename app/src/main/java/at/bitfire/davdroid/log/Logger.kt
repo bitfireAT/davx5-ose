@@ -94,9 +94,10 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                         .setContentText(context.getString(R.string.logging_notification_text, context.getString(R.string.app_name)))
                         .setOngoing(true)
 
-                val shareIntent = Intent(Intent.ACTION_SEND, null, context, DebugInfoActivity::class.java)
-                shareIntent.putExtra(DebugInfoActivity.EXTRA_LOG_FILE, logFile.absolutePath)
-                shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                val shareIntent = DebugInfoActivity.IntentBuilder(context)
+                    .withLogFile(logFile)
+                    .newTask()
+                    .share()
                 val pendingShare = PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 builder.addAction(NotificationCompat.Action.Builder(
                         R.drawable.ic_share,

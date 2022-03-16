@@ -102,8 +102,9 @@ class NextcloudLoginFlowFragment: Fragment() {
         loginFlowModel.error.observe(viewLifecycleOwner) { exception ->
             Snackbar.make(requireView(), exception.toString(), Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.exception_show_details) {
-                        val intent = Intent(requireActivity(), DebugInfoActivity::class.java)
-                        intent.putExtra(DebugInfoActivity.EXTRA_CAUSE, exception)
+                        val intent = DebugInfoActivity.IntentBuilder(requireActivity())
+                            .withCause(exception)
+                            .build()
                         startActivity(intent)
                     }
                     .show()

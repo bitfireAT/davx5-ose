@@ -50,9 +50,11 @@ import at.techbee.jtx.JtxContract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
+import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
 import java.io.*
@@ -64,26 +66,26 @@ import java.util.zip.ZipOutputStream
 class DebugInfoActivity: AppCompatActivity() {
 
     companion object {
-        /** serialized [Throwable] that causes the problem */
-        const val EXTRA_CAUSE = "cause"
-
-        /** logs related to the problem (plain-text [String]) */
-        const val EXTRA_LOGS = "logs"
-
-        /** logs related to the problem (path to log file, plain-text [String]) */
-        const val EXTRA_LOG_FILE = "logFile"
-
         /** [android.accounts.Account] (as [android.os.Parcelable]) related to problem */
-        const val EXTRA_ACCOUNT = "account"
+        private const val EXTRA_ACCOUNT = "account"
 
         /** sync authority name related to problem */
-        const val EXTRA_AUTHORITY = "authority"
+        private const val EXTRA_AUTHORITY = "authority"
 
-        /** local resource related to the problem (plain-text [String]) */
-        const val EXTRA_LOCAL_RESOURCE = "localResource"
+        /** serialized [Throwable] that causes the problem */
+        private const val EXTRA_CAUSE = "cause"
 
-        /** remote resource related to the problem (plain-text [String]) */
-        const val EXTRA_REMOTE_RESOURCE = "remoteResource"
+        /** dump of local resource related to the problem (plain-text [String]) */
+        private const val EXTRA_LOCAL_RESOURCE = "localResource"
+
+        /** logs related to the problem (path to log file, plain-text [String]) */
+        private const val EXTRA_LOG_FILE = "logFile"
+
+        /** logs related to the problem (plain-text [String]) */
+        private const val EXTRA_LOGS = "logs"
+
+        /** URL of remote resource related to the problem (plain-text [String]) */
+        private const val EXTRA_REMOTE_RESOURCE = "remoteResource"
 
         const val FILE_DEBUG_INFO = "debug-info.txt"
         const val FILE_LOGS = "logs.txt"
@@ -615,6 +617,71 @@ class DebugInfoActivity: AppCompatActivity() {
                     AccountDumpInfo(ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI, "raw contact(s)")
             )
 
+        }
+
+    }
+
+
+    class IntentBuilder(context: Context) {
+
+        companion object {
+            val MAX_ELEMENT_SIZE = 800*FileUtils.ONE_KB.toInt()
+        }
+
+        val intent = Intent(context, DebugInfoActivity::class.java)
+
+        fun newTask(): IntentBuilder {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            return this
+        }
+
+        fun withAccount(account: Account?): IntentBuilder {
+            if (account != null)
+                intent.putExtra(EXTRA_ACCOUNT, account)
+            return this
+        }
+
+        fun withAuthority(authority: String?): IntentBuilder {
+            if (authority != null)
+                intent.putExtra(EXTRA_AUTHORITY, authority)
+            return this
+        }
+
+        fun withCause(throwable: Throwable?): IntentBuilder {
+            if (throwable != null)
+                intent.putExtra(EXTRA_CAUSE, throwable)
+            return this
+        }
+
+        fun withLocalResource(dump: String?): IntentBuilder {
+            if (dump != null)
+                intent.putExtra(EXTRA_LOCAL_RESOURCE, StringUtils.abbreviate(dump, MAX_ELEMENT_SIZE))
+            return this
+        }
+
+        fun withLogFile(logFile: File?): IntentBuilder {
+            if (logFile != null)
+                intent.putExtra(EXTRA_LOG_FILE, logFile.absolutePath)
+            return this
+        }
+
+        fun withLogs(logs: String?): IntentBuilder {
+            if (logs != null)
+                intent.putExtra(EXTRA_LOGS, StringUtils.abbreviate(logs, MAX_ELEMENT_SIZE))
+            return this
+        }
+
+        fun withRemoteResource(remote: HttpUrl?): IntentBuilder {
+            if (remote != null)
+                intent.putExtra(EXTRA_REMOTE_RESOURCE, remote.toString())
+            return this
+        }
+
+
+        fun build() = intent
+
+        fun share() = intent.apply {
+            action = Intent.ACTION_SEND
         }
 
     }

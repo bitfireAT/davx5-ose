@@ -6,7 +6,6 @@ package at.bitfire.davdroid
 
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.StrictMode
 import androidx.appcompat.content.res.AppCompatResources
@@ -87,9 +86,10 @@ class App: Application(), Thread.UncaughtExceptionHandler {
     override fun uncaughtException(t: Thread, e: Throwable) {
         Logger.log.log(Level.SEVERE, "Unhandled exception!", e)
 
-        val intent = Intent(this, DebugInfoActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.putExtra(DebugInfoActivity.EXTRA_CAUSE, e)
+        val intent = DebugInfoActivity.IntentBuilder(this)
+            .withCause(e)
+            .newTask()
+            .build()
         startActivity(intent)
 
         exitProcess(1)

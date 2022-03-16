@@ -385,10 +385,10 @@ class DavService: IntentService("DavService") {
         } catch(e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
-            val debugIntent = Intent(this, DebugInfoActivity::class.java)
-            debugIntent.putExtra(DebugInfoActivity.EXTRA_CAUSE, e)
-            debugIntent.putExtra(DebugInfoActivity.EXTRA_ACCOUNT, account)
-
+            val debugIntent = DebugInfoActivity.IntentBuilder(this)
+                .withCause(e)
+                .withAccount(account)
+                .build()
             val notify = NotificationUtils.newBuilder(this, NotificationUtils.CHANNEL_GENERAL)
                     .setSmallIcon(R.drawable.ic_sync_problem_notify)
                     .setContentTitle(getString(R.string.dav_service_refresh_failed))
