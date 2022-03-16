@@ -57,7 +57,6 @@
   <string name="permissions_opentasks_title">Δικαιώματα OpenTasks</string>
   <string name="permissions_tasksorg_title">Δικαιώματα εργασιών</string>
   <string name="permissions_tasks_status_not_installed">Μη συγχρονισμός εργασιών (δεν είναι εγκατεστημένο)</string>
-  <string name="permissions_tasks_status_off">Μη συγχρονισμός εργασιών (δεν προτείνεται)</string>
   <string name="permissions_tasks_status_on">Ο Συγχρονισμός εργασιών είναι διαθέσιμος</string>
   <string name="permissions_autoreset_title">Διατήρηση δικαιωμάτων</string>
   <string name="permissions_autoreset_status_off">Τα δικαιώματα μπορούν να επαναφερθούν αυτόματα (δεν προτείνεται)</string>
@@ -131,11 +130,6 @@
   <string name="app_settings_foreground_service">Διατήρηση στο προσκήνιο</string>
   <string name="app_settings_foreground_service_details">Μπορεί να βοηθήσει εάν η συσκευή σας δεν επιτρέπει αυτόματο συγχρονισμό</string>
   <string name="app_settings_connection">Σύνδεση</string>
-  <string name="app_settings_override_proxy">Παράκαμψη ρυθμίσεων διαμεσολαβητή</string>
-  <string name="app_settings_override_proxy_on">Χρήση προσαρμοσμένων ρυθμίσεων διαμεσολαβητή</string>
-  <string name="app_settings_override_proxy_off">Χρήση προεπιλογμένων ρυθμίσεων συστήματος του διαμεσολαβητή</string>
-  <string name="app_settings_override_proxy_host">Όνομα συστήματος διαμεσολαβητή HTTP</string>
-  <string name="app_settings_override_proxy_port">Πόρτα διαμεσολαβητή HTTP</string>
   <string name="app_settings_security">Ασφάλεια</string>
   <string name="app_settings_security_app_permissions">Δικαιώματα εφαρμογής</string>
   <string name="app_settings_security_app_permissions_summary">Αναθεώρηση των δικαιωμάτων που χρειάζονται για τον συγχρονισμό</string>
@@ -149,7 +143,6 @@
   <string name="app_settings_notification_settings">Ρυθμίσεις ειδοποιήσεων</string>
   <string name="app_settings_notification_settings_summary">Διαχείριση καναλιών ειδοποιήσεων και των ρυθμίσεών τους</string>
   <string name="app_settings_theme_title">Επιλογή θέματος</string>
-  <string name="app_settings_theme_summary">Τρέχον θέμα: %s</string>
   <string-array name="app_settings_theme_names">
     <item>Προεπιλογή Συστήματος</item>
     <item>Φωτεινό</item>

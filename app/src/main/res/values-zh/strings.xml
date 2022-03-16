@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
-  <string name="account_invalid">帐户不再存在</string>
+  <string name="account_invalid">帐户（已）不存在</string>
   <string name="account_title_address_book">DAVx⁵ 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>
   <string name="field_required">此字段是必填项</string>
@@ -28,12 +28,14 @@
   <string name="intro_battery_not_whitelisted">禁用（不推荐）</string>
   <string name="intro_battery_whitelisted">启用（推荐）</string>
   <string name="intro_battery_text">为了定期进行同步，必须允许%s在后台运行。否则，Android可能会随时暂停同步。</string>
-  <string name="intro_battery_dont_show">我不需要定期的同步间隔。*</string>
+  <string name="intro_battery_dont_show">我不需要定期的同步。*</string>
   <string name="intro_autostart_title">%s兼容性</string>
   <string name="intro_autostart_text">该设备可能会阻止同步。如果您受到影响，则只能手动解决。</string>
   <string name="intro_autostart_dont_show">我已完成所需的设置。不再提醒我。*</string>
   <string name="intro_leave_unchecked">*取消选中以供稍后提醒。可以在应用设置中重置/%s。</string>
   <string name="intro_more_info">更多信息</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[支持任务、日记和笔记同步]]></string>
   <string name="intro_tasks_title">任务支持</string>
   <string name="intro_tasks_text1">如果你的服务器支持任务，它们可以通过一个受支持的任务应用进行同步:</string>
   <string name="intro_tasks_opentasks">OpenTasks </string>
@@ -45,7 +47,7 @@
   <string name="intro_open_source_title">开源软件</string>
   <string name="intro_open_source_text">我们很高兴您使用 %s 开源软件。开发、维护和支持是艰苦的工作。请考虑通过多种方式提供贡献或捐款。不胜感激！</string>
   <string name="intro_open_source_details">如何贡献或捐款</string>
-  <string name="intro_open_source_dont_show">不要在不久的将来出现</string>
+  <string name="intro_open_source_dont_show">以后不需要显示</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">权限</string>
   <string name="permissions_text">%s需要权限才能正常工作</string>
@@ -58,10 +60,14 @@
   <string name="permissions_calendar_title">日历权限</string>
   <string name="permissions_calendar_status_off">无日历同步（不推荐）</string>
   <string name="permissions_calendar_status_on">可同步日历</string>
+  <string name="permissions_jtx_title">jtx Board 权限</string>
+  <string name="permissions_jtx_status_not_installed">无任务、日记  &amp; 笔记同步（未安装）</string>
+  <string name="permissions_jtx_status_off">无任务、日记、笔记同步</string>
+  <string name="permissions_jtx_status_on">可同步任务、日记和笔记</string>
   <string name="permissions_opentasks_title">OpenTasks权限</string>
   <string name="permissions_tasksorg_title">Tasks权限</string>
   <string name="permissions_tasks_status_not_installed">无任务同步 （未安装）</string>
-  <string name="permissions_tasks_status_off">无任务同步 （不推荐）</string>
+  <string name="permissions_tasks_status_off">无任务同步</string>
   <string name="permissions_tasks_status_on">可同步任务</string>
   <string name="permissions_autoreset_title">保留权限</string>
   <string name="permissions_autoreset_status_off">权限可能被自动重置(不推荐)</string>
@@ -139,16 +145,20 @@
   <string name="app_settings_logging_on">日志记录已开启</string>
   <string name="app_settings_logging_off">日志记录已禁用</string>
   <string name="app_settings_battery_optimization">电池优化</string>
-  <string name="app_settings_battery_optimization_whitelisted">将 DAVx5 加入白名单（推荐）</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">不将 DAVx5 加入白名单（不推荐）</string>
+  <string name="app_settings_battery_optimization_whitelisted">将应用加入白名单（推荐）</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">不把应用加入白名单（不推荐）</string>
   <string name="app_settings_foreground_service">保持前台</string>
   <string name="app_settings_foreground_service_details">如果你的设备阻止自动同步，这可能会有帮助</string>
   <string name="app_settings_connection">连接</string>
-  <string name="app_settings_override_proxy">覆盖代理设置</string>
-  <string name="app_settings_override_proxy_on">使用自定义代理设置</string>
-  <string name="app_settings_override_proxy_off">使用系统默认代理设置</string>
-  <string name="app_settings_override_proxy_host">HTTP 代理主机名</string>
-  <string name="app_settings_override_proxy_port">HTTP 代理端口</string>
+  <string name="app_settings_proxy">代理类型</string>
+  <string-array name="app_settings_proxy_types">
+    <item>系统默认</item>
+    <item>无代理五</item>
+    <item>HTTP</item>
+    <item>SOCKS (用于 Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">代理主机名称</string>
+  <string name="app_settings_proxy_port">代理端口</string>
   <string name="app_settings_security">安全</string>
   <string name="app_settings_security_app_permissions">应用权限</string>
   <string name="app_settings_security_app_permissions_summary">查看同步所需权限</string>
@@ -162,7 +172,6 @@
   <string name="app_settings_notification_settings">通知设置</string>
   <string name="app_settings_notification_settings_summary">管理通知渠道等设置</string>
   <string name="app_settings_theme_title">选择主题</string>
-  <string name="app_settings_theme_summary">当前主题：%s</string>
   <string-array name="app_settings_theme_names">
     <item>系统默认</item>
     <item>浅色</item>
@@ -203,6 +212,7 @@
   <string name="account_read_only">只读</string>
   <string name="account_calendar">日历</string>
   <string name="account_task_list">任务列表</string>
+  <string name="account_journal">日记</string>
   <string name="account_only_personal">只显示个人</string>
   <string name="account_refresh_address_book_list">刷新通讯录列表</string>
   <string name="account_create_new_address_book">创建通讯录</string>

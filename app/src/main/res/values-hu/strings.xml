@@ -58,7 +58,6 @@
   <string name="permissions_opentasks_title">OpenTasks engedélyek</string>
   <string name="permissions_tasksorg_title">Feladat engedélyek</string>
   <string name="permissions_tasks_status_not_installed">A feladatlisták szinkronizálása nem lehetséges (nincs telepítve)</string>
-  <string name="permissions_tasks_status_off">A feladatlisták szinkronizálásának mellőzése (nem javasolt)</string>
   <string name="permissions_tasks_status_on">A feladatlisták szinkronizálása lehetséges</string>
   <string name="permissions_autoreset_title">Engedélyek megtartása</string>
   <string name="permissions_autoreset_status_off">Az engedélyek automatikusan visszaállhatnak az alapértelmezettre (nem ajánlott)</string>
@@ -132,11 +131,6 @@
   <string name="app_settings_foreground_service">Maradjon előtérben</string>
   <string name="app_settings_foreground_service_details">Segíthet, ha az eszköz akadályozza az automatikus szinkronizációt</string>
   <string name="app_settings_connection">Kapcsolat</string>
-  <string name="app_settings_override_proxy">Proxybeállítások felülírása</string>
-  <string name="app_settings_override_proxy_on">Egyedi proxybeállítások</string>
-  <string name="app_settings_override_proxy_off">Az alapértelmezett proxybeállítás használata</string>
-  <string name="app_settings_override_proxy_host">HTTP proxyállomás neve</string>
-  <string name="app_settings_override_proxy_port">HTTP proxy port</string>
   <string name="app_settings_security">Biztonság</string>
   <string name="app_settings_security_app_permissions">Alkalmazásengedélyek</string>
   <string name="app_settings_security_app_permissions_summary">Tekintse át a szinkronizáláshoz szükséges engedélyeket</string>
@@ -343,6 +337,8 @@
   <string name="exception_show_details">Részletek megjelenítése</string>
   <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Felhasználónév</string>
+  <string name="webdav_add_mount_password">Jelszó</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ engedélyek </string>
   <string name="sync_error_permissions_text">További engedélyek szükségesek</string>

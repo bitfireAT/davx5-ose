@@ -57,7 +57,6 @@
   <string name="permissions_opentasks_title">Permisos d\'OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisos de Tasks</string>
   <string name="permissions_tasks_status_not_installed">Sense sincronització de les tasques (no instal·lat)</string>
-  <string name="permissions_tasks_status_off">Sense sincronització de les tasques (no recomanat)</string>
   <string name="permissions_tasks_status_on">Sincronització de les tasques possible</string>
   <string name="permissions_autoreset_title">Mantenir els permisos</string>
   <string name="permissions_autoreset_status_off">Els permisos podrien ser revocats automàticament (no recomanat)</string>
@@ -121,9 +120,6 @@
   <string name="app_settings_foreground_service">Manté en segon pla</string>
   <string name="app_settings_foreground_service_details">Ajudaria si el teu dispositiu prevé la sincronització automàtica</string>
   <string name="app_settings_connection">Connexió</string>
-  <string name="app_settings_override_proxy">Anul·lar la configuració del servidor intermediari</string>
-  <string name="app_settings_override_proxy_on">Utilitzar paràmetres personalitzats per servidor intermediari</string>
-  <string name="app_settings_override_proxy_off">Utilitzar paràmetres per defecte per servidor intermediari</string>
   <string name="app_settings_security">Seguretat</string>
   <string name="app_settings_security_app_permissions">Permisos de l\'aplicació</string>
   <string name="app_settings_security_app_permissions_summary">Revisar permisos requerits per sincronitzar</string>
@@ -231,6 +227,7 @@
   <string name="create_calendar">Crea un calendari</string>
   <string name="create_calendar_time_zone">Fus horari</string>
   <string name="create_calendar_type">Possibles entrades de calendari</string>
+  <string name="create_calendar_type_vtodo">Tasks</string>
   <string name="create_calendar_type_events_and_tasks">Combinat (esdeveniments i tasques)</string>
   <string name="create_collection_color">Color</string>
   <string name="create_collection_creating">S\'està creant una col·lecció</string>
@@ -252,6 +249,8 @@
   <string name="exception_show_details">Mostra els detalls</string>
   <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Nom d\'usuari/a</string>
+  <string name="webdav_add_mount_password">Contrasenya</string>
   <!--sync adapters-->
   <string name="sync_error_http_dav">Error del servidor HTTP: %s</string>
   <string name="sync_error_local_storage">Error d\'emmagatzematge local: %s</string>
