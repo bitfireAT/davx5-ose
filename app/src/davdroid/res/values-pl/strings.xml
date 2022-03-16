@@ -19,7 +19,7 @@
   <string name="notification_channel_sync_errors_desc">Ważne błędy, które zatrzymują synchronizację, takie jak nieoczekiwane odpowiedzi serwera</string>
   <string name="notification_channel_sync_warnings">Ostrzeżenia synchronizacji</string>
   <string name="notification_channel_sync_warnings_desc">Niekrytyczne problemy z synchronizacją, takie jak niektóre nieprawidłowe pliki</string>
-  <string name="notification_channel_sync_io_errors">Błędy sieci oraz wejścia/wyjścia</string>
+  <string name="notification_channel_sync_io_errors">Błędy sieci oraz we/wy</string>
   <string name="notification_channel_sync_io_errors_desc">Przekroczenia czasu, problemy z połączeniem itp. (często tymczasowe)</string>
   <!--IntroActivity-->
   <string name="intro_slogan1">Twoje dane. Twój wybór.</string>
@@ -30,16 +30,18 @@
   <string name="intro_battery_text">Dla synchronizacji w regularnych przedziałach, %s musi mieć pozwolenie na pracę w tle. W przeciwnym razie, Android może wstrzymać synchronizację w dowolnym momencie.</string>
   <string name="intro_battery_dont_show">Nie potrzebuję regularnych przedziałów synchronizacji.*</string>
   <string name="intro_autostart_title">%s kompatybilność</string>
-  <string name="intro_autostart_text">To urządzenie prawdopodobnie blokuje synchronizację. Jeśli ten problem Cię dotyczy, możesz go jedynie rozwiązać ręcznie.</string>
+  <string name="intro_autostart_text">To urządzenie prawdopodobnie blokuje synchronizację. Jeśli ten problem Ciebie dotyczy, możesz go jedynie rozwiązać ręcznie.</string>
   <string name="intro_autostart_dont_show">Wprowadziłem potrzebne ustawienia. Nie przypominaj mi ponownie.*</string>
-  <string name="intro_leave_unchecked">* Pozostaw nie zaznaczone, aby otrzymać przypomnienie później. Można zresetować w ustawieniach aplikacji wybierając %s.</string>
+  <string name="intro_leave_unchecked">* Pozostaw nie zaznaczone, aby otrzymać przypomnienie później. Można zresetować w ustawieniach aplikacji wybierając / %s.</string>
   <string name="intro_more_info">Więcej informacji</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Obsługuje synchronizację Zadań, Dzienników i Notatek.]]></string>
   <string name="intro_tasks_title">Obsługa zadań</string>
   <string name="intro_tasks_text1">Jeśli zadania są wspierane przez Twój serwer, mogą być synchronizowane ze wspieraną aplikacją zadań:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info"><![CDATA[Dla pewnych funkcjonalności jak podzadania lub zadania powtarzalne,  możesz potrzebować<a href="https://www.davx5.com/faq/tasks/advanced-task-features">dodatkowych aplikacji</a>.]]></string>
   <string name="intro_tasks_tasks_org">Zadania</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Pewne funkcjonalności <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nie są (jeszcze) wspierane</a> .]]></string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Niektóre funkcje <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nie są (jeszcze) wspierane</a>.]]></string>
   <string name="intro_tasks_no_app_store">Sklep aplikacji nie jest dostępny</string>
   <string name="intro_tasks_dont_show">Nie potrzebuję obsługi zadań.*</string>
   <string name="intro_open_source_title">Oprogramowanie open-source</string>
@@ -58,16 +60,20 @@
   <string name="permissions_calendar_title">Uprawnienia kalendarza</string>
   <string name="permissions_calendar_status_off">Bez synchronizacji kalendarza (nie zalecane)</string>
   <string name="permissions_calendar_status_on">Synchronizacja kalendarza możliwa</string>
+  <string name="permissions_jtx_title">Uprawnienia jtx Board</string>
+  <string name="permissions_jtx_status_not_installed">Brak synchronizacji zadań, dzienników i notatek (niezainstalowane)</string>
+  <string name="permissions_jtx_status_off">Brak synchronizacji zadań, dzienników, notatek</string>
+  <string name="permissions_jtx_status_on">Możliwa synchronizacja zadań, dzienników, notatek</string>
   <string name="permissions_opentasks_title">Uprawnienia OpenTasks</string>
   <string name="permissions_tasksorg_title">Uprawnienia zadań</string>
   <string name="permissions_tasks_status_not_installed">Bez synchronizacji zadań (nie zainstalowane)</string>
-  <string name="permissions_tasks_status_off">Bez synchronizacji zadań (nie zalecane)</string>
+  <string name="permissions_tasks_status_off">Brak synchronizacji zadań</string>
   <string name="permissions_tasks_status_on">Synchronizacja zadań możliwa</string>
   <string name="permissions_autoreset_title">Utrzymaj uprawnienia</string>
   <string name="permissions_autoreset_status_off">Uprawnienia mogą zostać automatycznie zresetowane (nie zalecane)</string>
   <string name="permissions_autoreset_status_on">Uprawnienia nie będą automatycznie resetowane</string>
   <string name="permissions_autoreset_instruction">Kliknij Uprawnienia &gt; odznacz \"Usuń uprawnienia jeśli aplikacja nie jest używana\"</string>
-  <string name="permissions_app_settings_hint">Jeśli przełącznik nie działa użyj ustawień dla aplikacji/Uprawnienia.</string>
+  <string name="permissions_app_settings_hint">Jeśli przełącznik nie działa użyj ustawień dla aplikacji / Uprawnienia.</string>
   <string name="permissions_app_settings">Ustawienia aplikacji</string>
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Uprawnienia WiFi SSID</string>
@@ -139,16 +145,20 @@
   <string name="app_settings_logging_on">Logowanie jest włączone</string>
   <string name="app_settings_logging_off">Logowanie jest wyłączone</string>
   <string name="app_settings_battery_optimization">Optymalizacja baterii</string>
-  <string name="app_settings_battery_optimization_whitelisted">DAVx5 jest na białej liście (zalecane)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">DAVx5 nie jest na białej liście (niezalecane)</string>
+  <string name="app_settings_battery_optimization_whitelisted">Aplikacja jest na białej liście (zalecane)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Aplikacja nie znajduje się na białej liście (niezalecane)</string>
   <string name="app_settings_foreground_service">Pozostań na pierwszym planie</string>
   <string name="app_settings_foreground_service_details">Może pomóc, jeśli Twoje urządzenie uniemożliwia automatyczną synchronizację</string>
   <string name="app_settings_connection">Łączność</string>
-  <string name="app_settings_override_proxy">Nadpisz ustawienia proxy</string>
-  <string name="app_settings_override_proxy_on">Użyj niestandardowych ustawień proxy</string>
-  <string name="app_settings_override_proxy_off">Użyj systemowych ustawień proxy</string>
-  <string name="app_settings_override_proxy_host">Nazwa hosta proxy HTTP</string>
-  <string name="app_settings_override_proxy_port">Port proxy HTTP</string>
+  <string name="app_settings_proxy">Typ proxy</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Domyślne ustawienie systemowe</item>
+    <item>Brak proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (dla Orbota)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Nazwa hosta proxy</string>
+  <string name="app_settings_proxy_port">Port proxy</string>
   <string name="app_settings_security">Bezpieczeństwo</string>
   <string name="app_settings_security_app_permissions">Uprawnienia aplikacji</string>
   <string name="app_settings_security_app_permissions_summary">Przejrzyj uprawnienia konieczne do synchronizacji</string>
@@ -162,7 +172,6 @@
   <string name="app_settings_notification_settings">Ustawienia powiadomień</string>
   <string name="app_settings_notification_settings_summary">Zarządzaj kanałami powiadomień i ich ustawieniami</string>
   <string name="app_settings_theme_title">Wybierz motyw</string>
-  <string name="app_settings_theme_summary">Bieżący motyw: %s</string>
   <string-array name="app_settings_theme_names">
     <item>Domyślne ustawienie systemowe</item>
     <item>Jasny</item>
@@ -203,6 +212,7 @@
   <string name="account_read_only">tylko do odczytu</string>
   <string name="account_calendar">kalendarz</string>
   <string name="account_task_list">lista zadań</string>
+  <string name="account_journal">dziennik</string>
   <string name="account_only_personal">Pokaż tylko osobiste</string>
   <string name="account_refresh_address_book_list">Odśwież listę książek adresowych</string>
   <string name="account_create_new_address_book">Stwórz nową książkę adresową</string>
@@ -350,7 +360,7 @@
   <string name="debug_info_http_error">Błąd HTTP</string>
   <string name="debug_info_server_error">Błąd serwera</string>
   <string name="debug_info_webdav_error">Błąd WebDAV</string>
-  <string name="debug_info_io_error">Błąd Wej/Wyj</string>
+  <string name="debug_info_io_error">Błąd we/wy</string>
   <string name="debug_info_http_403_description">Żądanie zostało odrzucone. Sprawdź zaangażowane zasoby oraz szczegóły informacji debugowania.</string>
   <string name="debug_info_http_404_description">Żądany zasób (już) nie istnieje. Sprawdź zaangażowane zasoby oraz szczegóły informacji debugowania.</string>
   <string name="debug_info_http_5xx_description">Wystapił problem po stronie serwera. Skontaktuj się proszę z zespołem wsparcia Twojego serwera.</string>
@@ -368,7 +378,7 @@
   <!--ExceptionInfoFragment-->
   <string name="exception">Wystąpił błąd.</string>
   <string name="exception_httpexception">Wystąpił błąd HTTP.</string>
-  <string name="exception_ioexception">Wystąpił błąd wejścia/wyjścia.</string>
+  <string name="exception_ioexception">Wystąpił błąd we/wy.</string>
   <string name="exception_show_details">Pokaż szczegóły</string>
   <!--StorageLowReceiver-->
   <string name="storage_low_notify_title">Synchronizacja wstrzymana</string>
@@ -398,7 +408,7 @@
   <string name="sync_error_tasks_too_old">%s zbyt stary/a</string>
   <string name="sync_error_tasks_required_version">Minimalna wymagana wersja: %1$s</string>
   <string name="sync_error_authentication_failed">Nieudane uwierzytelnienie (sprawdź dane logowania)</string>
-  <string name="sync_error_io">Błąd sieci lub wejścia/wyjścia — %s</string>
+  <string name="sync_error_io">Błąd sieci lub we/wy – %s</string>
   <string name="sync_error_http_dav">Błąd serwera HTTP — %s</string>
   <string name="sync_error_local_storage">Błąd lokalnego storage’u — %s</string>
   <string name="sync_error_retry">Ponów</string>

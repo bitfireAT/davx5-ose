@@ -10,7 +10,7 @@
   <string name="manage_accounts">Управление на регистрации</string>
   <string name="share">Споделяне</string>
   <string name="database_destructive_migration_title">Повредена банка от данни</string>
-  <string name="database_destructive_migration_text">Всички местни сметки са премахнати.</string>
+  <string name="database_destructive_migration_text">Всички местни профили са премахнати.</string>
   <string name="notification_channel_debugging">Отстраняване на дефекти</string>
   <string name="notification_channel_general">Други важни съобщения</string>
   <string name="notification_channel_status">Съобщения за състоянието с нисък приоритет</string>
@@ -21,27 +21,29 @@
   <string name="notification_channel_sync_io_errors">Грешки с входа/изхода и мрежата</string>
   <!--IntroActivity-->
   <string name="intro_slogan1">Вашите данни. Вашият избор</string>
-  <string name="intro_slogan2">Поемете контрола</string>
+  <string name="intro_slogan2">Поемете контрол</string>
   <string name="intro_battery_title">Периодично синхронизиране</string>
   <string name="intro_battery_not_whitelisted">Изключено (не се препоръчва)</string>
   <string name="intro_battery_whitelisted">Включено (препоръчително)</string>
-  <string name="intro_battery_text">За да синхронизира периодично, на %s му трябва разрешение да работи на заден план. В противен случай Android може да прекъсне синхронизирането по всяко време.</string>
+  <string name="intro_battery_text">За да синхронизира периодично, %s се нуждае от разрешение да работи на заден план. В противен случай Android синхронизацията може да прекъсне по всяко време.</string>
   <string name="intro_battery_dont_show">Не желая периодично синхронизиране.*</string>
   <string name="intro_autostart_title">%s съвместимост</string>
   <string name="intro_autostart_text">Устройството вероятно прекъсва синхронизацията. Единственият начин да резрешите проблема е ръчната промяна на настройките.</string>
   <string name="intro_autostart_dont_show">Необходимите промени са направени. Без повторно напомняне.*</string>
   <string name="intro_leave_unchecked">* Оставете без отметка за повторно напомняне.  Може да бъде нулирано от настройките на приложението / %s.</string>
   <string name="intro_more_info">Допълнителна информация</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Синхронизация на задачи, дневници и бележки.]]></string>
   <string name="intro_tasks_title">Поддръжка на задачи</string>
   <string name="intro_tasks_text1">Ако сървърът поддържа задачи, те могат да бъдат синхронизирани и от приложение, поддржащо задачи:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[За някои възможности, като подзадачи или повтарящи се задачи, може да са необходими<a href="https://www.davx5.com/faq/tasks/advanced-task-features">допълнителни приложения</a>.]]></string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[За някои възможности, като подзадачи или повтарящи се задачи, може да са необходими <a href="https://www.davx5.com/faq/tasks/advanced-task-features">допълнителни приложения</a>.]]></string>
   <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Някои възможности <a href="https://www.davx5.com/faq/tasks/advanced-task-features">(още) не се поддържат</a>.]]></string>
   <string name="intro_tasks_no_app_store">Няма достъпен магазин за приложения</string>
   <string name="intro_tasks_dont_show">Не се нуждая от поддръжка на задачи.*</string>
   <string name="intro_open_source_title">Приложение с отворен код</string>
-  <string name="intro_open_source_text">Радваме се, че използвате %s. Това е софтуер с отворен код. Разработката, издръжката и поддръжката му са тежка работа. Моля да допринесете (има много начини) или да дарите. Вашият жест ще бъде високо оценен.</string>
+  <string name="intro_open_source_text">Радваме се, че използвате %s. Това е приложение с отворен код. Разработката, издръжката и поддръжката му са тежка работа. Моля да допринесете (има много начини) или да дарите. Вашият жест ще бъде високо оценен.</string>
   <string name="intro_open_source_details">Как да допринеса или даря</string>
   <string name="intro_open_source_dont_show">Без повторно показване в близко бъдеще</string>
   <!--PermissionsActivity-->
@@ -56,12 +58,15 @@
   <string name="permissions_calendar_title">Разрешения за календара</string>
   <string name="permissions_calendar_status_off">Календарите не могат да бъдат синхронизирани (не се препоръчва)</string>
   <string name="permissions_calendar_status_on">Календарите могат да бъдат синхронизирани</string>
+  <string name="permissions_jtx_title">Разрешения за jtx Board</string>
+  <string name="permissions_jtx_status_not_installed">Няма (инсталирана) синхронизация на задачи, дневници и бележки</string>
+  <string name="permissions_jtx_status_off">Без синхронизиране на задачи, дневници и бележки</string>
   <string name="permissions_opentasks_title">Разрешения за OpenTasks</string>
   <string name="permissions_tasksorg_title">Разрешения за Tasks</string>
   <string name="permissions_tasks_status_not_installed">Няма (инсталирана) синхронизация на задачи</string>
-  <string name="permissions_tasks_status_off">Задачите не могат да бъдат синхронизирани (не се препоръчва)</string>
+  <string name="permissions_tasks_status_off">Няма синхронизация на задачи</string>
   <string name="permissions_tasks_status_on">Задачите могат да бъдат синхронизирани</string>
-  <string name="permissions_autoreset_title">Поддържане на разрешенията</string>
+  <string name="permissions_autoreset_title">Предпазване от нулиране на разрешенията</string>
   <string name="permissions_autoreset_status_off">Разрешенията могат да бъдат нулирани автоматично (не се препоръчва)</string>
   <string name="permissions_autoreset_status_on">Разрешенията не могат да бъдат нулирани автоматично</string>
   <string name="permissions_autoreset_instruction">Докоснете Разрешения и махнете отметката от „Премахване на разрешенията, ако приложението не се използва“</string>
@@ -77,7 +82,7 @@
   <string name="wifi_permissions_background_location_permission_label">Разрешаване във всички случаи</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Разрешението за местоположението е <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Разрешението за местоположението не е <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_disclaimer">%sизползва разрешението за местоположение за достъп до името на мрежата, когато се изисква синхронизиране само през определена мрежа. Това се случва дори и когато приложението се изпълнява във фонов режим. Не се събират, съхраняват, обработват и разпространяват данни за местоположението.</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s използва разрешението за местоположение за достъп до името на мрежата, когато се изисква синхронизиране само през определена мрежа. Това се случва дори и когато приложението се изпълнява във фонов режим. Не се събират, съхраняват, обработват и разпространяват данни за местоположението.</string>
   <string name="wifi_permissions_location_enabled">Винаги включено местоположение</string>
   <string name="wifi_permissions_location_enabled_on">Услугата за местоположението е включена</string>
   <string name="wifi_permissions_location_enabled_off">Услугата за местоположението е изключена</string>
@@ -116,7 +121,7 @@
   <string name="account_list_no_internet">Няма връзка с интернет. Android няма да извършва синхронизации.</string>
   <string name="account_list_empty">Добре дошли при DAVx⁵!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_enable">Включване</string>
-  <string name="accounts_sync_all">Синхронизиране на всички сметки</string>
+  <string name="accounts_sync_all">Синхронизиране на всички профили</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Откриването на услугите се провали</string>
   <string name="dav_service_refresh_couldnt_refresh">Грешка при презареждане</string>
@@ -141,11 +146,11 @@
   <string name="app_settings_distrust_system_certs">Оттегляне на доверието в системните сертификати</string>
   <string name="app_settings_distrust_system_certs_on">Издатели на сертификати познати на системата или добавени от потребителя няма да бъдат доверени</string>
   <string name="app_settings_distrust_system_certs_off">Издателите на сертификатите познати на системата или добавени от потребителя ще бъдат доверени (препоръчително)</string>
+  <string name="app_settings_reset_certificates_success">Всички потребителски сертификати са премахнати</string>
   <string name="app_settings_user_interface">Потребителски интерфейс</string>
   <string name="app_settings_notification_settings">Настройки за съобщенията</string>
   <string name="app_settings_notification_settings_summary">Управлявление на каналите за съобщения и техните настройки</string>
   <string name="app_settings_theme_title">Избиране на тема</string>
-  <string name="app_settings_theme_summary">Текуща тема: %s</string>
   <string-array name="app_settings_theme_names">
     <item>Според системата</item>
     <item>Светла</item>
@@ -268,6 +273,7 @@
     <item quantity="one">Събития минали преди повече от ден ще бъдат пренебрегнати</item>
     <item quantity="other">Събития минали преди повече от %dдни ще бъдат пренебрегнати</item>
   </plurals>
+  <string name="settings_sync_time_range_past_message">Събития преди повече от този брой дни в миналото ще бъдат пренебрегнати </string>
   <string name="settings_default_alarm">Подразбирано напомняне</string>
   <plurals name="settings_default_alarm_on">
     <item quantity="one">Подразбирано напомняне 1 минута преди събитие</item>
@@ -344,6 +350,7 @@
   <string name="webdav_mounts_share_content">Споделяне на съдържание</string>
   <string name="webdav_mounts_unmount">Демонтиране</string>
   <string name="webdav_add_mount_title">Монтиране на дял на WebDAV</string>
+  <string name="webdav_mounts_empty">Получете директен достъп до файловете си в облака като монтирате дял на WebDAV.</string>
   <string name="webdav_add_mount_display_name">Видимо име</string>
   <string name="webdav_add_mount_url">Адрес на WebDAV</string>
   <string name="webdav_add_mount_url_invalid">Недействителен адрес</string>

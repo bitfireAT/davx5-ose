@@ -56,7 +56,6 @@
   <string name="permissions_opentasks_title">مجوزهای OpenTasks</string>
   <string name="permissions_tasksorg_title">مجوز وظایف</string>
   <string name="permissions_tasks_status_not_installed">بدون همگام سازی  (نصب نشده است)</string>
-  <string name="permissions_tasks_status_off">همگام سازی وظایف انجام نشود  (توصیه نمی شود)</string>
   <string name="permissions_tasks_status_on">امکان همگام سازی وظایف وجود دارد</string>
   <string name="permissions_autoreset_title">نگاه داری مجوزها</string>
   <string name="permissions_autoreset_status_off">مجوزها ممکن است به طور خودکار تنظیم مجدد شوند (توصیه نمی شود)</string>
@@ -127,11 +126,6 @@
   <string name="app_settings_foreground_service">در پیش زمینه نگه دارید</string>
   <string name="app_settings_foreground_service_details">اگر دستگاه شما از همگام سازی خودکار جلوگیری کند ، ممکن است کمک کند</string>
   <string name="app_settings_connection">ارتباط</string>
-  <string name="app_settings_override_proxy">تنظیمات پروکسی را لغو کنید</string>
-  <string name="app_settings_override_proxy_on">از تنظیمات پروکسی سفارشی استفاده کنید</string>
-  <string name="app_settings_override_proxy_off">از تنظیمات پیش فرض سیستم پروکسی استفاده کنید</string>
-  <string name="app_settings_override_proxy_host">نام میزبان پروکسی HTTP</string>
-  <string name="app_settings_override_proxy_port">پورت پروکسی HTTP</string>
   <string name="app_settings_security">امنیت</string>
   <string name="app_settings_security_app_permissions">مجوزهای برنامه</string>
   <string name="app_settings_security_app_permissions_summary">مجوزهای لازم برای همگام سازی را مرور کنید</string>
@@ -338,6 +332,8 @@
   <string name="exception_show_details">نمایش جزئیات</string>
   <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">نام کاربری</string>
+  <string name="webdav_add_mount_password">گذرواژه</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">مجوزهای همگام‌ساز DAVx⁵</string>
   <string name="sync_error_permissions_text">مجوزهای اضافی لازم است</string>

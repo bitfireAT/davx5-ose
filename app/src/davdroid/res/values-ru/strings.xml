@@ -34,6 +34,8 @@
   <string name="intro_autostart_dont_show">Я выполнил необходимые настройки. Больше не напоминать.*</string>
   <string name="intro_leave_unchecked">* Не отмечайте, чтобы получить напоминание повторно. Можно сбросить в настройках приложения  / %s.</string>
   <string name="intro_more_info">Дополнительная информация</string>
+  <string name="intro_tasks_jtx">Панель jtx</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Поддержка синхронизации задач, журналов и заметок.]]></string>
   <string name="intro_tasks_title">Поддержка задач</string>
   <string name="intro_tasks_text1">Если задачи поддерживаются вашим сервером, их можно синхронизировать при помощи соответствующего приложения:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -58,10 +60,14 @@
   <string name="permissions_calendar_title">Разрешения для календаря</string>
   <string name="permissions_calendar_status_off">Календарь не синхронизируется (не рекомендуется)</string>
   <string name="permissions_calendar_status_on">Синхронизация календаря возможна</string>
+  <string name="permissions_jtx_title">Разрешения панели jtx</string>
+  <string name="permissions_jtx_status_not_installed">Не синхронизируются задачи, журналы и заметки (не установлено)</string>
+  <string name="permissions_jtx_status_off">Не синхронизируются задачи, журналы, заметки</string>
+  <string name="permissions_jtx_status_on">Возможна синхронизация задач, журналов и заметок</string>
   <string name="permissions_opentasks_title">Разрешения OpenTasks</string>
   <string name="permissions_tasksorg_title">Разрешения Tasks</string>
   <string name="permissions_tasks_status_not_installed">Задачи не синхронизируются (не установлены)</string>
-  <string name="permissions_tasks_status_off">Задачи не синхронизируются (не рекомендуется)</string>
+  <string name="permissions_tasks_status_off">Не синхронизируются задачи</string>
   <string name="permissions_tasks_status_on">Синхронизация задач возможна</string>
   <string name="permissions_autoreset_title">Сохранить разрешения</string>
   <string name="permissions_autoreset_status_off">Разрешения могут быть сброшены автоматически (не рекомендуется)</string>
@@ -139,16 +145,20 @@
   <string name="app_settings_logging_on">Журналирование активно</string>
   <string name="app_settings_logging_off">Журналирование отключено</string>
   <string name="app_settings_battery_optimization">Оптимизация батареи</string>
-  <string name="app_settings_battery_optimization_whitelisted">DAVx5 внесен в белый список (рекомендуется)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">DAVx5 не внесен в белый список (не рекомендуется)</string>
+  <string name="app_settings_battery_optimization_whitelisted">Приложение внесено в белый список (рекомендуется)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Приложение не внесено в белый список (рекомендуется)</string>
   <string name="app_settings_foreground_service">Приоритетный режим</string>
   <string name="app_settings_foreground_service_details">Может помочь, если ваше устройство препятствует автоматической синхронизации</string>
   <string name="app_settings_connection">Подключение</string>
-  <string name="app_settings_override_proxy">Переопределить настройки прокси</string>
-  <string name="app_settings_override_proxy_on">Использовать пользовательские настройки прокси</string>
-  <string name="app_settings_override_proxy_off">Использовать системные настройки прокси</string>
-  <string name="app_settings_override_proxy_host">Имя хоста HTTP прокси</string>
-  <string name="app_settings_override_proxy_port">Порт HTTP прокси</string>
+  <string name="app_settings_proxy">Тип прокси</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Определен системой</item>
+    <item>Нет прокси</item>
+    <item>HTTP</item>
+    <item>SOCKS (для Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Имя хоста прокси</string>
+  <string name="app_settings_proxy_port">Порт прокси</string>
   <string name="app_settings_security">Безопасность</string>
   <string name="app_settings_security_app_permissions">Разрешения приложения</string>
   <string name="app_settings_security_app_permissions_summary">Проверка разрешений, необходимых для синхронизации</string>
@@ -162,7 +172,6 @@
   <string name="app_settings_notification_settings">Настройки уведомлений</string>
   <string name="app_settings_notification_settings_summary">Управление каналами уведомлений и их настройками</string>
   <string name="app_settings_theme_title">Выбор темы</string>
-  <string name="app_settings_theme_summary">Текущая тема: %s</string>
   <string-array name="app_settings_theme_names">
     <item>Системная</item>
     <item>Светлая</item>
@@ -203,6 +212,7 @@
   <string name="account_read_only">только для чтения</string>
   <string name="account_calendar">календарь</string>
   <string name="account_task_list">список задач</string>
+  <string name="account_journal">журнал</string>
   <string name="account_only_personal">Показать только личные</string>
   <string name="account_refresh_address_book_list">Обновить список адресных книг</string>
   <string name="account_create_new_address_book">Создать новую адресную книгу</string>
@@ -338,7 +348,7 @@
   <string name="collection_force_read_only">Только для чтения</string>
   <string name="collection_properties">Свойства</string>
   <string name="collection_properties_url">Адрес (URL):</string>
-  <string name="collection_properties_copy_url">Копировать URL</string>
+  <string name="collection_properties_copy_url">Скопировать URL</string>
   <string name="collection_properties_owner">Владелец:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>

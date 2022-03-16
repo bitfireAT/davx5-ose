@@ -61,7 +61,6 @@
   <string name="permissions_opentasks_title">Autorizzazioni di OpenTasks</string>
   <string name="permissions_tasksorg_title">Autorizzazioni delle attività</string>
   <string name="permissions_tasks_status_not_installed">Attività non sincronizzate (app non installata)</string>
-  <string name="permissions_tasks_status_off">Non sincronizzare le attività (sconsigliato)</string>
   <string name="permissions_tasks_status_on">Permette di sincronizzare le attività</string>
   <string name="permissions_autoreset_title">Mantieni autorizzazioni</string>
   <string name="permissions_autoreset_status_off">Le autorizzazioni possono essere reimpostate automaticamente (sconsigliato)</string>
@@ -138,11 +137,6 @@
   <string name="app_settings_foreground_service">Tenere in primo piano</string>
   <string name="app_settings_foreground_service_details">Può aiutare se il dispositivo impedisce la sincronizzazione automatica</string>
   <string name="app_settings_connection">Connessione</string>
-  <string name="app_settings_override_proxy">Non rispettare la impostazioni del proxy</string>
-  <string name="app_settings_override_proxy_on">Impostazioni personalizzate del proxy</string>
-  <string name="app_settings_override_proxy_off">Usa le impostazioni di sistema del proxy</string>
-  <string name="app_settings_override_proxy_host">Nome host del proxy HTTP</string>
-  <string name="app_settings_override_proxy_port">Porta del proxy HTTP</string>
   <string name="app_settings_security">Sicurezza</string>
   <string name="app_settings_security_app_permissions">Autorizzazioni app</string>
   <string name="app_settings_security_app_permissions_summary">Controlla le autorizzazioni per la sincronizzazione</string>
@@ -156,7 +150,6 @@
   <string name="app_settings_notification_settings">Impostazioni di notifica</string>
   <string name="app_settings_notification_settings_summary">Gestisci i canali di notifica e le loro impostazioni</string>
   <string name="app_settings_theme_title">Seleziona il tema</string>
-  <string name="app_settings_theme_summary">Tema corrente %s</string>
   <string-array name="app_settings_theme_names">
     <item> Sistema predefinito </item>
     <item> Luce </item>

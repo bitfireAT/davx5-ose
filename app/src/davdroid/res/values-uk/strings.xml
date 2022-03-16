@@ -34,13 +34,13 @@
   <string name="permissions_title">Дозволи</string>
   <string name="permissions_all_status_off">Використовуйте це, щоб дозволити всі можливості (рекомендується)</string>
   <string name="permissions_all_status_on">Усі дозволи надано</string>
+  <string name="permissions_contacts_title">Дозволи контактів</string>
   <string name="permissions_calendar_title">Дозволи календаря</string>
   <string name="permissions_calendar_status_off">Без синхронізації календаря (не рекомендується)</string>
   <string name="permissions_calendar_status_on">Можлива синхронізація календаря</string>
   <string name="permissions_opentasks_title">Дозволи OpenTasks</string>
   <string name="permissions_tasksorg_title">Дозволи завдань</string>
   <string name="permissions_tasks_status_not_installed">Без синхронізації завдань (не встановлено)</string>
-  <string name="permissions_tasks_status_off">Без синхронізації завдань (не рекомендується)</string>
   <string name="permissions_tasks_status_on">Можлива синхронізація завдань</string>
   <string name="permissions_app_settings">Налаштування застосунку</string>
   <!--WifiPermissionsActivity-->
@@ -91,11 +91,6 @@
   <string name="app_settings_logging_on">Звітування активно</string>
   <string name="app_settings_logging_off">Звітування призупинено</string>
   <string name="app_settings_connection">З\'єднання</string>
-  <string name="app_settings_override_proxy">Перевизначити налаштування проксі</string>
-  <string name="app_settings_override_proxy_on">Власні налаштування проксі</string>
-  <string name="app_settings_override_proxy_off">Типові системні налаштування проксі</string>
-  <string name="app_settings_override_proxy_host">Ім\'я хосту HTTP проксі</string>
-  <string name="app_settings_override_proxy_port">Порт HTTP проксі</string>
   <string name="app_settings_security">Безпека</string>
   <string name="app_settings_security_app_permissions">Дозволи застосунку</string>
   <string name="app_settings_distrust_system_certs">Не довіряти системним сертифікатам</string>
@@ -108,7 +103,6 @@
   <string name="app_settings_notification_settings">Налаштування сповіщення</string>
   <string name="app_settings_notification_settings_summary">Керування каналами інформування та їх налаштуванням</string>
   <string name="app_settings_theme_title">Вибрати тему</string>
-  <string name="app_settings_theme_summary">Чинна тема: %s</string>
   <string-array name="app_settings_theme_names">
     <item>Системна</item>
     <item>Світла</item>
@@ -285,6 +279,8 @@
   <string name="exception_show_details">Показати подробиці</string>
   <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Ім\'я користувача</string>
+  <string name="webdav_add_mount_password">Пароль</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Дозволи DAVx⁵</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>

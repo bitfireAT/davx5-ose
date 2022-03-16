@@ -58,7 +58,6 @@
   <string name="permissions_opentasks_title">OpenTasks baimenak</string>
   <string name="permissions_tasksorg_title">Tasks baimenak</string>
   <string name="permissions_tasks_status_not_installed">Ez sinkronizatu zereginak (instalatu gabe)</string>
-  <string name="permissions_tasks_status_off">Ez sinkronizatu zereginik (ez da gomendatzen)</string>
   <string name="permissions_tasks_status_on">Zereginen sinkronizazioa posible</string>
   <string name="permissions_autoreset_title">Mantendu baimenak</string>
   <string name="permissions_autoreset_status_off">Baimenak automatikoki berezarri daitezke (ez gomendatuta)</string>
@@ -134,11 +133,6 @@
   <string name="app_settings_foreground_service">Mantendu aurrealdean</string>
   <string name="app_settings_foreground_service_details">Zure gailuak sinkronizazio automatikoa galarazten badu lagundu dezake</string>
   <string name="app_settings_connection">Konexioa</string>
-  <string name="app_settings_override_proxy">Gainidatzi proxy ezarpenak</string>
-  <string name="app_settings_override_proxy_on">Erabili proxy ezarpen pertsonalizatuak</string>
-  <string name="app_settings_override_proxy_off">Erabili sistemak lehenetsitako proxy ezarpenak</string>
-  <string name="app_settings_override_proxy_host">HTTP proxy hostalari izena</string>
-  <string name="app_settings_override_proxy_port">HTTP proxy portua</string>
   <string name="app_settings_security">Segurtasuna</string>
   <string name="app_settings_security_app_permissions">Aplikazioaren baimenak</string>
   <string name="app_settings_security_app_permissions_summary">Berrikusi sinkronizaziorako beharrezkoak diren baimenak</string>
@@ -152,7 +146,6 @@
   <string name="app_settings_notification_settings">Jakinarazpen-ezarpenak</string>
   <string name="app_settings_notification_settings_summary">Kudeatu jakinarazpen kanalak eta haien ezarpenak</string>
   <string name="app_settings_theme_title">Hautatu gaia</string>
-  <string name="app_settings_theme_summary">Uneko gaia: %s</string>
   <string-array name="app_settings_theme_names">
     <item>Sistemaren lehenetsia</item>
     <item>Argia</item>
@@ -357,6 +350,8 @@
   <string name="exception_show_details">Erakutsi xehetasunak</string>
   <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Erabiltzaile izena</string>
+  <string name="webdav_add_mount_password">Pasahitza</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ baimenak</string>
   <string name="sync_error_permissions_text">Baimen gehigarriak beharrezkoak</string>

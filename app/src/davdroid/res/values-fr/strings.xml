@@ -61,7 +61,6 @@
   <string name="permissions_opentasks_title">Autorisations d\'OpenTasks</string>
   <string name="permissions_tasksorg_title">Autorisations de Tasks</string>
   <string name="permissions_tasks_status_not_installed">Pas de synchronisation des tâches (non installé)</string>
-  <string name="permissions_tasks_status_off">Pas de synchronisation des tâches (non recommandé)</string>
   <string name="permissions_tasks_status_on">Synchronisation des tâches possible</string>
   <string name="permissions_autoreset_title">Conserver les autorisations</string>
   <string name="permissions_autoreset_status_off">Les autorisations peuvent être réinitialisées automatiquement (non recommandé)</string>
@@ -138,11 +137,6 @@
   <string name="app_settings_foreground_service">Garder au premier plan</string>
   <string name="app_settings_foreground_service_details">Peut aider si votre appareil empêche la synchronisation automatique</string>
   <string name="app_settings_connection">Connexion</string>
-  <string name="app_settings_override_proxy">Ignorer les paramètres proxy</string>
-  <string name="app_settings_override_proxy_on">Utiliser des paramètres proxy personnalisés</string>
-  <string name="app_settings_override_proxy_off">Utiliser les paramètres proxy du système</string>
-  <string name="app_settings_override_proxy_host">Nom de l\'hôte du proxy HTTP</string>
-  <string name="app_settings_override_proxy_port">Port du proxy HTTP</string>
   <string name="app_settings_security">Sécurité</string>
   <string name="app_settings_security_app_permissions">Autorisations de l\'application</string>
   <string name="app_settings_security_app_permissions_summary">Consulter les autorisations requises pour la synchronisation</string>
@@ -156,7 +150,6 @@
   <string name="app_settings_notification_settings">Paramètres de notification</string>
   <string name="app_settings_notification_settings_summary">Gérer les canaux de notification et leurs paramètres</string>
   <string name="app_settings_theme_title">Sélectionner un thème</string>
-  <string name="app_settings_theme_summary">Thème actuel : %s</string>
   <string name="app_settings_reset_hints">Réinitialiser les astuces</string>
   <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vues précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
