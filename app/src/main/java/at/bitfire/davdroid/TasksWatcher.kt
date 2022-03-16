@@ -22,11 +22,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class TasksWatcher(
+class TasksWatcher protected constructor(
         context: Context
 ): PackageChangedReceiver(context) {
 
     companion object {
+
+        fun watch(context: Context) = TasksWatcher(context)
+
 
         @WorkerThread
         fun updateTaskSync(context: Context) {

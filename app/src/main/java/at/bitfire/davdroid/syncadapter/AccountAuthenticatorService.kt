@@ -3,49 +3,30 @@
  **************************************************************************************************/
 package at.bitfire.davdroid.syncadapter
 
-import android.accounts.*
+import android.accounts.AbstractAccountAuthenticator
+import android.accounts.Account
+import android.accounts.AccountAuthenticatorResponse
+import android.accounts.AccountManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import at.bitfire.davdroid.ui.setup.LoginActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 /**
  * Account authenticator for the main DAVx5 account type.
- *
- * Gets started when a DAVx5 account is removed, too, so it also watches for account removals
- * and contains the corresponding cleanup code.
  */
-class AccountAuthenticatorService: Service(), OnAccountsUpdateListener {
+class AccountAuthenticatorService: Service() {
 
-    private lateinit var accountManager: AccountManager
     private lateinit var accountAuthenticator: AccountAuthenticator
 
     override fun onCreate() {
-        accountManager = AccountManager.get(this)
-        accountManager.addOnAccountsUpdatedListener(this, null, true)
-
         accountAuthenticator = AccountAuthenticator(this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        accountManager.removeOnAccountsUpdatedListener(this)
     }
 
     override fun onBind(intent: Intent?) =
             accountAuthenticator.iBinder.takeIf { intent?.action == AccountManager.ACTION_AUTHENTICATOR_INTENT }
-
-
-    override fun onAccountsUpdated(accounts: Array<out Account>?) {
-        CoroutineScope(Dispatchers.Default).launch {
-            AccountUtils.cleanupAccounts(this@AccountAuthenticatorService)
-        }
-    }
 
 
     private class AccountAuthenticator(
@@ -68,4 +49,5 @@ class AccountAuthenticatorService: Service(), OnAccountsUpdateListener {
         override fun hasFeatures(p0: AccountAuthenticatorResponse?, p1: Account?, p2: Array<out String>?) = null
 
     }
+
 }

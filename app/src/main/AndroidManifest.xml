@@ -208,7 +208,7 @@
 
         <!-- account type "DAVx⁵ Address book" -->
         <service
-            android:name=".syncadapter.NullAuthenticatorService"
+            android:name=".syncadapter.AddressBookAuthenticatorService"
             android:exported="true">   <!-- Since Android 11, this must be true so that Google Contacts shows the address book accounts -->
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>

@@ -12,6 +12,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
@@ -63,23 +64,25 @@ class App: Application(), Thread.UncaughtExceptionHandler {
 
         // don't block UI for some background checks
         thread {
-            // create/update app shortcuts
-            UiUtils.updateShortcuts(this)
+            // watch for account changes/deletions
+            AccountUtils.registerAccountsUpdateListener(this)
 
-            // watch installed/removed apps
-            TasksWatcher(this)
-
-            // check whether a tasks app is currently installed
-            TasksWatcher.updateTaskSync(this)
+            // foreground service (possible workaround for devices which prevent DAVx5 from being started)
+            ForegroundService.startIfActive(this)
 
             // watch storage because low storage means synchronization is stopped
             StorageLowReceiver.getInstance(this)
 
+            // watch installed/removed apps
+            TasksWatcher.watch(this)
+            // check whether a tasks app is currently installed
+            TasksWatcher.updateTaskSync(this)
+
+            // create/update app shortcuts
+            UiUtils.updateShortcuts(this)
+
             // check/repair sync intervals
             AccountSettings.repairSyncIntervals(this)
-
-            // foreground service (possible workaround for devices which prevent DAVx5 from being started)
-            ForegroundService.startIfActive(this)
         }
     }
 

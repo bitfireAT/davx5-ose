@@ -13,7 +13,7 @@ import android.content.Intent
 import android.os.Bundle
 import at.bitfire.davdroid.ui.AccountsActivity
 
-class NullAuthenticatorService: Service() {
+class AddressBookAuthenticatorService: Service() {
 
     private lateinit var accountAuthenticator: AccountAuthenticator
 
