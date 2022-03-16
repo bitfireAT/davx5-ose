@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 402000004
+        versionCode 402000005
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 21        // Android 5
@@ -51,7 +51,7 @@ android {
     flavorDimensions "distribution"
     productFlavors {
         standard {
-            versionName "4.2.0-beta.1-ose"
+            versionName "4.2.rc.1-ose"
         }
     }
 
