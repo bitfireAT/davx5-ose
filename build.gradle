@@ -12,7 +12,7 @@ buildscript {
         appIntro: '6.1.0',
         dav4jvm: 'fe62f70',
         kotlin: '1.6.10',
-        okhttp: '4.9.1',
+        okhttp: '4.9.3',
         // latest Apache Commons versions that don't require Java 8 (Android 7)
         commonsCollections: '4.2',
         commonsLang: '3.8.1',
