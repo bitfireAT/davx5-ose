@@ -1,0 +1,3 @@
+* new integration: jtx Board integration: Sync Journals, Notes and Tasks with "jtx Board" app is now possible. jtx Board is using the open standards VJOURNAL and VTODO
+* new function: SOCKS proxy support for .onion URLs with Orbot/Tor
+* allows saving high resolution contact photos
