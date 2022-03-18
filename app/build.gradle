@@ -51,7 +51,7 @@ android {
     flavorDimensions "distribution"
     productFlavors {
         standard {
-            versionName "4.2.rc.1-ose"
+            versionName "4.2-ose"
         }
     }
 
