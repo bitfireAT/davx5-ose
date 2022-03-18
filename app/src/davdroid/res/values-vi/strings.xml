@@ -145,9 +145,20 @@
   <string name="app_settings_logging_on">Ghi nhật ký đang hoạt động</string>
   <string name="app_settings_logging_off">Ghi nhật ký đã tắt</string>
   <string name="app_settings_battery_optimization">Tối ưu hoá pin</string>
+  <string name="app_settings_battery_optimization_whitelisted">Ứng dụng không được tối ưu (khuyên dùng)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Ứng dụng được tối ưu (không khuyên dùng)</string>
   <string name="app_settings_foreground_service">Giữ ở trước</string>
   <string name="app_settings_foreground_service_details">Có thể giúp nếu thiết bị của bạn ngăn chặn đồng bộ hoá tự động</string>
   <string name="app_settings_connection">Kết nối</string>
+  <string name="app_settings_proxy">Loại proxy</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Mặc định hệ thống</item>
+    <item>Không có proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (cho Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Tên máy chủ proxy</string>
+  <string name="app_settings_proxy_port">Cổng proxy</string>
   <string name="app_settings_security">Bảo mật</string>
   <string name="app_settings_security_app_permissions">Quyền ứng dụng</string>
   <string name="app_settings_security_app_permissions_summary">Xem xét các quyền được yêu cầu để đồng bộ hoá</string>
