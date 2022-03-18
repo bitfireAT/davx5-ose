@@ -60,14 +60,14 @@
   <string name="permissions_calendar_title">Kalender-Berechtigungen</string>
   <string name="permissions_calendar_status_off">Keine Kalendersynchronisierung (nicht empfohlen)</string>
   <string name="permissions_calendar_status_on">Kalendersynchronisierung möglich</string>
-  <string name="permissions_jtx_title">jtx Board Berechtigungen</string>
+  <string name="permissions_jtx_title">jtx Board-Berechtigungen</string>
   <string name="permissions_jtx_status_not_installed">Keine Synchronisierung von Aufgaben, Journalen &amp; Notizen (nicht installiert)</string>
   <string name="permissions_jtx_status_off">Keine Synchronisierung von Aufgaben, Journalen und Notizen</string>
   <string name="permissions_jtx_status_on">Synchronisierung von Aufgaben, Journalen, Notizen möglich </string>
   <string name="permissions_opentasks_title">OpenTasks-Berechtigungen</string>
   <string name="permissions_tasksorg_title">Tasks-Berechtigungen</string>
   <string name="permissions_tasks_status_not_installed">Keine Aufgabensynchronisierung (nicht installiert)</string>
-  <string name="permissions_tasks_status_off">Keine Aufgaben-Synchronisierung</string>
+  <string name="permissions_tasks_status_off">Keine Aufgabensynchronisierung</string>
   <string name="permissions_tasks_status_on">Aufgabensynchronisierung möglich</string>
   <string name="permissions_autoreset_title">Berechtigungen behalten</string>
   <string name="permissions_autoreset_status_off">Berechtigungen können automatisch entzogen werden (nicht empfohlen)</string>
@@ -132,7 +132,7 @@
   <string name="dav_service_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Darf nicht im Vordergrund ausgeführt werden</string>
-  <string name="battery_optimization_notify_text">Berechtigung für Batterieoptimisierung erforderlich</string>
+  <string name="battery_optimization_notify_text">Ausnahme von Akku-Optimierung erforderlich</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Läuft im Vordergrund</string>
   <string name="foreground_service_notify_text">Auf manchen Geräten für die automatische Synchronisierung benötigt</string>
@@ -144,10 +144,21 @@
   <string name="app_settings_logging">Ausführliche Protokollierung</string>
   <string name="app_settings_logging_on">Protokollierung läuft</string>
   <string name="app_settings_logging_off">Keine Protokollierung</string>
-  <string name="app_settings_battery_optimization">Batterieoptimisierung</string>
+  <string name="app_settings_battery_optimization">Akku-Optimierung</string>
+  <string name="app_settings_battery_optimization_whitelisted">App ist ausgenommen (empfohlen)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">App ist nicht ausgenommen (nicht empfohlen)</string>
   <string name="app_settings_foreground_service">Im Vordergrund bleiben</string>
   <string name="app_settings_foreground_service_details">Kann helfen, wenn das Gerät automatische Synchronisierung verhindert</string>
   <string name="app_settings_connection">Verbindung</string>
+  <string name="app_settings_proxy">Proxy-Typ</string>
+  <string-array name="app_settings_proxy_types">
+    <item>System-Standard</item>
+    <item>Kein Proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (für Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Proxy-Rechnername</string>
+  <string name="app_settings_proxy_port">Proxy-Port</string>
   <string name="app_settings_security">Sicherheit</string>
   <string name="app_settings_security_app_permissions">App-Berechtigungen</string>
   <string name="app_settings_security_app_permissions_summary">Für die Synchronisierung benötigte Berechtigungen prüfen</string>

@@ -35,7 +35,7 @@
   <string name="intro_tasks_jtx">jtx Board</string>
   <string name="intro_tasks_jtx_info"><![CDATA[Синхронизация на задачи, дневници и бележки.]]></string>
   <string name="intro_tasks_title">Поддръжка на задачи</string>
-  <string name="intro_tasks_text1">Ако сървърът поддържа задачи, те могат да бъдат синхронизирани и от приложение, поддржащо задачи:</string>
+  <string name="intro_tasks_text1">Ако сървърът поддържа задачи, те могат да бъдат синхронизирани с приложение за задачи:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info"><![CDATA[За някои възможности, като подзадачи или повтарящи се задачи, може да са необходими <a href="https://www.davx5.com/faq/tasks/advanced-task-features">допълнителни приложения</a>.]]></string>
   <string name="intro_tasks_tasks_org">Tasks</string>
@@ -314,7 +314,6 @@
   <string name="delete_collection">Премахване</string>
   <string name="delete_collection_confirm_title">Сигурен ли си?</string>
   <string name="delete_collection_confirm_warning">Този ресурс (%s) и всичките данни в него ще бъдат изтрити.</string>
-  <string name="delete_collection_data_shall_be_deleted">Изтрий тези данни от сървъра</string>
   <string name="delete_collection_deleting_collection">Изтриване на ресурс</string>
   <string name="collection_force_read_only">Само за четене</string>
   <string name="collection_properties">Свойства</string>
@@ -369,7 +368,6 @@
   <string name="sync_error_http_dav">Грешка в сървъра на HTTP – %s</string>
   <string name="sync_error_local_storage">Грешка в местното хранилище – %s</string>
   <string name="sync_error_retry">Повторен опит</string>
-  <string name="sync_invalid_contact">Получих развален контакт от сървъра</string>
   <string name="sync_invalid_event">Получено е недействително събитие от сървъра</string>
   <string name="sync_invalid_task">Получен е недействителен файл от сървъра</string>
   <string name="sync_invalid_resources_ignoring">Пренебрегване на сбъркани данни</string>
