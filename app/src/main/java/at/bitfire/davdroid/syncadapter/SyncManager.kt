@@ -110,7 +110,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      */
     val workDispatcher = Singleton.getInstanceByKey("SyncManager.workDispatcher") {
         ThreadPoolExecutor(
-            0, Integer.min(Runtime.getRuntime().availableProcessors(), 6),
+            0, Integer.min(Runtime.getRuntime().availableProcessors(), 4),
             10, TimeUnit.SECONDS, LinkedBlockingQueue()
         ).asCoroutineDispatcher()
     }
