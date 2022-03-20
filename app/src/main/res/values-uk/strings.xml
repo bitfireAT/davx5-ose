@@ -69,7 +69,6 @@
   <string name="navigation_drawer_website">Веб сайт</string>
   <string name="navigation_drawer_manual">Посібник</string>
   <string name="navigation_drawer_faq">Питання/Відповіді</string>
-  <string name="navigation_drawer_forums">Допомога / Форуми</string>
   <string name="navigation_drawer_donate">Підтримка</string>
   <string name="navigation_drawer_privacy_policy">Політика конфіденційності</string>
   <string name="account_list_no_internet">Відсутнє підключення до інтернету. Android не може розпочати синхронізацію.</string>

@@ -118,7 +118,6 @@
   <string name="navigation_drawer_website">Веб-сайт</string>
   <string name="navigation_drawer_manual">Руководство</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">Помощь / Форумы</string>
   <string name="navigation_drawer_donate">Пожертвовать</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
   <string name="account_list_no_internet">Нет подключения к интернету. Android не будет выполнять синхронизацию.</string>

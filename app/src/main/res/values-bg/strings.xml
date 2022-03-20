@@ -115,7 +115,6 @@
   <string name="navigation_drawer_website">Страница</string>
   <string name="navigation_drawer_manual">Ръководство</string>
   <string name="navigation_drawer_faq">Често задавани въпроси</string>
-  <string name="navigation_drawer_forums">Помощ и форум</string>
   <string name="navigation_drawer_donate">Дарения</string>
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
   <string name="account_list_no_internet">Няма връзка с интернет. Android няма да извършва синхронизации.</string>

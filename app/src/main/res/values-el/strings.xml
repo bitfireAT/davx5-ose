@@ -104,7 +104,6 @@
   <string name="navigation_drawer_website">Ιστότοπος</string>
   <string name="navigation_drawer_manual">Χειροκίνητα</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">Βοήθεια / Φόρουμ</string>
   <string name="navigation_drawer_donate">Δωρεά</string>
   <string name="navigation_drawer_privacy_policy">Πολιτική απορρήτου</string>
   <string name="account_list_no_internet">Δεν υπάρχει σύνδεση στο Διαδίκτυο. Το Android δεν θα πραγματοποιήσει συγχρονισμό.</string>

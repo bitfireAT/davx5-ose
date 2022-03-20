@@ -36,7 +36,6 @@
   <string name="navigation_drawer_website">Веб-сајт</string>
   <string name="navigation_drawer_manual">Приручник</string>
   <string name="navigation_drawer_faq">ЧПП</string>
-  <string name="navigation_drawer_forums">Помоћ/форуми</string>
   <string name="navigation_drawer_donate">Донирај</string>
   <string name="account_list_empty">Добро дошли у ДАВдроид!\n\nМожете сада да додате КалДАВ/КардДАВ налог.</string>
   <string name="accounts_global_sync_disabled">Синхронизација је системски искључена</string>

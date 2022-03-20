@@ -107,7 +107,6 @@
   <string name="navigation_drawer_website">Webgunea</string>
   <string name="navigation_drawer_manual">Manuala</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">Laguntza / Foroak</string>
   <string name="navigation_drawer_donate">Dohaintza egin</string>
   <string name="navigation_drawer_privacy_policy">Pribatutasun gidalerroak</string>
   <string name="account_list_no_internet">Ez dago internetik. Androidek ez du sinkronizaziorik egingo.</string>

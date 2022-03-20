@@ -118,7 +118,6 @@
   <string name="navigation_drawer_website">Website</string>
   <string name="navigation_drawer_manual">Handleiding</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">Hulp / Forums</string>
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
   <string name="account_list_no_internet">Geen internetverbinding. Android zal niet synchroniseren.</string>

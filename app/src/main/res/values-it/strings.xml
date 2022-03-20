@@ -111,7 +111,6 @@
   <string name="navigation_drawer_website">Sito web</string>
   <string name="navigation_drawer_manual">Manuale</string>
   <string name="navigation_drawer_faq">Domande Frequenti</string>
-  <string name="navigation_drawer_forums">Aiuto / Forum</string>
   <string name="navigation_drawer_donate">Donazione</string>
   <string name="navigation_drawer_privacy_policy">Politica sulla riservatezza</string>
   <string name="account_list_no_internet">Nessuna connessione Internet. Android non eseguirà la sincronizzazione.</string>
