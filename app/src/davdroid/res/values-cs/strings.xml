@@ -118,7 +118,6 @@
   <string name="navigation_drawer_website">Webová stránka</string>
   <string name="navigation_drawer_manual">Příručka</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">Pomoc/diskutovat</string>
   <string name="navigation_drawer_donate">Obdarovat</string>
   <string name="navigation_drawer_privacy_policy">Ochrana soukromí</string>
   <string name="account_list_no_internet">Bez připojení k Internetu. Systém Android synchronizaci nespustí.</string>

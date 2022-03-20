@@ -100,7 +100,6 @@
   <string name="navigation_drawer_website">سایت اینترنتی</string>
   <string name="navigation_drawer_manual">دستی</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">راهنما / انجمن ها</string>
   <string name="navigation_drawer_donate">کمک</string>
   <string name="navigation_drawer_privacy_policy">سیاست حفظ حریم خصوصی</string>
   <string name="account_list_no_internet">بدون اتصال به اینترنت. اندروید همگام سازی را اجرا نمی کند.</string>

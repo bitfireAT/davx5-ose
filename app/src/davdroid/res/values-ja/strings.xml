@@ -44,7 +44,6 @@
   <string name="navigation_drawer_website">Web サイト</string>
   <string name="navigation_drawer_manual">マニュアル</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">ヘルプ / フォーラム</string>
   <string name="navigation_drawer_donate">寄付</string>
   <string name="account_list_no_internet">インターネット接続がありません。 Android は同期を実行しません。</string>
   <string name="account_list_empty">DAVx⁵ にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>

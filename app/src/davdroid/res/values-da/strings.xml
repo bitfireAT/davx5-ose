@@ -118,7 +118,6 @@
   <string name="navigation_drawer_website">Netsted</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">OSS</string>
-  <string name="navigation_drawer_forums">Hjælp / fora</string>
   <string name="navigation_drawer_donate">Donation</string>
   <string name="navigation_drawer_privacy_policy">Privatlivs politik</string>
   <string name="account_list_no_internet">Ingen internetforbindelse. Android kører ikke synkronisering.</string>

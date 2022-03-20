@@ -2,10 +2,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="address_books_authority_title">Rehberler</string>
   <string name="help">Yardım</string>
   <string name="manage_accounts">Hesapları yönet</string>
+  <string name="notification_channel_debugging">Hata ayıklama</string>
+  <string name="notification_channel_sync">Senkronizasyon</string>
   <!--IntroActivity-->
+  <string name="intro_more_info">Daha fazla bilgi</string>
   <!--PermissionsActivity-->
+  <string name="permissions_contacts_title">Kişiler izinleri</string>
+  <string name="permissions_calendar_title">Takvim izinleri</string>
+  <string name="permissions_opentasks_title">OpenTasks izinleri</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Bu uygulama HİÇ BİR GARANTİ ile gelmemektedir. Bedava bir yazılımdır ve belli koşullar altında dağıtabilirsiniz.</string>
@@ -32,18 +39,21 @@
   <string name="app_settings_debug">Hata ayıklama</string>
   <string name="app_settings_show_debug_info">Hata ayıklama bilgilerini göster</string>
   <string name="app_settings_show_debug_info_details">Yazılım ve konfigürasyon detaylarına bak/paylaş</string>
+  <string name="app_settings_logging">Uzun jurnalleme</string>
   <string name="app_settings_security">Güvenlik</string>
   <string name="app_settings_user_interface">Kullanıcı arayüzü</string>
   <string name="app_settings_reset_hints">İpuçlarını sıfırla</string>
   <string name="app_settings_reset_hints_summary">Daha önceden azat edilen ipuçlarını yeniden etkinleştirir</string>
   <string name="app_settings_reset_hints_success">Tüm ipuçları artık gösterilecek</string>
   <!--AccountActivity-->
+  <string name="account_caldav">CalDAV</string>
   <string name="account_synchronize_now">Şimdi senkronize et</string>
   <string name="account_synchronizing_now">Senkronize ediyor</string>
   <string name="account_settings">Hesap ayarları</string>
   <string name="account_delete">Hesabı sil</string>
   <string name="account_delete_confirmation_title">Hesap gerçekten silinsin mi?</string>
   <string name="account_delete_confirmation_text">Rehber, takvim ve iş listelerinin tüm yerel kopyaları silinecektir.</string>
+  <string name="account_read_only">salt-okunur</string>
   <string name="account_refresh_address_book_list">Rehber listesini yenile</string>
   <string name="account_create_new_address_book">Yeni rehber oluştur</string>
   <string name="account_refresh_calendar_list">Takvim listesini yenile</string>
@@ -69,6 +79,7 @@
   <string name="login_configuration_detection">Konfigürasyon keşfi</string>
   <string name="login_querying_server">Lütfen bekle, sunucu sorgulanıyor…</string>
   <string name="login_no_caldav_carddav">CalDAV veya CardDAV servisi bulunamadı.</string>
+  <string name="login_view_logs">Detayları göster</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Ayarlar: %s</string>
   <string name="settings_sync">Senkronizasyon</string>
@@ -80,6 +91,7 @@
   <string name="settings_sync_wifi_only">Sadece WiFi üzerinden senkronize et</string>
   <string name="settings_sync_wifi_only_on">Senkronizasyon WiFi bağlantıları ile kısıtlıdır</string>
   <string name="settings_sync_wifi_only_off">Bağlantı tipi göz önünde bulundurulmaz</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID kısıtlaması</string>
   <string name="settings_authentication">Doğrulama</string>
   <string name="settings_username">Kullanıcı adı</string>
   <string name="settings_enter_username">Kullanıcı adı girin:</string>
@@ -107,6 +119,7 @@
   <string name="delete_collection_deleting_collection">Koleksiyon siliniyor</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Hata ayıklama bilgisi</string>
+  <string name="debug_info_logs_view">Jurnallere bak</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Bir hata oluştu.</string>
   <string name="exception_httpexception">Bir HTTP hatası oluştu.</string>
@@ -114,6 +127,8 @@
   <string name="exception_show_details">Detayları göster</string>
   <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Kullanıcı adı</string>
+  <string name="webdav_add_mount_password">Parola</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ izinleri</string>
   <string name="sync_error_permissions_text">Ek izinler zorunludur</string>

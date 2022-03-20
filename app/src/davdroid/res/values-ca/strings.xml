@@ -96,7 +96,6 @@
   <string name="navigation_drawer_website">Pàgina web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Preguntes Freqüents</string>
-  <string name="navigation_drawer_forums">Ajuda / Fòrums</string>
   <string name="navigation_drawer_donate">Fer donació</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
   <string name="account_list_no_internet">Sense conexió a internet. Android no executarà la sincronització</string>

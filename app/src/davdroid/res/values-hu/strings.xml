@@ -105,7 +105,6 @@
   <string name="navigation_drawer_website">Honlap</string>
   <string name="navigation_drawer_manual">Kézikönyv</string>
   <string name="navigation_drawer_faq">GYIK</string>
-  <string name="navigation_drawer_forums">Segítség / Fórumok</string>
   <string name="navigation_drawer_donate">Támogatás</string>
   <string name="navigation_drawer_privacy_policy">Adatvédelmi politika</string>
   <string name="account_list_no_internet">Nincs Internet-elérés.  Az Android rendszer nem fogja elvégezni a szinkronizálst</string>

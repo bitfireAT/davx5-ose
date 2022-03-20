@@ -118,7 +118,6 @@
   <string name="navigation_drawer_website">Sitio web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">PMF</string>
-  <string name="navigation_drawer_forums">Axuda / Foros</string>
   <string name="navigation_drawer_donate">Doar</string>
   <string name="navigation_drawer_privacy_policy">Política de Privacidade</string>
   <string name="account_list_no_internet">Sen conexión a internet. Android non sincronizará.</string>

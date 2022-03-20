@@ -118,7 +118,6 @@
   <string name="navigation_drawer_website">应用网站</string>
   <string name="navigation_drawer_manual">手册</string>
   <string name="navigation_drawer_faq">常见问题</string>
-  <string name="navigation_drawer_forums">帮助 / 论坛</string>
   <string name="navigation_drawer_donate">捐助</string>
   <string name="navigation_drawer_privacy_policy">隐私政策</string>
   <string name="account_list_no_internet">无网络连接。Android 将不会运行同步。</string>
