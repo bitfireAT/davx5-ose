@@ -27,6 +27,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.apache.commons.io.FileUtils
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -52,9 +53,14 @@ class JtxSyncManager(
     override fun queryCapabilities() =
         remoteExceptionContext {
             var syncState: SyncState? = null
-            it.propfind(0, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                if (relation == Response.HrefRelation.SELF)
+            it.propfind(0, MaxICalendarSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                if (relation == Response.HrefRelation.SELF) {
+                    response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
+                        Logger.log.info("Server accepts resources up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                    }
+
                     syncState = syncState(response)
+                }
             }
             syncState
         }

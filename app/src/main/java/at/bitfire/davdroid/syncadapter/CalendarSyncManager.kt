@@ -30,6 +30,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.apache.commons.io.FileUtils
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -66,8 +67,12 @@ class CalendarSyncManager(
     override fun queryCapabilities(): SyncState? =
             remoteExceptionContext {
                 var syncState: SyncState? = null
-                it.propfind(0, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                it.propfind(0, MaxICalendarSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
+                        response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
+                            Logger.log.info("Server accepts events up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                        }
+
                         response[SupportedReportSet::class.java]?.let { supported ->
                             hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
                         }

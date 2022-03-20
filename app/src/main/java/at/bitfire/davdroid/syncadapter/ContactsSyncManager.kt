@@ -5,7 +5,10 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.content.*
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.Context
+import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
 import at.bitfire.dav4jvm.DavAddressBook
@@ -33,7 +36,11 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.*
+import org.apache.commons.io.FileUtils
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.Reader
+import java.io.StringReader
 import java.util.logging.Level
 
 /**
@@ -124,8 +131,12 @@ class ContactsSyncManager(
     override fun queryCapabilities(): SyncState? {
         return remoteExceptionContext {
             var syncState: SyncState? = null
-            it.propfind(0, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+            it.propfind(0, MaxVCardSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
+                    response[MaxVCardSize::class.java]?.maxSize?.let { maxSize ->
+                        Logger.log.info("Server accepts vCards up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                    }
+
                     response[SupportedAddressData::class.java]?.let { supported ->
                         hasVCard4 = supported.hasVCard4()
 
