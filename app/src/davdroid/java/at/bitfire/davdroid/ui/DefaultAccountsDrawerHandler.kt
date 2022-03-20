@@ -20,6 +20,8 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
 
     companion object {
         private const val BETA_FEEDBACK_URI = "mailto:play@bitfire.at?subject=${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME} feedback (${BuildConfig.VERSION_CODE})"
+
+        const val COMMUNITY_URL = "https://github.com/bitfireAT/davx5-ose/discussions"
     }
 
 
@@ -56,9 +58,8 @@ class DefaultAccountsDrawerHandler: IAccountsDrawerHandler {
             R.id.nav_faq ->
                 UiUtils.launchUri(activity,
                         App.homepageUrl(activity).buildUpon().appendPath("faq").build())
-            R.id.nav_forums ->
-                UiUtils.launchUri(activity,
-                        App.homepageUrl(activity).buildUpon().appendPath("forums").build())
+            R.id.nav_community ->
+                UiUtils.launchUri(activity, Uri.parse(COMMUNITY_URL))
             R.id.nav_donate ->
                 if (BuildConfig.FLAVOR != App.FLAVOR_GOOGLE_PLAY)
                     UiUtils.launchUri(activity,
