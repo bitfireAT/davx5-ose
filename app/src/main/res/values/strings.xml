@@ -132,7 +132,7 @@
     <string name="navigation_drawer_website">Web site</string>
     <string name="navigation_drawer_manual">Manual</string>
     <string name="navigation_drawer_faq">FAQ</string>
-    <string name="navigation_drawer_forums">Help / Forums</string>
+    <string name="navigation_drawer_community">Community</string>
     <string name="navigation_drawer_donate">Donate</string>
     <string name="navigation_drawer_privacy_policy">Privacy policy</string>
     <string name="account_list_no_internet">No Internet connectivity. Android will not run synchronization.</string>

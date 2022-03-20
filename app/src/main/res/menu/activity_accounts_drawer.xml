@@ -52,9 +52,9 @@
                 android:icon="@drawable/ic_help"
                 android:title="@string/navigation_drawer_faq"/>
             <item
-                android:id="@+id/nav_forums"
+                android:id="@+id/nav_community"
                 android:icon="@drawable/ic_forum"
-                android:title="@string/navigation_drawer_forums"/>
+                android:title="@string/navigation_drawer_community"/>
             <item
                 android:id="@+id/nav_donate"
                 android:icon="@drawable/ic_attach_money"
