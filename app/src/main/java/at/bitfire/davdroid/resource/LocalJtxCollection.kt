@@ -38,9 +38,8 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
                 put(JtxContract.JtxCollection.SUPPORTSVTODO, info.supportsVTODO)
                 put(JtxContract.JtxCollection.ACCOUNT_NAME, account.name)
                 put(JtxContract.JtxCollection.ACCOUNT_TYPE, account.type)
-                put(JtxContract.JtxCollection.READONLY, info.forceReadOnly)
+                put(JtxContract.JtxCollection.READONLY, info.forceReadOnly || !info.privWriteContent)
             }
-
     }
 
     override val tag: String
