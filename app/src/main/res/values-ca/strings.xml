@@ -5,9 +5,12 @@
   <string name="account_invalid">El compte no existeix (eliminat)</string>
   <string name="account_title_address_book">DAVx⁵ Llibreta d’Adreces</string>
   <string name="address_books_authority_title">Llibreta d’adreces</string>
+  <string name="field_required">Cal aquest camp</string>
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gestiona comptes</string>
   <string name="share">Compartir</string>
+  <string name="database_destructive_migration_title">Base de dades malmesa</string>
+  <string name="database_destructive_migration_text">S\'han eliminat localment tots els comptes.</string>
   <string name="notification_channel_debugging">Depurador</string>
   <string name="notification_channel_general">Altres missatges importants</string>
   <string name="notification_channel_status">Missatges d\'estat de baixa prioritat</string>
@@ -74,7 +77,7 @@
   <string name="wifi_permissions_location_enabled_off">Servei de localització deshabilitat</string>
   <!--AboutActivity-->
   <string name="about_translations">Traduccions</string>
-  <string name="about_libraries">Llibreries</string>
+  <string name="about_libraries">Biblioteques</string>
   <string name="about_flavor_info">Aquesta versió només és apta per la seva distribució a Google Play.</string>
   <string name="about_license_info_no_warranty">Aquest programa és distribuit sense CAP TIPUS DE GARANTIA. És programari lliure, i està permesa la seva re-distribució sota certes condicions.</string>
   <!--global settings-->
@@ -86,17 +89,17 @@
   <string name="navigation_drawer_open">Obriu el calaix de navegació</string>
   <string name="navigation_drawer_close">Tanca el calaix de navegació</string>
   <string name="navigation_drawer_subtitle">Adaptador de sincronització CalDAV / CardDAV</string>
-  <string name="navigation_drawer_about">Quan a / Llicència</string>
+  <string name="navigation_drawer_about">Quant a / Llicència</string>
   <string name="navigation_drawer_beta_feedback">Retroacció de la Beta</string>
   <string name="install_email_client">Si us plau, instal·leu un client de correu</string>
   <string name="install_browser">Si us plau, instal·leu un navegador.</string>
   <string name="navigation_drawer_settings">Paràmetres</string>
-  <string name="navigation_drawer_news_updates">Novetats &amp; Actualitzacions</string>
+  <string name="navigation_drawer_news_updates">Novetats i actualitzacions</string>
   <string name="navigation_drawer_external_links">Enllaços externs</string>
   <string name="navigation_drawer_website">Pàgina web</string>
   <string name="navigation_drawer_manual">Manual</string>
-  <string name="navigation_drawer_faq">Preguntes Freqüents</string>
-  <string name="navigation_drawer_donate">Fer donació</string>
+  <string name="navigation_drawer_faq">Preguntes més freqüents</string>
+  <string name="navigation_drawer_donate">Fer una donació</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
   <string name="account_list_no_internet">Sense conexió a internet. Android no executarà la sincronització</string>
   <string name="account_list_empty">Benvingut a DAVx⁵! \n\n Ara podeu afegir un compte CalDAV / CardDAV.</string>

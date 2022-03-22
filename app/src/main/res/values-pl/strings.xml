@@ -118,6 +118,7 @@
   <string name="navigation_drawer_website">Strona WWW</string>
   <string name="navigation_drawer_manual">Podręcznik</string>
   <string name="navigation_drawer_faq">Często zadawane pytania</string>
+  <string name="navigation_drawer_community">Społeczność</string>
   <string name="navigation_drawer_donate">Wesprzyj finansowo</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
   <string name="account_list_no_internet">Brak połączenia z Internetem. Android nie wykona synchronizacji.</string>
