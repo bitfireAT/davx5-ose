@@ -22,7 +22,7 @@
   <string name="notification_channel_sync_io_errors">Netwerk en I/O fouten</string>
   <string name="notification_channel_sync_io_errors_desc">Timeouts, connectie problemen, etc. (vaak tijdelijk).</string>
   <!--IntroActivity-->
-  <string name="intro_slogan1">Uw gegevens, Uw keuze</string>
+  <string name="intro_slogan1">Jouw gegevens, Jouw keuze</string>
   <string name="intro_slogan2">Houd zelf de controle</string>
   <string name="intro_battery_title">regelmatige sync-intervallen</string>
   <string name="intro_battery_not_whitelisted">Uitgeschakeld (niet aanbevolen)</string>
@@ -36,7 +36,7 @@
   <string name="intro_more_info">Meer informatie</string>
   <string name="intro_tasks_jtx">jtx Board</string>
   <string name="intro_tasks_jtx_info"><![CDATA[Synchroniseert taken, agenda\'s en notities met elke geschikte CalDAV-server.]]></string>
-  <string name="intro_tasks_title">Geschikt voor taken</string>
+  <string name="intro_tasks_title">Ondersteunt taken</string>
   <string name="intro_tasks_text1">Als de server taken ondersteunt, synchroniseert een geschikte taken-app ze:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info"><![CDATA[Voor functies als subtaken of herhalende taken zijn mogelijk <a href="https://www.davx5.com/faq/tasks/advanced-task-features">extra apps</a> nodig.]]></string>
@@ -45,25 +45,25 @@
   <string name="intro_tasks_no_app_store">Geen app-store beschikbaar</string>
   <string name="intro_tasks_dont_show">Er is geen taakondersteuning nodig.*</string>
   <string name="intro_open_source_title">Open-source software</string>
-  <string name="intro_open_source_text">We zijn blij dat de keuze valt op open-source software %s. Ontwikkeling, onderhoud en ondersteuning zijn veel werk. Overweeg daarom bij te dragen (er zijn vele manieren) of een donatie. Wij waarderen het zeer!</string>
+  <string name="intro_open_source_text">We zijn blij dat de keuze valt op open source software %s. Ontwikkelen, onderhouden en ondersteunen is veel werk. Overweeg daarom bij te dragen (kan op vele manieren) of een donatie. Wij waarderen het zeer!</string>
   <string name="intro_open_source_details">Hoe bijdragen/doneren</string>
   <string name="intro_open_source_dont_show">In de nabije toekomst niet weergeven</string>
   <!--PermissionsActivity-->
-  <string name="permissions_title">App-rechten</string>
+  <string name="permissions_title">Rechten toestaan</string>
   <string name="permissions_text">%s heeft rechten nodig om goed te werken.</string>
   <string name="permissions_all_title">Alle onderstaande</string>
   <string name="permissions_all_status_off">Gebruik dit om alle functies in te schakelen (aanbevolen)</string>
   <string name="permissions_all_status_on">Alle rechten toegekend</string>
   <string name="permissions_contacts_title">Contacten toestaan</string>
-  <string name="permissions_contacts_status_off">Geen contacten-sync (niet aanbevolen)</string>
-  <string name="permissions_contacts_status_on">Contacten-sync mogelijk</string>
-  <string name="permissions_calendar_title">Agendamachtigingen</string>
-  <string name="permissions_calendar_status_off">Geen agendasynchronisatie (niet aanbevolen)</string>
-  <string name="permissions_calendar_status_on">Agendasynchronisatie mogelijk</string>
+  <string name="permissions_contacts_status_off">Geen contacten synchroniseren (niet aanbevolen)</string>
+  <string name="permissions_contacts_status_on">Contacten synchroniseren mogelijk</string>
+  <string name="permissions_calendar_title">Kalender machtigingen</string>
+  <string name="permissions_calendar_status_off">Geen kalenders synchroniseren (niet aanbevolen)</string>
+  <string name="permissions_calendar_status_on"> Kalenders synchroniseren mogelijk</string>
   <string name="permissions_jtx_title">jtx Board-rechten</string>
-  <string name="permissions_jtx_status_not_installed">Geen taak-, agenda- en notitiesync (niet geïnstalleerd)</string>
-  <string name="permissions_jtx_status_off">Geen taak-, agenda- en notitiesync</string>
-  <string name="permissions_jtx_status_on">Taak-, agenda- en notitiesync mogelijk</string>
+  <string name="permissions_jtx_status_not_installed">Geen taak-, kalender- en notitiesync (niet geïnstalleerd)</string>
+  <string name="permissions_jtx_status_off">Geen taak-, kalender- en notitiesync</string>
+  <string name="permissions_jtx_status_on">Taak-, kalender- en notitiesync mogelijk</string>
   <string name="permissions_opentasks_title">OpenTasks rechten</string>
   <string name="permissions_tasksorg_title">Rechten voor taken</string>
   <string name="permissions_tasks_status_not_installed">Geen taak-sync (niet geïnstalleerd)</string>
@@ -118,6 +118,7 @@
   <string name="navigation_drawer_website">Website</string>
   <string name="navigation_drawer_manual">Handleiding</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
   <string name="account_list_no_internet">Geen internetverbinding. Android zal niet synchroniseren.</string>
@@ -144,9 +145,20 @@
   <string name="app_settings_logging_on">Loggen is actief</string>
   <string name="app_settings_logging_off">Loggen is geactiveerd</string>
   <string name="app_settings_battery_optimization">Batterijoptimalisatie</string>
+  <string name="app_settings_battery_optimization_whitelisted">Onbeperkt batterijgebruik toestaan (aanbevolen)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Niet onbeperkt batterijgebruik toestaan (niet aanbevolen)</string>
   <string name="app_settings_foreground_service">Op de voorgrond houden</string>
   <string name="app_settings_foreground_service_details">Kan helpen als uw toestel automatisch synchroniseren verhindert</string>
   <string name="app_settings_connection">Verbinding</string>
+  <string name="app_settings_proxy">Proxy type</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Systeem standaard</item>
+    <item>Geen proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (voor Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Proxy host naam</string>
+  <string name="app_settings_proxy_port">Proxy poort</string>
   <string name="app_settings_security">Beveiliging</string>
   <string name="app_settings_security_app_permissions">App-rechten</string>
   <string name="app_settings_security_app_permissions_summary">De vereiste rechten om te synchroniseren controleren</string>
@@ -177,14 +189,14 @@
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
   <string name="account_carddav_missing_permissions">Geen contacten-synchronisatie (ontbrekende rechten)</string>
-  <string name="account_caldav_missing_calendar_permissions">Geen agenda-synchronisatie (ontbrekende rechten)</string>
+  <string name="account_caldav_missing_calendar_permissions">Geen kalender synchronisatie (ontbrekende rechten)</string>
   <string name="account_caldav_missing_tasks_permissions">Geen taken synchroniseren (ontbrekende rechten)</string>
-  <string name="account_caldav_missing_permissions">Geen synchronisatie van agenda en taken (ontbrekende rechten)</string>
-  <string name="account_webcal_missing_calendar_permissions">Geen toegang tot agenda\'s (ontbrekende rechten)</string>
+  <string name="account_caldav_missing_permissions">Geen synchronisatie van kalender en taken (ontbrekende rechten)</string>
+  <string name="account_webcal_missing_calendar_permissions">Geen toegang tot kalenders (ontbrekende rechten)</string>
   <string name="account_permissions_action">Rechten</string>
   <string name="account_no_address_books">Er zijn (nog) geen adresboeken.</string>
-  <string name="account_no_calendars">Er zijn (nog) geen agenda\'s.</string>
-  <string name="account_no_webcals">Er zijn (nog) geen agenda-abonnementen.</string>
+  <string name="account_no_calendars">Er zijn (nog) geen kalenders.</string>
+  <string name="account_no_webcals">Er zijn (nog) geen kalender abonnementen.</string>
   <string name="account_swipe_down">Omlaag vegen om de lijst van de server te actualiseren.</string>
   <string name="account_synchronize_now">Nu synchroniseren</string>
   <string name="account_synchronizing_now">Synchroniseert…</string>
@@ -195,17 +207,17 @@
   <string name="account_rename_couldnt_rename">Naam account kon niet gewijzigd</string>
   <string name="account_delete">Account verwijderen</string>
   <string name="account_delete_confirmation_title">Account echt verwijderen?</string>
-  <string name="account_delete_confirmation_text">Alle lokale kopieën van adresboeken, agenda\'s en takenlijsten worden verwijderd.</string>
+  <string name="account_delete_confirmation_text">Alle lokale kopieën van adresboeken, kalenders en takenlijsten worden verwijderd.</string>
   <string name="account_synchronize_this_collection">deze collectie synchroniseren</string>
   <string name="account_read_only">alleen-lezen</string>
-  <string name="account_calendar">agenda</string>
+  <string name="account_calendar">kalender</string>
   <string name="account_task_list">takenlijst</string>
   <string name="account_journal">logboek</string>
   <string name="account_only_personal">Alleen persoonlijk tonen</string>
   <string name="account_refresh_address_book_list">Adresboeken vernieuwen</string>
   <string name="account_create_new_address_book">Nieuw adresboek maken</string>
-  <string name="account_refresh_calendar_list">Agenda\'s bijwerken</string>
-  <string name="account_create_new_calendar">Nieuwe agenda maken</string>
+  <string name="account_refresh_calendar_list">Kalenders bijwerken</string>
+  <string name="account_create_new_calendar">Nieuwe kalender maken</string>
   <string name="account_no_webcal_handler_found">Geen Webcal-app gevonden</string>
   <string name="account_install_icsx5">ICSx⁵ installeren</string>
   <!--AddAccountActivity-->
@@ -226,7 +238,7 @@
   <string name="login_create_account">Account aanmaken</string>
   <string name="login_account_name">Accountnaam</string>
   <string name="login_account_avoid_apostrophe">Het gebruik van apostrofs (\') heeft op sommige apparaten problemen veroorzaakt.</string>
-  <string name="login_account_name_info">Gebruik het eigen e-mailadres als accountnaam, want Android gebruikt dat als ORGANIZER veld voor gemaakte afspraken. Er kunnen niet 2 accounts met hetzelfde e-mailadres zijn.</string>
+  <string name="login_account_name_info">Gebruik het eigen e-mailadres als accountnaam, want Android gebruikt het als ORGANIZER veld voor gebeurtenissen. Twee accounts met hetzelfde adres kan niet.</string>
   <string name="login_account_contact_group_method">Methode voor contact-groepen:</string>
   <string name="login_account_name_required">Accountnaam verplicht</string>
   <string name="login_account_name_already_taken">Accountnaam is al in gebruik</string>
@@ -244,11 +256,11 @@
   <!--AccountSettingsActivity-->
   <string name="settings_title">Instellingen: %s</string>
   <string name="settings_sync">Synchronisatie</string>
-  <string name="settings_sync_interval_contacts">Contacten-sync. interval</string>
+  <string name="settings_sync_interval_contacts">Contacten synchronisatie interval</string>
   <string name="settings_sync_summary_manually">Alleen handmatig</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Elke %d minuten + meteen bij lokale veranderingen</string>
-  <string name="settings_sync_interval_calendars">Agenda\'s bijwerken</string>
-  <string name="settings_sync_interval_tasks">Taken-sync. interval</string>
+  <string name="settings_sync_interval_calendars">Kalenders bijwerken</string>
+  <string name="settings_sync_interval_tasks">Taken synchronisatie interval</string>
   <string-array name="settings_sync_interval_names">
     <item>Handmatig </item>
     <item>Om de 15 minuten </item>
@@ -259,11 +271,11 @@
     <item>Eenmaal daags</item>
   </string-array>
   <string name="settings_sync_wifi_only">Sync alleen via WiFi</string>
-  <string name="settings_sync_wifi_only_on">Sync is beperkt tot WiFi verbindingen</string>
+  <string name="settings_sync_wifi_only_on">Beperkt tot WiFi verbindingen</string>
   <string name="settings_sync_wifi_only_off">Type verbinding niet in acht genomen</string>
   <string name="settings_sync_wifi_only_ssids">Beperking WiFi-SSID</string>
-  <string name="settings_sync_wifi_only_ssids_on">Sync. alleen via %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Sync. alleen via %s(vereist geactiveerde locatiediensten)</string>
+  <string name="settings_sync_wifi_only_ssids_on">Synchronisatie alleen via %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Sync alleen via %s(vereist altijd toegang tot locatie)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WiFI-verbindingen worden gebruikt</string>
   <string name="settings_sync_wifi_only_ssids_message">Door komma\'s gescheiden namen (SSID\'s) van toegestane WiFi-netwerken (laat leeg voor alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Beperking WiFi-SSID vereist verdere instellingen</string>
@@ -278,26 +290,26 @@
   <string name="settings_certificate_alias">Cliënt-certificaat alias </string>
   <string name="settings_certificate_alias_empty">Geen certificaat geselecteerd</string>
   <string name="settings_caldav">CalDAV</string>
-  <string name="settings_sync_time_range_past">Verlopen-tijd limiet</string>
-  <string name="settings_sync_time_range_past_none">Alle afspraken worden gesynchronizeerd</string>
+  <string name="settings_sync_time_range_past">Gebeurtenissen in verleden tijd</string>
+  <string name="settings_sync_time_range_past_none">Worden alle gesynchroniseerd</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">Afspraken ouder dan een dag worden genegeerd</item>
-    <item quantity="other">Afspraken ouder dan %d dagen worden genegeerd</item>
+    <item quantity="other">Ouder dan %d dagen worden genegeerd</item>
   </plurals>
-  <string name="settings_sync_time_range_past_message">Afspraken ouder dan dit aantal dagen worden genegeerd (mag 0 zijn). Leeg laten om alle afspraken te synchroniseren.</string>
+  <string name="settings_sync_time_range_past_message">Ouder dan hier ingevuld aantal dagen worden genegeerd (mag 0 zijn). Veld leeg laten om alle te synchroniseren.</string>
   <string name="settings_default_alarm">Standaardherinnering</string>
   <plurals name="settings_default_alarm_on">
     <item quantity="one">Standaardherinnering één minut voor het evenement</item>
-    <item quantity="other">Standaardherinnering %d minuten voor aanvang gebeurtenis</item>
+    <item quantity="other"> %d minuten voor aanvang gebeurtenis</item>
   </plurals>
-  <string name="settings_default_alarm_off">Er worden geen standaardherinneringen aangemaakt</string>
-  <string name="settings_default_alarm_message">Als standaardherinneringen worden aangemaakt voor gebeurtenissen zonder herinnering: het gewenste aantal minuten voor de gebeurtenis. Leeg laten om standaardherinneringen uit te schakelen.</string>
-  <string name="settings_manage_calendar_colors">Agendakleuren beheren</string>
-  <string name="settings_manage_calendar_colors_on">Agendakleuren worden bij elke sync teruggezet</string>
-  <string name="settings_manage_calendar_colors_off">Agendakleuren kunnen door andere apps worden ingesteld</string>
+  <string name="settings_default_alarm_off">Worden niet aangemaakt</string>
+  <string name="settings_default_alarm_message">Vul het gewenste aantal minuten in. Leeg laten om herinneringen uit te schakelen.</string>
+  <string name="settings_manage_calendar_colors">Kalender kleuren beheren</string>
+  <string name="settings_manage_calendar_colors_on">Worden bij elke sync teruggezet</string>
+  <string name="settings_manage_calendar_colors_off">Kunnen door andere apps worden ingesteld</string>
   <string name="settings_event_colors">Gebeurteniskleuren ondersteunen</string>
-  <string name="settings_event_colors_on">Gebeurteniskleuren worden gesynchroniseerd</string>
-  <string name="settings_event_colors_off">Gebeurteniskleuren worden niet gesynchroniseerd</string>
+  <string name="settings_event_colors_on">Worden gesynchroniseerd</string>
+  <string name="settings_event_colors_off">Worden niet gesynchroniseerd</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Methode voor contact-groepen:</string>
   <string-array name="settings_contact_group_method_entries">
@@ -308,9 +320,9 @@
   <!--collection management-->
   <string name="create_addressbook">Adresboek aanmaken</string>
   <string name="create_addressbook_display_name_hint">Mijn adresboek</string>
-  <string name="create_calendar">Agenda aanmaken</string>
+  <string name="create_calendar">Kalender aanmaken</string>
   <string name="create_calendar_time_zone">Tijdzone</string>
-  <string name="create_calendar_type">Mogelijke agenda-items</string>
+  <string name="create_calendar_type">Mogelijke kalender-items</string>
   <string name="create_calendar_type_vevent">Gebeurtenissen</string>
   <string name="create_calendar_type_vtodo">Taken</string>
   <string name="create_calendar_type_vjournal">Notities / Dagboek</string>
