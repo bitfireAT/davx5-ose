@@ -34,7 +34,10 @@
   <string name="intro_autostart_dont_show">He fet els ajustaments requerits. No m\'ho recordis més.*</string>
   <string name="intro_leave_unchecked">* Deixar desmarcat per un recordatori més tard. Pot ser reinicialitzat a ajustaments /%s.</string>
   <string name="intro_more_info">Més informació</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Permet la sincronització de tasques, diaris i notes.]]></string>
   <string name="intro_tasks_title">Suport de tasques</string>
+  <string name="intro_tasks_text1">Si el vostre servidor permet les tasques, es poden sincronitzar amb una aplicació que admeti tasques:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info"><![CDATA[Per algunes característiques com les subtasques o les tasques recurrents, és possible que es necessitin <a href="https://www.davx5.com/faq/tasks/advanced-task-features">aplicacions addicionals</a>.]]></string>
   <string name="intro_tasks_tasks_org">Tasks</string>
@@ -57,29 +60,44 @@
   <string name="permissions_calendar_title">Permisos de calendari</string>
   <string name="permissions_calendar_status_off">Sense sincronització del calendari (no recomanat)</string>
   <string name="permissions_calendar_status_on">Sincronització del calendari possible</string>
+  <string name="permissions_jtx_title">Permisos de jtx Board</string>
+  <string name="permissions_jtx_status_not_installed">Sense sincronització de tasques, diaris ni notes (no instal·lada)</string>
+  <string name="permissions_jtx_status_off">Sense sincronització de tasques, diaris ni notes</string>
+  <string name="permissions_jtx_status_on">És possible la sincronització de tasques, diaris o notes</string>
   <string name="permissions_opentasks_title">Permisos d\'OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisos de Tasks</string>
   <string name="permissions_tasks_status_not_installed">Sense sincronització de les tasques (no instal·lat)</string>
+  <string name="permissions_tasks_status_off">Sense sincronització de les tasques</string>
   <string name="permissions_tasks_status_on">Sincronització de les tasques possible</string>
   <string name="permissions_autoreset_title">Mantenir els permisos</string>
   <string name="permissions_autoreset_status_off">Els permisos podrien ser revocats automàticament (no recomanat)</string>
   <string name="permissions_autoreset_status_on">Els permisos no seran revocats automàticament</string>
+  <string name="permissions_autoreset_instruction">Feu clic a Permisos &gt; desmarqueu «Elimina els permisos si no s\'usa l\'aplicació»</string>
   <string name="permissions_app_settings_hint">Si un interruptor no funciona, utilitza l\'apartat de permisos de l\'aplicació dels ajustaments del telèfon.</string>
   <string name="permissions_app_settings">Ajustaments de l\'aplicació</string>
   <!--WifiPermissionsActivity-->
   <string name="wifi_permissions_label">Permisos de l\'SSID del WiFi</string>
   <string name="wifi_permissions_intro">Per tal de poder accedir al nom de la xarxa de WiFi connectada (SSID), s\'han de complir els següents requisits:</string>
+  <string name="wifi_permissions_location_permission">Permís d\'ubicació precisa</string>
   <string name="wifi_permissions_location_permission_on">Permís d\'ubicació concedit</string>
   <string name="wifi_permissions_location_permission_off">Permís d\'ubicació rebutjat</string>
   <string name="wifi_permissions_background_location_permission">Permís d\'ubicació en segon pla</string>
   <string name="wifi_permissions_background_location_permission_label">Permetre tota l\'estona</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Permís d\'ubicació establert a <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Permís d\'ubicació no establert a <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s utilitza el permís de localització només per determinar l\'SSID de la Wi-Fi actual per als comptes restringits de SSID. Això ocorrerà fins i tot quan l\'aplicació estigui en segon pla. No es recullen, s\'emmagatzemen, es processen ni s\'envien a cap lloc.</string>
   <string name="wifi_permissions_location_enabled">Localització sempre habilitada</string>
+  <string name="wifi_permissions_location_enabled_on">El servei de localització està habilitat</string>
   <string name="wifi_permissions_location_enabled_off">Servei de localització deshabilitat</string>
   <!--AboutActivity-->
   <string name="about_translations">Traduccions</string>
   <string name="about_libraries">Biblioteques</string>
+  <string name="about_version">Versió %1$s (%2$d)</string>
+  <string name="about_build_date">Compilat el %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) i col·laboradors</string>
   <string name="about_flavor_info">Aquesta versió només és apta per la seva distribució a Google Play.</string>
   <string name="about_license_info_no_warranty">Aquest programa és distribuit sense CAP TIPUS DE GARANTIA. És programari lliure, i està permesa la seva re-distribució sota certes condicions.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Gràcies a: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">No es pot crear l\'arxiu de registre</string>
   <string name="logging_notification_text">Iniciant a totes les %s activitats</string>
@@ -95,10 +113,12 @@
   <string name="install_browser">Si us plau, instal·leu un navegador.</string>
   <string name="navigation_drawer_settings">Paràmetres</string>
   <string name="navigation_drawer_news_updates">Novetats i actualitzacions</string>
+  <string name="navigation_drawer_tools">Eines</string>
   <string name="navigation_drawer_external_links">Enllaços externs</string>
   <string name="navigation_drawer_website">Pàgina web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Preguntes més freqüents</string>
+  <string name="navigation_drawer_community">Communitat</string>
   <string name="navigation_drawer_donate">Fer una donació</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
   <string name="account_list_no_internet">Sense conexió a internet. Android no executarà la sincronització</string>
