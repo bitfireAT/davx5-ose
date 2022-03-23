@@ -8,18 +8,18 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     buildToolsVersion '32.0.0'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 402000008
-        versionName '4.2.0.2'
+        versionCode 402000009
+        versionName '4.2.0.3'
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         minSdkVersion 21        // Android 5
-        targetSdkVersion 31     // Android 12
+        targetSdkVersion 32     // Android 12
 
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
