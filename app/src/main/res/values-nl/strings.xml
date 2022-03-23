@@ -86,9 +86,9 @@
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Locatie recht ingesteld op <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Locatie recht niet ingesteld op <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%sgebruikt locatie recht alleen om de huidige WiFi-SSID voor SSID-beperkte accounts te bepalen. Dit gebeurt zelfs als de app zich op de achtergrond bevindt. Er worden geen locatiegegevens verzameld, opgeslagen, verwerkt of ergens naartoe verzonden.</string>
-  <string name="wifi_permissions_location_enabled">Locatieservice altijd ingeschakeld</string>
-  <string name="wifi_permissions_location_enabled_on">Locatieservice is ingeschakeld</string>
-  <string name="wifi_permissions_location_enabled_off">Locatieservice is uitgeschakeld</string>
+  <string name="wifi_permissions_location_enabled">Toegang tot locatie altijd ingeschakeld</string>
+  <string name="wifi_permissions_location_enabled_on">Toegang tot locatie is ingeschakeld</string>
+  <string name="wifi_permissions_location_enabled_off">Toegang tot locatie is uitgeschakeld</string>
   <!--AboutActivity-->
   <string name="about_translations">Vertalingen</string>
   <string name="about_libraries">Bibliotheken</string>
@@ -104,9 +104,9 @@
   <string name="logging_notification_view_share">Bekijken/delen</string>
   <string name="logging_notification_disable">Uitschakelen</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Navigatielade openen</string>
-  <string name="navigation_drawer_close">Navigatielade sluiten</string>
-  <string name="navigation_drawer_subtitle">CalDAV/CardDav Sync adapter</string>
+  <string name="navigation_drawer_open">Navigatiemenu openen</string>
+  <string name="navigation_drawer_close">Navigatielmenu sluiten</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync adapter</string>
   <string name="navigation_drawer_about">Over / Licentie</string>
   <string name="navigation_drawer_beta_feedback">Beta terugkoppeling</string>
   <string name="install_email_client">E-mailprogramma is vereist</string>
@@ -121,10 +121,10 @@
   <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
-  <string name="account_list_no_internet">Geen internetverbinding. Android zal niet synchroniseren.</string>
-  <string name="account_list_low_storage">Er is te weinig opslagruimte. Android zal geen synchroniseren.</string>
-  <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAv account toevoegen.</string>
-  <string name="accounts_global_sync_disabled">Automatisch synchroniseren voor het hele systeem is uitgeschakeld</string>
+  <string name="account_list_no_internet">Geen internetverbinding. Android synchroniseert niet.</string>
+  <string name="account_list_low_storage">Er is te weinig opslagruimte. Android zal niet synchroniseren.</string>
+  <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAV account toevoegen.</string>
+  <string name="accounts_global_sync_disabled">Automatisch synchroniseren is voor alle accounts uitgeschakeld</string>
   <string name="accounts_global_sync_enable">Inschakelen</string>
   <string name="accounts_sync_all">Alle accounts synchroniseren</string>
   <!--DavService-->
@@ -146,7 +146,7 @@
   <string name="app_settings_logging_off">Loggen is geactiveerd</string>
   <string name="app_settings_battery_optimization">Batterijoptimalisatie</string>
   <string name="app_settings_battery_optimization_whitelisted">Onbeperkt batterijgebruik toestaan (aanbevolen)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Niet onbeperkt batterijgebruik toestaan (niet aanbevolen)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Beperkt batterijgebruik toestaan (niet aanbevolen)</string>
   <string name="app_settings_foreground_service">Op de voorgrond houden</string>
   <string name="app_settings_foreground_service_details">Kan helpen als uw toestel automatisch synchroniseren verhindert</string>
   <string name="app_settings_connection">Verbinding</string>
@@ -160,15 +160,15 @@
   <string name="app_settings_proxy_host">Proxy host naam</string>
   <string name="app_settings_proxy_port">Proxy poort</string>
   <string name="app_settings_security">Beveiliging</string>
-  <string name="app_settings_security_app_permissions">App-rechten</string>
+  <string name="app_settings_security_app_permissions">App rechten</string>
   <string name="app_settings_security_app_permissions_summary">De vereiste rechten om te synchroniseren controleren</string>
   <string name="app_settings_distrust_system_certs">Systeemcertificaten niet vertrouwen</string>
-  <string name="app_settings_distrust_system_certs_on">Door systeem en gebruiker toegevoegde CA certificaten worden niet vertrouwd</string>
-  <string name="app_settings_distrust_system_certs_off">Door systeem en gebruiker toegevoegde CA certificaten worden vertrouwd (aanbevolen)</string>
-  <string name="app_settings_reset_certificates">(On)vertrouwde certificaten terugzetten</string>
+  <string name="app_settings_distrust_system_certs_on">Door systeem en gebruiker toegevoegde CA certificaten niet vertrouwen</string>
+  <string name="app_settings_distrust_system_certs_off">Door systeem en gebruiker toegevoegde CA certificaten vertrouwen (aanbevolen)</string>
+  <string name="app_settings_reset_certificates">(Niet-)vertrouwde certificaten terugzetten</string>
   <string name="app_settings_reset_certificates_summary">Herstelt het vertrouwen van alle aangepaste certificaten</string>
   <string name="app_settings_reset_certificates_success">Alle aangepaste certificaten zijn gewist</string>
-  <string name="app_settings_user_interface">Gebruikers-interface</string>
+  <string name="app_settings_user_interface">Gebruikersinterface</string>
   <string name="app_settings_notification_settings">Instellingen voor meldingen</string>
   <string name="app_settings_notification_settings_summary">Meldingskanalen en hun instellingen beheren</string>
   <string name="app_settings_theme_title">Thema selecteren</string>
@@ -179,18 +179,18 @@
   </string-array>
   <string name="app_settings_reset_hints">Hints opnieuw instellen</string>
   <string name="app_settings_reset_hints_summary">Hints die al gezien zijn opnieuw weergeven</string>
-  <string name="app_settings_reset_hints_success">Alle hints worden opnieuw weergegeven</string>
+  <string name="app_settings_reset_hints_success">Alle hints opnieuw weergeven</string>
   <string name="app_settings_integration">Integratie</string>
-  <string name="app_settings_tasks_provider">Taken-app</string>
+  <string name="app_settings_tasks_provider">Taken app</string>
   <string name="app_settings_tasks_provider_synchronizing_with">Synchroniseren met %s</string>
-  <string name="app_settings_tasks_provider_none">Geen compatibele taken-app gevonden</string>
+  <string name="app_settings_tasks_provider_none">Geen compatibele taken app gevonden</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Geen contacten-synchronisatie (ontbrekende rechten)</string>
+  <string name="account_carddav_missing_permissions">Geen contacten synchronisatie (ontbrekende rechten)</string>
   <string name="account_caldav_missing_calendar_permissions">Geen kalender synchronisatie (ontbrekende rechten)</string>
-  <string name="account_caldav_missing_tasks_permissions">Geen taken synchroniseren (ontbrekende rechten)</string>
+  <string name="account_caldav_missing_tasks_permissions">Geen taken synchronisatie (ontbrekende rechten)</string>
   <string name="account_caldav_missing_permissions">Geen synchronisatie van kalender en taken (ontbrekende rechten)</string>
   <string name="account_webcal_missing_calendar_permissions">Geen toegang tot kalenders (ontbrekende rechten)</string>
   <string name="account_permissions_action">Rechten</string>
@@ -202,9 +202,9 @@
   <string name="account_synchronizing_now">Synchroniseert…</string>
   <string name="account_settings">Account instellingen</string>
   <string name="account_rename">Naam account wijzigen</string>
-  <string name="account_rename_new_name">Niet opgeslagen lokale gegevens kunnen verloren gaan. Opnieuw synchroniseren is vereist na naamsverandering. Nieuwe accountnaam:</string>
+  <string name="account_rename_new_name">Niet opgeslagen lokale gegevens kunnen verloren gaan. Synchroniseren is vereist na verandering van naam. Nieuwe accountnaam:</string>
   <string name="account_rename_rename">Naam wijzigen</string>
-  <string name="account_rename_couldnt_rename">Naam account kon niet gewijzigd</string>
+  <string name="account_rename_couldnt_rename">Naam account is niet gewijzigd</string>
   <string name="account_delete">Account verwijderen</string>
   <string name="account_delete_confirmation_title">Account echt verwijderen?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopieën van adresboeken, kalenders en takenlijsten worden verwijderd.</string>
@@ -226,11 +226,11 @@
   <string name="login_email_address">E-mailadres</string>
   <string name="login_email_address_error">Geldig e-mailadres vereist</string>
   <string name="login_password">Wachtwoord</string>
-  <string name="login_password_required">Wachtwoord verplicht</string>
+  <string name="login_password_required">Wachtwoord vereist</string>
   <string name="login_type_url">Inloggen met URL en gebruikersnaam</string>
   <string name="login_url_must_be_http_or_https">URL moet met http(s):// beginnen</string>
   <string name="login_user_name">Gebruikersnaam</string>
-  <string name="login_user_name_required">Gebruikersnaam verplicht</string>
+  <string name="login_user_name_required">Gebruikersnaam vereist</string>
   <string name="login_base_url">Basis-URL</string>
   <string name="login_type_url_certificate">Login met URL en client certificaat</string>
   <string name="login_select_certificate">Certificaat selecteren</string>
@@ -258,19 +258,19 @@
   <string name="settings_sync">Synchronisatie</string>
   <string name="settings_sync_interval_contacts">Contacten synchronisatie interval</string>
   <string name="settings_sync_summary_manually">Alleen handmatig</string>
-  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Elke %d minuten + meteen bij lokale veranderingen</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Elke %d minuten + direct bij lokale veranderingen</string>
   <string name="settings_sync_interval_calendars">Kalenders bijwerken</string>
   <string name="settings_sync_interval_tasks">Taken synchronisatie interval</string>
   <string-array name="settings_sync_interval_names">
     <item>Handmatig </item>
-    <item>Om de 15 minuten </item>
-    <item>Om de 30 minuten</item>
-    <item>Om het uur</item>
-    <item>Om de 2 uur</item>
-    <item>Om de 4 uur</item>
+    <item>Elke 15 minuten </item>
+    <item>Elke 30 minuten</item>
+    <item>Elk uur</item>
+    <item>Elke 2 uur</item>
+    <item>Elke 4 uur</item>
     <item>Eenmaal daags</item>
   </string-array>
-  <string name="settings_sync_wifi_only">Sync alleen via WiFi</string>
+  <string name="settings_sync_wifi_only">Synchronisatie alleen via WiFi</string>
   <string name="settings_sync_wifi_only_on">Beperkt tot WiFi verbindingen</string>
   <string name="settings_sync_wifi_only_off">Type verbinding niet in acht genomen</string>
   <string name="settings_sync_wifi_only_ssids">Beperking WiFi-SSID</string>
@@ -307,7 +307,7 @@
   <string name="settings_manage_calendar_colors">Kalender kleuren beheren</string>
   <string name="settings_manage_calendar_colors_on">Worden bij elke sync teruggezet</string>
   <string name="settings_manage_calendar_colors_off">Kunnen door andere apps worden ingesteld</string>
-  <string name="settings_event_colors">Gebeurteniskleuren ondersteunen</string>
+  <string name="settings_event_colors">Gebeurtenis kleuren ondersteunen</string>
   <string name="settings_event_colors_on">Worden gesynchroniseerd</string>
   <string name="settings_event_colors_off">Worden niet gesynchroniseerd</string>
   <string name="settings_carddav">CardDAV</string>
@@ -337,8 +337,8 @@
   <string name="create_collection_home_set_required">Opslaglocatie is verplicht</string>
   <string name="create_collection_create">Aanmaken</string>
   <string name="delete_collection">Collectie verwijderen</string>
-  <string name="delete_collection_confirm_title">Echt waar?</string>
-  <string name="delete_collection_confirm_warning">Deze collectie (%s) en al haar gegevens worden definitief verwijderd..</string>
+  <string name="delete_collection_confirm_title">Inderdaad verwijderen?</string>
+  <string name="delete_collection_confirm_warning">Deze collectie (%s) wordt met alle gegevens blijvend verwijderd.</string>
   <string name="delete_collection_data_shall_be_deleted">Deze gegevens worden verwijderd van de server</string>
   <string name="delete_collection_deleting_collection">Verwijdert collectie</string>
   <string name="collection_force_read_only">Forceer alleen-lezen</string>
@@ -350,7 +350,7 @@
   <string name="debug_info_title">Debug informatie</string>
   <string name="debug_info_archive_caption">ZIP archief</string>
   <string name="debug_info_archive_subtitle">Bevat debuginformatie en logbestanden</string>
-  <string name="debug_info_archive_text">Deel het archief om het naar een computer over te brengen, per e-mail te verzenden of als bijlage bij een supportticket te voegen..</string>
+  <string name="debug_info_archive_text">Deel het archief om over te zetten naar een computer, per e-mail te verzenden of als bijlage bij een supportticket te voegen..</string>
   <string name="debug_info_archive_share">Archief delen</string>
   <string name="debug_info_attached">Debug info als bijlage bij dit bericht (vereist ondersteuning voor bijlagen van de ontvangende app).</string>
   <string name="debug_info_http_error">HTTP-fout</string>
@@ -385,7 +385,7 @@
   <string name="webdav_mounts_share_content">Inhoud delen</string>
   <string name="webdav_mounts_unmount">Ontkoppelen</string>
   <string name="webdav_add_mount_title">WebDAV-koppeling toevoegen</string>
-  <string name="webdav_mounts_empty">Directe toegang tot cloudbestanden krijgen door een WebDAV-koppeling toe te voegen!</string>
+  <string name="webdav_mounts_empty">Verkrijg directe toegang tot cloudbestanden met een WebDAV-koppeling!</string>
   <string name="webdav_add_mount_empty_more_info"><![CDATA[Zie de handleiding over <a href="%1$s"> het koppelen van WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Weergavenaam</string>
   <string name="webdav_add_mount_url">WebDAV-URL</string>
