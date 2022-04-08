@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
+import android.text.InputType
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
@@ -86,6 +87,18 @@ class AppSettingsActivity: AppCompatActivity() {
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     resetCertificates()
                     false
+                }
+            }
+
+            findPreference<EditTextPreference>(Settings.PROXY_HOST)!!.apply {
+                this.setOnBindEditTextListener {
+                    it.inputType = InputType.TYPE_TEXT_VARIATION_URI
+                }
+            }
+
+            findPreference<EditTextPreference>(Settings.PROXY_PORT)!!.apply {
+                this.setOnBindEditTextListener {
+                    it.inputType = InputType.TYPE_CLASS_NUMBER
                 }
             }
 
