@@ -48,7 +48,7 @@
             android:inputType="textUri"
             android:persistent="false" />
 
-        <at.bitfire.davdroid.ui.widget.IntEditTextPreference
+        <EditTextPreference
             android:key="proxy_port"
             android:title="@string/app_settings_proxy_port"
             android:inputType="number"
