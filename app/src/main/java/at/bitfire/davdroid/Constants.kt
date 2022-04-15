@@ -3,9 +3,14 @@
  **************************************************************************************************/
 package at.bitfire.davdroid
 
+import java.io.File
+
 object Constants {
 
     const val DAVDROID_GREEN_RGBA = 0xFF8bc34a.toInt()
+
+    // gplay billing
+    const val BILLINGCLIENT_CONNECTION_MAX_RETRIES = 4
 
     /**
      * Context label for [org.apache.commons.lang3.exception.ContextedException].

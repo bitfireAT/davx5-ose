@@ -58,8 +58,7 @@
             <item
                 android:id="@+id/nav_donate"
                 android:icon="@drawable/ic_attach_money"
-                android:title="@string/navigation_drawer_donate"
-                android:visible="false"/>
+                android:title="@string/navigation_drawer_donate"/>
             <item
                 android:id="@+id/nav_privacy"
                 android:icon="@drawable/ic_cloud_off"

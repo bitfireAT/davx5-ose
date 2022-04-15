@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_support_project">Support the project</string>
+    <string name="nav_earn_badges">Support us with badges</string>
+    <string name="nav_rate_us">Review in Google Play</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one">You\'ve earned a badge, thank you!</item>
+        <item quantity="other">You have earned %d badges, thank you!</item>
+    </plurals>
+    <string name="available_badges">Available badges</string>
+    <string name="available_badges_empty">Sorry, there are no badges available for purchase at the moment!</string>
+    <string name="what_are_badges">What are badges?</string>
+    <string name="what_are_badges_title">What are badges?</string>
+    <string name="what_are_badges_body">Badges are simple in-app one-time-payments. You will earn a nice little badge and with it you can support us over time.</string>
+    <string name="why_badges_title">Why does DAVx5 offer feature-free badges?</string>
+    <string name="why_badges_body">DAVx5 has really grown over the years! We are still actively developing new features, providing support and we always update the app for upcoming Android versions. These badges are one-time payments where you can simply show your support by buying us a coffee, or two&#8230; or 10 :-) We want to be as open as possible, so there will never-ever be any new stuff locked to in-app payment.</string>
+    <string name="button_buy_badge_free">FREE</string>
+    <string name="button_buy_badge_bought">Thank you!</string>
+    <string name="earn_badges">Earn badges to support us!</string>
+</resources>

@@ -32,12 +32,11 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
-        val accountsDrawerHandler = DefaultAccountsDrawerHandler()
+        val accountsDrawerHandler = OseAccountsDrawerHandler()
 
         const val REQUEST_INTRO = 0
     }
@@ -122,9 +121,9 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val processed = accountsDrawerHandler.onNavigationItemSelected(this, item)
+        accountsDrawerHandler.onNavigationItemSelected(this, item)
         binding.drawerLayout.closeDrawer(GravityCompat.START)
-        return processed
+        return true
     }
 
 
