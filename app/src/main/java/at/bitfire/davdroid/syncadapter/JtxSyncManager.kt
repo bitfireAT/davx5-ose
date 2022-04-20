@@ -53,13 +53,10 @@ class JtxSyncManager(
     override fun queryCapabilities() =
         remoteExceptionContext {
             var syncState: SyncState? = null
-            it.propfind(0, GetCTag.NAME, MaxICalendarSize.NAME, SyncToken.NAME, SupportedCalendarComponentSet.NAME) { response, relation ->
+            it.propfind(0, GetCTag.NAME, MaxICalendarSize.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
                         Logger.log.info("Collection accepts resources up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
-                    }
-                    response[SupportedCalendarComponentSet::class.java]?.let { cap ->
-                        Logger.log.info("Collection supports VEVENT: ${cap.supportsEvents} / VTODO: ${cap.supportsTasks} / VJOURNAL: ${cap.supportsJournal}")
                     }
 
                     syncState = syncState(response)
@@ -79,10 +76,15 @@ class JtxSyncManager(
 
     override fun listAllRemote(callback: DavResponseCallback) {
         remoteExceptionContext { remote ->
-            Logger.log.info("Querying tasks")
-            remote.calendarQuery("VTODO", null, null, callback)
-            Logger.log.info("Querying journals")
-            remote.calendarQuery("VJOURNAL", null, null, callback)
+            if (localCollection.supportsVTODO) {
+                Logger.log.info("Querying tasks")
+                remote.calendarQuery("VTODO", null, null, callback)
+            }
+
+            if (localCollection.supportsVJOURNAL) {
+                Logger.log.info("Querying journals")
+                remote.calendarQuery("VJOURNAL", null, null, callback)
+            }
         }
     }
 

@@ -48,7 +48,7 @@ class JtxSyncAdapterService: SyncAdapterService() {
                 if (!extras.containsKey(ContentResolver.SYNC_EXTRAS_MANUAL) && !checkSyncConditions(accountSettings))
                     return
 
-                //sync list of collections
+                // sync list of collections
                 updateLocalCollections(account, provider)
 
                 // sync contents of collections

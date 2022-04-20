@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
+import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
@@ -126,6 +127,9 @@ class CreateCollectionFragment: DialogFragment() {
                         db.serviceDao().getByAccountAndType(account.name, serviceType)?.let { service ->
                             collection.serviceId = service.id
                             db.collectionDao().insert(collection)
+
+                            // trigger service detection (because the collection may have other properties than the ones we have inserted)
+                            DavService.refreshCollections(getApplication(), service.id)
                         }
 
                         // post success
