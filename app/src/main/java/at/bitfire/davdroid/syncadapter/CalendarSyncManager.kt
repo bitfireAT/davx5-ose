@@ -70,7 +70,7 @@ class CalendarSyncManager(
                 it.propfind(0, MaxICalendarSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
                         response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
-                            Logger.log.info("Server accepts events up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                            Logger.log.info("Calendar accepts events up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
                         }
 
                         response[SupportedReportSet::class.java]?.let { supported ->
@@ -80,7 +80,7 @@ class CalendarSyncManager(
                     }
                 }
 
-                Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
+                Logger.log.info("Calendar supports Collection Sync: $hasCollectionSync")
                 syncState
             }
 

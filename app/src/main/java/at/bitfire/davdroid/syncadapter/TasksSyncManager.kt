@@ -59,7 +59,7 @@ class TasksSyncManager(
                 it.propfind(0, MaxICalendarSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
                         response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
-                            Logger.log.info("Server accepts tasks up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                            Logger.log.info("Calendar accepts tasks up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
                         }
 
                         syncState = syncState(response)

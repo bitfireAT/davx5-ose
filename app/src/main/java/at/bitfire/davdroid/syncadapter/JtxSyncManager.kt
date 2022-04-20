@@ -53,10 +53,13 @@ class JtxSyncManager(
     override fun queryCapabilities() =
         remoteExceptionContext {
             var syncState: SyncState? = null
-            it.propfind(0, MaxICalendarSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+            it.propfind(0, GetCTag.NAME, MaxICalendarSize.NAME, SyncToken.NAME, SupportedCalendarComponentSet.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
-                        Logger.log.info("Server accepts resources up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                        Logger.log.info("Collection accepts resources up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                    }
+                    response[SupportedCalendarComponentSet::class.java]?.let { cap ->
+                        Logger.log.info("Collection supports VEVENT: ${cap.supportsEvents} / VTODO: ${cap.supportsTasks} / VJOURNAL: ${cap.supportsJournal}")
                     }
 
                     syncState = syncState(response)

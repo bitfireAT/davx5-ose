@@ -134,7 +134,7 @@ class ContactsSyncManager(
             it.propfind(0, MaxVCardSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxVCardSize::class.java]?.maxSize?.let { maxSize ->
-                        Logger.log.info("Server accepts vCards up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                        Logger.log.info("Address book accepts vCards up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
                     }
 
                     response[SupportedAddressData::class.java]?.let { supported ->
@@ -151,8 +151,8 @@ class ContactsSyncManager(
             }
 
             // Logger.log.info("Server supports jCard: $hasJCard")
-            Logger.log.info("Server supports vCard4: $hasVCard4")
-            Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
+            Logger.log.info("Address book supports vCard4: $hasVCard4")
+            Logger.log.info("Address book supports Collection Sync: $hasCollectionSync")
 
             syncState
         }
