@@ -10,7 +10,7 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.db.AppDatabase
 import java.io.Writer
 
 class SharedPreferencesProvider(

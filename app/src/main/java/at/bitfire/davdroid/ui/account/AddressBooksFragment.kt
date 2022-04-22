@@ -9,7 +9,7 @@ import android.view.*
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCarddavItemBinding
-import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.db.Collection
 
 class AddressBooksFragment: CollectionsFragment() {
 

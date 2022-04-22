@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.syncadapter
 
-import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.resource.LocalCollection
 
 class LocalTestCollection: LocalCollection<LocalTestResource> {

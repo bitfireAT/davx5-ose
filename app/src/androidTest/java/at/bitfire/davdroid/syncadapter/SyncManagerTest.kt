@@ -15,8 +15,8 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.Response.HrefRelation
 import at.bitfire.dav4jvm.property.GetETag
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.model.Credentials
-import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
 import okhttp3.Protocol
 import okhttp3.internal.http.StatusLine

@@ -12,7 +12,7 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.model.Credentials
+import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.syncadapter.AccountUtils
 import org.junit.After
 import org.junit.Assert.*

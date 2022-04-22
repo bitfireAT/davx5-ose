@@ -22,9 +22,9 @@ import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAddWebdavMountBinding
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.Credentials
-import at.bitfire.davdroid.model.WebDavMount
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import com.google.android.material.snackbar.Snackbar

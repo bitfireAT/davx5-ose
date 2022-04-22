@@ -24,9 +24,9 @@ import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityWebdavMountsBinding
 import at.bitfire.davdroid.databinding.WebdavMountsItemBinding
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.WebDavDocument
-import at.bitfire.davdroid.model.WebDavMount
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.WebDavDocument
+import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import kotlinx.coroutines.Dispatchers

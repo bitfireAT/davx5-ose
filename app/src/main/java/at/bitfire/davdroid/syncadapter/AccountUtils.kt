@@ -13,7 +13,7 @@ import androidx.annotation.AnyThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.Singleton
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.resource.LocalAddressBook
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

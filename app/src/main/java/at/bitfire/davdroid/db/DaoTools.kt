@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid.model
+package at.bitfire.davdroid.db
 
 import at.bitfire.davdroid.log.Logger
 import java.util.logging.Level

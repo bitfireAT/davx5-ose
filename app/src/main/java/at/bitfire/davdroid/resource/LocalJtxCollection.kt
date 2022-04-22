@@ -8,8 +8,8 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import at.bitfire.davdroid.DavUtils
-import at.bitfire.davdroid.model.Collection
-import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxCollectionFactory
 import at.bitfire.ical4android.JtxICalObject

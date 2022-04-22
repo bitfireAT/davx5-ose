@@ -10,7 +10,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
-import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.TaskUtils
 
 class CalendarsFragment: CollectionsFragment() {

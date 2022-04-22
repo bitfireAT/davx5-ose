@@ -8,7 +8,7 @@ import android.content.Context
 import androidx.annotation.StringDef
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import at.bitfire.davdroid.model.Credentials
+import at.bitfire.davdroid.db.Credentials
 
 class CredentialsStore(context: Context) {
 

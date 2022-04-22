@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid.model
+package at.bitfire.davdroid.db
 
 /**
  * A model with a primary ID. Must be overriden with `@PrimaryKey(autoGenerate = true)`.
