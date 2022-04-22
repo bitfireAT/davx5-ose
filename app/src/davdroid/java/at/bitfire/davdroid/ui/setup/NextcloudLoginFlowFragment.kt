@@ -28,7 +28,7 @@ import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.Credentials
+import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
