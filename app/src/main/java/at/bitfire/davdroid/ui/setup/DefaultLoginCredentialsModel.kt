@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.setup
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.text.Editable
 import android.view.View
 import android.view.ViewGroup
@@ -76,10 +77,43 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
             return
         initialized = true
 
-        // we've got initial login data
-        val givenUrl = intent.getStringExtra(LoginActivity.EXTRA_URL)
-        val givenUsername = intent.getStringExtra(LoginActivity.EXTRA_USERNAME)
-        val givenPassword = intent.getStringExtra(LoginActivity.EXTRA_PASSWORD)
+        var givenUrl: String? = null
+        var givenUsername: String? = null
+        var givenPassword: String? = null
+
+        intent.data?.normalizeScheme()?.let { uri ->
+            // We've got initial login data from the Intent.
+            // We can't use uri.buildUpon() because this keeps the user info (it's readable, but not writable).
+            val realScheme = when (uri.scheme) {
+                "caldav", "carddav" -> "http"
+                "caldavs", "carddavs", "davx5" -> "https"
+                "http", "https" -> uri.scheme
+                else -> null
+            }
+            if (realScheme != null) {
+                val realUri = Uri.Builder()
+                    .scheme(realScheme)
+                    .authority(uri.host)
+                    .path(uri.path)
+                    .query(uri.query)
+                givenUrl = realUri.build().toString()
+
+                // extract user info
+                uri.userInfo?.split(':')?.let { userInfo ->
+                    givenUsername = userInfo.getOrNull(0)
+                    givenPassword = userInfo.getOrNull(1)
+                }
+            }
+        }
+
+        // no login data from the Intent, let's look up the extras
+        givenUrl ?: intent.getStringExtra(LoginActivity.EXTRA_URL)
+
+        // always prefer username/password from the extras
+        if (intent.hasExtra(LoginActivity.EXTRA_USERNAME))
+            givenUsername = intent.getStringExtra(LoginActivity.EXTRA_USERNAME)
+        if (intent.hasExtra(LoginActivity.EXTRA_PASSWORD))
+            givenPassword = intent.getStringExtra(LoginActivity.EXTRA_PASSWORD)
 
         if (givenUrl != null) {
             loginWithUrlAndUsername.value = true

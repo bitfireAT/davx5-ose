@@ -108,6 +108,16 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="caldav"/>
+                <data android:scheme="caldavs"/>
+                <data android:scheme="carddav"/>
+                <data android:scheme="carddavs"/>
+                <data android:scheme="davx5"/>
+            </intent-filter>
         </activity>
 
         <activity
