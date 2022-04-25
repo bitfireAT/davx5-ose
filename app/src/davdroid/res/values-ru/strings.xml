@@ -99,10 +99,10 @@
   <string name="about_license_info_no_warranty">Эта программа поставляется БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободное программное обеспечение и вы можете распространять его при соблюдении определенных условий.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Благодарность: </i> %s]]></string>
   <!--global settings-->
-  <string name="logging_couldnt_create_file">Не удалось создать файл журнала</string>
-  <string name="logging_notification_text">Сейчас регистрируются все %s действий</string>
-  <string name="logging_notification_view_share">Посмотреть/поделиться</string>
-  <string name="logging_notification_disable">Отключено</string>
+  <string name="logging_couldnt_create_file">Не удалось создать файл лога</string>
+  <string name="logging_notification_text">Сейчас логируется вся активность %s </string>
+  <string name="logging_notification_view_share">Просмотр/обмен</string>
+  <string name="logging_notification_disable">Отключить</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Открыть панель навигации</string>
   <string name="navigation_drawer_close">Закрыть панель навигации</string>
@@ -118,6 +118,7 @@
   <string name="navigation_drawer_website">Веб-сайт</string>
   <string name="navigation_drawer_manual">Руководство</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_community">Сообщество</string>
   <string name="navigation_drawer_donate">Пожертвовать</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
   <string name="account_list_no_internet">Нет подключения к интернету. Android не будет выполнять синхронизацию.</string>
@@ -140,15 +141,15 @@
   <string name="app_settings_debug">Отладка</string>
   <string name="app_settings_show_debug_info">Показать отладочную информацию</string>
   <string name="app_settings_show_debug_info_details">Просмотреть/поделиться сведениями о ПО и конфигурации</string>
-  <string name="app_settings_logging">Детальное журналирование</string>
-  <string name="app_settings_logging_on">Журналирование активно</string>
-  <string name="app_settings_logging_off">Журналирование отключено</string>
+  <string name="app_settings_logging">Подробное логирование</string>
+  <string name="app_settings_logging_on">Логирование активно</string>
+  <string name="app_settings_logging_off">Логирование отключено</string>
   <string name="app_settings_battery_optimization">Оптимизация батареи</string>
   <string name="app_settings_battery_optimization_whitelisted">Приложение внесено в белый список (рекомендуется)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Приложение не внесено в белый список (рекомендуется)</string>
   <string name="app_settings_foreground_service">Приоритетный режим</string>
   <string name="app_settings_foreground_service_details">Может помочь, если ваше устройство препятствует автоматической синхронизации</string>
-  <string name="app_settings_connection">Подключение</string>
+  <string name="app_settings_connection">Соединение</string>
   <string name="app_settings_proxy">Тип прокси</string>
   <string-array name="app_settings_proxy_types">
     <item>Определен системой</item>
@@ -352,7 +353,7 @@
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
   <string name="debug_info_archive_caption">ZIP-архив</string>
-  <string name="debug_info_archive_subtitle">Содержит отладочную информацию и журналы</string>
+  <string name="debug_info_archive_subtitle">Содержит отладочную информацию и логи</string>
   <string name="debug_info_archive_text">Поделитесь архивом, чтобы перенести его на компьютер, отправить по электронной почте или прикрепить к запросу в службу поддержки.</string>
   <string name="debug_info_archive_share">Поделиться архивом</string>
   <string name="debug_info_attached">Отладочная информация, прикреплена к данному сообщению (требует поддержки вложений со стороны принимающего приложения).</string>
@@ -371,9 +372,9 @@
   <string name="debug_info_involved_remote">Удаленный ресурс:</string>
   <string name="debug_info_involved_local">Локальный ресурс:</string>
   <string name="debug_info_involved_view">Просмотр с помощью приложения</string>
-  <string name="debug_info_logs_caption">Журналы</string>
-  <string name="debug_info_logs_subtitle">Доступны подробные журналы</string>
-  <string name="debug_info_logs_view">Просмотр журналов</string>
+  <string name="debug_info_logs_caption">Логи</string>
+  <string name="debug_info_logs_subtitle">Доступны подробные логи</string>
+  <string name="debug_info_logs_view">Просмотр логов</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Произошла ошибка.</string>
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
@@ -387,7 +388,7 @@
   <string name="webdav_mounts_quota_used_available">Использованная квота: %1$s / доступно: %2$s</string>
   <string name="webdav_mounts_share_content">Поделиться контентом</string>
   <string name="webdav_mounts_unmount">Отмонтировать</string>
-  <string name="webdav_add_mount_title">Добавить точку монтирования WebDAV</string>
+  <string name="webdav_add_mount_title">Добавление точки монтирования WebDAV</string>
   <string name="webdav_mounts_empty">Прямой доступ к вашим облачным файлам с помощью точки монтирования WebDAV!</string>
   <string name="webdav_add_mount_empty_more_info"><![CDATA[Ознакомьтесь с руководством, чтобы узнать <a href="%1$s">как работают точки монтирования WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Отображаемое имя</string>

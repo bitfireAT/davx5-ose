@@ -3,12 +3,12 @@
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
   <string name="account_invalid">El compte no existeix (eliminat)</string>
-  <string name="account_title_address_book">DAVx⁵ Llibreta d’Adreces</string>
+  <string name="account_title_address_book">Llibreta d’adreces del DAVx⁵</string>
   <string name="address_books_authority_title">Llibreta d’adreces</string>
   <string name="field_required">Cal aquest camp</string>
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gestiona comptes</string>
-  <string name="share">Compartir</string>
+  <string name="share">Comparteix</string>
   <string name="database_destructive_migration_title">Base de dades malmesa</string>
   <string name="database_destructive_migration_text">S\'han eliminat localment tots els comptes.</string>
   <string name="notification_channel_debugging">Depurador</string>
@@ -76,8 +76,8 @@
   <string name="permissions_app_settings_hint">Si un interruptor no funciona, utilitza l\'apartat de permisos de l\'aplicació dels ajustaments del telèfon.</string>
   <string name="permissions_app_settings">Ajustaments de l\'aplicació</string>
   <!--WifiPermissionsActivity-->
-  <string name="wifi_permissions_label">Permisos de l\'SSID del WiFi</string>
-  <string name="wifi_permissions_intro">Per tal de poder accedir al nom de la xarxa de WiFi connectada (SSID), s\'han de complir els següents requisits:</string>
+  <string name="wifi_permissions_label">Permisos de l\'SSID del Wi-Fi</string>
+  <string name="wifi_permissions_intro">Per tal de poder accedir al nom de la xarxa de Wi-Fi connectada (SSID), s\'han de complir els següents requisits:</string>
   <string name="wifi_permissions_location_permission">Permís d\'ubicació precisa</string>
   <string name="wifi_permissions_location_permission_on">Permís d\'ubicació concedit</string>
   <string name="wifi_permissions_location_permission_off">Permís d\'ubicació rebutjat</string>
@@ -96,126 +96,171 @@
   <string name="about_build_date">Compilat el %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) i col·laboradors</string>
   <string name="about_flavor_info">Aquesta versió només és apta per la seva distribució a Google Play.</string>
-  <string name="about_license_info_no_warranty">Aquest programa és distribuit sense CAP TIPUS DE GARANTIA. És programari lliure, i està permesa la seva re-distribució sota certes condicions.</string>
+  <string name="about_license_info_no_warranty">Aquest programa és distribuït sense CAP TIPUS DE GARANTIA. És programari lliure, i està permesa la seva re-distribució sota certes condicions.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Gràcies a: </i> %s]]></string>
   <!--global settings-->
-  <string name="logging_couldnt_create_file">No es pot crear l\'arxiu de registre</string>
+  <string name="logging_couldnt_create_file">No s\'ha pogut crear el fitxer de registre</string>
   <string name="logging_notification_text">Iniciant a totes les %s activitats</string>
   <string name="logging_notification_view_share">Veure/compartir</string>
-  <string name="logging_notification_disable">Desabilitar</string>
+  <string name="logging_notification_disable">Inhabilita</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Obriu el calaix de navegació</string>
+  <string name="navigation_drawer_open">Obre el calaix de navegació</string>
   <string name="navigation_drawer_close">Tanca el calaix de navegació</string>
   <string name="navigation_drawer_subtitle">Adaptador de sincronització CalDAV / CardDAV</string>
   <string name="navigation_drawer_about">Quant a / Llicència</string>
   <string name="navigation_drawer_beta_feedback">Retroacció de la Beta</string>
   <string name="install_email_client">Si us plau, instal·leu un client de correu</string>
   <string name="install_browser">Si us plau, instal·leu un navegador.</string>
-  <string name="navigation_drawer_settings">Paràmetres</string>
+  <string name="navigation_drawer_settings">Configuració</string>
   <string name="navigation_drawer_news_updates">Novetats i actualitzacions</string>
   <string name="navigation_drawer_tools">Eines</string>
   <string name="navigation_drawer_external_links">Enllaços externs</string>
   <string name="navigation_drawer_website">Pàgina web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Preguntes més freqüents</string>
-  <string name="navigation_drawer_community">Communitat</string>
+  <string name="navigation_drawer_community">Comunitat</string>
   <string name="navigation_drawer_donate">Fer una donació</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
-  <string name="account_list_no_internet">Sense conexió a internet. Android no executarà la sincronització</string>
-  <string name="account_list_empty">Benvingut a DAVx⁵! \n\n Ara podeu afegir un compte CalDAV / CardDAV.</string>
-  <string name="accounts_global_sync_enable">Activar</string>
+  <string name="account_list_no_internet">Sense connexió a internet. Android no executarà la sincronització</string>
+  <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no executarà la sincronització.</string>
+  <string name="account_list_empty">Us donem la benvinguda a DAVx⁵! \n\nAra podeu afegir un compte CalDAV / CardDAV.</string>
+  <string name="accounts_global_sync_disabled">La sincronització automàtica de tot el sistema està inhabilitada</string>
+  <string name="accounts_global_sync_enable">Activa</string>
   <string name="accounts_sync_all">Sincronitza tots els comptes</string>
   <!--DavService-->
-  <string name="dav_service_refresh_failed">Falla del servei de detecció</string>
+  <string name="dav_service_refresh_failed">Ha fallat la detecció del servei</string>
+  <string name="dav_service_refresh_couldnt_refresh">No s\'ha pogut actualitzar la llista de col·leccions</string>
   <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">No s\'ha pogut executar en segon pla</string>
+  <string name="battery_optimization_notify_text">Es requereix incloure-la a la llista blanca d\'optimització de la bateria</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Executant-se en segon pla</string>
   <string name="foreground_service_notify_text">En alguns dispositius, això és necessari per la sincronització automàtica</string>
   <!--AppSettingsActivity-->
-  <string name="app_settings">Paràmetres</string>
+  <string name="app_settings">Configuració</string>
   <string name="app_settings_debug">Depurador</string>
   <string name="app_settings_show_debug_info">Informació de depuració</string>
-  <string name="app_settings_show_debug_info_details">Mostra/comparteix software i detalls de configuració</string>
+  <string name="app_settings_show_debug_info_details">Mostra/comparteix detalls del programari i de la configuració</string>
   <string name="app_settings_logging">Registre detallat</string>
   <string name="app_settings_logging_on">Registre actiu</string>
   <string name="app_settings_logging_off">Registre inactiu</string>
+  <string name="app_settings_battery_optimization">Optimització de la bateria</string>
+  <string name="app_settings_battery_optimization_whitelisted">L\'aplicació és a la llista blanca (recomanat)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">L\'aplicació no és a la llista blanca (no recomanat)</string>
   <string name="app_settings_foreground_service">Manté en segon pla</string>
-  <string name="app_settings_foreground_service_details">Ajudaria si el teu dispositiu prevé la sincronització automàtica</string>
+  <string name="app_settings_foreground_service_details">Pot ajudar si el dispositiu evita la sincronització automàtica</string>
   <string name="app_settings_connection">Connexió</string>
+  <string name="app_settings_proxy">Tipus de servidor intermediari</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Predeterminat del sistema</item>
+    <item>Sense servidor intermediari</item>
+    <item>HTTP</item>
+    <item>SOCKS (per a l\'Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Nom del servidor intermediari</string>
+  <string name="app_settings_proxy_port">Port del servidor intermediari</string>
   <string name="app_settings_security">Seguretat</string>
   <string name="app_settings_security_app_permissions">Permisos de l\'aplicació</string>
-  <string name="app_settings_security_app_permissions_summary">Revisar permisos requerits per sincronitzar</string>
+  <string name="app_settings_security_app_permissions_summary">Revisa els permisos necessaris per a la sincronització</string>
+  <string name="app_settings_distrust_system_certs">Desconfia dels certificats del sistema</string>
+  <string name="app_settings_distrust_system_certs_on">No es confiarà en les CA del sistema ni les afegides per l\'usuari</string>
+  <string name="app_settings_distrust_system_certs_off">Es confiarà en les CA del sistema i les afegides per l\'usuari (recomanat)</string>
+  <string name="app_settings_reset_certificates">Restableix els certificats de (des)confiança</string>
+  <string name="app_settings_reset_certificates_summary">Restableix la confiança de tots els certificats personalitzats</string>
+  <string name="app_settings_reset_certificates_success">Neteja tots els certificats personalitzats</string>
   <string name="app_settings_user_interface">Interfície d’usuari</string>
-  <string name="app_settings_notification_settings">Configuració de notificacions</string>
-  <string name="app_settings_reset_hints">Reiniciar pistes</string>
+  <string name="app_settings_notification_settings">Configuració de les notificacions</string>
+  <string name="app_settings_notification_settings_summary">Gestiona els canals de notificació i la seva configuració</string>
+  <string name="app_settings_theme_title">Selecció del tema</string>
+  <string-array name="app_settings_theme_names">
+    <item>Predeterminat del sistema</item>
+    <item>Clar</item>
+    <item>Fosc</item>
+  </string-array>
+  <string name="app_settings_reset_hints">Reinicia els consells</string>
   <string name="app_settings_reset_hints_summary">Torna a habilitar els consells que s\'han ignorat anteriorment</string>
   <string name="app_settings_reset_hints_success">Es mostraran de nou tots els consells</string>
   <string name="app_settings_integration">Integració</string>
-  <string name="app_settings_tasks_provider">Aplicació Tasks</string>
+  <string name="app_settings_tasks_provider">Aplicació de tasques</string>
   <string name="app_settings_tasks_provider_synchronizing_with">Sincronitzant amb %s</string>
-  <string name="app_settings_tasks_provider_none">No trobada aplicació de tasques compatible</string>
+  <string name="app_settings_tasks_provider_none">No s\'ha trobat cap aplicació de tasques compatible</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Sense sincronització de contactes (sense permisos)</string>
-  <string name="account_caldav_missing_calendar_permissions">Sense sincronització de calendari (sense permisos)</string>
+  <string name="account_carddav_missing_permissions">Sense sincronització de contactes (manquen permisos)</string>
+  <string name="account_caldav_missing_calendar_permissions">Sense sincronització de calendari (manquen permisos)</string>
+  <string name="account_caldav_missing_tasks_permissions">Sense sincronització de tasques (manquen permisos)</string>
+  <string name="account_caldav_missing_permissions">Sense sincronització de calendari ni tasques (manquen permisos)</string>
+  <string name="account_webcal_missing_calendar_permissions">No s\'ha pogut accedir als calendaris (manquen permisos)</string>
   <string name="account_permissions_action">Permisos</string>
-  <string name="account_no_address_books">No existeixen llibretes d\'adreces (encara)</string>
-  <string name="account_no_calendars">No existeixen calendaris (encara)</string>
-  <string name="account_no_webcals">No hi ha subscripcions a calendaris (encara)</string>
-  <string name="account_swipe_down">Llisca avall per refrescar la llista del servidor</string>
+  <string name="account_no_address_books">No existeixen llibretes d\'adreces (encara).</string>
+  <string name="account_no_calendars">No existeixen calendaris (encara).</string>
+  <string name="account_no_webcals">No hi ha subscripcions a calendaris (encara).</string>
+  <string name="account_swipe_down">Llisca avall per a refrescar la llista del servidor.</string>
   <string name="account_synchronize_now">Sincronitza ara</string>
   <string name="account_synchronizing_now">Sincronitzant ara</string>
-  <string name="account_settings">Paràmetres del compte</string>
-  <string name="account_rename">Canvia el nom al compte</string>
+  <string name="account_settings">Configuració del compte</string>
+  <string name="account_rename">Canvia el nom del compte</string>
+  <string name="account_rename_new_name">Les dades locals no desades es poden desestimar. Es requereix tornar a sincronitzar després del canvi de nom. Nom nou del compte:</string>
   <string name="account_rename_rename">Canvia el nom</string>
-  <string name="account_rename_couldnt_rename">No es pot renombrar el compte</string>
-  <string name="account_delete">Esborra el compte</string>
-  <string name="account_delete_confirmation_title">Segur que vols esborrar el compte?</string>
+  <string name="account_rename_couldnt_rename">No s\'ha pogut canviar el nom del compte</string>
+  <string name="account_delete">Suprimeix el compte</string>
+  <string name="account_delete_confirmation_title">Segur que vols suprimir el compte?</string>
   <string name="account_delete_confirmation_text">Se suprimiran totes les còpies locals de llibretes d\'adreces, calendaris i llistes de tasques.</string>
-  <string name="account_synchronize_this_collection">Sincronitzar aquesta col·lecció</string>
+  <string name="account_synchronize_this_collection">Sincronitza aquesta col·lecció</string>
   <string name="account_read_only">Només de lectura</string>
   <string name="account_calendar">Calendari</string>
   <string name="account_task_list">Llista de tasques</string>
-  <string name="account_only_personal">Mostra només personal</string>
+  <string name="account_journal">Diari</string>
+  <string name="account_only_personal">Mostra només les personals</string>
   <string name="account_refresh_address_book_list">Actualitza la llista de llibretes d’adreces</string>
-  <string name="account_create_new_address_book">Crear nova llibreta d’adreces</string>
+  <string name="account_create_new_address_book">Crea una llibreta d’adreces nova</string>
   <string name="account_refresh_calendar_list">Actualitzar llista de calendaris</string>
   <string name="account_create_new_calendar">Crear nou calendari</string>
+  <string name="account_no_webcal_handler_found">No s\'ha trobat cap aplicació compatible amb Webcal</string>
+  <string name="account_install_icsx5">Instal·la ICSx⁵</string>
   <!--AddAccountActivity-->
-  <string name="login_title">Afegir compte</string>
-  <string name="login_type_email">Entra amb una adreça de correu electrònic</string>
-  <string name="login_email_address">Correu electrònic</string>
-  <string name="login_email_address_error">Es requereix un correu electrònic vàlid</string>
+  <string name="login_title">Afegeix un compte</string>
+  <string name="login_type_email">Inici de sessió amb una adreça de correu electrònic</string>
+  <string name="login_email_address">Adreça de correu electrònic</string>
+  <string name="login_email_address_error">Es requereix una adreça vàlida de correu electrònic</string>
   <string name="login_password">Contrasenya</string>
-  <string name="login_password_required">Es requereix contrasenya</string>
-  <string name="login_type_url">Entra amb una URL i un nom d\'usuari</string>
-  <string name="login_url_must_be_http_or_https">La URL hauria de començar amb http(s)://</string>
+  <string name="login_password_required">Es requereix una contrasenya</string>
+  <string name="login_type_url">Inici de sessió amb un URL i un nom d\'usuari/a</string>
+  <string name="login_url_must_be_http_or_https">L\'URL hauria de començar per http(s)://</string>
   <string name="login_user_name">Nom d\'usuari/a</string>
   <string name="login_user_name_required">Es requereix nom d\'usuari/a</string>
   <string name="login_base_url">URL base</string>
-  <string name="login_select_certificate">Selecciona certificat</string>
-  <string name="login_login">Entrada</string>
-  <string name="login_create_account">Crear compte</string>
+  <string name="login_type_url_certificate">Inici de sessió amb un URL i un certificat de client</string>
+  <string name="login_select_certificate">Selecciona el certificat</string>
+  <string name="login_login">Inici de sessió</string>
+  <string name="login_create_account">Crea un compte</string>
   <string name="login_account_name">Nom del compte</string>
-  <string name="login_account_name_info">Utilitzeu la vostra adreça de correu electrònic com a nom del compte perquè Android utilitzarà el nom del compte com a camp ORGANITZADOR per als esdeveniments que creeu. No podeu tenir dos comptes amb el mateix nom.</string>
+  <string name="login_account_avoid_apostrophe">S\'ha informat que l\'ús d\'apòstrofs (\'), causa problemes en alguns dispositius.</string>
+  <string name="login_account_name_info">Utilitzeu la vostra adreça de correu electrònic com a nom del compte perquè l\'Android utilitzarà el nom del compte com a camp ORGANITZADOR per als esdeveniments que creeu. No poden haver-hi dos comptes amb el mateix nom.</string>
+  <string name="login_account_contact_group_method">Mètode dels grups de contactes:</string>
   <string name="login_account_name_required">Nom del compte obligatori</string>
   <string name="login_account_name_already_taken">Nom de compte existent</string>
   <string name="login_account_not_created">No s\'ha pogut crear el compte</string>
-  <string name="login_use_username_password">Utilitza nom d\'usuari/contrasenya</string>
-  <string name="login_configuration_detection">Detecció de configuració</string>
-  <string name="login_querying_server">Espereu, consultant el servidor ...</string>
-  <string name="login_no_caldav_carddav">No s\'ha pogut trobar el servei CalDAV o CardDAV.</string>
+  <string name="login_type_advanced">Inici de sessió avançat (casos especials d\'ús)</string>
+  <string name="login_use_username_password">Utilitza un nom d\'usuari/contrasenya</string>
+  <string name="login_use_client_certificate">Utilitza un certificat de client</string>
+  <string name="login_no_certificate_found">No s\'ha trobat cap certificat</string>
+  <string name="login_install_certificate">Instal·la un certificat</string>
+  <string name="login_configuration_detection">Detecció de la configuració</string>
+  <string name="login_querying_server">Espereu, s\'està consultant el servidor…</string>
+  <string name="login_no_caldav_carddav">No s\'ha pogut trobar cap servei CalDAV o CardDAV.</string>
+  <string name="login_username_password_wrong">Nom d\'usuari (adreça de correu) / contrasenya incorrectes?</string>
   <string name="login_view_logs">Mostra els detalls</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Paràmetres: %s</string>
+  <string name="settings_title">Configuració: %s</string>
   <string name="settings_sync">Sincronització</string>
-  <string name="settings_sync_interval_contacts">Sincronització de contactes. Interval</string>
+  <string name="settings_sync_interval_contacts">Interval de sincronització dels contactes</string>
   <string name="settings_sync_summary_manually">Només a mà</string>
-  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Cada %dminut(s) + immediatament en els canvis locals</string>
-  <string name="settings_sync_interval_calendars">Sincronització de calendaris. Interval</string>
-  <string name="settings_sync_interval_tasks">Sincronització de tasques. Interval</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Cada %dminut/s + immediatament en els canvis locals</string>
+  <string name="settings_sync_interval_calendars">Interval de sincronització dels calendaris</string>
+  <string name="settings_sync_interval_tasks">Interval de sincronització de les tasques</string>
   <string-array name="settings_sync_interval_names">
     <item>Només a mà</item>
     <item>Cada 15 minuts</item>
@@ -225,13 +270,25 @@
     <item>Cada 4 hores</item>
     <item>Una vegada al dia</item>
   </string-array>
-  <string name="settings_sync_wifi_only">Sincronitzar només amb WI-FI</string>
+  <string name="settings_sync_wifi_only">Sincronitza només amb Wi-Fi</string>
+  <string name="settings_sync_wifi_only_on">La sincronització està restringida a les connexions Wi-Fi</string>
+  <string name="settings_sync_wifi_only_off">No es té en compte el tipus de connexió</string>
+  <string name="settings_sync_wifi_only_ssids">Restricció per SSID de la Wi-Fi</string>
+  <string name="settings_sync_wifi_only_ssids_on">Només sincronitzarà des de %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Només sincronitzarà des de %s (es necessiten els serveis d\'ubicació actius)</string>
+  <string name="settings_sync_wifi_only_ssids_off">S\'utilitzaran totes les connexions Wi-Fi</string>
+  <string name="settings_sync_wifi_only_ssids_message">Noms (SSID) separats per comes de les xarxes Wi-Fi permeses (deixeu-ho en blanc per a totes)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">La restricció per SSID de la Wi-Fi requereix una configuració addicional</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Gestió</string>
+  <string name="settings_more_info_faq">Més informació (PMF)</string>
   <string name="settings_authentication">Autentificació</string>
   <string name="settings_username">Nom d\'usuari/a</string>
   <string name="settings_enter_username">Escriu el nom d\'usuari/a:</string>
   <string name="settings_password">Contrasenya</string>
   <string name="settings_password_summary">Actualitzeu la contrasenya segons el vostre servidor.</string>
-  <string name="settings_enter_password">Escriu la teva contrasenya</string>
+  <string name="settings_enter_password">Introduïu la contrasenya:</string>
+  <string name="settings_certificate_alias">Àlies del certificat de client</string>
+  <string name="settings_certificate_alias_empty">No s\'ha seleccionat cap certificat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Límit de temps dels esdeveniments passats</string>
   <string name="settings_sync_time_range_past_none">Tots els esdeveniments se sincronitzaran</string>
@@ -240,41 +297,123 @@
     <item quantity="other">Els esdeveniments de més de %d dies passats seran ignorats</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Els esdeveniments que superin aquest nombre de dies en el passat seran ignorats (poden ser 0). Deixeu-ho en blanc per sincronitzar tots els esdeveniments.</string>
+  <string name="settings_default_alarm">Recordatori predeterminat</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Recordatori predeterminat d\'un minut abans de l\'esdeveniment</item>
+    <item quantity="other">Recordatori predeterminat de %d minuts abans de l\'esdeveniment</item>
+  </plurals>
+  <string name="settings_default_alarm_off">No es crearan recordatoris predeterminats</string>
+  <string name="settings_default_alarm_message">Si es creen recordatoris predeterminats per als esdeveniments sense recordatori: el nombre desitjat de minuts abans de l\'esdeveniment. Deixeu-ho en blanc per desactivar els recordatoris predeterminats.</string>
   <string name="settings_manage_calendar_colors">Gestiona els colors del calendari</string>
   <string name="settings_manage_calendar_colors_on">Els colors del calendari es reinicialitzen a cada sincronització</string>
+  <string name="settings_manage_calendar_colors_off">Altres aplicacions poden establir els colors del calendari</string>
+  <string name="settings_event_colors">Funcionament dels colors dels esdeveniments</string>
+  <string name="settings_event_colors_on">Se sincronitzen els colors dels esdeveniments</string>
+  <string name="settings_event_colors_off">No se sincronitzen els colors dels esdeveniments</string>
   <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Mètode dels grups de contactes</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Els grups són vCards separades</item>
+    <item>Els grups són categories per contacte</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Canvia el mètode dels grups</string>
   <!--collection management-->
   <string name="create_addressbook">Crea una llibreta d\'adreces</string>
   <string name="create_addressbook_display_name_hint">La meva llibreta d\'adreces</string>
   <string name="create_calendar">Crea un calendari</string>
   <string name="create_calendar_time_zone">Fus horari</string>
   <string name="create_calendar_type">Possibles entrades de calendari</string>
-  <string name="create_calendar_type_vtodo">Tasks</string>
+  <string name="create_calendar_type_vevent">Esdeveniments</string>
+  <string name="create_calendar_type_vtodo">Tasques</string>
+  <string name="create_calendar_type_vjournal">Notes / diari</string>
   <string name="create_calendar_type_events_and_tasks">Combinat (esdeveniments i tasques)</string>
   <string name="create_collection_color">Color</string>
   <string name="create_collection_creating">S\'està creant una col·lecció</string>
   <string name="create_collection_display_name">Títol</string>
   <string name="create_collection_display_name_required">Cal un títol</string>
   <string name="create_collection_description">Descripció</string>
+  <string name="create_collection_optional">opcional</string>
   <string name="create_collection_home_set">Ubicació d’emmagatzematge</string>
-  <string name="create_collection_create">Crear</string>
+  <string name="create_collection_home_set_required">Cal una ubicació d’emmagatzematge</string>
+  <string name="create_collection_create">Crea</string>
   <string name="delete_collection">Suprimeix la col·lecció</string>
   <string name="delete_collection_confirm_title">Estàs segur?</string>
   <string name="delete_collection_confirm_warning">Aquesta col·lecció (%s) i totes les seves dades s’eliminaran definitivament.</string>
+  <string name="delete_collection_data_shall_be_deleted">Aquestes dades se suprimiran del servidor.</string>
   <string name="delete_collection_deleting_collection">S\'està suprimint la col·lecció</string>
+  <string name="collection_force_read_only">Força que sigui de només lectura</string>
+  <string name="collection_properties">Propietats</string>
+  <string name="collection_properties_url">Adreça (URL):</string>
+  <string name="collection_properties_copy_url">Copia l\'URL</string>
+  <string name="collection_properties_owner">Propietari:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informació de depuració</string>
+  <string name="debug_info_archive_caption">Arxiu ZIP</string>
+  <string name="debug_info_archive_subtitle">Conté informació de depuració i registres</string>
+  <string name="debug_info_archive_text">Compartiu l\'arxiu per transferir-lo a un ordinador, per enviar-lo per correu electrònic o per adjuntar-lo a un tiquet de suport.</string>
+  <string name="debug_info_archive_share">Comparteix l\'arxiu</string>
+  <string name="debug_info_attached">Informació de depuració adjunta a aquest missatge (requereix el suport d\'adjunts de l\'aplicació de recepció).</string>
+  <string name="debug_info_http_error">Error HTTP</string>
+  <string name="debug_info_server_error">Error del servidor</string>
+  <string name="debug_info_webdav_error">Error del WebDAV</string>
+  <string name="debug_info_io_error">Error d\'E/S</string>
+  <string name="debug_info_http_403_description">S\'ha denegat la sol·licitud. Verifiqueu els recursos implicats i la informació de depuració dels detalls.</string>
+  <string name="debug_info_http_404_description">El recurs sol·licitat no existeix (mai més). Verifiqueu els recursos implicats i la informació de depuració dels detalls.</string>
+  <string name="debug_info_http_5xx_description">Hi ha hagut un problema a la banda del servidor. Poseu-vos en contacte amb el vostre suport del servidor.</string>
+  <string name="debug_info_unexpected_error">S\'ha produït un error inesperat. Visualitzeu la informació de depuració dels detalls.</string>
+  <string name="debug_info_view_details">Vista dels detalls</string>
+  <string name="debug_info_subtitle">S\'ha recopilat la informació de depuració</string>
+  <string name="debug_info_involved_caption">Recursos implicats</string>
+  <string name="debug_info_involved_subtitle">Relacionats amb el problema</string>
+  <string name="debug_info_involved_remote">Recurs remot:</string>
+  <string name="debug_info_involved_local">Recurs local:</string>
+  <string name="debug_info_involved_view">Visualitza amb l\'aplicació</string>
+  <string name="debug_info_logs_caption">Registres</string>
+  <string name="debug_info_logs_subtitle">Hi ha registres detallats disponibles</string>
+  <string name="debug_info_logs_view">Visualitza els registres</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">S\'ha produït un error.</string>
   <string name="exception_httpexception">S\'ha produït un error HTTP.</string>
   <string name="exception_ioexception">S\'ha produït un error d\'E/S.</string>
   <string name="exception_show_details">Mostra els detalls</string>
   <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Sincronització en pausa</string>
+  <string name="storage_low_notify_text">Gairebé no queda espai lliure</string>
   <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">Muntatges WebDAV</string>
+  <string name="webdav_mounts_quota_used_available">Quota utilitzada: %1$s / disponible: %2$s</string>
+  <string name="webdav_mounts_share_content">Comparteix el contingut</string>
+  <string name="webdav_mounts_unmount">Desmunta</string>
+  <string name="webdav_add_mount_title">Afegeix un muntatge WebDAV</string>
+  <string name="webdav_mounts_empty">Accediu directament als fitxers en el núvol afegint un muntatge WebDAV!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Vegeu el manual quant a <a href="%1$s">com funcionen els muntatges WebDAV</a>.</string>]]></string>
+  <string name="webdav_add_mount_display_name">Nom a mostrar</string>
+  <string name="webdav_add_mount_url">URL del WebDAV</string>
+  <string name="webdav_add_mount_url_invalid">URL no vàlid</string>
   <string name="webdav_add_mount_username">Nom d\'usuari/a</string>
   <string name="webdav_add_mount_password">Contrasenya</string>
+  <string name="webdav_add_mount_add">Afegeix un muntatge</string>
+  <string name="webdav_add_mount_no_support">No hi ha cap servei WebDAV en aquest URL</string>
+  <string name="webdav_notification_access">S\'està accedint al fitxer WebDAV</string>
+  <string name="webdav_notification_download">S\'està baixant el fitxer WebDAV</string>
+  <string name="webdav_notification_upload">S\'està pujant el fitxer WebDAV</string>
+  <string name="webdav_provider_root_title">Muntatge WebDAV</string>
   <!--sync adapters-->
+  <string name="sync_error_permissions">Permisos del DAVx⁵</string>
+  <string name="sync_error_permissions_text">Es requereixen permisos addicionals</string>
+  <string name="sync_error_tasks_too_old">%s és massa antiga</string>
+  <string name="sync_error_tasks_required_version">Versió mínima requerida: %1$s</string>
+  <string name="sync_error_authentication_failed">L\'autenticació ha fallat (verifiqueu les credencials d\'inici de sessió)</string>
+  <string name="sync_error_io">Error de xarxa o d\'E/S: %s</string>
   <string name="sync_error_http_dav">Error del servidor HTTP: %s</string>
   <string name="sync_error_local_storage">Error d\'emmagatzematge local: %s</string>
+  <string name="sync_error_retry">Reintenta</string>
+  <string name="sync_error_view_item">Veure element</string>
+  <string name="sync_invalid_contact">S\'ha rebut un contacte no vàlid del servidor</string>
+  <string name="sync_invalid_event">S\'ha rebut un esdeveniment no vàlid del servidor</string>
+  <string name="sync_invalid_task">S\'ha rebut una tasca no vàlida del servidor</string>
+  <string name="sync_invalid_resources_ignoring">S\'ha ignorat un o més recursos no vàlids</string>
   <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Seguretat de la connexió</string>
+  <string name="trust_certificate_unknown_certificate_found">El DAVx⁵ ha trobat un certificat desconegut. Voleu confiar-hi?</string>
 </resources>

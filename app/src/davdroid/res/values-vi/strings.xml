@@ -118,6 +118,7 @@
   <string name="navigation_drawer_website">Trang web</string>
   <string name="navigation_drawer_manual">Hướng dẫn</string>
   <string name="navigation_drawer_faq">Câu hỏi thường gặp</string>
+  <string name="navigation_drawer_community">Cộng đồng</string>
   <string name="navigation_drawer_donate">Quyên góp</string>
   <string name="navigation_drawer_privacy_policy">Chính sách riêng tư</string>
   <string name="account_list_no_internet">Không có kết nối internet. Android sẽ không chạy đồng bộ hoá.</string>
