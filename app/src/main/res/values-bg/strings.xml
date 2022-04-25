@@ -18,7 +18,9 @@
   <string name="notification_channel_sync_errors">Грешки при синхронизиране</string>
   <string name="notification_channel_sync_errors_desc">Важни грешки, спиращи синхронизирането, като неочакван отговор от сървъра</string>
   <string name="notification_channel_sync_warnings">Предупреждения от синхронизиране</string>
+  <string name="notification_channel_sync_warnings_desc">Нефатални проблеми със синхронизацията като някои невалидни файлове</string>
   <string name="notification_channel_sync_io_errors">Грешки с входа/изхода и мрежата</string>
+  <string name="notification_channel_sync_io_errors_desc">Забавяния, прекъсвания и т.н (често са временни)</string>
   <!--IntroActivity-->
   <string name="intro_slogan1">Вашите данни. Вашият избор</string>
   <string name="intro_slogan2">Поемете контрол</string>
@@ -61,6 +63,7 @@
   <string name="permissions_jtx_title">Разрешения за jtx Board</string>
   <string name="permissions_jtx_status_not_installed">Няма (инсталирана) синхронизация на задачи, дневници и бележки</string>
   <string name="permissions_jtx_status_off">Без синхронизиране на задачи, дневници и бележки</string>
+  <string name="permissions_jtx_status_on">Възможно синхронизиране на задачи, дневници и бележки</string>
   <string name="permissions_opentasks_title">Разрешения за OpenTasks</string>
   <string name="permissions_tasksorg_title">Разрешения за Tasks</string>
   <string name="permissions_tasks_status_not_installed">Няма (инсталирана) синхронизация на задачи</string>
@@ -115,10 +118,13 @@
   <string name="navigation_drawer_website">Страница</string>
   <string name="navigation_drawer_manual">Ръководство</string>
   <string name="navigation_drawer_faq">Често задавани въпроси</string>
+  <string name="navigation_drawer_community">Общност</string>
   <string name="navigation_drawer_donate">Дарения</string>
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
-  <string name="account_list_no_internet">Няма връзка с интернет. Android няма да извършва синхронизации.</string>
+  <string name="account_list_no_internet">Няма връзка с интернет. Android няма да извършва синхронизация.</string>
+  <string name="account_list_low_storage">Няма достатъчно свободно място. Android няма да извършва синхронизация.</string>
   <string name="account_list_empty">Добре дошли при DAVx⁵!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
+  <string name="accounts_global_sync_disabled">Автоматичното синхронизиране е изключено на ниво система</string>
   <string name="accounts_global_sync_enable">Включване</string>
   <string name="accounts_sync_all">Синхронизиране на всички профили</string>
   <!--DavService-->
@@ -136,9 +142,19 @@
   <string name="app_settings_logging">Подробен дневник</string>
   <string name="app_settings_logging_on">Дневникът е включен</string>
   <string name="app_settings_logging_off">Дневникът е изключен</string>
+  <string name="app_settings_battery_optimization">Оптимизиране на батерията</string>
   <string name="app_settings_foreground_service">Поддържане на преден план</string>
   <string name="app_settings_foreground_service_details">Може да помогне ако устройството възпрепятства автоматичното синхронизиране</string>
   <string name="app_settings_connection">Връзка</string>
+  <string name="app_settings_proxy">Вид на сървъра на прокси</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Според системата</item>
+    <item>Без сървър на прокси</item>
+    <item>HTTP</item>
+    <item>SOCKS (за Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Име на хоста на сървъра на прокси</string>
+  <string name="app_settings_proxy_port">Порт на сървъра на прокси</string>
   <string name="app_settings_security">Защита</string>
   <string name="app_settings_security_app_permissions">Разрешения за приложението</string>
   <string name="app_settings_security_app_permissions_summary">Преглед на необходимите за синхронизиране разрешения</string>
@@ -190,6 +206,7 @@
   <string name="account_read_only">само за четене</string>
   <string name="account_calendar">календар</string>
   <string name="account_task_list">списък със задачи</string>
+  <string name="account_journal">дневник</string>
   <string name="account_only_personal">Само лични</string>
   <string name="account_refresh_address_book_list">Презареждане на адресници</string>
   <string name="account_create_new_address_book">Създаване на адресник</string>
@@ -214,6 +231,7 @@
   <string name="login_login">Напред</string>
   <string name="login_create_account">Създаване на регистрация</string>
   <string name="login_account_name">Име на регистрация</string>
+  <string name="login_account_avoid_apostrophe">Използването на апострофи (\') води до проблеми при някои устройства.</string>
   <string name="login_account_name_info">Използвайте адрес за електронна поща вместо име, защото Android ще го използва като адрес на организатора за събитията, които създавате. Не може да има две регистрации с еднакво име.</string>
   <string name="login_account_contact_group_method">Метод за съхранение на групи от контакти:</string>
   <string name="login_account_name_required">Изисква се име на регистрацията</string>
@@ -308,11 +326,13 @@
   <string name="create_collection_display_name_required">Изисква се заглавие</string>
   <string name="create_collection_description">Описание</string>
   <string name="create_collection_optional">по желание</string>
-  <string name="create_collection_home_set">Място на съхранение</string>
+  <string name="create_collection_home_set">Местоположение на хранилището</string>
+  <string name="create_collection_home_set_required">Местоположението на хранилището е задължително</string>
   <string name="create_collection_create">Създаване</string>
   <string name="delete_collection">Премахване</string>
   <string name="delete_collection_confirm_title">Сигурен ли си?</string>
   <string name="delete_collection_confirm_warning">Този ресурс (%s) и всичките данни в него ще бъдат изтрити.</string>
+  <string name="delete_collection_data_shall_be_deleted">Тези данни ще бъдат премахнати от сървъра.</string>
   <string name="delete_collection_deleting_collection">Изтриване на ресурс</string>
   <string name="collection_force_read_only">Само за четене</string>
   <string name="collection_properties">Свойства</string>
@@ -330,6 +350,9 @@
   <string name="debug_info_webdav_error">Грешка на WebDAV</string>
   <string name="debug_info_io_error">Грешка на входа/изхода</string>
   <string name="debug_info_view_details">Подробности</string>
+  <string name="debug_info_subtitle">Информацията за отстраняване на дефекта е събрана</string>
+  <string name="debug_info_involved_caption">Ресурси, имащи отношение</string>
+  <string name="debug_info_involved_subtitle">Свързани с проблема</string>
   <string name="debug_info_involved_remote">Отдалечен ресурс:</string>
   <string name="debug_info_involved_local">Местен ресурс:</string>
   <string name="debug_info_involved_view">Преглед с приложение</string>
@@ -342,6 +365,8 @@
   <string name="exception_ioexception">Възникна грешка с входа/изхода.</string>
   <string name="exception_show_details">Подробности</string>
   <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Синхронизирането е спряно</string>
+  <string name="storage_low_notify_text">Почти няма свободно пространство</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Дялове на WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Използвана квота: %1$s / налична: %2$s</string>
@@ -349,6 +374,7 @@
   <string name="webdav_mounts_unmount">Демонтиране</string>
   <string name="webdav_add_mount_title">Монтиране на дял на WebDAV</string>
   <string name="webdav_mounts_empty">Получете директен достъп до файловете си в облака като монтирате дял на WebDAV.</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Вижте <a href="%1$s">как работят дяловете на WebDAV</a>в ръководството.</string>]]></string>
   <string name="webdav_add_mount_display_name">Видимо име</string>
   <string name="webdav_add_mount_url">Адрес на WebDAV</string>
   <string name="webdav_add_mount_url_invalid">Недействителен адрес</string>
@@ -356,6 +382,9 @@
   <string name="webdav_add_mount_password">Парола</string>
   <string name="webdav_add_mount_add">Монтиране</string>
   <string name="webdav_add_mount_no_support">Няма услуга на WebDAV на адреса</string>
+  <string name="webdav_notification_access">Достъпва се файл на WebDAV</string>
+  <string name="webdav_notification_download">Изтегля се файл на WebDAV</string>
+  <string name="webdav_notification_upload">Изпраща се файл на WebDAV</string>
   <string name="webdav_provider_root_title">Дял на WebDAV</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Разрешения на DAVx⁵</string>
@@ -367,6 +396,8 @@
   <string name="sync_error_http_dav">Грешка в сървъра на HTTP – %s</string>
   <string name="sync_error_local_storage">Грешка в местното хранилище – %s</string>
   <string name="sync_error_retry">Повторен опит</string>
+  <string name="sync_error_view_item">Преглед</string>
+  <string name="sync_invalid_contact">Получен е недействителен контакт от сървъра</string>
   <string name="sync_invalid_event">Получено е недействително събитие от сървъра</string>
   <string name="sync_invalid_task">Получен е недействителен файл от сървъра</string>
   <string name="sync_invalid_resources_ignoring">Пренебрегване на сбъркани данни</string>

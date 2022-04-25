@@ -1,1 +1,1 @@
-CalDAV/CardDAV Client i sincronització
+Client i sincronització de CalDAV/CardDAV

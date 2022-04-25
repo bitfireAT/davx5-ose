@@ -32,7 +32,7 @@
   <string name="intro_autostart_title">%s compatibiliteit</string>
   <string name="intro_autostart_text">Waarschijnlijk blokkeert dit toestel het synchroniseren. In dat geval is dit alleen handmatig op te lossen.</string>
   <string name="intro_autostart_dont_show">De vereiste instellingen zijn verricht. Er aan herinneren is niet meer nodig.*</string>
-  <string name="intro_leave_unchecked">* Niet aangevinkt laten om later herinnerd te worden. Kan teruggezet in app instellingen / %s.</string>
+  <string name="intro_leave_unchecked">* Niet aanvinken om later herinnerd te worden. Kan teruggezet in app instellingen / %s.</string>
   <string name="intro_more_info">Meer informatie</string>
   <string name="intro_tasks_jtx">jtx Board</string>
   <string name="intro_tasks_jtx_info"><![CDATA[Synchroniseert taken, agenda\'s en notities met elke geschikte CalDAV-server.]]></string>
@@ -41,7 +41,7 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info"><![CDATA[Voor functies als subtaken of herhalende taken zijn mogelijk <a href="https://www.davx5.com/faq/tasks/advanced-task-features">extra apps</a> nodig.]]></string>
   <string name="intro_tasks_tasks_org">Taken</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Sommige functies <a href="https://www.davx5.com/faq/tasks/advanced-task-features">worden (nog) niet ondersteund</a>.]]></string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Sommige functies<a href="https://www.davx5.com/faq/tasks/advanced-task-features">worden (nog) niet ondersteund</a>.]]></string>
   <string name="intro_tasks_no_app_store">Geen app-store beschikbaar</string>
   <string name="intro_tasks_dont_show">Er is geen taakondersteuning nodig.*</string>
   <string name="intro_open_source_title">Open-source software</string>
@@ -71,7 +71,7 @@
   <string name="permissions_tasks_status_on">Taak-sync mogelijk</string>
   <string name="permissions_autoreset_title">Rechten behouden</string>
   <string name="permissions_autoreset_status_off">Rechten kunnen automatisch worden teruggezet (niet aanbevolen)</string>
-  <string name="permissions_autoreset_status_on">Rechten zullen niet automatisch worden teruggezet</string>
+  <string name="permissions_autoreset_status_on">Rechten worden niet automatisch teruggezet</string>
   <string name="permissions_autoreset_instruction">Klik op App Rechten &gt; vinkje uit bij \"Rechten intrekken\"</string>
   <string name="permissions_app_settings_hint">Als een schakeloptie niet werkt, gebruik dan App-info / Rechten.</string>
   <string name="permissions_app_settings">App instellingen</string>
@@ -85,7 +85,7 @@
   <string name="wifi_permissions_background_location_permission_label">Onbeperkt toestaan</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[Locatie recht ingesteld op <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[Locatie recht niet ingesteld op <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_disclaimer">%sgebruikt locatie recht alleen om de huidige WiFi-SSID voor SSID-beperkte accounts te bepalen. Dit gebeurt zelfs als de app zich op de achtergrond bevindt. Er worden geen locatiegegevens verzameld, opgeslagen, verwerkt of ergens naartoe verzonden.</string>
+  <string name="wifi_permissions_background_location_disclaimer">%sgebruikt het locatie recht alleen om de huidige WiFi-SSID voor SSID-beperkte accounts te bepalen. Dit gebeurt zelfs als de app zich op de achtergrond bevindt. Locatiegegevens worden niet verzameld, opgeslagen, verwerkt of verzonden.</string>
   <string name="wifi_permissions_location_enabled">Toegang tot locatie altijd ingeschakeld</string>
   <string name="wifi_permissions_location_enabled_on">Toegang tot locatie is ingeschakeld</string>
   <string name="wifi_permissions_location_enabled_off">Toegang tot locatie is uitgeschakeld</string>
@@ -132,23 +132,23 @@
   <string name="dav_service_refresh_couldnt_refresh">De collectielijst is niet bijgewerkt</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Kan niet op de voorgrond draaien</string>
-  <string name="battery_optimization_notify_text">Onbeperkt batterijgebruik moet worden toegestaan</string>
+  <string name="battery_optimization_notify_text">Toestemming tot onbeperkt batterijgebruik is vereist</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Draait op de voorgrond</string>
   <string name="foreground_service_notify_text">Op sommige toestellen is dit nodig voor automatische synchronisatie.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Instellingen</string>
   <string name="app_settings_debug">Debuggen</string>
-  <string name="app_settings_show_debug_info">Debug-info tonen</string>
-  <string name="app_settings_show_debug_info_details">Software- en configuratiegegevens bekijken en delen</string>
+  <string name="app_settings_show_debug_info">Debug-info</string>
+  <string name="app_settings_show_debug_info_details">Details over software en configuratie bekijken en delen</string>
   <string name="app_settings_logging">Uitgebreid loggen</string>
   <string name="app_settings_logging_on">Loggen is actief</string>
-  <string name="app_settings_logging_off">Loggen is geactiveerd</string>
+  <string name="app_settings_logging_off">Loggen is niet actief</string>
   <string name="app_settings_battery_optimization">Batterijoptimalisatie</string>
   <string name="app_settings_battery_optimization_whitelisted">Onbeperkt batterijgebruik toestaan (aanbevolen)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Beperkt batterijgebruik toestaan (niet aanbevolen)</string>
   <string name="app_settings_foreground_service">Op de voorgrond houden</string>
-  <string name="app_settings_foreground_service_details">Kan helpen als uw toestel automatisch synchroniseren verhindert</string>
+  <string name="app_settings_foreground_service_details">Kan helpen als automatische synchronisatie niet plaatsvindt</string>
   <string name="app_settings_connection">Verbinding</string>
   <string name="app_settings_proxy">Proxy type</string>
   <string-array name="app_settings_proxy_types">
@@ -162,14 +162,14 @@
   <string name="app_settings_security">Beveiliging</string>
   <string name="app_settings_security_app_permissions">App rechten</string>
   <string name="app_settings_security_app_permissions_summary">De vereiste rechten om te synchroniseren controleren</string>
-  <string name="app_settings_distrust_system_certs">Systeemcertificaten niet vertrouwen</string>
+  <string name="app_settings_distrust_system_certs">Wantrouw systeemcertificaten</string>
   <string name="app_settings_distrust_system_certs_on">Door systeem en gebruiker toegevoegde CA certificaten niet vertrouwen</string>
   <string name="app_settings_distrust_system_certs_off">Door systeem en gebruiker toegevoegde CA certificaten vertrouwen (aanbevolen)</string>
   <string name="app_settings_reset_certificates">(Niet-)vertrouwde certificaten terugzetten</string>
   <string name="app_settings_reset_certificates_summary">Herstelt het vertrouwen van alle aangepaste certificaten</string>
   <string name="app_settings_reset_certificates_success">Alle aangepaste certificaten zijn gewist</string>
   <string name="app_settings_user_interface">Gebruikersinterface</string>
-  <string name="app_settings_notification_settings">Instellingen voor meldingen</string>
+  <string name="app_settings_notification_settings">App-meldingen</string>
   <string name="app_settings_notification_settings_summary">Meldingskanalen en hun instellingen beheren</string>
   <string name="app_settings_theme_title">Thema selecteren</string>
   <string-array name="app_settings_theme_names">
@@ -260,7 +260,7 @@
   <string name="settings_sync_summary_manually">Alleen handmatig</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Elke %d minuten + direct bij lokale veranderingen</string>
   <string name="settings_sync_interval_calendars">Kalenders bijwerken</string>
-  <string name="settings_sync_interval_tasks">Taken synchronisatie interval</string>
+  <string name="settings_sync_interval_tasks">Taken synchronisatie-interval</string>
   <string-array name="settings_sync_interval_names">
     <item>Handmatig </item>
     <item>Elke 15 minuten </item>
@@ -270,13 +270,13 @@
     <item>Elke 4 uur</item>
     <item>Eenmaal daags</item>
   </string-array>
-  <string name="settings_sync_wifi_only">Synchronisatie alleen via WiFi</string>
-  <string name="settings_sync_wifi_only_on">Beperkt tot WiFi verbindingen</string>
-  <string name="settings_sync_wifi_only_off">Type verbinding niet in acht genomen</string>
-  <string name="settings_sync_wifi_only_ssids">Beperking WiFi-SSID</string>
+  <string name="settings_sync_wifi_only">Synchronisatie beperken tot WiFi</string>
+  <string name="settings_sync_wifi_only_on">Alleen verbinden via WiFi</string>
+  <string name="settings_sync_wifi_only_off">Type verbinding is niet relevant</string>
+  <string name="settings_sync_wifi_only_ssids">Tot bepaalde WiFi-SSID beperken</string>
   <string name="settings_sync_wifi_only_ssids_on">Synchronisatie alleen via %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Sync alleen via %s(vereist altijd toegang tot locatie)</string>
-  <string name="settings_sync_wifi_only_ssids_off">Alle WiFI-verbindingen worden gebruikt</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Alleen via %s (Altijd toegang tot locatie toestaan)</string>
+  <string name="settings_sync_wifi_only_ssids_off">Elke WiFI-SSID toestaan</string>
   <string name="settings_sync_wifi_only_ssids_message">Door komma\'s gescheiden namen (SSID\'s) van toegestane WiFi-netwerken (laat leeg voor alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Beperking WiFi-SSID vereist verdere instellingen</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Beheren</string>
@@ -296,13 +296,13 @@
     <item quantity="one">Afspraken ouder dan een dag worden genegeerd</item>
     <item quantity="other">Ouder dan %d dagen worden genegeerd</item>
   </plurals>
-  <string name="settings_sync_time_range_past_message">Ouder dan hier ingevuld aantal dagen worden genegeerd (mag 0 zijn). Veld leeg laten om alle te synchroniseren.</string>
+  <string name="settings_sync_time_range_past_message">Gebeurtenissen ouder dan ingevuld aantal dagen worden genegeerd (mag 0 zijn). Veld leeg laten om alle te synchroniseren.</string>
   <string name="settings_default_alarm">Standaardherinnering</string>
   <plurals name="settings_default_alarm_on">
     <item quantity="one">Standaardherinnering één minut voor het evenement</item>
     <item quantity="other"> %d minuten voor aanvang gebeurtenis</item>
   </plurals>
-  <string name="settings_default_alarm_off">Worden niet aangemaakt</string>
+  <string name="settings_default_alarm_off">Wordt niet aangemaakt</string>
   <string name="settings_default_alarm_message">Vul het gewenste aantal minuten in. Leeg laten om herinneringen uit te schakelen.</string>
   <string name="settings_manage_calendar_colors">Kalender kleuren beheren</string>
   <string name="settings_manage_calendar_colors_on">Worden bij elke sync teruggezet</string>

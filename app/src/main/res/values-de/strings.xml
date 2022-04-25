@@ -118,6 +118,7 @@
   <string name="navigation_drawer_website">Homepage</string>
   <string name="navigation_drawer_manual">Handbuch</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_donate">Spenden</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
   <string name="account_list_no_internet">Keine Internet-Verbindung. Android wird die Synchronisierung daher nicht starten.</string>
