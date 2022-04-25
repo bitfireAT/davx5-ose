@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="at.bitfire.davdroid"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+
+        <activity android:name=".ui.setup.LoginActivity" tools:node="merge" tools:ignore="IntentFilterExportedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="caldav"/>
+                <data android:scheme="caldavs"/>
+                <data android:scheme="carddav"/>
+                <data android:scheme="carddavs"/>
+                <data android:scheme="davx5"/>
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
