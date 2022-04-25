@@ -2,10 +2,11 @@
 host = https://www.transifex.com
 
 [davx5.app]
-file_filter = app/src/main/res/values-<lang>/strings.xml
-minimum_perc = 0
 source_file = app/src/main/res/values/strings.xml
 source_lang = en
+minimum_perc = 0
+file_filter = app/src/main/res/values-<lang>/strings.xml
+trans.de = app/src/main/res/values-de/strings.xml
 trans.tr_TR = app/src/main/res/values-tr/strings.xml
 trans.zh_CN = app/src/main/res/values-zh/strings.xml
 type = ANDROID
