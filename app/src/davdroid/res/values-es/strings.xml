@@ -34,6 +34,8 @@
   <string name="intro_autostart_dont_show">No tengo los ajustes requeridos. No volver a recordar.*</string>
   <string name="intro_leave_unchecked">* Déjelo desmarcado para que se le recuerde más tarde. Se puede reconfigurar en los ajustes de la aplicación / %s</string>
   <string name="intro_more_info">Información adicional</string>
+  <string name="intro_tasks_jtx">Tablero jtx</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Soporta sincronización de Tareas, Diarios y Notas.]]></string>
   <string name="intro_tasks_title">Soporte de tareas</string>
   <string name="intro_tasks_text1">Si las tareas son compatibles con tu servidor, pueden sincronizarse con una aplicación de tareas compatible:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -58,9 +60,14 @@
   <string name="permissions_calendar_title">Permisos de calendario</string>
   <string name="permissions_calendar_status_off">Sin sincronización de calendario (no recomendado)</string>
   <string name="permissions_calendar_status_on">Sincronización de calendario permitida</string>
+  <string name="permissions_jtx_title">Permisos de tablero jtx</string>
+  <string name="permissions_jtx_status_not_installed">Tareas, diarios y notas sin sincronizar (no instalado)</string>
+  <string name="permissions_jtx_status_off">Tareas, diarios, notas sin sincronizar</string>
+  <string name="permissions_jtx_status_on">Sincronización posible de tareas, diarios y notas</string>
   <string name="permissions_opentasks_title">Permisos de OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisos de las tareas</string>
   <string name="permissions_tasks_status_not_installed">Sin sincronización de tareas (no instalado)</string>
+  <string name="permissions_tasks_status_off">Sin sincronización de tareas</string>
   <string name="permissions_tasks_status_on">Sincronización de tareas permitidas</string>
   <string name="permissions_autoreset_title">Mantener permisos</string>
   <string name="permissions_autoreset_status_off">Los permisos pueden restablecerse automáticamente (no recomendado)</string>
@@ -111,9 +118,11 @@
   <string name="navigation_drawer_website">Sitio web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Preguntas frequentes</string>
+  <string name="navigation_drawer_community">Comunidad</string>
   <string name="navigation_drawer_donate">Donar</string>
   <string name="navigation_drawer_privacy_policy">Reglamento de privacidad</string>
   <string name="account_list_no_internet">No hay conexión a Internet. Android no se sincronizará.</string>
+  <string name="account_list_low_storage">Espacio de almacenamiento bajo. Android no ejecutará la sincronización.</string>
   <string name="account_list_empty">Bienvenido a DAVx⁵!\n\nAhora puedes añadir una cuenta CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Sincronización automática del sistema completo está deshabilitada</string>
   <string name="accounts_global_sync_enable">Activar</string>
@@ -122,6 +131,8 @@
   <string name="dav_service_refresh_failed">Falló la detección del servicio</string>
   <string name="dav_service_refresh_couldnt_refresh">No se pudo refrescar lista de colección</string>
   <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">No puede ejecutarse en primer plano</string>
+  <string name="battery_optimization_notify_text">Se requiere agregar a la lista blanca de optimización de batería</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Funcionando en primer plano.</string>
   <string name="foreground_service_notify_text">En algunos dispositivos, esto es necesario para la sincronización automática.</string>
@@ -133,9 +144,21 @@
   <string name="app_settings_logging">Registro extendido</string>
   <string name="app_settings_logging_on">El registro está activo</string>
   <string name="app_settings_logging_off">El registro está deshabilitado</string>
+  <string name="app_settings_battery_optimization">Optimización de batería</string>
+  <string name="app_settings_battery_optimization_whitelisted">La app está la lista blanca (recomendado)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">La app no está en la lista blanca (no recomendado)</string>
   <string name="app_settings_foreground_service">Mantener en primer plano.</string>
   <string name="app_settings_foreground_service_details">Puede ayudar si tu dispositivo impide la sincronización automática.</string>
   <string name="app_settings_connection">Conexión</string>
+  <string name="app_settings_proxy">Tipo de proxy</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Por defecto del sistema</item>
+    <item>Sin proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (para Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Nombre de proxy anfitrión</string>
+  <string name="app_settings_proxy_port">Puerto proxy</string>
   <string name="app_settings_security">Seguridad</string>
   <string name="app_settings_security_app_permissions">Permisos de la aplicación</string>
   <string name="app_settings_security_app_permissions_summary">Revisar los permisos necesarios para la sincronización</string>
@@ -189,6 +212,7 @@
   <string name="account_read_only">solo lectura</string>
   <string name="account_calendar">calendario</string>
   <string name="account_task_list">lista de tareas</string>
+  <string name="account_journal">diario</string>
   <string name="account_only_personal">Mostrar solo personal</string>
   <string name="account_refresh_address_book_list">Refrescar contactos</string>
   <string name="account_create_new_address_book">Crear nueva agenda</string>
@@ -213,6 +237,7 @@
   <string name="login_login">Registrar</string>
   <string name="login_create_account">Crear cuenta</string>
   <string name="login_account_name">Nombre de cuenta</string>
+  <string name="login_account_avoid_apostrophe">Se han reportado problemas con el uso de apóstrofes(\') en algunos dispositivos.</string>
   <string name="login_account_name_info">Usa tu dirección de correo como nombre de cuenta puesto que Android usará el nombre de la cuenta como campo de \"organizador\" en los eventos que cree. No puedes tener dos cuentas con el mismo nombre.</string>
   <string name="login_account_contact_group_method">Método de contacto de grupo:</string>
   <string name="login_account_name_required">Nombre de cuenta requerido</string>
@@ -352,6 +377,8 @@
   <string name="exception_ioexception">Ha ocurrido un error I/O.</string>
   <string name="exception_show_details">Mostrar detalles</string>
   <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Sincronización pausada</string>
+  <string name="storage_low_notify_text">Casi no hay espacio disponible</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Montajes WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Cuota usada: %1$s/ disponible: %2$s</string>

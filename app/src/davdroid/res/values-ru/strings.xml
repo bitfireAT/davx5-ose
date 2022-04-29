@@ -268,7 +268,7 @@
     <item>Каждый час</item>
     <item>Каждые 2 часа</item>
     <item>Каждые 4 часа</item>
-    <item>Один раз в день</item>
+    <item>Раз в день</item>
   </string-array>
   <string name="settings_sync_wifi_only">Синхронизировать только через WiFi</string>
   <string name="settings_sync_wifi_only_on">Разрешить синхронизацию только через WiFi</string>
