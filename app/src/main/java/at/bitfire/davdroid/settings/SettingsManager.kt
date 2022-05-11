@@ -7,8 +7,9 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.util.NoSuchPropertyException
 import androidx.annotation.AnyThread
-import at.bitfire.davdroid.Singleton
 import at.bitfire.davdroid.log.Logger
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 import java.io.Writer
 import java.lang.ref.WeakReference
 import java.util.*
@@ -23,8 +24,11 @@ class SettingsManager private constructor(
 ) {
 
     companion object {
-        fun getInstance(context: Context) =
-            Singleton.getInstance(context) { SettingsManager(context) }
+        val defaultModule = module {
+            single {
+                SettingsManager(androidContext())
+            }
+        }
     }
 
     private val providers = LinkedList<SettingsProvider>()

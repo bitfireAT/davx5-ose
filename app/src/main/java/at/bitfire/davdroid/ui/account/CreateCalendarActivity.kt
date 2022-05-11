@@ -36,6 +36,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.fortuna.ical4j.model.Calendar
 import org.apache.commons.lang3.StringUtils
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.*
@@ -210,9 +212,10 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
     class Model(
             application: Application
-    ): AndroidViewModel(application) {
+    ): AndroidViewModel(application), KoinComponent {
 
         var account: Account? = null
+        val db by inject<AppDatabase>()
 
         val displayName = MutableLiveData<String>()
         val displayNameError = MutableLiveData<String>()
@@ -244,7 +247,6 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
-                val db = AppDatabase.getInstance(getApplication())
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { service ->
                     homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
                 }

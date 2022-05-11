@@ -16,10 +16,12 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class ForegroundService : Service() {
 
-    companion object {
+    companion object: KoinComponent {
 
         /**
          * Starts/stops a foreground service, according to the app setting [Settings.FOREGROUND_SERVICE]
@@ -43,16 +45,15 @@ class ForegroundService : Service() {
          * Whether the foreground service is enabled (checked) in the app settings.
          * @return true: foreground service enabled; false: foreground service not enabled
          */
-        fun foregroundServiceActivated(context: Context): Boolean {
-            val settings = SettingsManager.getInstance(context)
-            return settings.getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
+        fun foregroundServiceActivated(): Boolean {
+            return get<SettingsManager>().getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
         }
 
         /**
          * Starts the foreground service when enabled in the app settings and applicable.
          */
         fun startIfActive(context: Context) {
-            if (foregroundServiceActivated(context)) {
+            if (foregroundServiceActivated()) {
                 if (batteryOptimizationWhitelisted(context)) {
                     val serviceIntent = Intent(ACTION_FOREGROUND, null, context, ForegroundService::class.java)
                     if (Build.VERSION.SDK_INT >= 26)
@@ -86,7 +87,7 @@ class ForegroundService : Service() {
     override fun onBind(intent: Intent?): Nothing? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (foregroundServiceActivated(this)) {
+        if (foregroundServiceActivated()) {
             val settingsIntent = Intent(this, AppSettingsActivity::class.java).apply {
                 putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, Settings.FOREGROUND_SERVICE)
             }

@@ -14,11 +14,13 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.IIntroFragmentFactory.ShowMode
 import com.github.appintro.AppIntro2
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.util.*
 
 class IntroActivity: AppIntro2() {
 
-    companion object {
+    companion object: KoinComponent {
 
         private val serviceLoader = ServiceLoader.load(IIntroFragmentFactory::class.java)!!
         private val introFragmentFactories = serviceLoader.toList()
@@ -29,7 +31,7 @@ class IntroActivity: AppIntro2() {
         }
 
         fun shouldShowIntroActivity(context: Context): Boolean {
-            val settings = SettingsManager.getInstance(context)
+            val settings = get<SettingsManager>()
             return introFragmentFactories.any {
                 val show = it.shouldBeShown(context, settings)
                 Logger.log.fine("Intro fragment $it: showMode=$show")
@@ -44,7 +46,7 @@ class IntroActivity: AppIntro2() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val settings = SettingsManager.getInstance(this)
+        val settings = get<SettingsManager>()
 
         val factoriesWithMode = introFragmentFactories.associateWith { it.shouldBeShown(this, settings) }
         val showAll = factoriesWithMode.values.any { it == ShowMode.SHOW }

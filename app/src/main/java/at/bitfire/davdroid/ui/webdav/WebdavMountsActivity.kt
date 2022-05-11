@@ -32,6 +32,8 @@ import at.bitfire.davdroid.webdav.CredentialsStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.io.FileUtils
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class WebdavMountsActivity: AppCompatActivity() {
 
@@ -164,11 +166,12 @@ class WebdavMountsActivity: AppCompatActivity() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app) {
+    class Model(app: Application): AndroidViewModel(app), KoinComponent {
 
         val authority = app.getString(R.string.webdav_authority)
 
-        val db = AppDatabase.getInstance(app)
+        val db by inject<AppDatabase>()
+
         val mountInfos = object: MediatorLiveData<List<MountInfo>>() {
             var mounts: List<WebDavMount>? = null
             var roots: List<WebDavDocument>? = null

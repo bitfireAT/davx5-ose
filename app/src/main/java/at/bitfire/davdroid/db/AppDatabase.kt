@@ -16,11 +16,13 @@ import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.Singleton
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.AccountsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.component.KoinComponent
+import org.koin.dsl.module
 import java.io.Writer
 
 @Suppress("ClassName")
@@ -45,9 +47,15 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun webDavDocumentDao(): WebDavDocumentDao
     abstract fun webDavMountDao(): WebDavMountDao
 
-    companion object {
+    companion object: KoinComponent {
 
-        fun getInstance(context: Context) = Singleton.getInstance<AppDatabase>(context) {
+        val defaultModule = module {
+            single {
+                AppDatabase.createInstance(androidContext())
+            }
+        }
+
+        fun createInstance(context: Context) =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
                 .addMigrations(*migrations)
                 .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
@@ -72,7 +80,6 @@ abstract class AppDatabase: RoomDatabase() {
                     }
                 })
                 .build()
-        }
 
 
         // migrations

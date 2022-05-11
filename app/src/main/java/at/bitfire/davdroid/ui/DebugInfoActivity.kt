@@ -39,8 +39,8 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.databinding.ActivityDebugInfoBinding
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -57,6 +57,8 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.io.*
 import java.util.*
 import java.util.logging.Level
@@ -171,7 +173,7 @@ class DebugInfoActivity: AppCompatActivity() {
 
     class ReportModel(
             val context: Application
-    ): AndroidViewModel(context) {
+    ): AndroidViewModel(context), KoinComponent {
 
         private var initialized = false
 
@@ -469,11 +471,11 @@ class DebugInfoActivity: AppCompatActivity() {
 
                 // database dump
                 writer.append("\nDATABASE DUMP\n\n")
-                AppDatabase.getInstance(context).dump(writer, arrayOf("webdav_document"))
+                get<AppDatabase>().dump(writer, arrayOf("webdav_document"))
 
                 // app settings
                 writer.append("\nAPP SETTINGS\n\n")
-                SettingsManager.getInstance(context).dump(writer)
+                get<SettingsManager>().dump(writer)
 
                 writer.append("--- END DEBUG INFO ---\n")
                 writer.toString()

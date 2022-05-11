@@ -29,14 +29,16 @@ import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.log.Logger
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.logging.Level
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -154,12 +156,12 @@ class WebcalFragment: CollectionsFragment() {
     }
 
 
-    class WebcalModel(application: Application): AndroidViewModel(application) {
+    class WebcalModel(application: Application): AndroidViewModel(application), KoinComponent {
 
         private var initialized = false
         private var serviceId: Long = 0
 
-        private val db = AppDatabase.getInstance(application)
+        private val db by inject<AppDatabase>()
         private val resolver = application.contentResolver
 
         private var calendarPermission = false

@@ -30,6 +30,8 @@ import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
 import org.apache.commons.text.WordUtils
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.*
 
 class BatteryOptimizationsFragment: Fragment() {
@@ -81,7 +83,7 @@ class BatteryOptimizationsFragment: Fragment() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app) {
+    class Model(app: Application): AndroidViewModel(app), KoinComponent {
 
         companion object {
 
@@ -129,7 +131,7 @@ class BatteryOptimizationsFragment: Fragment() {
                         true
         }
 
-        val settings = SettingsManager.getInstance(app)
+        val settings by inject<SettingsManager>()
 
         val shouldBeWhitelisted = MutableLiveData<Boolean>()
         val isWhitelisted = MutableLiveData<Boolean>()

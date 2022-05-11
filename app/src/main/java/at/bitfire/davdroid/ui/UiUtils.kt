@@ -19,9 +19,11 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.util.logging.Level
 
-object UiUtils {
+object UiUtils: KoinComponent {
 
     const val SHORTCUT_SYNC_ALL = "syncAllAccounts"
     const val SNACKBAR_LENGTH_VERY_LONG = 5000          // 5s
@@ -52,8 +54,8 @@ object UiUtils {
         return false
     }
 
-    fun setTheme(context: Context) {
-        val settings = SettingsManager.getInstance(context)
+    fun setTheme() {
+        val settings = get<SettingsManager>()
         val mode = settings.getIntOrNull(Settings.PREFERRED_THEME) ?: Settings.PREFERRED_THEME_DEFAULT
         AppCompatDelegate.setDefaultNightMode(mode)
     }

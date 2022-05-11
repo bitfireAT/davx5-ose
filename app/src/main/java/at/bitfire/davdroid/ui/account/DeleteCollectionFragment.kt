@@ -24,6 +24,8 @@ import at.bitfire.davdroid.ui.ExceptionInfoFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class DeleteCollectionFragment: DialogFragment() {
 
@@ -81,12 +83,12 @@ class DeleteCollectionFragment: DialogFragment() {
 
     class Model(
             application: Application
-    ): AndroidViewModel(application) {
+    ): AndroidViewModel(application), KoinComponent {
 
         var account: Account? = null
         var collectionInfo: Collection? = null
 
-        val db = AppDatabase.getInstance(application)
+        val db by inject<AppDatabase>()
 
         val confirmation = MutableLiveData<Boolean>()
         val result = MutableLiveData<Exception>()

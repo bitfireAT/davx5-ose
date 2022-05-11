@@ -21,10 +21,10 @@ import at.bitfire.davdroid.App
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAddWebdavMountBinding
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import com.google.android.material.snackbar.Snackbar
@@ -33,6 +33,8 @@ import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.collections4.CollectionUtils
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.logging.Level
@@ -135,7 +137,7 @@ class AddWebdavMountActivity: AppCompatActivity() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app) {
+    class Model(app: Application): AndroidViewModel(app), KoinComponent {
 
         val displayName = MutableLiveData<String>()
         val displayNameError = MutableLiveData<String>()
@@ -161,8 +163,7 @@ class AddWebdavMountActivity: AppCompatActivity() {
                 return false
             }
 
-            val db = AppDatabase.getInstance(getApplication())
-            val id = db.webDavMountDao().insert(mount)
+            val id = get<AppDatabase>().webDavMountDao().insert(mount)
 
             val credentialsStore = CredentialsStore(getApplication())
             credentialsStore.setCredentials(id, credentials)

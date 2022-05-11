@@ -32,14 +32,15 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
-import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.PermissionsActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
+abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayout.OnRefreshListener {
 
     companion object {
         const val EXTRA_SERVICE_ID = "serviceId"
@@ -146,8 +147,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        val settings = SettingsManager.getInstance(requireActivity())
-
         menu.findItem(R.id.showOnlyPersonal).let { showOnlyPersonal ->
             accountModel.showOnlyPersonal.value?.let { value ->
                 showOnlyPersonal.isChecked = value
@@ -266,9 +265,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     class Model(
             val context: Application,
             val accountModel: AccountActivity.Model
-    ): ViewModel(), DavService.RefreshingStatusListener, SyncStatusObserver {
+    ): ViewModel(), DavService.RefreshingStatusListener, KoinComponent, SyncStatusObserver {
 
-        private val db = AppDatabase.getInstance(context)
+        private val db by inject<AppDatabase>()
 
         val serviceId = MutableLiveData<Long>()
         private lateinit var collectionType: String

@@ -29,6 +29,8 @@ import at.bitfire.davdroid.ui.HomeSetAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.*
 
 class CreateAddressBookActivity: AppCompatActivity() {
@@ -122,9 +124,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
     class Model(
             application: Application
-    ) : AndroidViewModel(application) {
+    ) : AndroidViewModel(application), KoinComponent {
 
         var account: Account? = null
+        val db by inject<AppDatabase>()
 
         val displayName = MutableLiveData<String>()
         val displayNameError = MutableLiveData<String>()
@@ -140,13 +143,13 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
         @MainThread
         fun initialize(account: Account) {
+            // TODO use constructor and model factory instead of custom initialize()
             if (this.account != null)
                 return
             this.account = account
 
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
-                val db = AppDatabase.getInstance(getApplication())
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
                     homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
                 }

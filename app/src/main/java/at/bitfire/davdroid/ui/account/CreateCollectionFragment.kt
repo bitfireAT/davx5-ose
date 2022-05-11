@@ -19,15 +19,17 @@ import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.io.IOException
 import java.io.StringWriter
 import java.util.logging.Level
@@ -103,7 +105,7 @@ class CreateCollectionFragment: DialogFragment() {
 
     class Model(
             app: Application
-    ): AndroidViewModel(app) {
+    ): AndroidViewModel(app), KoinComponent {
 
         lateinit var account: Account
         lateinit var serviceType: String
@@ -123,7 +125,7 @@ class CreateCollectionFragment: DialogFragment() {
                         dav.mkCol(generateXml()) {}
 
                         // no HTTP error -> create collection locally
-                        val db = AppDatabase.getInstance(getApplication())
+                        val db = get<AppDatabase>()
                         db.serviceDao().getByAccountAndType(account.name, serviceType)?.let { service ->
                             collection.serviceId = service.id
                             db.collectionDao().insert(collection)

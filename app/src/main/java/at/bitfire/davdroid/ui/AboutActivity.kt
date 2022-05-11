@@ -69,7 +69,7 @@ class AboutActivity: AppCompatActivity() {
         binding.tabs.setupWithViewPager(binding.viewpager, false)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_about, menu)
         return true
     }

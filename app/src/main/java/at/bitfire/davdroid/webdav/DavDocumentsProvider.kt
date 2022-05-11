@@ -15,7 +15,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.media.ThumbnailUtils
 import android.net.ConnectivityManager
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.CancellationSignal
+import android.os.ParcelFileDescriptor
 import android.os.storage.StorageManager
 import android.provider.DocumentsContract.*
 import android.provider.DocumentsProvider
@@ -31,21 +34,23 @@ import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.MemoryCookieStore
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.DaoTools
+import at.bitfire.davdroid.db.WebDavDocument
+import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.db.*
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.cache.HeadResponseCache
 import okhttp3.CookieJar
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.android.inject
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.net.HttpURLConnection
 import java.util.concurrent.*
 import java.util.logging.Level
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.min
 
 class DavDocumentsProvider: DocumentsProvider() {
@@ -68,7 +73,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     lateinit var authority: String
 
-    private val db: AppDatabase by lazy { AppDatabase.getInstance(context!!) }
+    private val db: AppDatabase by inject()
     private val mountDao by lazy { db.webDavMountDao() }
     private val documentDao by lazy { db.webDavDocumentDao() }
     private val webdavMountsLive by lazy { mountDao.getAllLive() }

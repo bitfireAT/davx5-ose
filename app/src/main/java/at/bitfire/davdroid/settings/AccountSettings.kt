@@ -25,11 +25,11 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TasksWatcher
 import at.bitfire.davdroid.closeCompat
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.TaskUtils
@@ -46,6 +46,9 @@ import net.fortuna.ical4j.model.property.Url
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.StringUtils
 import org.dmfs.tasks.contract.TaskContract
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.component.inject
 import java.io.ByteArrayInputStream
 import java.io.ObjectInputStream
 import java.util.logging.Level
@@ -59,7 +62,7 @@ import java.util.logging.Level
 class AccountSettings(
         val context: Context,
         val account: Account
-) {
+): KoinComponent {
 
     companion object {
 
@@ -174,10 +177,10 @@ class AccountSettings(
         }
 
     }
-    
-    
+
+
     val accountManager: AccountManager = AccountManager.get(context)
-    val settings = SettingsManager.getInstance(context)
+    val settings by inject<SettingsManager>()
 
     init {
         synchronized(AccountSettings::class.java) {
@@ -581,7 +584,7 @@ class AccountSettings(
      * Disable it on those accounts for the future.
      */
     private fun update_8_9() {
-        val db = AppDatabase.getInstance(context)
+        val db = get<AppDatabase>()
         val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
         if (!hasCalDAV && ContentResolver.getIsSyncable(account, OpenTasks.authority) != 0) {
             Logger.log.info("Disabling OpenTasks sync for $account")

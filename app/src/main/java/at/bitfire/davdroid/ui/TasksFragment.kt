@@ -26,6 +26,8 @@ import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import com.google.android.material.snackbar.Snackbar
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class TasksFragment: Fragment() {
 
@@ -94,7 +96,7 @@ class TasksFragment: Fragment() {
     }
 
 
-    class Model(app: Application) : AndroidViewModel(app), SettingsManager.OnChangeListener {
+    class Model(app: Application) : AndroidViewModel(app), KoinComponent, SettingsManager.OnChangeListener {
 
         companion object {
 
@@ -107,7 +109,7 @@ class TasksFragment: Fragment() {
 
         }
 
-        val settings = SettingsManager.getInstance(app)
+        val settings by inject<SettingsManager>()
 
         val currentProvider = MutableLiveData<ProviderName>()
         val openTasksInstalled = MutableLiveData<Boolean>()
@@ -126,7 +128,6 @@ class TasksFragment: Fragment() {
         }
 
         val dontShow = object: ObservableBoolean() {
-            val settings = SettingsManager.getInstance(getApplication())
             override fun get() = settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
             override fun set(dontShowAgain: Boolean) {
                 if (dontShowAgain)

@@ -10,9 +10,9 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import androidx.annotation.WorkerThread
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
@@ -21,12 +21,14 @@ import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class TasksWatcher protected constructor(
         context: Context
 ): PackageChangedReceiver(context) {
 
-    companion object {
+    companion object: KoinComponent {
 
         fun watch(context: Context) = TasksWatcher(context)
 
@@ -42,7 +44,7 @@ class TasksWatcher protected constructor(
             }
 
             // check all accounts and (de)activate task provider(s) if a CalDAV service is defined
-            val db = AppDatabase.getInstance(context)
+            val db = get<AppDatabase>()
             val accountManager = AccountManager.get(context)
             for (account in accountManager.getAccountsByType(context.getString(R.string.account_type))) {
                 val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
@@ -73,7 +75,7 @@ class TasksWatcher protected constructor(
                 try {
                     val settings = AccountSettings(context, account)
                     val interval = settings.getSavedTasksSyncInterval() ?:
-                            SettingsManager.getInstance(context).getLong(Settings.DEFAULT_SYNC_INTERVAL)
+                            get<SettingsManager>().getLong(Settings.DEFAULT_SYNC_INTERVAL)
                     settings.setSyncInterval(authority, interval)
                 } catch (e: InvalidAccountException) {
                     // account has already been removed

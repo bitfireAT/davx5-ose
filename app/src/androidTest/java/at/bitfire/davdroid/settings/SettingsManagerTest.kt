@@ -4,14 +4,15 @@
 
 package at.bitfire.davdroid.settings
 
-import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class SettingsManagerTest {
+class SettingsManagerTest: KoinComponent {
 
-    val settingsManager by lazy { SettingsManager.getInstance(InstrumentationRegistry.getInstrumentation().targetContext) }
+    val settingsManager by inject<SettingsManager>()
 
     @Test
     fun testContainsKey_NotExisting() {

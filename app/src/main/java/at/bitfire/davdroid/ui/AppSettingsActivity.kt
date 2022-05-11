@@ -29,6 +29,8 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.net.URI
 import java.net.URISyntaxException
 import kotlin.math.roundToInt
@@ -53,9 +55,9 @@ class AppSettingsActivity: AppCompatActivity() {
     }
 
 
-    class SettingsFragment: PreferenceFragmentCompat(), SettingsManager.OnChangeListener {
+    class SettingsFragment: PreferenceFragmentCompat(), KoinComponent, SettingsManager.OnChangeListener {
 
-        val settings by lazy { SettingsManager.getInstance(requireActivity()) }
+        val settings by inject<SettingsManager>()
 
         val onBatteryOptimizationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             loadSettings()
@@ -256,7 +258,6 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         private fun resetHints() {
-            val settings = SettingsManager.getInstance(requireActivity())
             settings.remove(BatteryOptimizationsFragment.Model.HINT_BATTERY_OPTIMIZATIONS)
             settings.remove(BatteryOptimizationsFragment.Model.HINT_AUTOSTART_PERMISSION)
             settings.remove(TasksFragment.Model.HINT_OPENTASKS_NOT_INSTALLED)

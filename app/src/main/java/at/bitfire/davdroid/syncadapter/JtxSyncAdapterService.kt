@@ -12,16 +12,17 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.koin.core.component.get
 import java.util.logging.Level
 
 class JtxSyncAdapterService: SyncAdapterService() {
@@ -69,7 +70,7 @@ class JtxSyncAdapterService: SyncAdapterService() {
         }
 
         private fun updateLocalCollections(account: Account, client: ContentProviderClient) {
-            val db = AppDatabase.getInstance(context)
+            val db = get<AppDatabase>()
             val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
 
             val remoteCollections = mutableMapOf<HttpUrl, Collection>()

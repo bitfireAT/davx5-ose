@@ -23,16 +23,18 @@ import androidx.lifecycle.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountBinding
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.logging.Level
 
 class AccountActivity: AppCompatActivity() {
@@ -80,7 +82,7 @@ class AccountActivity: AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_account, menu)
         return true
     }
@@ -231,7 +233,7 @@ class AccountActivity: AppCompatActivity() {
     class Model(
             application: Application,
             val account: Account
-    ): AndroidViewModel(application), OnAccountsUpdateListener {
+    ): AndroidViewModel(application), KoinComponent, OnAccountsUpdateListener {
 
         class Factory(
                 val application: Application,
@@ -242,7 +244,7 @@ class AccountActivity: AppCompatActivity() {
                     Model(application, account) as T
         }
 
-        private val db = AppDatabase.getInstance(application)
+        private val db by inject<AppDatabase>()
         val accountManager = AccountManager.get(application)!!
         val accountSettings by lazy { AccountSettings(getApplication(), account) }
 

@@ -30,8 +30,8 @@ import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.closeCompat
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
@@ -40,6 +40,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.util.logging.Level
 
 class RenameAccountFragment: DialogFragment() {
@@ -98,7 +100,7 @@ class RenameAccountFragment: DialogFragment() {
 
     class Model(
             application: Application
-    ): AndroidViewModel(application) {
+    ): AndroidViewModel(application), KoinComponent {
 
         val finished = MutableLiveData<Boolean>()
 
@@ -148,7 +150,7 @@ class RenameAccountFragment: DialogFragment() {
                 ContentResolver.cancelSync(addrBookAccount, null)
 
             // update account name references in database
-            val db = AppDatabase.getInstance(context)
+            val db = get<AppDatabase>()
             try {
                 db.serviceDao().renameAccount(oldAccount.name, newName)
             } catch (e: Exception) {

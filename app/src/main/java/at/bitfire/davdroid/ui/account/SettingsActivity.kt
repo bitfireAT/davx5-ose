@@ -28,8 +28,8 @@ import androidx.preference.*
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -42,6 +42,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class SettingsActivity: AppCompatActivity() {
 
@@ -72,10 +74,10 @@ class SettingsActivity: AppCompatActivity() {
     }
 
 
-    class AccountSettingsFragment: PreferenceFragmentCompat() {
+    class AccountSettingsFragment: PreferenceFragmentCompat(), KoinComponent {
 
         private val account by lazy { requireArguments().getParcelable<Account>(EXTRA_ACCOUNT)!! }
-        private val settings by lazy { SettingsManager.getInstance(requireActivity()) }
+        private val settings by inject<SettingsManager>()
 
         val model by viewModels<Model>()
 
@@ -370,12 +372,12 @@ class SettingsActivity: AppCompatActivity() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app), SyncStatusObserver, SettingsManager.OnChangeListener {
+    class Model(app: Application): AndroidViewModel(app), KoinComponent, SyncStatusObserver, SettingsManager.OnChangeListener {
 
         private var account: Account? = null
         private var accountSettings: AccountSettings? = null
 
-        private val settings = SettingsManager.getInstance(app)
+        private val settings by inject<SettingsManager>()
         private var statusChangeListener: Any? = null
 
         // settings

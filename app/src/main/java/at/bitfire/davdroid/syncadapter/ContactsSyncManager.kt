@@ -20,8 +20,8 @@ import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.DavUtils.sameTypeAs
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.groups.CategoriesStrategy

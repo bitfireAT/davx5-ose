@@ -9,14 +9,16 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.TextTable
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.log.Logger
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.io.Writer
 
 class SharedPreferencesProvider(
         val context: Context,
         val settingsManager: SettingsManager
-): SettingsProvider, SharedPreferences.OnSharedPreferenceChangeListener {
+): KoinComponent, SettingsProvider, SharedPreferences.OnSharedPreferenceChangeListener {
 
     companion object {
         private const val META_VERSION = "version"
@@ -124,7 +126,7 @@ class SharedPreferencesProvider(
         edit.apply()
 
         // open ServiceDB to upgrade it and possibly migrate settings
-        AppDatabase.getInstance(context)
+        get<AppDatabase>()
     }
 
 

@@ -10,8 +10,8 @@ import android.os.Build
 import android.os.storage.StorageManager
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.WebDavDocument
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.webdav.cache.CacheUtils
 import at.bitfire.davdroid.webdav.cache.DiskCache
 import org.apache.commons.io.FileUtils

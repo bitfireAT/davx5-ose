@@ -12,11 +12,15 @@ import at.bitfire.ical4android.TaskProvider.ProviderName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-object TaskUtils {
+object TaskUtils: KoinComponent {
+
+    val settingsManager by inject<SettingsManager>()
 
     fun currentProvider(context: Context): ProviderName? {
-        val preferredAuthority = SettingsManager.getInstance(context).getString(Settings.PREFERRED_TASKS_PROVIDER)
+        val preferredAuthority = settingsManager.getString(Settings.PREFERRED_TASKS_PROVIDER)
         ProviderName.values()
                 .sortedByDescending { it.authority == preferredAuthority }
                 .forEach { providerName ->
@@ -29,7 +33,7 @@ object TaskUtils {
     fun isAvailable(context: Context) = currentProvider(context) != null
 
     fun setPreferredProvider(context: Context, providerName: ProviderName) {
-        SettingsManager.getInstance(context).putString(Settings.PREFERRED_TASKS_PROVIDER, providerName.authority)
+        settingsManager.putString(Settings.PREFERRED_TASKS_PROVIDER, providerName.authority)
         CoroutineScope(Dispatchers.Default).launch {
             TasksWatcher.updateTaskSync(context)
         }

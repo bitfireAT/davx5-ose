@@ -3,8 +3,6 @@
  **************************************************************************************************/
 package at.bitfire.davdroid
 
-import java.io.File
-
 object Constants {
 
     const val DAVDROID_GREEN_RGBA = 0xFF8bc34a.toInt()

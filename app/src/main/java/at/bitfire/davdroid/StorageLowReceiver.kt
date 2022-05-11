@@ -15,19 +15,24 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
 class StorageLowReceiver private constructor(
         val context: Context
 ): BroadcastReceiver(), AutoCloseable {
 
     companion object {
-        fun getInstance(context: Context) =
-            Singleton.getInstance(context) { StorageLowReceiver(context) }
+        val defaultModule = module {
+            single {
+                StorageLowReceiver(androidContext())
+            }
+        }
     }
 
     val storageLow = MutableLiveData<Boolean>(false)
 
-    init {
+    fun listen() {
         Logger.log.fine("Listening for device storage low/OK broadcasts")
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_DEVICE_STORAGE_LOW)

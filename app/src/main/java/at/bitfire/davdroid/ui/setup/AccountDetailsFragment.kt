@@ -24,11 +24,11 @@ import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.LoginAccountDetailsBinding
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
@@ -40,9 +40,12 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.component.inject
 import java.util.logging.Level
 
-class AccountDetailsFragment : Fragment() {
+class AccountDetailsFragment : Fragment(), KoinComponent {
 
     val loginModel by activityViewModels<LoginModel>()
     val model by viewModels<AccountDetailsModel>()
@@ -63,7 +66,7 @@ class AccountDetailsFragment : Fragment() {
                         ?: loginModel.baseURI?.host
 
         // CardDAV-specific
-        val settings = SettingsManager.getInstance(requireActivity())
+        val settings = get<SettingsManager>()
         v.carddav.visibility = if (config.cardDAV != null) View.VISIBLE else View.GONE
         if (settings.containsKey(AccountSettings.KEY_CONTACT_GROUP_METHOD))
             v.contactGroupMethod.isEnabled = false
@@ -134,7 +137,9 @@ class AccountDetailsFragment : Fragment() {
 
     class AccountDetailsModel(
             application: Application
-    ) : AndroidViewModel(application) {
+    ) : AndroidViewModel(application), KoinComponent {
+
+        val db by inject<AppDatabase>()
 
         val name = MutableLiveData<String>()
         val nameError = MutableLiveData<String>()
@@ -162,11 +167,9 @@ class AccountDetailsFragment : Fragment() {
 
                 // add entries for account to service DB
                 Logger.log.log(Level.INFO, "Writing account configuration to database", config)
-                val db = AppDatabase.getInstance(context)
                 try {
                     val accountSettings = AccountSettings(context, account)
-                    val settings = SettingsManager.getInstance(context)
-                    val defaultSyncInterval = settings.getLong(Settings.DEFAULT_SYNC_INTERVAL)
+                    val defaultSyncInterval = get<SettingsManager>().getLong(Settings.DEFAULT_SYNC_INTERVAL)
 
                     val refreshIntent = Intent(context, DavService::class.java)
                     refreshIntent.action = DavService.ACTION_REFRESH_COLLECTIONS
@@ -174,7 +177,7 @@ class AccountDetailsFragment : Fragment() {
                     val addrBookAuthority = context.getString(R.string.address_books_authority)
                     if (config.cardDAV != null) {
                         // insert CardDAV service
-                        val id = insertService(db, name, Service.TYPE_CARDDAV, config.cardDAV)
+                        val id = insertService(name, Service.TYPE_CARDDAV, config.cardDAV)
 
                         // initial CardDAV account settings
                         accountSettings.setGroupMethod(groupMethod)
@@ -191,7 +194,7 @@ class AccountDetailsFragment : Fragment() {
 
                     if (config.calDAV != null) {
                         // insert CalDAV service
-                        val id = insertService(db, name, Service.TYPE_CALDAV, config.calDAV)
+                        val id = insertService(name, Service.TYPE_CALDAV, config.calDAV)
 
                         // start CalDAV service detection (refresh collections)
                         refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
@@ -220,7 +223,7 @@ class AccountDetailsFragment : Fragment() {
             return result
         }
 
-        private fun insertService(db: AppDatabase, accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
+        private fun insertService(accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
             // insert service
             val service = Service(0, accountName, type, info.principal)
             val serviceId = db.serviceDao().insertOrReplace(service)

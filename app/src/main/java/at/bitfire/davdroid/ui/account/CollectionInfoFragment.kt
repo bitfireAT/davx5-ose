@@ -20,6 +20,8 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class CollectionInfoFragment: DialogFragment() {
 
@@ -54,20 +56,21 @@ class CollectionInfoFragment: DialogFragment() {
 
     class Model(
             application: Application
-    ): AndroidViewModel(application) {
+    ): AndroidViewModel(application), KoinComponent {
 
+        val db by inject<AppDatabase>()
         var collection = MutableLiveData<Collection>()
 
         private var initialized = false
 
         @UiThread
         fun initialize(collectionId: Long) {
+            // TODO use constructor and model factory instead of custom initialize()
             if (initialized)
                 return
             initialized = true
 
             viewModelScope.launch(Dispatchers.IO) {
-                val db = AppDatabase.getInstance(getApplication())
                 collection.postValue(db.collectionDao().get(collectionId))
             }
         }

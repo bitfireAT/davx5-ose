@@ -10,8 +10,8 @@ import android.security.KeyChain
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -19,6 +19,8 @@ import okhttp3.*
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -80,7 +82,7 @@ class HttpClient private constructor(
             accountSettings: AccountSettings? = null,
             val logger: java.util.logging.Logger? = Logger.log,
             val loggerLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
-    ) {
+    ): KoinComponent {
         private var certManager: CustomCertManager? = null
         private var certificateAlias: String? = null
         private var offerCompression: Boolean = false
@@ -99,7 +101,7 @@ class HttpClient private constructor(
             }
 
             if (context != null) {
-                val settings = SettingsManager.getInstance(context)
+                val settings = get<SettingsManager>()
 
                 // custom proxy support
                 try {

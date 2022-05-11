@@ -11,10 +11,10 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidTaskList
@@ -22,6 +22,7 @@ import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
+import org.koin.core.component.get
 import java.util.logging.Level
 
 /**
@@ -75,7 +76,7 @@ open class TasksSyncAdapterService: SyncAdapterService() {
         }
 
         private fun updateLocalTaskLists(provider: TaskProvider, account: Account, settings: AccountSettings) {
-            val db = AppDatabase.getInstance(context)
+            val db = get<AppDatabase>()
             val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
 
             val remoteTaskLists = mutableMapOf<HttpUrl, Collection>()

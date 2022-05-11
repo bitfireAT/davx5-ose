@@ -10,18 +10,25 @@ import android.net.Uri
 import android.os.StrictMode
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.syncadapter.AccountUtils
+import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.context.startKoin
 import java.util.logging.Level
 import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 @Suppress("unused")
-class App: Application(), Thread.UncaughtExceptionHandler {
+class App: Application(), KoinComponent, Thread.UncaughtExceptionHandler {
 
     companion object {
 
@@ -37,6 +44,27 @@ class App: Application(), Thread.UncaughtExceptionHandler {
 
     }
 
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+
+        startKoin {
+            androidLogger(
+                if (BuildConfig.DEBUG)
+                    org.koin.core.logger.Level.DEBUG
+                else
+                    org.koin.core.logger.Level.INFO
+            )
+            androidContext(base)
+
+            modules(
+                AccountsUpdatedListener.defaultModule,
+                AppDatabase.defaultModule,
+                SettingsManager.defaultModule,
+                StorageLowReceiver.defaultModule
+            )
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -59,19 +87,19 @@ class App: Application(), Thread.UncaughtExceptionHandler {
         NotificationUtils.createChannels(this)
 
         // set light/dark mode
-        UiUtils.setTheme(this)      // when this is called in the asynchronous thread below, it recreates
-                                    // some current activity and causes an IllegalStateException in rare cases
+        UiUtils.setTheme()      // when this is called in the asynchronous thread below, it recreates
+                                // some current activity and causes an IllegalStateException in rare cases
 
         // don't block UI for some background checks
         thread {
             // watch for account changes/deletions
-            AccountUtils.registerAccountsUpdateListener(this)
+            get<AccountsUpdatedListener>().listen()
 
             // foreground service (possible workaround for devices which prevent DAVx5 from being started)
             ForegroundService.startIfActive(this)
 
             // watch storage because low storage means synchronization is stopped
-            StorageLowReceiver.getInstance(this)
+            get<StorageLowReceiver>().listen()
 
             // watch installed/removed apps
             TasksWatcher.watch(this)

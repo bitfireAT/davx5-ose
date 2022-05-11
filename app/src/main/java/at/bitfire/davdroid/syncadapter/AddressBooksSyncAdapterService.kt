@@ -14,14 +14,15 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.closeCompat
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.koin.core.component.get
 import java.util.logging.Level
 
 class AddressBooksSyncAdapterService : SyncAdapterService() {
@@ -58,7 +59,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
         }
 
         private fun updateLocalAddressBooks(account: Account, syncResult: SyncResult): Boolean {
-            val db = AppDatabase.getInstance(context)
+            val db = get<AppDatabase>()
             val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)
 
             val remoteAddressBooks = mutableMapOf<HttpUrl, Collection>()

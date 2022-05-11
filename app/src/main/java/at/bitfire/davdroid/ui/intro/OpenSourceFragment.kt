@@ -20,6 +20,8 @@ import at.bitfire.davdroid.databinding.IntroOpenSourceBinding
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment.Model.Companion.SETTING_NEXT_DONATION_POPUP
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class OpenSourceFragment: Fragment() {
 
@@ -42,14 +44,14 @@ class OpenSourceFragment: Fragment() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app) {
+    class Model(app: Application): AndroidViewModel(app), KoinComponent {
 
         companion object {
             const val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"
         }
 
         val dontShow = object: ObservableBoolean() {
-            val settings = SettingsManager.getInstance(getApplication())
+            val settings = get<SettingsManager>()
             override fun set(dontShowAgain: Boolean) {
                 if (dontShowAgain) {
                     val nextReminder = System.currentTimeMillis() + 90*86400000L     // 90 days (~ 3 months)

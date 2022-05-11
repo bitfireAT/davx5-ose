@@ -20,9 +20,9 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.*
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -30,13 +30,15 @@ import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
+import org.koin.android.ext.android.get
+import org.koin.core.component.KoinComponent
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
 import kotlin.collections.*
 
 @Suppress("DEPRECATION")
-class DavService: IntentService("DavService") {
+class DavService: IntentService("DavService"), KoinComponent {
 
     companion object {
 
@@ -93,7 +95,7 @@ class DavService: IntentService("DavService") {
                         listener.get()?.onDavRefreshStatusChanged(id, true)
                     }
 
-                    val db = AppDatabase.getInstance(this@DavService)
+                    val db = get<AppDatabase>()
                     refreshCollections(db, id)
                 }
 
@@ -160,7 +162,7 @@ class DavService: IntentService("DavService") {
     }
 
     private fun refreshCollections(db: AppDatabase, serviceId: Long) {
-        val settings = SettingsManager.getInstance(this)
+        val settings = get<SettingsManager>()
         val syncAllCollections = settings.getBoolean(Settings.SYNC_ALL_COLLECTIONS)
 
         val homeSetDao = db.homeSetDao()
