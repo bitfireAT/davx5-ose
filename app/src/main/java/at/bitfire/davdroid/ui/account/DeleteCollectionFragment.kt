@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.MainThread
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
@@ -43,16 +42,18 @@ class DeleteCollectionFragment: DialogFragment() {
         }
     }
 
-    val model by viewModels<Model>()
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        model.initialize(
-                requireArguments().getParcelable(ARG_ACCOUNT)!!,
-                requireArguments().getLong(ARG_COLLECTION_ID)
-        )
+    val model by viewModels<Model>() {
+        object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                Model(
+                    requireActivity().application,
+                    requireArguments().getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException("ARG_ACCOUNT required"),
+                    requireArguments().getLong(ARG_COLLECTION_ID)
+                ) as T
+        }
     }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = DeleteCollectionBinding.inflate(layoutInflater, null, false)
@@ -82,31 +83,25 @@ class DeleteCollectionFragment: DialogFragment() {
 
 
     class Model(
-            application: Application
+        application: Application,
+        var account: Account,
+        val collectionId: Long
     ): AndroidViewModel(application), KoinComponent {
 
-        var account: Account? = null
-        var collectionInfo: Collection? = null
-
         val db by inject<AppDatabase>()
+        var collectionInfo: Collection? = null
 
         val confirmation = MutableLiveData<Boolean>()
         val result = MutableLiveData<Exception>()
 
-        @MainThread
-        fun initialize(account: Account, collectionId: Long) {
-            if (this.account == null)
-                this.account = account
-
-            if (collectionInfo == null)
-                viewModelScope.launch(Dispatchers.IO) {
-                    collectionInfo = db.collectionDao().get(collectionId)
-                }
+        init {
+            viewModelScope.launch(Dispatchers.IO) {
+                collectionInfo = db.collectionDao().get(collectionId)
+            }
         }
 
         fun deleteCollection(): LiveData<Exception> {
             viewModelScope.launch(Dispatchers.IO + NonCancellable) {
-                val account = account ?: return@launch
                 val collectionInfo = collectionInfo ?: return@launch
 
                 val context = getApplication<Application>()

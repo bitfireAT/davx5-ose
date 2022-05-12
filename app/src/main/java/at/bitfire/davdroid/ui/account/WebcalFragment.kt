@@ -19,9 +19,7 @@ import android.view.*
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.room.Transaction
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.Constants
@@ -48,16 +46,23 @@ class WebcalFragment: CollectionsFragment() {
 
     override val noCollectionsStringId = R.string.account_no_webcals
 
-    val webcalModel by viewModels<WebcalModel>()
+    val webcalModel by viewModels<WebcalModel>() {
+        object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>) =
+                WebcalModel(
+                    requireActivity().application,
+                    requireArguments().getLong(EXTRA_SERVICE_ID)
+                ) as T
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        webcalModel.subscribedUrls.observe(this, { urls ->
+        webcalModel.subscribedUrls.observe(this, Observer { urls ->
             Logger.log.log(Level.FINE, "Got Android calendar list", urls.keys)
         })
-
-        webcalModel.initialize(arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
@@ -156,10 +161,10 @@ class WebcalFragment: CollectionsFragment() {
     }
 
 
-    class WebcalModel(application: Application): AndroidViewModel(application), KoinComponent {
-
-        private var initialized = false
-        private var serviceId: Long = 0
+    class WebcalModel(
+        application: Application,
+        val serviceId: Long
+    ): AndroidViewModel(application), KoinComponent {
 
         private val db by inject<AppDatabase>()
         private val resolver = application.contentResolver
@@ -167,10 +172,6 @@ class WebcalFragment: CollectionsFragment() {
         private var calendarPermission = false
         private val calendarProvider = object: MediatorLiveData<ContentProviderClient>() {
             init {
-                init()
-            }
-
-            fun init() {
                 calendarPermission = ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
                 if (calendarPermission)
                     connect()
@@ -272,14 +273,6 @@ class WebcalFragment: CollectionsFragment() {
             }
         }
 
-
-        fun initialize(dbServiceId: Long) {
-            if (initialized)
-                return
-            initialized = true
-
-            serviceId = dbServiceId
-        }
 
         fun unsubscribe(webcal: Collection) {
             viewModelScope.launch(Dispatchers.IO) {

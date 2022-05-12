@@ -20,7 +20,7 @@ interface HomeSetDao: SyncableDao<HomeSet> {
     fun getBindableByService(serviceId: Long): List<HomeSet>
 
     @Query("SELECT COUNT(*) FROM homeset WHERE serviceId=:serviceId AND privBind")
-    fun hasBindableByService(serviceId: Long): LiveData<Boolean>
+    fun hasBindableByServiceLive(serviceId: Long): LiveData<Boolean>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(homeSet: HomeSet): Long

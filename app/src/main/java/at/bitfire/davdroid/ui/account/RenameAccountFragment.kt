@@ -25,6 +25,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.InvalidAccountException
@@ -76,7 +77,7 @@ class RenameAccountFragment: DialogFragment() {
         layout.setPadding(8*density, 8*density, 8*density, 8*density)
         layout.addView(editText)
 
-        model.finished.observe(this, {
+        model.finished.observe(this, Observer {
             this@RenameAccountFragment.requireActivity().finish()
         })
 
@@ -163,14 +164,15 @@ class RenameAccountFragment: DialogFragment() {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
                 try {
                     context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { provider ->
-                        for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
-                            try {
+                        try {
+                            for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
                                 val addressBook = LocalAddressBook(context, addrBookAccount, provider)
                                 if (oldAccount == addressBook.mainAccount)
                                     addressBook.mainAccount = Account(newName, oldAccount.type)
-                            } finally {
-                                provider.closeCompat()
                             }
+                        } finally {
+                            provider.closeCompat()
+                        }
                     }
                 } catch (e: Exception) {
                     Logger.log.log(Level.SEVERE, "Couldn't update address book accounts", e)

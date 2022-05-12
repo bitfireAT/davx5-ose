@@ -55,7 +55,12 @@ abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayou
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T: ViewModel> create(modelClass: Class<T>): T =
-                    Model(requireActivity().application, accountModel) as T
+                Model(
+                    requireActivity().application,
+                    accountModel,
+                    requireArguments().getLong(EXTRA_SERVICE_ID),
+                    requireArguments().getString(EXTRA_COLLECTION_TYPE) ?: throw IllegalArgumentException("EXTRA_COLLECTION_TYPE required")
+                ) as T
         }
     }
 
@@ -78,12 +83,6 @@ abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayou
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // don't get the activity ViewModel in onCreate(), it may crash
-        model.initialize(
-                arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"),
-                arguments?.getString(EXTRA_COLLECTION_TYPE) ?: throw IllegalArgumentException("EXTRA_COLLECTION_TYPE required")
-        )
 
         model.isRefreshing.observe(viewLifecycleOwner, Observer { nowRefreshing ->
             binding.swipeRefresh.isRefreshing = nowRefreshing
@@ -263,37 +262,28 @@ abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayou
 
 
     class Model(
-            val context: Application,
-            val accountModel: AccountActivity.Model
+        val context: Application,
+        val accountModel: AccountActivity.Model,
+        val serviceId: Long,
+        val collectionType: String
     ): ViewModel(), DavService.RefreshingStatusListener, KoinComponent, SyncStatusObserver {
 
         private val db by inject<AppDatabase>()
 
-        val serviceId = MutableLiveData<Long>()
-        private lateinit var collectionType: String
-
         // cache task provider
         val taskProvider by lazy { TaskUtils.currentProvider(context) }
 
-        val hasWriteableCollections: LiveData<Boolean> =
-            Transformations.switchMap(serviceId) { service ->
-                db.homeSetDao().hasBindableByService(service)
-            }
-        val collectionsColors: LiveData<List<Int>> =
-            Transformations.switchMap(serviceId) { service ->
-                db.collectionDao().colorsByService(service)
-            }
+        val hasWriteableCollections = db.homeSetDao().hasBindableByServiceLive(serviceId)
+        val collectionsColors = db.collectionDao().colorsByServiceLive(serviceId)
         val collectionsPager: LiveData<Pager<Int, Collection>> =
-            Transformations.switchMap(accountModel.showOnlyPersonal) { onlyPersonal ->
-                Transformations.map(serviceId) { service ->
-                    Pager(PagingConfig(pageSize = 25)) {
-                        if (onlyPersonal)
-                            // show only personal collections
-                            db.collectionDao().pagePersonalByServiceAndType(service, collectionType)
-                        else
-                            // show all collections
-                            db.collectionDao().pageByServiceAndType(service, collectionType)
-                    }
+            Transformations.map(accountModel.showOnlyPersonal) { onlyPersonal ->
+                Pager(PagingConfig(pageSize = 25)) {
+                    if (onlyPersonal)
+                        // show only personal collections
+                        db.collectionDao().pagePersonalByServiceAndType(serviceId, collectionType)
+                    else
+                        // show all collections
+                        db.collectionDao().pageByServiceAndType(serviceId, collectionType)
                 }
             }
 
@@ -319,11 +309,7 @@ abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayou
         val isSyncPending = MutableLiveData<Boolean>()
 
 
-        fun initialize(id: Long, collectionType: String) {
-            this.collectionType = collectionType
-            if (serviceId.value == null)
-                serviceId.value = id
-
+        init {
             if (context.bindService(Intent(context, DavService::class.java), svcConn, Context.BIND_AUTO_CREATE))
                 davServiceConn = svcConn
 
@@ -344,14 +330,12 @@ abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayou
         }
 
         fun refresh() {
-            serviceId.value?.let { svcId ->
-                DavService.refreshCollections(context, svcId)
-            }
+            DavService.refreshCollections(context, serviceId)
         }
 
         @AnyThread
         override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) {
-            if (id == serviceId.value)
+            if (id == serviceId)
                 isRefreshing.postValue(refreshing)
         }
 
