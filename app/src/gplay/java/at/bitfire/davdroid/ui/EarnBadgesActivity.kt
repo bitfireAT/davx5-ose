@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
@@ -48,10 +49,10 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
     companion object {
 
-        const val SKU_HELPING_HANDS = "helping_hands.2022"
-        const val SKU_A_COFFEE_FOR_YOU = "a_coffee_for_you.2022"
-        const val SKU_LOYAL_FOSS_BACKER = "loyal_foss_backer.2022"
-        const val SKU_PART_OF_THE_JOURNEY = "part_of_the_journey.2022"
+        private const val SKU_HELPING_HANDS = "helping_hands.2022"
+        private const val SKU_A_COFFEE_FOR_YOU = "a_coffee_for_you.2022"
+        private const val SKU_LOYAL_FOSS_BACKER = "loyal_foss_backer.2022"
+        private const val SKU_PART_OF_THE_JOURNEY = "part_of_the_journey.2022"
 
         private val SKU_BADGES = mapOf(
             SKU_HELPING_HANDS to R.drawable.ic_badge_life_buoy,
@@ -123,14 +124,16 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                     }
                 )
                 badgesAdapter.update(badges)
-                
-                // Save to cache
-//                model.saveSkusToCache()
+
             }
         }
 
-        // Try loading SKUs from cache
-//        model.loadSkusFromCache()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // ensures that all purchases are successfully processed
+        model.store.queryPurchases()
     }
 
     /**
@@ -227,18 +230,17 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                 button.text = badge.price
 
                 // Badge icon - in dark grey
-                val badgeDrawable: Drawable = activity.getDrawable(SKU_BADGES[badge.skuDetails.sku]!!)!!
+                val badgeDrawable: Drawable = AppCompatResources.getDrawable(activity, SKU_BADGES[badge.skuDetails.sku]!!)!!
                 icon.setImageDrawable(badgeDrawable)
                 icon.setColorFilter(ContextCompat.getColor(icon.context, R.color.grey800), PorterDuff.Mode.SRC_IN)
 
                 // buy button
                 button.isEnabled = !badge.purchased
                 if (badge.purchased) {
-                    button.setBackgroundColor(button.context.resources.getColor(R.color.grey500))
+                    button.setBackgroundColor(ContextCompat.getColor(activity, R.color.grey500))
                     button.text = button.context.getString(R.string.button_buy_badge_bought)
-                    val heart = activity.getDrawable(R.drawable.ic_heart)
+                    val heart = AppCompatResources.getDrawable(activity, R.drawable.ic_heart)
                     button.setCompoundDrawablesWithIntrinsicBounds(heart, null, null, null)
-                    //TODO: Resize heart icon
                 }
             }
         }
@@ -265,11 +267,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
     class Model(app: Application) : AndroidViewModel(app) {
 
-        companion object {
-            const val CACHE_FILENAME_SKUS = "badgedetails"
-        }
-
-        private val store = PlayClient(app)
+        internal val store = PlayClient(app)
 
         val purchases = store.purchases
         val skus = store.skus
@@ -389,7 +387,10 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         val skus = MutableLiveData<List<SkuDetails>>()
         val purchases = MutableLiveData<List<Purchase>>()
 
-        private val billingClient: BillingClient
+        private val billingClient: BillingClient = BillingClient.newBuilder(context)
+            .setListener(this)
+            .enablePendingPurchases()
+            .build()
         private var connectionTriesCount: Int = 0
 
         /**
@@ -398,10 +399,6 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
          * experience, when buying a SKU
          */
         init {
-            billingClient = BillingClient.newBuilder(context)
-                .setListener(this)
-                .enablePendingPurchases()
-                .build()
             if (!billingClient.isReady) {
                 Logger.log.fine("Start connection...")
                 billingClient.startConnection(this)
@@ -430,7 +427,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                 // Purchases are stored locally by gplay app
                 queryPurchases()
 
-                // Only request SKUs if not found in app cache already
+                // Only request SKUs if not found already
                 if (skus.value.isNullOrEmpty()) {
                     Logger.log.fine("No skus loaded yet, requesting")
                     querySkusAsync()
@@ -468,7 +465,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             billingClient.querySkuDetailsAsync(
                 SkuDetailsParams.newBuilder()
                 .setType(BillingClient.SkuType.INAPP) // In App Purchases
-                .setSkusList(EarnBadgesActivity.SKUS)
+                .setSkusList(SKUS)
                 .build(), this)
         }
 
@@ -482,11 +479,11 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             val responseCode = billingResult.responseCode
             val debugMessage = billingResult.debugMessage
             if (responseCode == BillingClient.BillingResponseCode.OK) {
-                if (skuDetailsList != null && skuDetailsList.size == EarnBadgesActivity.SKUS.size) {
+                if (skuDetailsList != null && skuDetailsList.size == SKUS.size) {
                     Logger.log.log(Level.FINE, "BillingClient: Got sku details!", skuDetailsList)
                     skus.postValue(skuDetailsList)
                 } else {
-                    Logger.log.warning("Oh no! Expected ${EarnBadgesActivity.SKUS.size}, but found ${skuDetailsList?.size} SkuDetails.")
+                    Logger.log.warning("Oh no! Expected ${SKUS.size}, but found ${skuDetailsList?.size} SkuDetails.")
                 }
             } else {
                 Logger.log.warning("Failed to query for sku details:\n $responseCode $debugMessage")
@@ -499,7 +496,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
          * New purchases will be provided to the PurchasesUpdatedListener.
          * You still need to check the Google Play Billing API to know when purchase tokens are removed.
          */
-        private fun queryPurchases() {
+        internal fun queryPurchases() {
             if (!billingClient.isReady) {
                 Logger.log.warning("BillingClient is not ready")
             }
@@ -556,6 +553,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
             // Acknowledge purchases
             runBlocking {
+                Logger.log.info("Acknowledging purchases")
                 for (purchase in purchasesList) {
                     handlePurchase(purchase) { ackPurchaseResult ->
                         val responseCode = ackPurchaseResult.responseCode
@@ -569,6 +567,8 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                 }
             }
 
+            logAcknowledgementStatus(purchasesList)
+
             if (purchasesList.size != initialCount)
                 throw BillingException("Some purchase could not be acknowledged")
 
@@ -580,11 +580,27 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         }
 
         /**
-         * Acknowledges a purchase
+         * Log the number of purchases that are acknowledge and not acknowledged.
+         */
+        private fun logAcknowledgementStatus(purchasesList: List<Purchase>) {
+            var ack_yes = 0
+            var ack_no = 0
+            for (purchase in purchasesList) {
+                if (purchase.isAcknowledged) {
+                    ack_yes++
+                } else {
+                    ack_no++
+                }
+            }
+            Logger.log.info("logAcknowledgementStatus: acknowledged=$ack_yes unacknowledged=$ack_no")
+        }
+
+        /**
+         * Requests acknowledgement of a purchase and lets the passed function handle the request result
          */
         private suspend fun handlePurchase(purchase: Purchase, runAfter: (billingResult: BillingResult) -> Unit) {
-            if (purchase.purchaseState != Purchase.PurchaseState.PURCHASED
-                || !purchase.isAcknowledged) {
+            if (purchase.purchaseState != Purchase.PurchaseState.PURCHASED // pending purchases (ie. cash-payment) are not supported
+                || purchase.isAcknowledged) {
                 return
             }
 
