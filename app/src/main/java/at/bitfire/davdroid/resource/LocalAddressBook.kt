@@ -87,7 +87,7 @@ open class LocalAddressBook(
                 if (it.isNullOrEmpty())
                     DavUtils.lastSegmentOfUrl(info.url)
                 else
-                    it
+                    it.replace("'","’")
             })
             sb.append(" (${mainAccount.name} $hash)")
             return sb.toString()
