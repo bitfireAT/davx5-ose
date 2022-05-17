@@ -31,7 +31,7 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.AppDatabase
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings

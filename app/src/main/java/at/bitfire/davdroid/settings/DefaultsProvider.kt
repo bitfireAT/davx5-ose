@@ -19,19 +19,20 @@ class DefaultsProvider(
 
     override val booleanDefaults = mutableMapOf(
         Pair(Settings.DISTRUST_SYSTEM_CERTIFICATES, false),
-        Pair(Settings.OVERRIDE_PROXY, false)
+        Pair(Settings.SYNC_ALL_COLLECTIONS, false)
     )
 
     override val intDefaults = mapOf(
-            Pair(Settings.OVERRIDE_PROXY_PORT, 8118)
+        Pair(Settings.PROXY_TYPE, Settings.PROXY_TYPE_SYSTEM),
+        Pair(Settings.PROXY_PORT, 9050)     // Orbot SOCKS
     )
 
     override val longDefaults = mapOf<String, Long>(
-            Pair(Settings.DEFAULT_SYNC_INTERVAL, 4*3600)    /* 4 hours */
+        Pair(Settings.DEFAULT_SYNC_INTERVAL, 4*3600)    /* 4 hours */
     )
 
     override val stringDefaults = mapOf(
-            Pair(Settings.OVERRIDE_PROXY_HOST, "localhost")
+        Pair(Settings.PROXY_HOST, "localhost")
     )
 
     val dataSaverChangedListener by lazy {

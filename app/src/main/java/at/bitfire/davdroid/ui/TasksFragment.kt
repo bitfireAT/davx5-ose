@@ -119,6 +119,9 @@ class TasksFragment: Fragment() {
         val tasksOrgInstalled = MutableLiveData<Boolean>()
         val tasksOrgRequested = MutableLiveData<Boolean>()
         val tasksOrgSelected = MutableLiveData<Boolean>()
+        val jtxInstalled = MutableLiveData<Boolean>()
+        val jtxRequested = MutableLiveData<Boolean>()
+        val jtxSelected = MutableLiveData<Boolean>()
         val tasksWatcher = object: PackageChangedReceiver(app) {
             override fun onReceive(context: Context?, intent: Intent?) {
                 checkInstalled()
@@ -161,6 +164,11 @@ class TasksFragment: Fragment() {
             tasksOrgInstalled.postValue(tasksOrg)
             tasksOrgRequested.postValue(tasksOrg)
             tasksOrgSelected.postValue(taskProvider == ProviderName.TasksOrg)
+
+            val jtxBoard = isInstalled(ProviderName.JtxBoard.packageName)
+            jtxInstalled.postValue(jtxBoard)
+            jtxRequested.postValue(jtxBoard)
+            jtxSelected.postValue(taskProvider == ProviderName.JtxBoard)
         }
 
         private fun isInstalled(packageName: String): Boolean =

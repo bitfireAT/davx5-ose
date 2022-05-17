@@ -16,7 +16,7 @@ import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
@@ -30,6 +30,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.apache.commons.io.FileUtils
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -66,8 +67,12 @@ class CalendarSyncManager(
     override fun queryCapabilities(): SyncState? =
             remoteExceptionContext {
                 var syncState: SyncState? = null
-                it.propfind(0, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                it.propfind(0, MaxICalendarSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
+                        response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
+                            Logger.log.info("Calendar accepts events up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                        }
+
                         response[SupportedReportSet::class.java]?.let { supported ->
                             hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
                         }
@@ -75,7 +80,7 @@ class CalendarSyncManager(
                     }
                 }
 
-                Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
+                Logger.log.info("Calendar supports Collection Sync: $hasCollectionSync")
                 syncState
             }
 

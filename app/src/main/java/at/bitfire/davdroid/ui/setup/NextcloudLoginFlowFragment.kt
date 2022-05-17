@@ -27,7 +27,7 @@ import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.Credentials
+import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -102,8 +102,9 @@ class NextcloudLoginFlowFragment: Fragment() {
         loginFlowModel.error.observe(viewLifecycleOwner) { exception ->
             Snackbar.make(requireView(), exception.toString(), Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.exception_show_details) {
-                        val intent = Intent(requireActivity(), DebugInfoActivity::class.java)
-                        intent.putExtra(DebugInfoActivity.EXTRA_CAUSE, exception)
+                        val intent = DebugInfoActivity.IntentBuilder(requireActivity())
+                            .withCause(exception)
+                            .build()
                         startActivity(intent)
                     }
                     .show()

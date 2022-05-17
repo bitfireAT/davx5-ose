@@ -113,6 +113,16 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="caldav"/>
+                <data android:scheme="caldavs"/>
+                <data android:scheme="carddav"/>
+                <data android:scheme="carddavs"/>
+                <data android:scheme="davx5"/>
+            </intent-filter>
         </activity>
 
         <activity
@@ -168,6 +178,17 @@
                 android:resource="@xml/sync_calendars"/>
         </service>
         <service
+            android:name=".syncadapter.JtxSyncAdapterService"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_notes"/>
+        </service>
+        <service
             android:name=".syncadapter.OpenTasksSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
@@ -202,7 +223,7 @@
 
         <!-- account type "DAVx⁵ Address book" -->
         <service
-            android:name=".syncadapter.NullAuthenticatorService"
+            android:name=".syncadapter.AddressBookAuthenticatorService"
             android:exported="true">   <!-- Since Android 11, this must be true so that Google Contacts shows the address book accounts -->
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
@@ -270,6 +291,7 @@
     <!-- package visiblity – which apps do we need to see? -->
     <queries>
         <!-- task providers -->
+        <package android:name="at.techbee.jtx" />
         <package android:name="org.dmfs.tasks" />
         <package android:name="org.tasks" />
 

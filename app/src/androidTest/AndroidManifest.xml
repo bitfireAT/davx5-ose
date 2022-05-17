@@ -12,7 +12,7 @@
     <application>
 
         <service
-            android:name=".syncadapter.NullAuthenticatorService"
+            android:name=".syncadapter.AddressBookAuthenticatorService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>

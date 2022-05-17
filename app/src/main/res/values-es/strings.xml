@@ -61,7 +61,6 @@
   <string name="permissions_opentasks_title">Permisos de OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisos de las tareas</string>
   <string name="permissions_tasks_status_not_installed">Sin sincronización de tareas (no instalado)</string>
-  <string name="permissions_tasks_status_off">Sin sincronización de tareas (no recomendado)</string>
   <string name="permissions_tasks_status_on">Sincronización de tareas permitidas</string>
   <string name="permissions_autoreset_title">Mantener permisos</string>
   <string name="permissions_autoreset_status_off">Los permisos pueden restablecerse automáticamente (no recomendado)</string>
@@ -112,7 +111,6 @@
   <string name="navigation_drawer_website">Sitio web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Preguntas frequentes</string>
-  <string name="navigation_drawer_forums">Ayuda / Foros</string>
   <string name="navigation_drawer_donate">Donar</string>
   <string name="navigation_drawer_privacy_policy">Reglamento de privacidad</string>
   <string name="account_list_no_internet">No hay conexión a Internet. Android no se sincronizará.</string>
@@ -138,11 +136,6 @@
   <string name="app_settings_foreground_service">Mantener en primer plano.</string>
   <string name="app_settings_foreground_service_details">Puede ayudar si tu dispositivo impide la sincronización automática.</string>
   <string name="app_settings_connection">Conexión</string>
-  <string name="app_settings_override_proxy">Anular ajustes del proxy</string>
-  <string name="app_settings_override_proxy_on">Usar ajustes personalizados del proxy</string>
-  <string name="app_settings_override_proxy_off">Usar ajustes del proxy predefinidos por el sistema</string>
-  <string name="app_settings_override_proxy_host">Nombre del host del proxy HTTP</string>
-  <string name="app_settings_override_proxy_port">Puerto del proxy HTTP</string>
   <string name="app_settings_security">Seguridad</string>
   <string name="app_settings_security_app_permissions">Permisos de la aplicación</string>
   <string name="app_settings_security_app_permissions_summary">Revisar los permisos necesarios para la sincronización</string>
@@ -156,7 +149,6 @@
   <string name="app_settings_notification_settings">Ajustes de notificación</string>
   <string name="app_settings_notification_settings_summary">Administrar notificación de canales y sus ajustes</string>
   <string name="app_settings_theme_title">Seleccionar tema</string>
-  <string name="app_settings_theme_summary">Tema actual: %s</string>
   <string-array name="app_settings_theme_names">
     <item>Por defecto del sistema</item>
     <item>Claro</item>

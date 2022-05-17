@@ -29,7 +29,7 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.Credentials
+import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager

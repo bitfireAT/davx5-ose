@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.resource
 
 import android.provider.CalendarContract.Events
-import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.db.SyncState
 
 interface LocalCollection<out T: LocalResource<*>> {
 

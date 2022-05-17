@@ -25,9 +25,9 @@ import at.bitfire.dav4jvm.property.ScheduleTag
 import at.bitfire.dav4jvm.property.SyncToken
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.SyncState
-import at.bitfire.davdroid.model.SyncStats
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.db.SyncStats
 import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -44,6 +44,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
+import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.exception.ContextedException
 import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
@@ -75,6 +76,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     companion object {
+        const val DEBUG_INFO_MAX_RESOURCE_DUMP_SIZE = 100*FileUtils.ONE_KB.toInt()
         const val MAX_MULTIGET_RESOURCES = 10
     }
 
@@ -108,7 +110,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      */
     val workDispatcher = Singleton.getInstanceByKey("SyncManager.workDispatcher") {
         ThreadPoolExecutor(
-            0, Integer.min(Runtime.getRuntime().availableProcessors(), 6),
+            0, Integer.min(Runtime.getRuntime().availableProcessors(), 4),
             10, TimeUnit.SECONDS, LinkedBlockingQueue()
         ).asCoroutineDispatcher()
     }
@@ -763,17 +765,20 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     private fun buildDebugInfoIntent(e: Throwable, local: ResourceType?, remote: HttpUrl?) =
-            Intent(context, DebugInfoActivity::class.java).apply {
-                putExtra(DebugInfoActivity.EXTRA_ACCOUNT, account)
-                putExtra(DebugInfoActivity.EXTRA_AUTHORITY, authority)
-                putExtra(DebugInfoActivity.EXTRA_CAUSE, e)
-
-                // pass current local/remote resource
-                if (local != null)
-                    putExtra(DebugInfoActivity.EXTRA_LOCAL_RESOURCE, local.toString())
-                if (remote != null)
-                    putExtra(DebugInfoActivity.EXTRA_REMOTE_RESOURCE, remote.toString())
-            }
+        DebugInfoActivity.IntentBuilder(context)
+            .withAccount(account)
+            .withAuthority(authority)
+            .withCause(e)
+            .withLocalResource(
+                try {
+                    local.toString()
+                } catch (e: OutOfMemoryError) {
+                    // for instance because of a huge contact photo; maybe we're lucky and can fetch it
+                    null
+                }
+            )
+            .withRemoteResource(remote)
+            .build()
 
     private fun buildRetryAction(): NotificationCompat.Action {
         val retryIntent = Intent(context, DavService::class.java)

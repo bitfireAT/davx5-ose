@@ -8,24 +8,28 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion '30.0.3'
+    compileSdkVersion 32
+    buildToolsVersion '32.0.0'
 
     defaultConfig {
         applicationId 'com.infomaniak.sync'
         resValue 'string', 'application_id', applicationId
 
-        versionCode 401010002
+        versionCode 402010004
+        versionName '4.2.1'
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
+        setProperty "archivesBaseName", "davx5-ose-" + getVersionName()
+
         minSdkVersion 21        // Android 5
-        targetSdkVersion 31     // Android 12
+        targetSdkVersion 32     // Android 12
 
         buildConfigField "String", "userAgent", "\"kSync\""
 
         buildConfigField "String", "CLIENT_ID", '"CE011334-F75A-4263-9F9F-45FC5A142F59"'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunnerArgument "notAnnotation", "androidx.test.filters.FlakyTest"
 
         kapt {
             arguments {
@@ -53,12 +57,21 @@ android {
     flavorDimensions "distribution"
     productFlavors {
         standard {
-            versionName "4.1.1"
+//            versionNameSuffix "-ose"
         }
     }
 
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
+
+    signingConfigs {
+        bitfire {
+            storeFile file(System.getenv("ANDROID_KEYSTORE") ?: "/dev/null")
+            storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            keyAlias System.getenv("ANDROID_KEY_ALIAS")
+            keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+        }
     }
 
     buildTypes {
@@ -69,6 +82,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules-release.pro'
 
             shrinkResources true
+
+//            signingConfig signingConfigs.bitfire
         }
     }
 
@@ -89,7 +104,7 @@ dependencies {
     implementation project(':vcard4android')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -97,17 +112,17 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.fragment:fragment-ktx:1.4.0'
+    implementation 'androidx.fragment:fragment-ktx:1.4.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
-    implementation 'androidx.paging:paging-runtime-ktx:3.1.0'
-    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
+    implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'androidx.security:security-crypto:1.1.0-alpha03'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.5.0'
 
-    def room_version = '2.4.1'
+    def room_version = '2.4.2'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.room:room-paging:$room_version"

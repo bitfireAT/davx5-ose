@@ -21,7 +21,7 @@ import at.bitfire.davdroid.BuildConfig.APPLICATION_ID
 import at.bitfire.davdroid.BuildConfig.CLIENT_ID
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.InfomaniakLoadingViewBinding
-import at.bitfire.davdroid.model.Credentials
+import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.ui.setup.AccountDetailsFragment
 import at.bitfire.davdroid.ui.setup.DetectConfigurationFragment
 import at.bitfire.davdroid.ui.setup.LoginModel
@@ -215,6 +215,3 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
         }
     }
 }
-
-
-

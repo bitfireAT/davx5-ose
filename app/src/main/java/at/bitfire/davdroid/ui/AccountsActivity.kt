@@ -35,12 +35,11 @@ import com.infomaniak.lib.login.InfomaniakLogin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
-        val accountsDrawerHandler = DefaultAccountsDrawerHandler()
+        val accountsDrawerHandler = OseAccountsDrawerHandler()
 
         const val REQUEST_INTRO = 0
         private const val WEB_VIEW_LOGIN_REQ = 1
@@ -147,9 +146,9 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val processed = accountsDrawerHandler.onNavigationItemSelected(this, item)
+        accountsDrawerHandler.onNavigationItemSelected(this, item)
         binding.drawerLayout.closeDrawer(GravityCompat.START)
-        return processed
+        return true
     }
 
 

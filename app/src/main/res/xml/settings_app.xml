@@ -37,23 +37,24 @@
     <PreferenceCategory android:title="@string/app_settings_connection"
         app:isPreferenceVisible="false">
 
-        <SwitchPreferenceCompat
-            android:key="override_proxy"
-            android:title="@string/app_settings_override_proxy"
-            android:summaryOn="@string/app_settings_override_proxy_on"
-            android:summaryOff="@string/app_settings_override_proxy_off"/>
+        <ListPreference
+            android:key="proxy_type"
+            android:title="@string/app_settings_proxy"
+            android:entries="@array/app_settings_proxy_types"
+            android:entryValues="@array/app_settings_proxy_type_values"
+            android:persistent="false" />
 
         <EditTextPreference
-            android:key="override_proxy_host"
-            android:dependency="override_proxy"
-            android:title="@string/app_settings_override_proxy_host"
-            android:inputType="textUri"/>
+            android:key="proxy_host"
+            android:title="@string/app_settings_proxy_host"
+            android:inputType="textUri"
+            android:persistent="false" />
 
-        <at.bitfire.davdroid.ui.widget.IntEditTextPreference
-            android:key="override_proxy_port"
-            android:dependency="override_proxy"
-            android:title="@string/app_settings_override_proxy_port"
-            android:inputType="number"/>
+        <EditTextPreference
+            android:key="proxy_port"
+            android:title="@string/app_settings_proxy_port"
+            android:inputType="number"
+            android:persistent="false" />
 
     </PreferenceCategory>
 
@@ -65,7 +66,7 @@
             android:key="distrust_system_certs"
             android:title="@string/app_settings_distrust_system_certs"
             android:summaryOn="@string/app_settings_distrust_system_certs_on"
-            android:summaryOff="@string/app_settings_distrust_system_certs_off"/>
+            android:summaryOff="@string/app_settings_distrust_system_certs_off" />
 
         <Preference
             android:key="reset_certificates"
@@ -94,7 +95,6 @@
             android:key="preferred_theme"
             android:icon="@drawable/ic_invert_colors"
             android:title="@string/app_settings_theme_title"
-            android:summary="@string/app_settings_theme_summary"
             android:entries="@array/app_settings_theme_names"
             android:entryValues="@array/app_settings_theme_values"
             android:persistent="false" />

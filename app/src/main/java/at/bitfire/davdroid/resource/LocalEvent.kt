@@ -63,7 +63,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
                 ContentUris.withAppendedId(
                     Events.CONTENT_URI,
                     eventID
-                ).asSyncAdapter(account),
+                ),
                 arrayOf(Events.DTSTART, Events.LAST_DATE), null, null, null
             )?.use { cursor ->
                 cursor.moveToNext()
@@ -110,7 +110,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
 
             // add the number of instances of every main event's exception
             provider.query(
-                Events.CONTENT_URI.asSyncAdapter(account),
+                Events.CONTENT_URI,
                 arrayOf(Events._ID),
                 "${Events.ORIGINAL_ID}=?", // get exception events of the main event
                 arrayOf("$eventID"), null

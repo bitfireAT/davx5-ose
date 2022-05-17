@@ -8,11 +8,11 @@
 
 buildscript {
     ext.versions = [
-        aboutLibraries: '8.9.1',
+        aboutLibraries: '8.9.4',
         appIntro: '6.1.0',
-        dav4jvm: 'fe62f70',
-        kotlin: '1.6.10',
-        okhttp: '4.9.1',
+        dav4jvm: '2.1.4',
+        kotlin: '1.6.20',
+        okhttp: '4.9.3',
         // latest Apache Commons versions that don't require Java 8 (Android 7)
         commonsCollections: '4.2',
         commonsLang: '3.8.1',
@@ -28,7 +28,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.0'
+        classpath 'com.android.tools.build:gradle:7.1.3'
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${versions.aboutLibraries}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
     }

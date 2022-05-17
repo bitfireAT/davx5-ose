@@ -34,6 +34,8 @@
   <string name="intro_autostart_dont_show">Xa fixen o que me pediades. Non mo lembres máis.*</string>
   <string name="intro_leave_unchecked">* Deixar sen marcar para lembrar máis tarde. Pode restablecerse nos axustes da app / %s.</string>
   <string name="intro_more_info">Máis información</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Con soporte para sincr. Tarefas, Diarios e Notas.]]></string>
   <string name="intro_tasks_title">Soporte para Tasks</string>
   <string name="intro_tasks_text1">Se as tarefas están soportadas polo teu servidor, poden ser sincronizadas cunha app que soporte tarefas:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -58,10 +60,14 @@
   <string name="permissions_calendar_title">Permisos de calendario</string>
   <string name="permissions_calendar_status_off">Sen sincronización de calendario (non se recomenda)</string>
   <string name="permissions_calendar_status_on">É posible sincronizar o calendario</string>
+  <string name="permissions_jtx_title">permisos para jtx Board</string>
+  <string name="permissions_jtx_status_not_installed">Sen sincr. de tarefas, diarios e notas (non instalado)</string>
+  <string name="permissions_jtx_status_off">Sen sincr. de tarefas, diarios, notas</string>
+  <string name="permissions_jtx_status_on">Dispoñible sincr. de tarefas, diarios e notas</string>
   <string name="permissions_opentasks_title">Permisos para OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisos para Tasks</string>
   <string name="permissions_tasks_status_not_installed">Sen sincronización de tarefas (non instalado) </string>
-  <string name="permissions_tasks_status_off">Sen sincronización de tarefas (non se recomenda)</string>
+  <string name="permissions_tasks_status_off">Tarefas non sincr.</string>
   <string name="permissions_tasks_status_on">É posible sincronizar as tarefas</string>
   <string name="permissions_autoreset_title">Manter permisos</string>
   <string name="permissions_autoreset_status_off">Os permisos poden restablecerse automáticamente (non recomendado)</string>
@@ -112,7 +118,7 @@
   <string name="navigation_drawer_website">Sitio web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">PMF</string>
-  <string name="navigation_drawer_forums">Axuda / Foros</string>
+  <string name="navigation_drawer_community">Comunidade</string>
   <string name="navigation_drawer_donate">Doar</string>
   <string name="navigation_drawer_privacy_policy">Política de Privacidade</string>
   <string name="account_list_no_internet">Sen conexión a internet. Android non sincronizará.</string>
@@ -139,16 +145,20 @@
   <string name="app_settings_logging_on">O rexistro está activo</string>
   <string name="app_settings_logging_off">O rexistro está desactivado</string>
   <string name="app_settings_battery_optimization">Optimización da batería</string>
-  <string name="app_settings_battery_optimization_whitelisted">DAVx5 ten permiso (recomendado)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">DAVx5 non ten permiso (non recomendado)</string>
+  <string name="app_settings_battery_optimization_whitelisted">App está permitida (recomendado)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">App sen permiso (non recomendado)</string>
   <string name="app_settings_foreground_service">Manter en primeiro plano</string>
   <string name="app_settings_foreground_service_details">Podería ser útil se o dispositivo dificulta a sincronización automática</string>
   <string name="app_settings_connection">Conexión</string>
-  <string name="app_settings_override_proxy">Sobrescribir os axustes do proxy</string>
-  <string name="app_settings_override_proxy_on">Utilizar axustes de proxy personalizados</string>
-  <string name="app_settings_override_proxy_off">Utilizar axustes proxy por omisión do sistema</string>
-  <string name="app_settings_override_proxy_host">Nome servidor proxy HTTP</string>
-  <string name="app_settings_override_proxy_port">Porto proxy HTTP</string>
+  <string name="app_settings_proxy">Tipo de Proxy</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Por defecto no sistema</item>
+    <item>Sen proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (para Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Servidor do proxy</string>
+  <string name="app_settings_proxy_port">Porto do proxy</string>
   <string name="app_settings_security">Seguridade</string>
   <string name="app_settings_security_app_permissions">Permisos da App</string>
   <string name="app_settings_security_app_permissions_summary">Revisa os permisos requeridos para a sincronización</string>
@@ -162,7 +172,6 @@
   <string name="app_settings_notification_settings">Axustes das notificacións</string>
   <string name="app_settings_notification_settings_summary">Xestiona as canles de notificación e os seus axustes</string>
   <string name="app_settings_theme_title">Elixe decorado</string>
-  <string name="app_settings_theme_summary">Decorado actual: %s</string>
   <string-array name="app_settings_theme_names">
     <item>Por defecto no sistema</item>
     <item>Claro</item>
@@ -203,6 +212,7 @@
   <string name="account_read_only">só lectura</string>
   <string name="account_calendar">calendario</string>
   <string name="account_task_list">lista de tarefas</string>
+  <string name="account_journal">diario</string>
   <string name="account_only_personal">Mostrar só personal</string>
   <string name="account_refresh_address_book_list">Actualizar lista de libreta de enderezos</string>
   <string name="account_create_new_address_book">Crear nova libreta de enderezos</string>

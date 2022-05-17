@@ -12,8 +12,8 @@ import android.net.Uri
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.Collection
-import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.AndroidTaskListFactory
 import at.bitfire.ical4android.TaskProvider

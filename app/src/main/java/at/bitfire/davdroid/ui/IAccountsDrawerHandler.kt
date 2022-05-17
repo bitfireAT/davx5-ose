@@ -13,6 +13,6 @@ interface IAccountsDrawerHandler {
 
     fun initMenu(context: Context, menu: Menu)
 
-    fun onNavigationItemSelected(activity: Activity, item: MenuItem): Boolean
+    fun onNavigationItemSelected(activity: Activity, item: MenuItem)
 
 }

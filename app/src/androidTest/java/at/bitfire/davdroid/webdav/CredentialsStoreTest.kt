@@ -4,9 +4,8 @@
 
 package at.bitfire.davdroid.webdav
 
-import androidx.test.espresso.internal.inject.InstrumentationContext
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.davdroid.model.Credentials
+import at.bitfire.davdroid.db.Credentials
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

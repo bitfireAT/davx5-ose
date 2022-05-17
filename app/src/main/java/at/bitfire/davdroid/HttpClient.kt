@@ -11,7 +11,7 @@ import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.Credentials
+import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -103,15 +103,24 @@ class HttpClient private constructor(
 
                 // custom proxy support
                 try {
-                    if (settings.getBoolean(Settings.OVERRIDE_PROXY)) {
-                        val address = InetSocketAddress(
-                                settings.getString(Settings.OVERRIDE_PROXY_HOST),
-                                settings.getInt(Settings.OVERRIDE_PROXY_PORT)
-                        )
-
-                        val proxy = Proxy(Proxy.Type.HTTP, address)
+                    val proxyTypeValue = settings.getInt(Settings.PROXY_TYPE)
+                    if (proxyTypeValue != Settings.PROXY_TYPE_SYSTEM) {
+                        // we set our own proxy
+                        val address by lazy {           // lazy because not required for PROXY_TYPE_NONE
+                            InetSocketAddress(
+                                settings.getString(Settings.PROXY_HOST),
+                                settings.getInt(Settings.PROXY_PORT)
+                            )
+                        }
+                        val proxy =
+                            when (proxyTypeValue) {
+                                Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
+                                Settings.PROXY_TYPE_HTTP -> Proxy(Proxy.Type.HTTP, address)
+                                Settings.PROXY_TYPE_SOCKS -> Proxy(Proxy.Type.SOCKS, address)
+                                else -> throw IllegalArgumentException("Invalid proxy type")
+                            }
                         orig.proxy(proxy)
-                        Logger.log.log(Level.INFO, "Using proxy", proxy)
+                        Logger.log.log(Level.INFO, "Using proxy setting", proxy)
                     }
                 } catch (e: Exception) {
                     Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)

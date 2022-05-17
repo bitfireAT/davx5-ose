@@ -28,8 +28,8 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCollectionsBinding
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
@@ -345,12 +345,10 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             }
         }
 
-
         fun refresh() {
-            val intent = Intent(context, DavService::class.java)
-            intent.action = DavService.ACTION_REFRESH_COLLECTIONS
-            intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, serviceId.value)
-            context.startService(intent)
+            serviceId.value?.let { svcId ->
+                DavService.refreshCollections(context, svcId)
+            }
         }
 
         @AnyThread

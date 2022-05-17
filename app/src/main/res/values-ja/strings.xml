@@ -17,7 +17,12 @@
   <string name="notification_channel_sync_io_errors">ネットワークおよび I/O エラー</string>
   <string name="notification_channel_sync_io_errors_desc">タイムアウト、接続の問題など (多くの場合、一時的なもの)</string>
   <!--IntroActivity-->
+  <string name="intro_more_info">追加情報</string>
+  <string name="intro_tasks_tasks_org">タスク</string>
   <!--PermissionsActivity-->
+  <string name="permissions_contacts_title">連絡先アクセス許可</string>
+  <string name="permissions_calendar_title">カレンダー アクセス許可</string>
+  <string name="permissions_opentasks_title">OpenTasks アクセス許可</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">ライブラリー</string>
@@ -39,7 +44,6 @@
   <string name="navigation_drawer_website">Web サイト</string>
   <string name="navigation_drawer_manual">マニュアル</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">ヘルプ / フォーラム</string>
   <string name="navigation_drawer_donate">寄付</string>
   <string name="account_list_no_internet">インターネット接続がありません。 Android は同期を実行しません。</string>
   <string name="account_list_empty">kSync にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
@@ -59,11 +63,6 @@
   <string name="app_settings_logging_on">ログ取得は有効です</string>
   <string name="app_settings_logging_off">ログ取得は無効です</string>
   <string name="app_settings_connection">接続</string>
-  <string name="app_settings_override_proxy">プロキシ設定を上書き</string>
-  <string name="app_settings_override_proxy_on">カスタムのプロキシ設定を使用する</string>
-  <string name="app_settings_override_proxy_off">システムデフォルトのプロキシ設定を使用する</string>
-  <string name="app_settings_override_proxy_host">HTTP プロキシのホスト名</string>
-  <string name="app_settings_override_proxy_port">HTTP プロキシのポート</string>
   <string name="app_settings_security">セキュリティ</string>
   <string name="app_settings_distrust_system_certs">システム証明書の信頼を解除</string>
   <string name="app_settings_distrust_system_certs_on">システムとユーザーが追加したCAを信頼しない</string>
@@ -204,6 +203,7 @@
   <string name="collection_properties_copy_url">URL をコピー</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">デバッグ情報</string>
+  <string name="debug_info_logs_view">ログを表示</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">エラーが発生しました。</string>
   <string name="exception_httpexception">HTTP エラーが発生しました。</string>
@@ -211,6 +211,8 @@
   <string name="exception_show_details">詳細を表示</string>
   <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">ユーザー名</string>
+  <string name="webdav_add_mount_password">パスワード</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">kSync アクセス許可</string>
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>

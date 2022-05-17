@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.app.IntentService
 import android.app.PendingIntent
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.Bundle
@@ -20,9 +21,11 @@ import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.*
-import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.db.*
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import okhttp3.HttpUrl
@@ -55,6 +58,13 @@ class DavService: IntentService("DavService") {
                 CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME,
                 Source.NAME
         )
+
+        fun refreshCollections(context: Context, serviceId: Long) {
+            val intent = Intent(context, DavService::class.java)
+            intent.action = DavService.ACTION_REFRESH_COLLECTIONS
+            intent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, serviceId)
+            context.startService(intent)
+        }
 
     }
 
@@ -150,6 +160,9 @@ class DavService: IntentService("DavService") {
     }
 
     private fun refreshCollections(db: AppDatabase, serviceId: Long) {
+        val settings = SettingsManager.getInstance(this)
+        val syncAllCollections = settings.getBoolean(Settings.SYNC_ALL_COLLECTIONS)
+
         val homeSetDao = db.homeSetDao()
         val collectionDao = db.collectionDao()
 
@@ -257,6 +270,7 @@ class DavService: IntentService("DavService") {
         }
 
         fun saveHomesets() {
+            // syncAll sets the ID of the new homeset to the ID of the old one when the URLs are matching
             DaoTools(homeSetDao).syncAll(
                     homeSetDao.getByService(serviceId),
                     homeSets,
@@ -264,9 +278,11 @@ class DavService: IntentService("DavService") {
         }
 
         fun saveCollections() {
+            // syncAll sets the ID of the new collection to the ID of the old one when the URLs are matching
             DaoTools(collectionDao).syncAll(
                     collectionDao.getByService(serviceId),
                     collections, { it.url }) { new, old ->
+                // use old settings of "force read only" and "sync", regardless of detection results
                 new.forceReadOnly = old.forceReadOnly
                 new.sync = old.sync
             }
@@ -313,6 +329,10 @@ class DavService: IntentService("DavService") {
                             info.serviceId = serviceId
                             info.refHomeSet = homeSet
                             info.confirmed = true
+
+                            // whether new collections are selected for synchronization by default (controlled by managed setting)
+                            info.sync = syncAllCollections
+
                             info.owner = response[Owner::class.java]?.href?.let { response.href.resolve(it) }
                             Logger.log.log(Level.FINE, "Found collection", info)
 
@@ -329,9 +349,10 @@ class DavService: IntentService("DavService") {
                 }
 
                 // check/refresh unconfirmed collections
-                val itCollections = collections.entries.iterator()
-                while (itCollections.hasNext()) {
-                    val (url, info) = itCollections.next()
+                val collectionsIter = collections.entries.iterator()
+                while (collectionsIter.hasNext()) {
+                    val currentCollection = collectionsIter.next()
+                    val (url, info) = currentCollection
                     if (!info.confirmed)
                         try {
                             // this collection doesn't belong to a homeset anymore, otherwise it would have been confirmed
@@ -342,18 +363,22 @@ class DavService: IntentService("DavService") {
                                     return@propfind
 
                                 val collection = Collection.fromDavResponse(response) ?: return@propfind
+                                collection.serviceId = info.serviceId       // use same service ID as previous entry
                                 collection.confirmed = true
 
                                 // remove unusable collections
                                 if ((service.type == Service.TYPE_CARDDAV && collection.type != Collection.TYPE_ADDRESSBOOK) ||
                                     (service.type == Service.TYPE_CALDAV && !arrayOf(Collection.TYPE_CALENDAR, Collection.TYPE_WEBCAL).contains(collection.type)) ||
                                     (collection.type == Collection.TYPE_WEBCAL && collection.source == null))
-                                    itCollections.remove()
+                                    collectionsIter.remove()
+                                else
+                                    // update this collection in list
+                                    currentCollection.setValue(collection)
                             }
                         } catch(e: HttpException) {
                             if (e.code in arrayOf(403, 404, 410))
                                 // delete collection only if it was not accessible (40x)
-                                itCollections.remove()
+                                collectionsIter.remove()
                             else
                                 throw e
                         }
@@ -376,10 +401,10 @@ class DavService: IntentService("DavService") {
         } catch(e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
-            val debugIntent = Intent(this, DebugInfoActivity::class.java)
-            debugIntent.putExtra(DebugInfoActivity.EXTRA_CAUSE, e)
-            debugIntent.putExtra(DebugInfoActivity.EXTRA_ACCOUNT, account)
-
+            val debugIntent = DebugInfoActivity.IntentBuilder(this)
+                .withCause(e)
+                .withAccount(account)
+                .build()
             val notify = NotificationUtils.newBuilder(this, NotificationUtils.CHANNEL_GENERAL)
                     .setSmallIcon(R.drawable.ic_sync_problem_notify)
                     .setContentTitle(getString(R.string.dav_service_refresh_failed))

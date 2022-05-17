@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
-        <variable name="model" type="at.bitfire.davdroid.ui.PermissionsFragment.Model"/>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="model"
+            type="at.bitfire.davdroid.ui.PermissionsFragment.Model" />
     </data>
 
     <ScrollView
@@ -246,6 +250,29 @@
                         app:layout_constraintTop_toBottomOf="@id/openTasksSwitch" />
 
                     <TextView
+                        android:id="@+id/jtxHeading"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/permissions_jtx_title"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textColor="@color/infomaniakTitle"
+                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="@id/jtxSwitch"
+                        app:layout_constraintEnd_toStartOf="@id/jtxSwitch"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toTopOf="@id/jtxSwitch" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/jtxSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="@={model.needJtxPermissions}"
+                        android:clickable="@{!model.haveJtxPermissions}"
+                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        app:layout_constraintTop_toBottomOf="@id/tasksOrgSwitch" />
+
+                    <TextView
                         android:id="@+id/appSettingsHint"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -254,7 +281,7 @@
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                         app:layout_constraintEnd_toEndOf="@id/end"
                         app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/tasksOrgSwitch" />
+                        app:layout_constraintTop_toBottomOf="@id/jtxSwitch" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/appSettings"

@@ -15,11 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -28,15 +24,14 @@ import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityWebdavMountsBinding
 import at.bitfire.davdroid.databinding.WebdavMountsItemBinding
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.WebDavDocument
-import at.bitfire.davdroid.model.WebDavMount
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.WebDavDocument
+import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.io.FileUtils
-import java.util.*
 
 class WebdavMountsActivity: AppCompatActivity() {
 

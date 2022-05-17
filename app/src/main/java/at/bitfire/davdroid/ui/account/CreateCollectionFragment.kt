@@ -15,12 +15,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
+import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
 import kotlinx.coroutines.Dispatchers
@@ -126,6 +127,9 @@ class CreateCollectionFragment: DialogFragment() {
                         db.serviceDao().getByAccountAndType(account.name, serviceType)?.let { service ->
                             collection.serviceId = service.id
                             db.collectionDao().insert(collection)
+
+                            // trigger service detection (because the collection may have other properties than the ones we have inserted)
+                            DavService.refreshCollections(getApplication(), service.id)
                         }
 
                         // post success

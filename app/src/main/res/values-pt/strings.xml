@@ -52,9 +52,9 @@
   <string name="permissions_calendar_title">Permissões de calendário</string>
   <string name="permissions_calendar_status_off">Nenhum calendário sincronizado (não recomendado)</string>
   <string name="permissions_calendar_status_on">Possível sincronização de calendário</string>
+  <string name="permissions_opentasks_title">Permissões do OpenTasks</string>
   <string name="permissions_tasksorg_title">Permissões das tarefas</string>
   <string name="permissions_tasks_status_not_installed">Nenhuma tarefa sincronizada (não instalado)</string>
-  <string name="permissions_tasks_status_off">Nenhuma tarefa sincronizada (não recomendado)</string>
   <string name="permissions_tasks_status_on">Possível sincronização de tarefa</string>
   <string name="permissions_autoreset_title">Manter as permissões</string>
   <string name="permissions_autoreset_status_off">As permissões podem ser redefinidas automaticamente (não recomendado)</string>
@@ -94,7 +94,6 @@
   <string name="navigation_drawer_website">Site na Web</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Perguntas fequentes</string>
-  <string name="navigation_drawer_forums">Ajuda / Fóruns</string>
   <string name="navigation_drawer_donate">Doações</string>
   <string name="navigation_drawer_privacy_policy">Política de privacidade</string>
   <string name="account_list_no_internet">Sem conexão com a Internet. O Android não executará a sincronização.</string>
@@ -116,11 +115,6 @@
   <string name="app_settings_logging_on">Registro de atividades ativo</string>
   <string name="app_settings_logging_off">Registro de atividades desativado</string>
   <string name="app_settings_connection">Conexão</string>
-  <string name="app_settings_override_proxy">Substituir as configurações de proxy</string>
-  <string name="app_settings_override_proxy_on">Usar configurações de proxy personalizadas</string>
-  <string name="app_settings_override_proxy_off">Usar configurações de proxy padrão do sistema</string>
-  <string name="app_settings_override_proxy_host">Nome do servidor proxy HTTP</string>
-  <string name="app_settings_override_proxy_port">Porta do proxy HTTP</string>
   <string name="app_settings_security">Segurança</string>
   <string name="app_settings_security_app_permissions">Permissões do aplicativo</string>
   <string name="app_settings_security_app_permissions_summary">Revise as permissões necessárias para sincronização</string>
@@ -134,7 +128,6 @@
   <string name="app_settings_notification_settings">Configurações das notificações</string>
   <string name="app_settings_notification_settings_summary">Gerenciar os canais de notificação e suas configurações</string>
   <string name="app_settings_theme_title">Escolha um tema</string>
-  <string name="app_settings_theme_summary">Tema atual: %s</string>
   <string name="app_settings_reset_hints">Restaurar sugestões</string>
   <string name="app_settings_reset_hints_summary">Restaura as sugestões que foram descartadas anteriormente</string>
   <string name="app_settings_reset_hints_success">Todas as sugestões serão exibidas novamente</string>
@@ -316,6 +309,7 @@
   <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_share_content">Partilhar conteúdo</string>
+  <string name="webdav_add_mount_username">Nome do usuário</string>
   <string name="webdav_add_mount_password">Palavra passe</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Permissões do kSync</string>

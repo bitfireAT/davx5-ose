@@ -15,9 +15,9 @@ import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.Collection
-import at.bitfire.davdroid.model.Service
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import okhttp3.HttpUrl

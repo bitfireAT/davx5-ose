@@ -17,8 +17,8 @@ import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.databinding.DeleteCollectionBinding
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
 import kotlinx.coroutines.Dispatchers

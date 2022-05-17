@@ -1,0 +1,39 @@
+name: Create release
+on:
+  push:
+    tags:
+      - v*
+jobs:
+  build:
+    name: Create release
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 11
+          cache: 'gradle'
+      - uses: gradle/wrapper-validation-action@v1
+
+      - name: Prepare keystore
+        run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
+
+      - name: Build signed package
+        run: ./gradlew app:assembleRelease
+        env:
+          ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
+          ANDROID_KEY_ALIAS: ${{ secrets.android_key_alias }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.android_key_password }}
+
+      - name: Create Github release
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
+          files: app/build/outputs/apk/standard/release/*.apk
+          fail_on_unmatched_files: true

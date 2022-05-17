@@ -12,14 +12,11 @@ import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.DavResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.property.CalendarData
-import at.bitfire.dav4jvm.property.GetCTag
-import at.bitfire.dav4jvm.property.GetETag
-import at.bitfire.dav4jvm.property.SyncToken
+import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -30,6 +27,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.apache.commons.io.FileUtils
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -58,9 +56,14 @@ class TasksSyncManager(
     override fun queryCapabilities() =
             remoteExceptionContext {
                 var syncState: SyncState? = null
-                it.propfind(0, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                    if (relation == Response.HrefRelation.SELF)
+                it.propfind(0, MaxICalendarSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                    if (relation == Response.HrefRelation.SELF) {
+                        response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
+                            Logger.log.info("Calendar accepts tasks up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                        }
+
                         syncState = syncState(response)
+                    }
                 }
 
                 syncState

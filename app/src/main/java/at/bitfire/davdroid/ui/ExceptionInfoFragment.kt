@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import at.bitfire.dav4jvm.exception.HttpException
@@ -46,9 +45,10 @@ class ExceptionInfoFragment: DialogFragment() {
                 .setTitle(title)
                 .setMessage(exception::class.java.name + "\n" + exception.localizedMessage)
                 .setNegativeButton(R.string.exception_show_details) { _, _ ->
-                    val intent = Intent(activity, DebugInfoActivity::class.java)
-                    intent.putExtra(DebugInfoActivity.EXTRA_CAUSE, exception)
-                    account?.let { intent.putExtra(DebugInfoActivity.EXTRA_ACCOUNT, it) }
+                    val intent = DebugInfoActivity.IntentBuilder(requireActivity())
+                        .withAccount(account)
+                        .withCause(exception)
+                        .build()
                     startActivity(intent)
                 }
                 .setPositiveButton(android.R.string.ok) { _, _ -> }

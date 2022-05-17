@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.webdav.cache
 
 import android.util.LruCache
-import at.bitfire.davdroid.model.WebDavDocument
+import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.webdav.DocumentState
 import at.bitfire.davdroid.webdav.HeadResponse
 import java.util.*

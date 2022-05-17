@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
+import android.text.InputType
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
@@ -89,6 +90,18 @@ class AppSettingsActivity: AppCompatActivity() {
                 }
             }
 
+            findPreference<EditTextPreference>(Settings.PROXY_HOST)!!.apply {
+                this.setOnBindEditTextListener {
+                    it.inputType = InputType.TYPE_TEXT_VARIATION_URI
+                }
+            }
+
+            findPreference<EditTextPreference>(Settings.PROXY_PORT)!!.apply {
+                this.setOnBindEditTextListener {
+                    it.inputType = InputType.TYPE_CLASS_NUMBER
+                }
+            }
+
             arguments?.getString(EXTRA_SCROLL_TO)?.let { key ->
                 scrollToPreference(key)
             }
@@ -138,44 +151,50 @@ class AppSettingsActivity: AppCompatActivity() {
             }
 
             // connection settings
-            findPreference<SwitchPreferenceCompat>(Settings.OVERRIDE_PROXY)!!.apply {
-                isChecked = settings.getBoolean(Settings.OVERRIDE_PROXY)
-                isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY)
+            val proxyType = settings.getInt(Settings.PROXY_TYPE)
+            findPreference<ListPreference>(Settings.PROXY_TYPE)!!.apply {
+                setValueIndex(entryValues.indexOf(proxyType.toString()))
+                summary = entry
                 onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    settings.putBoolean(Settings.OVERRIDE_PROXY, newValue as Boolean)
+                    val proxyType = (newValue as String).toInt()
+                    settings.putInt(Settings.PROXY_TYPE, proxyType)
                     false
                 }
             }
 
-            findPreference<EditTextPreference>(Settings.OVERRIDE_PROXY_HOST)!!.apply {
-                isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_HOST)
-                val proxyHost = settings.getString(Settings.OVERRIDE_PROXY_HOST)
+            findPreference<EditTextPreference>(Settings.PROXY_HOST)!!.apply {
+                isVisible = proxyType != Settings.PROXY_TYPE_SYSTEM && proxyType != Settings.PROXY_TYPE_NONE
+                isEnabled = settings.isWritable(Settings.PROXY_HOST)
+
+                val proxyHost = settings.getString(Settings.PROXY_HOST)
                 text = proxyHost
                 summary = proxyHost
                 onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                     val host = newValue as String
                     try {
                         URI(null, host, null, null)
-                        settings.putString(Settings.OVERRIDE_PROXY_HOST, host)
+                        settings.putString(Settings.PROXY_HOST, host)
                         summary = host
                         false
                     } catch(e: URISyntaxException) {
-                        Snackbar.make(requireView(), e.localizedMessage, Snackbar.LENGTH_LONG).show()
+                        Snackbar.make(requireView(), e.reason, Snackbar.LENGTH_LONG).show()
                         false
                     }
                 }
             }
 
-            findPreference<EditTextPreference>(Settings.OVERRIDE_PROXY_PORT)!!.apply {
-                isEnabled = settings.isWritable(Settings.OVERRIDE_PROXY_PORT)
-                val proxyPort = settings.getInt(Settings.OVERRIDE_PROXY_PORT)
+            findPreference<EditTextPreference>(Settings.PROXY_PORT)!!.apply {
+                isVisible = proxyType != Settings.PROXY_TYPE_SYSTEM && proxyType != Settings.PROXY_TYPE_NONE
+                isEnabled = settings.isWritable(Settings.PROXY_PORT)
+
+                val proxyPort = settings.getInt(Settings.PROXY_PORT)
                 text = proxyPort.toString()
                 summary = proxyPort.toString()
                 onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                     try {
-                        val port = Integer.parseInt(newValue as String)
+                        val port = (newValue as String).toInt()
                         if (port in 1..65535) {
-                            settings.putInt(Settings.OVERRIDE_PROXY_PORT, port)
+                            settings.putInt(Settings.PROXY_PORT, port)
                             text = port.toString()
                             summary = port.toString()
                             false
@@ -195,7 +214,7 @@ class AppSettingsActivity: AppCompatActivity() {
             findPreference<ListPreference>(Settings.PREFERRED_THEME)!!.apply {
                 val mode = settings.getIntOrNull(Settings.PREFERRED_THEME) ?: Settings.PREFERRED_THEME_DEFAULT
                 setValueIndex(entryValues.indexOf(mode.toString()))
-                summary = getString(R.string.app_settings_theme_summary, entry)
+                summary = entry
 
                 onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                     val newMode = (newValue as String).toInt()

@@ -34,6 +34,8 @@
   <string name="intro_autostart_dont_show">Den krævede opsætning er udført. Stop påmindelser. *</string>
   <string name="intro_leave_unchecked">* Efterlad åben for senere påmindelse. Kan nulstilles i program opsætning / %s.</string>
   <string name="intro_more_info">Mere information</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Understøtter synkronisering af opgaver, journaler & noter.]]></string>
   <string name="intro_tasks_title">Opgaver understøttelse</string>
   <string name="intro_tasks_text1">Hvis opgaver er server understøttet, kan de synkroniseres med et understøttet opgaver program:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -58,10 +60,14 @@
   <string name="permissions_calendar_title">Kalender rettigheder</string>
   <string name="permissions_calendar_status_off">Ingen kalender synkronisering (ikke anbefalet)</string>
   <string name="permissions_calendar_status_on">Kalender synkronisering mulig</string>
+  <string name="permissions_jtx_title">jtx Board rettigheder</string>
+  <string name="permissions_jtx_status_not_installed">Ingen opgaver, journaler &amp; noter synkronisering (ikke installeret)</string>
+  <string name="permissions_jtx_status_off">Ingen opgaver, journaler &amp; noter synkronisering</string>
+  <string name="permissions_jtx_status_on">Opgaver, journaler og noter synkronisering mulig</string>
   <string name="permissions_opentasks_title">OpenTasks rettigheder</string>
   <string name="permissions_tasksorg_title">Opgaver rettigheder</string>
   <string name="permissions_tasks_status_not_installed">Ingen opgave synkronisering (ikke installeret)</string>
-  <string name="permissions_tasks_status_off">Ingen opgave synkronisering (ikke anbefalet)</string>
+  <string name="permissions_tasks_status_off">Ingen opgave synkronisering</string>
   <string name="permissions_tasks_status_on">Opgave synkronisering mulig</string>
   <string name="permissions_autoreset_title">Behold rettigheder</string>
   <string name="permissions_autoreset_status_off">Rettigheder kan nulstilles automatisk (ikke anbefalet)</string>
@@ -112,10 +118,11 @@
   <string name="navigation_drawer_website">Netsted</string>
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">OSS</string>
-  <string name="navigation_drawer_forums">Hjælp / fora</string>
+  <string name="navigation_drawer_community">Fællesskab</string>
   <string name="navigation_drawer_donate">Donation</string>
   <string name="navigation_drawer_privacy_policy">Privatlivs politik</string>
   <string name="account_list_no_internet">Ingen internetforbindelse. Android kører ikke synkronisering.</string>
+  <string name="account_list_low_storage">Lagerplds lav. Android kører ikke synkronisering.</string>
   <string name="account_list_empty">Velkommen til kSync!\n\nDu kan nu tilføje en CalDAV/CardDAV konto.</string>
   <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
   <string name="accounts_global_sync_enable">Aktivere</string>
@@ -124,6 +131,8 @@
   <string name="dav_service_refresh_failed">Registrering af tjeneste kunne ikke foretages</string>
   <string name="dav_service_refresh_couldnt_refresh">Kunne ikke opdatere samling liste</string>
   <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Kan ikke køre i forgrunden</string>
+  <string name="battery_optimization_notify_text">Batteri optimering hvid listet påkrævet</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Kører i forgrund</string>
   <string name="foreground_service_notify_text">På nogle enheder er dette nødvendigt for automatisk synkronisering.</string>
@@ -135,14 +144,21 @@
   <string name="app_settings_logging">Uddybende logning</string>
   <string name="app_settings_logging_on">Logning er aktiv</string>
   <string name="app_settings_logging_off">Logning er deaktiveret</string>
+  <string name="app_settings_battery_optimization">Batteri optimering</string>
+  <string name="app_settings_battery_optimization_whitelisted">App er hvid listet (anbefalet)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">App er ikke hvid listet (ikke anbefalet)</string>
   <string name="app_settings_foreground_service">Hold i forgrunden</string>
   <string name="app_settings_foreground_service_details">Kan hjælpe hvis enhed forhindrer automatisk synkronisering</string>
   <string name="app_settings_connection">Forbindelse</string>
-  <string name="app_settings_override_proxy">Tilsidesæt proxyindstillinger</string>
-  <string name="app_settings_override_proxy_on">Brug brugerdefinerede proxyindstillinger</string>
-  <string name="app_settings_override_proxy_off">Brug systemstandard proxyindstillinger</string>
-  <string name="app_settings_override_proxy_host">HTTP proxy værtsnavn</string>
-  <string name="app_settings_override_proxy_port">HTTP proxy port</string>
+  <string name="app_settings_proxy">Proxy type</string>
+  <string-array name="app_settings_proxy_types">
+    <item>System standard</item>
+    <item>Ingen proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (til Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Proxy værtsnavn</string>
+  <string name="app_settings_proxy_port">Proxy port</string>
   <string name="app_settings_security">Sikkerhed</string>
   <string name="app_settings_security_app_permissions">Program tilladelser</string>
   <string name="app_settings_security_app_permissions_summary">Gennemgå tilladelser krævet til synkronisering</string>
@@ -156,7 +172,6 @@
   <string name="app_settings_notification_settings">Notifikations indstillinger</string>
   <string name="app_settings_notification_settings_summary">Håndtér notifikationskanaler og deres opsætning</string>
   <string name="app_settings_theme_title">Vælg tema</string>
-  <string name="app_settings_theme_summary">Nuværende tema: %s</string>
   <string-array name="app_settings_theme_names">
     <item>System standard</item>
     <item>Lys</item>
@@ -197,6 +212,7 @@
   <string name="account_read_only">skrivebeskyttet</string>
   <string name="account_calendar">kalender</string>
   <string name="account_task_list">opgave liste</string>
+  <string name="account_journal">journal</string>
   <string name="account_only_personal">Vis kun personlig</string>
   <string name="account_refresh_address_book_list">Opdatere adressebogslister</string>
   <string name="account_create_new_address_book">Oprette ny adressebog</string>
@@ -361,6 +377,8 @@
   <string name="exception_ioexception">Der er opstået en I/O-fejl.</string>
   <string name="exception_show_details">Vis detaljer</string>
   <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Synkronisering i pause</string>
+  <string name="storage_low_notify_text">Næsten ingen plads tilbage</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV monteringspunkter</string>
   <string name="webdav_mounts_quota_used_available">Mængde brugt: %1$s / tilgængelig: %2$s</string>

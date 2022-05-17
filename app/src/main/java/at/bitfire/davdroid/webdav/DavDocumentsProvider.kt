@@ -32,10 +32,9 @@ import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.MemoryCookieStore
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.*
+import at.bitfire.davdroid.db.*
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.cache.HeadResponseCache
-import kotlinx.coroutines.*
 import okhttp3.CookieJar
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -43,7 +42,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.net.HttpURLConnection
-import java.util.*
 import java.util.concurrent.*
 import java.util.logging.Level
 import kotlin.collections.ArrayList

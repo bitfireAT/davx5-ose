@@ -187,7 +187,9 @@ class AboutActivity: AppCompatActivity() {
 
             private lateinit var binding: AboutTranslationBinding
 
-            class ViewHolder(val context: Context, val binding: AboutTranslationBinding): RecyclerView.ViewHolder(binding.root)
+            class ViewHolder(
+                val context: Context, val binding: AboutTranslationBinding
+                ): RecyclerView.ViewHolder(binding.root)
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
                 binding = AboutTranslationBinding.inflate(LayoutInflater.from(parent.context), parent, false)

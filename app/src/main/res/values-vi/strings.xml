@@ -34,6 +34,8 @@
   <string name="intro_autostart_dont_show">Tôi đã làm xong các cài đặt được yêu cầu. Đừng nhắc lại tôi nữa.*</string>
   <string name="intro_leave_unchecked">* Không đánh dấu để được nhắc lại sau. Có thể được đặt lại trong cài đặt ứng dụng / %s.</string>
   <string name="intro_more_info">Thêm thông tin</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Hỗ trợ đồng bộ Công việc, Nhật ký và Ghi chú.]]></string>
   <string name="intro_tasks_title">Hỗ trợ công việc</string>
   <string name="intro_tasks_text1">Nếu máy chủ của bạn hỗ trợ công việc, chúng có thể được đồng bộ hoá bằng một ứng dụng công việc được hỗ trợ:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -58,10 +60,14 @@
   <string name="permissions_calendar_title">Quyền lịch</string>
   <string name="permissions_calendar_status_off">Không đồng bộ lịch (không được khuyến nghị)</string>
   <string name="permissions_calendar_status_on">Có thể đồng bộ lịch</string>
+  <string name="permissions_jtx_title">Quyền của jtx Board</string>
+  <string name="permissions_jtx_status_not_installed">Không đồng bộ công việc, nhật ký &amp; ghi chú (chưa cài đặt)</string>
+  <string name="permissions_jtx_status_off">Không đồng bộ công việc, nhật ký, ghi chú</string>
+  <string name="permissions_jtx_status_on">Có thể đồng bộ công việc, nhật ký, ghi chú</string>
   <string name="permissions_opentasks_title">Quyền OpenTasks</string>
   <string name="permissions_tasksorg_title">Quyền Tasks</string>
   <string name="permissions_tasks_status_not_installed">Không đồng bộ công việc (không được cài đặt)</string>
-  <string name="permissions_tasks_status_off">Không đồng bộ công việc (không được khuyến nghị)</string>
+  <string name="permissions_tasks_status_off">Không đồng bộ công việc</string>
   <string name="permissions_tasks_status_on">Có thể đồng bộ công việc</string>
   <string name="permissions_autoreset_title">Giữ các quyền</string>
   <string name="permissions_autoreset_status_off">Các quyền có thể sẽ bị tự động đặt lại (không được khuyến nghị)</string>
@@ -112,10 +118,11 @@
   <string name="navigation_drawer_website">Trang web</string>
   <string name="navigation_drawer_manual">Hướng dẫn</string>
   <string name="navigation_drawer_faq">Câu hỏi thường gặp</string>
-  <string name="navigation_drawer_forums">Trợ giúp / Diễn đàn</string>
+  <string name="navigation_drawer_community">Cộng đồng</string>
   <string name="navigation_drawer_donate">Quyên góp</string>
   <string name="navigation_drawer_privacy_policy">Chính sách riêng tư</string>
   <string name="account_list_no_internet">Không có kết nối internet. Android sẽ không chạy đồng bộ hoá.</string>
+  <string name="account_list_low_storage">Dung lượng bộ nhớ thấp. Android sẽ không thực hiện đồng bộ.</string>
   <string name="account_list_empty">Chào mừng đến kSync!\n\nBạn có thể thêm một tài khoản CalDAV/CardDAV ngay.</string>
   <string name="accounts_global_sync_disabled">Đồng bộ hoá tự động trên toàn hệ thống bị tắt</string>
   <string name="accounts_global_sync_enable">Bật</string>
@@ -124,6 +131,8 @@
   <string name="dav_service_refresh_failed">Dò tìm dịch vụ thất bại</string>
   <string name="dav_service_refresh_couldnt_refresh">Không thể làm mới danh sách bộ sưu tập</string>
   <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Không thể chạy ở trước</string>
+  <string name="battery_optimization_notify_text">Bắt buộc không tối ưu hoá pin</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Đang chạy ở trước</string>
   <string name="foreground_service_notify_text">Trên một số thiết bị, điều này là cần thiết để đồng bộ hoá tự động.</string>
@@ -135,14 +144,21 @@
   <string name="app_settings_logging">Ghi nhật ký chi tiết</string>
   <string name="app_settings_logging_on">Ghi nhật ký đang hoạt động</string>
   <string name="app_settings_logging_off">Ghi nhật ký đã tắt</string>
+  <string name="app_settings_battery_optimization">Tối ưu hoá pin</string>
+  <string name="app_settings_battery_optimization_whitelisted">Ứng dụng không được tối ưu (khuyên dùng)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Ứng dụng được tối ưu (không khuyên dùng)</string>
   <string name="app_settings_foreground_service">Giữ ở trước</string>
   <string name="app_settings_foreground_service_details">Có thể giúp nếu thiết bị của bạn ngăn chặn đồng bộ hoá tự động</string>
   <string name="app_settings_connection">Kết nối</string>
-  <string name="app_settings_override_proxy">Ghi đè lên cài đặt proxy</string>
-  <string name="app_settings_override_proxy_on">Sử dụng cài đặt proxy tuỳ chỉnh</string>
-  <string name="app_settings_override_proxy_off">Sử dụng cài đặt proxy mặc định hệ thống</string>
-  <string name="app_settings_override_proxy_host">Tên máy chủ proxy HTTP</string>
-  <string name="app_settings_override_proxy_port">Cổng proxy HTTP</string>
+  <string name="app_settings_proxy">Loại proxy</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Mặc định hệ thống</item>
+    <item>Không có proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (cho Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Tên máy chủ proxy</string>
+  <string name="app_settings_proxy_port">Cổng proxy</string>
   <string name="app_settings_security">Bảo mật</string>
   <string name="app_settings_security_app_permissions">Quyền ứng dụng</string>
   <string name="app_settings_security_app_permissions_summary">Xem xét các quyền được yêu cầu để đồng bộ hoá</string>
@@ -156,7 +172,6 @@
   <string name="app_settings_notification_settings">Cài đặt thông báo</string>
   <string name="app_settings_notification_settings_summary">Quản lý các kênh thông báo và cài đặt của chúng</string>
   <string name="app_settings_theme_title">Chọn chủ đề</string>
-  <string name="app_settings_theme_summary">Chủ đề hiện tại: %s</string>
   <string-array name="app_settings_theme_names">
     <item>Mặc định hệ thống</item>
     <item>Sáng</item>
@@ -197,6 +212,7 @@
   <string name="account_read_only">chỉ đọc</string>
   <string name="account_calendar">lịch</string>
   <string name="account_task_list">danh sách công việc</string>
+  <string name="account_journal">nhật ký</string>
   <string name="account_only_personal">Chỉ hiện cá nhân</string>
   <string name="account_refresh_address_book_list">Làm mới danh sách sổ địa chỉ</string>
   <string name="account_create_new_address_book">Tạo sổ địa chỉ mới</string>
@@ -359,6 +375,8 @@
   <string name="exception_ioexception">Đã xảy ra lỗi I/O.</string>
   <string name="exception_show_details">Hiện chi tiết</string>
   <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Đã tạm dừng đồng bộ</string>
+  <string name="storage_low_notify_text">Không còn dung lượng trống</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Nơi gắn WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Hạn mức đã sử dụng: %1$s / có sẵn: %2$s</string>

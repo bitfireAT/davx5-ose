@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui.setup
 
 import android.app.Application
 import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -114,8 +113,9 @@ class DetectConfigurationFragment: Fragment() {
                     .setIcon(R.drawable.ic_error)
                     .setMessage(message)
                     .setNeutralButton(R.string.login_view_logs) { _, _ ->
-                        val intent = Intent(activity, DebugInfoActivity::class.java)
-                        intent.putExtra(DebugInfoActivity.EXTRA_LOGS, model.configuration?.logs)
+                        val intent = DebugInfoActivity.IntentBuilder(requireActivity())
+                            .withLogs(model.configuration?.logs)
+                            .build()
                         startActivity(intent)
                     }
                     .setPositiveButton(android.R.string.ok) { _, _ ->

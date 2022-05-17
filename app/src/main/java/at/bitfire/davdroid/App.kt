@@ -6,13 +6,13 @@ package at.bitfire.davdroid
 
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.StrictMode
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
@@ -64,32 +64,35 @@ class App: Application(), Thread.UncaughtExceptionHandler {
 
         // don't block UI for some background checks
         thread {
-            // create/update app shortcuts
-            UiUtils.updateShortcuts(this)
+            // watch for account changes/deletions
+            AccountUtils.registerAccountsUpdateListener(this)
 
-            // watch installed/removed apps
-            TasksWatcher(this)
-
-            // check whether a tasks app is currently installed
-            TasksWatcher.updateTaskSync(this)
+            // foreground service (possible workaround for devices which prevent DAVx5 from being started)
+            ForegroundService.startIfActive(this)
 
             // watch storage because low storage means synchronization is stopped
             StorageLowReceiver.getInstance(this)
 
+            // watch installed/removed apps
+            TasksWatcher.watch(this)
+            // check whether a tasks app is currently installed
+            TasksWatcher.updateTaskSync(this)
+
+            // create/update app shortcuts
+            UiUtils.updateShortcuts(this)
+
             // check/repair sync intervals
             AccountSettings.repairSyncIntervals(this)
-
-            // foreground service (possible workaround for devices which prevent DAVx5 from being started)
-            ForegroundService.startIfActive(this)
         }
     }
 
     override fun uncaughtException(t: Thread, e: Throwable) {
         Logger.log.log(Level.SEVERE, "Unhandled exception!", e)
 
-        val intent = Intent(this, DebugInfoActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.putExtra(DebugInfoActivity.EXTRA_CAUSE, e)
+        val intent = DebugInfoActivity.IntentBuilder(this)
+            .withCause(e)
+            .newTask()
+            .build()
         startActivity(intent)
 
         exitProcess(1)

@@ -13,9 +13,13 @@ object Settings {
 
     const val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
 
-    const val OVERRIDE_PROXY = "override_proxy"
-    const val OVERRIDE_PROXY_HOST = "override_proxy_host"
-    const val OVERRIDE_PROXY_PORT = "override_proxy_port"
+    const val PROXY_TYPE = "proxy_type"
+    const val PROXY_TYPE_SYSTEM = -1
+    const val PROXY_TYPE_NONE = 0
+    const val PROXY_TYPE_HTTP = 1
+    const val PROXY_TYPE_SOCKS = 2
+    const val PROXY_HOST = "proxy_host"
+    const val PROXY_PORT = "proxy_port"
 
     /**
      * Default sync interval (long), in seconds.
@@ -32,4 +36,7 @@ object Settings {
 
     const val PREFERRED_TASKS_PROVIDER = "preferred_tasks_provider"
 
+    /** whether detected collections are selected for synchronization for default */
+    const val SYNC_ALL_COLLECTIONS = "sync_all_collections"
+    
 }

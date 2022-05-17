@@ -11,8 +11,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.Service
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
@@ -22,11 +22,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class TasksWatcher(
+class TasksWatcher protected constructor(
         context: Context
 ): PackageChangedReceiver(context) {
 
     companion object {
+
+        fun watch(context: Context) = TasksWatcher(context)
+
 
         @WorkerThread
         fun updateTaskSync(context: Context) {

@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.resource.contactrow
 
 import android.net.Uri
-import at.bitfire.davdroid.model.UnknownProperties
 import at.bitfire.vcard4android.Contact
 import org.junit.Assert.assertEquals
 import org.junit.Test

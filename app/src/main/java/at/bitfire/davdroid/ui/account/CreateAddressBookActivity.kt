@@ -21,10 +21,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.Collection
-import at.bitfire.davdroid.model.HomeSet
-import at.bitfire.davdroid.model.Service
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.HomeSet
+import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.ui.HomeSetAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.webdav
 
 import at.bitfire.davdroid.TestUtils
-import at.bitfire.davdroid.model.WebDavMount
+import at.bitfire.davdroid.db.WebDavMount
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertFalse

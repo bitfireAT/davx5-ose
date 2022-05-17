@@ -34,6 +34,8 @@
   <string name="intro_autostart_dont_show">Ich habe die Einstellungen gemacht, nicht mehr erinnern.*</string>
   <string name="intro_leave_unchecked">* Nicht anwählen, um später erinnert zu werden. Kann unter App-Einstellungen / %s zurückgesetzt werden.</string>
   <string name="intro_more_info">Mehr Infos</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Unterstützt Synchronisierung von Aufgaben, Journalen und Notizen.]]></string>
   <string name="intro_tasks_title">Unterstützung für Aufgaben</string>
   <string name="intro_tasks_text1">Falls der Server Aufgaben unterstützt, können sie mit einer unterstützten App synchronisiert werden:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -58,10 +60,14 @@
   <string name="permissions_calendar_title">Kalender-Berechtigungen</string>
   <string name="permissions_calendar_status_off">Keine Kalendersynchronisierung (nicht empfohlen)</string>
   <string name="permissions_calendar_status_on">Kalendersynchronisierung möglich</string>
+  <string name="permissions_jtx_title">jtx Board-Berechtigungen</string>
+  <string name="permissions_jtx_status_not_installed">Keine Synchronisierung von Aufgaben, Journalen &amp; Notizen (nicht installiert)</string>
+  <string name="permissions_jtx_status_off">Keine Synchronisierung von Aufgaben, Journalen und Notizen</string>
+  <string name="permissions_jtx_status_on">Synchronisierung von Aufgaben, Journalen, Notizen möglich </string>
   <string name="permissions_opentasks_title">OpenTasks-Berechtigungen</string>
   <string name="permissions_tasksorg_title">Tasks-Berechtigungen</string>
   <string name="permissions_tasks_status_not_installed">Keine Aufgabensynchronisierung (nicht installiert)</string>
-  <string name="permissions_tasks_status_off">Keine Aufgabensynchronisierung (nicht empfohlen)</string>
+  <string name="permissions_tasks_status_off">Keine Aufgabensynchronisierung</string>
   <string name="permissions_tasks_status_on">Aufgabensynchronisierung möglich</string>
   <string name="permissions_autoreset_title">Berechtigungen behalten</string>
   <string name="permissions_autoreset_status_off">Berechtigungen können automatisch entzogen werden (nicht empfohlen)</string>
@@ -112,10 +118,11 @@
   <string name="navigation_drawer_website">Homepage</string>
   <string name="navigation_drawer_manual">Handbuch</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">Hilfe / Forum</string>
+  <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_donate">Spenden</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
   <string name="account_list_no_internet">Keine Internet-Verbindung. Android wird die Synchronisierung daher nicht starten.</string>
+  <string name="account_list_low_storage">Speicher knapp. Android wird keine Synchronisierung ausführen.</string>
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
   <string name="accounts_global_sync_disabled">Systemweite automatische Synchronisierung ist nicht aktiv</string>
   <string name="accounts_global_sync_enable">Aktivieren</string>
@@ -124,6 +131,8 @@
   <string name="dav_service_refresh_failed">Diensterkennung fehlgeschlagen</string>
   <string name="dav_service_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
   <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Darf nicht im Vordergrund ausgeführt werden</string>
+  <string name="battery_optimization_notify_text">Ausnahme von Akku-Optimierung erforderlich</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Läuft im Vordergrund</string>
   <string name="foreground_service_notify_text">Auf manchen Geräten für die automatische Synchronisierung benötigt</string>
@@ -135,14 +144,21 @@
   <string name="app_settings_logging">Ausführliche Protokollierung</string>
   <string name="app_settings_logging_on">Protokollierung läuft</string>
   <string name="app_settings_logging_off">Keine Protokollierung</string>
+  <string name="app_settings_battery_optimization">Akku-Optimierung</string>
+  <string name="app_settings_battery_optimization_whitelisted">App ist ausgenommen (empfohlen)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">App ist nicht ausgenommen (nicht empfohlen)</string>
   <string name="app_settings_foreground_service">Im Vordergrund bleiben</string>
   <string name="app_settings_foreground_service_details">Kann helfen, wenn das Gerät automatische Synchronisierung verhindert</string>
   <string name="app_settings_connection">Verbindung</string>
-  <string name="app_settings_override_proxy">Proxy-Einstellungen überschreiben</string>
-  <string name="app_settings_override_proxy_on">Eigene Proxy-Einstellungen werden verwendet</string>
-  <string name="app_settings_override_proxy_off">System-Proxy-Einstellungen werden verwendet</string>
-  <string name="app_settings_override_proxy_host">HTTP-Proxy-Rechnername</string>
-  <string name="app_settings_override_proxy_port">HTTP-Proxy-Port</string>
+  <string name="app_settings_proxy">Proxy-Typ</string>
+  <string-array name="app_settings_proxy_types">
+    <item>System-Standard</item>
+    <item>Kein Proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (für Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Proxy-Rechnername</string>
+  <string name="app_settings_proxy_port">Proxy-Port</string>
   <string name="app_settings_security">Sicherheit</string>
   <string name="app_settings_security_app_permissions">App-Berechtigungen</string>
   <string name="app_settings_security_app_permissions_summary">Für die Synchronisierung benötigte Berechtigungen prüfen</string>
@@ -156,7 +172,6 @@
   <string name="app_settings_notification_settings">Benachrichtigungseinstellungen</string>
   <string name="app_settings_notification_settings_summary">Benachrichtigungskanäle und -einstellungen verwalten</string>
   <string name="app_settings_theme_title">Aussehen wählen</string>
-  <string name="app_settings_theme_summary">Derzeitiges Aussehen: %s</string>
   <string-array name="app_settings_theme_names">
     <item>wie System</item>
     <item>heller Stil</item>
@@ -197,6 +212,7 @@
   <string name="account_read_only">schreibgeschützt</string>
   <string name="account_calendar">Kalender</string>
   <string name="account_task_list">Aufgabenliste</string>
+  <string name="account_journal">Journal</string>
   <string name="account_only_personal">Nur eigene anzeigen</string>
   <string name="account_refresh_address_book_list">Adressbücher neu erkennen</string>
   <string name="account_create_new_address_book">Neues Adressbuch erstellen</string>
@@ -361,6 +377,8 @@
   <string name="exception_ioexception">Ein E/A-Fehler ist aufgetreten.</string>
   <string name="exception_show_details">Details anzeigen</string>
   <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Synchronisation pausiert</string>
+  <string name="storage_low_notify_text">Kaum noch Speicherplatz vorhanden</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV-Zugänge</string>
   <string name="webdav_mounts_quota_used_available">Speicher belegt: %1$s / verfügbar: %2$s</string>

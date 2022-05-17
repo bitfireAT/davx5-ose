@@ -10,7 +10,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
-import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.TaskUtils
 
 class CalendarsFragment: CollectionsFragment() {
@@ -80,6 +80,7 @@ class CalendarsFragment: CollectionsFragment() {
             binding.readOnly.visibility = if (item.readOnly()) View.VISIBLE else View.GONE
             binding.events.visibility = if (item.supportsVEVENT == true) View.VISIBLE else View.GONE
             binding.tasks.visibility = if (item.supportsVTODO == true) View.VISIBLE else View.GONE
+            binding.journals.visibility = if (item.supportsVJOURNAL == true) View.VISIBLE else View.GONE
 
             itemView.setOnClickListener {
                 accountModel.toggleSync(item)

@@ -43,6 +43,8 @@
     <string name="intro_autostart_dont_show">I have done the required settings. Don\'t remind me anymore.*</string>
     <string name="intro_leave_unchecked">* Leave unchecked to be reminded later. Can be reset in app settings / %s.</string>
     <string name="intro_more_info">More information</string>
+    <string name="intro_tasks_jtx">jtx Board</string>
+    <string name="intro_tasks_jtx_info"><![CDATA[Supports sync of Tasks, Journals and Notes.]]></string>
     <string name="intro_tasks_title">Tasks support</string>
     <string name="intro_tasks_text1">If tasks are supported by your server, they can be synchronized with a supported tasks app:</string>
     <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -68,10 +70,14 @@
     <string name="permissions_calendar_title">Calendar permissions</string>
     <string name="permissions_calendar_status_off">No calendar sync (not recommended)</string>
     <string name="permissions_calendar_status_on">Calendar sync possible</string>
+    <string name="permissions_jtx_title">jtx Board permissions</string>
+    <string name="permissions_jtx_status_not_installed">No task, journals &amp; notes sync (not installed)</string>
+    <string name="permissions_jtx_status_off">No tasks, journals, notes sync</string>
+    <string name="permissions_jtx_status_on">Tasks, journals, notes sync possible</string>
     <string name="permissions_opentasks_title">OpenTasks permissions</string>
     <string name="permissions_tasksorg_title">Tasks permissions</string>
     <string name="permissions_tasks_status_not_installed">No task sync (not installed)</string>
-    <string name="permissions_tasks_status_off">No task sync (not recommended)</string>
+    <string name="permissions_tasks_status_off">No task sync</string>
     <string name="permissions_tasks_status_on">Task sync possible</string>
     <string name="permissions_autoreset_title">Keep permissions</string>
     <string name="permissions_autoreset_status_off">Permissions may be reset automatically (not recommended)</string>
@@ -126,7 +132,7 @@
     <string name="navigation_drawer_website">Web site</string>
     <string name="navigation_drawer_manual">Manual</string>
     <string name="navigation_drawer_faq">FAQ</string>
-    <string name="navigation_drawer_forums">Help / Forums</string>
+    <string name="navigation_drawer_community">Community</string>
     <string name="navigation_drawer_donate">Donate</string>
     <string name="navigation_drawer_privacy_policy">Privacy policy</string>
     <string name="account_list_no_internet">No Internet connectivity. Android will not run synchronization.</string>
@@ -157,16 +163,26 @@
     <string name="app_settings_logging_on">Logging is active</string>
     <string name="app_settings_logging_off">Logging is disabled</string>
     <string name="app_settings_battery_optimization">Battery optimization</string>
-    <string name="app_settings_battery_optimization_whitelisted">DAVx5 is whitelisted (recommended)</string>
-    <string name="app_settings_battery_optimization_not_whitelisted">DAVx5 is not whitelisted (not recommended)</string>
+    <string name="app_settings_battery_optimization_whitelisted">App is whitelisted (recommended)</string>
+    <string name="app_settings_battery_optimization_not_whitelisted">App is not whitelisted (not recommended)</string>
     <string name="app_settings_foreground_service">Keep in foreground</string>
     <string name="app_settings_foreground_service_details">May help if your device prevents automatic synchronization</string>
     <string name="app_settings_connection">Connection</string>
-    <string name="app_settings_override_proxy">Override proxy settings</string>
-    <string name="app_settings_override_proxy_on">Use custom proxy settings</string>
-    <string name="app_settings_override_proxy_off">Use system default proxy settings</string>
-    <string name="app_settings_override_proxy_host">HTTP proxy host name</string>
-    <string name="app_settings_override_proxy_port">HTTP proxy port</string>
+    <string name="app_settings_proxy">Proxy type</string>
+    <string-array name="app_settings_proxy_types">
+        <item>System default</item>
+        <item>No proxy</item>
+        <item>HTTP</item>
+        <item>SOCKS (for Orbot)</item>
+    </string-array>
+    <string-array name="app_settings_proxy_type_values" translatable="false">
+        <item>-1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string name="app_settings_proxy_host">Proxy host name</string>
+    <string name="app_settings_proxy_port">Proxy port</string>
     <string name="app_settings_security">Security</string>
     <string name="app_settings_security_app_permissions">App permissions</string>
     <string name="app_settings_security_app_permissions_summary">Review permissions required for synchronization</string>
@@ -180,7 +196,6 @@
     <string name="app_settings_notification_settings">Notification settings</string>
     <string name="app_settings_notification_settings_summary">Manage notification channels and their settings</string>
     <string name="app_settings_theme_title">Select theme</string>
-    <string name="app_settings_theme_summary">Current theme: %s</string>
     <string-array name="app_settings_theme_names">
         <item>System default</item>
         <item>Light</item>
@@ -227,6 +242,7 @@
     <string name="account_read_only">read-only</string>
     <string name="account_calendar">calendar</string>
     <string name="account_task_list">task list</string>
+    <string name="account_journal">journal</string>
     <string name="account_only_personal">Show only personal</string>
     <string name="account_refresh_address_book_list">Refresh address book list</string>
     <string name="account_create_new_address_book">Create new address book</string>

@@ -16,8 +16,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.databinding.CollectionPropertiesBinding
-import at.bitfire.davdroid.model.AppDatabase
-import at.bitfire.davdroid.model.Collection
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

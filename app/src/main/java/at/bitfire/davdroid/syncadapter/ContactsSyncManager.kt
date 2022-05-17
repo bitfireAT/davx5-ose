@@ -5,7 +5,10 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.content.*
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.Context
+import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
 import at.bitfire.dav4jvm.DavAddressBook
@@ -18,7 +21,7 @@ import at.bitfire.davdroid.DavUtils.sameTypeAs
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.model.SyncState
+import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.groups.CategoriesStrategy
@@ -33,7 +36,11 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.*
+import org.apache.commons.io.FileUtils
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.Reader
+import java.io.StringReader
 import java.util.logging.Level
 
 /**
@@ -124,8 +131,12 @@ class ContactsSyncManager(
     override fun queryCapabilities(): SyncState? {
         return remoteExceptionContext {
             var syncState: SyncState? = null
-            it.propfind(0, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+            it.propfind(0, MaxVCardSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
+                    response[MaxVCardSize::class.java]?.maxSize?.let { maxSize ->
+                        Logger.log.info("Address book accepts vCards up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                    }
+
                     response[SupportedAddressData::class.java]?.let { supported ->
                         hasVCard4 = supported.hasVCard4()
 
@@ -140,8 +151,8 @@ class ContactsSyncManager(
             }
 
             // Logger.log.info("Server supports jCard: $hasJCard")
-            Logger.log.info("Server supports vCard4: $hasVCard4")
-            Logger.log.info("Server supports Collection Sync: $hasCollectionSync")
+            Logger.log.info("Address book supports vCard4: $hasVCard4")
+            Logger.log.info("Address book supports Collection Sync: $hasCollectionSync")
 
             syncState
         }

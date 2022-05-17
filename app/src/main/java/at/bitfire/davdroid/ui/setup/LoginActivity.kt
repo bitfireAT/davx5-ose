@@ -24,6 +24,7 @@ import java.util.*
 class LoginActivity: AppCompatActivity() {
 
     companion object {
+
         /**
          * When set, "login by URL" will be activated by default, and the URL field will be set to this value.
          * When not set, "login by email" will be activated by default.

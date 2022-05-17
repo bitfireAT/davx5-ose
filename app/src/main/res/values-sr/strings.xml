@@ -12,7 +12,11 @@
   <string name="notification_channel_sync_errors">Грешке синхронизације</string>
   <string name="notification_channel_sync_io_errors">Мрежне и У/И грешке</string>
   <!--IntroActivity-->
+  <string name="intro_more_info">Још информација</string>
   <!--PermissionsActivity-->
+  <string name="permissions_contacts_title">Дозволе за контакте</string>
+  <string name="permissions_calendar_title">Дозволе за календар</string>
+  <string name="permissions_opentasks_title">Дозволе за задатке</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Библиотеке</string>
@@ -32,7 +36,6 @@
   <string name="navigation_drawer_website">Веб-сајт</string>
   <string name="navigation_drawer_manual">Приручник</string>
   <string name="navigation_drawer_faq">ЧПП</string>
-  <string name="navigation_drawer_forums">Помоћ/форуми</string>
   <string name="navigation_drawer_donate">Донирај</string>
   <string name="account_list_empty">Добро дошли у ДАВдроид!\n\nМожете сада да додате КалДАВ/КардДАВ налог.</string>
   <string name="accounts_global_sync_disabled">Синхронизација је системски искључена</string>
@@ -47,12 +50,8 @@
   <string name="app_settings_debug">Тражење грешака</string>
   <string name="app_settings_show_debug_info">Прикажи податке за исправљање грешака</string>
   <string name="app_settings_show_debug_info_details">Приказ/дељење детаља софтвера и поставки</string>
+  <string name="app_settings_logging">Исцрпна евиденција</string>
   <string name="app_settings_connection">Повезивање</string>
-  <string name="app_settings_override_proxy">Надјачај поставке проксија</string>
-  <string name="app_settings_override_proxy_on">Користи прилагођене поставке проксија</string>
-  <string name="app_settings_override_proxy_off">Користи системски подразумеване поставке проксија</string>
-  <string name="app_settings_override_proxy_host">ХТТП прокси домаћин</string>
-  <string name="app_settings_override_proxy_port">ХТТП прокси порт</string>
   <string name="app_settings_security">Безбедност</string>
   <string name="app_settings_distrust_system_certs">Посумњај у системске сертификате</string>
   <string name="app_settings_distrust_system_certs_on">Системски и кориснички додати сертификати неће бити поуздани</string>
@@ -172,6 +171,7 @@
   <string name="collection_properties_copy_url">Копирај УРЛ</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Подаци за исправљање грешака</string>
+  <string name="debug_info_logs_view">Прикажи записе</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Десила се грешка.</string>
   <string name="exception_httpexception">Десила се ХТТП грешка.</string>
@@ -179,6 +179,8 @@
   <string name="exception_show_details">Прикажи детаље</string>
   <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Корисничко име</string>
+  <string name="webdav_add_mount_password">Лозинка</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">ДАВдроид дозволе</string>
   <string name="sync_error_permissions_text">Потребне су додатне доволе</string>
