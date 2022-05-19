@@ -229,10 +229,9 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                 description.text = badge.description
                 button.text = badge.price
 
-                // Badge icon - in dark grey
+                // Badge icon
                 val badgeDrawable: Drawable = AppCompatResources.getDrawable(activity, SKU_BADGES[badge.skuDetails.sku]!!)!!
                 icon.setImageDrawable(badgeDrawable)
-                icon.setColorFilter(ContextCompat.getColor(icon.context, R.color.grey800), PorterDuff.Mode.SRC_IN)
 
                 // buy button
                 button.isEnabled = !badge.purchased
