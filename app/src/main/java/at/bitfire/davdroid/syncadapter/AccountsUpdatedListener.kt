@@ -16,22 +16,11 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.dsl.module
 import java.util.logging.Level
 
 class AccountsUpdatedListener(val context: Context): KoinComponent, OnAccountsUpdateListener {
-
-    companion object {
-        val defaultModule = module {
-            single {
-                AccountsUpdatedListener(androidContext())
-            }
-        }
-    }
-
 
     fun listen() {
         val accountManager = AccountManager.get(context)

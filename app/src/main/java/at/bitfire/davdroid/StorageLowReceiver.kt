@@ -15,20 +15,10 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
 
-class StorageLowReceiver private constructor(
-        val context: Context
+class StorageLowReceiver(
+    val context: Context
 ): BroadcastReceiver(), AutoCloseable {
-
-    companion object {
-        val defaultModule = module {
-            single {
-                StorageLowReceiver(androidContext())
-            }
-        }
-    }
 
     val storageLow = MutableLiveData<Boolean>(false)
 

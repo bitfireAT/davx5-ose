@@ -49,12 +49,6 @@ abstract class AppDatabase: RoomDatabase() {
 
     companion object: KoinComponent {
 
-        val defaultModule = module {
-            single {
-                AppDatabase.createInstance(androidContext())
-            }
-        }
-
         fun createInstance(context: Context) =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
                 .addMigrations(*migrations)

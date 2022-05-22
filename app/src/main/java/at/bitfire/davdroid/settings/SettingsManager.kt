@@ -8,8 +8,6 @@ import android.content.Context
 import android.util.NoSuchPropertyException
 import androidx.annotation.AnyThread
 import at.bitfire.davdroid.log.Logger
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
 import java.io.Writer
 import java.lang.ref.WeakReference
 import java.util.*
@@ -19,17 +17,9 @@ import java.util.logging.Level
  * Settings manager which coordinates [SettingsProvider]s to read/write
  * application settings.
  */
-class SettingsManager private constructor(
-        context: Context
+class SettingsManager(
+    context: Context
 ) {
-
-    companion object {
-        val defaultModule = module {
-            single {
-                SettingsManager(androidContext())
-            }
-        }
-    }
 
     private val providers = LinkedList<SettingsProvider>()
     private var writeProvider: SettingsProvider? = null

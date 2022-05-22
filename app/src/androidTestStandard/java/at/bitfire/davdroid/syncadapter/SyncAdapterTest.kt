@@ -2,7 +2,11 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid
+/***************************************************************************************************
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ **************************************************************************************************/
+
+package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
 import android.content.ContentProviderClient
@@ -10,7 +14,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.davdroid.syncadapter.SyncAdapterService
+import at.bitfire.davdroid.R
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -18,8 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class SyncAdapterTest {
 
-    val context = InstrumentationRegistry.getInstrumentation().context
-    val targetContext = InstrumentationRegistry.getInstrumentation().targetContext
+    val context by lazy { InstrumentationRegistry.getInstrumentation().context }
+    val targetContext by lazy { InstrumentationRegistry.getInstrumentation().targetContext }
 
     /** use our WebDAV provider as a mock provider because it's our own and we don't need any permissions for it */
     val mockAuthority = targetContext.getString(R.string.webdav_authority)
