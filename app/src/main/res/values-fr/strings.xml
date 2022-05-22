@@ -34,6 +34,7 @@
   <string name="intro_autostart_dont_show">J\'ai fait les réglages nécessaires. Ne me le rappelez plus.*</string>
   <string name="intro_leave_unchecked">* Laisser non coché pour un rappel ultérieur. Peut être réinitialisé dans les paramètres de l\'application / %s.</string>
   <string name="intro_more_info">Plus d\'informations</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Prends en charge la synchro des Tâches, Journaux et Notes.]]></string>
   <string name="intro_tasks_title">Gestion des taches</string>
   <string name="intro_tasks_text1">Si les tâches sont prises en charge par votre serveur, elles peuvent être synchronisées avec une application de tâches externe :</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -61,6 +62,7 @@
   <string name="permissions_opentasks_title">Autorisations d\'OpenTasks</string>
   <string name="permissions_tasksorg_title">Autorisations de Tasks</string>
   <string name="permissions_tasks_status_not_installed">Pas de synchronisation des tâches (non installé)</string>
+  <string name="permissions_tasks_status_off">Aucune tâche de synchro</string>
   <string name="permissions_tasks_status_on">Synchronisation des tâches possible</string>
   <string name="permissions_autoreset_title">Conserver les autorisations</string>
   <string name="permissions_autoreset_status_off">Les autorisations peuvent être réinitialisées automatiquement (non recommandé)</string>
@@ -111,9 +113,11 @@
   <string name="navigation_drawer_website">Site Web</string>
   <string name="navigation_drawer_manual">Manuel</string>
   <string name="navigation_drawer_faq">Foire aux questions</string>
+  <string name="navigation_drawer_community">Communauté</string>
   <string name="navigation_drawer_donate">Faire un don</string>
   <string name="navigation_drawer_privacy_policy">Politique de confidentialité</string>
   <string name="account_list_no_internet">Pas de connectivité Internet. Android ne pourra pas exécuter la synchronisation.</string>
+  <string name="account_list_low_storage">L\'espace de stockage est presque plein. Android ne lancera pas la synchronisation.</string>
   <string name="account_list_empty">Bienvenue sur DAVx⁵!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
   <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
   <string name="accounts_global_sync_enable">Activer</string>
@@ -133,9 +137,15 @@
   <string name="app_settings_logging">Journalisation verbeuse</string>
   <string name="app_settings_logging_on">La journalisation est activée</string>
   <string name="app_settings_logging_off">La journalisation est désactivée</string>
+  <string name="app_settings_battery_optimization">Optimisation de la batterie</string>
+  <string name="app_settings_battery_optimization_whitelisted">L\'App est dans la liste blanche (recommandé)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">L\'App n\'est pas dans la liste blanche (non recommandé)</string>
   <string name="app_settings_foreground_service">Garder au premier plan</string>
   <string name="app_settings_foreground_service_details">Peut aider si votre appareil empêche la synchronisation automatique</string>
   <string name="app_settings_connection">Connexion</string>
+  <string name="app_settings_proxy">Type de Proxy</string>
+  <string name="app_settings_proxy_host">Nom de l\'hôte du proxy</string>
+  <string name="app_settings_proxy_port">Port du proxy</string>
   <string name="app_settings_security">Sécurité</string>
   <string name="app_settings_security_app_permissions">Autorisations de l\'application</string>
   <string name="app_settings_security_app_permissions_summary">Consulter les autorisations requises pour la synchronisation</string>
@@ -149,6 +159,11 @@
   <string name="app_settings_notification_settings">Paramètres de notification</string>
   <string name="app_settings_notification_settings_summary">Gérer les canaux de notification et leurs paramètres</string>
   <string name="app_settings_theme_title">Sélectionner un thème</string>
+  <string-array name="app_settings_theme_names">
+    <item>Par défaut</item>
+    <item>Clair</item>
+    <item>Sombre</item>
+  </string-array>
   <string name="app_settings_reset_hints">Réinitialiser les astuces</string>
   <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vues précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
@@ -184,6 +199,7 @@
   <string name="account_read_only">En lecture seulement</string>
   <string name="account_calendar">calendrier</string>
   <string name="account_task_list">liste de tâche</string>
+  <string name="account_journal">journal</string>
   <string name="account_only_personal">N\'afficher que les comptes perso.</string>
   <string name="account_refresh_address_book_list">Actualiser la liste des carnets d\'adresses</string>
   <string name="account_create_new_address_book">Créer un nouveau carnet d\'adresses</string>
@@ -208,6 +224,7 @@
   <string name="login_login">Se connecter</string>
   <string name="login_create_account">Créer un compte</string>
   <string name="login_account_name">Nom du compte</string>
+  <string name="login_account_avoid_apostrophe">L\'utilisation d\'apostrophes (\') est connue pour causer des problèmes sur certains appareils.</string>
   <string name="login_account_name_info">Utilisez votre adresse e-mail comme nom de compte car Android utilisera ce nom en tant que champ ORGANISATEUR pour les événements que vous créerez. Vous ne pouvez pas avoir deux comptes avec le même nom.</string>
   <string name="login_account_contact_group_method">Méthode pour les contacts de type groupe :</string>
   <string name="login_account_name_required">Nom du compte requis</string>
@@ -347,9 +364,12 @@
   <string name="exception_ioexception">Une erreur I/O est survenue.</string>
   <string name="exception_show_details">Voir détails</string>
   <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Synchronisation suspendue</string>
+  <string name="storage_low_notify_text">L\'espace de stockage est presque plein</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_quota_used_available">Quota utitlisé : %1$s / disponible : %2$s</string>
   <string name="webdav_mounts_share_content">Partager le contenu</string>
+  <string name="webdav_add_mount_display_name">Nom affiché</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL incorrecte</string>
   <string name="webdav_add_mount_username">Nom d\'utilisateur</string>
