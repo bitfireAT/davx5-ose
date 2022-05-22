@@ -46,10 +46,6 @@
                 android:id="@+id/nav_donate"
                 android:icon="@drawable/ic_tag_heart"
                 android:title="@string/nav_earn_badges" />
-            <item
-                android:id="@+id/nav_rate_us"
-                android:icon="@drawable/ic_star_rate"
-                android:title="@string/nav_rate_us" />
         </menu>
     </item>
     <!-- gplay flavor only END -->

@@ -10,11 +10,11 @@ import android.app.Application
 import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -32,22 +32,31 @@ import at.bitfire.davdroid.databinding.ActivityEarnBadgesBinding
 import at.bitfire.davdroid.databinding.BoughtBadgeItemBinding
 import at.bitfire.davdroid.databinding.BuyBadgeItemBinding
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.SettingsManager
 import com.android.billingclient.api.*
+import com.google.android.play.core.review.ReviewManager
+import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.io.Closeable
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.logging.Level
 
-class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
+class EarnBadgesActivity : AppCompatActivity(), KoinComponent, LifecycleOwner {
 
     private lateinit var binding: ActivityEarnBadgesBinding
     val model by viewModels<Model>()
 
-    companion object {
+    companion object: KoinComponent {
+        internal const val LAST_REVIEW_PROMPT = "lastReviewPrompt"
+
+        /** Time between rating interval prompts in milliseconds */
+        private const val RATING_INTERVAL = 2*7*24*60*60*1000 // Two weeks
 
         private const val SKU_HELPING_HANDS = "helping_hands.2022"
         private const val SKU_A_COFFEE_FOR_YOU = "a_coffee_for_you.2022"
@@ -67,6 +76,29 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             SKU_PART_OF_THE_JOURNEY to R.anim.rock
         )
         val SKUS = SKU_BADGES.keys.toList()
+
+        /**
+         * Determines whether we should show a rating prompt to the user depending on whether
+         * - the RATING_INTERVAL has passed once after first installation, or
+         * - the last rating prompt is older than RATING_INTERVAL
+         *
+         * If the return value is `true`, also updates the `LAST_REVIEW_PROMPT` setting to the current time
+         * so that the next call won't be `true` again for the time specified in `RATING_INTERVAL`.
+         */
+        fun shouldShowRatingRequest(context: Context, settings: SettingsManager): Boolean {
+            val now = currentTime()
+            val firstInstall = installTime(context)
+            val lastPrompt = settings.getLongOrNull(LAST_REVIEW_PROMPT) ?: now
+            val shouldShowRatingRequest = (now > firstInstall + RATING_INTERVAL) && (now > lastPrompt + RATING_INTERVAL)
+            Logger.log.info("now=$now, firstInstall=$firstInstall, lastPrompt=$lastPrompt, shouldShowRatingRequest=$shouldShowRatingRequest")
+            if (shouldShowRatingRequest)
+                settings.putLong(LAST_REVIEW_PROMPT, now)
+            return shouldShowRatingRequest
+        }
+
+        fun currentTime() = System.currentTimeMillis()
+        fun installTime(context: Context) = context.packageManager.getPackageInfo(context.packageName, 0).firstInstallTime
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +106,10 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
         binding = ActivityEarnBadgesBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Show rating API dialog one week after the app has been installed
+        if (shouldShowRatingRequest(this, get<SettingsManager>()))
+            showRatingRequest(ReviewManagerFactory.create(this))
 
         // Bought badges adapter
         val boughtSkusAdapter = BoughtBadgesAdapter()
@@ -134,6 +170,33 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         super.onResume()
         // ensures that all purchases are successfully processed
         model.store.queryPurchases()
+    }
+
+    /**
+     * Starts the in-app review API to trigger the review request
+     * Once the user has rated the app, it will still trigger, but won't show up anymore.
+     */
+    fun showRatingRequest(manager: ReviewManager) {
+        // Try prompting for review/rating
+        manager.requestReviewFlow().addOnSuccessListener { reviewInfo ->
+            Logger.log.log(Level.INFO, "Launching app rating flow")
+            manager.launchReviewFlow(this, reviewInfo)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.activity_earn_badges, menu)
+        return true
+    }
+
+    fun startRating(item: MenuItem) {
+        if (!UiUtils.launchUri(this, Uri.parse("market://details?id=$packageName"))) {
+            // no store installed, open Google Play website instead
+            UiUtils.launchUri(
+                this,
+                Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+            )
+        }
     }
 
     /**
@@ -394,7 +457,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
         /**
          * Set up the billing client and connect when the activity is created
-         * SKUs and purchases are loaded from cache, but this will give a more responsive user
+         * SKUs and purchases are loaded from play store app cache, but this will give a more responsive user
          * experience, when buying a SKU
          */
         init {
@@ -420,22 +483,29 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         override fun onBillingSetupFinished(billingResult: BillingResult) {
             val responseCode = billingResult.responseCode
             val debugMessage = billingResult.debugMessage
-            if (responseCode == BillingClient.BillingResponseCode.OK) {
-                Logger.log.fine("ready")
+            Logger.log.warning("onBillingSetupFinished: $responseCode $debugMessage")
+            when (responseCode) {
+                BillingClient.BillingResponseCode.OK -> {
+                    Logger.log.fine("ready")
 
-                // Purchases are stored locally by gplay app
-                queryPurchases()
+                    // Purchases are stored locally by gplay app
+                    queryPurchases()
 
-                // Only request SKUs if not found already
-                if (skus.value.isNullOrEmpty()) {
-                    Logger.log.fine("No skus loaded yet, requesting")
-                    querySkusAsync()
+                    // Only request SKUs if not found already
+                    if (skus.value.isNullOrEmpty()) {
+                        Logger.log.fine("No skus loaded yet, requesting")
+                        querySkusAsync()
+                    }
                 }
 
-            } else {
-                Logger.log.warning("onBillingSetupFinished: $responseCode $debugMessage")
-            }
+                BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
+                BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE,
+                BillingClient.BillingResponseCode.SERVICE_TIMEOUT ->
+                    Toast.makeText(context.applicationContext, context.getString(R.string.network_problems), Toast.LENGTH_LONG).show()
 
+                BillingClient.BillingResponseCode.BILLING_UNAVAILABLE ->
+                    Toast.makeText(context.applicationContext, context.getString(R.string.billing_unavailable), Toast.LENGTH_LONG).show()
+            }
         }
 
         /**
