@@ -83,6 +83,39 @@
                         app:layout_constraintTop_toBottomOf="@id/heading" />
 
                     <RadioButton
+                        android:id="@+id/jtxRadio"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        android:checked="@={model.jtxSelected}"
+                        android:clickable="@{model.jtxInstalled}"
+                        android:text="@string/intro_tasks_jtx"
+                        android:textAlignment="viewStart"
+                        app:layout_constraintEnd_toStartOf="@id/jtxSwitch"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/text1" />
+                    <TextView
+                        android:id="@+id/jtxInfo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/jtxRadio"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        style="@style/TextAppearance.MaterialComponents.Body2"
+                        app:html="@{@string/intro_tasks_jtx_info}" />
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/jtxSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="@={model.jtxRequested}"
+                        android:clickable="@{!model.jtxInstalled}"
+                        app:layout_constraintTop_toTopOf="@id/jtxRadio"
+                        app:layout_constraintBottom_toBottomOf="@id/jtxRadio"
+                        app:layout_constraintStart_toEndOf="@id/jtxRadio"
+                        app:layout_constraintEnd_toEndOf="@id/end"/>
+
+                    <RadioButton
                         android:id="@+id/openTasksRadio"
                         style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
@@ -94,7 +127,7 @@
                         android:textAlignment="viewStart"
                         app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
                         app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/text1" />
+                        app:layout_constraintTop_toBottomOf="@id/jtxInfo" />
                     <TextView
                         android:id="@+id/openTasksInfo"
                         android:layout_width="0dp"
@@ -148,39 +181,6 @@
                         app:layout_constraintStart_toEndOf="@id/tasksOrgRadio"
                         app:layout_constraintEnd_toEndOf="@id/end"/>
 
-                    <RadioButton
-                        android:id="@+id/jtxRadio"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:checked="@={model.jtxSelected}"
-                        android:clickable="@{model.jtxInstalled}"
-                        android:text="@string/intro_tasks_jtx"
-                        android:textAlignment="viewStart"
-                        app:layout_constraintEnd_toStartOf="@id/jtxSwitch"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/tasksOrgInfo" />
-                    <TextView
-                        android:id="@+id/jtxInfo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/jtxRadio"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/end"
-                        style="@style/TextAppearance.MaterialComponents.Body2"
-                        app:html="@{@string/intro_tasks_jtx_info}" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/jtxSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="@={model.jtxRequested}"
-                        android:clickable="@{!model.jtxInstalled}"
-                        app:layout_constraintTop_toTopOf="@id/jtxRadio"
-                        app:layout_constraintBottom_toBottomOf="@id/jtxRadio"
-                        app:layout_constraintStart_toEndOf="@id/jtxRadio"
-                        app:layout_constraintEnd_toEndOf="@id/end"/>
-
                     <CheckBox
                         android:id="@+id/dontShow"
                         android:layout_width="0dp"
@@ -192,7 +192,7 @@
                         android:visibility="@{model.openTasksInstalled ? View.GONE : View.VISIBLE}"
                         app:layout_constraintEnd_toEndOf="@id/end"
                         app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/jtxInfo" />
+                        app:layout_constraintTop_toBottomOf="@id/tasksOrgInfo" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
