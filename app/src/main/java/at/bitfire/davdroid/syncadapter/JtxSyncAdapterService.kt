@@ -22,14 +22,20 @@ import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.koin.core.component.get
 import java.util.logging.Level
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 class JtxSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = JtxSyncAdapter(this)
+    override fun syncAdapter() = JtxSyncAdapter(this, appDatabase)
 
-    class JtxSyncAdapter(context: Context): SyncAdapter(context) {
+
+    class JtxSyncAdapter(
+        context: Context,
+        appDatabase: AppDatabase
+    ) : SyncAdapter(context, appDatabase) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
 
@@ -70,7 +76,6 @@ class JtxSyncAdapterService: SyncAdapterService() {
         }
 
         private fun updateLocalCollections(account: Account, client: ContentProviderClient) {
-            val db = get<AppDatabase>()
             val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
 
             val remoteCollections = mutableMapOf<HttpUrl, Collection>()

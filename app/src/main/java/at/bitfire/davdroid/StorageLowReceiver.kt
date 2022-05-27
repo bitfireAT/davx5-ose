@@ -15,10 +15,25 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-class StorageLowReceiver(
+class StorageLowReceiver private constructor(
     val context: Context
 ): BroadcastReceiver(), AutoCloseable {
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object storageLowReceiverModule {
+        @Provides
+        @Singleton
+        fun storageLowReceiver(@ApplicationContext context: Context) = StorageLowReceiver(context)
+    }
+
 
     val storageLow = MutableLiveData<Boolean>(false)
 

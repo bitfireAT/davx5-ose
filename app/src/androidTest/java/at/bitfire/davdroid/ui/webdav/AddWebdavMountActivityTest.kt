@@ -5,26 +5,43 @@
 package at.bitfire.davdroid.ui.webdav
 
 import android.security.NetworkSecurityPolicy
-import at.bitfire.davdroid.TestUtils
+import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.spyk
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assume
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
+@HiltAndroidTest
 class AddWebdavMountActivityTest {
 
-    val model = AddWebdavMountActivity.Model(TestUtils.targetApplication)
-    val web = MockWebServer()
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var db: AppDatabase
 
     @Before
     fun setUp() {
+        hiltRule.inject()
+
+        model = spyk(AddWebdavMountActivity.Model(InstrumentationRegistry.getInstrumentation().targetContext, db))
+
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }
 
+
+    lateinit var model: AddWebdavMountActivity.Model
+    val web = MockWebServer()
 
     @Test
     fun testHasWebDav_NoDavHeader() {

@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.app.Application
 import android.app.usage.UsageStatsManager
 import android.content.*
 import android.content.pm.ApplicationInfo
@@ -28,9 +27,9 @@ import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
@@ -47,6 +46,9 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.ical4android.MiscUtils.ContentProviderClientHelper.closeCompat
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import at.techbee.jtx.JtxContract
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,14 +59,14 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import java.io.*
 import java.util.*
 import java.util.logging.Level
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DebugInfoActivity: AppCompatActivity() {
 
     companion object {
@@ -129,7 +131,7 @@ class DebugInfoActivity: AppCompatActivity() {
             )
         })
 
-        model.debugInfo.observe(this, { debugInfo ->
+        model.debugInfo.observe(this, Observer { debugInfo ->
             val showDebugInfo = View.OnClickListener {
                 val uri = FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), debugInfo)
                 val intent = Intent(Intent.ACTION_VIEW)
@@ -147,7 +149,7 @@ class DebugInfoActivity: AppCompatActivity() {
             binding.zipShare.setOnClickListener { shareArchive() }
         })
 
-        model.logFile.observe(this, { logs ->
+        model.logFile.observe(this, Observer { logs ->
             binding.logsView.setOnClickListener {
                 val uri = FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), logs)
                 val intent = Intent(Intent.ACTION_VIEW)
@@ -171,9 +173,13 @@ class DebugInfoActivity: AppCompatActivity() {
     }
 
 
-    class ReportModel(
-            val context: Application
-    ): AndroidViewModel(context), KoinComponent {
+    @HiltViewModel
+    class ReportModel @Inject constructor(
+        @ApplicationContext val context: Context
+    ): ViewModel() {
+
+        @Inject lateinit var db: AppDatabase
+        @Inject lateinit var settings: SettingsManager
 
         private var initialized = false
 
@@ -471,11 +477,11 @@ class DebugInfoActivity: AppCompatActivity() {
 
                 // database dump
                 writer.append("\nDATABASE DUMP\n\n")
-                get<AppDatabase>().dump(writer, arrayOf("webdav_document"))
+                db.dump(writer, arrayOf("webdav_document"))
 
                 // app settings
                 writer.append("\nAPP SETTINGS\n\n")
-                get<SettingsManager>().dump(writer)
+                settings.dump(writer)
 
                 writer.append("--- END DEBUG INFO ---\n")
                 writer.toString()
@@ -484,8 +490,6 @@ class DebugInfoActivity: AppCompatActivity() {
         }
 
         fun generateZip(onSuccess: (File) -> Unit) {
-            val context = getApplication<Application>()
-
             viewModelScope.launch(Dispatchers.IO) {
                 try {
                     zipProgress.postValue(true)
@@ -537,8 +541,6 @@ class DebugInfoActivity: AppCompatActivity() {
 
 
         private fun dumpMainAccount(account: Account, writer: Writer) {
-            val context = getApplication<Application>()
-
             writer.append(" - Account: ${account.name}\n")
             writer.append(dumpAccount(account, AccountDumpInfo.mainAccount(context)))
             try {

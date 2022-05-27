@@ -11,12 +11,25 @@ import android.content.SyncResult
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
+import javax.inject.Inject
 
+@HiltAndroidTest
 class SyncAdapterTest {
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
     val context by lazy { InstrumentationRegistry.getInstrumentation().context }
     val targetContext by lazy { InstrumentationRegistry.getInstrumentation().targetContext }
@@ -27,12 +40,15 @@ class SyncAdapterTest {
 
     val account = Account("test", "com.example.test")
 
+    @Inject lateinit var db: AppDatabase
     lateinit var syncAdapter: TestSyncAdapter
 
 
     @Before
-    fun createSyncAdapter() {
-        syncAdapter = TestSyncAdapter(context)
+    fun setUp() {
+        hiltRule.inject()
+
+        syncAdapter = TestSyncAdapter(context, db)
     }
 
 
@@ -104,7 +120,7 @@ class SyncAdapterTest {
     }
 
 
-    class TestSyncAdapter(context: Context): SyncAdapterService.SyncAdapter(context) {
+    class TestSyncAdapter(context: Context, db: AppDatabase): SyncAdapterService.SyncAdapter(context, db) {
 
         companion object {
             /**

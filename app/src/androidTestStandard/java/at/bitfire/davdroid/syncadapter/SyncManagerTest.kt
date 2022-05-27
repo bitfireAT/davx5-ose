@@ -18,6 +18,9 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.Protocol
 import okhttp3.internal.http.StatusLine
 import okhttp3.mockwebserver.MockResponse
@@ -25,8 +28,21 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.*
 import org.junit.Assert.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
+@HiltAndroidTest
 class SyncManagerTest {
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
+    }
 
     companion object {
 

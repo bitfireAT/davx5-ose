@@ -6,8 +6,8 @@ package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.app.Application
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -37,15 +37,19 @@ import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
-import org.koin.core.component.inject
 import java.util.logging.Level
+import javax.inject.Inject
 
-class AccountDetailsFragment : Fragment(), KoinComponent {
+@AndroidEntryPoint
+class AccountDetailsFragment : Fragment() {
+
+    @Inject lateinit var settings: SettingsManager
 
     val loginModel by activityViewModels<LoginModel>()
     val model by viewModels<AccountDetailsModel>()
@@ -66,7 +70,6 @@ class AccountDetailsFragment : Fragment(), KoinComponent {
                         ?: loginModel.baseURI?.host
 
         // CardDAV-specific
-        val settings = get<SettingsManager>()
         v.carddav.visibility = if (config.cardDAV != null) View.VISIBLE else View.GONE
         if (settings.containsKey(AccountSettings.KEY_CONTACT_GROUP_METHOD))
             v.contactGroupMethod.isEnabled = false
@@ -135,11 +138,12 @@ class AccountDetailsFragment : Fragment(), KoinComponent {
     }
 
 
-    class AccountDetailsModel(
-            application: Application
-    ) : AndroidViewModel(application), KoinComponent {
-
-        val db by inject<AppDatabase>()
+    @HiltViewModel
+    class AccountDetailsModel @Inject constructor(
+        @ApplicationContext val context: Context,
+        val db: AppDatabase,
+        val settingsManager: SettingsManager
+    ) : ViewModel() {
 
         val name = MutableLiveData<String>()
         val nameError = MutableLiveData<String>()
@@ -152,7 +156,6 @@ class AccountDetailsFragment : Fragment(), KoinComponent {
 
         fun createAccount(name: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): LiveData<Boolean> {
             val result = MutableLiveData<Boolean>()
-            val context = getApplication<Application>()
             viewModelScope.launch(Dispatchers.Default + NonCancellable) {
                 val account = Account(name, context.getString(R.string.account_type))
 
@@ -169,7 +172,7 @@ class AccountDetailsFragment : Fragment(), KoinComponent {
                 Logger.log.log(Level.INFO, "Writing account configuration to database", config)
                 try {
                     val accountSettings = AccountSettings(context, account)
-                    val defaultSyncInterval = get<SettingsManager>().getLong(Settings.DEFAULT_SYNC_INTERVAL)
+                    val defaultSyncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
 
                     val refreshIntent = Intent(context, DavService::class.java)
                     refreshIntent.action = DavService.ACTION_REFRESH_COLLECTIONS

@@ -9,6 +9,9 @@ import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.ResourceType
 import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -16,9 +19,24 @@ import org.junit.After
 import org.junit.Assert.*
 import org.junit.Assume
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
+@HiltAndroidTest
 class CollectionTest {
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
+    }
+
 
     private lateinit var httpClient: HttpClient
     private val server = MockWebServer()

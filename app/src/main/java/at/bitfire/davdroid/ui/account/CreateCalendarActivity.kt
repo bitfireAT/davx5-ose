@@ -31,28 +31,33 @@ import at.bitfire.davdroid.ui.HomeSetAdapter
 import at.bitfire.ical4android.DateUtils
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.fortuna.ical4j.model.Calendar
 import org.apache.commons.lang3.StringUtils
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
     }
 
+    @Inject lateinit var modelFactory: Model.Factory
     val model by viewModels<Model>() {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 val account = intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
-                return Model(account) as T
+                return modelFactory.create(account) as T
             }
         }
     }
@@ -213,11 +218,15 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
     }
 
 
-    class Model(
-        val account: Account
-    ): ViewModel(), KoinComponent {
+    class Model @AssistedInject constructor(
+        val db: AppDatabase,
+        @Assisted val account: Account
+    ): ViewModel() {
 
-        val db by inject<AppDatabase>()
+        @AssistedFactory
+        interface Factory {
+            fun create(account: Account): Model
+        }
 
         val displayName = MutableLiveData<String>()
         val displayNameError = MutableLiveData<String>()

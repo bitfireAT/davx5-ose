@@ -8,9 +8,9 @@ import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
-import android.app.Application
 import android.app.Dialog
 import android.content.ContentResolver
+import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -23,9 +23,9 @@ import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.InvalidAccountException
@@ -38,13 +38,16 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import java.util.logging.Level
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RenameAccountFragment: DialogFragment() {
 
     companion object {
@@ -99,15 +102,15 @@ class RenameAccountFragment: DialogFragment() {
     }
 
 
-    class Model(
-            application: Application
-    ): AndroidViewModel(application), KoinComponent {
+    @HiltViewModel
+    class Model @Inject constructor(
+        @ApplicationContext val context: Context,
+        val db: AppDatabase
+    ): ViewModel() {
 
         val finished = MutableLiveData<Boolean>()
 
         fun renameAccount(oldAccount: Account, newName: String) {
-            val context = getApplication<Application>()
-
             // remember sync intervals
             val oldSettings = try {
                 AccountSettings(context, oldAccount)
@@ -143,7 +146,6 @@ class RenameAccountFragment: DialogFragment() {
         fun onAccountRenamed(accountManager: AccountManager, oldAccount: Account, newName: String, syncIntervals: List<Pair<String, Long?>>) {
             // account has now been renamed
             Logger.log.info("Updating account name references")
-            val context = getApplication<Application>()
 
             // cancel maybe running synchronization
             ContentResolver.cancelSync(oldAccount, null)
@@ -151,7 +153,6 @@ class RenameAccountFragment: DialogFragment() {
                 ContentResolver.cancelSync(addrBookAccount, null)
 
             // update account name references in database
-            val db = get<AppDatabase>()
             try {
                 db.serviceDao().renameAccount(oldAccount.name, newName)
             } catch (e: Exception) {

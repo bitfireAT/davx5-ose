@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import android.provider.ContactsContract
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
@@ -22,10 +23,13 @@ class ContactsSyncAdapterService: SyncAdapterService() {
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"
     }
 
-    override fun syncAdapter() = ContactsSyncAdapter(this)
+    override fun syncAdapter() = ContactsSyncAdapter(this, appDatabase)
 
 
-	class ContactsSyncAdapter(context: Context): SyncAdapter(context) {
+	class ContactsSyncAdapter(
+        context: Context,
+        appDatabase: AppDatabase
+    ) : SyncAdapter(context, appDatabase) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {

@@ -28,17 +28,18 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
-import org.koin.android.ext.android.get
-import org.koin.core.component.KoinComponent
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
+import javax.inject.Inject
 import kotlin.collections.*
 
 @Suppress("DEPRECATION")
-class DavService: IntentService("DavService"), KoinComponent {
+@AndroidEntryPoint
+class DavService: IntentService("DavService") {
 
     companion object {
 
@@ -70,6 +71,9 @@ class DavService: IntentService("DavService"), KoinComponent {
 
     }
 
+    @Inject lateinit var db: AppDatabase
+    @Inject lateinit var settings: SettingsManager
+
     /**
      * List of [Service] IDs for which the collections are currently refreshed
      */
@@ -95,8 +99,7 @@ class DavService: IntentService("DavService"), KoinComponent {
                         listener.get()?.onDavRefreshStatusChanged(id, true)
                     }
 
-                    val db = get<AppDatabase>()
-                    refreshCollections(db, id)
+                    refreshCollections(id)
                 }
 
             ACTION_FORCE_SYNC -> {
@@ -161,8 +164,7 @@ class DavService: IntentService("DavService"), KoinComponent {
         ContentResolver.requestSync(account, authority, extras)
     }
 
-    private fun refreshCollections(db: AppDatabase, serviceId: Long) {
-        val settings = get<SettingsManager>()
+    private fun refreshCollections(serviceId: Long) {
         val syncAllCollections = settings.getBoolean(Settings.SYNC_ALL_COLLECTIONS)
 
         val homeSetDao = db.homeSetDao()

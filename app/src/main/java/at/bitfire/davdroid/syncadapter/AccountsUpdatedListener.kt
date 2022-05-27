@@ -13,14 +13,37 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import java.util.logging.Level
+import javax.inject.Singleton
 
-class AccountsUpdatedListener(val context: Context): KoinComponent, OnAccountsUpdateListener {
+class AccountsUpdatedListener private constructor(
+    val context: Context
+): OnAccountsUpdateListener {
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object AccountsUpdatedListenerModule {
+        @Provides
+        @Singleton
+        fun accountsUpdatedListener(@ApplicationContext context: Context) = AccountsUpdatedListener(context)
+    }
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface AccountsUpdatedListenerEntryPoint {
+        fun appDatabase(): AppDatabase
+    }
+
 
     fun listen() {
         val accountManager = AccountManager.get(context)
@@ -67,7 +90,8 @@ class AccountsUpdatedListener(val context: Context): KoinComponent, OnAccountsUp
         }
 
         // delete orphaned services in DB
-        val serviceDao = get<AppDatabase>().serviceDao()
+        val db = EntryPointAccessors.fromApplication(context, AccountsUpdatedListenerEntryPoint::class.java).appDatabase()
+        val serviceDao = db.serviceDao()
         if (mainAccountNames.isEmpty())
             serviceDao.deleteAll()
         else

@@ -6,8 +6,8 @@ package at.bitfire.davdroid.ui.account
 
 import android.Manifest
 import android.app.Activity
-import android.app.Application
 import android.content.ContentProviderClient
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.ContentObserver
@@ -18,6 +18,7 @@ import android.provider.CalendarContract.Calendars
 import android.view.*
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.room.Transaction
@@ -31,27 +32,32 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
 import com.google.android.material.snackbar.Snackbar
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.util.logging.Level
+import javax.inject.Inject
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
+@AndroidEntryPoint
 class WebcalFragment: CollectionsFragment() {
 
     override val noCollectionsStringId = R.string.account_no_webcals
 
+    @Inject lateinit var webcalModelFactory: WebcalModel.Factory
     val webcalModel by viewModels<WebcalModel>() {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>) =
-                WebcalModel(
-                    requireActivity().application,
+                webcalModelFactory.create(
                     requireArguments().getLong(EXTRA_SERVICE_ID)
                 ) as T
         }
@@ -83,13 +89,14 @@ class WebcalFragment: CollectionsFragment() {
         }
     }
 
-    override fun createAdapter(): CollectionAdapter = WebcalAdapter(accountModel, webcalModel)
+    override fun createAdapter(): CollectionAdapter = WebcalAdapter(accountModel, webcalModel, parentFragmentManager)
 
 
     class CalendarViewHolder(
-            private val parent: ViewGroup,
-            accountModel: AccountActivity.Model,
-            private val webcalModel: WebcalModel
+        private val parent: ViewGroup,
+        accountModel: AccountActivity.Model,
+        private val webcalModel: WebcalModel,
+        private val fragmentManager: FragmentManager
     ): CollectionViewHolder<AccountCaldavItemBinding>(parent, AccountCaldavItemBinding.inflate(LayoutInflater.from(parent.context), parent, false), accountModel) {
 
         override fun bindTo(item: Collection) {
@@ -115,7 +122,7 @@ class WebcalFragment: CollectionsFragment() {
                 else
                     subscribe(item)
             }
-            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item))
+            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item, fragmentManager))
         }
 
         private fun subscribe(item: Collection) {
@@ -151,28 +158,34 @@ class WebcalFragment: CollectionsFragment() {
     }
 
     class WebcalAdapter(
-            accountModel: AccountActivity.Model,
-            private val webcalModel: WebcalModel
+        accountModel: AccountActivity.Model,
+        private val webcalModel: WebcalModel,
+        val fragmentManager: FragmentManager
     ): CollectionAdapter(accountModel) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-                CalendarViewHolder(parent, accountModel, webcalModel)
+                CalendarViewHolder(parent, accountModel, webcalModel, fragmentManager)
 
     }
 
 
-    class WebcalModel(
-        application: Application,
-        val serviceId: Long
-    ): AndroidViewModel(application), KoinComponent {
+    class WebcalModel @AssistedInject constructor(
+        @ApplicationContext context: Context,
+        val db: AppDatabase,
+        @Assisted val serviceId: Long
+    ): ViewModel() {
 
-        private val db by inject<AppDatabase>()
-        private val resolver = application.contentResolver
+        @AssistedFactory
+        interface Factory {
+            fun create(serviceId: Long): WebcalModel
+        }
+
+        private val resolver = context.contentResolver
 
         private var calendarPermission = false
         private val calendarProvider = object: MediatorLiveData<ContentProviderClient>() {
             init {
-                calendarPermission = ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+                calendarPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
                 if (calendarPermission)
                     connect()
             }
@@ -226,7 +239,7 @@ class WebcalFragment: CollectionsFragment() {
                             }
                         }
                     }
-                    getApplication<Application>().contentResolver.registerContentObserver(Calendars.CONTENT_URI, false, newObserver)
+                    context.contentResolver.registerContentObserver(Calendars.CONTENT_URI, false, newObserver)
                     observer = newObserver
 
                     viewModelScope.launch(Dispatchers.IO) {
@@ -242,7 +255,7 @@ class WebcalFragment: CollectionsFragment() {
 
             private fun unregisterObserver() {
                 observer?.let {
-                    application.contentResolver.unregisterContentObserver(it)
+                    context.contentResolver.unregisterContentObserver(it)
                     observer = null
                 }
             }

@@ -11,10 +11,17 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Build
 import androidx.core.content.getSystemService
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntKey
+import dagger.multibindings.IntoMap
+import javax.inject.Inject
 
 class DefaultsProvider(
-        context: Context,
-        settingsManager: SettingsManager
+    context: Context,
+    settingsManager: SettingsManager
 ): BaseDefaultsProvider(context, settingsManager) {
 
     override val booleanDefaults = mutableMapOf(
@@ -75,9 +82,17 @@ class DefaultsProvider(
     }
 
 
-    class Factory : SettingsProviderFactory {
+    class Factory @Inject constructor(): SettingsProviderFactory {
         override fun getProviders(context: Context, settingsManager: SettingsManager) =
-                listOf(DefaultsProvider(context, settingsManager))
+            listOf(DefaultsProvider(context, settingsManager))
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    abstract class DefaultsProviderFactoryModule {
+        @Binds
+        @IntoMap @IntKey(/* priority */ 0)
+        abstract fun factory(impl: Factory): SettingsProviderFactory
     }
 
 }

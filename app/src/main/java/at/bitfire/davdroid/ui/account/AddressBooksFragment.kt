@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.account
 
 import android.content.Intent
 import android.view.*
+import androidx.fragment.app.FragmentManager
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCarddavItemBinding
@@ -46,12 +47,13 @@ class AddressBooksFragment: CollectionsFragment() {
         }
     }
 
-    override fun createAdapter() = AddressBookAdapter(accountModel)
+    override fun createAdapter() = AddressBookAdapter(accountModel, parentFragmentManager)
 
 
     class AddressBookViewHolder(
-            parent: ViewGroup,
-            accountModel: AccountActivity.Model
+        parent: ViewGroup,
+        accountModel: AccountActivity.Model,
+        val fragmentManager: FragmentManager
     ): CollectionViewHolder<AccountCarddavItemBinding>(parent, AccountCarddavItemBinding.inflate(LayoutInflater.from(parent.context), parent, false), accountModel) {
 
         override fun bindTo(item: Collection) {
@@ -70,16 +72,17 @@ class AddressBooksFragment: CollectionsFragment() {
             itemView.setOnClickListener {
                 accountModel.toggleSync(item)
             }
-            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item))
+            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item, fragmentManager))
         }
     }
 
     class AddressBookAdapter(
-            accountModel: AccountActivity.Model
+        accountModel: AccountActivity.Model,
+        val fragmentManager: FragmentManager
     ): CollectionAdapter(accountModel) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            AddressBookViewHolder(parent, accountModel)
+            AddressBookViewHolder(parent, accountModel, fragmentManager)
 
     }
 

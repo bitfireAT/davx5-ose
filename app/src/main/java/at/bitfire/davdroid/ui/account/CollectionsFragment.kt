@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.app.Application
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
@@ -13,8 +12,8 @@ import android.provider.ContactsContract
 import android.view.*
 import android.widget.PopupMenu
 import androidx.annotation.AnyThread
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
@@ -33,14 +32,19 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.ui.PermissionsActivity
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import javax.inject.Inject
 
-abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayout.OnRefreshListener {
+@AndroidEntryPoint
+abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     companion object {
         const val EXTRA_SERVICE_ID = "serviceId"
@@ -51,12 +55,12 @@ abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayou
     protected val binding get() = _binding!!
 
     val accountModel by activityViewModels<AccountActivity.Model>()
+    @Inject lateinit var modelFactory: Model.Factory
     val model by viewModels<Model> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T: ViewModel> create(modelClass: Class<T>): T =
-                Model(
-                    requireActivity().application,
+                modelFactory.create(
                     accountModel,
                     requireArguments().getLong(EXTRA_SERVICE_ID),
                     requireArguments().getString(EXTRA_COLLECTION_TYPE) ?: throw IllegalArgumentException("EXTRA_COLLECTION_TYPE required")
@@ -190,15 +194,15 @@ abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayou
 
 
     abstract class CollectionViewHolder<T: ViewBinding>(
-            parent: ViewGroup,
-            val binding: T,
-            protected val accountModel: AccountActivity.Model
+        parent: ViewGroup,
+        val binding: T,
+        protected val accountModel: AccountActivity.Model
     ): RecyclerView.ViewHolder(binding.root) {
         abstract fun bindTo(item: Collection)
     }
 
     abstract class CollectionAdapter(
-            protected val accountModel: AccountActivity.Model
+        protected val accountModel: AccountActivity.Model
     ): PagingDataAdapter<Collection, CollectionViewHolder<*>>(DIFF_CALLBACK) {
 
         companion object {
@@ -220,12 +224,12 @@ abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayou
     }
 
     class CollectionPopupListener(
-            private val accountModel: AccountActivity.Model,
-            private val item: Collection
+        private val accountModel: AccountActivity.Model,
+        private val item: Collection,
+        private val fragmentManager: FragmentManager
     ): View.OnClickListener {
 
         override fun onClick(anchor: View) {
-            val fragmentManager = (anchor.context as AppCompatActivity).supportFragmentManager
             val popup = PopupMenu(anchor.context, anchor, Gravity.RIGHT)
             popup.inflate(R.menu.account_collection_operations)
 
@@ -261,14 +265,18 @@ abstract class CollectionsFragment: Fragment(), KoinComponent, SwipeRefreshLayou
     }
 
 
-    class Model(
-        val context: Application,
-        val accountModel: AccountActivity.Model,
-        val serviceId: Long,
-        val collectionType: String
-    ): ViewModel(), DavService.RefreshingStatusListener, KoinComponent, SyncStatusObserver {
+    class Model @AssistedInject constructor(
+        @ApplicationContext val context: Context,
+        val db: AppDatabase,
+        @Assisted val accountModel: AccountActivity.Model,
+        @Assisted val serviceId: Long,
+        @Assisted val collectionType: String
+    ): ViewModel(), DavService.RefreshingStatusListener, SyncStatusObserver {
 
-        private val db by inject<AppDatabase>()
+        @AssistedFactory
+        interface Factory {
+            fun create(accountModel: AccountActivity.Model, serviceId: Long, collectionType: String): Model
+        }
 
         // cache task provider
         val taskProvider by lazy { TaskUtils.currentProvider(context) }

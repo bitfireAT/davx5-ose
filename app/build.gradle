@@ -4,6 +4,7 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.mikepenz.aboutlibraries.plugin'
+apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
@@ -25,7 +26,7 @@ android {
 
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "at.bitfire.davdroid.CustomTestRunner"
         //testInstrumentationRunnerArgument "notAnnotation", "androidx.test.filters.FlakyTest"
 
         kapt {
@@ -104,6 +105,9 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
+    kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"
+
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.browser:browser:1.4.0'
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -138,7 +142,6 @@ dependencies {
     implementation 'commons-io:commons-io:2.6'
     //noinspection GradleDependency - dnsjava 3+ needs Java 8/Android 7
     implementation 'dnsjava:dnsjava:2.1.9'
-    implementation "io.insert-koin:koin-android:3.2.0"
     //noinspection GradleDependency
     implementation "org.apache.commons:commons-collections4:${versions.commonsCollections}"
     //noinspection GradleDependency
@@ -147,6 +150,9 @@ dependencies {
     implementation "org.apache.commons:commons-text:${versions.commonsText}"
 
     // for tests
+    androidTestImplementation "com.google.dagger:hilt-android-testing:${versions.hilt}"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:${versions.hilt}"
+
     androidTestImplementation 'androidx.test:core-ktx:1.4.0'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test:rules:1.4.0'

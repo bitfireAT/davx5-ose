@@ -19,15 +19,20 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.koin.core.component.get
 import java.util.logging.Level
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 class CalendarsSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = CalendarsSyncAdapter(this)
+    override fun syncAdapter() = CalendarsSyncAdapter(this, appDatabase)
 
 
-	class CalendarsSyncAdapter(context: Context): SyncAdapter(context) {
+	class CalendarsSyncAdapter(
+        context: Context,
+        appDatabase: AppDatabase
+    ) : SyncAdapter(context, appDatabase) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
@@ -64,7 +69,6 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
         }
 
         private fun updateLocalCalendars(provider: ContentProviderClient, account: Account, settings: AccountSettings) {
-            val db = get<AppDatabase>()
             val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
 
             val remoteCalendars = mutableMapOf<HttpUrl, Collection>()

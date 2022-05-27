@@ -9,8 +9,8 @@ import at.bitfire.davdroid.TextTable
 import java.io.Writer
 
 abstract class BaseDefaultsProvider(
-        val context: Context,
-        val settingsManager: SettingsManager
+    val context: Context,
+    val settingsManager: SettingsManager
 ): SettingsProvider {
 
     abstract val booleanDefaults: Map<String, Boolean>

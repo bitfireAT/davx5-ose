@@ -5,21 +5,28 @@
 package at.bitfire.davdroid.resource
 
 import android.content.Context
-import at.bitfire.davdroid.TasksWatcher
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.ical4android.TaskProvider.ProviderName
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-object TaskUtils: KoinComponent {
+object TaskUtils {
 
-    val settingsManager by inject<SettingsManager>()
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface TaskUtilsEntryPoint {
+        fun settingsManager(): SettingsManager
+    }
 
     fun currentProvider(context: Context): ProviderName? {
+        val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
         val preferredAuthority = settingsManager.getString(Settings.PREFERRED_TASKS_PROVIDER)
         ProviderName.values()
                 .sortedByDescending { it.authority == preferredAuthority }
@@ -33,9 +40,10 @@ object TaskUtils: KoinComponent {
     fun isAvailable(context: Context) = currentProvider(context) != null
 
     fun setPreferredProvider(context: Context, providerName: ProviderName) {
+        val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
         settingsManager.putString(Settings.PREFERRED_TASKS_PROVIDER, providerName.authority)
         CoroutineScope(Dispatchers.Default).launch {
-            TasksWatcher.updateTaskSync(context)
+            SyncUtils.updateTaskSync(context)
         }
     }
 

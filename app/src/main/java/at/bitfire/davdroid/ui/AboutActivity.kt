@@ -34,6 +34,11 @@ import at.bitfire.davdroid.databinding.AboutTranslationBinding
 import at.bitfire.davdroid.databinding.ActivityAboutBinding
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.LibsBuilder
+import dagger.BindsOptionalOf
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.io.IOUtils
@@ -41,7 +46,10 @@ import org.json.JSONObject
 import java.text.Collator
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Qualifier
 
+@AndroidEntryPoint
 class AboutActivity: AppCompatActivity() {
 
     companion object {
@@ -112,11 +120,28 @@ class AboutActivity: AppCompatActivity() {
     }
 
 
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class LicenseFragment
+
+    @Module
+    @InstallIn(ActivityComponent::class)
+    abstract class LicenseFragmentModule {
+        @BindsOptionalOf
+        @LicenseFragment
+        abstract fun licenseFragment(): Fragment
+    }
+
+    @AndroidEntryPoint
     class AppFragment: Fragment() {
 
         private var _binding: AboutBinding? = null
         private val binding get() = _binding!!
         val model by viewModels<TextFileModel>()
+
+        @Inject
+        @LicenseFragment
+        lateinit var licenseFragment: Optional<Fragment>
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
             _binding = AboutBinding.inflate(inflater, container, false)
@@ -274,6 +299,5 @@ class AboutActivity: AppCompatActivity() {
         }
 
     }
-
 
 }

@@ -16,12 +16,20 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 
 class ForegroundService : Service() {
 
-    companion object: KoinComponent {
+    companion object {
+
+        @EntryPoint
+        @InstallIn(SingletonComponent::class)
+        interface ForegroundServiceEntryPoint {
+            fun settingsManager(): SettingsManager
+        }
 
         /**
          * Starts/stops a foreground service, according to the app setting [Settings.FOREGROUND_SERVICE]
@@ -45,15 +53,16 @@ class ForegroundService : Service() {
          * Whether the foreground service is enabled (checked) in the app settings.
          * @return true: foreground service enabled; false: foreground service not enabled
          */
-        fun foregroundServiceActivated(): Boolean {
-            return get<SettingsManager>().getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
+        fun foregroundServiceActivated(context: Context): Boolean {
+            val settingsManager = EntryPointAccessors.fromApplication(context, ForegroundServiceEntryPoint::class.java).settingsManager()
+            return settingsManager.getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
         }
 
         /**
          * Starts the foreground service when enabled in the app settings and applicable.
          */
         fun startIfActive(context: Context) {
-            if (foregroundServiceActivated()) {
+            if (foregroundServiceActivated(context)) {
                 if (batteryOptimizationWhitelisted(context)) {
                     val serviceIntent = Intent(ACTION_FOREGROUND, null, context, ForegroundService::class.java)
                     if (Build.VERSION.SDK_INT >= 26)
@@ -87,7 +96,7 @@ class ForegroundService : Service() {
     override fun onBind(intent: Intent?): Nothing? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (foregroundServiceActivated()) {
+        if (foregroundServiceActivated(this)) {
             val settingsIntent = Intent(this, AppSettingsActivity::class.java).apply {
                 putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, Settings.FOREGROUND_SERVICE)
             }

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.intro
 
-import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,16 +12,19 @@ import android.view.ViewGroup
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.IntroOpenSourceBinding
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment.Model.Companion.SETTING_NEXT_DONATION_POPUP
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class OpenSourceFragment: Fragment() {
 
     val model by viewModels<Model>()
@@ -44,14 +46,17 @@ class OpenSourceFragment: Fragment() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app), KoinComponent {
+    @HiltViewModel
+    class Model @Inject constructor(
+        @ApplicationContext val context: Context,
+        val settings: SettingsManager
+    ): ViewModel() {
 
         companion object {
             const val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"
         }
 
         val dontShow = object: ObservableBoolean() {
-            val settings = get<SettingsManager>()
             override fun set(dontShowAgain: Boolean) {
                 if (dontShowAgain) {
                     val nextReminder = System.currentTimeMillis() + 90*86400000L     // 90 days (~ 3 months)
@@ -61,15 +66,19 @@ class OpenSourceFragment: Fragment() {
                 super.set(dontShowAgain)
             }
         }
+
     }
 
-    class Factory: IIntroFragmentFactory {
 
-        override fun shouldBeShown(context: Context, settingsManager: SettingsManager) =
-                if (System.currentTimeMillis() > (settingsManager.getLongOrNull(SETTING_NEXT_DONATION_POPUP) ?: 0))
-                    IIntroFragmentFactory.ShowMode.SHOW
-                else
-                    IIntroFragmentFactory.ShowMode.DONT_SHOW
+    class Factory @Inject constructor(
+        val settingsManager: SettingsManager
+    ): IntroFragmentFactory {
+
+        override fun getOrder(context: Context) =
+            if (System.currentTimeMillis() > (settingsManager.getLongOrNull(SETTING_NEXT_DONATION_POPUP) ?: 0))
+                100
+            else
+                0
 
         override fun create() = OpenSourceFragment()
 

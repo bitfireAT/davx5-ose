@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,12 +20,17 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DeleteCollectionFragment: DialogFragment() {
 
     companion object {
@@ -42,12 +47,12 @@ class DeleteCollectionFragment: DialogFragment() {
         }
     }
 
+    @Inject lateinit var modelFactory: Model.Factory
     val model by viewModels<Model>() {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                Model(
-                    requireActivity().application,
+                modelFactory.create(
                     requireArguments().getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException("ARG_ACCOUNT required"),
                     requireArguments().getLong(ARG_COLLECTION_ID)
                 ) as T
@@ -82,13 +87,18 @@ class DeleteCollectionFragment: DialogFragment() {
     }
 
 
-    class Model(
-        application: Application,
-        var account: Account,
-        val collectionId: Long
-    ): AndroidViewModel(application), KoinComponent {
+    class Model @AssistedInject constructor(
+        @ApplicationContext val context: Context,
+        val db: AppDatabase,
+        @Assisted var account: Account,
+        @Assisted val collectionId: Long
+    ): ViewModel() {
 
-        val db by inject<AppDatabase>()
+        @AssistedFactory
+        interface Factory {
+            fun create(account: Account, collectionId: Long): Model
+        }
+
         var collectionInfo: Collection? = null
 
         val confirmation = MutableLiveData<Boolean>()
@@ -104,7 +114,6 @@ class DeleteCollectionFragment: DialogFragment() {
             viewModelScope.launch(Dispatchers.IO + NonCancellable) {
                 val collectionInfo = collectionInfo ?: return@launch
 
-                val context = getApplication<Application>()
                 HttpClient.Builder(context, AccountSettings(context, account))
                         .setForeground(true)
                         .build().use { httpClient ->

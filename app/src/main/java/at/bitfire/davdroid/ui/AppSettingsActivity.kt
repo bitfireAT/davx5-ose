@@ -26,15 +26,16 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.net.URI
 import java.net.URISyntaxException
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
+@AndroidEntryPoint
 class AppSettingsActivity: AppCompatActivity() {
 
     companion object {
@@ -55,9 +56,10 @@ class AppSettingsActivity: AppCompatActivity() {
     }
 
 
-    class SettingsFragment: PreferenceFragmentCompat(), KoinComponent, SettingsManager.OnChangeListener {
+    @AndroidEntryPoint
+    class SettingsFragment: PreferenceFragmentCompat(), SettingsManager.OnChangeListener {
 
-        val settings by inject<SettingsManager>()
+        @Inject lateinit var settings: SettingsManager
 
         val onBatteryOptimizationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             loadSettings()

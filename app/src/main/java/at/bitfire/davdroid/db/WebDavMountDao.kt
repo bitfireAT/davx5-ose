@@ -16,9 +16,6 @@ interface WebDavMountDao {
     @Delete
     fun delete(mount: WebDavMount)
 
-    @Query("DELETE FROM webdav_mount")
-    fun deleteAll()
-
     @Query("SELECT * FROM webdav_mount ORDER BY name, url")
     fun getAll(): List<WebDavMount>
 

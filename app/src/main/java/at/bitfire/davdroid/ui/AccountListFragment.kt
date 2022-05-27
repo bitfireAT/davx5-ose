@@ -34,11 +34,14 @@ import at.bitfire.davdroid.StorageLowReceiver
 import at.bitfire.davdroid.databinding.AccountListBinding
 import at.bitfire.davdroid.databinding.AccountListItemBinding
 import at.bitfire.davdroid.ui.account.AccountActivity
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.Collator
+import javax.inject.Inject
 
-class AccountListFragment: Fragment(), KoinComponent {
+@AndroidEntryPoint
+class AccountListFragment: Fragment() {
+
+    @Inject lateinit var storageLowReceiver: StorageLowReceiver
 
     private var _binding: AccountListBinding? = null
     private val binding get() = _binding!!
@@ -63,7 +66,7 @@ class AccountListFragment: Fragment(), KoinComponent {
                 startActivity(intent)
         }
 
-        get<StorageLowReceiver>().storageLow.observe(viewLifecycleOwner) { storageLow ->
+        storageLowReceiver.storageLow.observe(viewLifecycleOwner) { storageLow ->
             binding.lowStorageInfo.visibility = if (storageLow) View.VISIBLE else View.GONE
         }
         binding.manageStorage.setOnClickListener {

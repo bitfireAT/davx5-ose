@@ -20,10 +20,13 @@ import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.AccountsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.component.KoinComponent
-import org.koin.dsl.module
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import java.io.Writer
+import javax.inject.Singleton
 
 @Suppress("ClassName")
 @Database(entities = [
@@ -40,16 +43,12 @@ import java.io.Writer
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
 
-    abstract fun serviceDao(): ServiceDao
-    abstract fun homeSetDao(): HomeSetDao
-    abstract fun collectionDao(): CollectionDao
-    abstract fun syncStatsDao(): SyncStatsDao
-    abstract fun webDavDocumentDao(): WebDavDocumentDao
-    abstract fun webDavMountDao(): WebDavMountDao
-
-    companion object: KoinComponent {
-
-        fun createInstance(context: Context) =
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object AppDatabaseModule {
+        @Provides
+        @Singleton
+        fun appDatabase(@ApplicationContext context: Context): AppDatabase =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
                 .addMigrations(*migrations)
                 .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
@@ -74,7 +73,9 @@ abstract class AppDatabase: RoomDatabase() {
                     }
                 })
                 .build()
+    }
 
+    companion object {
 
         // migrations
 
@@ -225,6 +226,18 @@ abstract class AppDatabase: RoomDatabase() {
 
     }
 
+
+    // DAOs
+
+    abstract fun serviceDao(): ServiceDao
+    abstract fun homeSetDao(): HomeSetDao
+    abstract fun collectionDao(): CollectionDao
+    abstract fun syncStatsDao(): SyncStatsDao
+    abstract fun webDavDocumentDao(): WebDavDocumentDao
+    abstract fun webDavMountDao(): WebDavMountDao
+
+
+    // helpers
 
     fun dump(writer: Writer, ignoreTables: Array<String>) {
         val db = openHelper.readableDatabase

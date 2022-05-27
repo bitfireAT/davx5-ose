@@ -14,9 +14,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.databinding.CollectionPropertiesBinding
 import at.bitfire.davdroid.db.AppDatabase
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CollectionInfoFragment: DialogFragment() {
 
     companion object {
@@ -33,11 +37,12 @@ class CollectionInfoFragment: DialogFragment() {
 
     }
 
+    @Inject lateinit var modelFactory: Model.Factory
     val model by viewModels<Model>() {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>) =
-                Model(requireArguments().getLong(ARGS_COLLECTION_ID)) as T
+                modelFactory.create(requireArguments().getLong(ARGS_COLLECTION_ID)) as T
         }
     }
 
@@ -50,11 +55,16 @@ class CollectionInfoFragment: DialogFragment() {
     }
 
 
-    class Model(
-        collectionId: Long
-    ): ViewModel(), KoinComponent {
+    class Model @AssistedInject constructor(
+        val db: AppDatabase,
+        @Assisted collectionId: Long
+    ): ViewModel() {
 
-        val db by inject<AppDatabase>()
+        @AssistedFactory
+        interface Factory {
+            fun create(collectionId: Long): Model
+        }
+
         var collection = db.collectionDao().getLive(collectionId)
 
     }

@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,16 +24,21 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import java.io.IOException
 import java.io.StringWriter
 import java.util.logging.Level
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CreateCollectionFragment: DialogFragment() {
 
     companion object {
@@ -53,6 +58,7 @@ class CreateCollectionFragment: DialogFragment() {
         const val ARG_SUPPORTS_VJOURNAL = "supportsVJOURNAL"
     }
 
+    @Inject lateinit var modelFactory: Model.Factory
     val model by viewModels<Model>() {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -76,7 +82,7 @@ class CreateCollectionFragment: DialogFragment() {
                     sync = true     /* by default, sync collections which just have been created */
                 )
 
-                return Model(requireActivity().application, account, serviceType, collection) as T
+                return modelFactory.create(account, serviceType, collection) as T
             }
         }
     }
@@ -110,18 +116,24 @@ class CreateCollectionFragment: DialogFragment() {
     }
 
 
-    class Model(
-        app: Application,
-        val account: Account,
-        val serviceType: String,
-        val collection: Collection
-    ): AndroidViewModel(app), KoinComponent {
+    class Model @AssistedInject constructor(
+        @ApplicationContext val context: Context,
+        val db: AppDatabase,
+        @Assisted val account: Account,
+        @Assisted val serviceType: String,
+        @Assisted val collection: Collection
+    ): ViewModel() {
+        
+        @AssistedFactory
+        interface Factory {
+            fun create(account: Account, serviceType: String, collection: Collection): Model
+        }
 
         val result = MutableLiveData<Exception>()
 
         fun createCollection(): LiveData<Exception> {
             viewModelScope.launch(Dispatchers.IO + NonCancellable) {
-                HttpClient.Builder(getApplication(), AccountSettings(getApplication(), account))
+                HttpClient.Builder(context, AccountSettings(context, account))
                         .setForeground(true)
                         .build().use { httpClient ->
                     try {
@@ -131,13 +143,12 @@ class CreateCollectionFragment: DialogFragment() {
                         dav.mkCol(generateXml()) {}
 
                         // no HTTP error -> create collection locally
-                        val db = get<AppDatabase>()
                         db.serviceDao().getByAccountAndType(account.name, serviceType)?.let { service ->
                             collection.serviceId = service.id
                             db.collectionDao().insert(collection)
 
                             // trigger service detection (because the collection may have other properties than the ones we have inserted)
-                            DavService.refreshCollections(getApplication(), service.id)
+                            DavService.refreshCollections(context, service.id)
                         }
 
                         // post success

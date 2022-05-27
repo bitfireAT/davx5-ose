@@ -19,11 +19,19 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import java.util.logging.Level
 
-object UiUtils: KoinComponent {
+object UiUtils {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface UiUtilsEntryPoint {
+        fun settingsManager(): SettingsManager
+    }
 
     const val SHORTCUT_SYNC_ALL = "syncAllAccounts"
     const val SNACKBAR_LENGTH_VERY_LONG = 5000          // 5s
@@ -54,8 +62,8 @@ object UiUtils: KoinComponent {
         return false
     }
 
-    fun setTheme() {
-        val settings = get<SettingsManager>()
+    fun setTheme(context: Context) {
+        val settings = EntryPointAccessors.fromApplication(context, UiUtilsEntryPoint::class.java).settingsManager()
         val mode = settings.getIntOrNull(Settings.PREFERRED_THEME) ?: Settings.PREFERRED_THEME_DEFAULT
         AppCompatDelegate.setDefaultNightMode(mode)
     }

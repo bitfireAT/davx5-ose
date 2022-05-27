@@ -4,15 +4,28 @@
 
 package at.bitfire.davdroid.settings
 
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import javax.inject.Inject
 
-class SettingsManagerTest: KoinComponent {
+@HiltAndroidTest
+class SettingsManagerTest {
 
-    val settingsManager by inject<SettingsManager>()
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject lateinit var settingsManager: SettingsManager
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
+    }
+
 
     @Test
     fun testContainsKey_NotExisting() {

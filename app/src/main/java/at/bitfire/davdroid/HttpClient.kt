@@ -15,12 +15,14 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import okhttp3.*
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -34,9 +36,15 @@ import java.util.logging.Level
 import javax.net.ssl.*
 
 class HttpClient private constructor(
-        val okHttpClient: OkHttpClient,
-        private val certManager: CustomCertManager?
+    val okHttpClient: OkHttpClient,
+    private val certManager: CustomCertManager?
 ): AutoCloseable {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface HttpClientEntryPoint {
+        fun settingsManager(): SettingsManager
+    }
 
     companion object {
         /** max. size of disk cache (10 MB) */
@@ -78,11 +86,11 @@ class HttpClient private constructor(
     }
 
     class Builder(
-            val context: Context? = null,
-            accountSettings: AccountSettings? = null,
-            val logger: java.util.logging.Logger? = Logger.log,
-            val loggerLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
-    ): KoinComponent {
+        val context: Context? = null,
+        accountSettings: AccountSettings? = null,
+        val logger: java.util.logging.Logger? = Logger.log,
+        val loggerLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
+    ) {
         private var certManager: CustomCertManager? = null
         private var certificateAlias: String? = null
         private var offerCompression: Boolean = false
@@ -101,7 +109,7 @@ class HttpClient private constructor(
             }
 
             if (context != null) {
-                val settings = get<SettingsManager>()
+                val settings = EntryPointAccessors.fromApplication(context, HttpClientEntryPoint::class.java).settingsManager()
 
                 // custom proxy support
                 try {

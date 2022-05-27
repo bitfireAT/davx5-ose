@@ -2,13 +2,17 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid.ui.setup
+package at.bitfire.davdroid.ui
 
-import android.content.Intent
-import androidx.fragment.app.Fragment
+import android.app.Activity
+import android.content.Context
+import android.view.Menu
+import android.view.MenuItem
 
-interface LoginCredentialsFragment {
+interface AccountsDrawerHandler {
 
-    fun getFragment(intent: Intent): Fragment?
+    fun initMenu(context: Context, menu: Menu)
+
+    fun onNavigationItemSelected(activity: Activity, item: MenuItem)
 
 }

@@ -38,14 +38,16 @@ import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.UsesThreadContextClassLoader
 import at.bitfire.vcard4android.ContactsStorageException
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.*
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.exception.ContextedException
 import org.dmfs.tasks.contract.TaskContract
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.lang.ref.WeakReference
@@ -68,7 +70,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     val authority: String,
     val syncResult: SyncResult,
     val localCollection: CollectionType
-): AutoCloseable, KoinComponent {
+): AutoCloseable {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface SyncManagerEntryPoint {
+        fun appDatabase(): AppDatabase
+    }
 
     enum class SyncAlgorithm {
         PROPFIND_REPORT,
@@ -141,7 +149,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             }
 
             // log sync time
-            val db = get<AppDatabase>()
+            val db = EntryPointAccessors.fromApplication(context, SyncManagerEntryPoint::class.java).appDatabase()
             db.runInTransaction {
                 db.collectionDao().getByUrl(collectionURL.toString())?.let { collection ->
                     db.syncStatsDao().insertOrReplace(
