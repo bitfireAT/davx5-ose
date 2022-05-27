@@ -4,29 +4,44 @@
 
 package at.bitfire.davdroid.ui
 
-import android.content.Context
 import androidx.test.core.app.launchActivity
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.settings.SettingsManager
 import com.google.android.play.core.review.testing.FakeReviewManager
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import javax.inject.Inject
 
-class EarnBadgesActivityTest : KoinComponent {
+@HiltAndroidTest
+class EarnBadgesActivityTest {
 
     companion object {
-        val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        val targetContext = InstrumentationRegistry.getInstrumentation().targetContext
     }
 
-    private val _settings by inject<SettingsManager>()
-    private var settings = spyk(_settings)
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
+    }
+
+
+    @Inject lateinit var settings: SettingsManager
+
 
     @Test
     fun testShowRatingRequest() {
