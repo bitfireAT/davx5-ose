@@ -11,11 +11,16 @@ import android.view.MenuItem
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import javax.inject.Inject
 
 /**
  * Default menu items control
  */
-open class StandardAccountsDrawerHandler: BaseAccountsDrawerHandler() {
+open class StandardAccountsDrawerHandler @Inject constructor(): BaseAccountsDrawerHandler() {
 
     companion object {
         const val COMMUNITY_URL = "https://github.com/bitfireAT/davx5-ose/discussions"

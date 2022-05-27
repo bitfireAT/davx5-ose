@@ -27,10 +27,16 @@ import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import com.google.android.material.snackbar.Snackbar
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntKey
+import dagger.multibindings.IntoMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,6 +50,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URI
+import javax.inject.Inject
 
 
 class NextcloudLoginFlowFragment: Fragment() {
@@ -275,7 +282,7 @@ class NextcloudLoginFlowFragment: Fragment() {
     }
 
 
-    class Factory: LoginCredentialsFragment {
+    class Factory @Inject constructor(): LoginCredentialsFragmentFactory {
 
         override fun getFragment(intent: Intent) =
                 if (intent.hasExtra(EXTRA_LOGIN_FLOW))
@@ -283,6 +290,15 @@ class NextcloudLoginFlowFragment: Fragment() {
                 else
                     null
 
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    abstract class NextcloudLoginFlowFragmentModule {
+        @Binds
+        @IntoMap
+        @IntKey(/* priority */ 20)
+        abstract fun factory(impl: Factory): LoginCredentialsFragmentFactory
     }
 
 }
