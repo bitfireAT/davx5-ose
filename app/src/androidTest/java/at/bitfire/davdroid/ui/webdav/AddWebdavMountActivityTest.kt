@@ -4,18 +4,27 @@
 
 package at.bitfire.davdroid.ui.webdav
 
+import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.db.WebDavMount
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assume
+import org.junit.Before
 import org.junit.Test
 
 class AddWebdavMountActivityTest {
 
     val model = AddWebdavMountActivity.Model(TestUtils.targetApplication)
     val web = MockWebServer()
+
+    @Before
+    fun setUp() {
+        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
+    }
+
 
     @Test
     fun testHasWebDav_NoDavHeader() {

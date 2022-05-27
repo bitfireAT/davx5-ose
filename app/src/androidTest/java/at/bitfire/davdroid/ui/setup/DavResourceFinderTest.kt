@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
@@ -19,6 +20,7 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Assert.*
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Test
 import java.net.URI
@@ -55,6 +57,8 @@ class DavResourceFinderTest {
         client = HttpClient.Builder()
                 .addAuthentication(null, loginModel.credentials!!)
                 .build()
+
+        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }
 
     @After

@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.db
 
+import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.ResourceType
@@ -13,6 +14,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.*
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Test
 
@@ -24,6 +26,7 @@ class CollectionTest {
     @Before
     fun setUp() {
         httpClient = HttpClient.Builder().build()
+        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }
 
     @After
