@@ -8,7 +8,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -36,23 +35,21 @@ import at.bitfire.davdroid.settings.SettingsManager
 import com.android.billingclient.api.*
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import java.io.Closeable
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.logging.Level
+import javax.inject.Inject
 
-class EarnBadgesActivity : AppCompatActivity(), KoinComponent, LifecycleOwner {
+@AndroidEntryPoint
+class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
-    private lateinit var binding: ActivityEarnBadgesBinding
-    val model by viewModels<Model>()
-
-    companion object: KoinComponent {
+    companion object {
         internal const val LAST_REVIEW_PROMPT = "lastReviewPrompt"
 
         /** Time between rating interval prompts in milliseconds */
@@ -101,6 +98,12 @@ class EarnBadgesActivity : AppCompatActivity(), KoinComponent, LifecycleOwner {
 
     }
 
+    @Inject lateinit var settingsManager: SettingsManager
+
+    private lateinit var binding: ActivityEarnBadgesBinding
+    val model by viewModels<Model>()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -108,7 +111,7 @@ class EarnBadgesActivity : AppCompatActivity(), KoinComponent, LifecycleOwner {
         setContentView(binding.root)
 
         // Show rating API dialog one week after the app has been installed
-        if (shouldShowRatingRequest(this, get<SettingsManager>()))
+        if (shouldShowRatingRequest(this, settingsManager))
             showRatingRequest(ReviewManagerFactory.create(this))
 
         // Bought badges adapter

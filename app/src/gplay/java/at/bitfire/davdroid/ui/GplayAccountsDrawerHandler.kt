@@ -5,14 +5,16 @@
 package at.bitfire.davdroid.ui
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.view.MenuItem
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import javax.inject.Inject
 
-class GplayAccountsDrawerHandler: StandardAccountsDrawerHandler() {
+class GplayAccountsDrawerHandler @Inject constructor() : StandardAccountsDrawerHandler() {
 
     override fun onNavigationItemSelected(activity: Activity, item: MenuItem) {
         when (item.itemId) {
