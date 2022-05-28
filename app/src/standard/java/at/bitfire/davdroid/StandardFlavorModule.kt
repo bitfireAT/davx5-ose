@@ -25,23 +25,4 @@ abstract class StandardFlavorModule {
     @Binds
     abstract fun accountsDrawerHandler(handler: StandardAccountsDrawerHandler): AccountsDrawerHandler
 
-
-    //// intro fragments ////
-
-    // WelcomeFragment and BatteryOptimizationsFragment modules are hardcoded there
-
-    @Module
-    @InstallIn(ActivityComponent::class)
-    abstract class PermissionsIntroFragmentModule {
-        @Binds @IntoSet
-        abstract fun getFactory(factory: PermissionsIntroFragment.Factory): IntroFragmentFactory
-    }
-
-    @Module
-    @InstallIn(ActivityComponent::class)
-    abstract class TasksIntroFragmentModule {
-        @Binds @IntoSet
-        abstract fun getFactory(factory: TasksIntroFragment.Factory): IntroFragmentFactory
-    }
-
 }
