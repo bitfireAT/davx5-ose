@@ -83,6 +83,11 @@ object SyncUtils {
         nm.notify(NotificationUtils.NOTIFY_TASKS_PROVIDER_TOO_OLD, notify.build())
     }
 
+    fun removePeriodicSyncs(account: Account, authority: String) {
+        for (sync in ContentResolver.getPeriodicSyncs(account, authority))
+            ContentResolver.removePeriodicSync(sync.account, sync.authority, sync.extras)
+    }
+
 
     // task sync utils
 
@@ -106,7 +111,7 @@ object SyncUtils {
                 val shallBeSyncable = hasCalDAV && providerName == currentProvider
                 if ((shallBeSyncable && isSyncable != 1) || (!shallBeSyncable && isSyncable != 0)) {
                     // enable/disable sync
-                    setSyncable(context, account, providerName.authority, shallBeSyncable)
+                    setSyncableFromSettings(context, account, providerName.authority, shallBeSyncable)
 
                     // if sync has just been enabled: check whether additional permissions are required
                     if (shallBeSyncable && !PermissionUtils.havePermissions(context, providerName.permissions))
@@ -121,10 +126,8 @@ object SyncUtils {
         }
     }
 
-    private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean) {
-        val settingsManager by lazy {
-            EntryPointAccessors.fromApplication(context, SyncUtilsEntryPoint::class.java).settingsManager()
-        }
+    private fun setSyncableFromSettings(context: Context, account: Account, authority: String, syncable: Boolean) {
+        val settingsManager by lazy { EntryPointAccessors.fromApplication(context, SyncUtilsEntryPoint::class.java).settingsManager() }
         if (syncable) {
             Logger.log.info("Enabling $authority sync for $account")
             ContentResolver.setIsSyncable(account, authority, 1)
