@@ -66,11 +66,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     val context: Context,
     val account: Account,
     val accountSettings: AccountSettings,
+    val httpClient: HttpClient,
     val extras: Bundle,
     val authority: String,
     val syncResult: SyncResult,
     val localCollection: CollectionType
-): AutoCloseable {
+) {
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
@@ -122,19 +123,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected val notificationManager = NotificationManagerCompat.from(context)
     protected val notificationTag = localCollection.tag
 
-    protected val httpClient = HttpClient.Builder(context, accountSettings).build()
-
     protected lateinit var collectionURL: HttpUrl
     protected lateinit var davCollection: RemoteType
 
     protected var hasCollectionSync = false
 
     val workDispatcher = getWorkDispatcher()
-
-
-    override fun close() {
-        httpClient.close()
-    }
 
 
     fun performSync() {

@@ -33,20 +33,16 @@ class AccountSettingsTest {
     @Inject
     lateinit var settingsManager: SettingsManager
 
-    @Before
-    fun inject() {
-        hiltRule.inject()
-    }
-
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     val account = Account("Test Account", context.getString(R.string.account_type))
     val fakeCredentials = Credentials("test", "test")
 
-
     @Before
-    fun prepareAccount() {
+    fun setUp() {
+        hiltRule.inject()
+
         assertTrue(AccountUtils.createAccount(context, account, AccountSettings.initialUserData(fakeCredentials)))
         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
         ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0)

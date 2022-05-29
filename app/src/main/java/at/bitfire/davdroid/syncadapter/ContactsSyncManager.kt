@@ -82,12 +82,13 @@ class ContactsSyncManager(
     context: Context,
     account: Account,
     accountSettings: AccountSettings,
+    httpClient: HttpClient,
     extras: Bundle,
     authority: String,
     syncResult: SyncResult,
     val provider: ContentProviderClient,
     localAddressBook: LocalAddressBook
-): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(context, account, accountSettings, extras, authority, syncResult, localAddressBook) {
+): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(context, account, accountSettings, httpClient, extras, authority, syncResult, localAddressBook) {
 
     companion object {
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)

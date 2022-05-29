@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import android.provider.CalendarContract
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -34,7 +35,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
         appDatabase: AppDatabase
     ) : SyncAdapter(context, appDatabase) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val accountSettings = AccountSettings(context, account)
 
@@ -58,7 +59,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
                         .sortedByDescending { priorityCalendars.contains(it.id) }
                 for (calendar in calendars) {
                     Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
-                    CalendarSyncManager(context, account, accountSettings, extras, authority, syncResult, calendar).use {
+                    CalendarSyncManager(context, account, accountSettings, extras, httpClient.value, authority, syncResult, calendar).let {
                         it.performSync()
                     }
                 }

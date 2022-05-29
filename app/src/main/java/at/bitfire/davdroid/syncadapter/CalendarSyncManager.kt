@@ -14,6 +14,7 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
@@ -46,10 +47,11 @@ class CalendarSyncManager(
     account: Account,
     accountSettings: AccountSettings,
     extras: Bundle,
+    httpClient: HttpClient,
     authority: String,
     syncResult: SyncResult,
     localCalendar: LocalCalendar
-): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(context, account, accountSettings, extras, authority, syncResult, localCalendar) {
+): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(context, account, accountSettings, httpClient, extras, authority, syncResult, localCalendar) {
 
     override fun prepare(): Boolean {
         collectionURL = (localCollection.name ?: return false).toHttpUrlOrNull() ?: return false

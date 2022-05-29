@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -34,7 +35,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
         appDatabase: AppDatabase
     ) : SyncAdapter(context, appDatabase) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val accountSettings = AccountSettings(context, account)
 

@@ -14,6 +14,7 @@ import at.bitfire.dav4jvm.PropStat
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.Response.HrefRelation
 import at.bitfire.dav4jvm.property.GetETag
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
@@ -74,6 +75,7 @@ class SyncManagerTest {
                     account,
                     Bundle(),
                     "TestAuthority",
+                    HttpClient.Builder().build(),
                     SyncResult(),
                     collection,
                     server

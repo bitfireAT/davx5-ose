@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -37,7 +38,7 @@ class JtxSyncAdapterService: SyncAdapterService() {
         appDatabase: AppDatabase
     ) : SyncAdapter(context, appDatabase) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
 
             try {
                 // check whether jtx Board is new enough
@@ -62,7 +63,7 @@ class JtxSyncAdapterService: SyncAdapterService() {
                 val collections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
                 for (collection in collections) {
                     Logger.log.info("Synchronizing $collection")
-                    JtxSyncManager(context, account, accountSettings, extras, authority, syncResult, collection).use {
+                    JtxSyncManager(context, account, accountSettings, extras, httpClient.value, authority, syncResult, collection).let {
                         it.performSync()
                     }
                 }

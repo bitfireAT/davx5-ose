@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.settings.SettingsManager
@@ -135,6 +136,7 @@ class SyncAdapterTest {
             account: Account,
             extras: Bundle,
             authority: String,
+            httpClient: Lazy<HttpClient>,
             provider: ContentProviderClient,
             syncResult: SyncResult
         ) {

@@ -9,15 +9,34 @@ import android.accounts.AccountManager
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
+@HiltAndroidTest
 class AccountUtilsTest {
 
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
-    val account = Account("Test Account", context.getString(R.string.account_type))
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
+    }
+
+
+    val context by lazy { InstrumentationRegistry.getInstrumentation().targetContext }
+    val account by lazy { Account("Test Account", context.getString(R.string.account_type)) }
 
     @Test
     fun testCreateAccount() {
