@@ -57,12 +57,17 @@ import java.util.logging.Level
 /**
  * Manages settings of an account.
  *
+ * @param context       Required to access account settings
+ * @param argAccount    Account to take settings from. If this account is an address book account,
+ * settings will be taken from the corresponding main account instead.
+ *
  * @throws InvalidAccountException on construction when the account doesn't exist (anymore)
+ * @throws IllegalArgumentException when the account type is not _DAVx5_ or _DAVx5 address book_
  */
 @Suppress("FunctionName")
 class AccountSettings(
     val context: Context,
-    val account: Account
+    argAccount: Account
 ) {
 
     @EntryPoint
@@ -191,8 +196,22 @@ class AccountSettings(
     val settings = EntryPointAccessors.fromApplication(context, AccountSettingsEntryPoint::class.java).settingsManager()
 
     val accountManager: AccountManager = AccountManager.get(context)
+    val account: Account
 
     init {
+        when (argAccount.type) {
+            context.getString(R.string.account_type_address_book) -> {
+                /* argAccount is an address book account, which is not a main account. However settings are
+                   stored in the main account, so resolve and use the main account instead. */
+                account = LocalAddressBook.mainAccount(context, argAccount)
+            }
+            context.getString(R.string.account_type) ->
+                account = argAccount
+            else ->
+                throw IllegalArgumentException("Account type not supported")
+        }
+
+        // synchronize because account migration must only be run one time
         synchronized(AccountSettings::class.java) {
             val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
             var version = 0

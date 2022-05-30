@@ -34,8 +34,8 @@ class ContactsSyncAdapterService: SyncAdapterService() {
 
         override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
+                val accountSettings = AccountSettings(context, account)
                 val addressBook = LocalAddressBook(context, account, provider)
-                val accountSettings = AccountSettings(context, addressBook.mainAccount)
 
                 // handle group method change
                 val groupMethod = accountSettings.getGroupMethod().name

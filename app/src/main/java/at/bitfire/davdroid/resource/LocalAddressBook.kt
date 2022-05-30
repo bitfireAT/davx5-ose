@@ -102,14 +102,15 @@ open class LocalAddressBook(
         }
 
         fun mainAccount(context: Context, account: Account): Account =
-                if (account.type == context.getString(R.string.account_type_address_book)) {
-                    val manager = AccountManager.get(context)
-                    Account(
-                            manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME),
-                            manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
-                    )
-                } else
-                    account
+            if (account.type == context.getString(R.string.account_type_address_book)) {
+                val manager = AccountManager.get(context)
+                val accountName = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
+                val accountType = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
+                if (accountName == null || accountType == null)
+                    throw IllegalArgumentException("Address book account does not have a main account")
+                Account(accountName, accountType)
+            } else
+                throw IllegalArgumentException("Account is not an address book account")
 
     }
 
@@ -135,20 +136,16 @@ open class LocalAddressBook(
     private var _mainAccount: Account? = null
     /**
      * The associated main account which this address book accounts belongs to.
-     * @throws IllegalStateException when no main account is assigned
+     *
+     * @throws IllegalArgumentException when [account] is not an address book account or when no main account is assigned
      */
     open var mainAccount: Account
         get() {
             _mainAccount?.let { return it }
 
-            AccountManager.get(context).let { accountManager ->
-                val name = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
-                val type = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
-                if (name != null && type != null)
-                    return Account(name, type)
-                else
-                    throw IllegalStateException("No main account assigned to address book account")
-            }
+            val result = mainAccount(context, account)
+            _mainAccount = result
+            return result
         }
         set(newMainAccount) {
             AccountManager.get(context).let { accountManager ->
