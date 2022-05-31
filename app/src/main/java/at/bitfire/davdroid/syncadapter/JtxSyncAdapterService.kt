@@ -45,9 +45,14 @@ class JtxSyncAdapterService: SyncAdapterService() {
                 TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
 
                 // make sure account can be seen by task provider
-                if (Build.VERSION.SDK_INT >= 26)
-                    AccountManager.get(context).setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
-
+                if (Build.VERSION.SDK_INT >= 26) {
+                    /* Warning: If setAccountVisibility is called, Android 12 broadcasts the
+                       AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs
+                       and starts them again! So make sure setAccountVisibility is only called when necessary. */
+                    val am = AccountManager.get(context)
+                    if (am.getAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName) != AccountManager.VISIBILITY_VISIBLE)
+                        am.setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
+                }
                 /* don't run sync if
                    - sync conditions (e.g. "sync only in WiFi") are not met AND
                    - this is is an automatic sync (i.e. manual syncs are run regardless of sync conditions)
