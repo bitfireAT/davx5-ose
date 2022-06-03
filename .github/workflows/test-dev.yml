@@ -51,7 +51,7 @@ jobs:
       - name: Start emulator
         run: start-emulator.sh
       - name: Run connected tests
-        run: ./gradlew app:connectedCheck -Pandroid.testInstrumentationRunnerArguments.notAnnotation=androidx.test.filters.FlakyTest
+        run: ./gradlew app:connectedCheck
       - name: Archive results
         if: always()
         uses: actions/upload-artifact@v2

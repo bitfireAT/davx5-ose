@@ -6,16 +6,14 @@ package at.bitfire.davdroid.resource
 
 import android.Manifest
 import android.accounts.Account
-import android.content.ContentProviderClient
-import android.content.ContentUris
-import android.content.ContentValues
+import android.content.*
 import android.os.Build
 import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
-import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.MiscUtils.ContentProviderClientHelper.closeCompat
@@ -26,13 +24,18 @@ import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.*
 import org.junit.*
 import org.junit.Assert.*
+import org.junit.rules.TestRule
 
 class LocalEventTest {
 
     companion object {
         @JvmField
-        @ClassRule
+        @ClassRule(order = 0)
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)!!
+
+        @JvmField
+        @ClassRule(order = 1)
+        val initCalendarProviderRule: TestRule = InitCalendarProviderRule()
 
         private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
 
@@ -51,7 +54,6 @@ class LocalEventTest {
         fun disconnect() {
             provider.closeCompat()
         }
-
     }
 
     @Before
@@ -67,7 +69,6 @@ class LocalEventTest {
 
 
     @Test
-    @FlakyTest(detail = "Fails when calendar storage is accessed the first time; probably some initialization thread")
     fun testNumDirectInstances_SingleInstance() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -106,6 +107,7 @@ class LocalEventTest {
     }
 
     @Test
+    // Flaky, Needs rec event init of CalendarProvider
     fun testNumDirectInstances_Recurring_LateEnd() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -122,6 +124,7 @@ class LocalEventTest {
     }
 
     @Test
+    // Flaky, Needs rec event init of CalendarProvider
     fun testNumDirectInstances_Recurring_ManyInstances() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -130,21 +133,15 @@ class LocalEventTest {
         }
         val localEvent = LocalEvent(calendar, event, null, null, null, 0)
         localEvent.add()
-
         val number = LocalEvent.numDirectInstances(provider, account, localEvent.id!!)
-        // Doesn't work immediately after the Calendar Provider has been started the first time.
-        // It then retursn 42 instead of 2*365 instances. As soon as the test is run the second time,
-        // it works. However it doesn't matter as soon as there is at least one instance.
-        /*assertEquals(
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
-                365*2       // early Android: does not include UNTIL (incorrect!)
-            else
-                365*2 + 1,  // current Android: includes UNTIL (correct)
-            number)*/
-        assertTrue(number != null && number > 1)
+
+        // Some android versions (i.e. <=Q and S) return 365*2 instances (wrong, 365*2+1 => correct),
+        // but we are satisfied with either result for now
+        assertTrue(number == 365*2 || number == 365*2+1)
     }
 
     @Test
+    // Flaky, Needs single event init of CalendarProvider
     fun testNumDirectInstances_RecurringWithExdate() {
         val event = Event().apply {
             dtStart = DtStart(Date("20220120T010203Z"))
@@ -183,6 +180,7 @@ class LocalEventTest {
 
 
     @Test
+    // Flaky, Needs single or rec event init of CalendarProvider
     fun testNumInstances_SingleInstance() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -221,6 +219,7 @@ class LocalEventTest {
     }
 
     @Test
+    // Flaky, Needs rec event init of CalendarProvider
     fun testNumInstances_Recurring_LateEnd() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -237,6 +236,7 @@ class LocalEventTest {
     }
 
     @Test
+    // Flaky, Needs rec event init of CalendarProvider
     fun testNumInstances_Recurring_ManyInstances() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -360,7 +360,7 @@ class LocalEventTest {
     }
 
     @Test
-    @FlakyTest(detail = "Fails when calendar storage is accessed the first time; probably some initialization thread")
+    // Flaky, Needs single event init OR rec event init of CalendarProvider
     fun testDeleteDirtyEventsWithoutInstances_Recurring_Instances() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")

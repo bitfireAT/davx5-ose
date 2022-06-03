@@ -27,7 +27,6 @@ android {
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
         testInstrumentationRunner "at.bitfire.davdroid.CustomTestRunner"
-        //testInstrumentationRunnerArgument "notAnnotation", "androidx.test.filters.FlakyTest"
 
         kapt {
             arguments {

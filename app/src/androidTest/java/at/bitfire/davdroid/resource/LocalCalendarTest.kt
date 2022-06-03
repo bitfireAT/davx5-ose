@@ -12,9 +12,9 @@ import android.content.ContentValues
 import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
-import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.MiscUtils.ContentProviderClientHelper.closeCompat
@@ -25,13 +25,18 @@ import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Status
 import org.junit.*
 import org.junit.Assert.assertEquals
+import org.junit.rules.TestRule
 
 class LocalCalendarTest {
 
     companion object {
         @JvmField
-        @ClassRule
+        @ClassRule(order = 0)
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)!!
+
+        @JvmField
+        @ClassRule(order = 1)
+        val initCalendarProviderRule: TestRule = InitCalendarProviderRule()
 
         private lateinit var provider: ContentProviderClient
 
@@ -114,7 +119,7 @@ class LocalCalendarTest {
     }
 
     @Test
-    @FlakyTest(detail = "Fails when calendar storage is accessed the first time; probably some initialization thread")
+    // Flaky, Needs single or rec init of CalendarProvider (InitCalendarProviderRule)
     fun testDeleteDirtyEventsWithoutInstances_Recurring_Instances() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
