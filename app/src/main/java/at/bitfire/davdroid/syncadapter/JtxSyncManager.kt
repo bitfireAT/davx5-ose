@@ -114,11 +114,7 @@ class JtxSyncManager(
         }
     }
 
-    override fun postProcess() {
-        /* related-to entries must be updated. The linkedICalObjectId is set to 0 for synced entries as we cannot be sure that the linked entry is already
-        there when the related-to entry is written. therefore we have to update it here in the postProcess() method.  */
-        localCollection.updateRelatedTo()
-    }
+    override fun postProcess() { /* nothing to do */  }
 
     override fun notifyInvalidResourceTitle(): String =
         context.getString(R.string.sync_invalid_event)
