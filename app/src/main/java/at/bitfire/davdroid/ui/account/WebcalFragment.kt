@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.account
 
 import android.Manifest
-import android.app.Activity
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.Intent
@@ -18,7 +17,6 @@ import android.provider.CalendarContract.Calendars
 import android.view.*
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.room.Transaction
@@ -89,14 +87,14 @@ class WebcalFragment: CollectionsFragment() {
         }
     }
 
-    override fun createAdapter(): CollectionAdapter = WebcalAdapter(accountModel, webcalModel, parentFragmentManager)
+    override fun createAdapter(): CollectionAdapter = WebcalAdapter(accountModel, webcalModel, this)
 
 
     class CalendarViewHolder(
         private val parent: ViewGroup,
         accountModel: AccountActivity.Model,
         private val webcalModel: WebcalModel,
-        private val fragmentManager: FragmentManager
+        private val webcalFragment: WebcalFragment
     ): CollectionViewHolder<AccountCaldavItemBinding>(parent, AccountCaldavItemBinding.inflate(LayoutInflater.from(parent.context), parent, false), accountModel) {
 
         override fun bindTo(item: Collection) {
@@ -122,7 +120,7 @@ class WebcalFragment: CollectionsFragment() {
                 else
                     subscribe(item)
             }
-            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item, fragmentManager))
+            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item, webcalFragment.parentFragmentManager))
         }
 
         private fun subscribe(item: Collection) {
@@ -138,7 +136,7 @@ class WebcalFragment: CollectionsFragment() {
 
             Logger.log.info("Intent: ${intent.extras}")
 
-            val activity = parent.context as Activity
+            val activity = webcalFragment.requireActivity()
             if (activity.packageManager.resolveActivity(intent, 0) != null)
                 activity.startActivity(intent)
             else {
@@ -160,11 +158,11 @@ class WebcalFragment: CollectionsFragment() {
     class WebcalAdapter(
         accountModel: AccountActivity.Model,
         private val webcalModel: WebcalModel,
-        val fragmentManager: FragmentManager
+        val webcalFragment: WebcalFragment
     ): CollectionAdapter(accountModel) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-                CalendarViewHolder(parent, accountModel, webcalModel, fragmentManager)
+                CalendarViewHolder(parent, accountModel, webcalModel, webcalFragment)
 
     }
 
