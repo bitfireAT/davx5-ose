@@ -1,0 +1,2 @@
+- improve compatibility with jtxBoard
+- minor improvements and bugfixes
