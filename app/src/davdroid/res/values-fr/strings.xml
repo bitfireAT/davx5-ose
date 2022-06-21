@@ -5,7 +5,7 @@
   <string name="account_invalid">Le compte n’existe plus (désormais)</string>
   <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
   <string name="address_books_authority_title">Carnets d\'adresses</string>
-  <string name="field_required">Ce champs est requis</string>
+  <string name="field_required">Ce champ est requis</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
   <string name="share">Partager</string>
@@ -281,12 +281,14 @@
   <string name="settings_sync_time_range_past_none">Tous les événements seront synchronisés</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">Les événements de plus d’un jour passé seront ignorés</item>
+    <item quantity="many">Les événements de plus de %d jours passés seront ignorés</item>
     <item quantity="other">Les événements de plus de %d jours passés seront ignorés</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Les événements antérieurs à ce nombre de jours seront ignorés (peut être 0). Laissez vide pour synchroniser tous les événements.</string>
   <string name="settings_default_alarm">Rappel par défaut</string>
   <plurals name="settings_default_alarm_on">
     <item quantity="one">Rappel par défaut une minute avant l\'événement</item>
+    <item quantity="many">Rappel par défaut %d minutes avant les événements</item>
     <item quantity="other">Rappel par défaut %d minutes avant les événements</item>
   </plurals>
   <string name="settings_default_alarm_off">Aucun rappel par défaut</string>

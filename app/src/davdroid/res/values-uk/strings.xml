@@ -5,8 +5,12 @@
   <string name="account_invalid">Обліківки не існує (більше)</string>
   <string name="account_title_address_book">Адресна книга DAVx⁵</string>
   <string name="address_books_authority_title">Адресні книги</string>
+  <string name="field_required">Це поле обовʼязкове</string>
   <string name="help">Допомога</string>
   <string name="manage_accounts">Керування обліковими записами</string>
+  <string name="share">Поширити</string>
+  <string name="database_destructive_migration_title">База даних пошкоджена</string>
+  <string name="database_destructive_migration_text">Усі облікові записи видалено локально.</string>
   <string name="notification_channel_debugging">Зневадження</string>
   <string name="notification_channel_general">Інші важливі повідомлення</string>
   <string name="notification_channel_status">Повідомлення з низьким пріоритетом</string>
@@ -30,6 +34,7 @@
   <string name="intro_tasks_tasks_org">Завдання</string>
   <string name="intro_tasks_dont_show">Мені не потрібна підтримка завдань.*</string>
   <string name="intro_open_source_title">ПЗ з відкритим кодом</string>
+  <string name="intro_open_source_details">Як співпрацювати/пожертвувати</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Дозволи</string>
   <string name="permissions_all_status_off">Використовуйте це, щоб дозволити всі можливості (рекомендується)</string>
