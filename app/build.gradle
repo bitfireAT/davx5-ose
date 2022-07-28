@@ -101,7 +101,7 @@ dependencies {
     implementation project(':vcard4android')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.6'
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
@@ -112,9 +112,9 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.fragment:fragment-ktx:1.4.1'
+    implementation 'androidx.fragment:fragment-ktx:1.5.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'androidx.security:security-crypto:1.1.0-alpha03'
@@ -122,7 +122,7 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.6.1'
 
-    def room_version = '2.4.2'
+    def room_version = '2.4.3'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.room:room-paging:$room_version"
