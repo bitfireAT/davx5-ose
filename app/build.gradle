@@ -13,7 +13,7 @@ android {
     buildToolsVersion '32.0.0'
 
     defaultConfig {
-        applicationId "at.bitfire.davdroid"
+        applicationId 'com.crainwalnut.davdroid'
 
         versionCode 402020000
         versionName '4.2.2'
