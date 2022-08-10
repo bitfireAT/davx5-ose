@@ -1,0 +1,13 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<resources>
+
+    <!-- Support the project, badge colors -->
+    <color name="badge_coffee">#352B1B</color>
+    <color name="badge_life_buoy">#FF6A00</color>
+    <color name="badge_medal">#FFC200</color>
+    <color name="badge_sailboat">#083d77</color>
+
+</resources>
