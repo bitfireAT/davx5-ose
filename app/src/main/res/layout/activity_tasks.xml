@@ -104,7 +104,7 @@
                         app:layout_constraintEnd_toStartOf="@id/end"
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         app:html="@{@string/intro_tasks_jtx_info}" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/jtxSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
                         app:layout_constraintEnd_toStartOf="@id/end"
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         app:html="@{@string/intro_tasks_opentasks_info}"/>
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/openTasksSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -170,7 +170,7 @@
                         app:layout_constraintEnd_toStartOf="@id/end"
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         app:html="@{@string/intro_tasks_tasks_org_info}" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/tasksOrgSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

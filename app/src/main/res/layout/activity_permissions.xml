@@ -104,7 +104,7 @@
                         app:layout_constraintEnd_toStartOf="@id/autoResetSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
                         app:layout_constraintTop_toBottomOf="@id/autoResetHeading" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/autoResetSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -139,7 +139,7 @@
                         app:layout_constraintEnd_toStartOf="@id/allSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
                         app:layout_constraintTop_toBottomOf="@id/allHeading" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/allSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -172,7 +172,7 @@
                         app:layout_constraintEnd_toStartOf="@id/contactsSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
                         app:layout_constraintTop_toBottomOf="@id/contactsHeading" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/contactsSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -205,7 +205,7 @@
                         app:layout_constraintEnd_toStartOf="@id/calendarSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
                         app:layout_constraintTop_toBottomOf="@id/calendarHeading" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/calendarSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -240,7 +240,7 @@
                         app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
                         app:layout_constraintTop_toBottomOf="@id/openTasksHeading" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/openTasksSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -276,7 +276,7 @@
                         app:layout_constraintEnd_toStartOf="@id/tasksOrgSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
                         app:layout_constraintTop_toBottomOf="@id/tasksOrgHeading" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/tasksOrgSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -312,7 +312,7 @@
                         app:layout_constraintEnd_toStartOf="@id/jtxSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
                         app:layout_constraintTop_toBottomOf="@id/jtxHeading" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/jtxSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
