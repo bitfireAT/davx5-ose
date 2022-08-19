@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.webdav
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -26,6 +27,7 @@ import at.bitfire.davdroid.databinding.WebdavMountsItemBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
@@ -35,7 +37,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.io.FileUtils
+import java.util.logging.Level
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class WebdavMountsActivity: AppCompatActivity() {
@@ -162,8 +166,16 @@ class WebdavMountsActivity: AppCompatActivity() {
                 model.browseIntent.value = null
             }
 
-            binding.unmount.setOnClickListener {
-                model.unmount(info.mount)
+            binding.removeMountpoint.setOnClickListener {
+                AlertDialog.Builder(context)
+                    .setTitle(R.string.webdav_remove_mount_title)
+                    .setMessage(R.string.webdav_remove_mount_text)
+                    .setPositiveButton(R.string.dialog_remove) { _, _ ->
+                        Logger.log.log(Level.INFO, "User removes mount point", info.mount)
+                        model.remove(info.mount)
+                    }
+                    .setNegativeButton(R.string.dialog_deny, null)
+                    .show()
             }
         }
     }
@@ -212,7 +224,10 @@ class WebdavMountsActivity: AppCompatActivity() {
 
         val browseIntent = MutableLiveData<Intent>()
 
-        fun unmount(mount: WebDavMount) {
+        /**
+         * Removes the mountpoint (deleting connection information)
+         */
+        fun remove(mount: WebDavMount) {
             viewModelScope.launch(Dispatchers.IO) {
                 // remove mount from database
                 db.webDavMountDao().delete(mount)
