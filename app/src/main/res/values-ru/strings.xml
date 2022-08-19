@@ -32,7 +32,7 @@
   <string name="intro_autostart_title">Совместимость %s</string>
   <string name="intro_autostart_text">Скорее всего, это устройство блокирует синхронизацию. В этом случае, вы можете решить проблему только самостоятельно.</string>
   <string name="intro_autostart_dont_show">Я выполнил необходимые настройки. Больше не напоминать.*</string>
-  <string name="intro_leave_unchecked">* Не отмечайте, чтобы получить напоминание повторно. Можно сбросить в настройках приложения  / %s.</string>
+  <string name="intro_leave_unchecked">* Чтобы получить предупреждение позже, снимите флажок. Можно сбросить в настройках приложения  / %s.</string>
   <string name="intro_more_info">Дополнительная информация</string>
   <string name="intro_tasks_jtx">Панель jtx</string>
   <string name="intro_tasks_jtx_info"><![CDATA[Поддержка синхронизации задач, журналов и заметок.]]></string>
@@ -268,7 +268,7 @@
     <item>Каждый час</item>
     <item>Каждые 2 часа</item>
     <item>Каждые 4 часа</item>
-    <item>Один раз в день</item>
+    <item>Раз в день</item>
   </string-array>
   <string name="settings_sync_wifi_only">Синхронизировать только через WiFi</string>
   <string name="settings_sync_wifi_only_on">Разрешить синхронизацию только через WiFi</string>

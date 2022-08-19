@@ -11,10 +11,11 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
-import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidTaskList
@@ -29,19 +30,28 @@ import java.util.logging.Level
  */
 open class TasksSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = TasksSyncAdapter(this)
+    override fun syncAdapter() = TasksSyncAdapter(this, appDatabase)
 
 
-	class TasksSyncAdapter(context: Context): SyncAdapter(context) {
+	class TasksSyncAdapter(
+        context: Context,
+        appDatabase: AppDatabase,
+    ) : SyncAdapter(context, appDatabase) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val providerName = TaskProvider.ProviderName.fromAuthority(authority)
                 val taskProvider = TaskProvider.fromProviderClient(context, providerName, provider)
 
                 // make sure account can be seen by task provider
-                if (Build.VERSION.SDK_INT >= 26)
-                    AccountManager.get(context).setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
+                if (Build.VERSION.SDK_INT >= 26) {
+                    /* Warning: If setAccountVisibility is called, Android 12 broadcasts the
+                       AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs
+                       and starts them again! So make sure setAccountVisibility is only called when necessary. */
+                    val am = AccountManager.get(context)
+                    if (am.getAccountVisibility(account, providerName.packageName) != AccountManager.VISIBILITY_VISIBLE)
+                        am.setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
+                }
 
                 val accountSettings = AccountSettings(context, account)
                 /* don't run sync if
@@ -59,7 +69,7 @@ open class TasksSyncAdapterService: SyncAdapterService() {
                         .sortedByDescending { priorityTaskLists.contains(it.id) }
                 for (taskList in taskLists) {
                     Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
-                    TasksSyncManager(context, account, accountSettings, extras, authority, syncResult, taskList).use {
+                    TasksSyncManager(context, account, accountSettings, httpClient.value, extras, authority, syncResult, taskList).let {
                         it.performSync()
                     }
                 }
@@ -75,7 +85,6 @@ open class TasksSyncAdapterService: SyncAdapterService() {
         }
 
         private fun updateLocalTaskLists(provider: TaskProvider, account: Account, settings: AccountSettings) {
-            val db = AppDatabase.getInstance(context)
             val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
 
             val remoteTaskLists = mutableMapOf<HttpUrl, Collection>()

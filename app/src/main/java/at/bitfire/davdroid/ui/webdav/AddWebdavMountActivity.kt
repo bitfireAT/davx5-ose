@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.ui.webdav
 
-import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,8 +12,8 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.UrlUtils
@@ -21,13 +21,17 @@ import at.bitfire.davdroid.App
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAddWebdavMountBinding
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
+import at.bitfire.davdroid.webdav.DavDocumentsProvider
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
@@ -36,7 +40,9 @@ import org.apache.commons.collections4.CollectionUtils
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.logging.Level
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AddWebdavMountActivity: AppCompatActivity() {
 
     lateinit var binding: ActivityAddWebdavMountBinding
@@ -135,7 +141,11 @@ class AddWebdavMountActivity: AppCompatActivity() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app) {
+    @HiltViewModel
+    class Model @Inject constructor(
+        @ApplicationContext val context: Context,
+        val db: AppDatabase
+    ) : ViewModel() {
 
         val displayName = MutableLiveData<String>()
         val displayNameError = MutableLiveData<String>()
@@ -157,22 +167,24 @@ class AddWebdavMountActivity: AppCompatActivity() {
                 return false
             }
             if (!supportsDav) {
-                error.postValue(getApplication<Application>().getString(R.string.webdav_add_mount_no_support))
+                error.postValue(context.getString(R.string.webdav_add_mount_no_support))
                 return false
             }
 
-            val db = AppDatabase.getInstance(getApplication())
             val id = db.webDavMountDao().insert(mount)
 
-            val credentialsStore = CredentialsStore(getApplication())
+            val credentialsStore = CredentialsStore(context)
             credentialsStore.setCredentials(id, credentials)
+
+            // notify content URI listeners
+            DavDocumentsProvider.notifyMountsChanged(context)
 
             return true
         }
 
         fun hasWebDav(mount: WebDavMount, credentials: Credentials?): Boolean {
             var supported = false
-            HttpClient.Builder(getApplication(), null, credentials).build().use { client ->
+            HttpClient.Builder(context, null, credentials).build().use { client ->
                 val dav = DavResource(client.okHttpClient, mount.url)
                 dav.options { davCapabilities, _ ->
                     if (CollectionUtils.containsAny(davCapabilities, "1", "2", "3"))

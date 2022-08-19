@@ -4,23 +4,23 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.app.Application
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.UiThread
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.databinding.CollectionPropertiesBinding
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Collection
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CollectionInfoFragment: DialogFragment() {
 
     companion object {
@@ -37,13 +37,16 @@ class CollectionInfoFragment: DialogFragment() {
 
     }
 
-    val model by viewModels<Model>()
+    @Inject lateinit var modelFactory: Model.Factory
+    val model by viewModels<Model>() {
+        object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>) =
+                modelFactory.create(requireArguments().getLong(ARGS_COLLECTION_ID)) as T
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        arguments?.getLong(ARGS_COLLECTION_ID)?.let { id ->
-            model.initialize(id)
-        }
-
         val view = CollectionPropertiesBinding.inflate(inflater, container, false)
         view.lifecycleOwner = this
         view.model = model
@@ -52,25 +55,17 @@ class CollectionInfoFragment: DialogFragment() {
     }
 
 
-    class Model(
-            application: Application
-    ): AndroidViewModel(application) {
+    class Model @AssistedInject constructor(
+        val db: AppDatabase,
+        @Assisted collectionId: Long
+    ): ViewModel() {
 
-        var collection = MutableLiveData<Collection>()
-
-        private var initialized = false
-
-        @UiThread
-        fun initialize(collectionId: Long) {
-            if (initialized)
-                return
-            initialized = true
-
-            viewModelScope.launch(Dispatchers.IO) {
-                val db = AppDatabase.getInstance(getApplication())
-                collection.postValue(db.collectionDao().get(collectionId))
-            }
+        @AssistedFactory
+        interface Factory {
+            fun create(collectionId: Long): Model
         }
+
+        var collection = db.collectionDao().getLive(collectionId)
 
     }
 

@@ -12,15 +12,18 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.syncadapter.AccountUtils
+import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
+import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
+import dagger.hilt.android.HiltAndroidApp
 import java.util.logging.Level
+import javax.inject.Inject
 import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
-@Suppress("unused")
+@HiltAndroidApp
 class App: Application(), Thread.UncaughtExceptionHandler {
 
     companion object {
@@ -36,6 +39,9 @@ class App: Application(), Thread.UncaughtExceptionHandler {
                         .build()!!
 
     }
+
+    @Inject lateinit var accountsUpdatedListener: AccountsUpdatedListener
+    @Inject lateinit var storageLowReceiver: StorageLowReceiver
 
 
     override fun onCreate() {
@@ -59,24 +65,24 @@ class App: Application(), Thread.UncaughtExceptionHandler {
         NotificationUtils.createChannels(this)
 
         // set light/dark mode
-        UiUtils.setTheme(this)      // when this is called in the asynchronous thread below, it recreates
-                                    // some current activity and causes an IllegalStateException in rare cases
+        UiUtils.setTheme(this)   // when this is called in the asynchronous thread below, it recreates
+                                 // some current activity and causes an IllegalStateException in rare cases
 
         // don't block UI for some background checks
         thread {
             // watch for account changes/deletions
-            AccountUtils.registerAccountsUpdateListener(this)
+            accountsUpdatedListener.listen()
 
             // foreground service (possible workaround for devices which prevent DAVx5 from being started)
             ForegroundService.startIfActive(this)
 
             // watch storage because low storage means synchronization is stopped
-            StorageLowReceiver.getInstance(this)
+            storageLowReceiver.listen()
 
             // watch installed/removed apps
             TasksWatcher.watch(this)
             // check whether a tasks app is currently installed
-            TasksWatcher.updateTaskSync(this)
+            SyncUtils.updateTaskSync(this)
 
             // create/update app shortcuts
             UiUtils.updateShortcuts(this)

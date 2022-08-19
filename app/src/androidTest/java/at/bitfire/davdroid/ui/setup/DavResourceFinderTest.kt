@@ -4,26 +4,45 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.ResourceType
 import at.bitfire.davdroid.HttpClient
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration.ServiceInfo
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Assert.*
+import org.junit.Assume
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.net.URI
+import javax.inject.Inject
 
+@HiltAndroidTest
 class DavResourceFinderTest {
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
+    }
 
     companion object {
         private const val PATH_NO_DAV = "/nodav"
@@ -55,6 +74,8 @@ class DavResourceFinderTest {
         client = HttpClient.Builder()
                 .addAuthentication(null, loginModel.credentials!!)
                 .build()
+
+        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }
 
     @After

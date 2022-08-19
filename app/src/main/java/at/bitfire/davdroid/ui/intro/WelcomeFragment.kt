@@ -13,7 +13,12 @@ import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.databinding.IntroWelcomeBinding
-import at.bitfire.davdroid.settings.SettingsManager
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.multibindings.IntoSet
+import javax.inject.Inject
 
 class WelcomeFragment: Fragment() {
 
@@ -54,9 +59,16 @@ class WelcomeFragment: Fragment() {
     }
 
 
-    class Factory : IIntroFragmentFactory {
+    @Module
+    @InstallIn(ActivityComponent::class)
+    abstract class WelcomeFragmentModule {
+        @Binds @IntoSet
+        abstract fun getFactory(factory: WelcomeFragment.Factory): IntroFragmentFactory
+    }
 
-        override fun shouldBeShown(context: Context, settingsManager: SettingsManager) = IIntroFragmentFactory.ShowMode.SHOW_NOT_ALONE
+    class Factory @Inject constructor() : IntroFragmentFactory {
+
+        override fun getOrder(context: Context) = -1000
 
         override fun create() = WelcomeFragment()
 

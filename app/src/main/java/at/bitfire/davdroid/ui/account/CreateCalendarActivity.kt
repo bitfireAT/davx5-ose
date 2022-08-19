@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
@@ -14,12 +13,12 @@ import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.activity.viewModels
-import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
@@ -32,6 +31,10 @@ import at.bitfire.davdroid.ui.HomeSetAdapter
 import at.bitfire.ical4android.DateUtils
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.fortuna.ical4j.model.Calendar
@@ -39,15 +42,25 @@ import org.apache.commons.lang3.StringUtils
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
-    val model by viewModels<Model>()
+    @Inject lateinit var modelFactory: Model.Factory
+    val model by viewModels<Model>() {
+        object: ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val account = intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
+                return modelFactory.create(account) as T
+            }
+        }
+    }
 
     lateinit var binding: ActivityCreateCalendarBinding
 
@@ -78,15 +91,12 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             }
         }
         binding.homeset.setAdapter(homeSetAdapter)
-        binding.homeset.setOnItemClickListener { parent, view, position, id ->
+        binding.homeset.setOnItemClickListener { parent, _, position, _ ->
             model.homeSet = parent.getItemAtPosition(position) as HomeSet?
         }
 
         binding.timezone.setAdapter(TimeZoneAdapter(this))
         binding.timezone.setText(TimeZone.getDefault().id, false)
-
-        if (savedInstanceState == null)
-            model.initialize(account)
     }
 
     override fun onColorSelected(dialogId: Int, rgb: Int) {
@@ -208,11 +218,15 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
     }
 
 
-    class Model(
-            application: Application
-    ): AndroidViewModel(application) {
+    class Model @AssistedInject constructor(
+        val db: AppDatabase,
+        @Assisted val account: Account
+    ): ViewModel() {
 
-        var account: Account? = null
+        @AssistedFactory
+        interface Factory {
+            fun create(account: Account): Model
+        }
 
         val displayName = MutableLiveData<String>()
         val displayNameError = MutableLiveData<String>()
@@ -230,12 +244,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         val supportVTODO = MutableLiveData<Boolean>()
         val supportVJOURNAL = MutableLiveData<Boolean>()
 
-        @MainThread
-        fun initialize(account: Account) {
-            if (this.account != null)
-                return
-            this.account = account
-
+        init {
             color.value = Constants.DAVDROID_GREEN_RGBA
 
             supportVEVENT.value = true
@@ -244,7 +253,6 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
-                val db = AppDatabase.getInstance(getApplication())
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { service ->
                     homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
                 }

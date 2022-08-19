@@ -20,22 +20,25 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.*
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
+import javax.inject.Inject
 import kotlin.collections.*
 
 @Suppress("DEPRECATION")
+@AndroidEntryPoint
 class DavService: IntentService("DavService") {
 
     companion object {
@@ -68,6 +71,9 @@ class DavService: IntentService("DavService") {
 
     }
 
+    @Inject lateinit var db: AppDatabase
+    @Inject lateinit var settings: SettingsManager
+
     /**
      * List of [Service] IDs for which the collections are currently refreshed
      */
@@ -93,8 +99,7 @@ class DavService: IntentService("DavService") {
                         listener.get()?.onDavRefreshStatusChanged(id, true)
                     }
 
-                    val db = AppDatabase.getInstance(this@DavService)
-                    refreshCollections(db, id)
+                    refreshCollections(id)
                 }
 
             ACTION_FORCE_SYNC -> {
@@ -159,8 +164,7 @@ class DavService: IntentService("DavService") {
         ContentResolver.requestSync(account, authority, extras)
     }
 
-    private fun refreshCollections(db: AppDatabase, serviceId: Long) {
-        val settings = SettingsManager.getInstance(this)
+    private fun refreshCollections(serviceId: Long) {
         val syncAllCollections = settings.getBoolean(Settings.SYNC_ALL_COLLECTIONS)
 
         val homeSetDao = db.homeSetDao()

@@ -232,12 +232,14 @@
   <string name="settings_sync_time_range_past_none">Todos os eventos serão sincronizados</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">Os eventos que ocorreram a mais de um dia serão ignorados</item>
+    <item quantity="many">Eventos que ocorreram a mais de %d dias serão ignorados</item>
     <item quantity="other">Eventos que ocorreram a mais de %d dias serão ignorados</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Os eventos que ocorreram antes desse número de dias serão ignorados (pode ser 0). Deixe em branco para sincronizar todos os eventos.</string>
   <string name="settings_default_alarm">Lembrete padrão</string>
   <plurals name="settings_default_alarm_on">
     <item quantity="one">Lembrete padrão um minuto antes do evento</item>
+    <item quantity="many">Lembrete padrão %d minutos antes do evento</item>
     <item quantity="other">Lembrete padrão %d minutos antes do evento</item>
   </plurals>
   <string name="settings_default_alarm_off">Nenhum lembrete padrão está criado</string>

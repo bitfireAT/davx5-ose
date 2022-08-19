@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui
 
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,9 +16,8 @@ import androidx.annotation.AnyThread
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.observe
+import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityTasksBinding
@@ -27,7 +25,12 @@ import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class TasksFragment: Fragment() {
 
     private var _binding: ActivityTasksBinding? = null
@@ -96,7 +99,11 @@ class TasksFragment: Fragment() {
     }
 
 
-    class Model(app: Application) : AndroidViewModel(app), SettingsManager.OnChangeListener {
+    @HiltViewModel
+    class Model @Inject constructor(
+        @ApplicationContext val context: Context,
+        val settings: SettingsManager
+    ) : ViewModel(), SettingsManager.OnChangeListener {
 
         companion object {
 
@@ -109,8 +116,6 @@ class TasksFragment: Fragment() {
 
         }
 
-        val settings = SettingsManager.getInstance(app)
-
         val showInstallTasks = MutableLiveData<Boolean>() // kSync
         val currentProvider = MutableLiveData<ProviderName>()
         val openTasksInstalled = MutableLiveData<Boolean>()
@@ -122,14 +127,13 @@ class TasksFragment: Fragment() {
         val jtxInstalled = MutableLiveData<Boolean>()
         val jtxRequested = MutableLiveData<Boolean>()
         val jtxSelected = MutableLiveData<Boolean>()
-        val tasksWatcher = object: PackageChangedReceiver(app) {
+        val tasksWatcher = object: PackageChangedReceiver(context) {
             override fun onReceive(context: Context?, intent: Intent?) {
                 checkInstalled()
             }
         }
 
         val dontShow = object: ObservableBoolean() {
-            val settings = SettingsManager.getInstance(getApplication())
             override fun get() = settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
             override fun set(dontShowAgain: Boolean) {
                 if (dontShowAgain)
@@ -152,7 +156,7 @@ class TasksFragment: Fragment() {
 
         @AnyThread
         fun checkInstalled() {
-            val taskProvider = TaskUtils.currentProvider(getApplication())
+            val taskProvider = TaskUtils.currentProvider(context)
             currentProvider.postValue(taskProvider)
 
             val openTasks = isInstalled(ProviderName.OpenTasks.packageName)
@@ -172,15 +176,15 @@ class TasksFragment: Fragment() {
         }
 
         private fun isInstalled(packageName: String): Boolean =
-                try {
-                    getApplication<Application>().packageManager.getPackageInfo(packageName, 0)
-                    true
-                } catch (e: PackageManager.NameNotFoundException) {
-                    false
-                }
+            try {
+                context.packageManager.getPackageInfo(packageName, 0)
+                true
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
+            }
 
         fun selectPreferredProvider(provider: ProviderName) {
-            TaskUtils.setPreferredProvider(getApplication(), provider)
+            TaskUtils.setPreferredProvider(context, provider)
         }
 
 

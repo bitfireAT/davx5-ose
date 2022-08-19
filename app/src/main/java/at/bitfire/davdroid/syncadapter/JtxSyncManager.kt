@@ -14,9 +14,10 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
@@ -38,10 +39,11 @@ class JtxSyncManager(
     account: Account,
     accountSettings: AccountSettings,
     extras: Bundle,
+    httpClient: HttpClient,
     authority: String,
     syncResult: SyncResult,
     localCollection: LocalJtxCollection
-):  SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(context, account, accountSettings, extras, authority, syncResult, localCollection) {
+):  SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(context, account, accountSettings, httpClient, extras, authority, syncResult, localCollection) {
 
     override fun prepare(): Boolean {
         collectionURL = (localCollection.url ?: return false).toHttpUrlOrNull() ?: return false
@@ -112,11 +114,7 @@ class JtxSyncManager(
         }
     }
 
-    override fun postProcess() {
-        /* related-to entries must be updated. The linkedICalObjectId is set to 0 for synced entries as we cannot be sure that the linked entry is already
-        there when the related-to entry is written. therefore we have to update it here in the postProcess() method.  */
-        localCollection.updateRelatedTo()
-    }
+    override fun postProcess() { /* nothing to do */  }
 
     override fun notifyInvalidResourceTitle(): String =
         context.getString(R.string.sync_invalid_event)

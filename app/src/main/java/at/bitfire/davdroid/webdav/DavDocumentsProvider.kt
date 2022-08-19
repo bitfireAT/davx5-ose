@@ -6,6 +6,7 @@ package at.bitfire.davdroid.webdav
 
 import android.app.AuthenticationRequiredException
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.content.res.AssetFileDescriptor
 import android.database.Cursor
@@ -15,13 +16,16 @@ import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.media.ThumbnailUtils
 import android.net.ConnectivityManager
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.CancellationSignal
+import android.os.ParcelFileDescriptor
 import android.os.storage.StorageManager
 import android.provider.DocumentsContract.*
 import android.provider.DocumentsProvider
 import android.webkit.MimeTypeMap
 import androidx.annotation.WorkerThread
-import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.lifecycle.Observer
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
@@ -31,10 +35,17 @@ import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.MemoryCookieStore
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.DaoTools
+import at.bitfire.davdroid.db.WebDavDocument
+import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.db.*
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.cache.HeadResponseCache
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import okhttp3.CookieJar
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -44,11 +55,15 @@ import java.io.FileNotFoundException
 import java.net.HttpURLConnection
 import java.util.concurrent.*
 import java.util.logging.Level
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.min
 
 class DavDocumentsProvider: DocumentsProvider() {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface DavDocumentsProviderEntryPoint {
+        fun appDatabase(): AppDatabase
+    }
 
     companion object {
         val DAV_FILE_FIELDS = arrayOf(
@@ -64,42 +79,35 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         const val MAX_NAME_ATTEMPTS = 5
         const val THUMBNAIL_TIMEOUT = 15L
+
+        fun notifyMountsChanged(context: Context) {
+            context.contentResolver.notifyChange(buildRootsUri(context.getString(R.string.webdav_authority)), null)
+        }
     }
 
-    lateinit var authority: String
+    val ourContext by lazy { context!! }        // requireContext() requires API level 30
+    val authority by lazy { ourContext.getString(R.string.webdav_authority) }
 
-    private val db: AppDatabase by lazy { AppDatabase.getInstance(context!!) }
+    private val db by lazy { EntryPointAccessors.fromApplication(ourContext, DavDocumentsProviderEntryPoint::class.java).appDatabase() }
     private val mountDao by lazy { db.webDavMountDao() }
     private val documentDao by lazy { db.webDavDocumentDao() }
-    private val webdavMountsLive by lazy { mountDao.getAllLive() }
 
-    private val credentialsStore by lazy { CredentialsStore(context!!) }
+    private val credentialsStore by lazy { CredentialsStore(ourContext) }
     val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
     val headResponseCache by lazy { HeadResponseCache() }
-    val thumbnailCache by lazy { ThumbnailCache(context!!) }
+    val thumbnailCache by lazy { ThumbnailCache(ourContext) }
 
-    private val connectivityManager by lazy { ContextCompat.getSystemService(context!!, ConnectivityManager::class.java)!! }
-    private val storageManager by lazy { ContextCompat.getSystemService(context!!, StorageManager::class.java)!! }
+    private val connectivityManager by lazy { ourContext.getSystemService<ConnectivityManager>()!! }
+    private val storageManager by lazy { ourContext.getSystemService<StorageManager>()!! }
 
-    private val executor = ThreadPoolExecutor(1, min(Runtime.getRuntime().availableProcessors(), 4),
-        30, TimeUnit.SECONDS, BlockingLifoQueue())
-    private val runningQueryChildren = HashMap<Long, Future<List<Bundle>>>()
-    private lateinit var webDavMountsObserver: Observer<List<WebDavMount>>
-
-
-    override fun onCreate(): Boolean {
-        authority = context!!.getString(R.string.webdav_authority)
-
-        webDavMountsObserver = Observer<List<WebDavMount>> {
-            context!!.contentResolver.notifyChange(buildRootsUri(authority), null)
-        }
-        webdavMountsLive.observeForever(webDavMountsObserver)
-
-        return true
+    private val executor by lazy {
+        ThreadPoolExecutor(1, min(Runtime.getRuntime().availableProcessors(), 4), 30, TimeUnit.SECONDS, BlockingLifoQueue())
     }
+    private val runningQueryChildren = HashMap<Long, Future<List<Bundle>>>()
+
+    override fun onCreate() = true
 
     override fun shutdown() {
-        webdavMountsLive.removeObserver(webDavMountsObserver)
         executor.shutdown()
     }
 
@@ -124,7 +132,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             roots.newRow().apply {
                 add(Root.COLUMN_ROOT_ID, mount.id)
                 add(Root.COLUMN_ICON, R.mipmap.ic_launcher)
-                add(Root.COLUMN_TITLE, context!!.getString(R.string.webdav_provider_root_title))
+                add(Root.COLUMN_TITLE, ourContext.getString(R.string.webdav_provider_root_title))
                 add(Root.COLUMN_DOCUMENT_ID, rootDocument.id.toString())
                 add(Root.COLUMN_SUMMARY, mount.name)
                 add(Root.COLUMN_FLAGS, Root.FLAG_SUPPORTS_CREATE or Root.FLAG_SUPPORTS_IS_CHILD)
@@ -193,7 +201,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         val worker = runningQueryChildren.getOrPut(parentId) {
             executor.submit(Callable {
                 val rows = doQueryChildren(parent)
-                context!!.contentResolver.notifyChange(notificationUri, null)
+                ourContext.contentResolver.notifyChange(notificationUri, null)
                 return@Callable rows
             })
         }
@@ -223,7 +231,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             runningQueryChildren.remove(parentId)
         }
 
-        result.setNotificationUri(context!!.contentResolver, notificationUri)
+        result.setNotificationUri(ourContext.contentResolver, notificationUri)
         return result
     }
 
@@ -520,10 +528,10 @@ class DavDocumentsProvider: DocumentsProvider() {
             (fileInfo.eTag != null || fileInfo.lastModified != null) &&     // we need a method to determine whether the document has changed during access
             fileInfo.supportsPartial != false   // WebDAV server must support random access
         ) {
-            val accessor = RandomAccessCallback.Wrapper(context!!, client, url, doc.mimeType, fileInfo, signal)
+            val accessor = RandomAccessCallback.Wrapper(ourContext, client, url, doc.mimeType, fileInfo, signal)
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.callback!!.workerHandler)
         } else {
-            val fd = StreamingFileDescriptor(context!!, client, url, doc.mimeType, signal) { transferred ->
+            val fd = StreamingFileDescriptor(ourContext, client, url, doc.mimeType, signal) { transferred ->
                 // called when transfer is finished
 
                 val now = System.currentTimeMillis()
@@ -612,7 +620,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     // helpers
 
     private fun httpClient(mountId: Long): HttpClient {
-        val builder = HttpClient.Builder(context!!, loggerLevel = HttpLoggingInterceptor.Level.HEADERS)
+        val builder = HttpClient.Builder(ourContext, loggerLevel = HttpLoggingInterceptor.Level.HEADERS)
             .cookieStore(cookieStore.getOrPut(mountId) { MemoryCookieStore() })
 
         credentialsStore.getCredentials(mountId)?.let { credentials ->
@@ -624,11 +632,11 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     private fun notifyFolderChanged(parentDocumentId: Long?) {
         if (parentDocumentId != null)
-            context!!.contentResolver.notifyChange(buildChildDocumentsUri(authority, parentDocumentId.toString()), null)
+            ourContext.contentResolver.notifyChange(buildChildDocumentsUri(authority, parentDocumentId.toString()), null)
     }
 
     private fun notifyFolderChanged(parentDocumentId: String) {
-        context!!.contentResolver.notifyChange(buildChildDocumentsUri(authority, parentDocumentId), null)
+        ourContext.contentResolver.notifyChange(buildChildDocumentsUri(authority, parentDocumentId), null)
     }
 
 
@@ -637,8 +645,8 @@ class DavDocumentsProvider: DocumentsProvider() {
             HttpURLConnection.HTTP_UNAUTHORIZED -> {
                 if (Build.VERSION.SDK_INT >= 26) {
                     // TODO edit mount
-                    val intent = Intent(context!!, WebdavMountsActivity::class.java)
-                    throw AuthenticationRequiredException(this, PendingIntent.getActivity(context!!, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                    val intent = Intent(ourContext, WebdavMountsActivity::class.java)
+                    throw AuthenticationRequiredException(this, PendingIntent.getActivity(ourContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
                 }
             }
             HttpURLConnection.HTTP_NOT_FOUND ->

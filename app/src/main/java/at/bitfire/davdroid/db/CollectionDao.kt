@@ -15,10 +15,13 @@ import androidx.room.Query
 interface CollectionDao: SyncableDao<Collection> {
 
     @Query("SELECT DISTINCT color FROM collection WHERE serviceId=:id")
-    fun colorsByService(id: Long): LiveData<List<Int>>
+    fun colorsByServiceLive(id: Long): LiveData<List<Int>>
 
     @Query("SELECT * FROM collection WHERE id=:id")
     fun get(id: Long): Collection?
+
+    @Query("SELECT * FROM collection WHERE id=:id")
+    fun getLive(id: Long): LiveData<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId")
     fun getByService(serviceId: Long): List<Collection>

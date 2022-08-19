@@ -10,12 +10,18 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.db.AppDatabase
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntKey
+import dagger.multibindings.IntoMap
 import java.io.Writer
+import javax.inject.Inject
 
 class SharedPreferencesProvider(
-        val context: Context,
-        val settingsManager: SettingsManager
+    val context: Context,
+    val settingsManager: SettingsManager
 ): SettingsProvider, SharedPreferences.OnSharedPreferenceChangeListener {
 
     companion object {
@@ -30,7 +36,7 @@ class SharedPreferencesProvider(
         val version = meta.getInt(META_VERSION, -1)
         if (version == -1) {
             // first call, check whether to migrate from SQLite database (DAVdroid <1.9)
-            firstCall(context)
+            firstCall()
             meta.edit().putInt(META_VERSION, CURRENT_VERSION).apply()
         }
 
@@ -113,8 +119,7 @@ class SharedPreferencesProvider(
     }
 
 
-
-    private fun firstCall(context: Context) {
+    private fun firstCall() {
         // remove possible artifacts from DAVdroid <1.9
         val edit = preferences.edit()
         edit.remove("override_proxy")
@@ -122,14 +127,19 @@ class SharedPreferencesProvider(
         edit.remove("proxy_port")
         edit.remove("log_to_external_storage")
         edit.apply()
-
-        // open ServiceDB to upgrade it and possibly migrate settings
-        AppDatabase.getInstance(context)
     }
 
 
-    class Factory : SettingsProviderFactory {
+    class Factory @Inject constructor() : SettingsProviderFactory {
         override fun getProviders(context: Context, settingsManager: SettingsManager) = listOf(SharedPreferencesProvider(context, settingsManager))
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    abstract class SharedPreferencesProviderFactoryModule {
+        @Binds
+        @IntoMap @IntKey(/* priority */ 10)
+        abstract fun factory(impl: Factory): SettingsProviderFactory
     }
 
 }

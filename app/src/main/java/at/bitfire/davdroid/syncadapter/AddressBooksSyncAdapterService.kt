@@ -13,11 +13,12 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.closeCompat
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import okhttp3.HttpUrl
@@ -26,12 +27,15 @@ import java.util.logging.Level
 
 class AddressBooksSyncAdapterService : SyncAdapterService() {
 
-    override fun syncAdapter() = AddressBooksSyncAdapter(this)
+    override fun syncAdapter() = AddressBooksSyncAdapter(this, appDatabase)
 
 
-    class AddressBooksSyncAdapter(context: Context): SyncAdapter(context) {
+    class AddressBooksSyncAdapter(
+        context: Context,
+        appDatabase: AppDatabase
+    ) : SyncAdapter(context, appDatabase) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val accountSettings = AccountSettings(context, account)
 
@@ -58,7 +62,6 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
         }
 
         private fun updateLocalAddressBooks(account: Account, syncResult: SyncResult): Boolean {
-            val db = AppDatabase.getInstance(context)
             val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)
 
             val remoteAddressBooks = mutableMapOf<HttpUrl, Collection>()

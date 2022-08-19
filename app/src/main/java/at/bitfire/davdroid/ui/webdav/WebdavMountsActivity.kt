@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.webdav
 
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -29,10 +28,16 @@ import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
+import at.bitfire.davdroid.webdav.DavDocumentsProvider
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.io.FileUtils
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class WebdavMountsActivity: AppCompatActivity() {
 
     private lateinit var binding: ActivityWebdavMountsBinding
@@ -164,11 +169,14 @@ class WebdavMountsActivity: AppCompatActivity() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app) {
+    @HiltViewModel
+    class Model @Inject constructor(
+        @ApplicationContext val context: Context,
+        val db: AppDatabase
+    ): ViewModel() {
 
-        val authority = app.getString(R.string.webdav_authority)
+        val authority = context.getString(R.string.webdav_authority)
 
-        val db = AppDatabase.getInstance(app)
         val mountInfos = object: MediatorLiveData<List<MountInfo>>() {
             var mounts: List<WebDavMount>? = null
             var roots: List<WebDavDocument>? = null
@@ -210,13 +218,16 @@ class WebdavMountsActivity: AppCompatActivity() {
                 db.webDavMountDao().delete(mount)
 
                 // remove credentials, too
-                CredentialsStore(getApplication()).setCredentials(mount.id, null)
+                CredentialsStore(context).setCredentials(mount.id, null)
+
+                // notify content URI listeners
+                DavDocumentsProvider.notifyMountsChanged(context)
             }
         }
 
 
         private fun queryChildrenOfRoot(mount: WebDavMount) {
-            val resolver = getApplication<Application>().contentResolver
+            val resolver = context.contentResolver
             db.webDavDocumentDao().getOrCreateRoot(mount).let { root ->
                 resolver.query(DocumentsContract.buildChildDocumentsUri(authority, root.id.toString()), null, null, null, null)?.close()
             }

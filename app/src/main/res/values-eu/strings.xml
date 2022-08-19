@@ -5,9 +5,12 @@
   <string name="account_invalid">Kontua ez da existitzen (dagoeneko)</string>
   <string name="account_title_address_book">kSync Helbide liburua</string>
   <string name="address_books_authority_title">Helbide liburuak</string>
+  <string name="field_required">Eremu hau beharrezkoa da</string>
   <string name="help">Laguntza</string>
   <string name="manage_accounts">Kudeatu kontuak</string>
   <string name="share">Partekatu</string>
+  <string name="database_destructive_migration_title">Datu-basea hondatua</string>
+  <string name="database_destructive_migration_text">Kontu lokal guztiak ezabatu dira.</string>
   <string name="notification_channel_debugging">Arazten</string>
   <string name="notification_channel_general">Beste mezu garrantzitsu batzuk</string>
   <string name="notification_channel_status">Prioritate baxuko egoera mezuak</string>
@@ -31,6 +34,8 @@
   <string name="intro_autostart_dont_show">Beharrezko ezarpenak bukatu ditut. Ez gogorarazi berriro.*</string>
   <string name="intro_leave_unchecked">* Utzi aktibatu gabe gero gogorarazteko. Aplikazioaren ezarpenetan berrezarri daiteke / %s</string>
   <string name="intro_more_info">Informazio gehiago</string>
+  <string name="intro_tasks_jtx">jtx taula</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Zereginak, egunkariak eta notak sinkronizatu ditzake.]]></string>
   <string name="intro_tasks_title">Tasks bateragarritasuna</string>
   <string name="intro_tasks_text1">Zereginak zure zerbitzarian onartuta badaude, onartutako zeregin aplikazio batekin sinkronizatu daitezke:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -55,9 +60,14 @@
   <string name="permissions_calendar_title">Egutegiaren baimenak</string>
   <string name="permissions_calendar_status_off">Egutegi sinkronizaziorik ez (ez gomendatuta)</string>
   <string name="permissions_calendar_status_on">Egutegiaren sinkronizazioa posible</string>
+  <string name="permissions_jtx_title">jtx taularen baimenak</string>
+  <string name="permissions_jtx_status_not_installed">Zereginen, egunkarien eta noten sinkronizaziorik ez (instalatu gabe)</string>
+  <string name="permissions_jtx_status_off">Zeregin, egunkari, noten sinkronizaziorik ez</string>
+  <string name="permissions_jtx_status_on">Zeregin, egunkari, noten sinkronizazioa posible</string>
   <string name="permissions_opentasks_title">OpenTasks baimenak</string>
   <string name="permissions_tasksorg_title">Tasks baimenak</string>
   <string name="permissions_tasks_status_not_installed">Ez sinkronizatu zereginak (instalatu gabe)</string>
+  <string name="permissions_tasks_status_off">Zeregin sink. ez</string>
   <string name="permissions_tasks_status_on">Zereginen sinkronizazioa posible</string>
   <string name="permissions_autoreset_title">Mantendu baimenak</string>
   <string name="permissions_autoreset_status_off">Baimenak automatikoki berezarri daitezke (ez gomendatuta)</string>
@@ -103,13 +113,16 @@
   <string name="install_browser">Instalatu web nabigatzaile bat</string>
   <string name="navigation_drawer_settings">Ezarpenak</string>
   <string name="navigation_drawer_news_updates">Berriak eta eguneraketak</string>
+  <string name="navigation_drawer_tools">Tresnak</string>
   <string name="navigation_drawer_external_links">Kanpo loturak</string>
   <string name="navigation_drawer_website">Webgunea</string>
   <string name="navigation_drawer_manual">Manuala</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_community">Komunitatea</string>
   <string name="navigation_drawer_donate">Dohaintza egin</string>
   <string name="navigation_drawer_privacy_policy">Pribatutasun gidalerroak</string>
   <string name="account_list_no_internet">Ez dago internetik. Androidek ez du sinkronizaziorik egingo.</string>
+  <string name="account_list_low_storage">Biltegiratze-lekua baxua da. Androidek ez du sinkronizatuko.</string>
   <string name="account_list_empty">Ongi etorri kSync aplikaziora!\n\nCalDAV/CardDAV kontu bat gehitu dezakezu orain.</string>
   <string name="accounts_global_sync_disabled">Sistema osoko sinkronizazio automatikoa desgaituta dago</string>
   <string name="accounts_global_sync_enable">Gaitu</string>
@@ -118,6 +131,8 @@
   <string name="dav_service_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
   <string name="dav_service_refresh_couldnt_refresh">Ezin izan da bilduma zerrenda freskatu</string>
   <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Ezin da aurrealdean exekutatu</string>
+  <string name="battery_optimization_notify_text">Bateriaren optimizazioaren zerrenda zuria behar da</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Aurrealdean exekutatzen</string>
   <string name="foreground_service_notify_text">Gailu batzuetan, hau beharrezkoa da sinkronizazio automatikorako.</string>
@@ -129,9 +144,21 @@
   <string name="app_settings_logging">Erregistro xehatuak</string>
   <string name="app_settings_logging_on">Erregistratzea gaituta dago</string>
   <string name="app_settings_logging_off">Erregistratzea desgaituta dago</string>
+  <string name="app_settings_battery_optimization">Bateria optimizazioa</string>
+  <string name="app_settings_battery_optimization_whitelisted">Aplikazioa zerrenda zurian dago (gomendatuta)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Aplikazioa ez dago zerrenda zurian (ez gomendatuta)</string>
   <string name="app_settings_foreground_service">Mantendu aurrealdean</string>
   <string name="app_settings_foreground_service_details">Zure gailuak sinkronizazio automatikoa galarazten badu lagundu dezake</string>
   <string name="app_settings_connection">Konexioa</string>
+  <string name="app_settings_proxy">Proxy mota</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Sistemaren lehenetsia</item>
+    <item>Proxyrik ez</item>
+    <item>HTTP</item>
+    <item>SOCKS (Orbot-erako)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Proxy ostalariaren izena</string>
+  <string name="app_settings_proxy_port">Proxy ataka</string>
   <string name="app_settings_security">Segurtasuna</string>
   <string name="app_settings_security_app_permissions">Aplikazioaren baimenak</string>
   <string name="app_settings_security_app_permissions_summary">Berrikusi sinkronizaziorako beharrezkoak diren baimenak</string>
@@ -185,6 +212,7 @@
   <string name="account_read_only">irakurri-soilik</string>
   <string name="account_calendar">egutegia</string>
   <string name="account_task_list">zeregin zerrenda</string>
+  <string name="account_journal">egunkaria</string>
   <string name="account_only_personal">Erakutsi pertsonala soilik</string>
   <string name="account_refresh_address_book_list">Freskatu helbide liburuen zerrenda</string>
   <string name="account_create_new_address_book">Sortu helbide liburu berria</string>
@@ -209,6 +237,7 @@
   <string name="login_login">Saioa hasi</string>
   <string name="login_create_account">Sortu kontua</string>
   <string name="login_account_name">Kontuaren izena</string>
+  <string name="login_account_avoid_apostrophe">Apostrofeen erabilera (\'), gailu batzuetan arazoak sortzen ditu.</string>
   <string name="login_account_name_info">Erabili zure eposta helbidea kontu izen bezala Androidek kontuaren izena ANTOLATZAILE eremuan ezarriko duelako sortzen dituzun gertaerentzako. Ezin dituzu bi kontu izen berdinarekin eduki.</string>
   <string name="login_account_contact_group_method">Kontaktuen taldekatze metodoa:</string>
   <string name="login_account_name_required">Kontuaren izena beharrezkoa</string>
@@ -271,7 +300,7 @@
   <string name="settings_default_alarm">Abisu lehentsia</string>
   <plurals name="settings_default_alarm_on">
     <item quantity="one">Abisu lehenetsia gertaera baino minutu bat lehenago</item>
-    <item quantity="other">Abisu lehenetsia %d minutu gertaera baino lehenago</item>
+    <item quantity="other">Abisu lehenetsia gertaera baino %d minutu lehenago</item>
   </plurals>
   <string name="settings_default_alarm_off">Ez dago abisu lehenetsirik sortuta</string>
   <string name="settings_default_alarm_message">Abisu lehenetsiak sortu behar badira abisurik gabeko gertaerentzat: nahi den minutu kopurua gertaera baino lehen. Utzi hutsik abisu lehenetsiak desgaitzeko.</string>
@@ -348,9 +377,27 @@
   <string name="exception_ioexception">S/I errore bat gertatu da.</string>
   <string name="exception_show_details">Erakutsi xehetasunak</string>
   <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Sinkronizazioa geldituta</string>
+  <string name="storage_low_notify_text">Ia ez dago leku librerik</string>
   <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">WebDAV muntaiak</string>
+  <string name="webdav_mounts_quota_used_available">Erabilitako kuota: %1$s / eskuragarri: %2$s</string>
+  <string name="webdav_mounts_share_content">Partekatu edukia</string>
+  <string name="webdav_mounts_unmount">Desmuntatu</string>
+  <string name="webdav_add_mount_title">Gehitu WebDAV muntaia</string>
+  <string name="webdav_mounts_empty">Atzitu zure cloud fitxategiak zuzenean WebDAV muntaia bat gehitzen!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Ikusi <a href="%1$s">WebDAV muntaiak nola funtzionatzen duten</a>.</string>]]></string>
+  <string name="webdav_add_mount_display_name">Bistaratze-izena</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">URL baliogabea</string>
   <string name="webdav_add_mount_username">Erabiltzaile izena</string>
   <string name="webdav_add_mount_password">Pasahitza</string>
+  <string name="webdav_add_mount_add">Gehitu muntaia</string>
+  <string name="webdav_add_mount_no_support">Ez dago WebDAV zerbitzurik URL honetan</string>
+  <string name="webdav_notification_access">WebDAV fitxategia atzitzen</string>
+  <string name="webdav_notification_download">WebDAV fitxategia deskargatzen</string>
+  <string name="webdav_notification_upload">WebDAV fitxategia kargatzen</string>
+  <string name="webdav_provider_root_title">WebDAV muntaia</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">kSync baimenak</string>
   <string name="sync_error_permissions_text">Baimen gehigarriak beharrezkoak</string>

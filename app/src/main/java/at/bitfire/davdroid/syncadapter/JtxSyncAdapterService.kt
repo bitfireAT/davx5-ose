@@ -12,10 +12,11 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
-import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.JtxCollection
@@ -23,23 +24,35 @@ import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 class JtxSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = JtxSyncAdapter(this)
+    override fun syncAdapter() = JtxSyncAdapter(this, appDatabase)
 
-    class JtxSyncAdapter(context: Context): SyncAdapter(context) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+    class JtxSyncAdapter(
+        context: Context,
+        appDatabase: AppDatabase
+    ) : SyncAdapter(context, appDatabase) {
+
+        override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
 
             try {
                 // check whether jtx Board is new enough
                 TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
 
                 // make sure account can be seen by task provider
-                if (Build.VERSION.SDK_INT >= 26)
-                    AccountManager.get(context).setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
-
+                if (Build.VERSION.SDK_INT >= 26) {
+                    /* Warning: If setAccountVisibility is called, Android 12 broadcasts the
+                       AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs
+                       and starts them again! So make sure setAccountVisibility is only called when necessary. */
+                    val am = AccountManager.get(context)
+                    if (am.getAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName) != AccountManager.VISIBILITY_VISIBLE)
+                        am.setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
+                }
                 /* don't run sync if
                    - sync conditions (e.g. "sync only in WiFi") are not met AND
                    - this is is an automatic sync (i.e. manual syncs are run regardless of sync conditions)
@@ -55,7 +68,7 @@ class JtxSyncAdapterService: SyncAdapterService() {
                 val collections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
                 for (collection in collections) {
                     Logger.log.info("Synchronizing $collection")
-                    JtxSyncManager(context, account, accountSettings, extras, authority, syncResult, collection).use {
+                    JtxSyncManager(context, account, accountSettings, extras, httpClient.value, authority, syncResult, collection).let {
                         it.performSync()
                     }
                 }
@@ -69,7 +82,6 @@ class JtxSyncAdapterService: SyncAdapterService() {
         }
 
         private fun updateLocalCollections(account: Account, client: ContentProviderClient) {
-            val db = AppDatabase.getInstance(context)
             val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
 
             val remoteCollections = mutableMapOf<HttpUrl, Collection>()

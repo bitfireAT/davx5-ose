@@ -4,12 +4,14 @@
 
 package at.bitfire.davdroid
 
+import android.security.NetworkSecurityPolicy
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Test
 
@@ -35,6 +37,7 @@ class HttpClientTest {
 
     @Test
     fun testCookies() {
+        Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
         val url = server.url("/test")
 
         // set cookie for root path (/) and /test path in first response

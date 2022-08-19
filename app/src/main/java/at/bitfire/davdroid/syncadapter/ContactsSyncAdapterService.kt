@@ -11,6 +11,8 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import android.provider.ContactsContract
+import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
@@ -22,15 +24,18 @@ class ContactsSyncAdapterService: SyncAdapterService() {
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"
     }
 
-    override fun syncAdapter() = ContactsSyncAdapter(this)
+    override fun syncAdapter() = ContactsSyncAdapter(this, appDatabase)
 
 
-	class ContactsSyncAdapter(context: Context): SyncAdapter(context) {
+	class ContactsSyncAdapter(
+        context: Context,
+        appDatabase: AppDatabase
+    ) : SyncAdapter(context, appDatabase) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
+                val accountSettings = AccountSettings(context, account)
                 val addressBook = LocalAddressBook(context, account, provider)
-                val accountSettings = AccountSettings(context, addressBook.mainAccount)
 
                 // handle group method change
                 val groupMethod = accountSettings.getGroupMethod().name
@@ -58,7 +63,7 @@ class ContactsSyncAdapterService: SyncAdapterService() {
                 Logger.log.info("Synchronizing address book: ${addressBook.url}")
                 Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
 
-                ContactsSyncManager(context, account, accountSettings, extras, authority, syncResult, provider, addressBook).use {
+                ContactsSyncManager(context, account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook).let {
                     it.performSync()
                 }
             } catch(e: Exception) {

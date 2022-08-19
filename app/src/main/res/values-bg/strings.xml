@@ -27,7 +27,7 @@
   <string name="intro_battery_title">Периодично синхронизиране</string>
   <string name="intro_battery_not_whitelisted">Изключено (не се препоръчва)</string>
   <string name="intro_battery_whitelisted">Включено (препоръчително)</string>
-  <string name="intro_battery_text">За да синхронизира периодично, %s се нуждае от разрешение да работи на заден план. В противен случай Android синхронизацията може да прекъсне по всяко време.</string>
+  <string name="intro_battery_text">За да синхронизира периодично, %s се нуждае от разрешение да работи на заден план. В противен случай Android може да спре синхронизацията по всяко време.</string>
   <string name="intro_battery_dont_show">Не желая периодично синхронизиране.*</string>
   <string name="intro_autostart_title">%s съвместимост</string>
   <string name="intro_autostart_text">Устройството вероятно прекъсва синхронизацията. Единственият начин да резрешите проблема е ръчната промяна на настройките.</string>
@@ -131,6 +131,7 @@
   <string name="dav_service_refresh_failed">Откриването на услугите се провали</string>
   <string name="dav_service_refresh_couldnt_refresh">Грешка при презареждане</string>
   <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Не може да работи на преден план</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Работи на преден план</string>
   <string name="foreground_service_notify_text">На някои устройства това е необходимо, за да работи автоматичното синхронизиране.</string>
@@ -232,7 +233,7 @@
   <string name="login_create_account">Създаване на регистрация</string>
   <string name="login_account_name">Име на регистрация</string>
   <string name="login_account_avoid_apostrophe">Използването на апострофи (\') води до проблеми при някои устройства.</string>
-  <string name="login_account_name_info">Използвайте адрес за електронна поща вместо име, защото Android ще го използва като адрес на организатора за събитията, които създавате. Не може да има две регистрации с еднакво име.</string>
+  <string name="login_account_name_info">Използвайте адрес за електронна поща вместо име, защото Android ще го използва като адрес на организатора на събитията, които създавате. Не може да има две регистрации с еднакво име.</string>
   <string name="login_account_contact_group_method">Метод за съхранение на групи от контакти:</string>
   <string name="login_account_name_required">Изисква се име на регистрацията</string>
   <string name="login_account_name_already_taken">Това име на регистрация вече се използва</string>
@@ -287,16 +288,17 @@
   <string name="settings_sync_time_range_past">Ограничения за събития от миналото</string>
   <string name="settings_sync_time_range_past_none">Всички събития ще се синхронизират</string>
   <plurals name="settings_sync_time_range_past_days">
-    <item quantity="one">Събития минали преди повече от ден ще бъдат пренебрегнати</item>
-    <item quantity="other">Събития минали преди повече от %dдни ще бъдат пренебрегнати</item>
+    <item quantity="one">Събития от преди повече от един ден ще бъдат пренебрегнати</item>
+    <item quantity="other">Събития от преди повече от %dдена ще бъдат пренебрегнати</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Събития преди повече от този брой дни в миналото ще бъдат пренебрегнати </string>
   <string name="settings_default_alarm">Подразбирано напомняне</string>
   <plurals name="settings_default_alarm_on">
-    <item quantity="one">Подразбирано напомняне 1 минута преди събитие</item>
-    <item quantity="other">Подразбирано напомняне %d преди събитие</item>
+    <item quantity="one">Подразбирано напомняне една минута преди събитието</item>
+    <item quantity="other">Подразбирано напомняне %d минути преди събитието</item>
   </plurals>
   <string name="settings_default_alarm_off">Няма създадени подразбирани напомняния</string>
+  <string name="settings_default_alarm_message">Към събитията без напомняне ще бъде добавяно подразбирано напомняне: желания брой минути преди събитието. Оставете празно, за да изключите подразбираните напомняния.</string>
   <string name="settings_manage_calendar_colors">Управление на цвета на календари</string>
   <string name="settings_manage_calendar_colors_on">Цветовете на календарите се нулират при всяко синхронизиране.</string>
   <string name="settings_manage_calendar_colors_off">Цветовете на календарите могат да бъдат зададени от други приложения.</string>
@@ -345,10 +347,14 @@
   <string name="debug_info_archive_subtitle">Съдържа информацията за отстраняване на дефекти и дневниците</string>
   <string name="debug_info_archive_text">Споделете архива, за да го пренесете на компютър, да го изпратите по електронна поща или да го прикачите към билет за поддръжка.</string>
   <string name="debug_info_archive_share">Споделяне на архива</string>
+  <string name="debug_info_attached">Информацията за отстраняване на дефекти е приложена към това съобщение (получаващото приложение трябва да поддръжа прикачени файлове).</string>
   <string name="debug_info_http_error">Грешка на HTTP</string>
   <string name="debug_info_server_error">Грешка на сървъра</string>
   <string name="debug_info_webdav_error">Грешка на WebDAV</string>
   <string name="debug_info_io_error">Грешка на входа/изхода</string>
+  <string name="debug_info_http_403_description">Заявката е отказана. За подробности проверете свързаните със завката ресурси и информацията за отстраняване на дефекти.</string>
+  <string name="debug_info_http_404_description">Заявеният ресурс не съществува (вече). За подробности проверете свързаните със завката ресурси и информацията за отстраняване на дефекти.</string>
+  <string name="debug_info_unexpected_error">Възникнала е неочаквана грешка. За подробности проверете информацията за отстраняване на дефекти.</string>
   <string name="debug_info_view_details">Подробности</string>
   <string name="debug_info_subtitle">Информацията за отстраняване на дефекта е събрана</string>
   <string name="debug_info_involved_caption">Ресурси, имащи отношение</string>

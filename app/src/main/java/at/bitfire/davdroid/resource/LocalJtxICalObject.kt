@@ -5,7 +5,9 @@
 package at.bitfire.davdroid.resource
 
 import android.content.ContentValues
-import at.bitfire.ical4android.*
+import at.bitfire.ical4android.JtxCollection
+import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.ical4android.JtxICalObjectFactory
 import at.techbee.jtx.JtxContract
 
 class LocalJtxICalObject(

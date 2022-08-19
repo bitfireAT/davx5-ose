@@ -16,10 +16,20 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 
 class ForegroundService : Service() {
 
     companion object {
+
+        @EntryPoint
+        @InstallIn(SingletonComponent::class)
+        interface ForegroundServiceEntryPoint {
+            fun settingsManager(): SettingsManager
+        }
 
         /**
          * Starts/stops a foreground service, according to the app setting [Settings.FOREGROUND_SERVICE]
@@ -44,8 +54,8 @@ class ForegroundService : Service() {
          * @return true: foreground service enabled; false: foreground service not enabled
          */
         fun foregroundServiceActivated(context: Context): Boolean {
-            val settings = SettingsManager.getInstance(context)
-            return settings.getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
+            val settingsManager = EntryPointAccessors.fromApplication(context, ForegroundServiceEntryPoint::class.java).settingsManager()
+            return settingsManager.getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
         }
 
         /**

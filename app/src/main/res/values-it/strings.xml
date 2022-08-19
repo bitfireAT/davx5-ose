@@ -270,12 +270,14 @@
   <string name="settings_sync_time_range_past_none">Verranno sincronizzati tutti gli eventi</string>
   <plurals name="settings_sync_time_range_past_days">
     <item quantity="one">Eventi più vecchi di un giorno saranno ignorati</item>
+    <item quantity="many">Eventi più vecchi di %d giorni saranno ignorati</item>
     <item quantity="other">Eventi più vecchi di %d giorni saranno ignorati</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Eventi più vecchi di questo numero di giorni verranno ignorati(può anche essere 0). Lasciare in bianco per sincronizzare tutti gli eventi.</string>
   <string name="settings_default_alarm">Promemoria predefinito</string>
   <plurals name="settings_default_alarm_on">
     <item quantity="one">Promemoria predefinito un minuto prima dell\'evento</item>
+    <item quantity="many">Promemoria predefinito %d minuti prima dell\'evento</item>
     <item quantity="other">Promemoria predefinito %d minuti prima dell\'evento</item>
   </plurals>
   <string name="settings_default_alarm_off">Nessun promemoria di default creato</string>

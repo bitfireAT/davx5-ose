@@ -10,11 +10,15 @@ import android.security.KeyChain
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import okhttp3.*
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
@@ -32,9 +36,15 @@ import java.util.logging.Level
 import javax.net.ssl.*
 
 class HttpClient private constructor(
-        val okHttpClient: OkHttpClient,
-        private val certManager: CustomCertManager?
+    val okHttpClient: OkHttpClient,
+    private val certManager: CustomCertManager?
 ): AutoCloseable {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface HttpClientEntryPoint {
+        fun settingsManager(): SettingsManager
+    }
 
     companion object {
         /** max. size of disk cache (10 MB) */
@@ -76,12 +86,18 @@ class HttpClient private constructor(
     }
 
     class Builder(
-            val context: Context? = null,
-            accountSettings: AccountSettings? = null,
-            val logger: java.util.logging.Logger? = Logger.log,
-            val loggerLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
+        val context: Context? = null,
+        accountSettings: AccountSettings? = null,
+        val logger: java.util.logging.Logger? = Logger.log,
+        val loggerLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
     ) {
-        private var certManager: CustomCertManager? = null
+
+        fun interface CertManagerProducer {
+            fun certManager(): CustomCertManager
+        }
+
+        private var appInForeground = false
+        private var certManagerProducer: CertManagerProducer? = null
         private var certificateAlias: String? = null
         private var offerCompression: Boolean = false
 
@@ -99,7 +115,7 @@ class HttpClient private constructor(
             }
 
             if (context != null) {
-                val settings = SettingsManager.getInstance(context)
+                val settings = EntryPointAccessors.fromApplication(context, HttpClientEntryPoint::class.java).settingsManager()
 
                 // custom proxy support
                 try {
@@ -126,9 +142,11 @@ class HttpClient private constructor(
                     Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
                 }
 
-                // TODO don't instantiate CustomCertManager in .Builder (causes service leaks)
-                customCertManager(CustomCertManager(context, true /*BuildConfig.customCertsUI*/,
-                        !(settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES))))
+                customCertManager() {
+                    // by default, use a CustomCertManager that respects the "distrust system certificates" setting
+                    val trustSystemCerts = !settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
+                    CustomCertManager(context, true /*BuildConfig.customCertsUI*/, trustSystemCerts)
+                }
             }
 
             // use account settings for authentication and cookies
@@ -168,11 +186,11 @@ class HttpClient private constructor(
             return this
         }
 
-        fun customCertManager(manager: CustomCertManager) {
-            certManager = manager
+        fun customCertManager(producer: CertManagerProducer) {
+            certManagerProducer = producer
         }
         fun setForeground(foreground: Boolean): Builder {
-            certManager?.appInForeground = foreground
+            appInForeground = foreground
             return this
         }
 
@@ -197,15 +215,6 @@ class HttpClient private constructor(
             if (offerCompression)
                 // offer Brotli and gzip compression
                 orig.addInterceptor(BrotliInterceptor)
-
-            val trustManager = certManager ?: run {
-                val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-                factory.init(null as KeyStore?)
-                factory.trustManagers.first() as X509TrustManager
-            }
-
-            val hostnameVerifier = certManager?.hostnameVerifier(OkHostnameVerifier)
-                    ?: OkHostnameVerifier
 
             var keyManager: KeyManager? = null
             certificateAlias?.let { alias ->
@@ -239,15 +248,30 @@ class HttpClient private constructor(
                 orig.protocols(listOf(Protocol.HTTP_1_1))
             }
 
-            val sslContext = SSLContext.getInstance("TLS")
-            sslContext.init(
+            if (certManagerProducer != null || keyManager != null) {
+                val certManager = certManagerProducer?.certManager()
+                certManager?.appInForeground = appInForeground
+
+                val trustManager = certManager ?: {     // fall back to system default trust manager
+                    val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                    factory.init(null as KeyStore?)
+                    factory.trustManagers.first() as X509TrustManager
+                }()
+
+                val hostnameVerifier = certManager?.hostnameVerifier(OkHostnameVerifier)
+                    ?: OkHostnameVerifier
+
+                val sslContext = SSLContext.getInstance("TLS")
+                sslContext.init(
                     if (keyManager != null) arrayOf(keyManager) else null,
                     arrayOf(trustManager),
                     null)
-            orig.sslSocketFactory(sslContext.socketFactory, trustManager)
-            orig.hostnameVerifier(hostnameVerifier)
+                orig.sslSocketFactory(sslContext.socketFactory, trustManager)
+                orig.hostnameVerifier(hostnameVerifier)
 
-            return HttpClient(orig.build(), certManager)
+                return HttpClient(orig.build(), certManager)
+            } else
+                return HttpClient(orig.build(), null)
         }
 
     }

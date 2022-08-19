@@ -7,24 +7,40 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.util.NoSuchPropertyException
 import androidx.annotation.AnyThread
-import at.bitfire.davdroid.Singleton
 import at.bitfire.davdroid.log.Logger
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import java.io.Writer
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.logging.Level
+import javax.inject.Singleton
 
 /**
  * Settings manager which coordinates [SettingsProvider]s to read/write
  * application settings.
  */
-class SettingsManager private constructor(
-        context: Context
+class SettingsManager internal constructor(
+    context: Context
 ) {
 
-    companion object {
-        fun getInstance(context: Context) =
-            Singleton.getInstance(context) { SettingsManager(context) }
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object SettingsManagerModule {
+        @Provides
+        @Singleton
+        fun settingsManager(@ApplicationContext context: Context) = SettingsManager(context)
+    }
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface SettingsManagerEntryPoint {
+        fun factories(): Map<Int, @JvmSuppressWildcards SettingsProviderFactory>
     }
 
     private val providers = LinkedList<SettingsProvider>()
@@ -33,12 +49,16 @@ class SettingsManager private constructor(
     private val observers = LinkedList<WeakReference<OnChangeListener>>()
 
     init {
-        val factories = ServiceLoader.load(SettingsProviderFactory::class.java, context.classLoader)
-        Logger.log.fine("Loading settings providers from ${factories.count()} factories")
-        for (factory in factories)
+        val factories = EntryPointAccessors.fromApplication(context, SettingsManagerEntryPoint::class.java)
+            .factories()        // get factories from Hilt
+            .toSortedMap()      // sort by Int key
+            .values.reversed()  // take reverse-sorted values (because high priority numbers shall be processed first)
+        for (factory in factories) {
+            Logger.log.fine("Loading settings providers from $factory")
             providers.addAll(factory.getProviders(context, this))
+        }
 
-        writeProvider = providers.first { it.canWrite() }
+        writeProvider = providers.firstOrNull() { it.canWrite() }
         Logger.log.fine("Changed settings are handled by $writeProvider")
     }
 

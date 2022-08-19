@@ -5,12 +5,11 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.MainThread
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
@@ -21,10 +20,17 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DeleteCollectionFragment: DialogFragment() {
 
     companion object {
@@ -41,16 +47,18 @@ class DeleteCollectionFragment: DialogFragment() {
         }
     }
 
-    val model by viewModels<Model>()
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        model.initialize(
-                requireArguments().getParcelable(ARG_ACCOUNT)!!,
-                requireArguments().getLong(ARG_COLLECTION_ID)
-        )
+    @Inject lateinit var modelFactory: Model.Factory
+    val model by viewModels<Model>() {
+        object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                modelFactory.create(
+                    requireArguments().getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException("ARG_ACCOUNT required"),
+                    requireArguments().getLong(ARG_COLLECTION_ID)
+                ) as T
+        }
     }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = DeleteCollectionBinding.inflate(layoutInflater, null, false)
@@ -79,35 +87,33 @@ class DeleteCollectionFragment: DialogFragment() {
     }
 
 
-    class Model(
-            application: Application
-    ): AndroidViewModel(application) {
+    class Model @AssistedInject constructor(
+        @ApplicationContext val context: Context,
+        val db: AppDatabase,
+        @Assisted var account: Account,
+        @Assisted val collectionId: Long
+    ): ViewModel() {
 
-        var account: Account? = null
+        @AssistedFactory
+        interface Factory {
+            fun create(account: Account, collectionId: Long): Model
+        }
+
         var collectionInfo: Collection? = null
-
-        val db = AppDatabase.getInstance(application)
 
         val confirmation = MutableLiveData<Boolean>()
         val result = MutableLiveData<Exception>()
 
-        @MainThread
-        fun initialize(account: Account, collectionId: Long) {
-            if (this.account == null)
-                this.account = account
-
-            if (collectionInfo == null)
-                viewModelScope.launch(Dispatchers.IO) {
-                    collectionInfo = db.collectionDao().get(collectionId)
-                }
+        init {
+            viewModelScope.launch(Dispatchers.IO) {
+                collectionInfo = db.collectionDao().get(collectionId)
+            }
         }
 
         fun deleteCollection(): LiveData<Exception> {
             viewModelScope.launch(Dispatchers.IO + NonCancellable) {
-                val account = account ?: return@launch
                 val collectionInfo = collectionInfo ?: return@launch
 
-                val context = getApplication<Application>()
                 HttpClient.Builder(context, AccountSettings(context, account))
                         .setForeground(true)
                         .build().use { httpClient ->

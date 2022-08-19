@@ -23,16 +23,16 @@ import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.TasksWatcher
 import at.bitfire.davdroid.closeCompat
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.TaskProvider
@@ -41,6 +41,10 @@ import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
 import at.techbee.jtx.JtxContract.asSyncAdapter
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.property.Url
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -53,13 +57,25 @@ import java.util.logging.Level
 /**
  * Manages settings of an account.
  *
+ * @param context       Required to access account settings
+ * @param argAccount    Account to take settings from. If this account is an address book account,
+ * settings will be taken from the corresponding main account instead.
+ *
  * @throws InvalidAccountException on construction when the account doesn't exist (anymore)
+ * @throws IllegalArgumentException when the account type is not _DAVx5_ or _DAVx5 address book_
  */
 @Suppress("FunctionName")
 class AccountSettings(
-        val context: Context,
-        val account: Account
+    val context: Context,
+    argAccount: Account
 ) {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface AccountSettingsEntryPoint {
+        fun appDatabase(): AppDatabase
+        fun settingsManager(): SettingsManager
+    }
 
     companion object {
 
@@ -174,12 +190,28 @@ class AccountSettings(
         }
 
     }
-    
-    
+
+
+    val db = EntryPointAccessors.fromApplication(context, AccountSettingsEntryPoint::class.java).appDatabase()
+    val settings = EntryPointAccessors.fromApplication(context, AccountSettingsEntryPoint::class.java).settingsManager()
+
     val accountManager: AccountManager = AccountManager.get(context)
-    val settings = SettingsManager.getInstance(context)
+    val account: Account
 
     init {
+        when (argAccount.type) {
+            context.getString(R.string.account_type_address_book) -> {
+                /* argAccount is an address book account, which is not a main account. However settings are
+                   stored in the main account, so resolve and use the main account instead. */
+                account = LocalAddressBook.mainAccount(context, argAccount)
+            }
+            context.getString(R.string.account_type) ->
+                account = argAccount
+            else ->
+                throw IllegalArgumentException("Account type not supported")
+        }
+
+        // synchronize because account migration must only be run one time
         synchronized(AccountSettings::class.java) {
             val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
             var version = 0
@@ -581,7 +613,6 @@ class AccountSettings(
      * Disable it on those accounts for the future.
      */
     private fun update_8_9() {
-        val db = AppDatabase.getInstance(context)
         val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
         if (!hasCalDAV && ContentResolver.getIsSyncable(account, OpenTasks.authority) != 0) {
             Logger.log.info("Disabling OpenTasks sync for $account")
@@ -706,7 +737,7 @@ class AccountSettings(
     @Suppress("unused")
     private fun update_4_5() {
         // call PackageChangedReceiver which then enables/disables OpenTasks sync when it's (not) available
-        TasksWatcher.updateTaskSync(context)
+        SyncUtils.updateTaskSync(context)
     }
 
     @Suppress("unused")

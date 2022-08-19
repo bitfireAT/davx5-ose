@@ -13,14 +13,18 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.ConcurrentUtils
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.PermissionUtils
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
-import java.util.*
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.logging.Level
+import javax.inject.Inject
 
+@AndroidEntryPoint
 abstract class SyncAdapterService: Service() {
 
     companion object {
@@ -57,6 +61,8 @@ abstract class SyncAdapterService: Service() {
         const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
     }
 
+    @Inject lateinit var appDatabase: AppDatabase
+
 
     protected abstract fun syncAdapter(): AbstractThreadedSyncAdapter
 
@@ -72,7 +78,8 @@ abstract class SyncAdapterService: Service() {
      * Also provides some useful methods that can be used by derived sync adapters.
      */
     abstract class SyncAdapter(
-        context: Context
+        context: Context,
+        val db: AppDatabase
     ): AbstractThreadedSyncAdapter(
         context,
         true    // isSyncable shouldn't be -1 because DAVx5 sets it to 0 or 1.
@@ -96,7 +103,8 @@ abstract class SyncAdapterService: Service() {
 
         }
 
-        abstract fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult)
+
+        abstract fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult)
 
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             Logger.log.log(Level.INFO, "$authority sync of $account has been initiated", extras.keySet().joinToString(", "))
@@ -107,15 +115,24 @@ abstract class SyncAdapterService: Service() {
                 // required for ServiceLoader -> ical4j -> ical4android
                 Thread.currentThread().contextClassLoader = context.classLoader
 
+                val accountSettings by lazy { AccountSettings(context, account) }
+                val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
+
                 try {
-                    if (/* always true in open-source edition */ true)
-                        sync(account, extras, authority, provider, syncResult)
+                    val runSync = /* always true in open-source edition */ true
+
+                    if (runSync)
+                        sync(account, extras, authority, httpClient, provider, syncResult)
+
                 } catch (e: InvalidAccountException) {
                     Logger.log.log(
                         Level.WARNING,
                         "Account was removed during synchronization",
                         e
                     )
+                } finally {
+                    if (httpClient.isInitialized())
+                        httpClient.value.close()
                 }
             })
                 Logger.log.log(Level.INFO, "Sync for $currentSyncKey finished", syncResult)

@@ -6,8 +6,8 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.content.SyncStatusObserver
 import android.os.Build
@@ -21,15 +21,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -38,11 +39,18 @@ import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SettingsActivity: AppCompatActivity() {
 
     companion object {
@@ -72,12 +80,20 @@ class SettingsActivity: AppCompatActivity() {
     }
 
 
-    class AccountSettingsFragment: PreferenceFragmentCompat() {
+    @AndroidEntryPoint
+    class AccountSettingsFragment(): PreferenceFragmentCompat() {
 
         private val account by lazy { requireArguments().getParcelable<Account>(EXTRA_ACCOUNT)!! }
-        private val settings by lazy { SettingsManager.getInstance(requireActivity()) }
+        @Inject lateinit var settings: SettingsManager
 
-        val model by viewModels<Model>()
+        @Inject lateinit var modelFactory: Model.Factory
+        val model by viewModels<Model> {
+            object: ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>) =
+                    modelFactory.create(account) as T
+            }
+        }
 
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -91,7 +107,6 @@ class SettingsActivity: AppCompatActivity() {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             try {
-                model.initialize(account)
                 initSettings()
             } catch (e: InvalidAccountException) {
                 Toast.makeText(context, R.string.account_invalid, Toast.LENGTH_LONG).show()
@@ -370,18 +385,25 @@ class SettingsActivity: AppCompatActivity() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app), SyncStatusObserver, SettingsManager.OnChangeListener {
+    class Model @AssistedInject constructor(
+        @ApplicationContext val context: Context,
+        val settings: SettingsManager,
+        @Assisted val account: Account
+    ): ViewModel(), SyncStatusObserver, SettingsManager.OnChangeListener {
 
-        private var account: Account? = null
+        @AssistedFactory
+        interface Factory {
+            fun create(account: Account): Model
+        }
+
         private var accountSettings: AccountSettings? = null
 
-        private val settings = SettingsManager.getInstance(app)
         private var statusChangeListener: Any? = null
 
         // settings
         val syncIntervalContacts = MutableLiveData<Long>()
         val syncIntervalCalendars = MutableLiveData<Long>()
-        val tasksProvider = TaskUtils.currentProvider(getApplication())
+        val tasksProvider = TaskUtils.currentProvider(context)
         val syncIntervalTasks = MutableLiveData<Long>()
         val hasCalDav = object: MediatorLiveData<Boolean>() {
             init {
@@ -406,13 +428,8 @@ class SettingsActivity: AppCompatActivity() {
         val contactGroupMethod = MutableLiveData<GroupMethod>()
 
 
-        fun initialize(account: Account) {
-            if (this.account != null)
-                // already initialized
-                return
-
-            this.account = account
-            accountSettings = AccountSettings(getApplication(), account)
+        init {
+            accountSettings = AccountSettings(context, account)
 
             settings.addOnChangeListener(this)
             statusChangeListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
@@ -442,7 +459,6 @@ class SettingsActivity: AppCompatActivity() {
 
         fun reload() {
             val accountSettings = accountSettings ?: return
-            val context = getApplication<Application>()
 
             syncIntervalContacts.postValue(accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)))
             syncIntervalCalendars.postValue(accountSettings.getSyncInterval(CalendarContract.AUTHORITY))
@@ -521,7 +537,7 @@ class SettingsActivity: AppCompatActivity() {
             accountSettings?.setGroupMethod(groupMethod)
             reload()
 
-            resync(getApplication<Application>().getString(R.string.address_books_authority), fullResync = true)
+            resync(context.getString(R.string.address_books_authority), fullResync = true)
         }
 
         /**

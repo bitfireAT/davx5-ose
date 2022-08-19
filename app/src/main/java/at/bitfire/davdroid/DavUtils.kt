@@ -22,7 +22,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import org.xbill.DNS.*
 import java.net.InetAddress
 import java.util.*
-import kotlin.collections.LinkedHashSet
 
 /**
  * Some WebDAV and related network utility methods

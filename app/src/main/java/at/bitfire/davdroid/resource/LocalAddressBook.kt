@@ -16,11 +16,12 @@ import android.provider.ContactsContract.RawContacts
 import android.util.Base64
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountUtils
+import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.vcard4android.*
 import java.io.ByteArrayOutputStream
 import java.util.*
@@ -53,8 +54,7 @@ open class LocalAddressBook(
                 throw IllegalStateException("Couldn't create address book account")
 
             val addressBook = LocalAddressBook(context, account, provider)
-            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1)
-            ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
+            addressBook.updateSyncSettings()
 
             // initialize Contacts Provider Settings
             val values = ContentValues(2)
@@ -102,14 +102,15 @@ open class LocalAddressBook(
         }
 
         fun mainAccount(context: Context, account: Account): Account =
-                if (account.type == context.getString(R.string.account_type_address_book)) {
-                    val manager = AccountManager.get(context)
-                    Account(
-                            manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME),
-                            manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
-                    )
-                } else
-                    account
+            if (account.type == context.getString(R.string.account_type_address_book)) {
+                val manager = AccountManager.get(context)
+                val accountName = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
+                val accountType = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
+                if (accountName == null || accountType == null)
+                    throw IllegalArgumentException("Address book account does not have a main account")
+                Account(accountName, accountType)
+            } else
+                throw IllegalArgumentException("Account is not an address book account")
 
     }
 
@@ -135,20 +136,16 @@ open class LocalAddressBook(
     private var _mainAccount: Account? = null
     /**
      * The associated main account which this address book accounts belongs to.
-     * @throws IllegalStateException when no main account is assigned
+     *
+     * @throws IllegalArgumentException when [account] is not an address book account or when no main account is assigned
      */
     open var mainAccount: Account
         get() {
             _mainAccount?.let { return it }
 
-            AccountManager.get(context).let { accountManager ->
-                val name = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
-                val type = accountManager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
-                if (name != null && type != null)
-                    return Account(name, type)
-                else
-                    throw IllegalStateException("No main account assigned to address book account")
-            }
+            val result = mainAccount(context, account)
+            _mainAccount = result
+            return result
         }
         set(newMainAccount) {
             AccountManager.get(context).let { accountManager ->
@@ -231,10 +228,7 @@ open class LocalAddressBook(
         }
 
         // make sure it will still be synchronized when contacts are updated
-        if (ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY) <= 0)
-            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1)
-        if (!ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY))
-            ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
+        updateSyncSettings()
     }
 
     fun delete() {
@@ -244,6 +238,23 @@ open class LocalAddressBook(
             accountManager.removeAccount(account, null, null, null)
         else
             accountManager.removeAccount(account, null, null)
+    }
+
+
+    /**
+     * Updates the sync framework settings for this address book:
+     *
+     * - Contacts sync of this address book account shall be possible → isSyncable = 1
+     * - When a contact is changed, a sync shall be initiated (ContactsSyncAdapter) -> syncAutomatically = true
+     * - However, we don't want a periodic (ContactsSyncAdapter) sync for this address book
+     * because contact synchronization is handled by AddressBooksSyncAdapter
+     * (which has its own periodic sync according to the account's contacts sync interval). */
+    fun updateSyncSettings() {
+        if (ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY) != 1)
+            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1)
+        if (!ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY))
+            ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
+        SyncUtils.removePeriodicSyncs(account, ContactsContract.AUTHORITY)
     }
 
 

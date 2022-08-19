@@ -237,8 +237,7 @@
             android:authorities="@string/address_books_authority"
             android:exported="false"
             android:label="@string/address_books_authority_title"
-            android:name=".syncadapter.AddressBookProvider"
-            android:multiprocess="false"/>
+            android:name=".syncadapter.AddressBookProvider" />
         <service
             android:name=".syncadapter.AddressBooksSyncAdapterService"
             android:exported="true"

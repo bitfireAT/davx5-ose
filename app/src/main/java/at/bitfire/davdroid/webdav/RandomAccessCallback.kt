@@ -30,8 +30,11 @@ import okhttp3.HttpUrl
 import okhttp3.MediaType
 import org.apache.commons.io.FileUtils
 import java.io.InterruptedIOException
+import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.util.logging.Level
+
+typealias MemorySegmentCache = MemoryCache<SegmentedCache.SegmentKey<RandomAccessCallback.DocumentKey>>
 
 @TargetApi(26)
 class RandomAccessCallback private constructor(
@@ -46,6 +49,25 @@ class RandomAccessCallback private constructor(
     companion object {
         /** one GET request per 2 MB */
         const val PAGE_SIZE: Int = (2*FileUtils.ONE_MB).toInt()
+
+        private var _memoryCache: WeakReference<MemorySegmentCache>? = null
+
+        @Synchronized
+        fun getMemoryCache(context: Context): MemorySegmentCache {
+            val cache = _memoryCache?.get()
+            if (cache != null)
+                return cache
+
+            Logger.log.info("Creating memory cache")
+
+            val maxHeapSizeMB = ContextCompat.getSystemService(context, ActivityManager::class.java)!!.memoryClass
+            val cacheSize = maxHeapSizeMB * FileUtils.ONE_MB.toInt() / 2
+            val newCache = MemorySegmentCache(cacheSize)
+
+            _memoryCache = WeakReference(newCache)
+            return newCache
+        }
+
     }
 
     private val dav = DavResource(httpClient.okHttpClient, url)
@@ -67,11 +89,7 @@ class RandomAccessCallback private constructor(
     private val workerThread = HandlerThread(javaClass.simpleName).apply { start() }
     val workerHandler: Handler = Handler(workerThread.looper)
 
-    val memoryCache = Singleton.getInstance(context) { appContext ->
-        val maxHeapSizeMB = ContextCompat.getSystemService(appContext, ActivityManager::class.java)!!.memoryClass
-        val cacheSize = maxHeapSizeMB * FileUtils.ONE_MB.toInt() / 2
-        MemoryCache<SegmentedCache.SegmentKey<DocumentKey>>(cacheSize)
-    }
+    val memoryCache = getMemoryCache(context)
     val cache = SegmentedCache(PAGE_SIZE, this, memoryCache)
 
 

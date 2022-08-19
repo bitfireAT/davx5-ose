@@ -10,25 +10,32 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import android.provider.CalendarContract
-import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 class CalendarsSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = CalendarsSyncAdapter(this)
+    override fun syncAdapter() = CalendarsSyncAdapter(this, appDatabase)
 
 
-	class CalendarsSyncAdapter(context: Context): SyncAdapter(context) {
+	class CalendarsSyncAdapter(
+        context: Context,
+        appDatabase: AppDatabase
+    ) : SyncAdapter(context, appDatabase) {
 
-        override fun sync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+        override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
                 val accountSettings = AccountSettings(context, account)
 
@@ -52,7 +59,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
                         .sortedByDescending { priorityCalendars.contains(it.id) }
                 for (calendar in calendars) {
                     Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
-                    CalendarSyncManager(context, account, accountSettings, extras, authority, syncResult, calendar).use {
+                    CalendarSyncManager(context, account, accountSettings, extras, httpClient.value, authority, syncResult, calendar).let {
                         it.performSync()
                     }
                 }
@@ -63,7 +70,6 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
         }
 
         private fun updateLocalCalendars(provider: ContentProviderClient, account: Account, settings: AccountSettings) {
-            val db = AppDatabase.getInstance(context)
             val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
 
             val remoteCalendars = mutableMapOf<HttpUrl, Collection>()

@@ -14,22 +14,35 @@ import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.syncadapter.AccountUtils
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
+@HiltAndroidTest
 class AccountSettingsTest {
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
+
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     val account = Account("Test Account", context.getString(R.string.account_type))
     val fakeCredentials = Credentials("test", "test")
 
-
     @Before
-    fun prepareAccount() {
+    fun setUp() {
+        hiltRule.inject()
+
         assertTrue(AccountUtils.createAccount(context, account, AccountSettings.initialUserData(fakeCredentials)))
         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
         ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0)
@@ -71,6 +84,5 @@ class AccountSettingsTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)     // below Android 7, Android returns true for whatever reason
             assertFalse(result)
     }
-
 
 }

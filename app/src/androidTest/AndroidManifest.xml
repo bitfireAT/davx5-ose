@@ -11,18 +11,6 @@
 
     <application>
 
-        <service
-            android:name=".syncadapter.AddressBookAuthenticatorService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/test_account_authenticator"/>
-        </service>
-
     </application>
 
 </manifest>

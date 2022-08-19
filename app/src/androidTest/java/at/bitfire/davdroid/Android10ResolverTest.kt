@@ -18,7 +18,7 @@ class Android10ResolverTest {
     val FQDN_DAVX5 = "www.google.com"
 
     @Test
-    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.O)
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
     fun testResolve() {
         val www = InetAddress.getByName(FQDN_DAVX5)
 

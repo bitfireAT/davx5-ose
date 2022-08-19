@@ -5,9 +5,8 @@
 package at.bitfire.davdroid.ui.account
 
 import android.Manifest
-import android.app.Activity
-import android.app.Application
 import android.content.ContentProviderClient
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.ContentObserver
@@ -19,9 +18,7 @@ import android.view.*
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.room.Transaction
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.Constants
@@ -29,33 +26,47 @@ import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.closeCompat
 import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.log.Logger
 import com.google.android.material.snackbar.Snackbar
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
+import javax.inject.Inject
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
+@AndroidEntryPoint
 class WebcalFragment: CollectionsFragment() {
 
     override val noCollectionsStringId = R.string.account_no_webcals
 
-    val webcalModel by viewModels<WebcalModel>()
+    @Inject lateinit var webcalModelFactory: WebcalModel.Factory
+    val webcalModel by viewModels<WebcalModel>() {
+        object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>) =
+                webcalModelFactory.create(
+                    requireArguments().getLong(EXTRA_SERVICE_ID)
+                ) as T
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        webcalModel.subscribedUrls.observe(this, { urls ->
+        webcalModel.subscribedUrls.observe(this, Observer { urls ->
             Logger.log.log(Level.FINE, "Got Android calendar list", urls.keys)
         })
-
-        webcalModel.initialize(arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
@@ -76,13 +87,14 @@ class WebcalFragment: CollectionsFragment() {
         }
     }
 
-    override fun createAdapter(): CollectionAdapter = WebcalAdapter(accountModel, webcalModel)
+    override fun createAdapter(): CollectionAdapter = WebcalAdapter(accountModel, webcalModel, this)
 
 
     class CalendarViewHolder(
-            private val parent: ViewGroup,
-            accountModel: AccountActivity.Model,
-            private val webcalModel: WebcalModel
+        private val parent: ViewGroup,
+        accountModel: AccountActivity.Model,
+        private val webcalModel: WebcalModel,
+        private val webcalFragment: WebcalFragment
     ): CollectionViewHolder<AccountCaldavItemBinding>(parent, AccountCaldavItemBinding.inflate(LayoutInflater.from(parent.context), parent, false), accountModel) {
 
         override fun bindTo(item: Collection) {
@@ -108,7 +120,7 @@ class WebcalFragment: CollectionsFragment() {
                 else
                     subscribe(item)
             }
-            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item))
+            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item, webcalFragment.parentFragmentManager))
         }
 
         private fun subscribe(item: Collection) {
@@ -124,7 +136,7 @@ class WebcalFragment: CollectionsFragment() {
 
             Logger.log.info("Intent: ${intent.extras}")
 
-            val activity = parent.context as Activity
+            val activity = webcalFragment.requireActivity()
             if (activity.packageManager.resolveActivity(intent, 0) != null)
                 activity.startActivity(intent)
             else {
@@ -144,32 +156,34 @@ class WebcalFragment: CollectionsFragment() {
     }
 
     class WebcalAdapter(
-            accountModel: AccountActivity.Model,
-            private val webcalModel: WebcalModel
+        accountModel: AccountActivity.Model,
+        private val webcalModel: WebcalModel,
+        val webcalFragment: WebcalFragment
     ): CollectionAdapter(accountModel) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-                CalendarViewHolder(parent, accountModel, webcalModel)
+                CalendarViewHolder(parent, accountModel, webcalModel, webcalFragment)
 
     }
 
 
-    class WebcalModel(application: Application): AndroidViewModel(application) {
+    class WebcalModel @AssistedInject constructor(
+        @ApplicationContext context: Context,
+        val db: AppDatabase,
+        @Assisted val serviceId: Long
+    ): ViewModel() {
 
-        private var initialized = false
-        private var serviceId: Long = 0
+        @AssistedFactory
+        interface Factory {
+            fun create(serviceId: Long): WebcalModel
+        }
 
-        private val db = AppDatabase.getInstance(application)
-        private val resolver = application.contentResolver
+        private val resolver = context.contentResolver
 
         private var calendarPermission = false
         private val calendarProvider = object: MediatorLiveData<ContentProviderClient>() {
             init {
-                init()
-            }
-
-            fun init() {
-                calendarPermission = ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
+                calendarPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED
                 if (calendarPermission)
                     connect()
             }
@@ -223,7 +237,7 @@ class WebcalFragment: CollectionsFragment() {
                             }
                         }
                     }
-                    getApplication<Application>().contentResolver.registerContentObserver(Calendars.CONTENT_URI, false, newObserver)
+                    context.contentResolver.registerContentObserver(Calendars.CONTENT_URI, false, newObserver)
                     observer = newObserver
 
                     viewModelScope.launch(Dispatchers.IO) {
@@ -239,7 +253,7 @@ class WebcalFragment: CollectionsFragment() {
 
             private fun unregisterObserver() {
                 observer?.let {
-                    application.contentResolver.unregisterContentObserver(it)
+                    context.contentResolver.unregisterContentObserver(it)
                     observer = null
                 }
             }
@@ -270,14 +284,6 @@ class WebcalFragment: CollectionsFragment() {
             }
         }
 
-
-        fun initialize(dbServiceId: Long) {
-            if (initialized)
-                return
-            initialized = true
-
-            serviceId = dbServiceId
-        }
 
         fun unsubscribe(webcal: Collection) {
             viewModelScope.launch(Dispatchers.IO) {

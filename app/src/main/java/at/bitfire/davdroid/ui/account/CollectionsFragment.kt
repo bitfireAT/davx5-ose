@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.app.Application
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
@@ -13,8 +12,8 @@ import android.provider.ContactsContract
 import android.view.*
 import android.widget.PopupMenu
 import androidx.annotation.AnyThread
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
@@ -32,13 +31,19 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
-import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.PermissionsActivity
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     companion object {
@@ -50,11 +55,16 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     protected val binding get() = _binding!!
 
     val accountModel by activityViewModels<AccountActivity.Model>()
+    @Inject lateinit var modelFactory: Model.Factory
     val model by viewModels<Model> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T: ViewModel> create(modelClass: Class<T>): T =
-                    Model(requireActivity().application, accountModel) as T
+                modelFactory.create(
+                    accountModel,
+                    requireArguments().getLong(EXTRA_SERVICE_ID),
+                    requireArguments().getString(EXTRA_COLLECTION_TYPE) ?: throw IllegalArgumentException("EXTRA_COLLECTION_TYPE required")
+                ) as T
         }
     }
 
@@ -77,12 +87,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // don't get the activity ViewModel in onCreate(), it may crash
-        model.initialize(
-                arguments?.getLong(EXTRA_SERVICE_ID) ?: throw IllegalArgumentException("EXTRA_SERVICE_ID required"),
-                arguments?.getString(EXTRA_COLLECTION_TYPE) ?: throw IllegalArgumentException("EXTRA_COLLECTION_TYPE required")
-        )
 
         model.isRefreshing.observe(viewLifecycleOwner, Observer { nowRefreshing ->
             binding.swipeRefresh.isRefreshing = nowRefreshing
@@ -146,8 +150,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        val settings = SettingsManager.getInstance(requireActivity())
-
         menu.findItem(R.id.showOnlyPersonal).let { showOnlyPersonal ->
             accountModel.showOnlyPersonal.value?.let { value ->
                 showOnlyPersonal.isChecked = value
@@ -159,18 +161,18 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =
-            when (item.itemId) {
-                R.id.refresh -> {
-                    onRefresh()
-                    true
-                }
-                R.id.showOnlyPersonal -> {
-                    accountModel.toggleShowOnlyPersonal()
-                    true
-                }
-                else ->
-                    false
+        when (item.itemId) {
+            R.id.refresh -> {
+                onRefresh()
+                true
             }
+            R.id.showOnlyPersonal -> {
+                accountModel.toggleShowOnlyPersonal()
+                true
+            }
+            else ->
+                false
+        }
 
     override fun onRefresh() {
         model.refresh()
@@ -192,24 +194,24 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
 
     abstract class CollectionViewHolder<T: ViewBinding>(
-            parent: ViewGroup,
-            val binding: T,
-            protected val accountModel: AccountActivity.Model
+        parent: ViewGroup,
+        val binding: T,
+        protected val accountModel: AccountActivity.Model
     ): RecyclerView.ViewHolder(binding.root) {
         abstract fun bindTo(item: Collection)
     }
 
     abstract class CollectionAdapter(
-            protected val accountModel: AccountActivity.Model
+        protected val accountModel: AccountActivity.Model
     ): PagingDataAdapter<Collection, CollectionViewHolder<*>>(DIFF_CALLBACK) {
 
         companion object {
             private val DIFF_CALLBACK = object: DiffUtil.ItemCallback<Collection>() {
                 override fun areItemsTheSame(oldItem: Collection, newItem: Collection) =
-                        oldItem.id == newItem.id
+                    oldItem.id == newItem.id
 
                 override fun areContentsTheSame(oldItem: Collection, newItem: Collection) =
-                        oldItem == newItem
+                    oldItem == newItem
             }
         }
 
@@ -222,19 +224,18 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     class CollectionPopupListener(
-            private val accountModel: AccountActivity.Model,
-            private val item: Collection
+        private val accountModel: AccountActivity.Model,
+        private val item: Collection,
+        private val fragmentManager: FragmentManager
     ): View.OnClickListener {
 
         override fun onClick(anchor: View) {
-            val fragmentManager = (anchor.context as AppCompatActivity).supportFragmentManager
-            val wrapper: Context = ContextThemeWrapper(anchor.context, R.style.PopupThemeInfomaniak) // kSync
-            val popup = PopupMenu(wrapper, anchor, Gravity.RIGHT)
+            val popup = PopupMenu(anchor.context, anchor, Gravity.RIGHT)
             popup.inflate(R.menu.account_collection_operations)
 
             with(popup.menu.findItem(R.id.force_read_only)) {
                 if (item.type == Collection.TYPE_WEBCAL)
-                    // Webcal collections are always read-only
+                // Webcal collections are always read-only
                     isVisible = false
                 else {
                     // non-Webcal collection
@@ -264,38 +265,33 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
 
-    class Model(
-            val context: Application,
-            val accountModel: AccountActivity.Model
+    class Model @AssistedInject constructor(
+        @ApplicationContext val context: Context,
+        val db: AppDatabase,
+        @Assisted val accountModel: AccountActivity.Model,
+        @Assisted val serviceId: Long,
+        @Assisted val collectionType: String
     ): ViewModel(), DavService.RefreshingStatusListener, SyncStatusObserver {
 
-        private val db = AppDatabase.getInstance(context)
-
-        val serviceId = MutableLiveData<Long>()
-        private lateinit var collectionType: String
+        @AssistedFactory
+        interface Factory {
+            fun create(accountModel: AccountActivity.Model, serviceId: Long, collectionType: String): Model
+        }
 
         // cache task provider
         val taskProvider by lazy { TaskUtils.currentProvider(context) }
 
-        val hasWriteableCollections: LiveData<Boolean> =
-            Transformations.switchMap(serviceId) { service ->
-                db.homeSetDao().hasBindableByService(service)
-            }
-        val collectionsColors: LiveData<List<Int>> =
-            Transformations.switchMap(serviceId) { service ->
-                db.collectionDao().colorsByService(service)
-            }
+        val hasWriteableCollections = db.homeSetDao().hasBindableByServiceLive(serviceId)
+        val collectionsColors = db.collectionDao().colorsByServiceLive(serviceId)
         val collectionsPager: LiveData<Pager<Int, Collection>> =
-            Transformations.switchMap(accountModel.showOnlyPersonal) { onlyPersonal ->
-                Transformations.map(serviceId) { service ->
-                    Pager(PagingConfig(pageSize = 25)) {
-                        if (onlyPersonal)
-                            // show only personal collections
-                            db.collectionDao().pagePersonalByServiceAndType(service, collectionType)
-                        else
-                            // show all collections
-                            db.collectionDao().pageByServiceAndType(service, collectionType)
-                    }
+            Transformations.map(accountModel.showOnlyPersonal) { onlyPersonal ->
+                Pager(PagingConfig(pageSize = 25)) {
+                    if (onlyPersonal)
+                    // show only personal collections
+                        db.collectionDao().pagePersonalByServiceAndType(serviceId, collectionType)
+                    else
+                    // show all collections
+                        db.collectionDao().pageByServiceAndType(serviceId, collectionType)
                 }
             }
 
@@ -321,11 +317,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val isSyncPending = MutableLiveData<Boolean>()
 
 
-        fun initialize(id: Long, collectionType: String) {
-            this.collectionType = collectionType
-            if (serviceId.value == null)
-                serviceId.value = id
-
+        init {
             if (context.bindService(Intent(context, DavService::class.java), svcConn, Context.BIND_AUTO_CREATE))
                 davServiceConn = svcConn
 
@@ -346,14 +338,12 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         }
 
         fun refresh() {
-            serviceId.value?.let { svcId ->
-                DavService.refreshCollections(context, svcId)
-            }
+            DavService.refreshCollections(context, serviceId)
         }
 
         @AnyThread
         override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) {
-            if (id == serviceId.value)
+            if (id == serviceId)
                 isRefreshing.postValue(refreshing)
         }
 

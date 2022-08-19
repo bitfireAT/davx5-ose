@@ -6,7 +6,7 @@
   <string name="account_title_address_book">kSync Adresboek</string>
   <string name="address_books_authority_title">Adresboeken</string>
   <string name="field_required">Dit veld is verplicht</string>
-  <string name="help">Help</string>
+  <string name="help">Hulp</string>
   <string name="manage_accounts">Accounts beheren</string>
   <string name="share">Delen</string>
   <string name="database_destructive_migration_title">Database beschadigd</string>

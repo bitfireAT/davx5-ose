@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.account
 
 import android.content.Intent
 import android.view.*
+import androidx.fragment.app.FragmentManager
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
@@ -56,12 +57,13 @@ class CalendarsFragment: CollectionsFragment() {
             binding.permissionsCard.visibility = View.VISIBLE
         }
     }
-    override fun createAdapter(): CollectionAdapter = CalendarAdapter(accountModel)
+    override fun createAdapter(): CollectionAdapter = CalendarAdapter(accountModel, parentFragmentManager)
 
 
     class CalendarViewHolder(
-            parent: ViewGroup,
-            accountModel: AccountActivity.Model
+        parent: ViewGroup,
+        accountModel: AccountActivity.Model,
+        val fragmentManager: FragmentManager
     ): CollectionViewHolder<AccountCaldavItemBinding>(parent, AccountCaldavItemBinding.inflate(LayoutInflater.from(parent.context), parent, false), accountModel) {
 
         override fun bindTo(item: Collection) {
@@ -85,17 +87,18 @@ class CalendarsFragment: CollectionsFragment() {
             itemView.setOnClickListener {
                 accountModel.toggleSync(item)
             }
-            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item))
+            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item, fragmentManager))
         }
 
     }
 
     class CalendarAdapter(
-            accountModel: AccountActivity.Model
+        accountModel: AccountActivity.Model,
+        val fragmentManager: FragmentManager
     ): CollectionAdapter(accountModel) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-                CalendarViewHolder(parent, accountModel)
+                CalendarViewHolder(parent, accountModel, fragmentManager)
 
     }
 

@@ -6,17 +6,11 @@ package at.bitfire.davdroid.ui.intro
 
 import android.content.Context
 import androidx.fragment.app.Fragment
-import at.bitfire.davdroid.settings.SettingsManager
 
-interface IIntroFragmentFactory {
+interface IntroFragmentFactory {
 
-    enum class ShowMode {
-        /** show the fragment */
-        SHOW,
-        /** show the fragment only when there is at least one other fragment with mode [SHOW] */
-        SHOW_NOT_ALONE,
-        /** don't show the fragment */
-        DONT_SHOW
+    companion object {
+        const val DONT_SHOW = 0
     }
 
     /**
@@ -24,15 +18,18 @@ interface IIntroFragmentFactory {
      * the [BatteryOptimizationsFragment]) should be shown.
      *
      * @param context   used to determine whether the fragment shall be shown
-     * @param settingsManager  used to determine whether the fragment shall be shown
      *
-     * @return whether an instance of this fragment type shall be created and shown
+     * @return Order with which an instance of this fragment type shall be created and shown. Possible values:
+     *
+     *   * <0: only show the fragment when there is at least one other fragment with positive order (lower numbers are shown first)
+     *   * 0: don't show the fragment
+     *   * ≥0: show the fragment (lower numbers are shown first)
      */
-    fun shouldBeShown(context: Context, settingsManager: SettingsManager): ShowMode
+    fun getOrder(context: Context): Int
 
     /**
      * Creates an instance of this intro fragment type. Will only be called when
-     * [shouldBeShown] is true.
+     * [getOrder] is true.
      *
      * @return the fragment (for instance, a [BatteryOptimizationsFragment]])
      */

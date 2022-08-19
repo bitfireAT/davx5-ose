@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -19,8 +18,8 @@ import androidx.core.content.getSystemService
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
@@ -29,9 +28,19 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.multibindings.IntoSet
 import org.apache.commons.text.WordUtils
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class BatteryOptimizationsFragment: Fragment() {
 
     companion object {
@@ -84,7 +93,11 @@ class BatteryOptimizationsFragment: Fragment() {
     }
 
 
-    class Model(app: Application): AndroidViewModel(app) {
+    @HiltViewModel
+    class Model @Inject constructor(
+        @ApplicationContext val context: Context,
+        val settings: SettingsManager
+    ): ViewModel() {
 
         companion object {
 
@@ -132,8 +145,6 @@ class BatteryOptimizationsFragment: Fragment() {
                         true
         }
 
-        val settings = SettingsManager.getInstance(app)
-
         val shouldBeWhitelisted = MutableLiveData<Boolean>()
         val isWhitelisted = MutableLiveData<Boolean>()
         val showManufacturerWarning = MutableLiveData<Boolean>() // kSync
@@ -160,7 +171,7 @@ class BatteryOptimizationsFragment: Fragment() {
         }
 
         fun checkWhitelisted() {
-            val whitelisted = isWhitelisted(getApplication())
+            val whitelisted = isWhitelisted(context)
             isWhitelisted.value = whitelisted
             shouldBeWhitelisted.value = whitelisted
 
@@ -172,9 +183,18 @@ class BatteryOptimizationsFragment: Fragment() {
     }
 
 
-    class Factory: IIntroFragmentFactory {
+    @Module
+    @InstallIn(ActivityComponent::class)
+    abstract class BatteryOptimizationsFragmentModule {
+        @Binds @IntoSet
+        abstract fun getFactory(factory: Factory): IntroFragmentFactory
+    }
 
-        override fun shouldBeShown(context: Context, settingsManager: SettingsManager) =
+    class Factory @Inject constructor(
+        val settingsManager: SettingsManager
+    ): IntroFragmentFactory {
+
+        override fun getOrder(context: Context) =
                 // show fragment when:
                 // 1. DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked, and/or
                 // 2a. evil manufacturer AND
@@ -183,9 +203,9 @@ class BatteryOptimizationsFragment: Fragment() {
                         (!Model.isWhitelisted(context) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
                         (Model.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
                 )
-                    IIntroFragmentFactory.ShowMode.SHOW
+                    100
                 else
-                    IIntroFragmentFactory.ShowMode.DONT_SHOW
+                    IntroFragmentFactory.DONT_SHOW
 
         override fun create() = BatteryOptimizationsFragment()
     }

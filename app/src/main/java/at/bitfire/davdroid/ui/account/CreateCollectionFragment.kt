@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +19,16 @@ import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -31,7 +36,9 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.IOException
 import java.io.StringWriter
 import java.util.logging.Level
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CreateCollectionFragment: DialogFragment() {
 
     companion object {
@@ -51,30 +58,38 @@ class CreateCollectionFragment: DialogFragment() {
         const val ARG_SUPPORTS_VJOURNAL = "supportsVJOURNAL"
     }
 
-    val model by viewModels<Model>()
+    @Inject lateinit var modelFactory: Model.Factory
+    val model by viewModels<Model>() {
+        object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val args = requireArguments()
+
+                val account: Account = args.getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException("ARG_ACCOUNT required")
+                val serviceType = args.getString(ARG_SERVICE_TYPE) ?: throw java.lang.IllegalArgumentException("ARG_SERVICE_TYPE required")
+                val collection = Collection(
+                    type = args.getString(ARG_TYPE) ?: throw IllegalArgumentException("ARG_TYPE required"),
+                    url = (args.getString(ARG_URL) ?: throw IllegalArgumentException("ARG_URL required")).toHttpUrl(),
+                    displayName = args.getString(ARG_DISPLAY_NAME),
+                    description = args.getString(ARG_DESCRIPTION),
+
+                    color = args.ifDefined(ARG_COLOR) { it.getInt(ARG_COLOR) },
+                    timezone = args.getString(ARG_TIMEZONE),
+                    supportsVEVENT = args.ifDefined(ARG_SUPPORTS_VEVENT) { it.getBoolean(ARG_SUPPORTS_VEVENT) },
+                    supportsVTODO = args.ifDefined(ARG_SUPPORTS_VTODO) { it.getBoolean(ARG_SUPPORTS_VTODO) },
+                    supportsVJOURNAL = args.ifDefined(ARG_SUPPORTS_VJOURNAL) { it.getBoolean(ARG_SUPPORTS_VJOURNAL) },
+
+                    sync = true     /* by default, sync collections which just have been created */
+                )
+
+                return modelFactory.create(account, serviceType, collection) as T
+            }
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val args = arguments ?: throw IllegalArgumentException()
-
-        model.account = args.getParcelable(ARG_ACCOUNT) ?: throw IllegalArgumentException("ARG_ACCOUNT required")
-        model.serviceType = args.getString(ARG_SERVICE_TYPE) ?: throw java.lang.IllegalArgumentException("ARG_SERVICE_TYPE required")
-
-        model.collection = Collection(
-                type = args.getString(ARG_TYPE) ?: throw IllegalArgumentException("ARG_TYPE required"),
-                url = (args.getString(ARG_URL) ?: throw IllegalArgumentException("ARG_URL required")).toHttpUrl(),
-                displayName = args.getString(ARG_DISPLAY_NAME),
-                description = args.getString(ARG_DESCRIPTION),
-
-                color = args.ifDefined(ARG_COLOR) { it.getInt(ARG_COLOR) },
-                timezone = args.getString(ARG_TIMEZONE),
-                supportsVEVENT = args.ifDefined(ARG_SUPPORTS_VEVENT) { it.getBoolean(ARG_SUPPORTS_VEVENT) },
-                supportsVTODO = args.ifDefined(ARG_SUPPORTS_VTODO) { it.getBoolean(ARG_SUPPORTS_VTODO) },
-                supportsVJOURNAL = args.ifDefined(ARG_SUPPORTS_VJOURNAL) { it.getBoolean(ARG_SUPPORTS_VJOURNAL) },
-
-                sync = true     /* by default, sync collections which just have been created */
-        )
 
         model.createCollection().observe(this, Observer { exception ->
             if (exception == null)
@@ -101,19 +116,24 @@ class CreateCollectionFragment: DialogFragment() {
     }
 
 
-    class Model(
-            app: Application
-    ): AndroidViewModel(app) {
-
-        lateinit var account: Account
-        lateinit var serviceType: String
-        lateinit var collection: Collection
+    class Model @AssistedInject constructor(
+        @ApplicationContext val context: Context,
+        val db: AppDatabase,
+        @Assisted val account: Account,
+        @Assisted val serviceType: String,
+        @Assisted val collection: Collection
+    ): ViewModel() {
+        
+        @AssistedFactory
+        interface Factory {
+            fun create(account: Account, serviceType: String, collection: Collection): Model
+        }
 
         val result = MutableLiveData<Exception>()
 
         fun createCollection(): LiveData<Exception> {
             viewModelScope.launch(Dispatchers.IO + NonCancellable) {
-                HttpClient.Builder(getApplication(), AccountSettings(getApplication(), account))
+                HttpClient.Builder(context, AccountSettings(context, account))
                         .setForeground(true)
                         .build().use { httpClient ->
                     try {
@@ -123,13 +143,12 @@ class CreateCollectionFragment: DialogFragment() {
                         dav.mkCol(generateXml()) {}
 
                         // no HTTP error -> create collection locally
-                        val db = AppDatabase.getInstance(getApplication())
                         db.serviceDao().getByAccountAndType(account.name, serviceType)?.let { service ->
                             collection.serviceId = service.id
                             db.collectionDao().insert(collection)
 
                             // trigger service detection (because the collection may have other properties than the ones we have inserted)
-                            DavService.refreshCollections(getApplication(), service.id)
+                            DavService.refreshCollections(context, service.id)
                         }
 
                         // post success

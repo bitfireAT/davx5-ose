@@ -5,19 +5,18 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
-import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
@@ -26,19 +25,33 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.ui.HomeSetAdapter
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CreateAddressBookActivity: AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
-    val model by viewModels<Model>()
+    @Inject lateinit var modelFactory: Model.Factory
+    val model by viewModels<Model>() {
+        object: ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val account = intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
+                return modelFactory.create(account) as T
+            }
+        }
+    }
 
     lateinit var binding: ActivityCreateAddressBookBinding
 
@@ -65,9 +78,6 @@ class CreateAddressBookActivity: AppCompatActivity() {
         binding.homeset.setOnItemClickListener { parent, view, position, id ->
             model.homeSet = parent.getItemAtPosition(position) as HomeSet?
         }
-
-        if (savedInstanceState == null)
-            model.initialize(account)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -78,7 +88,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
     }
 
 
@@ -120,11 +130,15 @@ class CreateAddressBookActivity: AppCompatActivity() {
     }
 
 
-    class Model(
-            application: Application
-    ) : AndroidViewModel(application) {
+    class Model @AssistedInject constructor(
+        val db: AppDatabase,
+        @Assisted val account: Account
+    ) : ViewModel() {
 
-        var account: Account? = null
+        @AssistedFactory
+        interface Factory {
+            fun create(account: Account): Model
+        }
 
         val displayName = MutableLiveData<String>()
         val displayNameError = MutableLiveData<String>()
@@ -134,23 +148,17 @@ class CreateAddressBookActivity: AppCompatActivity() {
         val homeSets = MutableLiveData<List<HomeSet>>()
         var homeSet: HomeSet? = null
 
-        fun clearNameError(s: Editable) {
-            displayNameError.value = null
-        }
-
-        @MainThread
-        fun initialize(account: Account) {
-            if (this.account != null)
-                return
-            this.account = account
-
+        init {
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
-                val db = AppDatabase.getInstance(getApplication())
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
                     homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
                 }
             }
+        }
+
+        fun clearNameError(s: Editable) {
+            displayNameError.value = null
         }
 
     }
