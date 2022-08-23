@@ -1,0 +1,3 @@
+* CalDAV: refactor and improve event validation and repairing (especially with recurring events)
+* WebDAV: connections now have a delete symbol, so that people know that they would delete the connection
+* minor bug fixes and improvements
