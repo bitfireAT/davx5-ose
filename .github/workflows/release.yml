@@ -35,5 +35,5 @@ jobs:
         uses: softprops/action-gh-release@v0.1.14
         with:
           prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
-          files: app/build/outputs/apk/standard/release/*.apk
+          files: app/build/outputs/apk/ose/release/*.apk
           fail_on_unmatched_files: true

@@ -53,7 +53,7 @@ android {
 
     flavorDimensions "distribution"
     productFlavors {
-        standard {
+        ose {
             versionNameSuffix "-ose"
         }
     }
