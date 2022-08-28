@@ -5,6 +5,8 @@
   <string name="account_invalid">A conta non existe (definitivamente)</string>
   <string name="account_title_address_book">DAVx⁵ libreta de enderezos</string>
   <string name="address_books_authority_title">Libretas de enderezos</string>
+  <string name="dialog_remove">Eliminar</string>
+  <string name="dialog_deny">Desbotar</string>
   <string name="field_required">Este campo é requerido</string>
   <string name="help">Axuda</string>
   <string name="manage_accounts">Xestionar contas</string>
@@ -394,6 +396,8 @@
   <string name="webdav_add_mount_password">Contrasinal</string>
   <string name="webdav_add_mount_add">Engadir montaxe</string>
   <string name="webdav_add_mount_no_support">Neste URL non hai ningún servizo WebDAV</string>
+  <string name="webdav_remove_mount_title">Eliminar punto de montaxe</string>
+  <string name="webdav_remove_mount_text">Perderanse os detalles da conexión, mais non se eliminarán ficheiros.</string>
   <string name="webdav_notification_access">Accedendo ao ficheiro WebDAV</string>
   <string name="webdav_notification_download">Descargando ficheiro WebDAV</string>
   <string name="webdav_notification_upload">Subindo ficheiro WebDAV</string>
