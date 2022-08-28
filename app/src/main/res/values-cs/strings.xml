@@ -5,6 +5,8 @@
   <string name="account_invalid">Účet (už) neexistuje</string>
   <string name="account_title_address_book">DAVx⁵ adresář kontaktů</string>
   <string name="address_books_authority_title">Adresáře kontaktů</string>
+  <string name="dialog_remove">Odebrat</string>
+  <string name="dialog_deny">Storno</string>
   <string name="field_required">Tuto kolonku je třeba vyplnit</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
@@ -118,6 +120,7 @@
   <string name="navigation_drawer_website">Webová stránka</string>
   <string name="navigation_drawer_manual">Příručka</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_community">Komunita</string>
   <string name="navigation_drawer_donate">Obdarovat</string>
   <string name="navigation_drawer_privacy_policy">Ochrana soukromí</string>
   <string name="account_list_no_internet">Bez připojení k Internetu. Systém Android synchronizaci nespustí.</string>
@@ -397,6 +400,8 @@
   <string name="webdav_add_mount_password">Heslo</string>
   <string name="webdav_add_mount_add">Přidat připojení (mount)</string>
   <string name="webdav_add_mount_no_support">Na této URL se nenachází žádná WebDAV služba</string>
+  <string name="webdav_remove_mount_title">Odebrat přípojný bod</string>
+  <string name="webdav_remove_mount_text">Podrobnosti o spojení budou ztraceny, ale soubory nebudou smazány.</string>
   <string name="webdav_notification_access">Přistupuje se k WebDAV souboru</string>
   <string name="webdav_notification_download">Stahuje se WebDAV soubor</string>
   <string name="webdav_notification_upload">Nahrává se WebDAV soubor</string>

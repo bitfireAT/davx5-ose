@@ -5,6 +5,8 @@
   <string name="account_invalid">Konto nicht (mehr) vorhanden</string>
   <string name="account_title_address_book">DAVx⁵-Adressbuch</string>
   <string name="address_books_authority_title">Adressbücher</string>
+  <string name="dialog_remove">Entfernen</string>
+  <string name="dialog_deny">Abbrechen</string>
   <string name="field_required">Feld wird benötigt</string>
   <string name="help">Hilfe</string>
   <string name="manage_accounts">Konten verwalten</string>
@@ -394,6 +396,8 @@
   <string name="webdav_add_mount_password">Passwort</string>
   <string name="webdav_add_mount_add">Einhängen</string>
   <string name="webdav_add_mount_no_support">Kein WebDAV-Dienst unter dieser Adresse</string>
+  <string name="webdav_remove_mount_title">Einhängepunkt entfernen</string>
+  <string name="webdav_remove_mount_text">Verbindungsdetails werden verloren gehen, es werden aber keine Dateien gelöscht.</string>
   <string name="webdav_notification_access">WebDAV-Dateizugriff</string>
   <string name="webdav_notification_download">WebDAV-Download</string>
   <string name="webdav_notification_upload">WebDAV-Upload</string>

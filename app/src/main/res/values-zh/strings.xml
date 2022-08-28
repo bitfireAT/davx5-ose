@@ -5,6 +5,8 @@
   <string name="account_invalid">帐户（已）不存在</string>
   <string name="account_title_address_book">DAVx⁵ 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>
+  <string name="dialog_remove">删除</string>
+  <string name="dialog_deny">取消</string>
   <string name="field_required">此字段是必填项</string>
   <string name="help">帮助</string>
   <string name="manage_accounts">管理账户</string>
@@ -392,6 +394,8 @@
   <string name="webdav_add_mount_password">密码</string>
   <string name="webdav_add_mount_add">添加 WebDAV 网址</string>
   <string name="webdav_add_mount_no_support">此 URL 无 WebDAV 服务</string>
+  <string name="webdav_remove_mount_title">删除装载点</string>
+  <string name="webdav_remove_mount_text">将丢失连接详情，但不会删除文件</string>
   <string name="webdav_notification_access">正在访问 WebDAV 文件</string>
   <string name="webdav_notification_download">正在下载 WebDAV 文件</string>
   <string name="webdav_notification_upload">正在上传 WebDAV 文件</string>
