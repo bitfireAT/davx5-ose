@@ -34,12 +34,8 @@ class LocalEventTest {
     companion object {
 
         @JvmField
-        @ClassRule(order = 0)
-        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)!!
-
-        @JvmField
-        @ClassRule(order = 1)
-        val initCalendarProviderRule: TestRule = InitCalendarProviderRule()
+        @ClassRule
+        val initCalendarProviderRule: TestRule = InitCalendarProviderRule.getInstance()
 
         private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
 
