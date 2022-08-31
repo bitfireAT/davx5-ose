@@ -6,7 +6,9 @@ package at.bitfire.davdroid.resource
 
 import android.Manifest
 import android.accounts.Account
-import android.content.*
+import android.content.ContentProviderClient
+import android.content.ContentUris
+import android.content.ContentValues
 import android.os.Build
 import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
@@ -25,10 +27,12 @@ import net.fortuna.ical4j.model.property.*
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.rules.TestRule
+import java.util.*
 
 class LocalEventTest {
 
     companion object {
+
         @JvmField
         @ClassRule(order = 0)
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)!!
@@ -107,7 +111,7 @@ class LocalEventTest {
     }
 
     @Test
-    // Flaky, Needs rec event init of CalendarProvider
+    // flaky, needs InitCalendarProviderRule
     fun testNumDirectInstances_Recurring_LateEnd() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -124,7 +128,7 @@ class LocalEventTest {
     }
 
     @Test
-    // Flaky, Needs rec event init of CalendarProvider
+    // flaky, needs InitCalendarProviderRule
     fun testNumDirectInstances_Recurring_ManyInstances() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -141,7 +145,7 @@ class LocalEventTest {
     }
 
     @Test
-    // Flaky, Needs single event init of CalendarProvider
+    // flaky, needs InitCalendarProviderRule
     fun testNumDirectInstances_RecurringWithExdate() {
         val event = Event().apply {
             dtStart = DtStart(Date("20220120T010203Z"))
@@ -180,7 +184,7 @@ class LocalEventTest {
 
 
     @Test
-    // Flaky, Needs single or rec event init of CalendarProvider
+    // flaky, needs InitCalendarProviderRule
     fun testNumInstances_SingleInstance() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -219,7 +223,7 @@ class LocalEventTest {
     }
 
     @Test
-    // Flaky, Needs rec event init of CalendarProvider
+    // flaky, needs InitCalendarProviderRule
     fun testNumInstances_Recurring_LateEnd() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -236,7 +240,7 @@ class LocalEventTest {
     }
 
     @Test
-    // Flaky, Needs rec event init of CalendarProvider
+    // flaky, needs InitCalendarProviderRule
     fun testNumInstances_Recurring_ManyInstances() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
@@ -307,6 +311,89 @@ class LocalEventTest {
 
 
     @Test
+    fun testPrepareForUpload_NoUid() {
+        // create event
+        val event = Event().apply {
+            dtStart = DtStart("20220120T010203Z")
+            summary = "Event without uid"
+        }
+        val localEvent = LocalEvent(calendar, event, null, null, null, 0)
+        localEvent.add()    // save it to calendar storage
+
+        // prepare for upload - this should generate a new random uuid, returned as filename
+        val fileNameWithSuffix = localEvent.prepareForUpload()
+        val fileName = fileNameWithSuffix.removeSuffix(".ics")
+
+        // throws an exception if fileName is not an UUID
+        UUID.fromString(fileName)
+
+        // UID in calendar storage should be the same as file name
+        provider.query(
+            ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!).asSyncAdapter(account),
+            arrayOf(Events.UID_2445), null, null, null
+        )!!.use { cursor ->
+            cursor.moveToFirst()
+            assertEquals(fileName, cursor.getString(0))
+        }
+    }
+
+    @Test
+    fun testPrepareForUpload_NormalUid() {
+        // create event
+        val event = Event().apply {
+            dtStart = DtStart("20220120T010203Z")
+            summary = "Event with normal uid"
+            uid = "some-event@hostname.tld"     // old UID format, UUID would be new format
+        }
+        val localEvent = LocalEvent(calendar, event, null, null, null, 0)
+        localEvent.add() // save it to calendar storage
+
+        // prepare for upload - this should use the UID for the file name
+        val fileNameWithSuffix = localEvent.prepareForUpload()
+        val fileName = fileNameWithSuffix.removeSuffix(".ics")
+
+        assertEquals(event.uid, fileName)
+
+        // UID in calendar storage should still be set, too
+        provider.query(
+            ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!).asSyncAdapter(account),
+            arrayOf(Events.UID_2445), null, null, null
+        )!!.use { cursor ->
+            cursor.moveToFirst()
+            assertEquals(fileName, cursor.getString(0))
+        }
+    }
+
+    @Test
+    fun testPrepareForUpload_UidHasDangerousChars() {
+        // create event
+        val event = Event().apply {
+            dtStart = DtStart("20220120T010203Z")
+            summary = "Event with funny uid"
+            uid = "https://www.example.com/events/asdfewfe-cxyb-ewrws-sadfrwerxyvser-asdfxye-"
+        }
+        val localEvent = LocalEvent(calendar, event, null, null, null, 0)
+        localEvent.add() // save it to calendar storage
+
+        // prepare for upload - this should generate a new random uuid, returned as filename
+        val fileNameWithSuffix = localEvent.prepareForUpload()
+        val fileName = fileNameWithSuffix.removeSuffix(".ics")
+
+        // throws an exception if fileName is not an UUID
+        UUID.fromString(fileName)
+
+        // UID in calendar storage shouldn't have been changed
+        provider.query(
+            ContentUris.withAppendedId(Events.CONTENT_URI, localEvent.id!!).asSyncAdapter(account),
+            arrayOf(Events.UID_2445), null, null, null
+        )!!.use { cursor ->
+            cursor.moveToFirst()
+            assertEquals(event.uid, cursor.getString(0))
+        }
+    }
+
+
+    @Test
     fun testDeleteDirtyEventsWithoutInstances_NoInstances_Exdate() {
         // TODO
     }
@@ -360,7 +447,6 @@ class LocalEventTest {
     }
 
     @Test
-    // Flaky, Needs single event init OR rec event init of CalendarProvider
     fun testDeleteDirtyEventsWithoutInstances_Recurring_Instances() {
         val event = Event().apply {
             dtStart = DtStart("20220120T010203Z")
