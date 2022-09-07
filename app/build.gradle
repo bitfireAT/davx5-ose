@@ -138,7 +138,7 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
     implementation "com.squareup.okhttp3:okhttp-brotli:${versions.okhttp}"
     implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
-    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'commons-io:commons-io:2.8.0' // don't update until API level 26 (Android 8) is the minimum API (DAVx5#130)
     //noinspection GradleDependency - dnsjava 3+ needs Java 8/Android 7
     implementation 'dnsjava:dnsjava:2.1.9'
     //noinspection GradleDependency
