@@ -8,7 +8,7 @@
         <item quantity="other">You have earned %d badges, thank you!</item>
     </plurals>
     <string name="available_badges">Available badges</string>
-    <string name="available_badges_empty">Sorry, there are no badges available for purchase at the moment!</string>
+    <string name="available_badges_empty">Sorry, could not load badges. Are you logged in to the Play Store?</string>
     <string name="what_are_badges">What are badges?</string>
     <string name="what_are_badges_title">What are badges?</string>
     <string name="what_are_badges_body">Badges are simple in-app one-time-payments. You will earn a nice little badge and with it you can support us over time.</string>
@@ -17,6 +17,6 @@
     <string name="button_buy_badge_free">FREE</string>
     <string name="button_buy_badge_bought">Thank you!</string>
     <string name="earn_badges">Earn badges to support us!</string>
-    <string name="billing_unavailable">Billing API unavailable, is the Play Store installed and are you logged in to your Google account?</string>
-    <string name="network_problems">There were network problems, you may retry?</string>
+    <string name="billing_unavailable">Billing API unavailable, is the Play Store up-to-date and are you logged in to your Google account?</string>
+    <string name="network_problems">There were network problems, please try again later.</string>
 </resources>

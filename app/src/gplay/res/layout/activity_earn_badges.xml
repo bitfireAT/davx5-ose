@@ -53,13 +53,13 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/available_badges_empty"
-                android:textAlignment="textStart"
-                android:visibility="gone"/>
+                android:textAlignment="textStart" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/buy_badges_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/what_are_badges_title"
