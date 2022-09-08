@@ -5,6 +5,8 @@
   <string name="account_invalid">Tài khoản không tồn tại (nữa)</string>
   <string name="account_title_address_book">Sổ địa chỉ của DAVx⁵</string>
   <string name="address_books_authority_title">Sổ địa chỉ</string>
+  <string name="dialog_remove">Xóa</string>
+  <string name="dialog_deny">Hủy</string>
   <string name="field_required">Trường này là bắt buộc</string>
   <string name="help">Trợ giúp</string>
   <string name="manage_accounts">Quản lý các tài khoản</string>
@@ -392,6 +394,8 @@
   <string name="webdav_add_mount_password">Mật khẩu</string>
   <string name="webdav_add_mount_add">Thêm nơi gắn</string>
   <string name="webdav_add_mount_no_support">Không có dịch vụ WebDAV tại URL này</string>
+  <string name="webdav_remove_mount_title">Xóa điểm gắn</string>
+  <string name="webdav_remove_mount_text">Chi tiết kết nối sẽ bị mất, nhưng các tệp sẽ không bị xóa.</string>
   <string name="webdav_notification_access">Đang truy cập tệp WebDAV</string>
   <string name="webdav_notification_download">Đang tải xuống tệp WebDAV</string>
   <string name="webdav_notification_upload">Đang tải lên tệp WebDAV</string>

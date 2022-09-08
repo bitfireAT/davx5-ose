@@ -5,6 +5,8 @@
   <string name="account_invalid">Аккаунт не существует (больше)</string>
   <string name="account_title_address_book">Адресная книга DAVx⁵</string>
   <string name="address_books_authority_title">Адресные книги</string>
+  <string name="dialog_remove">Удалить</string>
+  <string name="dialog_deny">Отмена</string>
   <string name="field_required">Это поле является обязательным</string>
   <string name="help">Помощь</string>
   <string name="manage_accounts">Управление аккаунтами</string>
@@ -398,6 +400,8 @@
   <string name="webdav_add_mount_password">Пароль</string>
   <string name="webdav_add_mount_add">Добавить точку монтирования</string>
   <string name="webdav_add_mount_no_support">Служба WebDAV отсутствует на данном URL</string>
+  <string name="webdav_remove_mount_title">Удалить точку монтирования</string>
+  <string name="webdav_remove_mount_text">Информация о подключении будет потеряна, но никакие файлы не будут удалены.</string>
   <string name="webdav_notification_access">Доступ к файлу WebDAV</string>
   <string name="webdav_notification_download">Загрузка файла WebDAV</string>
   <string name="webdav_notification_upload">Выгрузка файла WebDAV</string>

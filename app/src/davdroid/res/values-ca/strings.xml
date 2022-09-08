@@ -5,6 +5,8 @@
   <string name="account_invalid">El compte no existeix (eliminat)</string>
   <string name="account_title_address_book">Llibreta d’adreces del DAVx⁵</string>
   <string name="address_books_authority_title">Llibreta d’adreces</string>
+  <string name="dialog_remove">Elimina</string>
+  <string name="dialog_deny">Cancel·la</string>
   <string name="field_required">Cal aquest camp</string>
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gestiona comptes</string>
@@ -394,6 +396,8 @@
   <string name="webdav_add_mount_password">Contrasenya</string>
   <string name="webdav_add_mount_add">Afegeix un muntatge</string>
   <string name="webdav_add_mount_no_support">No hi ha cap servei WebDAV en aquest URL</string>
+  <string name="webdav_remove_mount_title">Elimina el punt de muntatge</string>
+  <string name="webdav_remove_mount_text">Es perdran els detalls de la connexió, però no se suprimiran els fitxers.</string>
   <string name="webdav_notification_access">S\'està accedint al fitxer WebDAV</string>
   <string name="webdav_notification_download">S\'està baixant el fitxer WebDAV</string>
   <string name="webdav_notification_upload">S\'està pujant el fitxer WebDAV</string>
