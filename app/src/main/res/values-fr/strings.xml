@@ -5,6 +5,8 @@
   <string name="account_invalid">Le compte n’existe plus (désormais)</string>
   <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
   <string name="address_books_authority_title">Carnets d\'adresses</string>
+  <string name="dialog_remove">Retirer</string>
+  <string name="dialog_deny">Annuler</string>
   <string name="field_required">Ce champ est requis</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
