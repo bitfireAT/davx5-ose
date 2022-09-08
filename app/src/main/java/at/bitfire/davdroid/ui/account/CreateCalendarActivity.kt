@@ -28,7 +28,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.ui.HomeSetAdapter
-import at.bitfire.ical4android.DateUtils
+import at.bitfire.ical4android.util.DateUtils
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import dagger.assisted.Assisted
