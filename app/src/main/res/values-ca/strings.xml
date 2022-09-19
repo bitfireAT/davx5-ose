@@ -47,7 +47,7 @@
   <string name="intro_tasks_no_app_store">No hi ha cap mercat d\'aplicacions disponible</string>
   <string name="intro_tasks_dont_show">No necessito suport per les tasques.*</string>
   <string name="intro_open_source_title">Programari de codi obert</string>
-  <string name="intro_open_source_text">Ens alegra saber que utilitzes %s, que es programari de codi obert. El desenvolupament, manteniment i suport requereixen un gran treball. Si us plau, considera contribuir (hi ha moltes formes) o realitzar una donació. Seria molt apreciat!</string>
+  <string name="intro_open_source_text">Ens alegra saber que utilitzes %s, que és programari de codi obert. El desenvolupament, manteniment i suport requereixen un gran treball. Si us plau, considera contribuir (hi ha moltes formes) o realitzar una donació. Seria molt apreciat!</string>
   <string name="intro_open_source_details">Com contribuir/donar</string>
   <string name="intro_open_source_dont_show">No mostrar en un futur proper</string>
   <!--PermissionsActivity-->
