@@ -284,6 +284,11 @@
 
     <!-- package visiblity – which apps do we need to see? -->
     <queries>
+        <!-- system providers (listing them is technically not required, but some apps like the
+        Huawei calendar take this as indication of whether these providers are accessed) -->
+        <provider android:authorities="com.android.calendar"/>
+        <provider android:authorities="com.android.contacts"/>
+
         <!-- task providers -->
         <package android:name="at.techbee.jtx" />
         <package android:name="org.dmfs.tasks" />
