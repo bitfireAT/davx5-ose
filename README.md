@@ -18,7 +18,7 @@ DAVx⁵ is licensed under the [GPLv3 License](LICENSE).
 
 News and updates: [@davx5app](https://twitter.com/davx5app) on Twitter
 
-**Help, discussion, feature requests, bug reports: [DAVx⁵ forums](https://www.davx5.com/forums)**
+**Help, discussion, feature requests, bug reports: [DAVx⁵ discussions](https://github.com/bitfireAT/davx5-ose/discussions)**
 
 Parts of DAVx⁵ have been outsourced into these libraries:
 
