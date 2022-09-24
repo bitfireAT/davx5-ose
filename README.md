@@ -37,6 +37,6 @@ USED THIRD-PARTY LIBRARIES
 The most important libraries which are used by DAVx⁵ (alphabetically):
 
 * [dnsjava](http://www.xbill.org/dnsjava/) – [BSD License](http://www.xbill.org/dnsjava/dnsjava-current/LICENSE)
-* [ez-vcard](https://github.com/mangstadt/ez-vcard) – [New BSD License](http://opensource.org/licenses/BSD-3-Clause)
-* [iCal4j](https://github.com/ical4j/ical4j) – [New BSD License](http://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE)
+* [ez-vcard](https://github.com/mangstadt/ez-vcard) – [New BSD License](https://opensource.org/licenses/BSD-3-Clause)
+* [iCal4j](https://github.com/ical4j/ical4j) – [New BSD License](https://sourceforge.net/p/ical4j/ical4j/ci/default/tree/LICENSE)
 * [okhttp](https://square.github.io/okhttp) – [Apache License, Version 2.0](https://square.github.io/okhttp/#license)
