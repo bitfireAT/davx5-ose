@@ -9,8 +9,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion '32.0.0'
+    compileSdkVersion 33
+    buildToolsVersion '33.0.0'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
@@ -101,7 +101,7 @@ dependencies {
     implementation project(':vcard4android')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.6'
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
@@ -111,8 +111,8 @@ dependencies {
     implementation 'androidx.browser:browser:1.4.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.fragment:fragment-ktx:1.5.2'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.fragment:fragment-ktx:1.5.3'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
