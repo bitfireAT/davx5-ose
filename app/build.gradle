@@ -51,6 +51,9 @@ android {
         dataBinding = true
     }
 
+    // Java namespace for our classes (not to be confused with Android package ID)
+    namespace 'at.bitfire.davdroid'
+
     flavorDimensions "distribution"
     productFlavors {
         ose {
@@ -158,7 +161,7 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.4.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.3'
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
-    androidTestImplementation 'io.mockk:mockk-android:1.12.3'
+    androidTestImplementation 'io.mockk:mockk-android:1.13.1'
     androidTestImplementation 'junit:junit:4.13.2'
 
     testImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"

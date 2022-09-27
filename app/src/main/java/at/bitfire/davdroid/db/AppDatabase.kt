@@ -251,7 +251,7 @@ abstract class AppDatabase: RoomDatabase() {
                     writer.append("$tableName: ")
                     db.query("SELECT COUNT(*) FROM $tableName").use { cursor ->
                         if (cursor.moveToNext())
-                        writer.append("${cursor.getInt(0)} row(s), data not listed here\n\n")
+                            writer.append("${cursor.getInt(0)} row(s), data not listed here\n\n")
                     }
                 } else {
                     writer.append("$tableName\n")
