@@ -1,5 +1,7 @@
 carddav.a1.net
 aol.com
+calendar.dingtalk.com/dav/
+cloud.disroot.org
 dav.edis.at
 dav.fruux.com
 caldav.gmx.net
@@ -11,6 +13,7 @@ calendar.mail.ru
 mailbox.org
 mailfence.com
 posteo.de:8443
+dav.runbox.com
 live.teambox.eu
 spica.t-online.de
 caldav.calendar.yahoo.com
