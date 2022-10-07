@@ -9,11 +9,11 @@
 buildscript {
     ext.versions = [
         aboutLibraries: '8.9.4',
-        appIntro: '6.1.0',
-        dav4jvm: '2.1.4',
-        hilt: '2.42',
-        kotlin: '1.6.21',
-        okhttp: '4.9.3',
+        appIntro: '6.2.0',
+        dav4jvm: 'c61e4b0c80a5a8de1df99b4997445bb323d3ea3d',
+        hilt: '2.43.2',
+        kotlin: '1.7.10',
+        okhttp: '4.10.0',
         // latest Apache Commons versions that don't require Java 8 (Android 7)
         commonsCollections: '4.2',
         commonsLang: '3.8.1',
@@ -29,7 +29,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}"
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${versions.aboutLibraries}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"

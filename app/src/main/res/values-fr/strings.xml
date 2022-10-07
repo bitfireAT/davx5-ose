@@ -5,6 +5,8 @@
   <string name="account_invalid">Le compte n’existe plus (désormais)</string>
   <string name="account_title_address_book">Carnet d\'adresses kSync</string>
   <string name="address_books_authority_title">Carnets d\'adresses</string>
+  <string name="dialog_remove">Retirer</string>
+  <string name="dialog_deny">Annuler</string>
   <string name="field_required">Ce champ est requis</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
@@ -88,7 +90,7 @@
   <string name="about_translations">Traductions</string>
   <string name="about_libraries">Librairies</string>
   <string name="about_version">Version %1$s (%2$d)</string>
-  <string name="about_build_date">Compilé sur %s</string>
+  <string name="about_build_date">Générée le %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) et les contributeurs</string>
   <string name="about_flavor_info">Cette version ne peut être distribuée que sur Google Play.</string>
   <string name="about_license_info_no_warranty">Ce programme est fourni sans AUCUNE GARANTIE. C\'est un logiciel libre, et vous êtes en droit de le redistribuer sous certaines conditions.</string>

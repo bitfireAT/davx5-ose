@@ -12,7 +12,7 @@ import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.ical4android.*
-import at.bitfire.ical4android.MiscUtils.UriHelper.asSyncAdapter
+import at.bitfire.ical4android.util.MiscUtils.UriHelper.asSyncAdapter
 import net.fortuna.ical4j.model.property.ProdId
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -193,26 +193,49 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
     }
 
 
+    /**
+     * Creates and sets a new UID in the calendar provider, if no UID is already set.
+     * It also returns the desired file name for the event for further processing in the sync algorithm.
+     *
+     * @return file name to use at upload
+     */
     override fun prepareForUpload(): String {
-        var uid: String? = null
+        // fetch UID_2445 from calendar provider
+        var dbUid: String? = null
         calendar.provider.query(eventSyncURI(), arrayOf(Events.UID_2445), null, null, null)?.use { cursor ->
             if (cursor.moveToNext())
-                uid = StringUtils.trimToNull(cursor.getString(0))
+                dbUid = StringUtils.trimToNull(cursor.getString(0))
         }
 
-        if (uid == null) {
+        // make sure that UID is set
+        val uid: String = dbUid ?: {
             // generate new UID
-            uid = UUID.randomUUID().toString()
+            val newUid = UUID.randomUUID().toString()
 
+            // update in calendar provider
             val values = ContentValues(1)
-            values.put(Events.UID_2445, uid)
+            values.put(Events.UID_2445, newUid)
             calendar.provider.update(eventSyncURI(), values, null, null)
 
-            event!!.uid = uid
-        }
+            // Update this event
+            event?.uid = newUid
 
-        return "$uid.ics"
+            newUid
+        }()
+
+        val uidIsGoodFilename = uid.all { char ->
+            // see RFC 2396 2.2
+            char.isLetterOrDigit() || arrayOf(          // allow letters and digits
+                ';',':','@','&','=','+','$',',',        // allow reserved characters except '/' and '?'
+                '-','_','.','!','~','*','\'','(',')'    // allow unreserved characters
+            ).contains(char)
+        }
+        return if (uidIsGoodFilename)
+            "$uid.ics"                      // use UID as file name
+        else
+            "${UUID.randomUUID()}.ics"      // UID would be dangerous as file name, use random UUID instead
     }
+
 
     override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
         val values = ContentValues(5)

@@ -5,6 +5,8 @@
   <string name="account_invalid">La cuenta (ya) no existe</string>
   <string name="account_title_address_book">Agenda kSync</string>
   <string name="address_books_authority_title">Agendas</string>
+  <string name="dialog_remove">Eliminar</string>
+  <string name="dialog_deny">Cancelar</string>
   <string name="field_required">Este campo es requerido</string>
   <string name="help">Ayuda</string>
   <string name="manage_accounts">Administrar cuentas</string>
@@ -396,6 +398,8 @@
   <string name="webdav_add_mount_password">Contraseña</string>
   <string name="webdav_add_mount_add">Agregar montaje</string>
   <string name="webdav_add_mount_no_support">No hay un servicio WebDAV en esta URL</string>
+  <string name="webdav_remove_mount_title">Eliminar punto de montaje</string>
+  <string name="webdav_remove_mount_text">Los detalles de la conexión se perderán pero ningún archivo será eliminado.</string>
   <string name="webdav_notification_access">Accediendo al fichero WebDAV</string>
   <string name="webdav_notification_download">Descargando el fichero WebDAV</string>
   <string name="webdav_notification_upload">Subiendo fichero WebDAV</string>

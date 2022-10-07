@@ -5,6 +5,8 @@
   <string name="account_invalid">Konto findes ikke (længere)</string>
   <string name="account_title_address_book">kSync adressebog</string>
   <string name="address_books_authority_title">Adressebøger</string>
+  <string name="dialog_remove">Fjern</string>
+  <string name="dialog_deny">Annullere</string>
   <string name="field_required">Feltet er påkrævet</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrere konti</string>
@@ -394,6 +396,8 @@
   <string name="webdav_add_mount_password">Adgangskode</string>
   <string name="webdav_add_mount_add">Tilføj monteringspunkt</string>
   <string name="webdav_add_mount_no_support">Ingen WebDAV tjeneste på URL\'en</string>
+  <string name="webdav_remove_mount_title">Fjern monteringspunkt</string>
+  <string name="webdav_remove_mount_text">Forbindelses informationer vil gå tabt, men ingen filer slettes.</string>
   <string name="webdav_notification_access">Tilgå WebDAV fil</string>
   <string name="webdav_notification_download">Hent WebDAV fil</string>
   <string name="webdav_notification_upload">Overfør WebDAV fil</string>

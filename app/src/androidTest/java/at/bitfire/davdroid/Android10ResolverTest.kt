@@ -11,6 +11,7 @@ import org.junit.Test
 import org.xbill.DNS.ARecord
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.Type
+import java.net.Inet4Address
 import java.net.InetAddress
 
 class Android10ResolverTest {
@@ -19,8 +20,8 @@ class Android10ResolverTest {
 
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
-    fun testResolve() {
-        val www = InetAddress.getByName(FQDN_DAVX5)
+    fun testResolveA() {
+        val www = InetAddress.getAllByName(FQDN_DAVX5).filterIsInstance(Inet4Address::class.java).first()
 
         val srvLookup = Lookup(FQDN_DAVX5, Type.A)
         srvLookup.setResolver(Android10Resolver)

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.resource
 
-import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
@@ -13,12 +12,11 @@ import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.MiscUtils.ContentProviderClientHelper.closeCompat
-import at.bitfire.ical4android.MiscUtils.UriHelper.asSyncAdapter
+import at.bitfire.ical4android.util.MiscUtils.ContentProviderClientHelper.closeCompat
+import at.bitfire.ical4android.util.MiscUtils.UriHelper.asSyncAdapter
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId
@@ -31,12 +29,8 @@ class LocalCalendarTest {
 
     companion object {
         @JvmField
-        @ClassRule(order = 0)
-        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)!!
-
-        @JvmField
-        @ClassRule(order = 1)
-        val initCalendarProviderRule: TestRule = InitCalendarProviderRule()
+        @ClassRule
+        val initCalendarProviderRule: TestRule = InitCalendarProviderRule.getInstance()
 
         private lateinit var provider: ContentProviderClient
 

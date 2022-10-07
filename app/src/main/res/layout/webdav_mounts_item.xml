@@ -69,13 +69,13 @@
                 android:text="@string/webdav_mounts_share_content" />
 
             <ImageButton
-                android:id="@+id/unmount"
+                android:id="@+id/remove_mountpoint"
                 app:layout_constraintTop_toTopOf="@id/browse"
                 app:layout_constraintBottom_toBottomOf="@id/browse"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_eject"
+                app:srcCompat="@drawable/ic_remove"
                 app:tint="?android:attr/colorControlNormal"
                 android:backgroundTint="@color/colorOnSecondary"
                 android:contentDescription="@string/webdav_mounts_unmount" />

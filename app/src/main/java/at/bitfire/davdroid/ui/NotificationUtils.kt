@@ -19,7 +19,7 @@ import at.bitfire.davdroid.R
 object NotificationUtils {
 
     // notification IDs
-    const val NOTIFY_EXTERNAL_FILE_LOGGING = 1
+    const val NOTIFY_VERBOSE_LOGGING = 1
     const val NOTIFY_REFRESH_COLLECTIONS = 2
     const val NOTIFY_FOREGROUND = 3
     const val NOTIFY_DATABASE_CORRUPTED = 4

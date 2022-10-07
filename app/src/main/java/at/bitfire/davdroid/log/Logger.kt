@@ -115,14 +115,14 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                         pendingPref
                 ).build())
 
-                nm.notify(NotificationUtils.NOTIFY_EXTERNAL_FILE_LOGGING, builder.build())
+                nm.notify(NotificationUtils.NOTIFY_VERBOSE_LOGGING, builder.build())
             } catch(e: IOException) {
                 log.log(Level.SEVERE, "Couldn't create log file", e)
                 Toast.makeText(context, context.getString(R.string.logging_couldnt_create_file), Toast.LENGTH_LONG).show()
             }
         } else {
             // verbose logging is disabled -> cancel notification and remove old logs
-            nm.cancel(NotificationUtils.NOTIFY_EXTERNAL_FILE_LOGGING)
+            nm.cancel(NotificationUtils.NOTIFY_VERBOSE_LOGGING)
             debugDir()?.deleteRecursively()
         }
     }

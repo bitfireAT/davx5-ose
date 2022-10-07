@@ -5,6 +5,8 @@
   <string name="account_invalid">Регистрацията (вече) не съществува</string>
   <string name="account_title_address_book">Адресник на kSync</string>
   <string name="address_books_authority_title">Адресници</string>
+  <string name="dialog_remove">Премахване</string>
+  <string name="dialog_deny">Отказ</string>
   <string name="field_required">Задължително поле</string>
   <string name="help">Помощ</string>
   <string name="manage_accounts">Управление на регистрации</string>
@@ -388,6 +390,7 @@
   <string name="webdav_add_mount_password">Парола</string>
   <string name="webdav_add_mount_add">Монтиране</string>
   <string name="webdav_add_mount_no_support">Няма услуга на WebDAV на адреса</string>
+  <string name="webdav_remove_mount_title">Премахване на точката на монтиране</string>
   <string name="webdav_notification_access">Достъпва се файл на WebDAV</string>
   <string name="webdav_notification_download">Изтегля се файл на WebDAV</string>
   <string name="webdav_notification_upload">Изпраща се файл на WebDAV</string>

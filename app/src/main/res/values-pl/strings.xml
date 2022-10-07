@@ -5,6 +5,8 @@
   <string name="account_invalid">Konto (już) nie istnieje</string>
   <string name="account_title_address_book">Książka adresowa kSync</string>
   <string name="address_books_authority_title">Książka adresowa</string>
+  <string name="dialog_remove">Usuń</string>
+  <string name="dialog_deny">Anuluj</string>
   <string name="field_required">To pole jest wymagane</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Zadządzaj kontami</string>
@@ -398,6 +400,8 @@
   <string name="webdav_add_mount_password">Hasło</string>
   <string name="webdav_add_mount_add">Dodaj link</string>
   <string name="webdav_add_mount_no_support">Brak usługi WebDAV pod tym URL</string>
+  <string name="webdav_remove_mount_title">Usuń punkt montowania</string>
+  <string name="webdav_remove_mount_text">Szczegóły połączenia zostaną utracone, ale żadne pliki nie będą usunięte.</string>
   <string name="webdav_notification_access">Uzyskiwanie dostępu do pliku WebDAV</string>
   <string name="webdav_notification_download">Pobieranie pliku WebDAV</string>
   <string name="webdav_notification_upload">Wgrywanie pliku WebDAV</string>

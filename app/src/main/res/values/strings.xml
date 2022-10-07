@@ -11,6 +11,8 @@
     <string name="account_title_address_book">kSync Address book</string>
     <string name="address_books_authority" translatable="false">com.infomaniak.sync.addressbooks</string>
     <string name="address_books_authority_title">Address books</string>
+    <string name="dialog_remove">Remove</string>
+    <string name="dialog_deny">Cancel</string>
     <string name="field_required">This field is required</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
@@ -462,6 +464,8 @@
     <string name="webdav_add_mount_password">Password</string>
     <string name="webdav_add_mount_add">Add mount</string>
     <string name="webdav_add_mount_no_support">No WebDAV service at this URL</string>
+    <string name="webdav_remove_mount_title">Remove mount point</string>
+    <string name="webdav_remove_mount_text">Connection details will be lost, but no files will be deleted.</string>
     <string name="webdav_notification_access">Accessing WebDAV file</string>
     <string name="webdav_notification_download">Downloading WebDAV file</string>
     <string name="webdav_notification_upload">Uploading WebDAV file</string>
