@@ -20,6 +20,7 @@ class OseAccountsDrawerHandler @Inject constructor(): BaseAccountsDrawerHandler(
 
     companion object {
         const val COMMUNITY_URL = "https://github.com/bitfireAT/davx5-ose/discussions"
+        const val MANUAL_URL = "https://manual.davx5.com"
     }
 
     override fun onNavigationItemSelected(activity: Activity, item: MenuItem) {
@@ -42,7 +43,7 @@ class OseAccountsDrawerHandler @Inject constructor(): BaseAccountsDrawerHandler(
             R.id.nav_manual ->
                 UiUtils.launchUri(
                     activity,
-                    App.homepageUrl(activity).buildUpon().appendPath("manual").build()
+                    Uri.parse(MANUAL_URL)
                 )
             R.id.nav_faq ->
                 UiUtils.launchUri(
