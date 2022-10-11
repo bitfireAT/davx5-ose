@@ -55,6 +55,8 @@
         <item name="android:textColorSecondary">@color/secondaryTextColor</item>
 
         <item name="android:colorBackground">@color/backgroundColor</item>
+
+        <item name="switchPreferenceCompatStyle">@style/MySwitchPreference</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -80,5 +82,9 @@
     <!-- widgets -->
 
     <color name="cardview_background">@color/secondaryLightColor</color>
+
+    <style name="MySwitchPreference" parent="@style/Preference.SwitchPreferenceCompat.Material">
+        <item name="widgetLayout">@layout/view_preference_switch</item>
+    </style>
 
 </resources>
