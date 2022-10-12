@@ -226,7 +226,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     class CollectionPopupListener(
         private val accountModel: AccountActivity.Model,
         private val item: Collection,
-        private val fragmentManager: FragmentManager
+        private val fragmentManager: FragmentManager,
+        private val forceReadOnly: Boolean = false
     ): View.OnClickListener {
 
         override fun onClick(anchor: View) {
@@ -243,6 +244,12 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                         isChecked = item.forceReadOnly
                     else
                         isVisible = false
+                }
+
+                if (item.type == Collection.TYPE_ADDRESSBOOK && forceReadOnly) {
+                    // managed restriction "force read-only address books" is active
+                    isChecked = true
+                    isEnabled = false
                 }
             }
             popup.menu.findItem(R.id.delete_collection).isVisible = item.privUnbind

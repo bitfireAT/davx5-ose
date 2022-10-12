@@ -11,6 +11,12 @@ import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCarddavItemBinding
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 
 class AddressBooksFragment: CollectionsFragment() {
 
@@ -53,8 +59,17 @@ class AddressBooksFragment: CollectionsFragment() {
     class AddressBookViewHolder(
         parent: ViewGroup,
         accountModel: AccountActivity.Model,
-        val fragmentManager: FragmentManager
+        val fragmentManager: FragmentManager,
     ): CollectionViewHolder<AccountCarddavItemBinding>(parent, AccountCarddavItemBinding.inflate(LayoutInflater.from(parent.context), parent, false), accountModel) {
+
+        @EntryPoint
+        @InstallIn(SingletonComponent::class)
+        interface AddressBookViewHolderEntryPoint {
+            fun settingsManager(): SettingsManager
+        }
+
+        private val settings = EntryPointAccessors.fromApplication(parent.context, AddressBookViewHolderEntryPoint::class.java).settingsManager()
+        private val forceReadOnlyAddressBooks = settings.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS) // managed restriction
 
         override fun bindTo(item: Collection) {
             binding.sync.isChecked = item.sync
@@ -67,12 +82,12 @@ class AddressBooksFragment: CollectionsFragment() {
                 binding.description.visibility = View.VISIBLE
             }
 
-            binding.readOnly.visibility = if (item.readOnly()) View.VISIBLE else View.GONE
+            binding.readOnly.visibility = if (item.readOnly() || forceReadOnlyAddressBooks) View.VISIBLE else View.GONE
 
             itemView.setOnClickListener {
                 accountModel.toggleSync(item)
             }
-            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item, fragmentManager))
+            binding.actionOverflow.setOnClickListener(CollectionPopupListener(accountModel, item, fragmentManager, forceReadOnlyAddressBooks))
         }
     }
 

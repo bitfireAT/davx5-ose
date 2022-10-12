@@ -38,5 +38,8 @@ object Settings {
 
     /** whether detected collections are selected for synchronization for default */
     const val SYNC_ALL_COLLECTIONS = "sync_all_collections"
+
+    /** whether all address books are forced to be read-only */
+    const val FORCE_READ_ONLY_ADDRESSBOOKS = "force_read_only_addressbooks"
     
 }
