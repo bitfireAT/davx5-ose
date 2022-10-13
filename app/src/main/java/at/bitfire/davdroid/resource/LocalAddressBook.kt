@@ -75,13 +75,19 @@ open class LocalAddressBook(
             return addressBook
         }
 
+        /**
+         * Finds and returns all the local address books belonging to a given main account
+         *
+         * @param mainAccount the main account to use
+         * @return list of [mainAccount]'s address books
+         */
         fun findAll(context: Context, provider: ContentProviderClient?, mainAccount: Account) = AccountManager.get(context)
                 .getAccountsByType(context.getString(R.string.account_type_address_book))
                 .map { LocalAddressBook(context, it, provider) }
                 .filter {
                     try {
                         it.mainAccount == mainAccount
-                    } catch(e: IllegalStateException) {
+                    } catch(e: IllegalArgumentException) {
                         false
                     }
                 }
@@ -110,6 +116,13 @@ open class LocalAddressBook(
             return bundle
         }
 
+        /**
+         * Finds and returns the main account of the given address book's account (sub-account)
+         *
+         * @param account the address book account to find the main account for
+         * @return the associated main account
+         * @throws IllegalArgumentException if the given account is not a address book account or does not have a main account
+         */
         fun mainAccount(context: Context, account: Account): Account =
             if (account.type == context.getString(R.string.account_type_address_book)) {
                 val manager = AccountManager.get(context)
@@ -144,7 +157,7 @@ open class LocalAddressBook(
 
     private var _mainAccount: Account? = null
     /**
-     * The associated main account which this address book accounts belongs to.
+     * The associated main account which this address book's accounts belong to.
      *
      * @throws IllegalArgumentException when [account] is not an address book account or when no main account is assigned
      */
