@@ -1,0 +1,361 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Račun (više) ne postoji</string>
+  <string name="account_title_address_book">DAVx⁵ Adresar</string>
+  <string name="address_books_authority_title">Adresari</string>
+  <string name="help">Pomoć</string>
+  <string name="manage_accounts">Upravljaj računima</string>
+  <string name="share">Dijeli</string>
+  <string name="notification_channel_debugging">Debugging</string>
+  <string name="notification_channel_general">Ostale važne poruke</string>
+  <string name="notification_channel_status">Statusne poruke niskog prioriteta</string>
+  <string name="notification_channel_sync">Sinkronizacija</string>
+  <string name="notification_channel_sync_errors">Sinkronizacijske greške</string>
+  <string name="notification_channel_sync_errors_desc">Važne greške koje zaustavljaju sinkronizaciju poput neočekivanih odgovora poslužitelja</string>
+  <string name="notification_channel_sync_warnings">Sinkronizacijska upozorenja</string>
+  <string name="notification_channel_sync_warnings_desc">Sinkronizacijski problemi koji nisu fatalni poput određenih nevaljanih datoteka</string>
+  <string name="notification_channel_sync_io_errors">Mrežne i I/O greške</string>
+  <string name="notification_channel_sync_io_errors_desc">Vremensko ograničenje, greške povezivanja, itd. (obično privremeno)</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">Vaši podaci. Vaš izbor.</string>
+  <string name="intro_slogan2">Preuzmite kontrolu.</string>
+  <string name="intro_battery_title">Redoviti intervali sinkronizacije</string>
+  <string name="intro_battery_not_whitelisted">Onemogućeno (nije preporučeno)</string>
+  <string name="intro_battery_whitelisted">Omogućeno (preporučeno)</string>
+  <string name="intro_battery_text">Za sinkronizaciju u redovitim intervalima, %s mora imati omogućen rad u pozadini. Inače, Android može zaustaviti sinkronizaciju u bilo kojem trenutku.</string>
+  <string name="intro_battery_dont_show">Ne trebam redovita sinkroniziranja.</string>
+  <string name="intro_autostart_title">%s kompatibilnost</string>
+  <string name="intro_autostart_text">Ovaj uređaj vjerojatno blokira sinkronizaciju. Ukoliko ste zahvaćeni ovim problemom, morati ćete ga riješiti ručno sami.</string>
+  <string name="intro_autostart_dont_show">Tražene izmjene su napravljene. Ne podsjećaj me više.</string>
+  <string name="intro_leave_unchecked">* Ostavi neoznačeno za podsjetnik kasnije. Moguće je resetirati u aplikacijskim postavkama / %s.</string>
+  <string name="intro_more_info">Više informacija</string>
+  <string name="intro_tasks_title">Podrška za zadatke</string>
+  <string name="intro_tasks_text1">Ukoliko su zadatci podržani od strane vašeg poslužitelja, moguće ih je sinkronizirati sa podržanom aplikacijom za zadatke:</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[Za određene mogućnosti, poput podzadataka ili ponavljajućih zadataka, možda ćete trebati <a href="https://www.davx5.com/faq/tasks/advanced-task-features">dodatne aplikacije</a>.]]></string>
+  <string name="intro_tasks_tasks_org">Tasks</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Neke mogućnosti <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nisu podržane</a> (još).]]></string>
+  <string name="intro_tasks_no_app_store">Trgovina aplikacijama nije dostupna</string>
+  <string name="intro_tasks_dont_show">Ne trebam podršku za zadatke.*</string>
+  <string name="intro_open_source_title">Softver otvorenog koda</string>
+  <string name="intro_open_source_text">Sretni smo što upotrebljavate %s, softver otvorenog koda. Razvoj, održavanje i podrška težak su posao. Molimo razmislite o doprinosu  (mnogo je načina) ili o donaciji. Biti ćemo vam vrlo zahvalni!</string>
+  <string name="intro_open_source_details">Kako doprinijeti/donirati</string>
+  <string name="intro_open_source_dont_show">Ne prikazuj u bliskoj u bliskoj budućnosti</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">Dopuštenja</string>
+  <string name="permissions_text">%s treba dopuštenja kako bi radio ispravno.</string>
+  <string name="permissions_all_title">Sve od ispod</string>
+  <string name="permissions_all_status_off">Koristi ovo za aktiviranje svih mogućnosti (preporučeno)</string>
+  <string name="permissions_all_status_on">Sva dopuštenja odobrena</string>
+  <string name="permissions_contacts_title">Dopuštenja kontakata</string>
+  <string name="permissions_contacts_status_off">Bez sinkronizacije kontakata (nije preporučeno)</string>
+  <string name="permissions_contacts_status_on">Moguća sinkronizacija kontakata</string>
+  <string name="permissions_calendar_title">Dopuštenja kalendara</string>
+  <string name="permissions_calendar_status_off">Bez sinkronizacije kalendara (nije preporučeno)</string>
+  <string name="permissions_calendar_status_on">Moguća sinkronizacija kalendara</string>
+  <string name="permissions_opentasks_title">OpenTasks dopuštenja</string>
+  <string name="permissions_tasksorg_title">Dopuštenja zadataka</string>
+  <string name="permissions_tasks_status_not_installed">Bez sinkronizacije zadataka (nije instalirano)</string>
+  <string name="permissions_tasks_status_on">Moguća sinkronizacija zadataka</string>
+  <string name="permissions_autoreset_title">Zadrži dopuštenja</string>
+  <string name="permissions_autoreset_status_off">Dopuštenja mogu biti automatski resetirana (nije preporučeno)</string>
+  <string name="permissions_autoreset_status_on">Dopuštenja neće biti automatski resetirana</string>
+  <string name="permissions_autoreset_instruction">Ukloni dopuštenja ukoliko se aplikacija ne upotrebljava</string>
+  <string name="permissions_app_settings_hint">Ukoliko prekidač ne radi, koristi postavke aplikacije / Dopuštenja.</string>
+  <string name="permissions_app_settings">Postavke aplikacije</string>
+  <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID dopuštenja</string>
+  <string name="wifi_permissions_intro">Kako bi se pristupilo trenutnom WiFi imenu (SSID), ovi uvjeti trebaju biti zadovoljeni:</string>
+  <string name="wifi_permissions_location_permission_on">Dopuštenja lokacije odobrena</string>
+  <string name="wifi_permissions_location_permission_off">Dopuštenja lokacije odbijena</string>
+  <string name="wifi_permissions_background_location_permission">Pozadinska dopuštenja lokacije</string>
+  <string name="wifi_permissions_background_location_permission_label">Dopusti cijelo vrijeme</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Lokalna dopuštenja postavljena na <b>%s</b> ]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Lokalna dopuštenja nisu postavljena na <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s koristi dopuštenje za lokaciju samo kako bi se utvrdilo sadašnje WiFi SSID za SSID-ograničenim računa. To će se dogoditi čak i kada je aplikacija u pozadini. Podaci o lokaciji se ne prikupljaju, pohranjuju, obrađuju ili šalju bilo gdje.</string>
+  <string name="wifi_permissions_location_enabled">Lokacija uvijek omogućena</string>
+  <string name="wifi_permissions_location_enabled_on">Lokacijske usluge su omogućene</string>
+  <string name="wifi_permissions_location_enabled_off">Lokacijske usluge su onemogućene</string>
+  <!--AboutActivity-->
+  <string name="about_translations">Prijevodi</string>
+  <string name="about_libraries">Bibiloteke</string>
+  <string name="about_version">Verzija %1$s(%2$d)</string>
+  <string name="about_build_date">Kompilirano na %s</string>
+  <string name="about_flavor_info">Ova verzija ispunjava uvjete za distribuciju samo na Google Play trgovini. </string>
+  <string name="about_license_info_no_warranty">Ovaj program dolazi BEZ APSOLUTNO BILO KAKVOG JAMSTVA. To je besplatni softver i možete ga distribuirati pod određenim uvjetima. </string>
+  <string name="about_translations_thanks"><![CDATA[<i>Thanks to: </i> %s]]></string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Couldn\'t create log file</string>
+  <string name="logging_notification_text">Now logging all %s activities </string>
+  <string name="logging_notification_view_share">Pregledaj/podijeli</string>
+  <string name="logging_notification_disable">Onemogući</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Otvori navigacijski pretinac</string>
+  <string name="navigation_drawer_close">Zatvori navigacijski pretinac</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
+  <string name="navigation_drawer_about">About / License</string>
+  <string name="navigation_drawer_beta_feedback">Beta feedback</string>
+  <string name="install_email_client">Molimo instalirajte aplikaciju za e-poštu</string>
+  <string name="install_browser">Molimo instalirajte web preglednik</string>
+  <string name="navigation_drawer_settings">Postavke</string>
+  <string name="navigation_drawer_news_updates">Novosti &amp; aktualnosti</string>
+  <string name="navigation_drawer_external_links">Vanjske poveznice</string>
+  <string name="navigation_drawer_website">Web stranica</string>
+  <string name="navigation_drawer_manual">Upute</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_donate">Doniraj</string>
+  <string name="navigation_drawer_privacy_policy">Pravila o zaštiti privatnosti</string>
+  <string name="account_list_no_internet">Nema internet veze. Android neće pokrenuti sinkronizaciju.</string>
+  <string name="account_list_empty">Dobrodošli u DAVx⁵!\n\nSada možete dodati CalDAV/CardDAV račun.</string>
+  <string name="accounts_global_sync_disabled">Automatska sinkronizacija je onemogućena na razini sustava</string>
+  <string name="accounts_global_sync_enable">Omogući</string>
+  <string name="accounts_sync_all">Sinkroniziraj sve račune</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Detekcija servisa nije uspjela</string>
+  <string name="dav_service_refresh_couldnt_refresh">Nije moguće osvježiti popis zbirki</string>
+  <!--Battery Optimization-->
+  <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Pokrenuto u prednjem planu</string>
+  <string name="foreground_service_notify_text">Na nekim uređajima, ovo je neophodno za automatsku sinkronizaciju.</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Postavke</string>
+  <string name="app_settings_debug">Debugging</string>
+  <string name="app_settings_show_debug_info">Prikaži debug informacije</string>
+  <string name="app_settings_show_debug_info_details">Pregledaj/podijeli softver i konfiguracijske detalje</string>
+  <string name="app_settings_logging">Verbose logging</string>
+  <string name="app_settings_logging_on">Logging je aktivan</string>
+  <string name="app_settings_logging_off">Logging je onemogućen</string>
+  <string name="app_settings_foreground_service">Zadrži u prednjem planu</string>
+  <string name="app_settings_foreground_service_details">Može pomoći ukoliko vaš uređaj sprečava automatsku sinkronizaciju</string>
+  <string name="app_settings_connection">Veza</string>
+  <string name="app_settings_security">Sigurnost</string>
+  <string name="app_settings_security_app_permissions">Dopuštenja aplikacije</string>
+  <string name="app_settings_security_app_permissions_summary">Pregledajte dopuštenja potrebna za sinkronizaciju</string>
+  <string name="app_settings_distrust_system_certs">Ukidanje povjerenja sistemskim certifikatima</string>
+  <string name="app_settings_distrust_system_certs_on">Sistemski i korisnički dodani CA-i neće biti od povjerenja</string>
+  <string name="app_settings_distrust_system_certs_off">Sistemski i korisnički dodani CA-i su od povjerenja (preporučeno)</string>
+  <string name="app_settings_reset_certificates">Resetiraj certifikate od (ne)povjerenja</string>
+  <string name="app_settings_reset_certificates_summary">Reseira povjerenje svih prilagođenih certifikata</string>
+  <string name="app_settings_reset_certificates_success">Svi prilagođeni certifikati su obrisani</string>
+  <string name="app_settings_user_interface">Korisničko sučelje</string>
+  <string name="app_settings_notification_settings">Postavke obavijesti</string>
+  <string name="app_settings_notification_settings_summary">Uredi izvore obavještavanja i njihove postavke</string>
+  <string name="app_settings_reset_hints">Resetiraj naznake</string>
+  <string name="app_settings_reset_hints_summary">Ponovno omogućuje naznake koje su prethodno bile odbačene</string>
+  <string name="app_settings_reset_hints_success">Sve naznake će ponovno biti prikazane</string>
+  <string name="app_settings_integration">Integracija</string>
+  <string name="app_settings_tasks_provider">Tasks aplikacija</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">Sinkronizira sa %s</string>
+  <string name="app_settings_tasks_provider_none">Kompatibilna aplikacija za zadatke nije pronađena</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Bez sinkronizacije kontakata (nedostaju dopuštenja)</string>
+  <string name="account_caldav_missing_calendar_permissions">Bez sinkronizacije kalendara (nedostaju dopuštenja)</string>
+  <string name="account_caldav_missing_tasks_permissions">Bez sinkronizacije zadataka (nedostaju dopuštenja)</string>
+  <string name="account_caldav_missing_permissions">Bez sinkronizacije kalendara i zadataka (nedostaju dopuštenja)</string>
+  <string name="account_webcal_missing_calendar_permissions">Nije moguće pristupiti kalendarima (nedostaju dopuštenja)</string>
+  <string name="account_permissions_action">Dopuštenja</string>
+  <string name="account_no_address_books">Ne postoji adresar (još).</string>
+  <string name="account_no_calendars">Ne postoji kalendar (još).</string>
+  <string name="account_no_webcals">Ne postoje pretplate na kalendar (još).</string>
+  <string name="account_swipe_down">Povucite prstom prema dolje za osvježavanje popisa sa poslužitelja.</string>
+  <string name="account_synchronize_now">Sinkroniziraj sada</string>
+  <string name="account_synchronizing_now">Upravo sinkronizira</string>
+  <string name="account_settings">Postavke računa</string>
+  <string name="account_rename">Preimenuj račun</string>
+  <string name="account_rename_new_name">Ne spremljeni lokalni podatci mogu biti odbačeni. Ponovna sinkronizacija je potrebna nakon preimenovanja. Novi naziv računa:</string>
+  <string name="account_rename_rename">Preimenuj</string>
+  <string name="account_rename_couldnt_rename">Račun nije moguće preimenovati</string>
+  <string name="account_delete">Obriši račun</string>
+  <string name="account_delete_confirmation_title">Stvarno izbrisati račun?</string>
+  <string name="account_delete_confirmation_text">Sve lokalne kopije adresara, kalendara i popisa zadataka biti će izbrisane.</string>
+  <string name="account_synchronize_this_collection">sinkroniziraj ovu zbirku</string>
+  <string name="account_read_only">read-only</string>
+  <string name="account_calendar">kalendar</string>
+  <string name="account_task_list">popis zadataka</string>
+  <string name="account_only_personal">Prikaži samo osobno</string>
+  <string name="account_refresh_address_book_list">Osvježi popis adresara</string>
+  <string name="account_create_new_address_book">Kreiraj novi adresar</string>
+  <string name="account_refresh_calendar_list">Osvježi popis kalendara</string>
+  <string name="account_create_new_calendar">Kreiraj novi kalendar</string>
+  <string name="account_no_webcal_handler_found">Aplikacija sa Webcal mogućnostima nije pronađena</string>
+  <string name="account_install_icsx5">Instaliraj ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Dodaj račun</string>
+  <string name="login_type_email">Prijavi se sa adresom e-pošte</string>
+  <string name="login_email_address">Adresa e-pošte</string>
+  <string name="login_email_address_error">Potrebna je valjana adresa e-pošte</string>
+  <string name="login_password">Lozinka</string>
+  <string name="login_password_required">Lozinka je potrebna</string>
+  <string name="login_type_url">Prijava sa URL-om i korisničkim imenom</string>
+  <string name="login_url_must_be_http_or_https">URL mora započeti sa http(s)://</string>
+  <string name="login_user_name">Korisničko ime</string>
+  <string name="login_user_name_required">Korisničko ime je potrebno</string>
+  <string name="login_base_url">Osnovni URL</string>
+  <string name="login_type_url_certificate">Prijava sa URL-om i klijentskim certifikatom</string>
+  <string name="login_select_certificate">Odaberi certifikat</string>
+  <string name="login_login">Prijava</string>
+  <string name="login_create_account">Kreiraj račun</string>
+  <string name="login_account_name">Naziv računa</string>
+  <string name="login_account_name_info">Koristite svoju adresu e-pošte kao naziv računa jer Android će koristiti naziv računa kao ORGANIZER polje za događaje koje kreirate. Nije moguće imati dva računa sa istim imenom.</string>
+  <string name="login_account_contact_group_method">Metoda kontaktnih grupa:</string>
+  <string name="login_account_name_required">Potreban je naziv računa</string>
+  <string name="login_account_name_already_taken">Naziv računa se već koristi</string>
+  <string name="login_account_not_created">Nije moguće napraviti račun</string>
+  <string name="login_type_advanced">Napredna prijava (posebne namjene)</string>
+  <string name="login_use_username_password">Koristi korisničko ime/lozinka</string>
+  <string name="login_use_client_certificate">Koristi klijentski certifikat</string>
+  <string name="login_no_certificate_found">Certifikat nije pronađen</string>
+  <string name="login_install_certificate">Instaliraj certifikat</string>
+  <string name="login_configuration_detection">Detektiranje konfiguracije</string>
+  <string name="login_querying_server">Pričekajte, postavljanje upita poslužitelju...</string>
+  <string name="login_no_caldav_carddav">Nije moguće pronaći CalDAV ili CardDAV uslugu.</string>
+  <string name="login_username_password_wrong">Korisničko ime (adresa e-pošte) / lozinka pogrešni?</string>
+  <string name="login_view_logs">Prikaži detalje</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Postavke %s</string>
+  <string name="settings_sync">Sinkronizacija</string>
+  <string name="settings_sync_interval_contacts">Interval sinkr. kontakata</string>
+  <string name="settings_sync_summary_manually">Samo ručno</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Svakih %d minuta + odmah nakon lokalnih izmjena</string>
+  <string name="settings_sync_interval_calendars">Interval sinkr. kalendara</string>
+  <string name="settings_sync_interval_tasks">Interval sinkr. zadataka</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Samo ručno</item>
+    <item>Svakih 15 minuta</item>
+    <item>Svakih 30 minuta</item>
+    <item>Svaki sat</item>
+    <item>Svaka 2 sata</item>
+    <item>Svaka 4 sata</item>
+    <item>Jednom dnevno</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Sinkroniziraj preko WiFi</string>
+  <string name="settings_sync_wifi_only_on">Sinkronizacija je ograničena na WiFi veze</string>
+  <string name="settings_sync_wifi_only_off">Vrsta veze se ne uzima u obzir</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID ograničenje</string>
+  <string name="settings_sync_wifi_only_ssids_on">Sinhronizirat će se samo preko %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Sinkronizirat će se samo preko %s (potrebne su aktivne usluge lokacije)</string>
+  <string name="settings_sync_wifi_only_ssids_off">Koristit će se sve WiFi veze</string>
+  <string name="settings_sync_wifi_only_ssids_message">Zarezom odijeljeni nazivi (SSIDa) dozvoljenih WiFi mreža (ostaviti prazno za sve mreže)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID ograničenje zahtijeva daljnje postavke</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Upravljaj</string>
+  <string name="settings_more_info_faq">Više informacija (FAQ)</string>
+  <string name="settings_authentication">Autentifkacija</string>
+  <string name="settings_username">Korisničko ime</string>
+  <string name="settings_enter_username">Unesite korisničko ime:</string>
+  <string name="settings_password">Lozinka</string>
+  <string name="settings_password_summary">Ažurirajte lozinku vezanu uz vaš poslužitelj.</string>
+  <string name="settings_enter_password">Unesite svoju lozinku:</string>
+  <string name="settings_certificate_alias">Pseudonim klijentskog certifikata</string>
+  <string name="settings_certificate_alias_empty">Nije odabran nijedan certifikat</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Vremensko ograničenje za prošli događaj</string>
+  <string name="settings_sync_time_range_past_none">Svi događaju biti će sinkronizirani</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Događaji duži od jednog dana u prošlosti bit će zanemareni</item>
+    <item quantity="few">Događaji duži od %d dana u prošlosti bit će zanemareni</item>
+    <item quantity="other">Događaji duži od %d dana u prošlosti bit će zanemareni</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Događaji koji su prošli više od ovog broja dana bit će zanemareni (može biti 0). Ostavite prazno za sinkronizaciju svih događaja.</string>
+  <string name="settings_default_alarm">Zadani podsjetnik</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Zadani podsjetnik jednu minuta prije događaja</item>
+    <item quantity="few">Zadani podsjetnik %d minuta prije događaja</item>
+    <item quantity="other">Zadani podsjetnik %d minuta prije događaja</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Zadani podsjetnici nisu kreirani</string>
+  <string name="settings_default_alarm_message">Ako će se stvoriti zadani podsjetnici za događaje bez podsjetnika: željeni broj minuta prije događaja. Ostavite prazno da biste onemogućili zadane podsjetnike.</string>
+  <string name="settings_manage_calendar_colors">Upravljaj bojama kalendara</string>
+  <string name="settings_manage_calendar_colors_on">Boje kalendara se resetiraju pri svakoj sinkronizaciji</string>
+  <string name="settings_manage_calendar_colors_off">Boje kalendara mogu biti postavljene od strane drugih aplikacija</string>
+  <string name="settings_event_colors">Podrška za boju događaja </string>
+  <string name="settings_event_colors_on">Boje događaja su sinkronizirane</string>
+  <string name="settings_event_colors_off">Boje događaja nisu sinkronizirane</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Metoda kontaktnih grupa</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupe su odvojene vCards</item>
+    <item>Grupe su kategorije po kontaktima</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Promijeni metodu grupe</string>
+  <!--collection management-->
+  <string name="create_addressbook">Kreiraj adresar</string>
+  <string name="create_addressbook_display_name_hint">Moj adresar</string>
+  <string name="create_calendar">Kreiraj kalendar</string>
+  <string name="create_calendar_time_zone">Vremenska zona</string>
+  <string name="create_calendar_type">Mogući unosi u kalendar</string>
+  <string name="create_calendar_type_vevent">Događaji</string>
+  <string name="create_calendar_type_vtodo">Zadatci</string>
+  <string name="create_calendar_type_vjournal">Bilješke / dnevnik</string>
+  <string name="create_calendar_type_events_and_tasks">Kombinirano (događaji i zadaci)</string>
+  <string name="create_collection_color">Boja</string>
+  <string name="create_collection_creating">Izrada zbirke</string>
+  <string name="create_collection_display_name">Naslov</string>
+  <string name="create_collection_display_name_required">Potreban je naslov</string>
+  <string name="create_collection_description">Opis</string>
+  <string name="create_collection_optional">opcionalno</string>
+  <string name="create_collection_home_set">Mjesto pohrane</string>
+  <string name="create_collection_create">Kreiraj</string>
+  <string name="delete_collection">Obriši zbirku</string>
+  <string name="delete_collection_confirm_title">Jeste li sigurni?</string>
+  <string name="delete_collection_confirm_warning">Ova zbirka (%s) i njeni podatci biti će trajno uklonjeni.</string>
+  <string name="delete_collection_data_shall_be_deleted">Ovi podatci biti će obrisani sa poslužitelja.</string>
+  <string name="delete_collection_deleting_collection">Brisanje zbirke</string>
+  <string name="collection_force_read_only">Prisilno samo za čitanje</string>
+  <string name="collection_properties">Svojstva</string>
+  <string name="collection_properties_url">Adresa (URL):</string>
+  <string name="collection_properties_copy_url">Kopiraj URL</string>
+  <string name="collection_properties_owner">Vlasnik:</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Debug info</string>
+  <string name="debug_info_attached">Debug info priložen je uz ovu poruku (zahtijeva podršku za privitke aplikacije koja će primiti poruku).</string>
+  <string name="debug_info_http_error">HTTP greška</string>
+  <string name="debug_info_server_error">Greška na poslužitelju</string>
+  <string name="debug_info_webdav_error">WebDAV greška</string>
+  <string name="debug_info_io_error">I/O greška</string>
+  <string name="debug_info_http_403_description">Zahtjev je odbijen. Pojedinosti potražite u uključenim resursima i debug informacijama.</string>
+  <string name="debug_info_http_404_description">Traženi resurs ne postoji (više). Pojedinosti potražite u uključenim resursima i debug informacijama.</string>
+  <string name="debug_info_http_5xx_description">Greška sa poslužiteljske strane. Molimo obratite se podršci za poslužitelja.</string>
+  <string name="debug_info_unexpected_error">Dogodila se neočekivana pogreška. Pojedinosti potražite u debug informacijama.</string>
+  <string name="debug_info_view_details">Pogledaj pojedinosti</string>
+  <string name="debug_info_subtitle">Debug info je prikupljen</string>
+  <string name="debug_info_involved_caption">Uključeni resursi</string>
+  <string name="debug_info_involved_subtitle">Povezano s problemom</string>
+  <string name="debug_info_involved_remote">Udaljeni resurs:</string>
+  <string name="debug_info_involved_local">Lokali resurs:</string>
+  <string name="debug_info_involved_view">Pregledaj u aplikaciji</string>
+  <string name="debug_info_logs_caption">Logovi</string>
+  <string name="debug_info_logs_subtitle">Opsežniji logovi su dostupni</string>
+  <string name="debug_info_logs_view">Pregledaj logove</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Dogodila se greška.</string>
+  <string name="exception_httpexception">Dogodila se HTTP greška.</string>
+  <string name="exception_ioexception">Dogodila se I/O greška.</string>
+  <string name="exception_show_details">Prikaži detalje</string>
+  <!--StorageLowReceiver-->
+  <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Korisničko ime</string>
+  <string name="webdav_add_mount_password">Lozinka</string>
+  <!--sync adapters-->
+  <string name="sync_error_permissions">DAVx⁵ dopuštenja</string>
+  <string name="sync_error_permissions_text">Dodatna dopuštenja su potrebna</string>
+  <string name="sync_error_tasks_too_old">%s prestar</string>
+  <string name="sync_error_tasks_required_version">Najmanja potrebno verzija: %1$s</string>
+  <string name="sync_error_authentication_failed">Autentifikacija nije uspjela (provjerite podatke za prijavu)</string>
+  <string name="sync_error_io">Mrežna ili I/O greška – %s</string>
+  <string name="sync_error_http_dav">HTTP poslužiteljska greška – %s</string>
+  <string name="sync_error_local_storage">Greška lokalne pohrane – %s</string>
+  <string name="sync_error_retry">Pokušaj ponovno</string>
+  <string name="sync_error_view_item">Pregledaj stavku</string>
+  <string name="sync_invalid_contact">Primljen je nevažeći kontakt sa poslužitelja</string>
+  <string name="sync_invalid_event">Primljen je nevažeći dogđaj sa poslužitelja</string>
+  <string name="sync_invalid_task">Primljen je nevažeći zadatak sa poslužitelja</string>
+  <string name="sync_invalid_resources_ignoring">Zanemarivanje jednog ili više nevaljanih resursa</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Sigurnost veze</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ je naišao na nepoznati certifikat. Želite li mu vjerovati?</string>
+</resources>

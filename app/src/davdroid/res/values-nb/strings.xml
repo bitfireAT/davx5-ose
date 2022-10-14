@@ -14,7 +14,12 @@
   <string name="notification_channel_sync_warnings_desc">Ikke-kritiske synkroniseringsproblem, som enkelte ugyldige filer</string>
   <string name="notification_channel_sync_io_errors">Nettverk- og I/O-feil</string>
   <!--IntroActivity-->
+  <string name="intro_more_info">Mer informasjon</string>
+  <string name="intro_tasks_tasks_org">Oppgaver</string>
   <!--PermissionsActivity-->
+  <string name="permissions_contacts_title">Kontakt-tilgang</string>
+  <string name="permissions_calendar_title">Kalender-tilgang</string>
+  <string name="permissions_opentasks_title">OpenTasks-tilganger</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Bibliotek</string>
@@ -36,7 +41,6 @@
   <string name="navigation_drawer_website">Nettside</string>
   <string name="navigation_drawer_manual">Manuell</string>
   <string name="navigation_drawer_faq">O-S-S</string>
-  <string name="navigation_drawer_forums">Hjelp / Forum</string>
   <string name="navigation_drawer_donate">Doner</string>
   <string name="account_list_empty">Velkommen til DAVx⁵.\n\nDu kan legge til en CalDAV/CardDAV-konto nå.</string>
   <string name="accounts_global_sync_disabled">Systemomspennende automatisk synkronisering avskrudd</string>
@@ -44,6 +48,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Tjenesteoppdagelse mislyktes</string>
   <string name="dav_service_refresh_couldnt_refresh">Kunne ikke gjenoppfriske innsamlingsliste</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Innstillinger</string>
@@ -54,11 +59,6 @@
   <string name="app_settings_logging_on">Logging er aktivert</string>
   <string name="app_settings_logging_off">Logging er skrudd av</string>
   <string name="app_settings_connection">Tilkobling</string>
-  <string name="app_settings_override_proxy">Overstyr mellomtjenerinnstillinger</string>
-  <string name="app_settings_override_proxy_on">Bruk egendefinerte mellomtjenerinnstillinger</string>
-  <string name="app_settings_override_proxy_off">Bruk systemets forvalgte mellomtjenerinnstillinger</string>
-  <string name="app_settings_override_proxy_host">Vertsnavn for HTTP-mellomtjener</string>
-  <string name="app_settings_override_proxy_port">HTTP-mellomtjeningsport</string>
   <string name="app_settings_security">Sikkerhet</string>
   <string name="app_settings_distrust_system_certs">Fjern tiltro til systemsertifikater</string>
   <string name="app_settings_distrust_system_certs_on">System og brukertillagte sertifikatsmyntigheter vil ikke bli tiltrodd</string>
@@ -200,6 +200,10 @@
   <string name="exception_httpexception">En HTTP-feil har inntruffet.</string>
   <string name="exception_ioexception">En I/O-feil har inntruffet.</string>
   <string name="exception_show_details">Vis detaljer</string>
+  <!--StorageLowReceiver-->
+  <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Brukernavn</string>
+  <string name="webdav_add_mount_password">Passord</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵-tilganger</string>
   <string name="sync_error_permissions_text">Ytterligere tilganger kreves</string>
