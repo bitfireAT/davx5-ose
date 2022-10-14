@@ -1,0 +1,423 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Kontot finns inte (längre)</string>
+  <string name="account_title_address_book">DAVx⁵ Adressbok</string>
+  <string name="address_books_authority_title">Adressböcker</string>
+  <string name="dialog_remove">Ta bort</string>
+  <string name="dialog_deny">Avbryt</string>
+  <string name="field_required">Detta fÄlt Ã¤r obligatoriskt</string>
+  <string name="help">Hjälp</string>
+  <string name="manage_accounts">Hantera konton</string>
+  <string name="share">Dela</string>
+  <string name="database_destructive_migration_title">Databasen är korrupt</string>
+  <string name="database_destructive_migration_text">Alla konton har blivit borttagna lokalt.</string>
+  <string name="notification_channel_debugging">Felsökning</string>
+  <string name="notification_channel_general">Andra viktiga meddelanden</string>
+  <string name="notification_channel_status">Statusmeddelanden med låg prioritet</string>
+  <string name="notification_channel_sync">Synkronisering</string>
+  <string name="notification_channel_sync_errors">Synkroniseringsfel</string>
+  <string name="notification_channel_sync_errors_desc">Viktiga fel som stoppar synkronisering, såsom oväntade serversvar</string>
+  <string name="notification_channel_sync_warnings">Synkroniseringsvarningar</string>
+  <string name="notification_channel_sync_warnings_desc">Icke allvarliga synkroniseringsfel såsom vissa felaktiga filer</string>
+  <string name="notification_channel_sync_io_errors">Nätverk och I/O fel</string>
+  <string name="notification_channel_sync_io_errors_desc">Tidsgräns eller anslutningsproblem etc. (ofta temporärt)</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">Din data. Ditt val.</string>
+  <string name="intro_slogan2">Ta kontroll</string>
+  <string name="intro_battery_title">Regelbundna synkroniseringsintervall</string>
+  <string name="intro_battery_not_whitelisted">Inaktiverat (ej rekommenderat)</string>
+  <string name="intro_battery_whitelisted">Aktiverat (rekommenderat)</string>
+  <string name="intro_battery_text">För att programmet skall kunna köra regelbunden synkronisering %s måste det tillåtas att köra i bakgrunden. Annars kan Android pausa synkroniseringen när som helst.</string>
+  <string name="intro_battery_dont_show">Jag behöver inte regelbunden synkronisering.*</string>
+  <string name="intro_autostart_title">%s kompatibilitet</string>
+  <string name="intro_autostart_text">Den här enheten blockerar troligen synkronisering. Om du är drabbad måste det lösas manuellt.</string>
+  <string name="intro_autostart_dont_show">Jag har gjort alla inställningar som behövs. Påminn mig inte igen.*</string>
+  <string name="intro_leave_unchecked">* Låt stå för att påminna mig senare. Kan bli återställt i appens inställningar / %s.</string>
+  <string name="intro_more_info">Mer information</string>
+  <string name="intro_tasks_jtx">jtx Bord</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Stödjer avstämning av uppgifter, journaler och anteckningar.]]></string>
+  <string name="intro_tasks_title">Ärendestöd</string>
+  <string name="intro_tasks_text1">Om ärenden stöds av din server kan de synkroniseras med en ärendeapp som stöds:</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[För vissa funktioner som deluppgifter eller återkommande uppgifter kan du behöva <a href="https://www.davx5.com/faq/tasks/advanced-task-features"> ytterligare appar </a>.]]></string>
+  <string name="intro_tasks_tasks_org">Tasks</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Vissa funktioner <a href="https://www.davx5.com/faq/tasks/advanced-task-features">stöds inte</a> (ännu).]]></string>
+  <string name="intro_tasks_no_app_store">Ingen app butik tillgänglig</string>
+  <string name="intro_tasks_dont_show">Jag behöver inte stöd för att-göra.*</string>
+  <string name="intro_open_source_title">Öppen källkod mjukvara</string>
+  <string name="intro_open_source_text">Vi är glada att du använder %s som är mjukvara med öppen källkod. Utveckling och drift innebär hårt arbete. Bidra gärna på något sätt (det finns många sätt) eller donera. Det skulle vara mycket hjälpsamt!</string>
+  <string name="intro_open_source_details">Hur man kan bidra/donera</string>
+  <string name="intro_open_source_dont_show">Visa inte inom en snar framtid</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">Behörigheter</string>
+  <string name="permissions_text">%s behöver behörighet för att kunna fungera</string>
+  <string name="permissions_all_title">Allt nedanstående</string>
+  <string name="permissions_all_status_off">Använd detta för att aktivera alla funktioner (rekommenderat)</string>
+  <string name="permissions_all_status_on">Alla behörigheter godkända</string>
+  <string name="permissions_contacts_title">kontaktbehörigheter</string>
+  <string name="permissions_contacts_status_off">Synkronisera inte kontakter (ej rekommenderat)</string>
+  <string name="permissions_contacts_status_on">Synkronisering av kontakter möjlig</string>
+  <string name="permissions_calendar_title">Kalenderbehörigheter</string>
+  <string name="permissions_calendar_status_off">Synkronisera inte kalendern (ej rekommenderat)</string>
+  <string name="permissions_calendar_status_on">Synkronisering av kalender möjlig</string>
+  <string name="permissions_jtx_title">jtx Bordsbehörigheter</string>
+  <string name="permissions_jtx_status_not_installed">Ingen uppgift, journaler &amp; anteckningssynkronisering (ej installerad)</string>
+  <string name="permissions_jtx_status_off">Ingen synkronisering av uppgifter, journaler, anteckningar</string>
+  <string name="permissions_jtx_status_on">Synkronisering av uppgifter, journaler, anteckningar är möjlig</string>
+  <string name="permissions_opentasks_title">OpenTasks-behörigheter</string>
+  <string name="permissions_tasksorg_title">Tasks behörighet</string>
+  <string name="permissions_tasks_status_not_installed">Ingen synkronisering av uppgifter (ej installerat)</string>
+  <string name="permissions_tasks_status_off">Ingen synkronisering av uppgifter</string>
+  <string name="permissions_tasks_status_on">Uppgiftssynronisering möjlig</string>
+  <string name="permissions_autoreset_title">Behåll behörigheter</string>
+  <string name="permissions_autoreset_status_off">Behörigheter kan återställas automatiskt (rekommenderas inte)</string>
+  <string name="permissions_autoreset_status_on">Behörigheterna återställs inte automatiskt</string>
+  <string name="permissions_autoreset_instruction">Klicka på Behörigheter &gt; avmarkera \"Ta bort behörigheter om appen inte används\"</string>
+  <string name="permissions_app_settings_hint">Om en brytare inte fungerar, använd app-inställningar-&gt;behörigheter</string>
+  <string name="permissions_app_settings">App-inställningar</string>
+  <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID-behörigheter</string>
+  <string name="wifi_permissions_intro">För att kunna komma åt det aktuella WiFi-namnet (SSID) måste dessa villkor vara uppfyllda:</string>
+  <string name="wifi_permissions_location_permission">Behörighet för exakt plats</string>
+  <string name="wifi_permissions_location_permission_on">Behörighet för platsdata beviljat</string>
+  <string name="wifi_permissions_location_permission_off">Behörighet för platsdata nekad</string>
+  <string name="wifi_permissions_background_location_permission">Behörighet för platsdata i bakgrunden</string>
+  <string name="wifi_permissions_background_location_permission_label">Tillåt hela tiden</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Platsbehörighet satt till <b>%s</b> ]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Platsbehörighet inte satt till <b>%s</b> ]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s använder platsbehörigheten endast för att bestämma den aktuella WiFi:s SSID för konton med SSID-begränsning. Detta kommer att hända även när appen är i bakgrunden. Ingen platsdata samlas in, lagras, bearbetas eller skickas någonstans.</string>
+  <string name="wifi_permissions_location_enabled">Plats alltid påslagen</string>
+  <string name="wifi_permissions_location_enabled_on">Platstjänster är påslagna</string>
+  <string name="wifi_permissions_location_enabled_off">Platstjänster är avstängda</string>
+  <!--AboutActivity-->
+  <string name="about_translations">Översättningar</string>
+  <string name="about_libraries">Bibliotek</string>
+  <string name="about_version">Version %1$s (%2$d)</string>
+  <string name="about_build_date">Kompilerad på %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) och bidragsgivare</string>
+  <string name="about_flavor_info">Den här versionen är endast berättigad för distribution genom Google Play</string>
+  <string name="about_license_info_no_warranty">Detta program levereras med ABSOLUT INGEN GARANTI. Det är fri programvara, och du kan vidaredistribuera den under vissa förutsättningar.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Tack till: </i> %s ]]></string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Kunde inte skapa loggfil</string>
+  <string name="logging_notification_text">Loggar nu alla %s aktiviteter</string>
+  <string name="logging_notification_view_share">Visa/dela</string>
+  <string name="logging_notification_disable">Inaktivera</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Öppna navigeringslådan</string>
+  <string name="navigation_drawer_close">Stäng navigeringslådan</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV Synk Adapter</string>
+  <string name="navigation_drawer_about">Om / Licens</string>
+  <string name="navigation_drawer_beta_feedback">Betafeedback</string>
+  <string name="install_email_client">Installera en e-postklient</string>
+  <string name="install_browser">Installera en webbläsare</string>
+  <string name="navigation_drawer_settings">Inställningar</string>
+  <string name="navigation_drawer_news_updates">Nyheter &amp; uppdateringar</string>
+  <string name="navigation_drawer_tools">Verktyg</string>
+  <string name="navigation_drawer_external_links">Externa länkar</string>
+  <string name="navigation_drawer_website">Websida</string>
+  <string name="navigation_drawer_manual">Manual</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_community">Gemenskap</string>
+  <string name="navigation_drawer_donate">Donera</string>
+  <string name="navigation_drawer_privacy_policy">Integritetspolicy</string>
+  <string name="account_list_no_internet">Ingen internetanslutning. Android kommer inte att köra synkronisering.</string>
+  <string name="account_list_low_storage">Lagringsutrymme lågt. Android kommer inte att köra synkronisering.</string>
+  <string name="account_list_empty">Välkommen till DAVx⁵!\n\nDu kan lägga till ett CalDAV/CardDAV-konto nu.</string>
+  <string name="accounts_global_sync_disabled">Systemomfattande automatisk synkronisering är inaktiverad</string>
+  <string name="accounts_global_sync_enable">Aktivera</string>
+  <string name="accounts_sync_all">Synkronisera alla konton</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Servicedetektering misslyckades</string>
+  <string name="dav_service_refresh_couldnt_refresh">Det gick inte att uppdatera samlingslistan</string>
+  <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Kan inte köras i förgrunden</string>
+  <string name="battery_optimization_notify_text">Vitlista för batterioptimering krävs</string>
+  <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Arbetar i förgrunden</string>
+  <string name="foreground_service_notify_text">På vissa enheter är detta nödvändigt för automatisk synkronisering.</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">InstÃ¤llningar</string>
+  <string name="app_settings_debug">Felsökning</string>
+  <string name="app_settings_show_debug_info">Visa felsökningsinformation</string>
+  <string name="app_settings_show_debug_info_details">Visa/dela programvara och konfigurationsdetaljer</string>
+  <string name="app_settings_logging">Omfattande loggning</string>
+  <string name="app_settings_logging_on">Loggning är påslagen</string>
+  <string name="app_settings_logging_off">Loggning är avstängd</string>
+  <string name="app_settings_battery_optimization">Batterioptimering</string>
+  <string name="app_settings_battery_optimization_whitelisted">Appen är vitlistad (rekommenderat)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Appen är inte vitlistad (rekommenderas ej)</string>
+  <string name="app_settings_foreground_service">Håll i förgrunden</string>
+  <string name="app_settings_foreground_service_details">Kan hjälpa om din enhet förhindrar automatisk synkronisering</string>
+  <string name="app_settings_connection">Anslutning</string>
+  <string name="app_settings_proxy">Proxy typ</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Systemstandard</item>
+    <item>Ingen proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (för Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Proxy hostnamn</string>
+  <string name="app_settings_proxy_port">Proxy port</string>
+  <string name="app_settings_security">Säkerhet</string>
+  <string name="app_settings_security_app_permissions">App behörigheter</string>
+  <string name="app_settings_security_app_permissions_summary">Granska behörigheter som krävs för synkronisering</string>
+  <string name="app_settings_distrust_system_certs">Misstro systemcertifikat</string>
+  <string name="app_settings_distrust_system_certs_on">System- och användartillagda certifikatutfärdare kommer inte att vara betrodda</string>
+  <string name="app_settings_distrust_system_certs_off">System- och användartillagda certifikatutfärdare kommer att vara betrodda (rekommenderat)</string>
+  <string name="app_settings_reset_certificates">Återställ (o)betrodda certifikat</string>
+  <string name="app_settings_reset_certificates_summary">Återställer förtroendet för alla anpassade certifikat</string>
+  <string name="app_settings_reset_certificates_success">Alla anpassade certifikat har rensats</string>
+  <string name="app_settings_user_interface">Användargränssnitt</string>
+  <string name="app_settings_notification_settings">Aviseringsinställningar</string>
+  <string name="app_settings_notification_settings_summary">Hantera aviseringskanaler och deras inställningar</string>
+  <string name="app_settings_theme_title">Välj tema</string>
+  <string-array name="app_settings_theme_names">
+    <item>Systemstandard</item>
+    <item>Ljus</item>
+    <item>Mörk</item>
+  </string-array>
+  <string name="app_settings_reset_hints">Återställ tips</string>
+  <string name="app_settings_reset_hints_summary">Återaktiverar tips som har avvisats tidigare</string>
+  <string name="app_settings_reset_hints_success">Alla tips kommer visas igen</string>
+  <string name="app_settings_integration">Integrering</string>
+  <string name="app_settings_tasks_provider">Tasks appen</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">Synkroniserar med %s</string>
+  <string name="app_settings_tasks_provider_none">Ingen kompatibel task-app hittades</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Ingen synkronisering av kontakter (saknar behörigheter)</string>
+  <string name="account_caldav_missing_calendar_permissions">Ingen synkronisering av kalender (saknar behörigheter)</string>
+  <string name="account_caldav_missing_tasks_permissions">Ingen synkronisering av uppgifter (saknar behörigheter)</string>
+  <string name="account_caldav_missing_permissions">Ingen kalender eller uppgiftssynkronisering (saknade behörigheter)</string>
+  <string name="account_webcal_missing_calendar_permissions">Kan inte komma åt kalendrar (saknade behörigheter)</string>
+  <string name="account_permissions_action">Behörigheter</string>
+  <string name="account_no_address_books">Det finns inga adressböcker (ännu).</string>
+  <string name="account_no_calendars">Det finns inga kalendrar (ännu).</string>
+  <string name="account_no_webcals">Det finns inga kalenderprenumerationer (ännu).</string>
+  <string name="account_swipe_down">Svep nedåt för att uppdatera listan från servern.</string>
+  <string name="account_synchronize_now">Synkronisera nu</string>
+  <string name="account_synchronizing_now">Synkroniserar nu</string>
+  <string name="account_settings">Kontoinställningar</string>
+  <string name="account_rename">Byt namn på kontot</string>
+  <string name="account_rename_new_name">Lokala data som inte har sparats kan avvisas. Omsynkronisering krävs efter byte av namn. Nytt kontonamn:</string>
+  <string name="account_rename_rename">Byt namn</string>
+  <string name="account_rename_couldnt_rename">Kunde inte ändra namn på kontot</string>
+  <string name="account_delete">Ta bort kontot</string>
+  <string name="account_delete_confirmation_title">Vill du verkligen ta bort kontot?</string>
+  <string name="account_delete_confirmation_text">Alla lokala kopior av adressböcker, kalendrar och uppgiftslistor kommer att raderas.</string>
+  <string name="account_synchronize_this_collection">synkronisera denna samling</string>
+  <string name="account_read_only">skrivskyddad</string>
+  <string name="account_calendar">kalender</string>
+  <string name="account_task_list">uppgiftslista</string>
+  <string name="account_journal">Journal</string>
+  <string name="account_only_personal">Visa endast personligt</string>
+  <string name="account_refresh_address_book_list">Uppdatera adressbokslistan</string>
+  <string name="account_create_new_address_book">Skapa ny adressbok</string>
+  <string name="account_refresh_calendar_list">Uppdatera kalenderlistan</string>
+  <string name="account_create_new_calendar">Skapa ny kalender</string>
+  <string name="account_no_webcal_handler_found">Ingen Webcal-kompatibel app hittades</string>
+  <string name="account_install_icsx5">Installera ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Lägg till konto</string>
+  <string name="login_type_email">Logga in med e-postadress</string>
+  <string name="login_email_address">E-postadress</string>
+  <string name="login_email_address_error">Giltig e-postadress krävs</string>
+  <string name="login_password">Lösenord</string>
+  <string name="login_password_required">Lösenord krävs</string>
+  <string name="login_type_url">Logga in med URL och användarnamn</string>
+  <string name="login_url_must_be_http_or_https">URL måste börja med http(s)://</string>
+  <string name="login_user_name">Användarnamn</string>
+  <string name="login_user_name_required">Användarnamn krävs</string>
+  <string name="login_base_url">Bas-URL</string>
+  <string name="login_type_url_certificate">Logga in med URL och klientcertifikat</string>
+  <string name="login_select_certificate">Välj certifikat</string>
+  <string name="login_login">Logga in</string>
+  <string name="login_create_account">Skapa konto</string>
+  <string name="login_account_name">Kontonamn</string>
+  <string name="login_account_avoid_apostrophe">Användning av apostrof (\'), har rapporterats orsaka problem på vissa enheter.</string>
+  <string name="login_account_name_info">Använd din e-postadress som kontonamn eftersom Android kommer att använda kontonamnet som fält för ARRANGÖR för händelser du skapar. Du kan inte ha två konton med samma namn.</string>
+  <string name="login_account_contact_group_method">Kontaktgruppsmetod:</string>
+  <string name="login_account_name_required">Konto namn krävs</string>
+  <string name="login_account_name_already_taken">Kontonamn är upptaget</string>
+  <string name="login_account_not_created">Konto kunde inte skapas</string>
+  <string name="login_type_advanced">Avancerad inloggning (särskilda användningsfall)</string>
+  <string name="login_use_username_password">Använd användarnamn/lösenord</string>
+  <string name="login_use_client_certificate">Använd klientcertifikat</string>
+  <string name="login_no_certificate_found">Inget certifikat funnet</string>
+  <string name="login_install_certificate">Installera certifikat</string>
+  <string name="login_configuration_detection">Konfigurationsdetektering</string>
+  <string name="login_querying_server">Vänligen vänta, frågar efter server...</string>
+  <string name="login_no_caldav_carddav">Det gick inte att hitta CalDAV eller CardDAV-tjänsten.</string>
+  <string name="login_username_password_wrong">Användarnamn (e-postadress) / lösenord är fel?</string>
+  <string name="login_view_logs">Visa detaljer</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Inställningar: %s</string>
+  <string name="settings_sync">Synkronisering</string>
+  <string name="settings_sync_interval_contacts">Intervall för kontaktsynkronisering</string>
+  <string name="settings_sync_summary_manually">Bara manuellt</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Var %d minut + omedelbart på lokala förändringar</string>
+  <string name="settings_sync_interval_calendars">Intervall för kalendersynkronisering</string>
+  <string name="settings_sync_interval_tasks">Intervall för uppgiftssynkronisering</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Endast manuellt</item>
+    <item>Var 15:e minut</item>
+    <item>Var 30:e minut</item>
+    <item>Varje timme</item>
+    <item>Var 2:e timme</item>
+    <item>Var 4:e timme</item>
+    <item>En gång om dagen</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Synkronisera endast via WiFi</string>
+  <string name="settings_sync_wifi_only_on">Synkronisering är begränsad till WiFi-anslutningar</string>
+  <string name="settings_sync_wifi_only_off">Anslutningstyp beaktas inte</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID-begränsning</string>
+  <string name="settings_sync_wifi_only_ssids_on">Synkroniserar endast över %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Synkroniseras endast över %s (kräver aktiva platstjänster)</string>
+  <string name="settings_sync_wifi_only_ssids_off">Alla WiFi-anslutningar kommer att användas</string>
+  <string name="settings_sync_wifi_only_ssids_message">Kommaseparerade namn (SSID) för tillåtna WiFi-nätverk (lämna tomt för alla)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID-begränsning kräver ytterligare inställningar</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Hantera</string>
+  <string name="settings_more_info_faq">Mer information (FAQ)</string>
+  <string name="settings_authentication">Autentisering</string>
+  <string name="settings_username">Användarnamn</string>
+  <string name="settings_enter_username">Skriv in användarnamn</string>
+  <string name="settings_password">Lösenord</string>
+  <string name="settings_password_summary">Uppdatera lösenordet enligt din server.</string>
+  <string name="settings_enter_password">Ange ditt lösenord:</string>
+  <string name="settings_certificate_alias">Klientcertifikatalias</string>
+  <string name="settings_certificate_alias_empty">Inget certifikat valt</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Tidsgräns för tidigare händelser</string>
+  <string name="settings_sync_time_range_past_none">Alla händelser kommer att synkroniseras</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Händelser mer än en dag i det förflutna kommer att ignoreras</item>
+    <item quantity="other">Händelser mer än %d dagar i det förflutna kommer att ignoreras</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Händelser som är fler än detta antal dagar i det förflutna kommer att ignoreras (kan vara 0). Lämna tomt för att synkronisera alla händelser.</string>
+  <string name="settings_default_alarm">Standardpåminnelse</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Standard påminnelse en minut före händelsen</item>
+    <item quantity="other">Standard påminnelse %d minuter före händelsen</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Inga standardpåminnelser är skapade</string>
+  <string name="settings_default_alarm_message">Om standardpåminnelser ska skapas för händelser utan påminnelse: önskat antal minuter före händelsen. Lämna tomt för att inaktivera standardpåminnelser.</string>
+  <string name="settings_manage_calendar_colors">Hantera kalenderfärger</string>
+  <string name="settings_manage_calendar_colors_on">Kalenderfärger nollställs vid varje synkronisering</string>
+  <string name="settings_manage_calendar_colors_off">Kalenderfärger kan sättas av andra appar.</string>
+  <string name="settings_event_colors">Stöd för händelsefärger</string>
+  <string name="settings_event_colors_on">Händelsefärger synkroniseras</string>
+  <string name="settings_event_colors_off">Händelsefärger synkroniseras inte</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Kontaktgruppsmetod</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupper är separata vCards</item>
+    <item>Grupper är per-kontaktkategorier</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Ändra gruppmetod</string>
+  <!--collection management-->
+  <string name="create_addressbook">Skapa adressbok</string>
+  <string name="create_addressbook_display_name_hint">Min adressbok </string>
+  <string name="create_calendar">Skapa kalender</string>
+  <string name="create_calendar_time_zone">Tidzon</string>
+  <string name="create_calendar_type">Möjliga kalenderposter</string>
+  <string name="create_calendar_type_vevent">Händelser</string>
+  <string name="create_calendar_type_vtodo">Ärenden</string>
+  <string name="create_calendar_type_vjournal">Anteckningar / journal</string>
+  <string name="create_calendar_type_events_and_tasks">Kombinerat (händelser och ärenden)</string>
+  <string name="create_collection_color">Färg</string>
+  <string name="create_collection_creating">Skapar samling</string>
+  <string name="create_collection_display_name">Titel</string>
+  <string name="create_collection_display_name_required">Titel krävs</string>
+  <string name="create_collection_description">Beskrivning</string>
+  <string name="create_collection_optional">valfritt</string>
+  <string name="create_collection_home_set">Lagringsplats</string>
+  <string name="create_collection_home_set_required">Lagringsplats krävs</string>
+  <string name="create_collection_create">Skapa</string>
+  <string name="delete_collection">Ta bort samling</string>
+  <string name="delete_collection_confirm_title">Är du säker?</string>
+  <string name="delete_collection_confirm_warning">Denna samling(%s) och all dess data tas bort permanent.</string>
+  <string name="delete_collection_data_shall_be_deleted">Denna data blir borttagen från servern.</string>
+  <string name="delete_collection_deleting_collection">Tar bort samling</string>
+  <string name="collection_force_read_only">Tvinga endast läsning</string>
+  <string name="collection_properties">Egenskaper</string>
+  <string name="collection_properties_url">Adress (URL):</string>
+  <string name="collection_properties_copy_url">Kopiera URL</string>
+  <string name="collection_properties_owner">Ägare:</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Felsöknings information</string>
+  <string name="debug_info_archive_caption">ZIP arkiv</string>
+  <string name="debug_info_archive_subtitle">Innehåller felsökningsinformation och loggar</string>
+  <string name="debug_info_archive_text">Dela arkivet för att överföra det till en dator, för att skicka det via e-post eller för att bifoga det till ett supportärende.</string>
+  <string name="debug_info_archive_share">Dela arkiv</string>
+  <string name="debug_info_attached">Felsökningsinformation bifogad i det här meddelandet (kräver stöd för bilagor från den mottagande appen).</string>
+  <string name="debug_info_http_error">HTTP-fel</string>
+  <string name="debug_info_server_error">Server-fel</string>
+  <string name="debug_info_webdav_error">WebDAV-fel</string>
+  <string name="debug_info_io_error">I/O-fel</string>
+  <string name="debug_info_http_403_description">Begäran har avslagits. Kontrollera involverade resurser och felsökningsinformation för detaljer.</string>
+  <string name="debug_info_http_404_description">Den begärda resursen finns inte (längre). Kontrollera involverade resurser och felsökningsinformation för detaljer.</string>
+  <string name="debug_info_http_5xx_description">Ett problem på serversidan uppstod. Kontakta din serversupport.</string>
+  <string name="debug_info_unexpected_error">An unexpected error has occured. View debug info for details. </string>
+  <string name="debug_info_view_details">Visa detaljer</string>
+  <string name="debug_info_subtitle">Felsökningsinformation har samlats in</string>
+  <string name="debug_info_involved_caption">Inblandade resurser</string>
+  <string name="debug_info_involved_subtitle">Relaterat till problemet</string>
+  <string name="debug_info_involved_remote">Fjärrresurs:</string>
+  <string name="debug_info_involved_local">Lokal resurs:</string>
+  <string name="debug_info_involved_view">Visa med appen</string>
+  <string name="debug_info_logs_caption">Loggar</string>
+  <string name="debug_info_logs_subtitle">Utförliga loggar finns tillgängliga</string>
+  <string name="debug_info_logs_view">Visa loggar</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">Ett fel har uppstått.</string>
+  <string name="exception_httpexception">Ett HTTP-fel har uppstått.</string>
+  <string name="exception_ioexception">Ett I/O-fel har uppstått.</string>
+  <string name="exception_show_details">Visa detaljer</string>
+  <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Synkronisering pausad</string>
+  <string name="storage_low_notify_text">Nästan inget ledigt utrymme kvar</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">WebDAV-fästen</string>
+  <string name="webdav_mounts_quota_used_available">Använd kvot: %1$s / tillgängligt: %2$s</string>
+  <string name="webdav_mounts_share_content">Dela innehåll</string>
+  <string name="webdav_mounts_unmount">Avmontera</string>
+  <string name="webdav_add_mount_title">Lägg till WebDAV-fäste</string>
+  <string name="webdav_mounts_empty">Direkt åtkomst till dina filer i molnet genom att lägga till en WebDAV montering!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Se i manualen för att se <a href="%1$s">hur WebDAV monteringar fungerar </a>.</string>]]></string>
+  <string name="webdav_add_mount_display_name">Visningsnamn</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">Felaktig URL</string>
+  <string name="webdav_add_mount_username">Användarnamn</string>
+  <string name="webdav_add_mount_password">Lösenord</string>
+  <string name="webdav_add_mount_add">Lägg till fäste</string>
+  <string name="webdav_add_mount_no_support">Ingen WebDAV-tjänst på denna URL</string>
+  <string name="webdav_remove_mount_title">Ta bort monteringspunkt</string>
+  <string name="webdav_remove_mount_text">Anslutningsdetealjer kommer att gå förlorade men inga filer tas bort.</string>
+  <string name="webdav_notification_access">Åtkomst till WebDAV-fil</string>
+  <string name="webdav_notification_download">Laddar ner WebDAV-fil</string>
+  <string name="webdav_notification_upload">Laddar upp WebDAV-fil</string>
+  <string name="webdav_provider_root_title">WebDAV-fäste</string>
+  <!--sync adapters-->
+  <string name="sync_error_permissions">DAVx⁵-behörigheter</string>
+  <string name="sync_error_permissions_text">Ytterligare behörigheter krävs</string>
+  <string name="sync_error_tasks_too_old">%s för gammal</string>
+  <string name="sync_error_tasks_required_version">Minsta obligatoriska version: %1$s</string>
+  <string name="sync_error_authentication_failed">Autentisering misslyckades (kontrollera inloggningsuppgifterna)</string>
+  <string name="sync_error_io">Nätverks- eller I/O-fel - %s</string>
+  <string name="sync_error_http_dav">HTTP server fel - %s</string>
+  <string name="sync_error_local_storage">Lokalt lagringsfel - %s</string>
+  <string name="sync_error_retry">Försök igen</string>
+  <string name="sync_error_view_item">Visa objekt</string>
+  <string name="sync_invalid_contact">Fick ogiltig kontakt från servern</string>
+  <string name="sync_invalid_event">Fick ogiltig händelse från servern</string>
+  <string name="sync_invalid_task">Fick ogiltigt ärende från servern</string>
+  <string name="sync_invalid_resources_ignoring">Ignorerar en eller flera ogiltiga resurser</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Anslutningssäkerhet</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ har stött på ett okänt certifikat. Vill du lita på det?</string>
+</resources>

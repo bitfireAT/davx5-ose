@@ -112,12 +112,12 @@
   <string name="navigation_drawer_about">О программе / Лицензия</string>
   <string name="navigation_drawer_beta_feedback">Отзыв о бета-тестировании</string>
   <string name="install_email_client">Пожалуйста, установите почтовый клиент</string>
-  <string name="install_browser">Пожалуйста, установите веб-браузер</string>
+  <string name="install_browser">Пожалуйста, установите браузер</string>
   <string name="navigation_drawer_settings">Настройки</string>
   <string name="navigation_drawer_news_updates">Новости и обновления</string>
   <string name="navigation_drawer_tools">Инструменты</string>
   <string name="navigation_drawer_external_links">Внешние ссылки</string>
-  <string name="navigation_drawer_website">Веб-сайт</string>
+  <string name="navigation_drawer_website">Сайт</string>
   <string name="navigation_drawer_manual">Руководство</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">Сообщество</string>
@@ -137,7 +137,7 @@
   <string name="battery_optimization_notify_text">Необходимо добавить в белый список оптимизации батареи</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Запущен в приоритетном режиме</string>
-  <string name="foreground_service_notify_text">Для автоматической синхронизации на некоторых устройствах.</string>
+  <string name="foreground_service_notify_text">Требуется для автоматической синхронизации на некоторых устройствах.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отладка</string>

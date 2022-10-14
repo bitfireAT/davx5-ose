@@ -14,8 +14,10 @@
   <string name="notification_channel_sync_warnings">تحذيرات المزامنة</string>
   <string name="notification_channel_sync_warnings_desc">المشاكل غير الفادحة في المزامنة ، مثل بعض الملفات غير الصالحة</string>
   <string name="notification_channel_sync_io_errors">أخطاء الشبكة و عمليات الإدخال/الإخراج</string>
-  <string name="notification_channel_sync_io_errors_desc">أوقات المهل، مشاكل الاتصال ، …الخ (مؤقتة في العادة)</string>
+  <string name="notification_channel_sync_io_errors_desc">أوقات المهل، مشاكل الاتصال ، ...الخ (مؤقتة في العادة)</string>
   <!--IntroActivity-->
+  <string name="intro_more_info">المزيد من المعلومات</string>
+  <string name="intro_tasks_tasks_org">مهام</string>
   <!--PermissionsActivity-->
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
@@ -38,7 +40,6 @@
   <string name="navigation_drawer_website">موقع الويب</string>
   <string name="navigation_drawer_manual">دليل الاستخدام</string>
   <string name="navigation_drawer_faq">الأسئلة الشائعة</string>
-  <string name="navigation_drawer_forums">المساعدة / المنتدى</string>
   <string name="navigation_drawer_donate">تبرَّع</string>
   <string name="account_list_empty">مرحباً بك في DAVx⁵ !\n\n يمكنك إضافة حساب CalDAV أو CardDAV الآن.</string>
   <string name="accounts_global_sync_disabled">تم تعطيل المزامنة التلقائية على مستوى النظام</string>
@@ -46,6 +47,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">فشل اكتشاف الخدمة</string>
   <string name="dav_service_refresh_couldnt_refresh">لم يتمكن التطبيق من تجديد قائمة المجموعة</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">الإعدادات</string>
@@ -56,11 +58,6 @@
   <string name="app_settings_logging_on">التسجيل مفعَّل</string>
   <string name="app_settings_logging_off">التسجيل معطَّل</string>
   <string name="app_settings_connection">الاتصال</string>
-  <string name="app_settings_override_proxy">تجاوز إعدادات الوكيل</string>
-  <string name="app_settings_override_proxy_on">إستخدم إعدادات وكيل مخصَّصة</string>
-  <string name="app_settings_override_proxy_off">إستخدم إعدادات الوكيل الافتراضية في النظام</string>
-  <string name="app_settings_override_proxy_host">اسم مضيف وكيل HTTP</string>
-  <string name="app_settings_override_proxy_port">منفذ وكيل HTTP</string>
   <string name="app_settings_security">الأمن</string>
   <string name="app_settings_distrust_system_certs">عدم الثقة في شهادات النظام</string>
   <string name="app_settings_distrust_system_certs_on">هيئات توثيق النظام و تلك التي أضافها المستخدم لن تكون محل ثقة</string>
@@ -207,6 +204,10 @@
   <string name="exception_httpexception">حدث خطأ HTTP.</string>
   <string name="exception_ioexception">حدث خطأ في الإدخال/الإخراج.</string>
   <string name="exception_show_details">عرض التفاصيل</string>
+  <!--StorageLowReceiver-->
+  <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">اسم المستخدم</string>
+  <string name="webdav_add_mount_password">كلمة المرور</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">أذونات DAVx⁵</string>
   <string name="sync_error_permissions_text">مطلوب أذونات إضافية</string>
