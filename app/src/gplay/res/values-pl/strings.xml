@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_support_project">Wspieraj projekt</string>
+    <string name="nav_earn_badges">Wspieraj nas z odznakami</string>
+    <string name="nav_rate_us">Oceń w Google Play</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one">Zdobyłeś odznakę, dziękujemy!</item>
+        <item quantity="few">Zdobyłeś %d odznaki, dziękujemy</item>
+        <item quantity="many">Zdobyłeś %d odznaki, dziękujemy!</item>
+        <item quantity="other">Zdobyłeś %d odznak, dziękujemy!</item>
+    </plurals>
+    <string name="available_badges">Dostępne odznaki</string>
+    <string name="available_badges_empty">Przepraszamy, nie można załadować odznak. Czy jesteś zalogowany do Play Store?</string>
+    <string name="what_are_badges">Czym są odznaki?</string>
+    <string name="what_are_badges_title">Czym są odznaki?</string>
+    <string name="what_are_badges_body">Odznaki są po prostu jednorazowymi płatnościami w aplikacji. Zdobędziesz ładna, małą odznakę a przez to możesz nas wspierać.</string>
+    <string name="why_badges_title">Dlaczego DAVx5 offeruje odznaki bez funkcjonalności?</string>
+    <string name="why_badges_body">DAVx5 naprawdę rozrósł się przez lata! Wciąż aktywnie rozwijamy nowe funkcjonalności, dostarczamy wsparcie i zawsze aktualizujemy aplikację dla nadchodzących wersji systemu Android. Te odznaki są jednorazowymi płatnościami, przez które możesz okazac swoje wsparcie kupując nam kawę, albo dwie&#8230; albo 10 :-) Chcemy byc tak otwarci jak to  możliwe więc nigdy ale to nigdy nie będzie nowych elementów ograniczonych poprzez płatności w aplikacji.</string>
+    <string name="button_buy_badge_free">DARMOWY</string>
+    <string name="button_buy_badge_bought">Dziękujemy!</string>
+    <string name="earn_badges">Zdobądź odznaki aby nas wspierać!</string>
+    <string name="billing_unavailable">Rozliczeniowe API jest niedostępne, czy Play Store jest w aktualnej wersji i czy jesteś zalogowany do Twojego konta Google?</string>
+    <string name="network_problems">Wystąpiły problemy z siecią, spróbuj ponownie później.</string>
+</resources>

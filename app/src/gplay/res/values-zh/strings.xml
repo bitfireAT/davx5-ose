@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_support_project">支持本项目</string>
+    <string name="nav_earn_badges">用徽章支持我们</string>
+    <string name="nav_rate_us">在 Google Play 中打分</string>
+    <plurals name="you_earned_badges">
+        <item quantity="other">你已赚得 %d 枚徽章，谢谢！</item>
+    </plurals>
+    <string name="available_badges">可用的徽章</string>
+    <string name="available_badges_empty">抱歉，无法加载徽章。你登录 Play Store 了吗？</string>
+    <string name="what_are_badges">什么是徽章？</string>
+    <string name="what_are_badges_title">什么是徽章？</string>
+    <string name="what_are_badges_body">徽章是一种简单的应用内一次性付费。付款后，你将获得一个漂亮的小徽章，你可以用它支持我们。</string>
+    <string name="why_badges_title">为何 DAVx5 提供无功能徽章？</string>
+    <string name="why_badges_body">DAVx5 这些年真的成长了很多！我们仍在积极开发新功能，提供支持，我们总是为即将到来的 Android 版本更新应用。这些徽章是一次性付款，你可以支付一两杯或 &#8230; 10 杯咖啡钱来表示你的支持 :-) 我们希望尽可能地开放，确保不会有任何新功能需要付费才能使用。</string>
+    <string name="button_buy_badge_free">免费</string>
+    <string name="button_buy_badge_bought">谢谢！</string>
+    <string name="earn_badges">用徽章表示支持！</string>
+    <string name="billing_unavailable">账单 API 不可用，请确保 Play Store 是最新版，且您已登录到 Google 账户。</string>
+    <string name="network_problems">有网络问题，请稍后再试。</string>
+</resources>
