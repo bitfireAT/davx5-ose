@@ -253,6 +253,11 @@ open class LocalAddressBook(
             val dataValues = ContentValues(1)
             dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
             provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
+
+            // update group rows
+            val groupValues = ContentValues(1)
+            groupValues.put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            provider!!.update(groupsSyncUri(), groupValues, null, null)
         }
 
         // make sure it will still be synchronized when contacts are updated
