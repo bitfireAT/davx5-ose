@@ -134,6 +134,7 @@
   <string name="dav_service_refresh_couldnt_refresh">Грешка при презареждане</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Не може да работи на преден план</string>
+  <string name="battery_optimization_notify_text">Необходимо е да спрете оптимизирането на батерията за приложението</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Работи на преден план</string>
   <string name="foreground_service_notify_text">На някои устройства това е необходимо, за да работи автоматичното синхронизиране.</string>
@@ -146,6 +147,8 @@
   <string name="app_settings_logging_on">Дневникът е включен</string>
   <string name="app_settings_logging_off">Дневникът е изключен</string>
   <string name="app_settings_battery_optimization">Оптимизиране на батерията</string>
+  <string name="app_settings_battery_optimization_whitelisted">Приложението е в белия списък (препоръчително)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Приложението не е в белия списък (непрепоръчително)</string>
   <string name="app_settings_foreground_service">Поддържане на преден план</string>
   <string name="app_settings_foreground_service_details">Може да помогне ако устройството възпрепятства автоматичното синхронизиране</string>
   <string name="app_settings_connection">Връзка</string>
@@ -164,6 +167,8 @@
   <string name="app_settings_distrust_system_certs">Оттегляне на доверието в системните сертификати</string>
   <string name="app_settings_distrust_system_certs_on">Издатели на сертификати познати на системата или добавени от потребителя няма да бъдат доверени</string>
   <string name="app_settings_distrust_system_certs_off">Издателите на сертификатите познати на системата или добавени от потребителя ще бъдат доверени (препоръчително)</string>
+  <string name="app_settings_reset_certificates">Нулиране на (не)доверените сертификати</string>
+  <string name="app_settings_reset_certificates_summary">Нулиране на доверието към всички потребителски сертификати</string>
   <string name="app_settings_reset_certificates_success">Всички потребителски сертификати са премахнати</string>
   <string name="app_settings_user_interface">Потребителски интерфейс</string>
   <string name="app_settings_notification_settings">Настройки за съобщенията</string>
@@ -293,7 +298,7 @@
     <item quantity="one">Събития от преди повече от един ден ще бъдат пренебрегнати</item>
     <item quantity="other">Събития от преди повече от %dдена ще бъдат пренебрегнати</item>
   </plurals>
-  <string name="settings_sync_time_range_past_message">Събития преди повече от този брой дни в миналото ще бъдат пренебрегнати </string>
+  <string name="settings_sync_time_range_past_message">Събитията преди повече от зададения брой дни в миналото ще бъдат пренебрегнати (може да бъде 0). За да бъдат синхронизирани всички събития оставете празно.</string>
   <string name="settings_default_alarm">Подразбирано напомняне</string>
   <plurals name="settings_default_alarm_on">
     <item quantity="one">Подразбирано напомняне една минута преди събитието</item>
@@ -356,6 +361,7 @@
   <string name="debug_info_io_error">Грешка на входа/изхода</string>
   <string name="debug_info_http_403_description">Заявката е отказана. За подробности проверете свързаните със завката ресурси и информацията за отстраняване на дефекти.</string>
   <string name="debug_info_http_404_description">Заявеният ресурс не съществува (вече). За подробности проверете свързаните със завката ресурси и информацията за отстраняване на дефекти.</string>
+  <string name="debug_info_http_5xx_description">Възникнал е проблем от страна на сървъра. Свържете се с поддръжката му.</string>
   <string name="debug_info_unexpected_error">Възникнала е неочаквана грешка. За подробности проверете информацията за отстраняване на дефекти.</string>
   <string name="debug_info_view_details">Подробности</string>
   <string name="debug_info_subtitle">Информацията за отстраняване на дефекта е събрана</string>
@@ -391,6 +397,7 @@
   <string name="webdav_add_mount_add">Монтиране</string>
   <string name="webdav_add_mount_no_support">Няма услуга на WebDAV на адреса</string>
   <string name="webdav_remove_mount_title">Премахване на точката на монтиране</string>
+  <string name="webdav_remove_mount_text">Ще бъдат изгубени подробности за връзката, но файлове няма да бъдат премахвани.</string>
   <string name="webdav_notification_access">Достъпва се файл на WebDAV</string>
   <string name="webdav_notification_download">Изтегля се файл на WebDAV</string>
   <string name="webdav_notification_upload">Изпраща се файл на WebDAV</string>
