@@ -159,10 +159,11 @@ class ContactsSyncManager(
         }
     }
 
-    override fun syncAlgorithm() = if (hasCollectionSync)
-                SyncAlgorithm.COLLECTION_SYNC
-            else
-                SyncAlgorithm.PROPFIND_REPORT
+    override fun syncAlgorithm() =
+        if (hasCollectionSync)
+            SyncAlgorithm.COLLECTION_SYNC
+        else
+            SyncAlgorithm.PROPFIND_REPORT
 
     override fun processLocallyDeleted() =
             if (readOnly) {
@@ -178,6 +179,12 @@ class ContactsSyncManager(
                     localExceptionContext(contact) { it.resetDeleted() }
                     modified = true
                 }
+
+                /* This is unfortunately dirty: When a contact has been inserted to a read-only address book
+                   that supports Collection Sync, it's not enough to force synchronization (by returning true),
+                   but we also need to make sure all contacts are downloaded again. */
+                if (modified)
+                    localCollection.lastSyncState = null
 
                 modified
             } else
@@ -199,6 +206,10 @@ class ContactsSyncManager(
                 localExceptionContext(contact) { it.clearDirty(null, null) }
                 modified = true
             }
+
+            // see same position in processLocallyDeleted
+            if (modified)
+                localCollection.lastSyncState = null
 
         } else
             // we only need to handle changes in groups when the address book is read/write
