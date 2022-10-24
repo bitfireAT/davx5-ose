@@ -58,18 +58,21 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         private const val A_COFFEE_FOR_YOU = "a_coffee_for_you.2022"
         private const val LOYAL_FOSS_BACKER = "loyal_foss_backer.2022"
         private const val PART_OF_THE_JOURNEY = "part_of_the_journey.2022"
+        private const val NINTH_ANNIVERSARY = "9th_anniversary.2022"
 
         private val BADGES = mapOf(
             HELPING_HANDS to R.drawable.ic_badge_life_buoy,
             A_COFFEE_FOR_YOU to R.drawable.ic_badge_coffee,
             LOYAL_FOSS_BACKER to R.drawable.ic_badge_medal,
-            PART_OF_THE_JOURNEY to R.drawable.ic_badge_sailboat
+            PART_OF_THE_JOURNEY to R.drawable.ic_badge_sailboat,
+            NINTH_ANNIVERSARY to R.drawable.ic_badge_ninth_anniversary
         )
         private val BADGES_ANIMATIONS = mapOf(
             HELPING_HANDS to R.anim.spin,
             A_COFFEE_FOR_YOU to R.anim.lift,
             LOYAL_FOSS_BACKER to R.anim.pulsate,
-            PART_OF_THE_JOURNEY to R.anim.rock
+            PART_OF_THE_JOURNEY to R.anim.rock,
+            NINTH_ANNIVERSARY to R.anim.drop_in
         )
         val PRODUCT_IDS = BADGES.keys.toList()
 
@@ -536,9 +539,9 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             if (responseCode == BillingClient.BillingResponseCode.OK) {
                 if (productDetails.size == PRODUCT_IDS.size) {
                     Logger.log.log(Level.FINE, "BillingClient: Got product details!", productDetails)
-                    productDetailsList.postValue(productDetails)
                 } else
-                    Logger.log.warning("Oh no! Expected ${PRODUCT_IDS.size}, but found ${productDetails.size} product details.")
+                    Logger.log.warning("Oh no! Expected ${PRODUCT_IDS.size}, but got ${productDetails.size} product details from server.")
+                productDetailsList.postValue(productDetails)
             } else
                 Logger.log.warning("Failed to query for product details:\n $responseCode $debugMessage")
         }
@@ -661,7 +664,8 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         }
 
         /**
-         * Consumes a purchased item, so it will be available for purchasing again
+         * Consumes a purchased item, so it will be available for purchasing again.
+         * Used for testing - don't remove.
          */
         private suspend fun consumePurchase(purchase: Purchase, runAfter: (billingResult: ConsumeResult) -> Unit) {
             Logger.log.info("Trying to consume purchase with token: ${purchase.purchaseToken}")
