@@ -13,7 +13,7 @@ class UnknownPropertiesBuilderTest {
 
     @Test
     fun testUnknownProperties_None() {
-        UnknownPropertiesBuilder(Uri.EMPTY, null, Contact()).build().also { result ->
+        UnknownPropertiesBuilder(Uri.EMPTY, null, Contact(), false).build().also { result ->
             assertEquals(0, result.size)
         }
     }
@@ -22,7 +22,7 @@ class UnknownPropertiesBuilderTest {
     fun testUnknownProperties_Properties() {
         UnknownPropertiesBuilder(Uri.EMPTY, null, Contact().apply {
             unknownProperties = "X-TEST:12345"
-        }).build().also { result ->
+        }, false).build().also { result ->
             assertEquals(1, result.size)
             assertEquals(UnknownProperties.CONTENT_ITEM_TYPE, result[0].values[UnknownProperties.MIMETYPE])
             assertEquals("X-TEST:12345", result[0].values[UnknownProperties.UNKNOWN_PROPERTIES])

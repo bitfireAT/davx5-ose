@@ -54,7 +54,7 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories).build().also { result ->
+        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
             assertEquals(1, result.size)
             assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
             assertEquals(addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP"), result[0].values[GroupMembership.GROUP_ROW_ID])
@@ -66,7 +66,7 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
-        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards).build().also { result ->
+        GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
             // group membership is constructed during post-processing
             assertEquals(0, result.size)
         }
