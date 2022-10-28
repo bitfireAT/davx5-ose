@@ -520,7 +520,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      *
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
-    protected open fun syncRemote(listRemote: (DavResponseCallback) -> Unit) {
+    protected open fun syncRemote(listRemote: (MultiResponseCallback) -> Unit) {
         // thread-safe sync stats
         val nInserted = AtomicInteger()
         val nUpdated = AtomicInteger()
@@ -611,9 +611,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
     }
 
-    protected abstract fun listAllRemote(callback: DavResponseCallback)
+    protected abstract fun listAllRemote(callback: MultiResponseCallback)
 
-    protected open fun listRemoteChanges(syncState: SyncState?, callback: DavResponseCallback): Pair<SyncToken, Boolean> {
+    protected open fun listRemoteChanges(syncState: SyncState?, callback: MultiResponseCallback): Pair<SyncToken, Boolean> {
         var furtherResults = false
 
         val report = davCollection.reportChanges(
@@ -625,7 +625,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     furtherResults = response.status?.code == 507
 
                 Response.HrefRelation.MEMBER ->
-                    callback(response, relation)
+                    callback.onResponse(response, relation)
 
                 else ->
                     Logger.log.fine("Unexpected sync-collection response: $response")

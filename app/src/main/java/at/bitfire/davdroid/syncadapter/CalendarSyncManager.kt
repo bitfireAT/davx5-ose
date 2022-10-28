@@ -9,7 +9,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4jvm.DavCalendar
-import at.bitfire.dav4jvm.DavResponseCallback
+import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.property.*
@@ -101,7 +101,7 @@ class CalendarSyncManager(
         os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
     }
 
-    override fun listAllRemote(callback: DavResponseCallback) {
+    override fun listAllRemote(callback: MultiResponseCallback) {
         // calculate time range limits
         var limitStart: Date? = null
         accountSettings.getTimeRangePastDays()?.let { pastDays ->

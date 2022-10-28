@@ -9,7 +9,7 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4jvm.DavCalendar
-import at.bitfire.dav4jvm.DavResponseCallback
+import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.property.*
@@ -76,7 +76,7 @@ class JtxSyncManager(
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun listAllRemote(callback: DavResponseCallback) {
+    override fun listAllRemote(callback: MultiResponseCallback) {
         remoteExceptionContext { remote ->
             if (localCollection.supportsVTODO) {
                 Logger.log.info("Querying tasks")
