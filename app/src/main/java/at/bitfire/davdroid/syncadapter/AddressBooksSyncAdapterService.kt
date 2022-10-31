@@ -21,6 +21,12 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
@@ -34,6 +40,15 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
         context: Context,
         appDatabase: AppDatabase
     ) : SyncAdapter(context, appDatabase) {
+
+        @EntryPoint
+        @InstallIn(SingletonComponent::class)
+        interface AddressBooksSyncAdapterEntryPoint {
+            fun settingsManager(): SettingsManager
+        }
+
+        val entryPoint = EntryPointAccessors.fromApplication(context, AddressBooksSyncAdapterEntryPoint::class.java)
+        val settingsManager = entryPoint.settingsManager()
 
         override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
@@ -85,6 +100,8 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                     return false
                 }
 
+                val forceAllReadOnly = settingsManager.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
+
                 // delete/update local address books
                 for (addressBook in LocalAddressBook.findAll(context, contactsProvider, account)) {
                     val url = addressBook.url.toHttpUrl()
@@ -96,7 +113,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                         // remote CollectionInfo found for this local collection, update data
                         try {
                             Logger.log.log(Level.FINE, "Updating local address book $url", info)
-                            addressBook.update(info)
+                            addressBook.update(info, forceAllReadOnly)
                         } catch (e: Exception) {
                             Logger.log.log(Level.WARNING, "Couldn't rename address book account", e)
                         }
@@ -108,7 +125,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                 // create new local address books
                 for ((_, info) in remoteAddressBooks) {
                     Logger.log.log(Level.INFO, "Adding local address book", info)
-                    LocalAddressBook.create(context, contactsProvider, account, info)
+                    LocalAddressBook.create(context, contactsProvider, account, info, forceAllReadOnly)
                 }
             } finally {
                 contactsProvider?.closeCompat()

@@ -5,6 +5,8 @@
   <string name="account_invalid">Kontua ez da existitzen (dagoeneko)</string>
   <string name="account_title_address_book">kSync Helbide liburua</string>
   <string name="address_books_authority_title">Helbide liburuak</string>
+  <string name="dialog_remove">Kendu</string>
+  <string name="dialog_deny">Utzi</string>
   <string name="field_required">Eremu hau beharrezkoa da</string>
   <string name="help">Laguntza</string>
   <string name="manage_accounts">Kudeatu kontuak</string>
@@ -394,6 +396,8 @@
   <string name="webdav_add_mount_password">Pasahitza</string>
   <string name="webdav_add_mount_add">Gehitu muntaia</string>
   <string name="webdav_add_mount_no_support">Ez dago WebDAV zerbitzurik URL honetan</string>
+  <string name="webdav_remove_mount_title">Kendu muntaia-puntua</string>
+  <string name="webdav_remove_mount_text">Konexio xehetasunak galduko dira, baina ez da fitxategirik ezabatuko.</string>
   <string name="webdav_notification_access">WebDAV fitxategia atzitzen</string>
   <string name="webdav_notification_download">WebDAV fitxategia deskargatzen</string>
   <string name="webdav_notification_upload">WebDAV fitxategia kargatzen</string>

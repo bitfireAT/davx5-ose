@@ -5,6 +5,8 @@
   <string name="account_invalid">Account bestaat niet (of niet meer)</string>
   <string name="account_title_address_book">kSync Adresboek</string>
   <string name="address_books_authority_title">Adresboeken</string>
+  <string name="dialog_remove">Verwijder</string>
+  <string name="dialog_deny">Annuleer</string>
   <string name="field_required">Dit veld is verplicht</string>
   <string name="help">Hulp</string>
   <string name="manage_accounts">Accounts beheren</string>
@@ -394,6 +396,8 @@
   <string name="webdav_add_mount_password">Wachtwoord</string>
   <string name="webdav_add_mount_add">Koppeling toevoegen</string>
   <string name="webdav_add_mount_no_support">Geen WebDAV-service op deze URL</string>
+  <string name="webdav_remove_mount_title">Verwijder het koppelpunt</string>
+  <string name="webdav_remove_mount_text">Verbindingsgegevens gaan verloren, maar er worden geen bestanden gewist.</string>
   <string name="webdav_notification_access">WebDAV-bestand openen</string>
   <string name="webdav_notification_download">WebDAV-bestand downloaden</string>
   <string name="webdav_notification_upload">WebDAV-bestand uploaden</string>

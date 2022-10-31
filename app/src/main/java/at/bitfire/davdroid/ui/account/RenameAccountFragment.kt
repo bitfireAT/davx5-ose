@@ -36,6 +36,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -105,6 +106,7 @@ class RenameAccountFragment: DialogFragment() {
     @HiltViewModel
     class Model @Inject constructor(
         @ApplicationContext val context: Context,
+        val accountsUpdatedListener: AccountsUpdatedListener,
         val db: AppDatabase
     ): ViewModel() {
 
@@ -129,11 +131,27 @@ class RenameAccountFragment: DialogFragment() {
 
             val accountManager = AccountManager.get(context)
             try {
+                /* https://github.com/bitfireAT/davx5/issues/135
+                Take AccountsUpdatedListenerLock so that the AccountsUpdateListener doesn't run while we rename the account
+                because this can cause problems when:
+                1. The account is renamed.
+                2. The AccountsUpdateListener is called BEFORE the services table is updated.
+                   → AccountsUpdateListener removes the "orphaned" services because they belong to the old account which doesn't exist anymore
+                3. Now the services would be renamed, but they're not here anymore. */
+                accountsUpdatedListener.mutex.acquire()
+
                 accountManager.renameAccount(oldAccount, newName, {
                     if (it.result?.name == newName /* success */)
                         viewModelScope.launch(Dispatchers.Default + NonCancellable) {
                             onAccountRenamed(accountManager, oldAccount, newName, syncIntervals)
-                        }
+
+                            // release AccountsUpdatedListener mutex at the end of this async coroutine
+                            accountsUpdatedListener.mutex.release()
+                        } else
+                            // release AccountsUpdatedListener mutex now
+                            accountsUpdatedListener.mutex.release()
+
+
                 }, null)
             } catch (e: Exception) {
                 Logger.log.log(Level.WARNING, "Couldn't rename account", e)

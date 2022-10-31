@@ -244,7 +244,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             val parentUrl = parent.toHttpUrl(db)
             val folder = DavCollection(client.okHttpClient, parentUrl)
 
-                folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
+            folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
                 Logger.log.fine("$relation $response")
 
                 val resource: WebDavDocument =
@@ -486,11 +486,11 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         if (appendNumber != 0) {
             val extension: String? = MimeTypeMap.getFileExtensionFromUrl(displayName)
-                if (extension != null) {
-                    val baseName = safeName.removeSuffix(".$extension")
-                    return "${baseName}_$appendNumber.$extension"
-                } else
-                    return "${safeName}_$appendNumber"
+            if (extension != null) {
+                val baseName = safeName.removeSuffix(".$extension")
+                return "${baseName}_$appendNumber.$extension"
+            } else
+                return "${safeName}_$appendNumber"
         } else
             return safeName
     }

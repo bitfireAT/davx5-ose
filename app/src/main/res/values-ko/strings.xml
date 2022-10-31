@@ -1,0 +1,418 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">계정이 존재하지 않음 (anymore)</string>
+  <string name="account_title_address_book">DAVx⁵ 주소록</string>
+  <string name="address_books_authority_title">주소록</string>
+  <string name="field_required">이 field는 필수입니다.</string>
+  <string name="help">도움말</string>
+  <string name="manage_accounts">관리 계정</string>
+  <string name="share">공유하기</string>
+  <string name="database_destructive_migration_title">데이터베이스 손상</string>
+  <string name="database_destructive_migration_text">모든 계정이 로컬에서 제거되었습니다.</string>
+  <string name="notification_channel_debugging">Debugging</string>
+  <string name="notification_channel_general">기타 중요한 메시지</string>
+  <string name="notification_channel_status">Low-priority status messages</string>
+  <string name="notification_channel_sync">동기화</string>
+  <string name="notification_channel_sync_errors">동기화 오류</string>
+  <string name="notification_channel_sync_errors_desc">예기치 않은 서버 응답과 같이 동기화를 중지하는 중요한 오류</string>
+  <string name="notification_channel_sync_warnings">동기화 warning</string>
+  <string name="notification_channel_sync_warnings_desc">특정 잘못된 파일과 같은 치명적이지 않은 동기화 문제</string>
+  <string name="notification_channel_sync_io_errors">네트워크 및 I/O 에러</string>
+  <string name="notification_channel_sync_io_errors_desc">시간 초과, 연결 문제 등(대개 일시적)</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">당신의 데이터. 당신의 선택.</string>
+  <string name="intro_slogan2">관리.</string>
+  <string name="intro_battery_title">정기적 동기화 주기</string>
+  <string name="intro_battery_not_whitelisted">사용 안 함(권장하지 않음)</string>
+  <string name="intro_battery_whitelisted">사용(권장)</string>
+  <string name="intro_battery_text">정기적으로 동기화하려면 백그라운드에서 %s이 실행되도록 허용해야 합니다. 그렇지 않으면 Android는 언제든지 동기화를 일시 중지할 수 있습니다.</string>
+  <string name="intro_battery_dont_show">나는 정기적인 동기화 주기가 필요하지 않다.*</string>
+  <string name="intro_autostart_title">%s 호환성</string>
+  <string name="intro_autostart_text">이 장치는 동기화를 차단합니다. 영향을 받는 경우 이 문제를 수동으로만 해결할 수 있습니다.</string>
+  <string name="intro_autostart_dont_show">필요한 설정을 완료했습니다. 더 이상 다시 수행하지 마세요.*</string>
+  <string name="intro_leave_unchecked">* 나중에 알림이 표시되도록 선택 해제된 상태로 둡니다. / 앱 설정에서 재설정할 수 있습니다. / %s</string>
+  <string name="intro_more_info">상세 정보</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[작업, 저널 및 노트 동기화 지원.]]></string>
+  <string name="intro_tasks_title">작업 지원</string>
+  <string name="intro_tasks_text1">서버에서 작업을 지원하는 경우 지원되는 작업 앱과 동기화할 수 있습니다.</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[하위 작업 또는 반복 작업과 같은 일부 기능의 경우 <a href="https://www.davx5.com/faq/tasks/advanced-task-features">추가 앱</a>이 필요할 수 있습니다..]]></string>
+  <string name="intro_tasks_tasks_org">할일 목록</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[일부 기능은 <a href="https://www.davx5.com/faq/tasks/advanced-task-features">아직 지원되지 않습니다.</a>(yet)]]></string>
+  <string name="intro_tasks_no_app_store">사용 가능한 앱 스토어 없음</string>
+  <string name="intro_tasks_dont_show">업무 지원은 필요 없습니다.*</string>
+  <string name="intro_open_source_title">오픈-소스 소프트웨어</string>
+  <string name="intro_open_source_text">오픈 소스 소프트웨어인 %s를 사용해 주셔서 기쁩니다. 개발, 유지보수 및 지원은 힘든 작업입니다. (기여나 기부를 고려해 보세요. 그것은 매우 감사할 일 것 입니다!)</string>
+  <string name="intro_open_source_details">기여/기부 방법</string>
+  <string name="intro_open_source_dont_show">가까운 시일 내에 표시 안 함</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">권한</string>
+  <string name="permissions_text">%s이 제대로 작동하려면 사용 권한이 필요합니다</string>
+  <string name="permissions_all_title">아래의 모든 것</string>
+  <string name="permissions_all_status_off">이를 통해 모든 기능을 사용할 수 있습니다(권장).</string>
+  <string name="permissions_all_status_on">모든 권한 부여</string>
+  <string name="permissions_contacts_title">연락처 권한</string>
+  <string name="permissions_contacts_status_off">연락처 동기화 하지않음 (권장하지 않음)</string>
+  <string name="permissions_contacts_status_on">연락처 동기화 가능</string>
+  <string name="permissions_calendar_title">캘린더 권한</string>
+  <string name="permissions_calendar_status_off">캘린더 동기화 없음(권장하지 않음)</string>
+  <string name="permissions_calendar_status_on">캘린더를 동기화 할 수 있음</string>
+  <string name="permissions_jtx_title">jtx Board 권한</string>
+  <string name="permissions_jtx_status_not_installed">동기화할 작업, 일지 &amp;  노트가 없음(설치되지 않음)</string>
+  <string name="permissions_jtx_status_off">동기화할 작업, 일지, 노트가 없음</string>
+  <string name="permissions_jtx_status_on">동기회 가능한 작업, 일지, 노트</string>
+  <string name="permissions_opentasks_title">OpenTasks 권한</string>
+  <string name="permissions_tasksorg_title">작업 권한</string>
+  <string name="permissions_tasks_status_not_installed">작업 동기화 되지 않음 (설치되지 않음)</string>
+  <string name="permissions_tasks_status_off">할일 목록 동기화 하지않음</string>
+  <string name="permissions_tasks_status_on">할일 목록 동기화 가능</string>
+  <string name="permissions_autoreset_title">권한 유지</string>
+  <string name="permissions_autoreset_status_off">권한이 자동으로 재설정됨(권장하지 않음)</string>
+  <string name="permissions_autoreset_status_on">권한이 자동으로 재설정 되지않음</string>
+  <string name="permissions_autoreset_instruction">권한을 선택하세요 &gt; \"앱을 사용하지 않을 경우 사용 권한 제거\" </string>
+  <string name="permissions_app_settings_hint">스위치가 작동하지 않으면 앱 설정 / 사용 권한을 사용하십시오.</string>
+  <string name="permissions_app_settings">앱 설정</string>
+  <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID 권한</string>
+  <string name="wifi_permissions_intro">현재 WiFi 이름(SSID)에 액세스할 수 있으려면 다음 조건을 충족해야 합니다.</string>
+  <string name="wifi_permissions_location_permission">상세 위치 권한</string>
+  <string name="wifi_permissions_location_permission_on">위치 권한 부여</string>
+  <string name="wifi_permissions_location_permission_off">위치 권한 거부</string>
+  <string name="wifi_permissions_background_location_permission">백그라운드 위치 권한</string>
+  <string name="wifi_permissions_background_location_permission_label">항상 허용</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[위치 권한이 <b>%s</b>로 설정됨]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[위치 권한이 <b>%s</b>로 설정되지 않음 ]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s은 SSID 제한 계정에 대한 현재 WiFi의 SSID를 확인하는 데만 위치 권한을 사용합니다. 이것은 앱이 백그라운드에 있을 때에도 발생할 것이다. 어떤 위치 데이터도 수집, 저장, 처리 또는 어디로든 전송되지 않습니다.</string>
+  <string name="wifi_permissions_location_enabled">위치 정보 항상 사용</string>
+  <string name="wifi_permissions_location_enabled_on">위치 서비스를 사용할 수 있습니다.</string>
+  <string name="wifi_permissions_location_enabled_off">위치 서비스가 거부되었습니다.</string>
+  <!--AboutActivity-->
+  <string name="about_translations">번역</string>
+  <string name="about_libraries">라이브러리</string>
+  <string name="about_version">버전 %1$s (%2$d)</string>
+  <string name="about_build_date">%s에서 컴파일</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) and contributors</string>
+  <string name="about_flavor_info">이 버전은 Google Play를 통해서만 배포될 수 있습니다.</string>
+  <string name="about_license_info_no_warranty">이 프로그램은 보증 없이 제공됩니다. 그것은 무료 소프트웨어이며, 특정한 조건 하에서 재배포하는 것을 환영합니다.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Thanks to:</i> %s]]></string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">log file을 만들 수 없습니다.</string>
+  <string name="logging_notification_text">이제 모든 %s 활동을 logging합니다.</string>
+  <string name="logging_notification_view_share">보기/공유</string>
+  <string name="logging_notification_disable">사용 안함</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">탐색 창 열기</string>
+  <string name="navigation_drawer_close">탐색 창 닫기</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV 동기화 어댑터</string>
+  <string name="navigation_drawer_about">관련 / 라이센스</string>
+  <string name="navigation_drawer_beta_feedback">베타 피드백</string>
+  <string name="install_email_client">이메일 클라이언트를 설치하십시오.</string>
+  <string name="install_browser">웹 브라우저를 설치해 주십시오.</string>
+  <string name="navigation_drawer_settings">설정</string>
+  <string name="navigation_drawer_news_updates">뉴스 &amp; 업데이트</string>
+  <string name="navigation_drawer_tools">툴</string>
+  <string name="navigation_drawer_external_links">외부 링크</string>
+  <string name="navigation_drawer_website">웹 사이트</string>
+  <string name="navigation_drawer_manual">메뉴얼</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_community">커뮤니티</string>
+  <string name="navigation_drawer_donate">기부</string>
+  <string name="navigation_drawer_privacy_policy">개인 정보 보호 정책</string>
+  <string name="account_list_no_internet">인터넷에 연결할 수 없습니다. Android가 동기화를 실행하지 않습니다.</string>
+  <string name="account_list_low_storage">저장 공간이 부족합니다. Android가 동기화를 실행하지 않습니다.</string>
+  <string name="account_list_empty">DAVx⁵에 오신 것을 환영 합니다!/n/n
+당신은  CalDAV/CardDAV 계정을 지금 추가 할 수 있습니다.</string>
+  <string name="accounts_global_sync_disabled">시스템 전체 자동 동기화가 비활성화됩니다.</string>
+  <string name="accounts_global_sync_enable">활성</string>
+  <string name="accounts_sync_all">모든 계정 동기화</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">서비스 검색 실패</string>
+  <string name="dav_service_refresh_couldnt_refresh">collection 목록을 새로 고칠 수 없습니다.</string>
+  <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">foreground에서 실행할 수 없습니다.</string>
+  <string name="battery_optimization_notify_text">배터리 최적화 허용목록 필요</string>
+  <!--ForegroundService-->
+  <string name="foreground_service_notify_title">foreground에서 실행중</string>
+  <string name="foreground_service_notify_text">일부 장치에서는 자동 동기화를 위해 이 작업이 필요합니다.</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">설정</string>
+  <string name="app_settings_debug">Debugging</string>
+  <string name="app_settings_show_debug_info">debug info 보기</string>
+  <string name="app_settings_show_debug_info_details">소프트웨어 및 구성 세부 정보 보기/공유</string>
+  <string name="app_settings_logging">상세 로그</string>
+  <string name="app_settings_logging_on">logging이 활성되었습니다.</string>
+  <string name="app_settings_logging_off">logging이 비활성화되었습니다.</string>
+  <string name="app_settings_battery_optimization">배터리 최적화</string>
+  <string name="app_settings_battery_optimization_whitelisted">앱이 허용목록에 포함(권장)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">앱이 허용목록에 미포함(권장하지 않음)</string>
+  <string name="app_settings_foreground_service">foreground에서 유지</string>
+  <string name="app_settings_foreground_service_details">장치가 자동 동기화를 차단하는 경우 도움이 될 수 있습니다.</string>
+  <string name="app_settings_connection">연결</string>
+  <string name="app_settings_proxy">프록시 타입</string>
+  <string-array name="app_settings_proxy_types">
+    <item>기본값</item>
+    <item>No proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (for Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">프록시 호스트 이름</string>
+  <string name="app_settings_proxy_port">프록시 포트</string>
+  <string name="app_settings_security">보안</string>
+  <string name="app_settings_security_app_permissions">앱 권한</string>
+  <string name="app_settings_security_app_permissions_summary">동기화에 필요한 사용 권한 검토</string>
+  <string name="app_settings_distrust_system_certs">신뢰할 수 없는 시스템 인증 </string>
+  <string name="app_settings_distrust_system_certs_on">시스템 및 사용자 추가한 CA를 신뢰할 수 없음</string>
+  <string name="app_settings_distrust_system_certs_off">시스템 및 사용자 추가한 CA를 신뢰할 수 있음(권장)</string>
+  <string name="app_settings_reset_certificates">신뢰할 수 있는(없는) 인증서 재설정</string>
+  <string name="app_settings_reset_certificates_summary">모든 사용자 지정 인증서를 재설정합니다.</string>
+  <string name="app_settings_reset_certificates_success">모든 사용자 지정 인증서가 확인되었습니다.</string>
+  <string name="app_settings_user_interface">사용자 인터페이스</string>
+  <string name="app_settings_notification_settings">알림 설정</string>
+  <string name="app_settings_notification_settings_summary">알림 채널 및 해당 설정 관리</string>
+  <string name="app_settings_theme_title">테마 선택</string>
+  <string-array name="app_settings_theme_names">
+    <item>시스템 디자인</item>
+    <item>밝은 테마</item>
+    <item>어두운 테마</item>
+  </string-array>
+  <string name="app_settings_reset_hints">힌트 재설정</string>
+  <string name="app_settings_reset_hints_summary">이전에 해제된 힌트를 다시 사용</string>
+  <string name="app_settings_reset_hints_success">모든 힌트가 다시 표기</string>
+  <string name="app_settings_integration">통합</string>
+  <string name="app_settings_tasks_provider">테스크 앱</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">%s과 동기화</string>
+  <string name="app_settings_tasks_provider_none">호환되는 작업 앱을 찾을 수 없습니다.</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">연락처 동기화 되지않음 (missing permissions)</string>
+  <string name="account_caldav_missing_calendar_permissions">캘린더가 동기화되지 않음 (missing permissions)</string>
+  <string name="account_caldav_missing_tasks_permissions">할일목록이 동기화 되지않음 (missing permissions)</string>
+  <string name="account_caldav_missing_permissions">캘린더 및 할일 목록이 동기화되지 않음(missing permissions)</string>
+  <string name="account_webcal_missing_calendar_permissions">캘린더에 접근할 수 없음 (missing permissions)</string>
+  <string name="account_permissions_action">권한</string>
+  <string name="account_no_address_books">주소록이 없다. (yet)</string>
+  <string name="account_no_calendars">캘린더가 없다.(yet)</string>
+  <string name="account_no_webcals">구독하는 캘린더가 없습니다. (yet)</string>
+  <string name="account_swipe_down">서버에서 목록을 새로 고치려면 아래로 스와이프하세요.</string>
+  <string name="account_synchronize_now">동기화</string>
+  <string name="account_synchronizing_now">동기화 중</string>
+  <string name="account_settings">계정 설정</string>
+  <string name="account_rename">계정 이름 바꾸기</string>
+  <string name="account_rename_new_name">저장되지 않은 로컬 데이터는 삭제될 수 있습니다. 이름을 변경한 후 다시 동기화해야 합니다. 새 계정 이름:</string>
+  <string name="account_rename_rename">이름 바꾸기</string>
+  <string name="account_rename_couldnt_rename">계정 이름을 바꿀 수 없습니다.</string>
+  <string name="account_delete">계정 삭제</string>
+  <string name="account_delete_confirmation_title">정말 계정을 삭제하시겠습니까?</string>
+  <string name="account_delete_confirmation_text">주소록, 캘린더 및 업무 목록의 모든 로컬 복사본이 삭제됩니다.</string>
+  <string name="account_synchronize_this_collection">이 collection을 동기화합니다.</string>
+  <string name="account_read_only">읽기전용</string>
+  <string name="account_calendar">캘린더</string>
+  <string name="account_task_list">할일 목록</string>
+  <string name="account_journal">일지</string>
+  <string name="account_only_personal">개인만 표시</string>
+  <string name="account_refresh_address_book_list">주소록 목록 새로 고침</string>
+  <string name="account_create_new_address_book">새 주소록 만들기</string>
+  <string name="account_refresh_calendar_list">캘린더 목록 새로 고침</string>
+  <string name="account_create_new_calendar">새 캘린더 작성</string>
+  <string name="account_no_webcal_handler_found">Webcal 지원 앱을 찾을 수 없습니다.</string>
+  <string name="account_install_icsx5">ICSx⁵를 설치합니다.</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">계정 추가</string>
+  <string name="login_type_email">이메일 주소로 로그인</string>
+  <string name="login_email_address">이메일 주소</string>
+  <string name="login_email_address_error">올바른 이메일 주소가 필요합니다.</string>
+  <string name="login_password">비밀번호</string>
+  <string name="login_password_required">비밀번호가 필요합니다.</string>
+  <string name="login_type_url">로그인 URL 과 사용자이름</string>
+  <string name="login_url_must_be_http_or_https">URL은 반드시 http(s)://로 시작되어야 합니다.</string>
+  <string name="login_user_name">사용자 이름</string>
+  <string name="login_user_name_required">사용자 이름이 필요합니다.</string>
+  <string name="login_base_url">기본 URL</string>
+  <string name="login_type_url_certificate">URL 및 클라이언트 인증서로 로그인</string>
+  <string name="login_select_certificate">인증서 선택</string>
+  <string name="login_login">로그인</string>
+  <string name="login_create_account">계정 생성</string>
+  <string name="login_account_name">계정 이름</string>
+  <string name="login_account_avoid_apostrophe">따옴표(\')를 사용하면 일부 장치에서 문제가 발생하는 것으로 보고되었습니다.</string>
+  <string name="login_account_name_info">Android는 사용자가 만든 이벤트에 대해 계정 이름을 ORGANGER 필드로 사용하므로 전자 메일 주소를 계정 이름으로 사용합니다. 이름이 같은 두 개의 계정을 가질 수 없습니다.</string>
+  <string name="login_account_contact_group_method">연락처 분류 방법:</string>
+  <string name="login_account_name_required">계정 이름 필요</string>
+  <string name="login_account_name_already_taken">계정 이름이 이미 사용되었습니다.</string>
+  <string name="login_account_not_created">계정을 만들 수 없습니다.</string>
+  <string name="login_type_advanced">Advanced 로그인 (special use cases)</string>
+  <string name="login_use_username_password">사용자 이름/비밀번호 사용</string>
+  <string name="login_use_client_certificate">클라이언트 인증서 사용</string>
+  <string name="login_no_certificate_found">인증서를 찾을 수 없음</string>
+  <string name="login_install_certificate">인증서 설치</string>
+  <string name="login_configuration_detection">구성 탐색</string>
+  <string name="login_querying_server">잠시 기다려 주십시오. 서버를 쿼리하고 있습니다...</string>
+  <string name="login_no_caldav_carddav">CalDAV 또는 CardDAV 서비스를 찾을 수 없습니다.</string>
+  <string name="login_username_password_wrong">사용자 이름 (email address) / 비밀번호 가 잘못되었습니까?</string>
+  <string name="login_view_logs">자세히</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">설정: %s</string>
+  <string name="settings_sync">동기화</string>
+  <string name="settings_sync_interval_contacts">주기적 연락처 동기화 </string>
+  <string name="settings_sync_summary_manually">직접 선택</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">매 %d 분 + 로컬 변경시 즉시</string>
+  <string name="settings_sync_interval_calendars">주기적 캘린더 동기화</string>
+  <string name="settings_sync_interval_tasks">주기적으로 작업 동기화</string>
+  <string-array name="settings_sync_interval_names">
+    <item>직접 선택</item>
+    <item>매 15분마다</item>
+    <item>매 30분마다</item>
+    <item>매 1시간마다</item>
+    <item>매 2시간마다</item>
+    <item>매 4시간마다</item>
+    <item>매일 한번</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">WiFi로만 동기화</string>
+  <string name="settings_sync_wifi_only_on">동기화는 WiFi 연결로 제한됩니다.</string>
+  <string name="settings_sync_wifi_only_off">연결 유형은 고려되지 않습니다.</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID 제한</string>
+  <string name="settings_sync_wifi_only_ssids_on">다음에 대해서만 동기화됨 %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">%s에서만 동기화 수행(active location services 필요)</string>
+  <string name="settings_sync_wifi_only_ssids_off">모든 WiFi 연결이 사용됩니다.</string>
+  <string name="settings_sync_wifi_only_ssids_message">쉼표로 구분된 허용되는 WIFI 네트워크의 이름(모두 빈칸으로 두세요)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 제한에 추가 설정이 필요함</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">관리</string>
+  <string name="settings_more_info_faq">추가 정보(FAQ)</string>
+  <string name="settings_authentication">인증</string>
+  <string name="settings_username">사용자 이름</string>
+  <string name="settings_enter_username">사용자 이름 입력:</string>
+  <string name="settings_password">비밀번호</string>
+  <string name="settings_password_summary">귀하의 서버에  비밀번호 업데이트.</string>
+  <string name="settings_enter_password">비밀번호를 입력:</string>
+  <string name="settings_certificate_alias">클라이언트 인증서 별칭</string>
+  <string name="settings_certificate_alias_empty">인증서를 선택하지 않음</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">지난 이벤트 시간 제한</string>
+  <string name="settings_sync_time_range_past_none">모든 이벤트가 동기화 됩니다.</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="other">지난 이벤트 중 %d일은 무시됩니다.</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">지난 일 수보다 많은 이벤트는 무시됩니다(0일). 모든 이벤트를 동기화하려면 비워 두십시오.</string>
+  <string name="settings_default_alarm">기본 리마인더</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="other">이벤트 %d분 전 기본 리마인더</item>
+  </plurals>
+  <string name="settings_default_alarm_off">기본 리마인더이 생성되지 않았습니다</string>
+  <string name="settings_default_alarm_message">리마인더없이 이벤트에 대해 default 리마인더가 생성되어야 하는 경우: 이벤트 시작 전 원하는 시간. default 리마인더을 사용하지 않으려면 비워 두십시오.</string>
+  <string name="settings_manage_calendar_colors">캘린더 색상 관리</string>
+  <string name="settings_manage_calendar_colors_on">캘린더 색상은 동기화할 때마다 재설정됩니다.</string>
+  <string name="settings_manage_calendar_colors_off">다른 앱에서 캘린더 색상을 설정할 수 있습니다.</string>
+  <string name="settings_event_colors">이벤트 색상 지원</string>
+  <string name="settings_event_colors_on">이벤트 색상이 동기화 되었습니다.</string>
+  <string name="settings_event_colors_off">이벤트 색상이 동기화되지 않았습니다.</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">연락처 분류 방법</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>별도의 전자 명함으로 분류</item>
+    <item>연락처 별 항목으로 분류</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">분류 방식 변경</string>
+  <!--collection management-->
+  <string name="create_addressbook">주소록 생성</string>
+  <string name="create_addressbook_display_name_hint">내 주소록</string>
+  <string name="create_calendar">캘린더 생성</string>
+  <string name="create_calendar_time_zone">시간대 </string>
+  <string name="create_calendar_type">가능한 캘린더 항목</string>
+  <string name="create_calendar_type_vevent">이벤트</string>
+  <string name="create_calendar_type_vtodo">할일 목록</string>
+  <string name="create_calendar_type_vjournal">메모 및 저널</string>
+  <string name="create_calendar_type_events_and_tasks">통합 (이벤트 및 작업)</string>
+  <string name="create_collection_color">색상</string>
+  <string name="create_collection_creating">collection을 만드는 중</string>
+  <string name="create_collection_display_name">제목</string>
+  <string name="create_collection_display_name_required">제목이 필요합니다.</string>
+  <string name="create_collection_description">설명</string>
+  <string name="create_collection_optional">선택</string>
+  <string name="create_collection_home_set">저장 위치</string>
+  <string name="create_collection_home_set_required">저장 위치가 필요합니다.</string>
+  <string name="create_collection_create">생성</string>
+  <string name="delete_collection">collection 삭제</string>
+  <string name="delete_collection_confirm_title">확실합니까?</string>
+  <string name="delete_collection_confirm_warning">이 collection(%s) 및 모든 데이터가 영구적으로 제거됩니다.</string>
+  <string name="delete_collection_data_shall_be_deleted">이러한 데이터는 서버에서 삭제되어야 한다.</string>
+  <string name="delete_collection_deleting_collection">collection 삭제중</string>
+  <string name="collection_force_read_only">읽기-전용으로 만들기</string>
+  <string name="collection_properties">Properties</string>
+  <string name="collection_properties_url">주소 (URL):</string>
+  <string name="collection_properties_copy_url">URL 복사</string>
+  <string name="collection_properties_owner">소유자:</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Debug info</string>
+  <string name="debug_info_archive_caption">ZIP 아카이브</string>
+  <string name="debug_info_archive_subtitle">debug info and logs을 포함</string>
+  <string name="debug_info_archive_text">아카이브를 공유하여 컴퓨터로 전송하거나 email로 보내거나 support ticket에 첨부합니다.</string>
+  <string name="debug_info_archive_share">아카이브를 공유</string>
+  <string name="debug_info_attached">이 메시지에 첨부된 Debug info(requires attachment support of the receiving app)</string>
+  <string name="debug_info_http_error">HTTP 에러</string>
+  <string name="debug_info_server_error">서버 에러</string>
+  <string name="debug_info_webdav_error">WebDAV 에러</string>
+  <string name="debug_info_io_error">I/O 에러</string>
+  <string name="debug_info_http_403_description">요청이 거부되었습니다. 자세한 내용은 관련 리소스 및 디버그 정보를 확인하십시오.</string>
+  <string name="debug_info_http_404_description">요청한 리소스가 (더 이상) 존재하지 않습니다. 자세한 내용은 관련 리소스 및 Debug info를 확인하십시오.</string>
+  <string name="debug_info_http_5xx_description">서버 측 문제가 발생했습니다. server support에 문의하십시오</string>
+  <string name="debug_info_unexpected_error">예기치 않은 오류가 발생했습니다. 자세한 내용은 debug info를 참조하십시오.</string>
+  <string name="debug_info_view_details">상세 설명보기</string>
+  <string name="debug_info_subtitle">Debug info가 수집되었습니다.</string>
+  <string name="debug_info_involved_caption">관련 리소스</string>
+  <string name="debug_info_involved_subtitle">관련된 문제</string>
+  <string name="debug_info_involved_remote">원격 리소스:</string>
+  <string name="debug_info_involved_local">로컬 리소스: </string>
+  <string name="debug_info_involved_view">앱으로 보기</string>
+  <string name="debug_info_logs_caption">Logs</string>
+  <string name="debug_info_logs_subtitle">상세 logs를 사용할 수 있습니다.</string>
+  <string name="debug_info_logs_view">logs 보기</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">에러가 발생 하였습니다.</string>
+  <string name="exception_httpexception">HTTP 에러가 발생 하였습니다.</string>
+  <string name="exception_ioexception">I/O 에러가 발생 하였습니다.</string>
+  <string name="exception_show_details">자세히</string>
+  <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">동기화가 일시 중지됨</string>
+  <string name="storage_low_notify_text">사용 가능한 공간이 거의 없음</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">WebDAV mounts</string>
+  <string name="webdav_mounts_quota_used_available">사용된 할당량: %1$s / 사용가능한 할당량: %2$s</string>
+  <string name="webdav_mounts_share_content">공유 콘텐츠</string>
+  <string name="webdav_mounts_unmount">Unmount</string>
+  <string name="webdav_add_mount_title">Add WebDAV mount</string>
+  <string name="webdav_mounts_empty">WebDAV 마운트를 추가하여 클라우드 파일에 직접 액세스하십시오!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[<a href="%1$s">WebDAV 마운트의 작동 방법</a>은 설명서를 참조하십시오.</string>]]></string>
+  <string name="webdav_add_mount_display_name">이름 표기</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">잘못된 URL</string>
+  <string name="webdav_add_mount_username">사용자 이름</string>
+  <string name="webdav_add_mount_password">비밀번호</string>
+  <string name="webdav_add_mount_add">Add mount</string>
+  <string name="webdav_add_mount_no_support">이 URL에 WebDAV 서비스가 없습니다.</string>
+  <string name="webdav_notification_access">Accessing WebDAV file</string>
+  <string name="webdav_notification_download">Downloading WebDAV file</string>
+  <string name="webdav_notification_upload">Uploading WebDAV file</string>
+  <string name="webdav_provider_root_title">WebDAV mount</string>
+  <!--sync adapters-->
+  <string name="sync_error_permissions">DAVx⁵ 권한</string>
+  <string name="sync_error_permissions_text">추가 권한 필요</string>
+  <string name="sync_error_tasks_too_old">%s는 너무 오래되었습니다.</string>
+  <string name="sync_error_tasks_required_version">최소 필요 버전: %1$s</string>
+  <string name="sync_error_authentication_failed">인증 실패(로그인 자격 증명 확인)</string>
+  <string name="sync_error_io">네트워크 혹은 I/O 에러  – %s</string>
+  <string name="sync_error_http_dav">HTTP 서버 오류 – %s</string>
+  <string name="sync_error_local_storage">Local storage 오류 – %s</string>
+  <string name="sync_error_retry">다시하기</string>
+  <string name="sync_error_view_item">항목 보기</string>
+  <string name="sync_invalid_contact">서버로부터 잘못된 연락처를 받았습니다.</string>
+  <string name="sync_invalid_event">서버에서 잘못된 이벤트를 수신했습니다.</string>
+  <string name="sync_invalid_task">서버에서 잘못된 작업을 수신했습니다.</string>
+  <string name="sync_invalid_resources_ignoring">하나 이상의 잘못된 리소스 무시</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx²: 연결 보안</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx®에서 알 수 없는 인증서를 발견했습니다. 신뢰할 수 있습니까?</string>
+</resources>

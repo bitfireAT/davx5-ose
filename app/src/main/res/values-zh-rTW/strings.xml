@@ -2,37 +2,54 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">kSync</string>
-  <string name="account_invalid"> 賬戶不存在 (anymore)</string>
+  <string name="account_invalid">帳號（已）不存在</string>
   <string name="account_title_address_book">kSync 通訊錄</string>
   <string name="address_books_authority_title">通訊錄</string>
+  <string name="field_required">此為必填欄位</string>
   <string name="help">幫助</string>
   <string name="manage_accounts">管理帳號</string>
+  <string name="share">分享</string>
+  <string name="database_destructive_migration_title">資料庫損毀</string>
+  <string name="database_destructive_migration_text">所有帳號已在本地刪除</string>
   <string name="notification_channel_debugging">除錯</string>
   <string name="notification_channel_general">其他重要訊息</string>
+  <string name="notification_channel_status">低優先的狀態訊息</string>
   <string name="notification_channel_sync">同步</string>
   <string name="notification_channel_sync_errors">同步錯誤</string>
-  <string name="notification_channel_sync_errors_desc">同步中止，由於伺服器響應不尋常等原因而出錯</string>
+  <string name="notification_channel_sync_errors_desc">導致同步停止的嚴重錯誤，如異常的伺服器回應</string>
   <string name="notification_channel_sync_warnings">同步警告</string>
-  <string name="notification_channel_sync_warnings_desc">可忽略的同步問題，比如一些無效文件</string>
-  <string name="notification_channel_sync_io_errors">網際網絡和輸入輸出錯誤</string>
-  <string name="notification_channel_sync_io_errors_desc">超時，連接問題等（臨時問題）</string>
+  <string name="notification_channel_sync_warnings_desc">可忽略的同步問題，比如一些無效檔案</string>
+  <string name="notification_channel_sync_io_errors">網路和輸入輸出錯誤</string>
+  <string name="notification_channel_sync_io_errors_desc">逾時、連線問題等等（通常為暫時性）</string>
   <!--IntroActivity-->
-  <string name="intro_slogan1">自已數據自已揀
-</string>
-  <string name="intro_slogan2">量力而為</string>
+  <string name="intro_slogan1">您的資料，您的選擇</string>
+  <string name="intro_slogan2">權力在握</string>
   <string name="intro_battery_title">定期同步間隔</string>
-  <string name="intro_battery_not_whitelisted">煞停 (不建議)</string>
-  <string name="intro_battery_whitelisted">推進 （建議）</string>
-  <string name="intro_battery_dont_show">我不需要定期同步間隔</string>
-  <string name="intro_autostart_text">裝置可能解除了同步功能。如果你正受影響，請手動解決此問題。</string>
-  <string name="intro_autostart_dont_show">所需設定已完成，不用再提醒我</string>
-  <string name="intro_more_info">更多訊息</string>
+  <string name="intro_battery_not_whitelisted">停用（不建議）</string>
+  <string name="intro_battery_whitelisted">啟用（建議）</string>
+  <string name="intro_battery_text">為了定期進行同步，必須允許 %s 在背景運行，否則 Android 可能會隨時暫停同步。</string>
+  <string name="intro_battery_dont_show">我不需要定期同步間隔*</string>
+  <string name="intro_autostart_title">%s 相容性</string>
+  <string name="intro_autostart_text">該裝置可能阻擋了同步，若您受到影響，只能手動解決。</string>
+  <string name="intro_autostart_dont_show">所需設定已完成，不用再提醒我*</string>
+  <string name="intro_leave_unchecked">* 取消勾選則稍後會再次提醒，可於設定中重置 / %s</string>
+  <string name="intro_more_info">更多資訊</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[支持任務、日記及筆記同步]]></string>
+  <string name="intro_tasks_title">待辦事項支援</string>
+  <string name="intro_tasks_text1">如果你的服務器支持任務，它們可以與支援任務的app同步:</string>
+  <string name="intro_tasks_opentasks_info"><![CDATA[對於子任務或重複任務等功能，您可能需要<a href="https://www.davx5.com/faq/tasks/advanced-task-features">額外的app</a>.]]></string>
+  <string name="intro_tasks_tasks_org">任務</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[有些功能<a href="https://www.davx5.com/faq/tasks/advanced-task-features">尚未支援</a>]]></string>
+  <string name="intro_tasks_no_app_store">沒有應用商店可用</string>
   <!--PermissionsActivity-->
+  <string name="permissions_contacts_title">通訊錄權限</string>
+  <string name="permissions_calendar_title">行事曆權限</string>
+  <string name="permissions_opentasks_title">OpenTasks 權限</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
-  <string name="about_libraries">庫</string>
-  <string name="about_version">版本號%1$s（%2$d）</string>
-  <string name="about_build_date">在%s上進行編譯</string>
+  <string name="about_libraries">函式庫</string>
+  <string name="about_version">版本號 %1$s（%2$d）</string>
+  <string name="about_build_date">編譯於 %s</string>
   <string name="about_flavor_info">本功能僅在Google Play上面發行的程式上可用。</string>
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
@@ -51,7 +68,6 @@
   <string name="navigation_drawer_website">我們的網站</string>
   <string name="navigation_drawer_manual">使用説明書</string>
   <string name="navigation_drawer_faq">常見問答</string>
-  <string name="navigation_drawer_forums">幫助/論壇</string>
   <string name="navigation_drawer_donate">贊助我們</string>
   <string name="navigation_drawer_privacy_policy">隱私權政策</string>
   <string name="account_list_no_internet">網際網絡沒有連接。Android不會進行同步。</string>
@@ -61,21 +77,18 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">未發現遠端服務</string>
   <string name="dav_service_refresh_couldnt_refresh">無法更新清單</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">設定</string>
   <string name="app_settings_debug">除錯</string>
   <string name="app_settings_show_debug_info">顯示除錯訊息</string>
   <string name="app_settings_show_debug_info_details">檢視/分享本軟體及設定檔細節</string>
-  <string name="app_settings_logging">多餘的除錯訊息</string>
-  <string name="app_settings_logging_on">除錯訊息記錄在活動狀態</string>
-  <string name="app_settings_logging_off">除錯訊息記錄在關閉狀態</string>
+  <string name="app_settings_logging">詳細除錯記錄</string>
+  <string name="app_settings_logging_on">日誌記錄已啟用</string>
+  <string name="app_settings_logging_off">日誌記錄已停用</string>
+  <string name="app_settings_battery_optimization">電池最佳化</string>
   <string name="app_settings_connection">網路連線</string>
-  <string name="app_settings_override_proxy">自訂代理伺服器</string>
-  <string name="app_settings_override_proxy_on">正在使用自訂的代理伺服器設定值</string>
-  <string name="app_settings_override_proxy_off">正在使用系統預設的代理伺服器設定值</string>
-  <string name="app_settings_override_proxy_host">HTTP 代理伺服器主機名稱或網址</string>
-  <string name="app_settings_override_proxy_port">HTTP 代理伺服器通訊埠</string>
   <string name="app_settings_security">安全性</string>
   <string name="app_settings_distrust_system_certs">不信任系統憑證</string>
   <string name="app_settings_distrust_system_certs_on">系統憑證和使用者自訂憑證將不被信任</string>
@@ -93,27 +106,29 @@
   <string name="account_carddav">CardDAV聯絡人檔案</string>
   <string name="account_caldav">CalDav行事曆檔案</string>
   <string name="account_webcal">Webcal網際網絡行事曆</string>
-  <string name="account_no_address_books">（目前）沒有地址簿。</string>
-  <string name="account_no_calendars">（目前）沒有行事曆。</string>
-  <string name="account_no_webcals">（目前）沒有行事曆訂閲。</string>
-  <string name="account_swipe_down">下劃更新伺服器上面的列表</string>
+  <string name="account_no_address_books">（目前）沒有通訊錄</string>
+  <string name="account_no_calendars">（目前）沒有行事曆</string>
+  <string name="account_no_webcals">（目前）沒有行事曆訂閲</string>
+  <string name="account_swipe_down">下拉可從伺服器獲取最新清單</string>
   <string name="account_synchronize_now">立即同步</string>
   <string name="account_synchronizing_now">同步中</string>
   <string name="account_settings">帳號設定</string>
   <string name="account_rename">重新命名帳號</string>
-  <string name="account_rename_new_name">尚未儲存的本地資料可能會消失。重新命名後必須再次執行同步。新的帳號名稱: </string>
+  <string name="account_rename_new_name">尚未儲存的本地資料可能會消失。重新命名後必須再次執行同步。新的帳號名稱：</string>
   <string name="account_rename_rename">重新命名</string>
+  <string name="account_rename_couldnt_rename">無法重新命名帳號</string>
   <string name="account_delete">刪除帳號</string>
-  <string name="account_delete_confirmation_title">真的要刪除帳號?</string>
+  <string name="account_delete_confirmation_title">確定要刪除帳號？</string>
   <string name="account_delete_confirmation_text">這台裝置上這個帳號的通訊錄、行事曆和工作清單將被刪除。</string>
   <string name="account_synchronize_this_collection">同步這個行事曆或工作清單</string>
-  <string name="account_read_only">只讀</string>
+  <string name="account_read_only">唯讀</string>
   <string name="account_calendar">行事曆</string>
-  <string name="account_task_list">事項清單</string>
-  <string name="account_refresh_address_book_list">刷新通訊錄清單</string>
+  <string name="account_task_list">待辦事項</string>
+  <string name="account_only_personal">只顯示個人</string>
+  <string name="account_refresh_address_book_list">更新通訊錄清單</string>
   <string name="account_create_new_address_book">建立新的通訊錄</string>
-  <string name="account_refresh_calendar_list">刷新行事曆清單</string>
-  <string name="account_create_new_calendar">建立新的行事曆</string>
+  <string name="account_refresh_calendar_list">更新行事曆清單</string>
+  <string name="account_create_new_calendar">建立新行事曆</string>
   <string name="account_no_webcal_handler_found">未找到支援Webcal的APP</string>
   <string name="account_install_icsx5">安裝ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -149,7 +164,7 @@
   <string name="settings_sync_summary_manually">只手動同步</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">每 %d 分鐘，以及在本裝置上修改時</string>
   <string name="settings_sync_interval_calendars">行事曆同步間隔</string>
-  <string name="settings_sync_interval_tasks">工作清單同步間隔</string>
+  <string name="settings_sync_interval_tasks">待辦事項同步間隔</string>
   <string-array name="settings_sync_interval_names">
     <item>僅手動</item>
     <item>每15分鐘自動</item>
@@ -162,35 +177,37 @@
   <string name="settings_sync_wifi_only">只用 WiFi 同步</string>
   <string name="settings_sync_wifi_only_on">只於 WiFi 連線時同步</string>
   <string name="settings_sync_wifi_only_off">任何網路連線都可使用</string>
-  <string name="settings_sync_wifi_only_ssids">特定的 WiFi SSID 連線</string>
+  <string name="settings_sync_wifi_only_ssids">限用特定 WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">只在%s連線時同步</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">只在%s連線時同步（需要開啓的定位服務）</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">只在%s連線時同步（需要啟用定位服務）</string>
   <string name="settings_sync_wifi_only_ssids_off">所有 WiFi 連線都可以使用</string>
-  <string name="settings_sync_wifi_only_ssids_message">使用逗號分割的名稱 (SSIDs) 表示的 WiFi 連綫（留空則代表全部）</string>
-  <string name="settings_more_info_faq">更多訊息（FAQ）</string>
-  <string name="settings_authentication">登入驗證</string>
+  <string name="settings_sync_wifi_only_ssids_message">使用逗號分割的名稱 (SSIDs) 表示的 WiFi 連線（留空則代表全部）</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
+  <string name="settings_more_info_faq">更多資訊（常見問題）</string>
+  <string name="settings_authentication">認證</string>
   <string name="settings_username">使用者帳號</string>
   <string name="settings_enter_username">輸入帳號名稱:</string>
   <string name="settings_password">密碼</string>
   <string name="settings_password_summary">您在伺服器上使用中的密碼</string>
-  <string name="settings_enter_password">輸入密碼: </string>
-  <string name="settings_certificate_alias">客戶端鑒權別名</string>
-  <string name="settings_caldav">CalDav（行事曆檔案）</string>
-  <string name="settings_sync_time_range_past">過去項目的時間限制</string>
-  <string name="settings_sync_time_range_past_none">將會同步所有項目</string>
+  <string name="settings_enter_password">輸入密碼：</string>
+  <string name="settings_certificate_alias">客戶端憑證別名</string>
+  <string name="settings_certificate_alias_empty">未選擇憑證</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">過去活動的時間限制</string>
+  <string name="settings_sync_time_range_past_none">將會同步所有活動</string>
   <plurals name="settings_sync_time_range_past_days">
-    <item quantity="other">%d 天之前的項目會被忽略</item>
+    <item quantity="other">%d 天之前的活動會被忽略</item>
   </plurals>
-  <string name="settings_sync_time_range_past_message">這個天數之前的項目將被忽略 (可設為0)。留白，則所有項目都會同步。</string>
-  <string name="settings_default_alarm">默認的提醒方式</string>
+  <string name="settings_sync_time_range_past_message">此天數前的活動將會被忽略（可設為零），若留空則同步所有活動</string>
+  <string name="settings_default_alarm">預設提醒</string>
   <plurals name="settings_default_alarm_on">
-    <item quantity="other">事項%d分鐘之前的默認提醒方式</item>
+    <item quantity="other">預設在活動前 %d 分鐘提醒</item>
   </plurals>
-  <string name="settings_default_alarm_off">未創建默認的提醒方式</string>
-  <string name="settings_default_alarm_message">如果默認的提醒方式在創建時沒有這一項：在事項前幾分鐘，就可以留空來關閉默認的提醒方式。</string>
+  <string name="settings_default_alarm_off">未設定預設提醒</string>
+  <string name="settings_default_alarm_message">當沒有提醒的活動需要加入預設提醒時，活動開始前多少分鐘出發提醒。留空則停用預設提醒。</string>
   <string name="settings_manage_calendar_colors">管理行事曆的顏色</string>
-  <string name="settings_event_colors">設定事項的顔色</string>
-  <string name="settings_carddav">CardDAV（聯絡人檔案）</string>
+  <string name="settings_event_colors">設定活動的顔色</string>
+  <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">聯絡人群組的儲存格式</string>
   <string-array name="settings_contact_group_method_entries">
     <item>群組存成額外的 VCard 檔案</item>
@@ -200,12 +217,12 @@
   <!--collection management-->
   <string name="create_addressbook">建立通訊錄</string>
   <string name="create_addressbook_display_name_hint">我的通訊錄</string>
-  <string name="create_calendar">創建行事曆</string>
+  <string name="create_calendar">建立行事曆</string>
   <string name="create_calendar_time_zone">時區</string>
-  <string name="create_calendar_type">獲取行事曆</string>
-  <string name="create_calendar_type_vevent">事件</string>
-  <string name="create_calendar_type_vtodo">任務</string>
-  <string name="create_calendar_type_vjournal">筆記/日志</string>
+  <string name="create_calendar_type">可使用的行事曆項目</string>
+  <string name="create_calendar_type_vevent">活動</string>
+  <string name="create_calendar_type_vtodo">事務</string>
+  <string name="create_calendar_type_vjournal">筆記/日誌</string>
   <string name="create_calendar_type_events_and_tasks">合併 (事件和任務)</string>
   <string name="create_collection_color">顔色</string>
   <string name="create_collection_creating">建立新行事曆或工作清單</string>
@@ -231,6 +248,10 @@
   <string name="exception_httpexception">HTTP 發生錯誤</string>
   <string name="exception_ioexception">讀寫錯誤</string>
   <string name="exception_show_details">顯示細節</string>
+  <!--StorageLowReceiver-->
+  <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">使用者帳號</string>
+  <string name="webdav_add_mount_password">密碼</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">kSync 權限</string>
   <string name="sync_error_permissions_text">需要額外的權限</string>

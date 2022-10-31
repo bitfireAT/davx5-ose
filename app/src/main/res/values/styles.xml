@@ -61,6 +61,8 @@
         <item name="android:colorBackground">@color/backgroundColor</item>
         <item name="colorControlHighlight">@color/ripple</item>
         <item name="popupTheme">@style/PopupThemeInfomaniak</item>
+
+        <item name="switchPreferenceCompatStyle">@style/MySwitchPreference</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -103,6 +105,10 @@
     <!-- widgets -->
 
     <color name="cardview_background">@color/infomaniakBackgroundCard</color>
+
+    <style name="MySwitchPreference" parent="@style/Preference.SwitchPreferenceCompat.Material">
+        <item name="widgetLayout">@layout/view_preference_switch</item>
+    </style>
 
     <!-- kSync -->
 

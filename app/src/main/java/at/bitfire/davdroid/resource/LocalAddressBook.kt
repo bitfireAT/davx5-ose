@@ -46,7 +46,16 @@ open class LocalAddressBook(
         const val USER_DATA_URL = "url"
         const val USER_DATA_READ_ONLY = "read_only"
 
-        fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: Collection): LocalAddressBook {
+        /**
+         * Creates a local address book.
+         *
+         * @param context        app context to resolve string resources
+         * @param provider       contacts provider client
+         * @param mainAccount    main account this address book (account) belongs to
+         * @param info           collection where to take the name and settings from
+         * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
+         */
+        fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: Collection, forceReadOnly: Boolean): LocalAddressBook {
             val account = Account(accountName(mainAccount, info), context.getString(R.string.account_type_address_book))
             val userData = initialUserData(mainAccount, info.url.toString())
             Logger.log.log(Level.INFO, "Creating local address book $account", userData)
@@ -61,18 +70,24 @@ open class LocalAddressBook(
             values.put(ContactsContract.Settings.SHOULD_SYNC, 1)
             values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
             addressBook.settings = values
-            addressBook.readOnly = !info.privWriteContent || info.forceReadOnly
+            addressBook.readOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
 
             return addressBook
         }
 
+        /**
+         * Finds and returns all the local address books belonging to a given main account
+         *
+         * @param mainAccount the main account to use
+         * @return list of [mainAccount]'s address books
+         */
         fun findAll(context: Context, provider: ContentProviderClient?, mainAccount: Account) = AccountManager.get(context)
                 .getAccountsByType(context.getString(R.string.account_type_address_book))
                 .map { LocalAddressBook(context, it, provider) }
                 .filter {
                     try {
                         it.mainAccount == mainAccount
-                    } catch(e: IllegalStateException) {
+                    } catch(e: IllegalArgumentException) {
                         false
                     }
                 }
@@ -101,6 +116,13 @@ open class LocalAddressBook(
             return bundle
         }
 
+        /**
+         * Finds and returns the main account of the given address book's account (sub-account)
+         *
+         * @param account the address book account to find the main account for
+         * @return the associated main account
+         * @throws IllegalArgumentException if the given account is not a address book account or does not have a main account
+         */
         fun mainAccount(context: Context, account: Account): Account =
             if (account.type == context.getString(R.string.account_type_address_book)) {
                 val manager = AccountManager.get(context)
@@ -135,7 +157,7 @@ open class LocalAddressBook(
 
     private var _mainAccount: Account? = null
     /**
-     * The associated main account which this address book accounts belongs to.
+     * The associated main account which this address book's accounts belong to.
      *
      * @throws IllegalArgumentException when [account] is not an address book account or when no main account is assigned
      */
@@ -199,7 +221,13 @@ open class LocalAddressBook(
         return number
     }
 
-    fun update(info: Collection) {
+    /**
+     * Updates the address book settings.
+     *
+     * @param info  collection where to take the settings from
+     * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
+     */
+    fun update(info: Collection, forceReadOnly: Boolean) {
         val newAccountName = accountName(mainAccount, info)
 
         if (account.name != newAccountName && Build.VERSION.SDK_INT >= 21) {
@@ -209,7 +237,7 @@ open class LocalAddressBook(
             account = future.result
         }
 
-        val nowReadOnly = !info.privWriteContent || info.forceReadOnly
+        val nowReadOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
         if (nowReadOnly != readOnly) {
             Constants.log.info("Address book now read-only = $nowReadOnly, updating contacts")
 
@@ -225,6 +253,11 @@ open class LocalAddressBook(
             val dataValues = ContentValues(1)
             dataValues.put(ContactsContract.Data.IS_READ_ONLY, if (nowReadOnly) 1 else 0)
             provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
+
+            // update group rows
+            val groupValues = ContentValues(1)
+            groupValues.put(Groups.GROUP_IS_READ_ONLY, if (nowReadOnly) 1 else 0)
+            provider!!.update(groupsSyncUri(), groupValues, null, null)
         }
 
         // make sure it will still be synchronized when contacts are updated

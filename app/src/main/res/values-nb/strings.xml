@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_title_address_book">DAVx⁵-adressebok</string>
+  <string name="address_books_authority_title">Adressebøker</string>
+  <string name="help">Hjelp</string>
+  <string name="manage_accounts">Behandle kontoer</string>
+  <string name="notification_channel_debugging">Feilsøking</string>
+  <string name="notification_channel_general">Andre viktige beskjeder</string>
+  <string name="notification_channel_sync">Synkronisering</string>
+  <string name="notification_channel_sync_errors">Synkroniseringsfeil</string>
+  <string name="notification_channel_sync_errors_desc">Viktige feil som avbryter synkronisering, som uventede svar fra serveren</string>
+  <string name="notification_channel_sync_warnings_desc">Ikke-kritiske synkroniseringsproblem, som enkelte ugyldige filer</string>
+  <string name="notification_channel_sync_io_errors">Nettverk- og I/O-feil</string>
+  <!--IntroActivity-->
+  <string name="intro_more_info">Mer informasjon</string>
+  <string name="intro_tasks_tasks_org">Oppgaver</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_contacts_title">Kontakt-tilgang</string>
+  <string name="permissions_calendar_title">Kalender-tilgang</string>
+  <string name="permissions_opentasks_title">OpenTasks-tilganger</string>
+  <!--WifiPermissionsActivity-->
+  <!--AboutActivity-->
+  <string name="about_libraries">Bibliotek</string>
+  <string name="about_version">Versjon %1$s(%2$d)</string>
+  <string name="about_build_date">Kompilert på %s</string>
+  <string name="about_flavor_info">Denne versjonen kan bare distribueres over Google Play.</string>
+  <string name="about_license_info_no_warranty">Dette programmet kommer uten NOEN FORM FOR GARANTI. Det er fri programvare, og du er velkommen til å redistribuere det under gitte forhold.</string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Kan ikke opprette loggfil</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Åpne navigasjonsskuff</string>
+  <string name="navigation_drawer_close">Lukk navigasjonsskuff</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV -synkroniseringsadapter</string>
+  <string name="navigation_drawer_about">Om / Lisens</string>
+  <string name="navigation_drawer_beta_feedback">Tilbakemelding om beta-en</string>
+  <string name="navigation_drawer_settings">Innstillinger</string>
+  <string name="navigation_drawer_news_updates">Nyheter og oppdateringer</string>
+  <string name="navigation_drawer_external_links">Eksterne lenker</string>
+  <string name="navigation_drawer_website">Nettside</string>
+  <string name="navigation_drawer_manual">Manuell</string>
+  <string name="navigation_drawer_faq">O-S-S</string>
+  <string name="navigation_drawer_donate">Doner</string>
+  <string name="account_list_empty">Velkommen til DAVx⁵.\n\nDu kan legge til en CalDAV/CardDAV-konto nå.</string>
+  <string name="accounts_global_sync_disabled">Systemomspennende automatisk synkronisering avskrudd</string>
+  <string name="accounts_global_sync_enable">Skru på</string>
+  <!--DavService-->
+  <string name="dav_service_refresh_failed">Tjenesteoppdagelse mislyktes</string>
+  <string name="dav_service_refresh_couldnt_refresh">Kunne ikke gjenoppfriske innsamlingsliste</string>
+  <!--Battery Optimization-->
+  <!--ForegroundService-->
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Innstillinger</string>
+  <string name="app_settings_debug">Feilretting</string>
+  <string name="app_settings_show_debug_info">Vis feilrettingsinfo</string>
+  <string name="app_settings_show_debug_info_details">Vis/del programvare- og oppsettsdetaljer</string>
+  <string name="app_settings_logging">Grundig logging</string>
+  <string name="app_settings_logging_on">Logging er aktivert</string>
+  <string name="app_settings_logging_off">Logging er skrudd av</string>
+  <string name="app_settings_connection">Tilkobling</string>
+  <string name="app_settings_security">Sikkerhet</string>
+  <string name="app_settings_distrust_system_certs">Fjern tiltro til systemsertifikater</string>
+  <string name="app_settings_distrust_system_certs_on">System og brukertillagte sertifikatsmyntigheter vil ikke bli tiltrodd</string>
+  <string name="app_settings_distrust_system_certs_off">System- og bruker -tillagte sertifikatsmyndigheter vil bli tiltrodd (anbefalt)</string>
+  <string name="app_settings_reset_certificates">Tilbakestill (ikke)tiltrodde sertifikater</string>
+  <string name="app_settings_reset_certificates_summary">Tilbakestiller tillit til alle egendefinerte sertifikater</string>
+  <string name="app_settings_reset_certificates_success">Alle egendefinerte sertifikater har blitt fjernet</string>
+  <string name="app_settings_user_interface">Brukergrensesnitt</string>
+  <string name="app_settings_notification_settings">Varselsinnstillinger</string>
+  <string name="app_settings_reset_hints">Tilbakestill hint</string>
+  <string name="app_settings_reset_hints_summary">Skrur på hint som har blitt avslått tidligere</string>
+  <string name="app_settings_reset_hints_success">Alle hint vil bli vist igjen</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_no_address_books">Det eksisterer ingen adressebøker (enda).</string>
+  <string name="account_no_calendars">Det eksisterer ingen kalendere (enda).</string>
+  <string name="account_no_webcals">Du abonnerer ikke på noen kalendere (enda).</string>
+  <string name="account_swipe_down">Dra ned for å oppdatere listen fra serveren.</string>
+  <string name="account_synchronize_now">Synkroniser nå</string>
+  <string name="account_synchronizing_now">Synkroniserer nå</string>
+  <string name="account_settings">Kontoinnstillinger</string>
+  <string name="account_rename">Gi konto nytt navn</string>
+  <string name="account_rename_new_name">Ulagret lokal data kan bli avslått. Ny synkronisering kreves etter ny navngivning. Nytt kontonavn:</string>
+  <string name="account_rename_rename">Gi nytt navn</string>
+  <string name="account_delete">Slett konto</string>
+  <string name="account_delete_confirmation_title">Vil du virkeling slette kontoen?</string>
+  <string name="account_delete_confirmation_text">Alle lokale kopier av adressebøker, kalendere og gjøremålslister vil bli slettet.</string>
+  <string name="account_synchronize_this_collection">synkroniser denne samlingen</string>
+  <string name="account_read_only">kun lesbar</string>
+  <string name="account_calendar">kalender</string>
+  <string name="account_task_list">oppgaveliste</string>
+  <string name="account_refresh_address_book_list">Gjenoppfrisk adressebokliste</string>
+  <string name="account_create_new_address_book">Opprett ny adressebok</string>
+  <string name="account_refresh_calendar_list">Gjenoppfrisk kalenderliste</string>
+  <string name="account_create_new_calendar">Opprett ny kalender</string>
+  <string name="account_no_webcal_handler_found">Fant ingen programmer med støtte for Webcal</string>
+  <string name="account_install_icsx5">Installer ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Legg til konto</string>
+  <string name="login_type_email">Innlogging med e-postadresse</string>
+  <string name="login_email_address">E-postadresse</string>
+  <string name="login_email_address_error">Gyldig e-postadresse påkrevd</string>
+  <string name="login_password">Passord</string>
+  <string name="login_password_required">Passord kreves</string>
+  <string name="login_type_url">Logg inn med nettadresse og brukernavn</string>
+  <string name="login_url_must_be_http_or_https">Nettadresse må begynned med http(s)://</string>
+  <string name="login_user_name">Brukernavn</string>
+  <string name="login_user_name_required">Brukernavn påkrevd</string>
+  <string name="login_base_url">Landings-nettadresse</string>
+  <string name="login_login">Logg inn</string>
+  <string name="login_create_account">Opprett konto</string>
+  <string name="login_account_name">Kontonavn</string>
+  <string name="login_account_name_info">Bruk din e-postadresse som kontonavn fordi Android vil bruke kontonavnet som ORGANISATOR-felt for hendelser du oppretter. Du kan ikke ha to kontoer med samme navn.</string>
+  <string name="login_account_contact_group_method">Kontaktgruppemetode:</string>
+  <string name="login_account_name_required">Kontonavn påkrevd</string>
+  <string name="login_account_name_already_taken">Brukernavnet er allerede i bruk</string>
+  <string name="login_account_not_created">Kontonavnet kan ikke opprettes</string>
+  <string name="login_configuration_detection">Oppdagelse av oppsett</string>
+  <string name="login_querying_server">Vent, spør tjener…</string>
+  <string name="login_no_caldav_carddav">Fant ikke CalDAV eller CardDAV-tjeneste.</string>
+  <string name="login_view_logs">Vis fler detaljer</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Innstillinger: %s</string>
+  <string name="settings_sync">Synkronisering</string>
+  <string name="settings_sync_interval_contacts">Intervall for kontaktsynkronisering</string>
+  <string name="settings_sync_summary_manually">Åpne manuelt</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Hvert %d minutt + umiddelbart ved lokale endringer</string>
+  <string name="settings_sync_interval_calendars">Kalendersynkroniseringsintervall</string>
+  <string name="settings_sync_interval_tasks">Gjøremålssynkroniseringsintervall</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Bare manuelt</item>
+    <item>Hvert kvarter</item>
+    <item>Hver halvtime</item>
+    <item>Hver time</item>
+    <item>Hver andre time</item>
+    <item>Hver fjerde time</item>
+    <item>Én gang om dagen</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Bare synk. over Wi-Fi</string>
+  <string name="settings_sync_wifi_only_on">Synkronisering er begrenset til Wi-Fi -tilkoblinger</string>
+  <string name="settings_sync_wifi_only_off">Tilkoblingstypen blir ikke tatt i betraktning</string>
+  <string name="settings_sync_wifi_only_ssids">Wi-Fi SSID -begrensning</string>
+  <string name="settings_sync_wifi_only_ssids_on">Vil kun synkronisere over %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Vil bare synkronisere over %s (krever å ha lokasjonstjenester aktivert)</string>
+  <string name="settings_sync_wifi_only_ssids_off">Alle Wi-Fi -tilkoblinger vil bli brukt</string>
+  <string name="settings_sync_wifi_only_ssids_message">Kommainndelte navn (SSID-er) på tillatte Wi-Fi -nettverk (la stå tomt for alle)</string>
+  <string name="settings_more_info_faq">Mer informasjon (FAQ)</string>
+  <string name="settings_authentication">Identitetsbekreftelse</string>
+  <string name="settings_username">Brukernavn</string>
+  <string name="settings_enter_username">Skriv inn brukernavn:</string>
+  <string name="settings_password">Passord</string>
+  <string name="settings_password_summary">Oppdater passordet i henhold til din tjener.</string>
+  <string name="settings_enter_password">Skriv inn passordet ditt:</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Tidsgrense for tidligere hendelser</string>
+  <string name="settings_sync_time_range_past_none">Alle gjøremål vil bli synkronisert</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Gjøremål for mer enn én dag siden vil bli sett bort fra</item>
+    <item quantity="other">Gjøremål for mer enn %d dager siden vil bli sett bort fra</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Hendelser som er mer enn dette antallet dager i fortid vil bli ignorert (kan være 0). La stå tomt for å synkronisere alle hendelser.</string>
+  <string name="settings_manage_calendar_colors">Velg kalenderfarger</string>
+  <string name="settings_event_colors">Støtte for fargelegging av hendelser</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Kontaktgruppemetode</string>
+  <string name="settings_contact_group_method_change">Endre gruppemetode</string>
+  <!--collection management-->
+  <string name="create_addressbook">Opprett adressebok</string>
+  <string name="create_addressbook_display_name_hint">Min adressebok</string>
+  <string name="create_calendar">Opprett kalender</string>
+  <string name="create_calendar_time_zone">Tidssone</string>
+  <string name="create_calendar_type">Mulige kalenderhendelser</string>
+  <string name="create_calendar_type_vevent">Hendelser</string>
+  <string name="create_calendar_type_vtodo">Oppgaver</string>
+  <string name="create_calendar_type_events_and_tasks">Kombinert (hendelser og gjøremål)</string>
+  <string name="create_collection_color">Farge</string>
+  <string name="create_collection_creating">Oppretter samling</string>
+  <string name="create_collection_display_name">Tittel</string>
+  <string name="create_collection_display_name_required">Tittel kreves</string>
+  <string name="create_collection_description">Beskrivelse</string>
+  <string name="create_collection_optional">valgfri</string>
+  <string name="create_collection_home_set">Lagringslokasjon</string>
+  <string name="create_collection_create">Opprett</string>
+  <string name="delete_collection">Slett samling</string>
+  <string name="delete_collection_confirm_title">Er du sikker?</string>
+  <string name="delete_collection_confirm_warning">Denne samlingen (%s) og all dens data vil bli permanent slettet.</string>
+  <string name="delete_collection_data_shall_be_deleted">Disse datene blir slettet fra serveren.</string>
+  <string name="delete_collection_deleting_collection">Sletter samling</string>
+  <string name="collection_force_read_only">Tving kun lesbar</string>
+  <string name="collection_properties">Egenskaper</string>
+  <string name="collection_properties_url">Adresse (URL):</string>
+  <string name="collection_properties_copy_url">Kopier nettadresse</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Feilrettingsinfo</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">En feil har inntruffet</string>
+  <string name="exception_httpexception">En HTTP-feil har inntruffet.</string>
+  <string name="exception_ioexception">En I/O-feil har inntruffet.</string>
+  <string name="exception_show_details">Vis detaljer</string>
+  <!--StorageLowReceiver-->
+  <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Brukernavn</string>
+  <string name="webdav_add_mount_password">Passord</string>
+  <!--sync adapters-->
+  <string name="sync_error_permissions">DAVx⁵-tilganger</string>
+  <string name="sync_error_permissions_text">Ytterligere tilganger kreves</string>
+  <string name="sync_error_io">Nettverk- og I/O-feil - %s</string>
+  <string name="sync_error_http_dav">HTTP-tjenerfeil - %s</string>
+  <string name="sync_error_local_storage">Feil med lokallagring - %s</string>
+  <string name="sync_error_retry">Forsøk igjen</string>
+  <string name="sync_invalid_contact">Fikk ugyldig kontakt fra server</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Tilkoblingssikkerhet</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ har støtt på et ukjent sertifikat. Har du tiltro til det?</string>
+</resources>

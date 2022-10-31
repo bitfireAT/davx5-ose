@@ -2,28 +2,66 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">ДАВдроид</string>
+  <string name="account_invalid">Налог не постоји (више)</string>
   <string name="account_title_address_book">ДАВдроид адресар</string>
   <string name="address_books_authority_title">Адресари</string>
+  <string name="dialog_remove">Уклони</string>
+  <string name="dialog_deny">Поништи</string>
+  <string name="field_required">Ово поље је обавезно</string>
   <string name="help">Помоћ</string>
   <string name="manage_accounts">Управљај налозима</string>
+  <string name="share">Подели</string>
+  <string name="database_destructive_migration_title">База података је корумпирана</string>
+  <string name="database_destructive_migration_text">Сви налози су уклоњени локално.</string>
   <string name="notification_channel_debugging">Тражење грешака</string>
   <string name="notification_channel_general">Остале важне поруке</string>
+  <string name="notification_channel_status">Статусне поруке ниског приоритета</string>
   <string name="notification_channel_sync">Синхронизација</string>
   <string name="notification_channel_sync_errors">Грешке синхронизације</string>
+  <string name="notification_channel_sync_warnings">Упозорења синхронизације</string>
   <string name="notification_channel_sync_io_errors">Мрежне и У/И грешке</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">Ваши подаци. Ваш избор.</string>
+  <string name="intro_slogan2">Преузмите контролу.</string>
+  <string name="intro_battery_title">Регуларни интервали синхронизације</string>
+  <string name="intro_battery_not_whitelisted">Онемогућено (није препоручено)</string>
+  <string name="intro_battery_whitelisted">Омогућено (препоручено)</string>
+  <string name="intro_battery_dont_show">Не требају ми регуларни интервали синхронизације.*</string>
+  <string name="intro_autostart_text">Овај уређај вероватно блокира синхронизацију. Ако је тако, овај проблем можете решити једино ручно.</string>
+  <string name="intro_autostart_dont_show">Изменио сам потребна подешавања. Не подсећај ме више.*</string>
+  <string name="intro_leave_unchecked">* Остави непотврђено да би био подсетнут касније. Може бити ресетовано у подешавањима / %s.</string>
   <string name="intro_more_info">Још информација</string>
+  <string name="intro_tasks_tasks_org">Задаци</string>
+  <string name="intro_tasks_dont_show">Не треба ми подршка за задатке.*</string>
+  <string name="intro_open_source_title">Софтвер отвореног кода</string>
+  <string name="intro_open_source_dont_show">Не приказуј у блиској будућности</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">Дозволе</string>
+  <string name="permissions_text">%s захтева дозволе да би исправно радила.</string>
+  <string name="permissions_all_title">Све испод</string>
+  <string name="permissions_all_status_on">Све дозволе су дате</string>
   <string name="permissions_contacts_title">Дозволе за контакте</string>
+  <string name="permissions_contacts_status_off">Без синхронизације контаката (није препоручено)</string>
   <string name="permissions_calendar_title">Дозволе за календар</string>
   <string name="permissions_opentasks_title">Дозволе за задатке</string>
+  <string name="permissions_tasksorg_title">Дозволе за задатке</string>
+  <string name="permissions_autoreset_title">Задржи дозволе</string>
+  <string name="permissions_app_settings">Подешавања апликације</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_location_permission">Дозвола прецизне локације</string>
+  <string name="wifi_permissions_background_location_permission_label">Дозволи сво време</string>
+  <string name="wifi_permissions_location_enabled">Локација је увек омогућена</string>
+  <string name="wifi_permissions_location_enabled_on">Услуга локације је омогућена</string>
+  <string name="wifi_permissions_location_enabled_off">Услуга локације је онемогућена</string>
   <!--AboutActivity-->
+  <string name="about_translations">Преводи</string>
   <string name="about_libraries">Библиотеке</string>
   <string name="about_version">Издање %1$s (%2$d)</string>
   <string name="about_build_date">Компилован %s</string>
   <string name="about_license_info_no_warranty">Овај програм НЕМА НИКАКВЕ ГАРАНЦИЈЕ. Бесплатан је софтвер којег можете слободно да делите под одређеним условима.</string>
   <!--global settings-->
+  <string name="logging_notification_view_share">Прегледај/подели</string>
+  <string name="logging_notification_disable">Онемогући</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">Отвори навигациону фиоку</string>
   <string name="navigation_drawer_close">Затвори навигациону фиоку</string>
@@ -32,14 +70,20 @@
   <string name="navigation_drawer_beta_feedback">Повратне информације бета издања</string>
   <string name="navigation_drawer_settings">Поставке</string>
   <string name="navigation_drawer_news_updates">Новости и ажурирања</string>
+  <string name="navigation_drawer_tools">Алати</string>
   <string name="navigation_drawer_external_links">Вањске везе</string>
   <string name="navigation_drawer_website">Веб-сајт</string>
   <string name="navigation_drawer_manual">Приручник</string>
   <string name="navigation_drawer_faq">ЧПП</string>
+  <string name="navigation_drawer_community">Заједница</string>
   <string name="navigation_drawer_donate">Донирај</string>
+  <string name="navigation_drawer_privacy_policy">Политика приватности</string>
+  <string name="account_list_no_internet">Нема везе са интернетом. Андроид неће вршити синхронизацију.</string>
+  <string name="account_list_low_storage">Недовољно слободног простора. Андроид неће вршити синхронизацију.</string>
   <string name="account_list_empty">Добро дошли у ДАВдроид!\n\nМожете сада да додате КалДАВ/КардДАВ налог.</string>
   <string name="accounts_global_sync_disabled">Синхронизација је системски искључена</string>
   <string name="accounts_global_sync_enable">Укључи</string>
+  <string name="accounts_sync_all">Синхронизуј све налоге</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">Откривање услуге није успело</string>
   <string name="dav_service_refresh_couldnt_refresh">Не могох да освежим списак збирки</string>
@@ -51,8 +95,11 @@
   <string name="app_settings_show_debug_info">Прикажи податке за исправљање грешака</string>
   <string name="app_settings_show_debug_info_details">Приказ/дељење детаља софтвера и поставки</string>
   <string name="app_settings_logging">Исцрпна евиденција</string>
+  <string name="app_settings_battery_optimization">Оптимизација батерије</string>
   <string name="app_settings_connection">Повезивање</string>
   <string name="app_settings_security">Безбедност</string>
+  <string name="app_settings_security_app_permissions">Дозволе апликације</string>
+  <string name="app_settings_security_app_permissions_summary">Прегледај дозволе неопходне за синхронизацију</string>
   <string name="app_settings_distrust_system_certs">Посумњај у системске сертификате</string>
   <string name="app_settings_distrust_system_certs_on">Системски и кориснички додати сертификати неће бити поуздани</string>
   <string name="app_settings_distrust_system_certs_off">Системски и кориснички додати сертификати ће бити поуздани (препоручљиво)</string>
@@ -60,13 +107,26 @@
   <string name="app_settings_reset_certificates_summary">Ресетуј поуздање свих прилагођених сертификата</string>
   <string name="app_settings_reset_certificates_success">Сви прилагођени сертификати су уклоњени</string>
   <string name="app_settings_user_interface">Корисничко сучеље</string>
+  <string name="app_settings_notification_settings">Подешавања обавештења</string>
+  <string name="app_settings_notification_settings_summary">Управљај каналима обавештења и њиховим подешавањима</string>
+  <string name="app_settings_theme_title">Изабери тему</string>
+  <string-array name="app_settings_theme_names">
+    <item>Према систему</item>
+    <item>Светла</item>
+    <item>Тамна</item>
+  </string-array>
   <string name="app_settings_reset_hints">Ресетуј савете</string>
   <string name="app_settings_reset_hints_summary">Поновно приказивање претходно одбачених савета</string>
   <string name="app_settings_reset_hints_success">Сви савети ће поново бити приказани</string>
+  <string name="app_settings_integration">Интеграција</string>
   <!--AccountActivity-->
   <string name="account_carddav">КардДАВ</string>
   <string name="account_caldav">КалДАВ</string>
   <string name="account_webcal">Вебкал</string>
+  <string name="account_permissions_action">Дозволе</string>
+  <string name="account_no_address_books">Нема именика (још увек).</string>
+  <string name="account_no_calendars">Нема календара (још увек).</string>
+  <string name="account_swipe_down">Повуците на доле да би сте освежили списак са сервера.</string>
   <string name="account_synchronize_now">Синхронизуј одмах</string>
   <string name="account_synchronizing_now">Синхронизујем</string>
   <string name="account_settings">Поставке налога</string>
@@ -80,6 +140,8 @@
   <string name="account_read_only">само-за-читање</string>
   <string name="account_calendar">календар</string>
   <string name="account_task_list">листа задатака</string>
+  <string name="account_journal">журнал</string>
+  <string name="account_only_personal">Прикажи само личне</string>
   <string name="account_refresh_address_book_list">Освежи списак адресара</string>
   <string name="account_create_new_address_book">Направи нови адресар</string>
   <string name="account_refresh_calendar_list">Освежи списак календара</string>
@@ -88,8 +150,8 @@
   <!--AddAccountActivity-->
   <string name="login_title">Додај налог</string>
   <string name="login_type_email">Пријавите се адресом е-поште</string>
-  <string name="login_email_address">Е-адреса</string>
-  <string name="login_email_address_error">Исправна е-адреса је обавезна</string>
+  <string name="login_email_address">Адреса е-поште</string>
+  <string name="login_email_address_error">Исправна адреса е-поште је обавезна</string>
   <string name="login_password">Лозинка</string>
   <string name="login_password_required">Лозинка је обавезна</string>
   <string name="login_type_url">Пријавите се УРЛ-ом и корисничким именом</string>
@@ -105,7 +167,13 @@
   <string name="login_account_name_info">Користите вашу е-адресу за назив налога јер Андроид користи назив налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог назива.</string>
   <string name="login_account_contact_group_method">Режим група контаката:</string>
   <string name="login_account_name_required">Назив налога је обавезан</string>
+  <string name="login_account_name_already_taken">Назив налога је већ заузет</string>
   <string name="login_account_not_created">Не могох направити налог</string>
+  <string name="login_type_advanced">Напредна пријава (посебни случајеви)</string>
+  <string name="login_use_username_password">Користи корисничко име/лозинку</string>
+  <string name="login_use_client_certificate">Користи сертификат клијента</string>
+  <string name="login_no_certificate_found">Сертификат није пронађен</string>
+  <string name="login_install_certificate">Инсталирај сертификат</string>
   <string name="login_configuration_detection">Откривање конфигурације</string>
   <string name="login_querying_server">Сачекајте, шаљем упит серверу…</string>
   <string name="login_no_caldav_carddav">Не могох да нађем КалДАВ или КардДАВ услугу.</string>
@@ -134,6 +202,8 @@
   <string name="settings_sync_wifi_only_ssids_on">Синхронизовање само преко %s</string>
   <string name="settings_sync_wifi_only_ssids_off">Коришћење свих бежичних мрежа</string>
   <string name="settings_sync_wifi_only_ssids_message">Имена (ССИД) дозвољених мрежа. одвојена зарезом (оставите празно за све мреже)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Управљај</string>
+  <string name="settings_more_info_faq">Још информација (ЧПП)</string>
   <string name="settings_authentication">Аутентификација</string>
   <string name="settings_username">Корисничко име</string>
   <string name="settings_enter_username">Унесите корисничко име:</string>
@@ -141,6 +211,7 @@
   <string name="settings_password_summary">Ажурирајте лозинку за ваш сервер.</string>
   <string name="settings_enter_password">Унесите лозинку:</string>
   <string name="settings_certificate_alias">Псеудоним сертификата клијента</string>
+  <string name="settings_certificate_alias_empty">Није изабран сертификат</string>
   <string name="settings_caldav">КалДАВ</string>
   <string name="settings_sync_time_range_past">Ограничење догађаја у прошлости</string>
   <string name="settings_sync_time_range_past_none">Сви догађаји се синхронизују</string>
@@ -150,17 +221,30 @@
     <item quantity="other">Догађаји старији од %d дана ће бити занемарени</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">Догађаји старији од овог броја дана ће бити занемарени (може бити 0). Оставите празно за синхронизацију свих догађаја.</string>
+  <string name="settings_default_alarm">Предефинисани подсетник</string>
   <string name="settings_manage_calendar_colors">Управљај бојама календара</string>
   <string name="settings_event_colors">Подршка за боју догађаја</string>
+  <string name="settings_event_colors_on">Боје догађаја су синхронизоване</string>
+  <string name="settings_event_colors_off">Боје догађаја нису синхронизоване</string>
   <string name="settings_carddav">КардДАВ</string>
   <string name="settings_contact_group_method">Режим група контаката</string>
   <string name="settings_contact_group_method_change">Измени режим група</string>
   <!--collection management-->
   <string name="create_addressbook">Направи адресар</string>
   <string name="create_addressbook_display_name_hint">Мој адресар</string>
+  <string name="create_calendar">Направи календар</string>
+  <string name="create_calendar_time_zone">Временска зона</string>
+  <string name="create_calendar_type_vevent">Догађаји</string>
+  <string name="create_calendar_type_vtodo">Задаци</string>
   <string name="create_calendar_type_events_and_tasks">Комбиновано (догађаји и задаци)</string>
+  <string name="create_collection_color">Боја</string>
   <string name="create_collection_creating">Правим збирку</string>
+  <string name="create_collection_display_name">Наслов</string>
   <string name="create_collection_display_name_required">Наслов је обавезан</string>
+  <string name="create_collection_description">Опис</string>
+  <string name="create_collection_optional">опционо</string>
+  <string name="create_collection_home_set">Локација складишта</string>
+  <string name="create_collection_home_set_required">Локација складишта је обавезна</string>
   <string name="create_collection_create">Направи</string>
   <string name="delete_collection">Обриши збирку</string>
   <string name="delete_collection_confirm_title">Да ли сте сигурни?</string>
@@ -169,8 +253,11 @@
   <string name="collection_properties">Својства</string>
   <string name="collection_properties_url">Адреса (УРЛ):</string>
   <string name="collection_properties_copy_url">Копирај УРЛ</string>
+  <string name="collection_properties_owner">Власник:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Подаци за исправљање грешака</string>
+  <string name="debug_info_view_details">Прикажи детаље</string>
+  <string name="debug_info_logs_caption">Записи</string>
   <string name="debug_info_logs_view">Прикажи записе</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Десила се грешка.</string>
@@ -179,6 +266,7 @@
   <string name="exception_show_details">Прикажи детаље</string>
   <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
+  <string name="webdav_add_mount_display_name">Име за приказ</string>
   <string name="webdav_add_mount_username">Корисничко име</string>
   <string name="webdav_add_mount_password">Лозинка</string>
   <!--sync adapters-->

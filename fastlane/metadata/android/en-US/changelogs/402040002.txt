@@ -1,0 +1,13 @@
+- [CardDAV] vCard LABELs are not generated anymore - now there's only the structured address
+- [CardDAV] better support for read-only address books (make contacts "really" read-only as good as possible)
+- [CalDAV] handle a rare exception when a time zone is known to Android but not to ical4j
+- [UI] use Material switches for preferences
+- [UI] use switches instead of checkboxes in accounts so that it is more understandable what should be synchronized
+- [UI] add monochrome/themed icon
+- [UI] added some pre-set base URLs
+- [UI] updated Manual URL (the manual is now automatically updated by Github Actions after editing it)
+- [jtx Board] remove filesize restriction for attachments
+- improved compatibility (especially HUAWEI to display DAVx5 calendars there again)
+- fix a bug that caused the account view to be empty after renaming an account
+- fix a crash when accounts vanish somehow
+- new languages (thanks to our translators!)

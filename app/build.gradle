@@ -9,15 +9,15 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion '32.0.0'
+    compileSdkVersion 33
+    buildToolsVersion '33.0.0'
 
     defaultConfig {
         applicationId 'com.infomaniak.sync'
         resValue 'string', 'application_id', applicationId
 
-        versionCode 402030402
-        versionName '4.2.3.4'
+        versionCode 402040002
+        versionName '4.2.4'
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         setProperty "archivesBaseName", "davx5-ose-" + getVersionName()
@@ -53,6 +53,9 @@ android {
         viewBinding = true
         dataBinding = true
     }
+
+    // Java namespace for our classes (not to be confused with Android package ID)
+    namespace 'at.bitfire.davdroid'
 
     flavorDimensions "distribution"
     productFlavors {
@@ -104,7 +107,7 @@ dependencies {
     implementation project(':vcard4android')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.6'
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
@@ -114,8 +117,8 @@ dependencies {
     implementation 'androidx.browser:browser:1.4.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.fragment:fragment-ktx:1.5.2'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.fragment:fragment-ktx:1.5.3'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
@@ -123,7 +126,7 @@ dependencies {
     implementation 'androidx.security:security-crypto:1.1.0-alpha03'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
 
     def room_version = '2.4.3'
     implementation "androidx.room:room-runtime:$room_version"
@@ -161,7 +164,7 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.4.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.3'
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
-    androidTestImplementation 'io.mockk:mockk-android:1.12.3'
+    androidTestImplementation 'io.mockk:mockk-android:1.13.2'
     androidTestImplementation 'junit:junit:4.13.2'
 
     testImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"

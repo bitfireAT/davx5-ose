@@ -23,6 +23,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.Semaphore
 import java.util.logging.Level
 import javax.inject.Singleton
 
@@ -44,6 +45,13 @@ class AccountsUpdatedListener private constructor(
         fun appDatabase(): AppDatabase
     }
 
+    /**
+     * This mutex (semaphore with 1 permit) will be acquired by [onAccountsUpdated]. So if you
+     * want to postpone [onAccountsUpdated] execution because you're modifying accounts non-transactionally,
+     * you can acquire the mutex by yourself. Don't forget to release it as soon as you're done.
+     */
+    val mutex = Semaphore(1)
+
 
     fun listen() {
         val accountManager = AccountManager.get(context)
@@ -56,13 +64,21 @@ class AccountsUpdatedListener private constructor(
      *
      * 1. Remove related address book accounts.
      * 2. Remove related service entries from the [AppDatabase].
+     *
+     * Before the accounts are cleaned up, the [mutex] is acquired.
+     * After the accounts are cleaned up, the [mutex] is released.
      */
     @AnyThread
     override fun onAccountsUpdated(accounts: Array<out Account>) {
         /* onAccountsUpdated may be called from the main thread, but cleanupAccounts
            requires disk (database) access. So we launch it in a separate thread. */
         CoroutineScope(Dispatchers.Default).launch {
-            cleanupAccounts(context, accounts)
+            try {
+                mutex.acquire()
+                cleanupAccounts(context, accounts)
+            } finally {
+                mutex.release()
+            }
         }
     }
 

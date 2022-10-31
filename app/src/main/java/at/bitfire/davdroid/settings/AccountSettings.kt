@@ -507,67 +507,72 @@ class AccountSettings(
      * convert legacy unknown properties to the current format.
      */
     private fun update_11_12() {
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-            context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
-                // Attention: CalendarProvider does NOT limit the results of the ExtendedProperties query
-                // to the given account! So all extended properties will be processed number-of-accounts times.
-                val extUri = ExtendedProperties.CONTENT_URI.asSyncAdapter(account)
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+            val provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)
+            if (provider != null)
+                try {
+                    // Attention: CalendarProvider does NOT limit the results of the ExtendedProperties query
+                    // to the given account! So all extended properties will be processed number-of-accounts times.
+                    val extUri = ExtendedProperties.CONTENT_URI.asSyncAdapter(account)
 
-                provider.query(extUri, arrayOf(
-                        ExtendedProperties._ID,     // idx 0
-                        ExtendedProperties.NAME,    // idx 1
-                        ExtendedProperties.VALUE    // idx 2
-                ), null, null, null)?.use { cursor ->
-                    while (cursor.moveToNext()) {
-                        val id = cursor.getLong(0)
-                        val rawValue = cursor.getString(2)
+                    provider.query(extUri, arrayOf(
+                            ExtendedProperties._ID,     // idx 0
+                            ExtendedProperties.NAME,    // idx 1
+                            ExtendedProperties.VALUE    // idx 2
+                    ), null, null, null)?.use { cursor ->
+                        while (cursor.moveToNext()) {
+                            val id = cursor.getLong(0)
+                            val rawValue = cursor.getString(2)
 
-                        val uri by lazy {
-                            ContentUris.withAppendedId(ExtendedProperties.CONTENT_URI, id).asSyncAdapter(account)
-                        }
-
-                        when (cursor.getString(1)) {
-                            UnknownProperty.CONTENT_ITEM_TYPE -> {
-                                // unknown property; check whether it's a URL
-                                try {
-                                    val property = UnknownProperty.fromJsonString(rawValue)
-                                    if (property is Url) {  // rewrite to MIMETYPE_URL
-                                        val newValues = ContentValues(2)
-                                        newValues.put(ExtendedProperties.NAME, AndroidEvent.MIMETYPE_URL)
-                                        newValues.put(ExtendedProperties.VALUE, property.value)
-                                        provider.update(uri, newValues, null, null)
-                                    }
-                                } catch (e: Exception) {
-                                    Logger.log.log(Level.WARNING, "Couldn't rewrite URL from unknown property to ${AndroidEvent.MIMETYPE_URL}", e)
-                                }
+                            val uri by lazy {
+                                ContentUris.withAppendedId(ExtendedProperties.CONTENT_URI, id).asSyncAdapter(account)
                             }
-                            "unknown-property" -> {
-                                // unknown property (deprecated format); convert to current format
-                                try {
-                                    val stream = ByteArrayInputStream(Base64.decode(rawValue, Base64.NO_WRAP))
-                                    ObjectInputStream(stream).use {
-                                        (it.readObject() as? Property)?.let { property ->
-                                            // rewrite to current format
+
+                            when (cursor.getString(1)) {
+                                UnknownProperty.CONTENT_ITEM_TYPE -> {
+                                    // unknown property; check whether it's a URL
+                                    try {
+                                        val property = UnknownProperty.fromJsonString(rawValue)
+                                        if (property is Url) {  // rewrite to MIMETYPE_URL
                                             val newValues = ContentValues(2)
-                                            newValues.put(ExtendedProperties.NAME, UnknownProperty.CONTENT_ITEM_TYPE)
-                                            newValues.put(ExtendedProperties.VALUE, UnknownProperty.toJsonString(property))
+                                            newValues.put(ExtendedProperties.NAME, AndroidEvent.MIMETYPE_URL)
+                                            newValues.put(ExtendedProperties.VALUE, property.value)
                                             provider.update(uri, newValues, null, null)
                                         }
+                                    } catch (e: Exception) {
+                                        Logger.log.log(Level.WARNING, "Couldn't rewrite URL from unknown property to ${AndroidEvent.MIMETYPE_URL}", e)
                                     }
-                                } catch(e: Exception) {
-                                    Logger.log.log(Level.WARNING, "Couldn't rewrite deprecated unknown property to current format", e)
                                 }
-                            }
-                            "unknown-property.v2" -> {
-                                // unknown property (deprecated MIME type); rewrite to current MIME type
-                                val newValues = ContentValues(1)
-                                newValues.put(ExtendedProperties.NAME, UnknownProperty.CONTENT_ITEM_TYPE)
-                                provider.update(uri, newValues, null, null)
+                                "unknown-property" -> {
+                                    // unknown property (deprecated format); convert to current format
+                                    try {
+                                        val stream = ByteArrayInputStream(Base64.decode(rawValue, Base64.NO_WRAP))
+                                        ObjectInputStream(stream).use {
+                                            (it.readObject() as? Property)?.let { property ->
+                                                // rewrite to current format
+                                                val newValues = ContentValues(2)
+                                                newValues.put(ExtendedProperties.NAME, UnknownProperty.CONTENT_ITEM_TYPE)
+                                                newValues.put(ExtendedProperties.VALUE, UnknownProperty.toJsonString(property))
+                                                provider.update(uri, newValues, null, null)
+                                            }
+                                        }
+                                    } catch(e: Exception) {
+                                        Logger.log.log(Level.WARNING, "Couldn't rewrite deprecated unknown property to current format", e)
+                                    }
+                                }
+                                "unknown-property.v2" -> {
+                                    // unknown property (deprecated MIME type); rewrite to current MIME type
+                                    val newValues = ContentValues(1)
+                                    newValues.put(ExtendedProperties.NAME, UnknownProperty.CONTENT_ITEM_TYPE)
+                                    provider.update(uri, newValues, null, null)
+                                }
                             }
                         }
                     }
+                } finally {
+                    provider.closeCompat()
                 }
-            }
+        }
     }
 
     @Suppress("unused","FunctionName")

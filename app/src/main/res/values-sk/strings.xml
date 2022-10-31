@@ -16,6 +16,8 @@
   <string name="notification_channel_sync_io_errors">Sieťové a V/V chyby</string>
   <string name="notification_channel_sync_io_errors_desc">Vypršanie času, problémy spojenia, atď. (často dočasné)</string>
   <!--IntroActivity-->
+  <string name="intro_more_info">Viac informácii</string>
+  <string name="intro_tasks_tasks_org">Úlohy</string>
   <!--PermissionsActivity-->
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
@@ -40,7 +42,6 @@
   <string name="navigation_drawer_website">Webové sídlo</string>
   <string name="navigation_drawer_manual">Manuál</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_forums">Pomoc / Fóra</string>
   <string name="navigation_drawer_donate">Darovať</string>
   <string name="navigation_drawer_privacy_policy">Zásady bezpečnosti</string>
   <string name="account_list_no_internet">Žiadne pripojenie do internetu. Android nestpustí synchronizáciu.</string>
@@ -50,6 +51,7 @@
   <!--DavService-->
   <string name="dav_service_refresh_failed">Zisťovanie služby zlyhalo</string>
   <string name="dav_service_refresh_couldnt_refresh">Nie je možné obnoviť zoznam kolekcií</string>
+  <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Nastavenia</string>
@@ -60,11 +62,6 @@
   <string name="app_settings_logging_on">Protokolovanie je aktívne</string>
   <string name="app_settings_logging_off">Protokolovanie je zakázané</string>
   <string name="app_settings_connection">Spojenie</string>
-  <string name="app_settings_override_proxy">Prepísať nastavenie proxy</string>
-  <string name="app_settings_override_proxy_on">Použiť užívateľské nastavenie proxy</string>
-  <string name="app_settings_override_proxy_off">Použiť nastavenie proxy platné pre systém</string>
-  <string name="app_settings_override_proxy_host">Meno hostiteľa HTTP proxy </string>
-  <string name="app_settings_override_proxy_port">Číslo portu HTTP proxy</string>
   <string name="app_settings_security">Zabezpečenie</string>
   <string name="app_settings_distrust_system_certs">Nedôverovať systémovým certifikátom</string>
   <string name="app_settings_distrust_system_certs_on">Nebude sa dôverovať systémovým a požívateľom pridaným certifikátom</string>
@@ -128,7 +125,7 @@
   <string name="login_account_name_already_taken">Meno účtu sa už používa</string>
   <string name="login_account_not_created">Nie je možné vytvoriť používateľský účet</string>
   <string name="login_configuration_detection">Zisťuje sa konfigurácia</string>
-  <string name="login_querying_server">Čakajte, prosím, zasiela sa dopyt na server…</string>
+  <string name="login_querying_server">Čakajte, prosím, zasiela sa dopyt na server...</string>
   <string name="login_no_caldav_carddav">Nie je možné nájsť služby CalDAV ani CardDAV.</string>
   <string name="login_view_logs">Zobraziť podrobnosti</string>
   <!--AccountSettingsActivity-->
@@ -226,6 +223,10 @@
   <string name="exception_httpexception">Vyskytla sa HTTP chyba.</string>
   <string name="exception_ioexception">Vyskytla sa V/V chyba.</string>
   <string name="exception_show_details">Zobraziť detaily</string>
+  <!--StorageLowReceiver-->
+  <!--WebDAV accounts-->
+  <string name="webdav_add_mount_username">Meno používateľa</string>
+  <string name="webdav_add_mount_password">Heslo</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">Oprávnenia kSync </string>
   <string name="sync_error_permissions_text">Vyžadujú sa dodatočné oprávnenia</string>
