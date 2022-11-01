@@ -65,7 +65,7 @@ class PermissionsFragment: Fragment() {
                 requestPermission.launch(CALENDAR_PERMISSIONS)
         })
         model.needNotificationPermissions.observe(viewLifecycleOwner, { needNotifications ->
-            if (needNotifications && model.haveNotificationPermissions.value == false)
+            if (needNotifications == true && model.haveNotificationPermissions.value == false)
                 requestPermission.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS))
         })
         model.needOpenTasksPermissions.observe(viewLifecycleOwner, { needOpenTasks ->
@@ -162,9 +162,19 @@ class PermissionsFragment: Fragment() {
             haveCalendarPermissions.value = calendarPermissions
             needCalendarPermissions.value = calendarPermissions
 
-            val notificationPermissions = ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-            haveNotificationPermissions.value = notificationPermissions
-            needNotificationPermissions.value = notificationPermissions
+            val notificationPermissions: Boolean
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // Android 13: POST_NOTIFICATIONS permission required
+                notificationPermissions =
+                    ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                haveNotificationPermissions.value = notificationPermissions
+                needNotificationPermissions.value = notificationPermissions
+            } else {
+                // Android <= 12: hide the POST_NOTIFICATIONS switch
+                notificationPermissions = true
+                haveNotificationPermissions.value = null
+                needNotificationPermissions.value = null
+            }
 
             // OpenTasks
             val openTasksAvailable = pm.resolveContentProvider(ProviderName.OpenTasks.authority, 0) != null

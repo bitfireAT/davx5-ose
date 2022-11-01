@@ -72,7 +72,7 @@
     <string name="permissions_calendar_title">Calendar permissions</string>
     <string name="permissions_calendar_status_off">No calendar sync (not recommended)</string>
     <string name="permissions_calendar_status_on">Calendar sync possible</string>
-    <string name="permissions_notification_title">Notification permissions</string>
+    <string name="permissions_notification_title">Notification permission</string>
     <string name="permissions_notification_status_off">Notifications disabled (not recommended)</string>
     <string name="permissions_notification_status_on">Notifications enabled</string>
     <string name="permissions_jtx_title">jtx Board permissions</string>

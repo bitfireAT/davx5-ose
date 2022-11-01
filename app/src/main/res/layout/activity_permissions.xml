@@ -152,6 +152,7 @@
                     <TextView
                         android:id="@+id/notificationHeading"
                         style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:visibility="@{model.haveNotificationPermissions != null ? View.VISIBLE : View.GONE}"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/card_margin_title_text"
@@ -165,6 +166,7 @@
                     <TextView
                         android:id="@+id/notificationStatus"
                         style="@style/TextAppearance.MaterialComponents.Body2"
+                        android:visibility="@{model.haveNotificationPermissions != null ? View.VISIBLE : View.GONE}"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@{model.haveNotificationPermissions ? @string/permissions_notification_status_on : @string/permissions_notification_status_off}"
@@ -176,6 +178,7 @@
                         android:id="@+id/notificationSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:visibility="@{model.haveNotificationPermissions != null ? View.VISIBLE : View.GONE}"
                         app:layout_constraintTop_toTopOf="@id/notificationHeading"
                         app:layout_constraintBottom_toBottomOf="@id/notificationStatus"
                         app:layout_constraintEnd_toStartOf="@id/end"
