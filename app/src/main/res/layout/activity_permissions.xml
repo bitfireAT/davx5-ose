@@ -31,14 +31,14 @@
                         android:id="@+id/image"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:layout_constraintVertical_chainStyle="packed"
-                        app:layout_constraintVertical_bias="0"
-                        android:maxHeight="@dimen/card_theme_max_height"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toTopOf="@id/heading"
                         android:adjustViewBounds="true"
-                        app:verticalOffsetPercent=".45"
-                        app:srcCompat="@drawable/intro_permissions"/>
+                        android:maxHeight="@dimen/card_theme_max_height"
+                        app:layout_constraintBottom_toTopOf="@id/heading"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0"
+                        app:layout_constraintVertical_chainStyle="packed"
+                        app:srcCompat="@drawable/intro_permissions"
+                        app:verticalOffsetPercent=".45" />
 
                     <androidx.constraintlayout.widget.Guideline
                         android:id="@+id/start"
@@ -150,37 +150,37 @@
                         android:checked="@={model.needAllPermissions}" />
 
                     <TextView
-                        android:id="@+id/contactsHeading"
+                        android:id="@+id/notificationHeading"
                         style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/permissions_contacts_title"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        android:text="@string/permissions_notification_title"
                         android:textAlignment="viewStart"
-                        app:layout_constraintBottom_toTopOf="@id/contactsStatus"
-                        app:layout_constraintEnd_toStartOf="@id/contactsSwitch"
+                        app:layout_constraintBottom_toTopOf="@id/notificationStatus"
+                        app:layout_constraintEnd_toStartOf="@id/notificationSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
                         app:layout_constraintTop_toBottomOf="@id/allStatus" />
 
                     <TextView
-                        android:id="@+id/contactsStatus"
+                        android:id="@+id/notificationStatus"
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@{model.haveContactsPermissions ? @string/permissions_contacts_status_on : @string/permissions_contacts_status_off}"
+                        android:text="@{model.haveNotificationPermissions ? @string/permissions_notification_status_on : @string/permissions_notification_status_off}"
                         android:textAlignment="viewStart"
-                        app:layout_constraintEnd_toStartOf="@id/contactsSwitch"
+                        app:layout_constraintEnd_toStartOf="@id/notificationSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/contactsHeading" />
+                        app:layout_constraintTop_toBottomOf="@id/notificationHeading" />
                     <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/contactsSwitch"
+                        android:id="@+id/notificationSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        app:layout_constraintTop_toTopOf="@id/contactsHeading"
-                        app:layout_constraintBottom_toBottomOf="@id/contactsStatus"
+                        app:layout_constraintTop_toTopOf="@id/notificationHeading"
+                        app:layout_constraintBottom_toBottomOf="@id/notificationStatus"
                         app:layout_constraintEnd_toStartOf="@id/end"
-                        android:clickable="@{!model.haveContactsPermissions}"
-                        android:checked="@={model.needContactsPermissions}" />
+                        android:clickable="@{!model.haveNotificationPermissions}"
+                        android:checked="@={model.needNotificationPermissions}" />
 
                     <TextView
                         android:id="@+id/calendarHeading"
@@ -193,7 +193,7 @@
                         app:layout_constraintBottom_toTopOf="@id/calendarStatus"
                         app:layout_constraintEnd_toStartOf="@id/calendarSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/contactsStatus" />
+                        app:layout_constraintTop_toBottomOf="@id/notificationStatus" />
 
                     <TextView
                         android:id="@+id/calendarStatus"
@@ -216,6 +216,75 @@
                         android:checked="@={model.needCalendarPermissions}" />
 
                     <TextView
+                        android:id="@+id/contactsHeading"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/permissions_contacts_title"
+                        android:textAlignment="viewStart"
+                        app:layout_constraintBottom_toTopOf="@id/contactsStatus"
+                        app:layout_constraintEnd_toStartOf="@id/contactsSwitch"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/calendarStatus" />
+
+                    <TextView
+                        android:id="@+id/contactsStatus"
+                        style="@style/TextAppearance.MaterialComponents.Body2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{model.haveContactsPermissions ? @string/permissions_contacts_status_on : @string/permissions_contacts_status_off}"
+                        android:textAlignment="viewStart"
+                        app:layout_constraintEnd_toStartOf="@id/contactsSwitch"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/contactsHeading" />
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/contactsSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        app:layout_constraintTop_toTopOf="@id/contactsHeading"
+                        app:layout_constraintBottom_toBottomOf="@id/contactsStatus"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        android:clickable="@{!model.haveContactsPermissions}"
+                        android:checked="@={model.needContactsPermissions}" />
+
+                    <TextView
+                        android:id="@+id/jtxHeading"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        android:text="@string/permissions_jtx_title"
+                        android:textAlignment="viewStart"
+                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toTopOf="@id/jtxStatus"
+                        app:layout_constraintEnd_toStartOf="@id/jtxSwitch"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/contactsStatus" />
+
+                    <TextView
+                        android:id="@+id/jtxStatus"
+                        style="@style/TextAppearance.MaterialComponents.Body2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{model.haveJtxPermissions != null ? (model.haveJtxPermissions ? @string/permissions_jtx_status_on : @string/permissions_jtx_status_off) : @string/permissions_jtx_status_not_installed}"
+                        android:textAlignment="viewStart"
+                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toStartOf="@id/jtxSwitch"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/jtxHeading" />
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/jtxSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        app:layout_constraintTop_toTopOf="@id/jtxHeading"
+                        app:layout_constraintBottom_toBottomOf="@id/jtxStatus"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
+                        android:clickable="@{!model.haveJtxPermissions}"
+                        android:checked="@={model.needJtxPermissions}" />
+
+                    <TextView
                         android:id="@+id/openTasksHeading"
                         style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
@@ -227,7 +296,7 @@
                         app:layout_constraintBottom_toTopOf="@id/openTasksStatus"
                         app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
                         app:layout_constraintStart_toEndOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/calendarStatus" />
+                        app:layout_constraintTop_toBottomOf="@id/jtxStatus" />
 
                     <TextView
                         android:id="@+id/openTasksStatus"
@@ -288,42 +357,6 @@
                         android:checked="@={model.needTasksOrgPermissions}" />
 
                     <TextView
-                        android:id="@+id/jtxHeading"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:text="@string/permissions_jtx_title"
-                        android:textAlignment="viewStart"
-                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
-                        app:layout_constraintBottom_toTopOf="@id/jtxStatus"
-                        app:layout_constraintEnd_toStartOf="@id/jtxSwitch"
-                        app:layout_constraintStart_toEndOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/tasksOrgStatus" />
-
-                    <TextView
-                        android:id="@+id/jtxStatus"
-                        style="@style/TextAppearance.MaterialComponents.Body2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="@{model.haveJtxPermissions != null ? (model.haveJtxPermissions ? @string/permissions_jtx_status_on : @string/permissions_jtx_status_off) : @string/permissions_jtx_status_not_installed}"
-                        android:textAlignment="viewStart"
-                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
-                        app:layout_constraintEnd_toStartOf="@id/jtxSwitch"
-                        app:layout_constraintStart_toEndOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/jtxHeading" />
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/jtxSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        app:layout_constraintTop_toTopOf="@id/jtxHeading"
-                        app:layout_constraintBottom_toBottomOf="@id/jtxStatus"
-                        app:layout_constraintEnd_toStartOf="@id/end"
-                        android:visibility="@{model.haveJtxPermissions != null ? View.VISIBLE : View.GONE}"
-                        android:clickable="@{!model.haveJtxPermissions}"
-                        android:checked="@={model.needJtxPermissions}" />
-
-                    <TextView
                         android:id="@+id/appSettingsHint"
                         style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
@@ -333,7 +366,7 @@
                         android:textAlignment="viewStart"
                         app:layout_constraintEnd_toEndOf="@id/end"
                         app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/jtxSwitch" />
+                        app:layout_constraintTop_toBottomOf="@id/tasksOrgSwitch" />
 
                     <Button
                         android:id="@+id/appSettings"

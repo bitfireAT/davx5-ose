@@ -23,12 +23,12 @@ import at.bitfire.davdroid.ui.PermissionsActivity
 object PermissionUtils {
 
     val CONTACT_PERMISSIONS = arrayOf(
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.WRITE_CONTACTS
+        Manifest.permission.READ_CONTACTS,
+        Manifest.permission.WRITE_CONTACTS
     )
     val CALENDAR_PERMISSIONS = arrayOf(
-            Manifest.permission.READ_CALENDAR,
-            Manifest.permission.WRITE_CALENDAR
+        Manifest.permission.READ_CALENDAR,
+        Manifest.permission.WRITE_CALENDAR
     )
 
     val WIFI_SSID_PERMISSIONS =

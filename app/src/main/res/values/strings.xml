@@ -72,6 +72,9 @@
     <string name="permissions_calendar_title">Calendar permissions</string>
     <string name="permissions_calendar_status_off">No calendar sync (not recommended)</string>
     <string name="permissions_calendar_status_on">Calendar sync possible</string>
+    <string name="permissions_notification_title">Notification permissions</string>
+    <string name="permissions_notification_status_off">Notifications disabled (not recommended)</string>
+    <string name="permissions_notification_status_on">Notifications enabled</string>
     <string name="permissions_jtx_title">jtx Board permissions</string>
     <string name="permissions_jtx_status_not_installed">No task, journals &amp; notes sync (not installed)</string>
     <string name="permissions_jtx_status_off">No tasks, journals, notes sync</string>
@@ -137,8 +140,11 @@
     <string name="navigation_drawer_community">Community</string>
     <string name="navigation_drawer_donate">Donate</string>
     <string name="navigation_drawer_privacy_policy">Privacy policy</string>
+    <string name="account_list_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
     <string name="account_list_no_internet">No Internet connectivity. Android will not run synchronization.</string>
+    <string name="account_list_manage_connections">Manage connections</string>
     <string name="account_list_low_storage">Storage space low. Android will not run synchronization.</string>
+    <string name="account_list_manage_storage">Manage storage</string>
     <string name="account_list_empty">Welcome to DAVx⁵!\n\nYou can add a CalDAV/CardDAV account now.</string>
     <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
     <string name="accounts_global_sync_enable">Enable</string>

@@ -4,12 +4,14 @@
 
 package at.bitfire.davdroid.ui
 
+import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.app.Activity
 import android.app.Application
 import android.content.*
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -18,6 +20,8 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.*
+import androidx.core.content.ContextCompat
+import androidx.core.content.PackageManagerCompat
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -29,6 +33,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.DavUtils.SyncStatus
+import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.StorageLowReceiver
 import at.bitfire.davdroid.databinding.AccountListBinding
@@ -56,6 +61,10 @@ class AccountListFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.allowNotifications.setOnClickListener {
+            startActivity(Intent(requireActivity(), PermissionsActivity::class.java))
+        }
 
         model.networkAvailable.observe(viewLifecycleOwner) { networkAvailable ->
             binding.noNetworkInfo.visibility = if (networkAvailable) View.GONE else View.VISIBLE
@@ -103,11 +112,22 @@ class AccountListFragment: Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        checkPermissions()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+    fun checkPermissions() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)
+            binding.noNotificationsInfo.visibility = View.GONE
+        else
+            binding.noNotificationsInfo.visibility = View.VISIBLE
+    }
 
     class AccountAdapter(
             val activity: Activity
