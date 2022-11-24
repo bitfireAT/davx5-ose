@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityTasksBinding
@@ -89,7 +90,8 @@ class TasksFragment: Fragment() {
     }
 
     private fun installApp(packageName: String) {
-        val uri = Uri.parse("market://details?id=$packageName")
+        val uri = Uri.parse("market://details?id=$packageName&referrer=" +
+                Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID))
         val intent = Intent(Intent.ACTION_VIEW, uri)
         if (intent.resolveActivity(requireActivity().packageManager) != null)
             startActivity(intent)
