@@ -11,7 +11,7 @@ buildscript {
         aboutLibraries: '8.9.4',
         appIntro: '6.2.0',
         dav4jvm: '2.2',
-        hilt: '2.44',
+        hilt: '2.44.2',
         kotlin: '1.7.21',
         okhttp: '4.10.0',
         // latest Apache Commons versions that don't require Java 8 (Android 7)

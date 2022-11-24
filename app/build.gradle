@@ -15,8 +15,8 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 402040002
-        versionName '4.2.4'
+        versionCode 402050000
+        versionName '4.2.5-rc.1'
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         setProperty "archivesBaseName", "davx5-ose-" + getVersionName()
@@ -120,7 +120,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
     implementation 'androidx.preference:preference-ktx:1.2.0'
-    implementation 'androidx.security:security-crypto:1.1.0-alpha03'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha04'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.7.0'
@@ -157,7 +157,7 @@ dependencies {
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:${versions.hilt}"
 
     androidTestImplementation 'androidx.test:core-ktx:1.5.0'
-    androidTestImplementation 'androidx.test:runner:1.5.0'
+    androidTestImplementation 'androidx.test:runner:1.5.1'
     androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.4'
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
