@@ -50,8 +50,8 @@
     <string name="intro_tasks_title">Tasks support</string>
     <string name="intro_tasks_text1">If tasks are supported by your server, they can be synchronized with a supported tasks app:</string>
     <string name="intro_tasks_opentasks">OpenTasks</string>
-    <string name="intro_tasks_opentasks_info"><![CDATA[For some features like subtasks or recurring tasks, you may need <a href="https://www.davx5.com/faq/tasks/advanced-task-features">additional apps</a>.]]></string>
-    <string name="intro_tasks_tasks_org">Tasks</string>
+    <string name="intro_tasks_opentasks_info">Doesn\'t seem to be developed anymore – not recommended.</string>
+    <string name="intro_tasks_tasks_org">Tasks.org</string>
     <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">are not supported</a> (yet).]]></string>
     <string name="intro_tasks_no_app_store">No app store available</string>
     <string name="intro_tasks_dont_show">I don\'t need tasks support.*</string>

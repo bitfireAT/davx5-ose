@@ -116,39 +116,6 @@
                         app:layout_constraintEnd_toEndOf="@id/end"/>
 
                     <RadioButton
-                        android:id="@+id/openTasksRadio"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/card_margin_title_text"
-                        android:checked="@={model.openTasksSelected}"
-                        android:clickable="@{model.openTasksInstalled}"
-                        android:text="@string/intro_tasks_opentasks"
-                        android:textAlignment="viewStart"
-                        app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/jtxInfo" />
-                    <TextView
-                        android:id="@+id/openTasksInfo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/openTasksRadio"
-                        app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintEnd_toStartOf="@id/end"
-                        style="@style/TextAppearance.MaterialComponents.Body2"
-                        app:html="@{@string/intro_tasks_opentasks_info}"/>
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/openTasksSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="@={model.openTasksRequested}"
-                        android:clickable="@{!model.openTasksInstalled}"
-                        app:layout_constraintTop_toTopOf="@id/openTasksRadio"
-                        app:layout_constraintBottom_toBottomOf="@id/openTasksRadio"
-                        app:layout_constraintStart_toEndOf="@id/openTasksRadio"
-                        app:layout_constraintEnd_toEndOf="@id/end"/>
-
-                    <RadioButton
                         android:id="@+id/tasksOrgRadio"
                         style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
@@ -160,7 +127,7 @@
                         android:textAlignment="viewStart"
                         app:layout_constraintEnd_toStartOf="@id/tasksOrgSwitch"
                         app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/openTasksInfo" />
+                        app:layout_constraintTop_toBottomOf="@id/jtxInfo" />
                     <TextView
                         android:id="@+id/tasksOrgInfo"
                         android:layout_width="0dp"
@@ -181,6 +148,39 @@
                         app:layout_constraintStart_toEndOf="@id/tasksOrgRadio"
                         app:layout_constraintEnd_toEndOf="@id/end"/>
 
+                    <RadioButton
+                        android:id="@+id/openTasksRadio"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/card_margin_title_text"
+                        android:checked="@={model.openTasksSelected}"
+                        android:clickable="@{model.openTasksInstalled}"
+                        android:text="@string/intro_tasks_opentasks"
+                        android:textAlignment="viewStart"
+                        app:layout_constraintEnd_toStartOf="@id/openTasksSwitch"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintTop_toBottomOf="@id/tasksOrgInfo" />
+                    <TextView
+                        android:id="@+id/openTasksInfo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/openTasksRadio"
+                        app:layout_constraintStart_toStartOf="@id/start"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        style="@style/TextAppearance.MaterialComponents.Body2"
+                        app:html="@{@string/intro_tasks_opentasks_info}"/>
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/openTasksSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="@={model.openTasksRequested}"
+                        android:clickable="@{!model.openTasksInstalled}"
+                        app:layout_constraintTop_toTopOf="@id/openTasksRadio"
+                        app:layout_constraintBottom_toBottomOf="@id/openTasksRadio"
+                        app:layout_constraintStart_toEndOf="@id/openTasksRadio"
+                        app:layout_constraintEnd_toEndOf="@id/end"/>
+
                     <CheckBox
                         android:id="@+id/dontShow"
                         android:layout_width="0dp"
@@ -192,7 +192,7 @@
                         android:visibility="@{model.openTasksInstalled ? View.GONE : View.VISIBLE}"
                         app:layout_constraintEnd_toEndOf="@id/end"
                         app:layout_constraintStart_toStartOf="@id/start"
-                        app:layout_constraintTop_toBottomOf="@id/tasksOrgInfo" />
+                        app:layout_constraintTop_toBottomOf="@id/openTasksInfo" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
