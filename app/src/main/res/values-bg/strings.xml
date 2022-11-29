@@ -41,8 +41,6 @@
   <string name="intro_tasks_title">Поддръжка на задачи</string>
   <string name="intro_tasks_text1">Ако сървърът поддържа задачи, те могат да бъдат синхронизирани с приложение за задачи:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[За някои възможности, като подзадачи или повтарящи се задачи, може да са необходими <a href="https://www.davx5.com/faq/tasks/advanced-task-features">допълнителни приложения</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Някои възможности <a href="https://www.davx5.com/faq/tasks/advanced-task-features">(още) не се поддържат</a>.]]></string>
   <string name="intro_tasks_no_app_store">Няма достъпен магазин за приложения</string>
   <string name="intro_tasks_dont_show">Не се нуждая от поддръжка на задачи.*</string>

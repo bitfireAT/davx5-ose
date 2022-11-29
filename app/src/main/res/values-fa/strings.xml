@@ -34,7 +34,6 @@
   <string name="intro_tasks_title">وظایف پشتیبانی</string>
   <string name="intro_tasks_text1">اگر وظایف توسط سرور شما پشتیبانی شود، می توان آنها را همگام سازی کرد:</string>
   <string name="intro_tasks_opentasks">وظایف را باز کنید</string>
-  <string name="intro_tasks_tasks_org">وظایف</string>
   <string name="intro_tasks_no_app_store">فروشگاه در دسترس نیست</string>
   <string name="intro_tasks_dont_show">من به پشتیبانی وظایف نیاز ندارم. *</string>
   <string name="intro_open_source_title">برنامه‌های متن باز</string>

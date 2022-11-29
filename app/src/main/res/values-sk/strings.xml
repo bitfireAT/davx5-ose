@@ -17,7 +17,6 @@
   <string name="notification_channel_sync_io_errors_desc">Vypršanie času, problémy spojenia, atď. (často dočasné)</string>
   <!--IntroActivity-->
   <string name="intro_more_info">Viac informácii</string>
-  <string name="intro_tasks_tasks_org">Úlohy</string>
   <!--PermissionsActivity-->
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->

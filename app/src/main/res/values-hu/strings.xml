@@ -39,8 +39,6 @@
   <string name="intro_tasks_title">Feladatok támogatása</string>
   <string name="intro_tasks_text1">Ha a szerver támogatja a feladatokat, akkor a következő feladat alkalmazásokkal lehet szinkronizálni őket:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Néhány funkcióhoz, mint az alfeladatok vagy ismétlődő feladatok, szükség lehet <a href="https://www.davx5.com/faq/tasks/advanced-task-features">további alkalmazásokra </a>.]]></string>
-  <string name="intro_tasks_tasks_org">Feladatok</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Néhány funkció <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nem támogatott</a> (még).]]></string>
   <string name="intro_tasks_no_app_store">Nincs elérhető alkalmazás-áruház</string>
   <string name="intro_tasks_dont_show">Nincs szükségem a feladatok támogatására.*</string>

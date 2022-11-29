@@ -39,8 +39,6 @@
   <string name="intro_tasks_title">작업 지원</string>
   <string name="intro_tasks_text1">서버에서 작업을 지원하는 경우 지원되는 작업 앱과 동기화할 수 있습니다.</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[하위 작업 또는 반복 작업과 같은 일부 기능의 경우 <a href="https://www.davx5.com/faq/tasks/advanced-task-features">추가 앱</a>이 필요할 수 있습니다..]]></string>
-  <string name="intro_tasks_tasks_org">할일 목록</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[일부 기능은 <a href="https://www.davx5.com/faq/tasks/advanced-task-features">아직 지원되지 않습니다.</a>(yet)]]></string>
   <string name="intro_tasks_no_app_store">사용 가능한 앱 스토어 없음</string>
   <string name="intro_tasks_dont_show">업무 지원은 필요 없습니다.*</string>

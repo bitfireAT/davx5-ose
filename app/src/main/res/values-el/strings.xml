@@ -37,7 +37,6 @@
   <string name="intro_tasks_title">Υποστήριξη εργασιών</string>
   <string name="intro_tasks_text1">Εάν οι εργασίες υποστηρίζονται από τον server σας, μπορούν να συγχρονιστούν με μια υποστηριζόμενη εφαρμογή εργασιών:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_tasks_org">Εργασίες</string>
   <string name="intro_tasks_no_app_store">Δεν υπάρχει διαθέσιμο κατάστημα εφαρμογών</string>
   <string name="intro_tasks_dont_show">Δεν χρειάζομαι υποστήριξη εργασιών.*</string>
   <string name="intro_open_source_title">Λογισμικό ανοικτού κώδικα</string>

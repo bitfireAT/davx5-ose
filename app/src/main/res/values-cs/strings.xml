@@ -41,8 +41,7 @@
   <string name="intro_tasks_title">Podpora úkolů</string>
   <string name="intro_tasks_text1">Pokud jsou úkoly podporovány vámi využívaným serverem, je možné je synchronizovat pomocí podporované aplikace pro úkoly:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Pro některé funkce, jako jsou dílčí a opakující se úkoly nejspíš budete potřebovat <a href="https://www.davx5.com/faq/tasks/advanced-task-features">další aplikace</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Úkoly</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Některé funkce (ještě) <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nejsou podporovány</a>.]]></string>
   <string name="intro_tasks_no_app_store">Není k dispozici žádný obchod s aplikacemi</string>
   <string name="intro_tasks_dont_show">Nepotřebuji podporu pro úkoly.*</string>
@@ -124,7 +123,9 @@
   <string name="navigation_drawer_donate">Obdarovat</string>
   <string name="navigation_drawer_privacy_policy">Ochrana soukromí</string>
   <string name="account_list_no_internet">Bez připojení k Internetu. Systém Android synchronizaci nespustí.</string>
+  <string name="account_list_manage_connections">Spravovat spojení</string>
   <string name="account_list_low_storage">Zbývá málo místa na úložišti. Systém Android nespustí synchronizaci.</string>
+  <string name="account_list_manage_storage">Spravovat úložiště</string>
   <string name="account_list_empty">Vítejte v aplikaci DAVx⁵!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizace v rámci celého systému je vypnutá</string>
   <string name="accounts_global_sync_enable">Zapnout</string>

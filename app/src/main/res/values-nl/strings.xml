@@ -41,8 +41,6 @@
   <string name="intro_tasks_title">Ondersteunt taken</string>
   <string name="intro_tasks_text1">Als de server taken ondersteunt, synchroniseert een geschikte taken-app ze:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Voor functies als subtaken of herhalende taken zijn mogelijk <a href="https://www.davx5.com/faq/tasks/advanced-task-features">extra apps</a> nodig.]]></string>
-  <string name="intro_tasks_tasks_org">Taken</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Sommige functies<a href="https://www.davx5.com/faq/tasks/advanced-task-features">worden (nog) niet ondersteund</a>.]]></string>
   <string name="intro_tasks_no_app_store">Geen app-store beschikbaar</string>
   <string name="intro_tasks_dont_show">Er is geen taakondersteuning nodig.*</string>
