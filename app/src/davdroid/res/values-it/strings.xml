@@ -37,8 +37,6 @@
   <string name="intro_tasks_title">Supporto per le attività</string>
   <string name="intro_tasks_text1">Se le attività sono supportate dal tuo server, possono essere sincronizzate con una app per attività supportata:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Per alcune funzionalità come attività secondarie o attività ricorrenti, potresti aver bisogno di <a href="https://www.davx5.com/faq/tasks/advanced-task-features">app addizionali </a>.]]> </string>
-  <string name="intro_tasks_tasks_org">Attività</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Alcune funzionalità <a href="https://www.davx5.com/faq/tasks/advanced-task-features"> non sono (ancora) supportate </a>.]]></string>
   <string name="intro_tasks_no_app_store">Nessun app store disponibile</string>
   <string name="intro_tasks_dont_show">Non ho bisogno del supporto alle attività.*</string>

@@ -41,8 +41,6 @@
   <string name="intro_tasks_title">Soporte de tareas</string>
   <string name="intro_tasks_text1">Si las tareas son compatibles con tu servidor, pueden sincronizarse con una aplicación de tareas compatible:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Para algunas funciones como las subtareas o las tareas recurrentes, es posible que necesite <a href="https://www.davx5.com/faq/tasks/advanced-task-features">aplicaciones adicionales</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tareas</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Algunas características <a href="https://www.davx5.com/faq/tasks/advanced-task-features">no son compatibles</a> (todavía).]]></string>
   <string name="intro_tasks_no_app_store">Ninguna tienda de aplicaciones disponible</string>
   <string name="intro_tasks_dont_show">No necesito soporte para tareas.*</string>

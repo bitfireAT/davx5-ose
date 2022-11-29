@@ -41,8 +41,6 @@
   <string name="intro_tasks_title">Ärendestöd</string>
   <string name="intro_tasks_text1">Om ärenden stöds av din server kan de synkroniseras med en ärendeapp som stöds:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[För vissa funktioner som deluppgifter eller återkommande uppgifter kan du behöva <a href="https://www.davx5.com/faq/tasks/advanced-task-features"> ytterligare appar </a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Vissa funktioner <a href="https://www.davx5.com/faq/tasks/advanced-task-features">stöds inte</a> (ännu).]]></string>
   <string name="intro_tasks_no_app_store">Ingen app butik tillgänglig</string>
   <string name="intro_tasks_dont_show">Jag behöver inte stöd för att-göra.*</string>
@@ -62,6 +60,9 @@
   <string name="permissions_calendar_title">Kalenderbehörigheter</string>
   <string name="permissions_calendar_status_off">Synkronisera inte kalendern (ej rekommenderat)</string>
   <string name="permissions_calendar_status_on">Synkronisering av kalender möjlig</string>
+  <string name="permissions_notification_title">Notifieringsbehörigheter</string>
+  <string name="permissions_notification_status_off">Notifieringar avaktiverade (ej rekommenderat)</string>
+  <string name="permissions_notification_status_on">Notifieringar aktiva</string>
   <string name="permissions_jtx_title">jtx Bordsbehörigheter</string>
   <string name="permissions_jtx_status_not_installed">Ingen uppgift, journaler &amp; anteckningssynkronisering (ej installerad)</string>
   <string name="permissions_jtx_status_off">Ingen synkronisering av uppgifter, journaler, anteckningar</string>
@@ -123,8 +124,11 @@
   <string name="navigation_drawer_community">Gemenskap</string>
   <string name="navigation_drawer_donate">Donera</string>
   <string name="navigation_drawer_privacy_policy">Integritetspolicy</string>
+  <string name="account_list_no_notification_permission">Notifieringar avstängda. Du kommer inte bli informerad om synkroniseringsfel.</string>
   <string name="account_list_no_internet">Ingen internetanslutning. Android kommer inte att köra synkronisering.</string>
+  <string name="account_list_manage_connections">Hantera anslutningar</string>
   <string name="account_list_low_storage">Lagringsutrymme lågt. Android kommer inte att köra synkronisering.</string>
+  <string name="account_list_manage_storage">Hantera lagring</string>
   <string name="account_list_empty">Välkommen till DAVx⁵!\n\nDu kan lägga till ett CalDAV/CardDAV-konto nu.</string>
   <string name="accounts_global_sync_disabled">Systemomfattande automatisk synkronisering är inaktiverad</string>
   <string name="accounts_global_sync_enable">Aktivera</string>

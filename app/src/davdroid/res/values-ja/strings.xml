@@ -5,10 +5,17 @@
   <string name="account_invalid">アカウントがありません</string>
   <string name="account_title_address_book">DAVx⁵ アドレス帳</string>
   <string name="address_books_authority_title">アドレス帳</string>
+  <string name="dialog_remove">削除</string>
+  <string name="dialog_deny">キャンセル</string>
+  <string name="field_required">このフィールドは入力必須です</string>
   <string name="help">ヘルプ</string>
   <string name="manage_accounts">アカウントの管理</string>
+  <string name="share">共有</string>
+  <string name="database_destructive_migration_title">データベースが破損しています</string>
+  <string name="database_destructive_migration_text">すべてのアカウントがローカルから削除されました</string>
   <string name="notification_channel_debugging">デバッグ中</string>
   <string name="notification_channel_general">他の重要なメッセージ</string>
+  <string name="notification_channel_status">優先度の低いステータスメッセージ</string>
   <string name="notification_channel_sync">同期</string>
   <string name="notification_channel_sync_errors">同期エラー</string>
   <string name="notification_channel_sync_errors_desc">予期しないサーバーの応答のような、同期を停止させる重要なエラー</string>
@@ -17,91 +24,207 @@
   <string name="notification_channel_sync_io_errors">ネットワークおよび I/O エラー</string>
   <string name="notification_channel_sync_io_errors_desc">タイムアウト、接続の問題など (多くの場合、一時的なもの)</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">あなたのデータはあなたの手で</string>
+  <string name="intro_slogan2">コントロールを始めよう</string>
+  <string name="intro_battery_title">一定の間隔で同期</string>
+  <string name="intro_battery_not_whitelisted">無効 (非推奨)</string>
+  <string name="intro_battery_whitelisted">有効 (推奨)</string>
+  <string name="intro_battery_text">一定の間隔で同期するには、%s のバックグラウンドでの動作を許可する必要があります。許可しない場合、Android によって同期が停止されることがあります。</string>
+  <string name="intro_battery_dont_show">一定間隔での同期は不要です*</string>
+  <string name="intro_autostart_title">%s 適合性</string>
+  <string name="intro_autostart_text">このデバイスが同期をブロックしている可能性があります。もし影響を受けている場合、この手順で解決できます。</string>
+  <string name="intro_autostart_dont_show">必要な設定は完了したのでリマインダーは不要です*</string>
+  <string name="intro_leave_unchecked">* 未チェックのままにすると後でリマインドします。アプリの設定 / %s でリセットできます</string>
   <string name="intro_more_info">追加情報</string>
-  <string name="intro_tasks_tasks_org">タスク</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[日誌、メモ、タスクの同期に対応]]></string>
+  <string name="intro_tasks_title">タスクの同期に対応</string>
+  <string name="intro_tasks_text1">お使いのサーバーがタスクに対応している場合、対応するアプリで同期できます:</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[いくつかの機能は (まだ) <a href="https://www.davx5.com/faq/tasks/advanced-task-features">対応していません</a>]]></string>
+  <string name="intro_tasks_no_app_store">アプリストアが利用できません</string>
+  <string name="intro_tasks_dont_show">タスク対応は不要です*</string>
+  <string name="intro_open_source_title">オープンソースソフトウェア</string>
+  <string name="intro_open_source_text">オープンソースソフトウェアとして %s をお届けできることをとても嬉しく思っています。開発・維持・サポートは簡単ではありません。貢献 (さまざまな方法があります) や寄付をご検討ください。プロジェクトはそれらに支えられています。</string>
+  <string name="intro_open_source_details">貢献/寄付の方法</string>
+  <string name="intro_open_source_dont_show">しばらく非表示にする</string>
   <!--PermissionsActivity-->
-  <string name="permissions_contacts_title">連絡先アクセス許可</string>
-  <string name="permissions_calendar_title">カレンダー アクセス許可</string>
-  <string name="permissions_opentasks_title">OpenTasks アクセス許可</string>
+  <string name="permissions_title">権限の許可</string>
+  <string name="permissions_text">%s が正しく動作するには権限を許可する必要があります</string>
+  <string name="permissions_all_title">以下のすべて</string>
+  <string name="permissions_all_status_off">すべての機能を使用する (推奨)</string>
+  <string name="permissions_all_status_on">すべての権限が許可されました</string>
+  <string name="permissions_contacts_title">連絡先へのアクセス許可</string>
+  <string name="permissions_contacts_status_off">連絡先を同期しない (非推奨)</string>
+  <string name="permissions_contacts_status_on">連絡先を同期できます</string>
+  <string name="permissions_calendar_title">カレンダーへのアクセス許可</string>
+  <string name="permissions_calendar_status_off">カレンダーを同期しない (非推奨)</string>
+  <string name="permissions_calendar_status_on">カレンダーを同期できます</string>
+  <string name="permissions_notification_title">通知の許可</string>
+  <string name="permissions_notification_status_off">通知が無効です (非推奨)</string>
+  <string name="permissions_notification_status_on">通知が有効です</string>
+  <string name="permissions_jtx_title">jtx Board の許可</string>
+  <string name="permissions_jtx_status_not_installed">日誌、メモ、タスクを同期しない (未インストール)</string>
+  <string name="permissions_jtx_status_off">日誌、メモ、タスクを同期しない</string>
+  <string name="permissions_jtx_status_on">日誌、メモ、タスクを同期できます</string>
+  <string name="permissions_opentasks_title">OpenTasks の許可</string>
+  <string name="permissions_tasksorg_title">Tasks の許可</string>
+  <string name="permissions_tasks_status_not_installed">タスクを同期しない (未インストール)</string>
+  <string name="permissions_tasks_status_off">タスクを同期しない</string>
+  <string name="permissions_tasks_status_on">タスクを同期できます</string>
+  <string name="permissions_autoreset_title">継続の許可</string>
+  <string name="permissions_autoreset_status_off">権限が自動的にリセットされることがあります (非推奨)</string>
+  <string name="permissions_autoreset_status_on">権限は自動でリセットされません</string>
+  <string name="permissions_autoreset_instruction">許可から「アプリが使用されていない場合に権限を削除」を無効化してください</string>
+  <string name="permissions_app_settings_hint">スイッチが機能しない場合、アプリ情報 / 許可 にアクセスしてください</string>
+  <string name="permissions_app_settings">アプリ設定</string>
   <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID の許可</string>
+  <string name="wifi_permissions_intro">現在の WiFi 名 (SSID) にアクセスするため、これらの条件を満たす必要があります:</string>
+  <string name="wifi_permissions_location_permission">正確な位置情報の許可</string>
+  <string name="wifi_permissions_location_permission_on">位置情報の権限が許可されています</string>
+  <string name="wifi_permissions_location_permission_off">位置情報の権限が拒否されています</string>
+  <string name="wifi_permissions_background_location_permission">バックグラウンドでの位置情報の許可</string>
+  <string name="wifi_permissions_background_location_permission_label">常に許可</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[位置情報の権限は <b>%s</b> に設定されています]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[位置情報の権限は <b>%s</b> に設定されていません]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s は位置情報の権限を SSID で制限されたアカウントのために現在の WiFi SSID を確認する目的にのみ使用します。これはアプリがバックグラウンドでも発生します。位置情報データが収集、保存、処理および送信されることはありません。</string>
+  <string name="wifi_permissions_location_enabled">位置情報は常に有効です</string>
+  <string name="wifi_permissions_location_enabled_on">位置情報サービスは有効です</string>
+  <string name="wifi_permissions_location_enabled_off">位置情報サービスは無効です</string>
   <!--AboutActivity-->
+  <string name="about_translations">翻訳</string>
   <string name="about_libraries">ライブラリー</string>
   <string name="about_version">バージョン %1$s (%2$d)</string>
   <string name="about_build_date">コンパイル日時 %s</string>
+  <string name="about_copyright">© Ricki Hirner、Bernhard Stockmann (bitfire web engineering GmbH) と貢献者</string>
   <string name="about_flavor_info">このバージョンは Google Play での配信にのみ対応しています。</string>
   <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Thanks to: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">ログファイルを作成できませんでした</string>
+  <string name="logging_notification_text">%s のすべてのアクティビティのログを記録しています</string>
+  <string name="logging_notification_view_share">表示/共有</string>
+  <string name="logging_notification_disable">無効にする</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_open">ナビゲーションドロワーを開く</string>
   <string name="navigation_drawer_close">ナビゲーションドロワーを閉じる</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同期アダプター</string>
   <string name="navigation_drawer_about">アプリについて / ライセンス</string>
   <string name="navigation_drawer_beta_feedback">ベータフィードバック</string>
+  <string name="install_email_client">メールクライアントをインストールしてください</string>
+  <string name="install_browser">ウェブブラウザをインストールしてください</string>
   <string name="navigation_drawer_settings">設定</string>
   <string name="navigation_drawer_news_updates">ニュース &amp; 更新</string>
+  <string name="navigation_drawer_tools">ツール</string>
   <string name="navigation_drawer_external_links">外部リンク</string>
-  <string name="navigation_drawer_website">Web サイト</string>
+  <string name="navigation_drawer_website">ウェブサイト</string>
   <string name="navigation_drawer_manual">マニュアル</string>
   <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_community">コミュニティ</string>
   <string name="navigation_drawer_donate">寄付</string>
+  <string name="navigation_drawer_privacy_policy">プライバシーポリシー</string>
+  <string name="account_list_no_notification_permission">通知が無効です。同期エラーが発生しても通知されません。</string>
   <string name="account_list_no_internet">インターネット接続がありません。 Android は同期を実行しません。</string>
-  <string name="account_list_empty">DAVx⁵ にようこそ!\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
+  <string name="account_list_manage_connections">接続を管理</string>
+  <string name="account_list_low_storage">残りのストレージ容量が少なくなっています。Android は同期を実行しません。</string>
+  <string name="account_list_manage_storage">ストレージを管理</string>
+  <string name="account_list_empty">DAVx⁵ にようこそ！\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
   <string name="accounts_global_sync_disabled">システム全体の自動同期が無効です</string>
   <string name="accounts_global_sync_enable">有効</string>
+  <string name="accounts_sync_all">すべてのアカウントを同期</string>
   <!--DavService-->
   <string name="dav_service_refresh_failed">サービスの検出に失敗しました</string>
-  <string name="dav_service_refresh_couldnt_refresh">コレクション リストを更新できません</string>
+  <string name="dav_service_refresh_couldnt_refresh">コレクション リストを更新できませんでした</string>
   <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">フォアグラウンドで実行できません</string>
+  <string name="battery_optimization_notify_text">バッテリー最適化を無効にしてください</string>
   <!--ForegroundService-->
+  <string name="foreground_service_notify_title">フォアグラウンドで実行</string>
+  <string name="foreground_service_notify_text">一部のデバイスでは自動同期にこの設定が必要になります。</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">設定</string>
   <string name="app_settings_debug">デバッグ</string>
   <string name="app_settings_show_debug_info">デバッグ情報を表示</string>
   <string name="app_settings_show_debug_info_details">ソフトウェアと設定の詳細を表示/共有</string>
   <string name="app_settings_logging">詳細ログ</string>
-  <string name="app_settings_logging_on">ログ取得は有効です</string>
-  <string name="app_settings_logging_off">ログ取得は無効です</string>
+  <string name="app_settings_logging_on">ログ取得が有効</string>
+  <string name="app_settings_logging_off">ログ取得が無効</string>
+  <string name="app_settings_battery_optimization">バッテリー最適化</string>
+  <string name="app_settings_battery_optimization_whitelisted">このアプリでは無効 (推奨)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">有効 (非推奨)</string>
+  <string name="app_settings_foreground_service">フォアグラウンドを維持</string>
+  <string name="app_settings_foreground_service_details">自動同期に問題のあるデバイスでは有効かもしれません</string>
   <string name="app_settings_connection">接続</string>
+  <string name="app_settings_proxy">プロキシーの種類</string>
+  <string-array name="app_settings_proxy_types">
+    <item>システムのデフォルト</item>
+    <item>プロキシーなし</item>
+    <item>HTTP</item>
+    <item>SOCKS (Orbot 向け)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">プロキシーのホスト名</string>
+  <string name="app_settings_proxy_port">プロキシーのポート番号</string>
   <string name="app_settings_security">セキュリティ</string>
-  <string name="app_settings_distrust_system_certs">システム証明書の信頼を解除</string>
-  <string name="app_settings_distrust_system_certs_on">システムとユーザーが追加したCAを信頼しない</string>
-  <string name="app_settings_distrust_system_certs_off">システムとユーザーが追加したCAを信頼する (推奨)</string>
-  <string name="app_settings_reset_certificates">(未)信頼済証明書をリセット</string>
-  <string name="app_settings_reset_certificates_summary">すべてのカスタム証明書の信頼をリセット</string>
+  <string name="app_settings_security_app_permissions">アプリの権限</string>
+  <string name="app_settings_security_app_permissions_summary">同期に必要な権限を確認する</string>
+  <string name="app_settings_distrust_system_certs">システム証明書を無視</string>
+  <string name="app_settings_distrust_system_certs_on">システムとユーザーが追加した CA を信頼しない</string>
+  <string name="app_settings_distrust_system_certs_off">システムとユーザーが追加した CA を信頼する (推奨)</string>
+  <string name="app_settings_reset_certificates">(未) 信頼証明書をリセット</string>
+  <string name="app_settings_reset_certificates_summary">すべてのカスタム証明書の信頼をリセットします</string>
   <string name="app_settings_reset_certificates_success">すべてのカスタム証明書をクリアしました</string>
   <string name="app_settings_user_interface">ユーザーインターフェイス</string>
   <string name="app_settings_notification_settings">通知設定</string>
   <string name="app_settings_notification_settings_summary">通知チャネルとその設定を管理します</string>
+  <string name="app_settings_theme_title">テーマを選択</string>
+  <string-array name="app_settings_theme_names">
+    <item>システムのデフォルト</item>
+    <item>ライト</item>
+    <item>ダーク</item>
+  </string-array>
   <string name="app_settings_reset_hints">ヒントをリセット</string>
-  <string name="app_settings_reset_hints_summary">以前非表示にしたヒントを、再度有効にします</string>
-  <string name="app_settings_reset_hints_success">すべてのヒントが再度表示されます</string>
+  <string name="app_settings_reset_hints_summary">以前非表示にしたヒントを再表示します</string>
+  <string name="app_settings_reset_hints_success">すべてのヒントを再表示します</string>
+  <string name="app_settings_integration">統合</string>
+  <string name="app_settings_tasks_provider">タスク管理アプリ</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">%s と同期しています</string>
+  <string name="app_settings_tasks_provider_none">連携できるアプリがありません</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">連絡先を同期しません (権限なし)</string>
+  <string name="account_caldav_missing_calendar_permissions">カレンダーを同期しません (権限なし)</string>
+  <string name="account_caldav_missing_tasks_permissions">タスクを同期しません (権限なし)</string>
+  <string name="account_caldav_missing_permissions">カレンダーとタスクを同期しません (権限なし)</string>
+  <string name="account_webcal_missing_calendar_permissions">カレンダーにアクセスできません (権限なし)</string>
+  <string name="account_permissions_action">権限の許可</string>
   <string name="account_no_address_books">アドレス帳は (まだ) ありません。</string>
   <string name="account_no_calendars">カレンダーは (まだ) ありません。</string>
   <string name="account_no_webcals">カレンダーのサブスクリプションは (まだ) ありません。</string>
   <string name="account_swipe_down">下にスワイプすると、サーバーからリストを更新します。</string>
   <string name="account_synchronize_now">今すぐ同期</string>
-  <string name="account_synchronizing_now">同期中</string>
+  <string name="account_synchronizing_now">同期しています</string>
   <string name="account_settings">アカウント設定</string>
   <string name="account_rename">アカウントの名前を変更</string>
-  <string name="account_rename_new_name">未保存のローカルデータが破棄されることがあります。 名前の変更後に再同期が必要です。 新しいアカウント名:</string>
+  <string name="account_rename_new_name">未保存のローカルデータが破棄されることがあります。名前の変更後に再同期が必要です。新しいアカウント名:</string>
   <string name="account_rename_rename">名前を変更</string>
+  <string name="account_rename_couldnt_rename">アカウントの名前を変更できません</string>
   <string name="account_delete">アカウントを削除</string>
-  <string name="account_delete_confirmation_title">アカウントを削除してもよろしいですか?</string>
-  <string name="account_delete_confirmation_text">アドレス帳、カレンダー、タスクリストのローカルコピーがすべて削除されます。</string>
+  <string name="account_delete_confirmation_title">本当にアカウントを削除しますか？</string>
+  <string name="account_delete_confirmation_text">アドレス帳、カレンダー、タスクリストのすべてのローカルコピーが削除されます。</string>
   <string name="account_synchronize_this_collection">このコレクションを同期</string>
   <string name="account_read_only">読み取り専用</string>
   <string name="account_calendar">カレンダー</string>
   <string name="account_task_list">タスクリスト</string>
+  <string name="account_journal">日誌</string>
+  <string name="account_only_personal">プライベートのみ表示</string>
   <string name="account_refresh_address_book_list">アドレス帳リストを更新</string>
   <string name="account_create_new_address_book">新しいアドレス帳を作成</string>
   <string name="account_refresh_calendar_list">カレンダーリストを更新</string>
   <string name="account_create_new_calendar">新しいカレンダーを作成</string>
-  <string name="account_no_webcal_handler_found">Webcal に対応するアプリが見つかりません</string>
+  <string name="account_no_webcal_handler_found">Webcal に対応するアプリが見つかりませんでした</string>
   <string name="account_install_icsx5">ICSx⁵ をインストール</string>
   <!--AddAccountActivity-->
   <string name="login_title">アカウントを追加</string>
@@ -120,23 +243,30 @@
   <string name="login_login">ログイン</string>
   <string name="login_create_account">アカウントを作成</string>
   <string name="login_account_name">アカウント名</string>
-  <string name="login_account_name_info">Android はあなたが作成した予定の ORGANIZER フィールドとしてアカウント名を使用するので、アカウント名としてメールアドレスを使用してください。同じ名前のアカウントを 2 つ持つことはできません。</string>
+  <string name="login_account_avoid_apostrophe">アポストロフィー (\') の使用によりいくつかのデバイスでエラーが発生することが報告されています。</string>
+  <string name="login_account_name_info">Android はあなたが作成した予定の ORGANIZER フィールドにアカウント名を使用するので、アカウント名としてメールアドレスを使用してください。同じ名前のアカウントを 2 つ持つことはできません。</string>
   <string name="login_account_contact_group_method">連絡先グループ方法:</string>
   <string name="login_account_name_required">アカウント名が必要です</string>
   <string name="login_account_name_already_taken">アカウント名はすでに取得されています</string>
   <string name="login_account_not_created">アカウントを作成できません</string>
+  <string name="login_type_advanced">高度なログイン (特別な場合)</string>
+  <string name="login_use_username_password">ユーザー名/パスワードを使用</string>
+  <string name="login_use_client_certificate">クライアント証明書を使用</string>
+  <string name="login_no_certificate_found">証明書が見つかりませんでした</string>
+  <string name="login_install_certificate">証明書をインストール</string>
   <string name="login_configuration_detection">設定の検出</string>
   <string name="login_querying_server">しばらくお待ちください。サーバーに問い合わせ中…</string>
-  <string name="login_no_caldav_carddav">CalDAV または CardDAV サービスが見つかりません。</string>
+  <string name="login_no_caldav_carddav">CalDAV または CardDAV サービスが見つかりませんでした。</string>
+  <string name="login_username_password_wrong">ユーザー名 (メールアドレス) / パスワード が間違っていませんか？</string>
   <string name="login_view_logs">詳細を表示</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">設定: %s</string>
   <string name="settings_sync">同期</string>
-  <string name="settings_sync_interval_contacts">連絡先同期間隔</string>
+  <string name="settings_sync_interval_contacts">連絡先の同期間隔</string>
   <string name="settings_sync_summary_manually">手動のみ</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">%d 分ごと + ローカルの変更時はすぐに</string>
-  <string name="settings_sync_interval_calendars">カレンダー同期間隔</string>
-  <string name="settings_sync_interval_tasks">タスク同期間隔</string>
+  <string name="settings_sync_interval_calendars">カレンダーの同期間隔</string>
+  <string name="settings_sync_interval_tasks">タスクの同期間隔</string>
   <string-array name="settings_sync_interval_names">
     <item>手動のみ</item>
     <item>15 分ごと</item>
@@ -144,16 +274,18 @@
     <item>1 時間ごと</item>
     <item>2 時間ごと</item>
     <item>4 時間ごと</item>
-    <item>1 日 1 回</item>
+    <item>毎日 1 回</item>
   </string-array>
   <string name="settings_sync_wifi_only">WiFi でのみ同期</string>
-  <string name="settings_sync_wifi_only_on">同期は WiFi 接続に制限されます</string>
+  <string name="settings_sync_wifi_only_on">WiFi 接続でのみ同期します</string>
   <string name="settings_sync_wifi_only_off">接続の種類は考慮されません</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID 制限</string>
   <string name="settings_sync_wifi_only_ssids_on">%s でのみ同期します</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">%s でのみ同期します (有効な位置サービスが必要です)</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">%s でのみ同期します (有効な位置情報サービスが必要)</string>
   <string name="settings_sync_wifi_only_ssids_off">すべての WiFi 接続が使用されます</string>
   <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 制限にはさらに設定が必要です</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
   <string name="settings_more_info_faq">詳細情報 (FAQ)</string>
   <string name="settings_authentication">認証</string>
   <string name="settings_username">ユーザー名</string>
@@ -162,6 +294,7 @@
   <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
   <string name="settings_enter_password">パスワードを入力:</string>
   <string name="settings_certificate_alias">クライアント証明書の別名</string>
+  <string name="settings_certificate_alias_empty">証明書が選択されていません</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">過去イベントの時間限度</string>
   <string name="settings_sync_time_range_past_none">すべてのイベントが同期されます</string>
@@ -169,14 +302,28 @@
     <item quantity="other">%d 日より前のイベントは無視されます</item>
   </plurals>
   <string name="settings_sync_time_range_past_message">この日数より過去のイベントは無視されます (0 も可)。すべてのイベントを同期させるには、空白のままにしてください。</string>
+  <string name="settings_default_alarm">デフォルトのリマインダー</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="other">デフォルトのリマインダーはイベントの %d 分前です</item>
+  </plurals>
+  <string name="settings_default_alarm_off">デフォルトのリマインダーはありません</string>
+  <string name="settings_default_alarm_message">デフォルトのリマインダーは、リマインダーのないイベントに適用されます。希望する分数を入力してください。デフォルトのリマインダーを無効にするには、空白のままにしてください。</string>
   <string name="settings_manage_calendar_colors">カレンダーの色を管理</string>
-  <string name="settings_event_colors">イベントカラーサポート</string>
+  <string name="settings_manage_calendar_colors_on">カレンダーの色は同期ごとにリセットされます</string>
+  <string name="settings_manage_calendar_colors_off">カレンダーの色は他のアプリで設定できます</string>
+  <string name="settings_event_colors">イベントの色への対応</string>
+  <string name="settings_event_colors_on">イベントの色が同期されます</string>
+  <string name="settings_event_colors_off">イベントの色は同期されません</string>
   <string name="settings_carddav">CardDAV</string>
-  <string name="settings_contact_group_method">連絡先グループ方法</string>
+  <string name="settings_contact_group_method">連絡先のグループ方法</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>グループを個別の vCard に分割</item>
+    <item>グループを連絡先ごとのカテゴリーとして記録</item>
+  </string-array>
   <string name="settings_contact_group_method_change">グループ方法を変更</string>
   <!--collection management-->
   <string name="create_addressbook">アドレス帳を作成</string>
-  <string name="create_addressbook_display_name_hint">マイ アドレス帳</string>
+  <string name="create_addressbook_display_name_hint">アドレス帳</string>
   <string name="create_calendar">カレンダーを作成</string>
   <string name="create_calendar_time_zone">タイムゾーン</string>
   <string name="create_calendar_type">可能なカレンダーエントリー</string>
@@ -191,31 +338,77 @@
   <string name="create_collection_description">説明</string>
   <string name="create_collection_optional">オプション</string>
   <string name="create_collection_home_set">ストレージの場所</string>
+  <string name="create_collection_home_set_required">ストレージの場所が必要です</string>
   <string name="create_collection_create">作成</string>
   <string name="delete_collection">コレクションを削除</string>
-  <string name="delete_collection_confirm_title">よろしいですか?</string>
+  <string name="delete_collection_confirm_title">よろしいですか？</string>
   <string name="delete_collection_confirm_warning">このコレクション (%s) とそのすべてのデータが完全に削除されます。</string>
   <string name="delete_collection_data_shall_be_deleted">これらのデータがサーバーから削除されます。</string>
   <string name="delete_collection_deleting_collection">コレクションの削除中</string>
-  <string name="collection_force_read_only">強制的に読み取り専用</string>
+  <string name="collection_force_read_only">読み取り専用にする</string>
   <string name="collection_properties">プロパティ</string>
   <string name="collection_properties_url">アドレス (URL):</string>
   <string name="collection_properties_copy_url">URL をコピー</string>
+  <string name="collection_properties_owner">所有者:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">デバッグ情報</string>
+  <string name="debug_info_archive_caption">ZIP アーカイブ</string>
+  <string name="debug_info_archive_subtitle">デバッグ情報とログを含みます</string>
+  <string name="debug_info_archive_text">アーカイブをコンピューターに転送、メールで送信、サポートチケットに添付するには共有してください</string>
+  <string name="debug_info_archive_share">アーカイブを共有</string>
+  <string name="debug_info_attached">デバッグ情報がこのメッセージに添付されています (受信したアプリが添付ファイルに対応している必要があります)</string>
+  <string name="debug_info_http_error">HTTP エラー</string>
+  <string name="debug_info_server_error">サーバーエラー</string>
+  <string name="debug_info_webdav_error">WebDAV エラー</string>
+  <string name="debug_info_io_error">I/O エラー</string>
+  <string name="debug_info_http_403_description">リクエストが拒否されました。詳細は関連するリソースとデバッグ情報を確認してください。</string>
+  <string name="debug_info_http_404_description">要求されたリソースは (もう) 存在しません。詳細は関連するリソースとデバッグ情報を確認してください。</string>
+  <string name="debug_info_http_5xx_description">サーバー側に問題が発生しました。お使いのサーバーのサポートに連絡してください。</string>
+  <string name="debug_info_unexpected_error">予期せぬエラーが発生しました。詳細はデバッグ情報を確認してください。</string>
+  <string name="debug_info_view_details">詳細を表示</string>
+  <string name="debug_info_subtitle">収集されたデバッグ情報</string>
+  <string name="debug_info_involved_caption">関連するリソース</string>
+  <string name="debug_info_involved_subtitle">関係する問題</string>
+  <string name="debug_info_involved_remote">リモートリソース:</string>
+  <string name="debug_info_involved_local">ローカルリソース:</string>
+  <string name="debug_info_involved_view">アプリで表示</string>
+  <string name="debug_info_logs_caption">ログ</string>
+  <string name="debug_info_logs_subtitle">詳細なログが利用できます</string>
   <string name="debug_info_logs_view">ログを表示</string>
   <!--ExceptionInfoFragment-->
-  <string name="exception">エラーが発生しました。</string>
-  <string name="exception_httpexception">HTTP エラーが発生しました。</string>
-  <string name="exception_ioexception">I/O エラーが発生しました。</string>
+  <string name="exception">エラーが発生しました</string>
+  <string name="exception_httpexception">HTTP エラーが発生しました</string>
+  <string name="exception_ioexception">I/O エラーが発生しました</string>
   <string name="exception_show_details">詳細を表示</string>
   <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">同期が一時停止しました</string>
+  <string name="storage_low_notify_text">ほとんど空き容量が残っていません</string>
   <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">WebDAV マウント</string>
+  <string name="webdav_mounts_quota_used_available">割り当て 使用中: %1$s / 利用可能: %2$s</string>
+  <string name="webdav_mounts_share_content">コンテンツを共有</string>
+  <string name="webdav_mounts_unmount">マウント解除</string>
+  <string name="webdav_add_mount_title">WebDAV マウントを追加</string>
+  <string name="webdav_mounts_empty">WebDAV マウントを追加してクラウドファイルに直接アクセスしましょう！</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[WebDAV マウントの機能は <a href="%1$s">マニュアル</a> を確認</string>]]></string>
+  <string name="webdav_add_mount_display_name">表示名</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">無効な URL</string>
   <string name="webdav_add_mount_username">ユーザー名</string>
   <string name="webdav_add_mount_password">パスワード</string>
+  <string name="webdav_add_mount_add">マウントを追加</string>
+  <string name="webdav_add_mount_no_support">この URL では WebDAV サービスがありません</string>
+  <string name="webdav_remove_mount_title">マウントポイントを削除</string>
+  <string name="webdav_remove_mount_text">接続の詳細が失われました。ファイルは削除されていません。</string>
+  <string name="webdav_notification_access">WebDAV ファイルにアクセスしています</string>
+  <string name="webdav_notification_download">WebDAV ファイルをダウンロードしています</string>
+  <string name="webdav_notification_upload">WebDAV ファイルをアップロードしています</string>
+  <string name="webdav_provider_root_title">WebDAV マウント</string>
   <!--sync adapters-->
   <string name="sync_error_permissions">DAVx⁵ アクセス許可</string>
   <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
+  <string name="sync_error_tasks_too_old">%s が古すぎます</string>
+  <string name="sync_error_tasks_required_version">最小要求バージョン: %1$s</string>
   <string name="sync_error_authentication_failed">認証に失敗しました (ログイン情報を確認してください)</string>
   <string name="sync_error_io">ネットワークまたは I/O エラー – %s</string>
   <string name="sync_error_http_dav">HTTP サーバーエラー – %s</string>
@@ -228,5 +421,5 @@
   <string name="sync_invalid_resources_ignoring">1 または複数の無効なリソースを無視します</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: 接続セキュリティ</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵は、未知の証明書を検出しました。それを信頼しますか?</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ が未知の証明書を検出しました。信頼しますか？</string>
 </resources>

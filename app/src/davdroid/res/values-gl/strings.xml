@@ -41,8 +41,8 @@
   <string name="intro_tasks_title">Soporte para Tasks</string>
   <string name="intro_tasks_text1">Se as tarefas están soportadas polo teu servidor, poden ser sincronizadas cunha app que soporte tarefas:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Para funcións como subtarefas ou tarefas recurrentes, poderías precisar <a href="https://www.davx5.com/faq/tasks/advanced-task-features">apps adicionais</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tarefas</string>
+  <string name="intro_tasks_opentasks_info">Semella que xa non está en desenvolvemento – non recomendado.</string>
+  <string name="intro_tasks_tasks_org">Task.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Algunhas características <a href="https://www.davx5.com/faq/tasks/advanced-task-features">non están soportadas</a>  (aínda).]]></string>
   <string name="intro_tasks_no_app_store">Sen tenda de apps dispoñible</string>
   <string name="intro_tasks_dont_show">Non necesito soporte para tarefas.*</string>
@@ -62,6 +62,9 @@
   <string name="permissions_calendar_title">Permisos de calendario</string>
   <string name="permissions_calendar_status_off">Sen sincronización de calendario (non se recomenda)</string>
   <string name="permissions_calendar_status_on">É posible sincronizar o calendario</string>
+  <string name="permissions_notification_title">Permiso de notificacións</string>
+  <string name="permissions_notification_status_off">Notificacións desactivadas (non recomendado)</string>
+  <string name="permissions_notification_status_on">Notificacións activadas</string>
   <string name="permissions_jtx_title">permisos para jtx Board</string>
   <string name="permissions_jtx_status_not_installed">Sen sincr. de tarefas, diarios e notas (non instalado)</string>
   <string name="permissions_jtx_status_off">Sen sincr. de tarefas, diarios, notas</string>
@@ -123,8 +126,11 @@
   <string name="navigation_drawer_community">Comunidade</string>
   <string name="navigation_drawer_donate">Doar</string>
   <string name="navigation_drawer_privacy_policy">Política de Privacidade</string>
+  <string name="account_list_no_notification_permission">Notificacións desactivadas. Non verás os avisos de erro na sincr.</string>
   <string name="account_list_no_internet">Sen conexión a internet. Android non sincronizará.</string>
+  <string name="account_list_manage_connections">Xestionar conexións</string>
   <string name="account_list_low_storage">Queda pouco espazo, Android non executará a sincronización.</string>
+  <string name="account_list_manage_storage">Xestionar almacenaxe</string>
   <string name="account_list_empty">Benvida a DAVx⁵!\n\nXa podes engadir unha conta CalDAV/CardDAV</string>
   <string name="accounts_global_sync_disabled">A sincronización global automática do sistema está desactivada</string>
   <string name="accounts_global_sync_enable">Activar</string>

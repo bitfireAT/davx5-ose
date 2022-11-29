@@ -41,8 +41,6 @@
   <string name="intro_tasks_title">Tasks bateragarritasuna</string>
   <string name="intro_tasks_text1">Zereginak zure zerbitzarian onartuta badaude, onartutako zeregin aplikazio batekin sinkronizatu daitezke:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Azpizereginak edo zeregin errepikakorren bezalako ezaugarrientzako, posible da <a href="https://www.davx5.com/faq/tasks/advanced-task-features">aplikazio gehigarriak</a> behar izatea.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Ezaugarri batzuk <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ez dira onartzen</a> (oraindik).]]></string>
   <string name="intro_tasks_no_app_store">Ez dago denda aplikaziorik eskuragarri </string>
   <string name="intro_tasks_dont_show">Ez dut zereginen funtzionalitatea behar.*</string>

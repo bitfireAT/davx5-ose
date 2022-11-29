@@ -37,8 +37,6 @@
   <string name="intro_tasks_jtx_info"><![CDATA[支持任務、日記及筆記同步]]></string>
   <string name="intro_tasks_title">待辦事項支援</string>
   <string name="intro_tasks_text1">如果你的服務器支持任務，它們可以與支援任務的app同步:</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[對於子任務或重複任務等功能，您可能需要<a href="https://www.davx5.com/faq/tasks/advanced-task-features">額外的app</a>.]]></string>
-  <string name="intro_tasks_tasks_org">任務</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[有些功能<a href="https://www.davx5.com/faq/tasks/advanced-task-features">尚未支援</a>]]></string>
   <string name="intro_tasks_no_app_store">沒有應用商店可用</string>
   <!--PermissionsActivity-->

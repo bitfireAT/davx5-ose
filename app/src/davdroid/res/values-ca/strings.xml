@@ -41,8 +41,6 @@
   <string name="intro_tasks_title">Suport de tasques</string>
   <string name="intro_tasks_text1">Si el vostre servidor permet les tasques, es poden sincronitzar amb una aplicació que admeti tasques:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Per algunes característiques com les subtasques o les tasques recurrents, és possible que es necessitin <a href="https://www.davx5.com/faq/tasks/advanced-task-features">aplicacions addicionals</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Algunes funcions <a href="https://www.davx5.com/faq/tasks/advanced-task-features">no estan disponibles</a> (encara).]]></string>
   <string name="intro_tasks_no_app_store">No hi ha cap mercat d\'aplicacions disponible</string>
   <string name="intro_tasks_dont_show">No necessito suport per les tasques.*</string>
@@ -62,6 +60,9 @@
   <string name="permissions_calendar_title">Permisos de calendari</string>
   <string name="permissions_calendar_status_off">Sense sincronització del calendari (no recomanat)</string>
   <string name="permissions_calendar_status_on">Sincronització del calendari possible</string>
+  <string name="permissions_notification_title">Permís de notificació</string>
+  <string name="permissions_notification_status_off">Notificacions desactivades (no recomanat)</string>
+  <string name="permissions_notification_status_on">Notificacions activades</string>
   <string name="permissions_jtx_title">Permisos de jtx Board</string>
   <string name="permissions_jtx_status_not_installed">Sense sincronització de tasques, diaris ni notes (no instal·lada)</string>
   <string name="permissions_jtx_status_off">Sense sincronització de tasques, diaris ni notes</string>
@@ -109,7 +110,7 @@
   <string name="navigation_drawer_open">Obre el calaix de navegació</string>
   <string name="navigation_drawer_close">Tanca el calaix de navegació</string>
   <string name="navigation_drawer_subtitle">Adaptador de sincronització CalDAV / CardDAV</string>
-  <string name="navigation_drawer_about">Quant a / Llicència</string>
+  <string name="navigation_drawer_about">Quant a/llicència</string>
   <string name="navigation_drawer_beta_feedback">Retroacció de la Beta</string>
   <string name="install_email_client">Si us plau, instal·leu un client de correu</string>
   <string name="install_browser">Si us plau, instal·leu un navegador.</string>
@@ -123,8 +124,11 @@
   <string name="navigation_drawer_community">Comunitat</string>
   <string name="navigation_drawer_donate">Fer una donació</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
+  <string name="account_list_no_notification_permission">Notificacions desactivades. No es notificaran els errors de sincronització.</string>
   <string name="account_list_no_internet">Sense connexió a internet. Android no executarà la sincronització</string>
+  <string name="account_list_manage_connections">Gestiona les connexions</string>
   <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no executarà la sincronització.</string>
+  <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
   <string name="account_list_empty">Us donem la benvinguda a DAVx⁵! \n\nAra podeu afegir un compte CalDAV / CardDAV.</string>
   <string name="accounts_global_sync_disabled">La sincronització automàtica de tot el sistema està inhabilitada</string>
   <string name="accounts_global_sync_enable">Activa</string>
@@ -327,7 +331,7 @@
   <string name="create_calendar_type">Possibles entrades de calendari</string>
   <string name="create_calendar_type_vevent">Esdeveniments</string>
   <string name="create_calendar_type_vtodo">Tasques</string>
-  <string name="create_calendar_type_vjournal">Notes / diari</string>
+  <string name="create_calendar_type_vjournal">Notes/diari</string>
   <string name="create_calendar_type_events_and_tasks">Combinat (esdeveniments i tasques)</string>
   <string name="create_collection_color">Color</string>
   <string name="create_collection_creating">S\'està creant una col·lecció</string>

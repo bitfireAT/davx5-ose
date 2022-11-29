@@ -40,8 +40,6 @@
   <string name="intro_tasks_title">Gestion des taches</string>
   <string name="intro_tasks_text1">Si les tâches sont prises en charge par votre serveur, elles peuvent être synchronisées avec une application de tâches externe :</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Pour certaines fonctionnalités comme les sous-tâches ou les tâches récurrentes, vous pouvez avoir besoin <a href="https://www.davx5.com/faq/tasks/advanced-task-features">d\'applications supplémentaires</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Taches</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Certaines fonctionnalités <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ne sont pas (encore) prises en charge</a>.]]></string>
   <string name="intro_tasks_no_app_store">Pas de magasin d\'application disponible</string>
   <string name="intro_tasks_dont_show">Je n\'ai pas besoin de support des tâches.*</string>

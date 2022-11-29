@@ -41,8 +41,8 @@
   <string name="intro_tasks_title">Поддержка задач</string>
   <string name="intro_tasks_text1">Если задачи поддерживаются вашим сервером, их можно синхронизировать при помощи соответствующего приложения:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Для некоторых возможностей, таких как подзадачи или повторяющиеся задачи, вам могут потребоваться <a href="https://www.davx5.com/faq/tasks/advanced-task-features">дополнительные приложения</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
+  <string name="intro_tasks_opentasks_info">По всей видимости, больше не разрабатывается - не рекомендуется.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Некоторые возможности <a href="https://www.davx5.com/faq/tasks/advanced-task-features">не поддерживаются</a> (пока).]]></string>
   <string name="intro_tasks_no_app_store">Магазин приложений недоступен</string>
   <string name="intro_tasks_dont_show">Мне не нужна поддержка задач.*</string>
@@ -62,6 +62,9 @@
   <string name="permissions_calendar_title">Разрешения для календаря</string>
   <string name="permissions_calendar_status_off">Календарь не синхронизируется (не рекомендуется)</string>
   <string name="permissions_calendar_status_on">Синхронизация календаря возможна</string>
+  <string name="permissions_notification_title">Разрешение на уведомление</string>
+  <string name="permissions_notification_status_off">Уведомления отключены (не рекомендуется)</string>
+  <string name="permissions_notification_status_on">Уведомления включены</string>
   <string name="permissions_jtx_title">Разрешения панели jtx</string>
   <string name="permissions_jtx_status_not_installed">Не синхронизируются задачи, журналы и заметки (не установлено)</string>
   <string name="permissions_jtx_status_off">Не синхронизируются задачи, журналы, заметки</string>
@@ -123,8 +126,11 @@
   <string name="navigation_drawer_community">Сообщество</string>
   <string name="navigation_drawer_donate">Пожертвовать</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
+  <string name="account_list_no_notification_permission">Уведомления отключены. Вы не будете получать уведомления об ошибках синхронизации.</string>
   <string name="account_list_no_internet">Нет подключения к интернету. Android не будет выполнять синхронизацию.</string>
+  <string name="account_list_manage_connections">Управление подключениями</string>
   <string name="account_list_low_storage">Место для хранения мало. Android не будет выполнять синхронизацию.</string>
+  <string name="account_list_manage_storage">Управление хранилищем</string>
   <string name="account_list_empty">Добро пожаловать в DAVx⁵!\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
   <string name="accounts_global_sync_enable">Включить</string>

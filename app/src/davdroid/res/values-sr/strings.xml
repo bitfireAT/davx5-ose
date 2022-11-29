@@ -31,7 +31,6 @@
   <string name="intro_autostart_dont_show">Изменио сам потребна подешавања. Не подсећај ме више.*</string>
   <string name="intro_leave_unchecked">* Остави непотврђено да би био подсетнут касније. Може бити ресетовано у подешавањима / %s.</string>
   <string name="intro_more_info">Још информација</string>
-  <string name="intro_tasks_tasks_org">Задаци</string>
   <string name="intro_tasks_dont_show">Не треба ми подршка за задатке.*</string>
   <string name="intro_open_source_title">Софтвер отвореног кода</string>
   <string name="intro_open_source_dont_show">Не приказуј у блиској будућности</string>

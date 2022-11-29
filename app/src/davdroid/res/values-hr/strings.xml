@@ -34,8 +34,6 @@
   <string name="intro_tasks_title">Podrška za zadatke</string>
   <string name="intro_tasks_text1">Ukoliko su zadatci podržani od strane vašeg poslužitelja, moguće ih je sinkronizirati sa podržanom aplikacijom za zadatke:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Za određene mogućnosti, poput podzadataka ili ponavljajućih zadataka, možda ćete trebati <a href="https://www.davx5.com/faq/tasks/advanced-task-features">dodatne aplikacije</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Neke mogućnosti <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nisu podržane</a> (još).]]></string>
   <string name="intro_tasks_no_app_store">Trgovina aplikacijama nije dostupna</string>
   <string name="intro_tasks_dont_show">Ne trebam podršku za zadatke.*</string>
