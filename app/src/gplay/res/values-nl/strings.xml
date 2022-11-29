@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_support_project">Ondersteun het project</string>
+    <string name="nav_earn_badges">Steun ons met badges</string>
+    <string name="nav_rate_us">Beoordeel in Google Play</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one">Je hebt badges verdiend, bedankt!</item>
+        <item quantity="other">Je hebt %d badges verdiend, bedankt!</item>
+    </plurals>
+    <string name="available_badges">Beschikbare badges</string>
+    <string name="available_badges_empty">Sorry, kon geen badges laden. Ben je ingelogd in de Play Store?</string>
+    <string name="what_are_badges">Wat zijn badges?</string>
+    <string name="what_are_badges_title">Wat zijn badges?</string>
+    <string name="what_are_badges_body">Badges zijn eenvoudige eenmalige in-app betalingen. Je verdient een leuke kleine badge en daarmee kun je ons in de loop der tijd steunen.</string>
+    <string name="why_badges_title">Waarom biedt DAVx5 functievrije badges aan?</string>
+    <string name="why_badges_body">DAVx5 is in de loop der jaren echt gegroeid! We ontwikkelen nog steeds actief nieuwe functies, bieden ondersteuning en we werken de app altijd bij voor komende Android versies. Deze badges zijn eenmalige betalingen waarbij je gewoon je steun kunt tonen door ons een kopje koffie te kopen, of twee&#8230; of 10 :-) We willen zo open mogelijk zijn, dus zullen er nooit nieuwe dingen worden vergrendeld voor in-app betaling.</string>
+    <string name="button_buy_badge_free">Gratis</string>
+    <string name="button_buy_badge_bought">Dank U!</string>
+    <string name="earn_badges">Verdien badges om ons te steunen!</string>
+    <string name="billing_unavailable">Facturatie API niet beschikbaar, is de Play Store up-to-date en bent u ingelogd op uw Google-account?</string>
+    <string name="network_problems">Er waren netwerkproblemen, probeer het later nog eens.</string>
+</resources>

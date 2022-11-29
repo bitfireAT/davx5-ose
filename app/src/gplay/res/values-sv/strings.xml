@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_support_project">Stöd projektet</string>
+    <string name="nav_earn_badges">Stöd oss med märken</string>
+    <string name="nav_rate_us">Betygsätt i Google Play</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one">Du har förtjänat ett märke. Stort tack!</item>
+        <item quantity="other">Du har förtjänat %d märken. Stort tack!</item>
+    </plurals>
+    <string name="available_badges">Tillgängliga märken</string>
+    <string name="available_badges_empty">Ledsen, men märken kunde inte hämtas. Är du inloggad i Play Store?</string>
+    <string name="what_are_badges">Vad är märken?</string>
+    <string name="what_are_badges_title">Vad är märken?</string>
+    <string name="what_are_badges_body">Märken är enkla engångsköp i appen. Du erhåller ett märke och stöder oss över tid.</string>
+    <string name="why_badges_title">Varför erbjuder DAVx5 märken utan funktioner?</string>
+    <string name="why_badges_body">DAVx5 har verkligen vuxit under årens lopp! Vi utvecklar aktivt nya funktioner, ger support och uppdaterar alltid appen för kommande Android-versioner. Dessa märken är engångsbetalningar där du helt enkelt kan visa ditt stöd genom att bjuda oss på en kaffe, eller två&#8230; eller 10 :-) Vi vill vara så öppna som möjligt och det kommer aldrig finnas funktioner som kräver köp i appen.</string>
+    <string name="button_buy_badge_free">GRATIS</string>
+    <string name="button_buy_badge_bought">Tack!</string>
+    <string name="earn_badges">Tjäna märken genom att stödja oss!</string>
+    <string name="billing_unavailable">Betalnings-API är otillgängligt. Är Play Store uppdaterat och är du inloggad på ditt Google-konto?</string>
+    <string name="network_problems">Nätverksproblem, testa igen om ett tag.</string>
+</resources>

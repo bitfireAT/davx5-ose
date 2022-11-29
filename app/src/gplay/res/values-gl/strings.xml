@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_support_project">Axuda ao proxecto</string>
+    <string name="nav_earn_badges">Axúdanos con insignias</string>
+    <string name="nav_rate_us">Recensión en Google Play</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one">Gañaches unha insignia, grazas!</item>
+        <item quantity="other">Gañaches %d insignias, grazas!</item>
+    </plurals>
+    <string name="available_badges">Insignias dispoñibles</string>
+    <string name="available_badges_empty">Lamentámolo, pero non cargaron as insignias. Iniciaches sesión na Play Store?</string>
+    <string name="what_are_badges">Que son as insignias?</string>
+    <string name="what_are_badges_title">Que son as insignias?</string>
+    <string name="what_are_badges_body">As insignias son simples pagamentos únicos dentro da app. Gañarás unha pequena insignia coa que nos axudarás.</string>
+    <string name="why_badges_title">Por que DAVx5 ofrece insignias sen recompensa?</string>
+    <string name="why_badges_body">DAVx5 medrou moito nos últimos anos! Seguimos co seu desenvolvemento de xeito activo, proporcionando axuda e actualizando a app para as vindeiras versións de Android. Estas insignias son pagamentos únicos cos que mostras o teu apoio convidándonos a un café, ou  two&#8230; ou 10 :-)  Queremos ser o máis transparentes posible, polo que nunca engadiremos funcións que estén detrás dun valado de pagamento.</string>
+    <string name="button_buy_badge_free">DE BALDE</string>
+    <string name="button_buy_badge_bought">Grazas!</string>
+    <string name="earn_badges">Consigue insignias para axudarnos!</string>
+    <string name="billing_unavailable">A API de cobros non está dispoñible, tes a Play Store actualizada e accedeches coa túa conta?</string>
+    <string name="network_problems">Hai problemas na rede, inténtao máis tarde por favor.</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_support_project">Podpořte projekt</string>
+    <string name="nav_earn_badges">Podpořte nás ozdznáčky</string>
+    <string name="nav_rate_us">Napsat recenzi v Google Play</string>
+    <string name="button_buy_badge_free">ZDARMA</string>
+    <string name="button_buy_badge_bought">Děkujeme!</string>
+    </resources>

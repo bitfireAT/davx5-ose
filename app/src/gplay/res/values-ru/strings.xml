@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_support_project">Поддержать проект</string>
+    <string name="nav_earn_badges">Поддержать нас значками</string>
+    <string name="nav_rate_us">Отзыв в Google Play</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one">Вы заработали значок, спасибо!</item>
+        <item quantity="few">Вы заработали %d значка, спасибо!</item>
+        <item quantity="many">Вы заработали %d значков, спасибо!</item>
+        <item quantity="other">Вы заработали %d значков, спасибо!</item>
+    </plurals>
+    <string name="available_badges">Доступные значки</string>
+    <string name="available_badges_empty">К сожалению, не удалось загрузить значки. Вы авторизовались в Play Store?</string>
+    <string name="what_are_badges">Что такое значки?</string>
+    <string name="what_are_badges_title">Что такое значки?</string>
+    <string name="what_are_badges_body">Значки — это обычные одноразовые платежи в приложении. Вы заработаете миленький значок, и с его помощью вы сможете поддерживать нас в течение долгого времени.</string>
+    <string name="why_badges_title">Почему DAVx5 предлагает значки без каких-либо возможностей?</string>
+    <string name="why_badges_body">DAVx5 действительно вырос за эти годы! Мы по-прежнему активно разрабатываем новые функции, оказываем поддержку и всегда обновляем приложение для новых версий Android. Эти значки - одноразовые платежи, которыми вы можете просто показать свою поддержку, купив нам кофе, или два&#8230; или 10 :-) Мы хотим быть максимально открытыми, поэтому в приложении никогда не будет никаких новых функций, которые можно было бы оплатить через приложение.</string>
+    <string name="button_buy_badge_free">БЕСПЛАТНО</string>
+    <string name="button_buy_badge_bought">Спасибо!</string>
+    <string name="earn_badges">Зарабатывайте значки, поддерживая нас!</string>
+    <string name="billing_unavailable">API биллинга недоступен. Проверьте, пожалуйста, обновлен ли Play Store и авторизованы ли вы в вашем аккаунте Google?</string>
+    <string name="network_problems">Возникли проблемы с сетью, повторите попытку позже.</string>
+</resources>
