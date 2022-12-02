@@ -118,6 +118,8 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
                 <data android:scheme="caldav"/>
                 <data android:scheme="caldavs"/>
                 <data android:scheme="carddav"/>
