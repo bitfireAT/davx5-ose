@@ -83,9 +83,9 @@
   <string name="accounts_global_sync_disabled">Синхронизација је системски искључена</string>
   <string name="accounts_global_sync_enable">Укључи</string>
   <string name="accounts_sync_all">Синхронизуј све налоге</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Откривање услуге није успело</string>
-  <string name="dav_service_refresh_couldnt_refresh">Не могох да освежим списак збирки</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Откривање услуге није успело</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Не могох да освежим списак збирки</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->

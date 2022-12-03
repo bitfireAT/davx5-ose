@@ -135,9 +135,9 @@
   <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
   <string name="accounts_global_sync_enable">启用</string>
   <string name="accounts_sync_all">同步所有账户</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">服务配置检测失败</string>
-  <string name="dav_service_refresh_couldnt_refresh">无法刷新集合列表</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">服务配置检测失败</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">无法刷新集合列表</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">无法在前台运行</string>
   <string name="battery_optimization_notify_text">需要在电池优化中排除本应用</string>

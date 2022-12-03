@@ -66,9 +66,9 @@
   <string name="account_list_empty">Witōmy w DAVx⁵!\n\nMożesz teroz przidać kōnto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Autōmatyczno synchrōnizacyjo dlo cołkigo systymu je zastawiōno</string>
   <string name="accounts_global_sync_enable">Włōncz</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Niy szło ôdświyżyć serwisu</string>
-  <string name="dav_service_refresh_couldnt_refresh">Niy szło ôdświyżyć listy kolekcyje</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Niy szło ôdświyżyć serwisu</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Niy szło ôdświyżyć listy kolekcyje</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->

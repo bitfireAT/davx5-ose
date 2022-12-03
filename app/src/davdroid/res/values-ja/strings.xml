@@ -133,9 +133,9 @@
   <string name="accounts_global_sync_disabled">システム全体の自動同期が無効です</string>
   <string name="accounts_global_sync_enable">有効</string>
   <string name="accounts_sync_all">すべてのアカウントを同期</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">サービスの検出に失敗しました</string>
-  <string name="dav_service_refresh_couldnt_refresh">コレクション リストを更新できませんでした</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">サービスの検出に失敗しました</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">コレクション リストを更新できませんでした</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">フォアグラウンドで実行できません</string>
   <string name="battery_optimization_notify_text">バッテリー最適化を無効にしてください</string>

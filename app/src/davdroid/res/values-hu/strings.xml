@@ -125,9 +125,9 @@
   <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
   <string name="accounts_global_sync_enable">Bekapcsolás</string>
   <string name="accounts_sync_all">Az összes fiók szinkronizálása</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
-  <string name="dav_service_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Nem lehetséges az előtérben való futtatás</string>
   <string name="battery_optimization_notify_text">Kivétel az akkumulátorhasználat optimalizálása alól</string>

@@ -110,9 +110,9 @@
   <string name="accounts_global_sync_disabled">Automatska sinkronizacija je onemogućena na razini sustava</string>
   <string name="accounts_global_sync_enable">Omogući</string>
   <string name="accounts_sync_all">Sinkroniziraj sve račune</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Detekcija servisa nije uspjela</string>
-  <string name="dav_service_refresh_couldnt_refresh">Nije moguće osvježiti popis zbirki</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Detekcija servisa nije uspjela</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Nije moguće osvježiti popis zbirki</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Pokrenuto u prednjem planu</string>

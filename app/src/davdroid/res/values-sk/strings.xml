@@ -47,9 +47,9 @@
   <string name="account_list_empty">Vitajte v programe DAVx⁵!\n\nTeraz môžete pridať používateľský účet pre CalDAV/CardDAV .</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizácia platná pre celý systém je zakázaná</string>
   <string name="accounts_global_sync_enable">Povoliť</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Zisťovanie služby zlyhalo</string>
-  <string name="dav_service_refresh_couldnt_refresh">Nie je možné obnoviť zoznam kolekcií</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Zisťovanie služby zlyhalo</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Nie je možné obnoviť zoznam kolekcií</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->

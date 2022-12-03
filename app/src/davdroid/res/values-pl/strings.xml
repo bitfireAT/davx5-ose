@@ -135,9 +135,9 @@
   <string name="accounts_global_sync_disabled">Automatyczna synchronizacja dla całego systemu jest wyłączona</string>
   <string name="accounts_global_sync_enable">Włącz</string>
   <string name="accounts_sync_all">Synchronizuj wszystkie konta</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Wykrycie serwisu nie powiodło się</string>
-  <string name="dav_service_refresh_couldnt_refresh">Nie można odświeżyć listy kolekcji</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Wykrycie serwisu nie powiodło się</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Nie można odświeżyć listy kolekcji</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Nie można uruchomić na pierwszym planie</string>
   <string name="battery_optimization_notify_text">Wymagana biała lista optymalizacji baterii</string>

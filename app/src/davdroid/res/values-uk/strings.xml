@@ -80,9 +80,9 @@
   <string name="accounts_global_sync_disabled">Автоматичну синхронізацію вимкнено зі сторони системи</string>
   <string name="accounts_global_sync_enable">Увімкнути</string>
   <string name="accounts_sync_all">Синхронізувати всі обліківки</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Не вдалося виявити сервіси</string>
-  <string name="dav_service_refresh_couldnt_refresh">Не вдалося оновити перелік колекції</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Не вдалося виявити сервіси</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Не вдалося оновити перелік колекції</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->

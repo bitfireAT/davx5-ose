@@ -127,9 +127,9 @@
   <string name="accounts_global_sync_disabled">Đồng bộ hoá tự động trên toàn hệ thống bị tắt</string>
   <string name="accounts_global_sync_enable">Bật</string>
   <string name="accounts_sync_all">Đồng bộ tất cả tài khoản</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Dò tìm dịch vụ thất bại</string>
-  <string name="dav_service_refresh_couldnt_refresh">Không thể làm mới danh sách bộ sưu tập</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Dò tìm dịch vụ thất bại</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Không thể làm mới danh sách bộ sưu tập</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Không thể chạy ở trước</string>
   <string name="battery_optimization_notify_text">Bắt buộc không tối ưu hoá pin</string>

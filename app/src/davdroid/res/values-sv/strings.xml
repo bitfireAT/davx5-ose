@@ -133,9 +133,9 @@
   <string name="accounts_global_sync_disabled">Systemomfattande automatisk synkronisering är inaktiverad</string>
   <string name="accounts_global_sync_enable">Aktivera</string>
   <string name="accounts_sync_all">Synkronisera alla konton</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Servicedetektering misslyckades</string>
-  <string name="dav_service_refresh_couldnt_refresh">Det gick inte att uppdatera samlingslistan</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Servicedetektering misslyckades</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Det gick inte att uppdatera samlingslistan</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Kan inte köras i förgrunden</string>
   <string name="battery_optimization_notify_text">Vitlista för batterioptimering krävs</string>

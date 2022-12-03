@@ -43,9 +43,9 @@
   <string name="account_list_empty">Dobrodošli v DAVx⁵!\n\nZdaj lahko dodate CalDAV/CardDAV račun.</string>
   <string name="accounts_global_sync_disabled">Sistemska avtomatska sinhronizacija je izklopljena</string>
   <string name="accounts_global_sync_enable">Omogoči</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Zaznava storitve ni uspela</string>
-  <string name="dav_service_refresh_couldnt_refresh">Zbirke ni bilo mogoče osvežiti</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Zaznava storitve ni uspela</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Zbirke ni bilo mogoče osvežiti</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->

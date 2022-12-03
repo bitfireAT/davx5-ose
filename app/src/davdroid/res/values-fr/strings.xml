@@ -122,9 +122,9 @@
   <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
   <string name="accounts_global_sync_enable">Activer</string>
   <string name="accounts_sync_all">Synchroniser tous les comptes</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">La détection du service a échoué</string>
-  <string name="dav_service_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">La détection du service a échoué</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Fonctionne au premier plan</string>

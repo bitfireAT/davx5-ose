@@ -43,9 +43,9 @@
   <string name="account_list_empty">مرحباً بك في DAVx⁵ !\n\n يمكنك إضافة حساب CalDAV أو CardDAV الآن.</string>
   <string name="accounts_global_sync_disabled">تم تعطيل المزامنة التلقائية على مستوى النظام</string>
   <string name="accounts_global_sync_enable">تفعيل</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">فشل اكتشاف الخدمة</string>
-  <string name="dav_service_refresh_couldnt_refresh">لم يتمكن التطبيق من تجديد قائمة المجموعة</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">فشل اكتشاف الخدمة</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">لم يتمكن التطبيق من تجديد قائمة المجموعة</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->
