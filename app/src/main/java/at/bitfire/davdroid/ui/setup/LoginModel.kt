@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.setup
 
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import java.net.URI
 
 class LoginModel: ViewModel() {

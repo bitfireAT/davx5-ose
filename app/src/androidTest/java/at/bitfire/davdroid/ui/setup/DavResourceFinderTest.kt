@@ -13,8 +13,9 @@ import at.bitfire.dav4jvm.property.ResourceType
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.setup.DavResourceFinder.Configuration.ServiceInfo
+import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.mockwebserver.Dispatcher

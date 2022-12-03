@@ -135,9 +135,9 @@
   <string name="accounts_global_sync_disabled">Systemweite automatische Synchronisierung ist nicht aktiv</string>
   <string name="accounts_global_sync_enable">Aktivieren</string>
   <string name="accounts_sync_all">Alle Konten synchronisieren</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Diensterkennung fehlgeschlagen</string>
-  <string name="dav_service_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Diensterkennung fehlgeschlagen</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Darf nicht im Vordergrund ausgeführt werden</string>
   <string name="battery_optimization_notify_text">Ausnahme von Akku-Optimierung erforderlich</string>

@@ -127,9 +127,9 @@
   <string name="accounts_global_sync_disabled">Sincronización automática del sistema completo está deshabilitada</string>
   <string name="accounts_global_sync_enable">Activar</string>
   <string name="accounts_sync_all">Sincronizar todas las cuentas</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Falló la detección del servicio</string>
-  <string name="dav_service_refresh_couldnt_refresh">No se pudo refrescar lista de colección</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Falló la detección del servicio</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">No se pudo refrescar lista de colección</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">No puede ejecutarse en primer plano</string>
   <string name="battery_optimization_notify_text">Se requiere agregar a la lista blanca de optimización de batería</string>

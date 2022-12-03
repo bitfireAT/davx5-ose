@@ -106,9 +106,9 @@
   <string name="accounts_global_sync_disabled">همگام سازی خودکار در کل سیستم غیرفعال است</string>
   <string name="accounts_global_sync_enable">فعال</string>
   <string name="accounts_sync_all">همگام سازی همه حساب‌ها</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">تشخیص سرویس ناموفق بود</string>
-  <string name="dav_service_refresh_couldnt_refresh">لیست مجموعه به روز نشد</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">تشخیص سرویس ناموفق بود</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">لیست مجموعه به روز نشد</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">در حال اجرا در پیش زمینه</string>

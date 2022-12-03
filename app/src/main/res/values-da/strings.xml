@@ -127,9 +127,9 @@
   <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
   <string name="accounts_global_sync_enable">Aktivere</string>
   <string name="accounts_sync_all">Synkronisere alle konti</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Registrering af tjeneste kunne ikke foretages</string>
-  <string name="dav_service_refresh_couldnt_refresh">Kunne ikke opdatere samling liste</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Registrering af tjeneste kunne ikke foretages</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Kunne ikke opdatere samling liste</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Kan ikke køre i forgrunden</string>
   <string name="battery_optimization_notify_text">Batteri optimering hvid listet påkrævet</string>

@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui.account
 
 import android.content.*
 import android.os.Bundle
-import android.os.IBinder
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.*
@@ -23,14 +22,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewbinding.ViewBinding
+import androidx.work.WorkInfo
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCollectionsBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.ui.PermissionsActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -278,7 +278,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         @Assisted val accountModel: AccountActivity.Model,
         @Assisted val serviceId: Long,
         @Assisted val collectionType: String
-    ): ViewModel(), DavService.RefreshingStatusListener, SyncStatusObserver {
+    ): ViewModel(), SyncStatusObserver {
 
         @AssistedFactory
         interface Factory {
@@ -302,21 +302,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                 }
             }
 
-        // observe DavService refresh status
-        @Volatile
-        private var davService: DavService.InfoBinder? = null
-        private var davServiceConn: ServiceConnection? = null
-        private val svcConn = object: ServiceConnection {
-            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                val svc = service as DavService.InfoBinder
-                davService = svc
-                svc.addRefreshingStatusListener(this@Model, true)
-            }
-            override fun onServiceDisconnected(name: ComponentName?) {
-                davService = null
-            }
-        }
-        val isRefreshing = MutableLiveData<Boolean>()
+        // observe RefreshCollectionsWorker status
+        val isRefreshing = RefreshCollectionsWorker.isWorkerInState(context, serviceId, WorkInfo.State.RUNNING)
 
         // observe whether sync is active
         private var syncStatusHandle: Any? = null
@@ -325,9 +312,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
 
         init {
-            if (context.bindService(Intent(context, DavService::class.java), svcConn, Context.BIND_AUTO_CREATE))
-                davServiceConn = svcConn
-
             viewModelScope.launch(Dispatchers.Default) {
                 syncStatusHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING + ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this@Model)
                 checkSyncStatus()
@@ -336,22 +320,10 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
         override fun onCleared() {
             syncStatusHandle?.let { ContentResolver.removeStatusChangeListener(it) }
-
-            davService?.removeRefreshingStatusListener(this)
-            davServiceConn?.let {
-                context.unbindService(it)
-                davServiceConn = null
-            }
         }
 
         fun refresh() {
-            DavService.refreshCollections(context, serviceId)
-        }
-
-        @AnyThread
-        override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) {
-            if (id == serviceId)
-                isRefreshing.postValue(refreshing)
+            RefreshCollectionsWorker.refreshCollections(context, serviceId)
         }
 
         @AnyThread

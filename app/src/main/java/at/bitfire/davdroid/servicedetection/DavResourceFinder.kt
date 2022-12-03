@@ -1,7 +1,11 @@
 /***************************************************************************************************
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
-package at.bitfire.davdroid.ui.setup
+
+/***************************************************************************************************
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ **************************************************************************************************/
+package at.bitfire.davdroid.servicedetection
 
 import android.content.Context
 import at.bitfire.dav4jvm.DavResource
@@ -15,6 +19,7 @@ import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.StringHandler
+import at.bitfire.davdroid.ui.setup.LoginModel
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
@@ -434,11 +439,11 @@ class DavResourceFinder(
     // data classes
 
     class Configuration(
-            val cardDAV: ServiceInfo?,
-            val calDAV: ServiceInfo?,
+        val cardDAV: ServiceInfo?,
+        val calDAV: ServiceInfo?,
 
-            val encountered401: Boolean,
-            val logs: String
+        val encountered401: Boolean,
+        val logs: String
     ) {
 
         data class ServiceInfo(

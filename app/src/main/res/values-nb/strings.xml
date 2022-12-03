@@ -44,9 +44,9 @@
   <string name="account_list_empty">Velkommen til DAVx⁵.\n\nDu kan legge til en CalDAV/CardDAV-konto nå.</string>
   <string name="accounts_global_sync_disabled">Systemomspennende automatisk synkronisering avskrudd</string>
   <string name="accounts_global_sync_enable">Skru på</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Tjenesteoppdagelse mislyktes</string>
-  <string name="dav_service_refresh_couldnt_refresh">Kunne ikke gjenoppfriske innsamlingsliste</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Tjenesteoppdagelse mislyktes</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Kunne ikke gjenoppfriske innsamlingsliste</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->

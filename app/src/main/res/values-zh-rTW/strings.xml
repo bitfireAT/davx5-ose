@@ -72,9 +72,9 @@
   <string name="account_list_empty">歡迎使用 DAVx⁵!\n\n您現在可以新增 CalDAV/CardDAV 帳號</string>
   <string name="accounts_global_sync_disabled">操作系統的自動同步被關閉了</string>
   <string name="accounts_global_sync_enable">啟用</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">未發現遠端服務</string>
-  <string name="dav_service_refresh_couldnt_refresh">無法更新清單</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">未發現遠端服務</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">無法更新清單</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->

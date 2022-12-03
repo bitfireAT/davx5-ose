@@ -100,9 +100,9 @@
   <string name="accounts_global_sync_disabled">A sincronização automática pelo sistema está desativada</string>
   <string name="accounts_global_sync_enable">Ativar</string>
   <string name="accounts_sync_all">Sincronizar todas as contas</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Falha na detecção do serviço</string>
-  <string name="dav_service_refresh_couldnt_refresh">Não foi possível atualizar a lista da coleção</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Falha na detecção do serviço</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Não foi possível atualizar a lista da coleção</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->

@@ -17,9 +17,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.AndroidTaskListFactory
 import at.bitfire.ical4android.TaskProvider
-import org.dmfs.tasks.contract.TaskContract.Tasks
-import org.dmfs.tasks.contract.TaskContract.TaskLists
-import org.dmfs.tasks.contract.TaskContract.TaskListColumns
+import org.dmfs.tasks.contract.TaskContract.*
 import java.util.logging.Level
 
 class LocalTaskList private constructor(

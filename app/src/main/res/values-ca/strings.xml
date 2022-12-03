@@ -133,9 +133,9 @@
   <string name="accounts_global_sync_disabled">La sincronització automàtica de tot el sistema està inhabilitada</string>
   <string name="accounts_global_sync_enable">Activa</string>
   <string name="accounts_sync_all">Sincronitza tots els comptes</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Ha fallat la detecció del servei</string>
-  <string name="dav_service_refresh_couldnt_refresh">No s\'ha pogut actualitzar la llista de col·leccions</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Ha fallat la detecció del servei</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">No s\'ha pogut actualitzar la llista de col·leccions</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">No s\'ha pogut executar en segon pla</string>
   <string name="battery_optimization_notify_text">Es requereix incloure-la a la llista blanca d\'optimització de la bateria</string>

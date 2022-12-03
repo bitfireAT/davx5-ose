@@ -20,7 +20,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
-import at.bitfire.davdroid.DavService
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.LoginAccountDetailsBinding
@@ -30,6 +29,8 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.servicedetection.DavResourceFinder
+import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -174,9 +175,6 @@ class AccountDetailsFragment : Fragment() {
                     val accountSettings = AccountSettings(context, account)
                     val defaultSyncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
 
-                    val refreshIntent = Intent(context, DavService::class.java)
-                    refreshIntent.action = DavService.ACTION_REFRESH_COLLECTIONS
-
                     val addrBookAuthority = context.getString(R.string.address_books_authority)
                     if (config.cardDAV != null) {
                         // insert CardDAV service
@@ -186,8 +184,7 @@ class AccountDetailsFragment : Fragment() {
                         accountSettings.setGroupMethod(groupMethod)
 
                         // start CardDAV service detection (refresh collections)
-                        refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
-                        context.startService(refreshIntent)
+                        RefreshCollectionsWorker.refreshCollections(context, id)
 
                         // set default sync interval and enable sync regardless of permissions
                         ContentResolver.setIsSyncable(account, addrBookAuthority, 1)
@@ -200,8 +197,7 @@ class AccountDetailsFragment : Fragment() {
                         val id = insertService(name, Service.TYPE_CALDAV, config.calDAV)
 
                         // start CalDAV service detection (refresh collections)
-                        refreshIntent.putExtra(DavService.EXTRA_DAV_SERVICE_ID, id)
-                        context.startService(refreshIntent)
+                        RefreshCollectionsWorker.refreshCollections(context, id)
 
                         // set default sync interval and enable sync regardless of permissions
                         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)

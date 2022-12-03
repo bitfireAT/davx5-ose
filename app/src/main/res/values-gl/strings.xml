@@ -135,9 +135,9 @@
   <string name="accounts_global_sync_disabled">A sincronización global automática do sistema está desactivada</string>
   <string name="accounts_global_sync_enable">Activar</string>
   <string name="accounts_sync_all">Sincroniza todas as contas</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Fallou a detección do servizo</string>
-  <string name="dav_service_refresh_couldnt_refresh">Non se actualizou a lista da colección</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Fallou a detección do servizo</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Non se actualizou a lista da colección</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Non pode executarse en segundo plano</string>
   <string name="battery_optimization_notify_text">Require ter permiso para optimizacións de batería</string>

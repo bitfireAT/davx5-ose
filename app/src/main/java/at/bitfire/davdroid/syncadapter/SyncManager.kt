@@ -775,7 +775,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setPriority(priority)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
         viewItemAction?.let { builder.addAction(it) }
-        builder.addAction(buildRetryAction())
 
         notificationManager.notify(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR, builder.build())
     }
@@ -795,32 +794,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             )
             .withRemoteResource(remote)
             .build()
-
-    private fun buildRetryAction(): NotificationCompat.Action {
-        val retryIntent = Intent(context, DavService::class.java)
-        retryIntent.action = DavService.ACTION_FORCE_SYNC
-
-        val syncAuthority: String
-        val syncAccount: Account
-        if (authority == ContactsContract.AUTHORITY) {
-            // if this is a contacts sync, retry syncing all address books of the main account
-            syncAuthority = context.getString(R.string.address_books_authority)
-            syncAccount = mainAccount
-        } else {
-            syncAuthority = authority
-            syncAccount = account
-        }
-
-        retryIntent.data = Uri.parse("sync://").buildUpon()
-                .authority(syncAuthority)
-                .appendPath(syncAccount.type)
-                .appendPath(syncAccount.name)
-                .build()
-
-        return NotificationCompat.Action(
-                android.R.drawable.ic_menu_rotate, context.getString(R.string.sync_error_retry),
-                PendingIntent.getService(context, 0, retryIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-    }
 
     private fun buildViewItemAction(local: ResourceType): NotificationCompat.Action? {
         Logger.log.log(Level.FINE, "Adding view action for local resource", local)

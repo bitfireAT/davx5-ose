@@ -135,9 +135,9 @@
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
   <string name="accounts_global_sync_enable">Включить</string>
   <string name="accounts_sync_all">Синхронизировать все аккаунты</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Не удалось обнаружить службу</string>
-  <string name="dav_service_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Не удалось обнаружить службу</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Невозможно запустить в приоритетном режиме</string>
   <string name="battery_optimization_notify_text">Необходимо добавить в белый список оптимизации батареи</string>

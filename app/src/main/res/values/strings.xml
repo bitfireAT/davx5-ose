@@ -150,9 +150,9 @@
     <string name="accounts_global_sync_enable">Enable</string>
     <string name="accounts_sync_all">Sync all accounts</string>
 
-    <!-- DavService -->
-    <string name="dav_service_refresh_failed">Service detection failed</string>
-    <string name="dav_service_refresh_couldnt_refresh">Couldn\'t refresh collection list</string>
+    <!-- RefreshCollectionsWorker -->
+    <string name="refresh_collections_worker_refresh_failed">Service detection failed</string>
+    <string name="refresh_collections_worker_refresh_couldnt_refresh">Couldn\'t refresh collection list</string>
 
     <!-- Battery Optimization -->
     <string name="battery_optimization_notify_title">Can not run in foreground</string>

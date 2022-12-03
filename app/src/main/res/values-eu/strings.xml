@@ -127,9 +127,9 @@
   <string name="accounts_global_sync_disabled">Sistema osoko sinkronizazio automatikoa desgaituta dago</string>
   <string name="accounts_global_sync_enable">Gaitu</string>
   <string name="accounts_sync_all">Sinkronizatu kontu guztiak</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
-  <string name="dav_service_refresh_couldnt_refresh">Ezin izan da bilduma zerrenda freskatu</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Ezin izan da bilduma zerrenda freskatu</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Ezin da aurrealdean exekutatu</string>
   <string name="battery_optimization_notify_text">Bateriaren optimizazioaren zerrenda zuria behar da</string>

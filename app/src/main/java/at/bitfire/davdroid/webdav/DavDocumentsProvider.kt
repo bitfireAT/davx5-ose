@@ -26,7 +26,6 @@ import android.provider.DocumentsProvider
 import android.webkit.MimeTypeMap
 import androidx.annotation.WorkerThread
 import androidx.core.content.getSystemService
-import androidx.lifecycle.Observer
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
@@ -38,7 +37,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DaoTools
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.cache.HeadResponseCache

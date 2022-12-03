@@ -127,9 +127,9 @@
   <string name="accounts_global_sync_disabled">Automatisch synchroniseren is voor alle accounts uitgeschakeld</string>
   <string name="accounts_global_sync_enable">Inschakelen</string>
   <string name="accounts_sync_all">Alle accounts synchroniseren</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Service herkenning is mislukt</string>
-  <string name="dav_service_refresh_couldnt_refresh">De collectielijst is niet bijgewerkt</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Service herkenning is mislukt</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">De collectielijst is niet bijgewerkt</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Kan niet op de voorgrond draaien</string>
   <string name="battery_optimization_notify_text">Toestemming tot onbeperkt batterijgebruik is vereist</string>

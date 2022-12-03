@@ -116,9 +116,9 @@
   <string name="accounts_global_sync_disabled">La sincronizzazione automatica dell\'intero sistema è disabilitata</string>
   <string name="accounts_global_sync_enable">Attiva</string>
   <string name="accounts_sync_all">Sincronizzazione di tutti gli account</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Fallita l\'individuazione dei servizi</string>
-  <string name="dav_service_refresh_couldnt_refresh">Impossibile aggiornare la lista delle raccolte</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Fallita l\'individuazione dei servizi</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Impossibile aggiornare la lista delle raccolte</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Esecuzione in primo piano</string>
