@@ -28,7 +28,7 @@ class StorageLowReceiver private constructor(
 
     @Module
     @InstallIn(SingletonComponent::class)
-    object storageLowReceiverModule {
+    object StorageLowReceiverModule {
         @Provides
         @Singleton
         fun storageLowReceiver(@ApplicationContext context: Context) = StorageLowReceiver(context)

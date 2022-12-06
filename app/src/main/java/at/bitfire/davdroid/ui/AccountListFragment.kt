@@ -10,18 +10,14 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.app.Activity
 import android.app.Application
-import android.content.*
+import android.content.ContentResolver
+import android.content.Intent
+import android.content.SyncStatusObserver
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.*
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
@@ -33,22 +29,24 @@ import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.DavUtils.SyncStatus
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.StorageLowReceiver
 import at.bitfire.davdroid.databinding.AccountListBinding
 import at.bitfire.davdroid.databinding.AccountListItemBinding
 import at.bitfire.davdroid.ui.account.AccountActivity
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.Collator
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountListFragment: Fragment() {
 
-    @Inject lateinit var storageLowReceiver: StorageLowReceiver
-
     private var _binding: AccountListBinding? = null
     private val binding get() = _binding!!
     val model by viewModels<Model>()
+
+    private var syncStatusSnackbar: Snackbar? = null
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setHasOptionsMenu(true)
@@ -64,6 +62,23 @@ class AccountListFragment: Fragment() {
             startActivity(Intent(requireActivity(), PermissionsActivity::class.java))
         }
 
+        model.showSyncDisabled.observe(viewLifecycleOwner) { syncDisabled ->
+            if (syncDisabled) {
+                val snackbar = Snackbar
+                    .make(view, R.string.accounts_global_sync_disabled, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.accounts_global_sync_enable) {
+                        ContentResolver.setMasterSyncAutomatically(true)
+                    }
+                snackbar.show()
+                syncStatusSnackbar = snackbar
+            } else {
+                syncStatusSnackbar?.let { snackbar ->
+                    snackbar.dismiss()
+                    syncStatusSnackbar = null
+                }
+            }
+        }
+
         model.networkAvailable.observe(viewLifecycleOwner) { networkAvailable ->
             binding.noNetworkInfo.visibility = if (networkAvailable) View.GONE else View.VISIBLE
         }
@@ -73,7 +88,7 @@ class AccountListFragment: Fragment() {
                 startActivity(intent)
         }
 
-        storageLowReceiver.storageLow.observe(viewLifecycleOwner) { storageLow ->
+        model.storageLow.observe(viewLifecycleOwner) { storageLow ->
             binding.lowStorageInfo.visibility = if (storageLow) View.VISIBLE else View.GONE
         }
         binding.manageStorage.setOnClickListener {
@@ -87,7 +102,7 @@ class AccountListFragment: Fragment() {
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = accountAdapter
         }
-        model.accounts.observe(viewLifecycleOwner, { accounts ->
+        model.accounts.observe(viewLifecycleOwner) { accounts ->
             if (accounts.isEmpty()) {
                 binding.list.visibility = View.GONE
                 binding.empty.visibility = View.VISIBLE
@@ -97,11 +112,11 @@ class AccountListFragment: Fragment() {
             }
             accountAdapter.submitList(accounts)
             requireActivity().invalidateOptionsMenu()
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
-            inflater.inflate(R.menu.activity_accounts, menu)
+        inflater.inflate(R.menu.activity_accounts, menu)
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         // Show "Sync all" only when there is at least one account
@@ -126,6 +141,7 @@ class AccountListFragment: Fragment() {
         else
             binding.noNotificationsInfo.visibility = View.VISIBLE
     }
+
 
     class AccountAdapter(
             val activity: Activity
@@ -177,89 +193,37 @@ class AccountListFragment: Fragment() {
     }
 
 
-    class Model(
-            application: Application
+    @HiltViewModel
+    class Model @Inject constructor(
+        application: Application,
+        val warnings: AppWarningsManager
     ): AndroidViewModel(application), OnAccountsUpdateListener, SyncStatusObserver {
 
-        data class AccountInfo(
-                val account: Account,
-                val status: SyncStatus
-        )
+        // Warnings
+        val showSyncDisabled = warnings.globalSyncDisabled
+        val networkAvailable = warnings.networkAvailable
+        val storageLow = warnings.storageLow
 
+        // Accounts
         val accounts = MutableLiveData<List<AccountInfo>>()
-        val syncAuthorities by lazy { DavUtils.syncAuthorities(getApplication()) }
+        private val accountManager = AccountManager.get(application)!!
+        private val syncAuthorities by lazy { DavUtils.syncAuthorities(application) }
 
-        val networkAvailable = MutableLiveData<Boolean>()
-        private var networkCallback: ConnectivityManager.NetworkCallback? = null
-        private var networkReceiver: BroadcastReceiver? = null
-
-        private val accountManager = AccountManager.get(getApplication())!!
-        private val connectivityManager = application.getSystemService<ConnectivityManager>()!!
         init {
             // watch accounts
             accountManager.addOnAccountsUpdatedListener(this, null, true)
 
             // watch account status
-            ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE or ContentResolver.SYNC_OBSERVER_TYPE_PENDING, this)
-
-            // watch connectivity
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {    // API level <26
-                networkReceiver = object: BroadcastReceiver() {
-                    init {
-                        update()
-                    }
-
-                    override fun onReceive(context: Context?, intent: Intent?) = update()
-
-                    private fun update() {
-                        networkAvailable.postValue(connectivityManager.allNetworkInfo.any { it.isConnected })
-                    }
-                }
-                application.registerReceiver(networkReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-
-            } else {    // API level >= 26
-                networkAvailable.postValue(false)
-
-                // check for working (e.g. WiFi after captive portal login) Internet connection
-                val networkRequest = NetworkRequest.Builder()
-                        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                        .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-                        .build()
-                val callback = object: ConnectivityManager.NetworkCallback() {
-                    val availableNetworks = hashSetOf<Network>()
-
-                    override fun onAvailable(network: Network) {
-                        availableNetworks += network
-                        update()
-                    }
-
-                    override fun onLost(network: Network) {
-                        availableNetworks -= network
-                        update()
-                    }
-
-                    private fun update() {
-                        networkAvailable.postValue(availableNetworks.isNotEmpty())
-                    }
-                }
-                connectivityManager.registerNetworkCallback(networkRequest, callback)
-                networkCallback = callback
-            }
+            ContentResolver.addStatusChangeListener(
+                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE or ContentResolver.SYNC_OBSERVER_TYPE_PENDING,
+                this
+            )
         }
 
-        override fun onCleared() {
-            accountManager.removeOnAccountsUpdatedListener(this)
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-                networkReceiver?.let {
-                    getApplication<Application>().unregisterReceiver(it)
-                }
-
-            else
-                networkCallback?.let {
-                    connectivityManager.unregisterNetworkCallback(it)
-                }
-        }
+        data class AccountInfo(
+            val account: Account,
+            val status: SyncStatus
+        )
 
         override fun onAccountsUpdated(newAccounts: Array<out Account>) {
             reloadAccounts()
@@ -274,14 +238,22 @@ class AccountListFragment: Fragment() {
             val collator = Collator.getInstance()
 
             val sortedAccounts = accountManager
-                    .getAccountsByType(context.getString(R.string.account_type))
-                    .sortedArrayWith { a, b ->
-                        collator.compare(a.name, b.name)
-                    }
+                .getAccountsByType(context.getString(R.string.account_type))
+                .sortedArrayWith { a, b ->
+                    collator.compare(a.name, b.name)
+                }
             val accountsWithInfo = sortedAccounts.map { account ->
-                AccountInfo(account, DavUtils.accountSyncStatus(context, syncAuthorities, account))
+                AccountInfo(
+                    account,
+                    DavUtils.accountSyncStatus(context, syncAuthorities, account)
+                )
             }
             accounts.postValue(accountsWithInfo)
+        }
+
+        override fun onCleared() {
+            accountManager.removeOnAccountsUpdatedListener(this)
+            warnings.close()
         }
 
     }
