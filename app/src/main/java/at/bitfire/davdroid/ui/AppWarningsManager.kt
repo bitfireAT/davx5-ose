@@ -10,6 +10,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.StorageLowReceiver
@@ -27,6 +28,7 @@ import javax.inject.Inject
  *   - whether storage is low → [storageLow]
  *   - whether global sync is disabled → [globalSyncDisabled]
  *   - whether a network connection is available → [networkAvailable]
+ *   - whether data saver is turned on -> [dataSaverEnabled]
  */
 class AppWarningsManager @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -46,6 +48,10 @@ class AppWarningsManager @Inject constructor(
     private var networkReceiver: BroadcastReceiver? = null
     private val connectivityManager = context.getSystemService<ConnectivityManager>()!!
 
+    /** whether data saver is restricting background synchronization ([ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED]) */
+    val dataSaverEnabled = MutableLiveData<Boolean>()
+    var dataSaverChangedListener: BroadcastReceiver? = null
+
     init {
         Logger.log.fine("Watching for warning conditions")
 
@@ -55,6 +61,25 @@ class AppWarningsManager @Inject constructor(
 
         // Network
         watchConnectivity()
+
+        // Data saver
+        if (Build.VERSION.SDK_INT >= 24) {
+            val listener = object: BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    checkDataSaver()
+                }
+            }
+
+            val dataSaverChangedFilter = IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED)
+            context.registerReceiver(listener, dataSaverChangedFilter)
+            dataSaverChangedListener = listener
+
+            checkDataSaver()
+        }
+    }
+
+    override fun onStatusChanged(which: Int) {
+        globalSyncDisabled.postValue(!ContentResolver.getMasterSyncAutomatically())
     }
 
     private fun watchConnectivity() {
@@ -105,8 +130,13 @@ class AppWarningsManager @Inject constructor(
         }
     }
 
-    override fun onStatusChanged(which: Int) {
-        globalSyncDisabled.postValue(!ContentResolver.getMasterSyncAutomatically())
+    @RequiresApi(24)
+    private fun checkDataSaver() {
+        context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
+            dataSaverEnabled.postValue(
+                connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED
+            )
+        }
     }
 
     override fun close() {
@@ -121,6 +151,12 @@ class AppWarningsManager @Inject constructor(
         }
         networkCallback?.let {
             connectivityManager.unregisterNetworkCallback(it)
+        }
+
+        // Data Saver
+        dataSaverChangedListener?.let { listener ->
+            context.unregisterReceiver(listener)
+            dataSaverChangedListener = null
         }
     }
 

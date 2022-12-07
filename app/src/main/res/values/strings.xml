@@ -145,6 +145,8 @@
     <string name="account_list_manage_connections">Manage connections</string>
     <string name="account_list_low_storage">Storage space low. Android will not run synchronization.</string>
     <string name="account_list_manage_storage">Manage storage</string>
+    <string name="account_list_datasaver_enabled">Data saver enabled. Background synchronization is restricted.</string>
+    <string name="account_list_manage_datasaver">Manage data saver</string>
     <string name="account_list_empty">Welcome to DAVx⁵!\n\nYou can add a CalDAV/CardDAV account now.</string>
     <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
     <string name="accounts_global_sync_enable">Enable</string>

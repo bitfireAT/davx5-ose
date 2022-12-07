@@ -99,6 +99,38 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/datasaver_on_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:contentPadding="@dimen/card_padding">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:visibility="visible"
+                app:drawableLeftCompat="@drawable/ic_datasaver_on"
+                app:drawableTint="?android:attr/textColorPrimary"
+                android:drawablePadding="8dp"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:text="@string/account_list_datasaver_enabled"/>
+
+            <Button
+                android:id="@+id/manage_datasaver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:text="@string/account_list_manage_datasaver" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@android:id/list"
         android:layout_width="match_parent"

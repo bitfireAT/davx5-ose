@@ -43,46 +43,6 @@ class DefaultsProvider(
         Pair(Settings.PROXY_HOST, "localhost")
     )
 
-    val dataSaverChangedListener by lazy {
-        object: BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                evaluateDataSaver(true)
-            }
-        }
-    }
-
-
-    init {
-        if (Build.VERSION.SDK_INT >= 24) {
-            val dataSaverChangedFilter = IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED)
-            context.registerReceiver(dataSaverChangedListener, dataSaverChangedFilter)
-            evaluateDataSaver()
-        }
-    }
-
-    override fun forceReload() {
-        evaluateDataSaver()
-    }
-
-    override fun close() {
-        if (Build.VERSION.SDK_INT >= 24)
-            context.unregisterReceiver(dataSaverChangedListener)
-    }
-
-    fun evaluateDataSaver(notify: Boolean = false) {
-        if (Build.VERSION.SDK_INT >= 24) {
-            context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
-                if (connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED)
-                    booleanDefaults[AccountSettings.KEY_WIFI_ONLY] = true
-                else
-                    booleanDefaults -= AccountSettings.KEY_WIFI_ONLY
-            }
-            if (notify)
-                settingsManager.onSettingsChanged()
-        }
-    }
-
-
     class Factory @Inject constructor(): SettingsProviderFactory {
         override fun getProviders(context: Context, settingsManager: SettingsManager) =
             listOf(DefaultsProvider(context, settingsManager))

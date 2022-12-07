@@ -10,10 +10,10 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.app.Activity
 import android.app.Application
-import android.content.ContentResolver
-import android.content.Intent
-import android.content.SyncStatusObserver
+import android.content.*
 import android.content.pm.PackageManager
+import android.net.*
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.*
@@ -62,7 +62,7 @@ class AccountListFragment: Fragment() {
             startActivity(Intent(requireActivity(), PermissionsActivity::class.java))
         }
 
-        model.showSyncDisabled.observe(viewLifecycleOwner) { syncDisabled ->
+        model.globalSyncDisabled.observe(viewLifecycleOwner) { syncDisabled ->
             if (syncDisabled) {
                 val snackbar = Snackbar
                     .make(view, R.string.accounts_global_sync_disabled, Snackbar.LENGTH_INDEFINITE)
@@ -95,6 +95,17 @@ class AccountListFragment: Fragment() {
             val intent = Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
             if (intent.resolveActivity(requireActivity().packageManager) != null)
                 startActivity(intent)
+        }
+
+        model.dataSaverOn.observe(viewLifecycleOwner) { datasaverOn ->
+            binding.datasaverOnInfo.visibility = if (Build.VERSION.SDK_INT >= 24 && datasaverOn) View.VISIBLE else View.GONE
+        }
+        binding.manageDatasaver.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 24) {
+                val intent = Intent(Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS, Uri.parse("package:" + requireActivity().packageName))
+                if (intent.resolveActivity(requireActivity().packageManager) != null)
+                    startActivity(intent)
+            }
         }
 
         val accountAdapter = AccountAdapter(requireActivity())
@@ -196,11 +207,17 @@ class AccountListFragment: Fragment() {
     @HiltViewModel
     class Model @Inject constructor(
         application: Application,
-        val warnings: AppWarningsManager
+        private val warnings: AppWarningsManager
     ): AndroidViewModel(application), OnAccountsUpdateListener, SyncStatusObserver {
 
+        data class AccountInfo(
+            val account: Account,
+            val status: SyncStatus
+        )
+
         // Warnings
-        val showSyncDisabled = warnings.globalSyncDisabled
+        val globalSyncDisabled = warnings.globalSyncDisabled
+        val dataSaverOn = warnings.dataSaverEnabled
         val networkAvailable = warnings.networkAvailable
         val storageLow = warnings.storageLow
 
@@ -219,11 +236,6 @@ class AccountListFragment: Fragment() {
                 this
             )
         }
-
-        data class AccountInfo(
-            val account: Account,
-            val status: SyncStatus
-        )
 
         override fun onAccountsUpdated(newAccounts: Array<out Account>) {
             reloadAccounts()
