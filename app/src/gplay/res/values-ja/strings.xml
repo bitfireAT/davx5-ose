@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_support_project">プロジェクトを支援</string>
+    <string name="nav_earn_badges">バッジで私たちを支援</string>
+    <string name="nav_rate_us">Google Play でレビュー</string>
+    <plurals name="you_earned_badges">
+        <item quantity="other">%d 個のバッジをお持ちです。ありがとう！</item>
+    </plurals>
+    <string name="available_badges">利用できるバッジ</string>
+    <string name="available_badges_empty">バッジを読み込めませんでした。Play ストアにログインしていますか？</string>
+    <string name="what_are_badges">バッジとは何ですか？</string>
+    <string name="what_are_badges_title">バッジとは何ですか？</string>
+    <string name="what_are_badges_body">アプリ内で買い切りのバッジを購入できます。小さなバッジですが、私たちへの大きな支援になります。</string>
+    <string name="why_badges_title">DAVx5 のバッジを購入しても追加機能がないのはなぜですか？</string>
+    <string name="why_badges_body">DAVx5 は何年もの時を経て大きく成長してきました！ 今も新たな機能の開発やサポートを継続しており、Android のバージョンアップにも常に対応してきました。これらのバッジはあなたが私たちを 1 杯、2 杯&#8230; 10 杯のコーヒーの分支援してくださったことを表します:-) 私たちはできるだけオープンでありたいと願っており、アプリ内購入が必要な新機能を導入することは - 今までもこれからも - ありません。</string>
+    <string name="button_buy_badge_free">無料</string>
+    <string name="button_buy_badge_bought">ありがとう！</string>
+    <string name="earn_badges">支援のためにバッジを入手！</string>
+    <string name="billing_unavailable">支払い用の API を利用できませんでした。お使いの Play ストアが最新で、Google アカウントにログインしていることを確認してください。</string>
+    <string name="network_problems">ネットワークに問題があります。後でもう一度お試しください。</string>
+</resources>

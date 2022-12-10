@@ -3,6 +3,11 @@
     <string name="navigation_drawer_support_project">Podpořte projekt</string>
     <string name="nav_earn_badges">Podpořte nás ozdznáčky</string>
     <string name="nav_rate_us">Napsat recenzi v Google Play</string>
+    <string name="available_badges">Odznáčky k dispozici</string>
+    <string name="what_are_badges">Co jsou odznáčky?</string>
+    <string name="what_are_badges_title">Co jsou odznáčky?</string>
+    <string name="what_are_badges_body">Odznáčky jsou jednoduché jednorázové platby v aplikaci. Získáte hezký malý odznáček a pomocí něho nás v čase můžete podporovat.</string>
+    <string name="why_badges_title">Proč DAVx5 nabízí odznáčky bez funkcí?</string>
     <string name="button_buy_badge_free">ZDARMA</string>
     <string name="button_buy_badge_bought">Děkujeme!</string>
     </resources>
