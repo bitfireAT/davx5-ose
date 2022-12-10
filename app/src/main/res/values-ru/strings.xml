@@ -36,12 +36,12 @@
   <string name="intro_autostart_dont_show">Я выполнил необходимые настройки. Больше не напоминать.*</string>
   <string name="intro_leave_unchecked">* Чтобы получить предупреждение позже, снимите флажок. Можно сбросить в настройках приложения  / %s.</string>
   <string name="intro_more_info">Дополнительная информация</string>
-  <string name="intro_tasks_jtx">Панель jtx</string>
-  <string name="intro_tasks_jtx_info"><![CDATA[Поддержка синхронизации задач, журналов и заметок.]]></string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Поддерживает синхронизацию задач, журналов и заметок.]]></string>
   <string name="intro_tasks_title">Поддержка задач</string>
   <string name="intro_tasks_text1">Если задачи поддерживаются вашим сервером, их можно синхронизировать при помощи соответствующего приложения:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info">По всей видимости, больше не разрабатывается - не рекомендуется.</string>
+  <string name="intro_tasks_opentasks_info">По всей видимости, больше не разрабатывается (не рекомендуется)</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Некоторые возможности <a href="https://www.davx5.com/faq/tasks/advanced-task-features">не поддерживаются</a> (пока).]]></string>
   <string name="intro_tasks_no_app_store">Магазин приложений недоступен</string>
@@ -65,7 +65,7 @@
   <string name="permissions_notification_title">Разрешение на уведомление</string>
   <string name="permissions_notification_status_off">Уведомления отключены (не рекомендуется)</string>
   <string name="permissions_notification_status_on">Уведомления включены</string>
-  <string name="permissions_jtx_title">Разрешения панели jtx</string>
+  <string name="permissions_jtx_title">Разрешения jtx Board</string>
   <string name="permissions_jtx_status_not_installed">Не синхронизируются задачи, журналы и заметки (не установлено)</string>
   <string name="permissions_jtx_status_off">Не синхронизируются задачи, журналы, заметки</string>
   <string name="permissions_jtx_status_on">Возможна синхронизация задач, журналов и заметок</string>
@@ -74,7 +74,7 @@
   <string name="permissions_tasks_status_not_installed">Задачи не синхронизируются (не установлены)</string>
   <string name="permissions_tasks_status_off">Не синхронизируются задачи</string>
   <string name="permissions_tasks_status_on">Синхронизация задач возможна</string>
-  <string name="permissions_autoreset_title">Сохранить разрешения</string>
+  <string name="permissions_autoreset_title">Сохранять разрешения</string>
   <string name="permissions_autoreset_status_off">Разрешения могут быть сброшены автоматически (не рекомендуется)</string>
   <string name="permissions_autoreset_status_on">Разрешения не будут сброшены автоматически</string>
   <string name="permissions_autoreset_instruction">Выберите Разрешения &gt; снимите флажок \"Удалить разрешения, если приложение не используется\".</string>
@@ -153,8 +153,8 @@
   <string name="app_settings_logging_on">Логирование активно</string>
   <string name="app_settings_logging_off">Логирование отключено</string>
   <string name="app_settings_battery_optimization">Оптимизация батареи</string>
-  <string name="app_settings_battery_optimization_whitelisted">Приложение внесено в белый список (рекомендуется)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Приложение не внесено в белый список (рекомендуется)</string>
+  <string name="app_settings_battery_optimization_whitelisted">Приложение добавлено в белый список (рекомендуется)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Приложение не добавлено в белый список (не рекомендуется)</string>
   <string name="app_settings_foreground_service">Приоритетный режим</string>
   <string name="app_settings_foreground_service_details">Может помочь, если ваше устройство препятствует автоматической синхронизации</string>
   <string name="app_settings_connection">Соединение</string>

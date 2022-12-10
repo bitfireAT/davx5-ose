@@ -41,6 +41,7 @@
   <string name="intro_tasks_title">Podpora úkolů</string>
   <string name="intro_tasks_text1">Pokud jsou úkoly podporovány vámi využívaným serverem, je možné je synchronizovat pomocí podporované aplikace pro úkoly:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">Nezdá se už být vyvíjeno – nedoporučeno.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Některé funkce (ještě) <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nejsou podporovány</a>.]]></string>
   <string name="intro_tasks_no_app_store">Není k dispozici žádný obchod s aplikacemi</string>
@@ -61,6 +62,8 @@
   <string name="permissions_calendar_title">Oprávnění pro přístup ke kalendáři</string>
   <string name="permissions_calendar_status_off">Bez synchronizace kalendáře (nedoporučeno)</string>
   <string name="permissions_calendar_status_on">Synchronizace kalendáře možná</string>
+  <string name="permissions_notification_status_off">Upozornění vypnuta (nedoporučeno)</string>
+  <string name="permissions_notification_status_on">Upozornění zapnuta</string>
   <string name="permissions_jtx_title">Oprávnění pro jtx Board</string>
   <string name="permissions_jtx_status_not_installed">Bez synchronizace úkolů, žurnálů a poznámek (není nainstalováno)</string>
   <string name="permissions_jtx_status_off">Bez synchronizace úkolů, žurnálů a poznámek</string>
@@ -122,6 +125,7 @@
   <string name="navigation_drawer_community">Komunita</string>
   <string name="navigation_drawer_donate">Obdarovat</string>
   <string name="navigation_drawer_privacy_policy">Ochrana soukromí</string>
+  <string name="account_list_no_notification_permission">Upozornění vypnuta. Nebudete upozorněni na chyby při synchronizaci.</string>
   <string name="account_list_no_internet">Bez připojení k Internetu. Systém Android synchronizaci nespustí.</string>
   <string name="account_list_manage_connections">Spravovat spojení</string>
   <string name="account_list_low_storage">Zbývá málo místa na úložišti. Systém Android nespustí synchronizaci.</string>

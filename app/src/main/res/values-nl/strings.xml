@@ -41,6 +41,8 @@
   <string name="intro_tasks_title">Ondersteunt taken</string>
   <string name="intro_tasks_text1">Als de server taken ondersteunt, synchroniseert een geschikte taken-app ze:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">Schijnt niet meer ontwikkeld te worden - niet aanbevolen.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Sommige functies<a href="https://www.davx5.com/faq/tasks/advanced-task-features">worden (nog) niet ondersteund</a>.]]></string>
   <string name="intro_tasks_no_app_store">Geen app-store beschikbaar</string>
   <string name="intro_tasks_dont_show">Er is geen taakondersteuning nodig.*</string>
@@ -60,6 +62,9 @@
   <string name="permissions_calendar_title">Kalender machtigingen</string>
   <string name="permissions_calendar_status_off">Geen kalenders synchroniseren (niet aanbevolen)</string>
   <string name="permissions_calendar_status_on"> Kalenders synchroniseren mogelijk</string>
+  <string name="permissions_notification_title">Toestemming voor meldingen</string>
+  <string name="permissions_notification_status_off">Meldingen uitgeschakeld (niet aanbevolen)</string>
+  <string name="permissions_notification_status_on">Meldingen ingeschakeld</string>
   <string name="permissions_jtx_title">jtx Board-rechten</string>
   <string name="permissions_jtx_status_not_installed">Geen taak-, kalender- en notitiesync (niet geïnstalleerd)</string>
   <string name="permissions_jtx_status_off">Geen taak-, kalender- en notitiesync</string>
@@ -121,8 +126,11 @@
   <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
+  <string name="account_list_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
   <string name="account_list_no_internet">Geen internetverbinding. Android synchroniseert niet.</string>
+  <string name="account_list_manage_connections">Verbindingen beheren</string>
   <string name="account_list_low_storage">Er is te weinig opslagruimte. Android zal niet synchroniseren.</string>
+  <string name="account_list_manage_storage">Opslag beheren</string>
   <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAV account toevoegen.</string>
   <string name="accounts_global_sync_disabled">Automatisch synchroniseren is voor alle accounts uitgeschakeld</string>
   <string name="accounts_global_sync_enable">Inschakelen</string>

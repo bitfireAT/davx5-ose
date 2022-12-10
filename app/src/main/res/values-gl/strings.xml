@@ -131,6 +131,8 @@
   <string name="account_list_manage_connections">Xestionar conexións</string>
   <string name="account_list_low_storage">Queda pouco espazo, Android non executará a sincronización.</string>
   <string name="account_list_manage_storage">Xestionar almacenaxe</string>
+  <string name="account_list_datasaver_enabled">O aforro de datos está activado. A sincronización en segundo plano está restrinxida.</string>
+  <string name="account_list_manage_datasaver">Xestionar aforro de datos</string>
   <string name="account_list_empty">Benvida a DAVx⁵!\n\nXa podes engadir unha conta CalDAV/CardDAV</string>
   <string name="accounts_global_sync_disabled">A sincronización global automática do sistema está desactivada</string>
   <string name="accounts_global_sync_enable">Activar</string>
