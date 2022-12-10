@@ -131,6 +131,8 @@
   <string name="account_list_manage_connections">管理连接</string>
   <string name="account_list_low_storage">存储空间低。Android 将不会运行同步。</string>
   <string name="account_list_manage_storage">管理存储</string>
+  <string name="account_list_datasaver_enabled">启用了流量节省程序。后台同步受限</string>
+  <string name="account_list_manage_datasaver">管理流量节省程序</string>
   <string name="account_list_empty">欢迎使用 DAVx⁵！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
   <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
   <string name="accounts_global_sync_enable">启用</string>

@@ -41,6 +41,8 @@
   <string name="intro_tasks_title">タスクの同期に対応</string>
   <string name="intro_tasks_text1">お使いのサーバーがタスクに対応している場合、対応するアプリで同期できます:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">開発を停止している可能性があります – 非推奨</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[いくつかの機能は (まだ) <a href="https://www.davx5.com/faq/tasks/advanced-task-features">対応していません</a>]]></string>
   <string name="intro_tasks_no_app_store">アプリストアが利用できません</string>
   <string name="intro_tasks_dont_show">タスク対応は不要です*</string>
@@ -115,7 +117,7 @@
   <string name="install_email_client">メールクライアントをインストールしてください</string>
   <string name="install_browser">ウェブブラウザをインストールしてください</string>
   <string name="navigation_drawer_settings">設定</string>
-  <string name="navigation_drawer_news_updates">ニュース &amp; 更新</string>
+  <string name="navigation_drawer_news_updates">ニュース &amp; アップデート</string>
   <string name="navigation_drawer_tools">ツール</string>
   <string name="navigation_drawer_external_links">外部リンク</string>
   <string name="navigation_drawer_website">ウェブサイト</string>

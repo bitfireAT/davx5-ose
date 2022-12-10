@@ -131,6 +131,8 @@
   <string name="account_list_manage_connections">Zarządzaj połączeniami</string>
   <string name="account_list_low_storage">Za mało miejsca do przechowywania. Android nie uruchomi synchronizacji.</string>
   <string name="account_list_manage_storage">Zarządzaj pamięcią</string>
+  <string name="account_list_datasaver_enabled">Włączono oszczędzanie danych. Synchronizacja w tle jest ograniczona.</string>
+  <string name="account_list_manage_datasaver">Zarządzaj oszczędzaniem danych</string>
   <string name="account_list_empty">Witamy w DAVx⁵!\n\nMożesz teraz dodać konto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Automatyczna synchronizacja dla całego systemu jest wyłączona</string>
   <string name="accounts_global_sync_enable">Włącz</string>
