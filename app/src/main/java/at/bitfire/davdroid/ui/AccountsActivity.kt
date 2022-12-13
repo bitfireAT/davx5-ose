@@ -15,9 +15,9 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
-import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountsBinding
+import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.android.material.navigation.NavigationView
@@ -111,7 +111,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         val accounts = allAccounts()
         for (account in accounts)
-            DavUtils.requestSync(this, account)
+            SyncWorker.requestSync(this, account)
     }
 
 }

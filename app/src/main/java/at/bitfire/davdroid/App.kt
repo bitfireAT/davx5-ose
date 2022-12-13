@@ -44,6 +44,7 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
 
     @Inject lateinit var accountsUpdatedListener: AccountsUpdatedListener
     @Inject lateinit var storageLowReceiver: StorageLowReceiver
+
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
     override fun onCreate() {

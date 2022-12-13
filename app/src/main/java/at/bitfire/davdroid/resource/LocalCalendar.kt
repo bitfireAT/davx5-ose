@@ -12,7 +12,7 @@ import android.net.Uri
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger

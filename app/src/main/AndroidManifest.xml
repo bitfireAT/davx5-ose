@@ -59,6 +59,14 @@
 
         <service android:name=".ForegroundService"/>
 
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove">
+        </provider>
+
+        <service android:name=".ForegroundService"/>
+
         <activity android:name=".ui.intro.IntroActivity" android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.AccountsActivity"

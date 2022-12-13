@@ -26,8 +26,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import at.bitfire.davdroid.DavUtils
-import at.bitfire.davdroid.DavUtils.SyncStatus
+import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.DavUtils.SyncStatus
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountListBinding
 import at.bitfire.davdroid.databinding.AccountListItemBinding

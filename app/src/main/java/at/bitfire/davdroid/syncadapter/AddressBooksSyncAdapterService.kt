@@ -14,8 +14,7 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.HttpClient
-import at.bitfire.davdroid.closeCompat
-import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
@@ -33,13 +32,9 @@ import java.util.logging.Level
 
 class AddressBooksSyncAdapterService : SyncAdapterService() {
 
-    override fun syncAdapter() = AddressBooksSyncAdapter(this, appDatabase)
+    override fun syncAdapter() = AddressBooksSyncAdapter(this)
 
-
-    class AddressBooksSyncAdapter(
-        context: Context,
-        appDatabase: AppDatabase
-    ) : SyncAdapter(context, appDatabase) {
+    class AddressBooksSyncAdapter(context: Context) : SyncAdapter(context) {
 
         @EntryPoint
         @InstallIn(SingletonComponent::class)
@@ -64,10 +59,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                 if (updateLocalAddressBooks(account, syncResult))
                     for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
                         Logger.log.log(Level.INFO, "Running sync for address book", addressBookAccount)
-                        val syncExtras = Bundle(extras)
-                        syncExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true)
-                        syncExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, true)
-                        ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, syncExtras)
+                        SyncWorker.requestSync(context, addressBookAccount)
                     }
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't sync address books", e)

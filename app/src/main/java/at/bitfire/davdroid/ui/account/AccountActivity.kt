@@ -20,8 +20,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.*
-import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.databinding.ActivityAccountBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -88,7 +88,7 @@ class AccountActivity: AppCompatActivity() {
         })
 
         binding.sync.setOnClickListener {
-            DavUtils.requestSync(this, model.account)
+            SyncWorker.requestSync(this, model.account)
             Snackbar.make(binding.viewPager, R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show()
         }
     }

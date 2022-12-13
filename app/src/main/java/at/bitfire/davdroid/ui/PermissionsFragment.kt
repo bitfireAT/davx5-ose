@@ -25,10 +25,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
-import at.bitfire.davdroid.PermissionUtils
-import at.bitfire.davdroid.PermissionUtils.CALENDAR_PERMISSIONS
-import at.bitfire.davdroid.PermissionUtils.CONTACT_PERMISSIONS
-import at.bitfire.davdroid.PermissionUtils.havePermissions
+import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
+import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
+import at.bitfire.davdroid.util.PermissionUtils.havePermissions
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityPermissionsBinding
 import at.bitfire.ical4android.TaskProvider

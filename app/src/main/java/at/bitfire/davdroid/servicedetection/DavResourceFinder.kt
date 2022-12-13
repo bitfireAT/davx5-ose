@@ -11,7 +11,7 @@ import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.exception.UnauthorizedException
 import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.StringHandler

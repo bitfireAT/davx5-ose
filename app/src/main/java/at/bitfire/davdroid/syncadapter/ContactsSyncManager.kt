@@ -16,8 +16,8 @@ import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.DavUtils
-import at.bitfire.davdroid.DavUtils.sameTypeAs
+import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.DavUtils.sameTypeAs
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.SyncState

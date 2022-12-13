@@ -26,7 +26,7 @@ import androidx.core.location.LocationManagerCompat
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import at.bitfire.davdroid.PermissionUtils
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityWifiPermissionsBinding
 import at.bitfire.davdroid.log.Logger

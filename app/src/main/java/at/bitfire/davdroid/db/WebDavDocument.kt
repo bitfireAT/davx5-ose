@@ -12,7 +12,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.davdroid.DavUtils.MEDIA_TYPE_OCTET_STREAM
+import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull

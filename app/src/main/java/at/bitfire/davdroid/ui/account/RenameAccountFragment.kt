@@ -27,16 +27,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.DavUtils
-import at.bitfire.davdroid.InvalidAccountException
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.closeCompat
+import at.bitfire.davdroid.*
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
+import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -220,7 +219,7 @@ class RenameAccountFragment: DialogFragment() {
             }
 
             // synchronize again
-            DavUtils.requestSync(context, newAccount)
+            SyncWorker.requestSync(context, newAccount)
         }
 
     }

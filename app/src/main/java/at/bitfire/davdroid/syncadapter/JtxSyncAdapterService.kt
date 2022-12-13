@@ -30,13 +30,9 @@ import kotlin.collections.set
 
 class JtxSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = JtxSyncAdapter(this, appDatabase)
+    override fun syncAdapter() = JtxSyncAdapter(this)
 
-
-    class JtxSyncAdapter(
-        context: Context,
-        appDatabase: AppDatabase
-    ) : SyncAdapter(context, appDatabase) {
+    class JtxSyncAdapter(context: Context) : SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
 

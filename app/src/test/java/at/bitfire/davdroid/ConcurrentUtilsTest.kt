@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid
 
+import at.bitfire.davdroid.util.ConcurrentUtils
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger

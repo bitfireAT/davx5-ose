@@ -8,7 +8,7 @@ import androidx.room.*
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.StringUtils
