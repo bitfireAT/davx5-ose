@@ -26,7 +26,7 @@ class ContactsSyncAdapterService: SyncAdapterService() {
 
     override fun syncAdapter() = ContactsSyncAdapter(this)
 
-	  class ContactsSyncAdapter(context: Context) : SyncAdapter(context) {
+    class ContactsSyncAdapter(context: Context) : SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {

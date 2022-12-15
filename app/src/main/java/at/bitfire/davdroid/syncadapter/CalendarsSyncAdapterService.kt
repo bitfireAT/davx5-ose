@@ -29,7 +29,7 @@ class CalendarsSyncAdapterService: SyncAdapterService() {
 
     override fun syncAdapter() = CalendarsSyncAdapter(this)
 
-	  class CalendarsSyncAdapter(context: Context) : SyncAdapter(context) {
+    class CalendarsSyncAdapter(context: Context) : SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
