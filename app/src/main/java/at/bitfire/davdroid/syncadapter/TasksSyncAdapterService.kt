@@ -32,7 +32,7 @@ open class TasksSyncAdapterService: SyncAdapterService() {
 
     override fun syncAdapter() = TasksSyncAdapter(this)
 
-	  class TasksSyncAdapter(context: Context) : SyncAdapter(context) {
+    class TasksSyncAdapter(context: Context) : SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {
