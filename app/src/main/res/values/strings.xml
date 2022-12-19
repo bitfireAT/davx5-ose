@@ -206,6 +206,8 @@
     <string name="app_settings_notification_settings">Notification settings</string>
     <string name="app_settings_notification_settings_summary">Manage notification channels and their settings</string>
     <string name="app_settings_theme_title">Select theme</string>
+    <string name="app_settings_language_title">Select language</string>
+    <string name="app_settings_language_system_default">System default</string>
     <string-array name="app_settings_theme_names">
         <item>System default</item>
         <item>Light</item>

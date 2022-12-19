@@ -8,6 +8,8 @@ apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
+apply from: 'locales.gradle'
+
 android {
     compileSdkVersion 33
     buildToolsVersion '33.0.0'
@@ -32,6 +34,16 @@ android {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas")
             }
+        }
+
+        applicationVariants.all { variant ->
+            def locales = getLocales(variant.flavorName)
+
+            variant.buildConfigField "String[]", "TRANSLATION_ARRAY", "new String[]{\"" + locales.join("\",\"") + "\"}"
+            variant.mergedFlavor.resourceConfigurations.clear()
+            variant.mergedFlavor.resourceConfigurations.addAll(locales)
+
+            generateLocalesConfig(variant.flavorName, locales)
         }
     }
 
@@ -62,6 +74,9 @@ android {
     }
 
     sourceSets {
+        ose.res.srcDirs += "build/generated/res/locale-ose"
+
+        androidTest.java.srcDirs = [ "src/androidTest/java" ]
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
 
@@ -110,7 +125,7 @@ dependencies {
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"
 
-    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.appcompat:appcompat:1.6.0-rc01'
     implementation 'androidx.browser:browser:1.4.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.concurrent:concurrent-futures-ktx:1.1.0'

@@ -34,6 +34,9 @@ object Settings {
     const val PREFERRED_THEME = "preferred_theme"
     const val PREFERRED_THEME_DEFAULT = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 
+    const val LANGUAGE = "language"
+    const val LANGUAGE_SYSTEM = "language_system"
+
     const val PREFERRED_TASKS_PROVIDER = "preferred_tasks_provider"
 
     /** whether detected collections are selected for synchronization for default */

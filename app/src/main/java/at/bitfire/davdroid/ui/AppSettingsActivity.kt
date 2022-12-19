@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.preference.*
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.BuildConfig
@@ -32,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URI
 import java.net.URISyntaxException
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -224,6 +226,38 @@ class AppSettingsActivity: AppCompatActivity() {
                     val newMode = (newValue as String).toInt()
                     AppCompatDelegate.setDefaultNightMode(newMode)
                     settings.putInt(Settings.PREFERRED_THEME, newMode)
+                    false
+                }
+            }
+            findPreference<ListPreference>(Settings.LANGUAGE)!!.apply {
+                val languageOptions = mutableListOf<Locale?>(null)
+                for (language in BuildConfig.TRANSLATION_ARRAY) {
+                    languageOptions.add(Locale.forLanguageTag(language))
+                }
+                this.entries  = languageOptions.map { language -> language?.displayLanguage ?: context.getText(R.string.app_settings_language_system_default) }.toTypedArray()
+                this.entryValues = languageOptions.map { language -> language?.language ?: Settings.LANGUAGE_SYSTEM }.toTypedArray()
+
+                val appCompatLocales = AppCompatDelegate.getApplicationLocales()
+                var currentLocale: Locale? = null
+                if(!appCompatLocales.isEmpty) {
+                    for (i in 0 until appCompatLocales.size()) {
+                        val locale = appCompatLocales[i] ?: continue
+                        if (languageOptions.contains(appCompatLocales[i]!!)) {
+                            currentLocale = locale
+                            break
+                        }
+                    }
+                }
+                setValueIndex(entryValues.indexOf(currentLocale?.language ?: Settings.LANGUAGE_SYSTEM))
+                summary = entry
+
+                onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    if(newValue.toString() == Settings.LANGUAGE_SYSTEM)
+                        AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+                    else {
+                        val newLanguage = Locale.forLanguageTag(newValue.toString())
+                        AppCompatDelegate.setApplicationLocales(LocaleListCompat.create(newLanguage))
+                    }
                     false
                 }
             }
