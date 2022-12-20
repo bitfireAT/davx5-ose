@@ -59,7 +59,7 @@ class AddressBooksSyncAdapterService : SyncAdapterService() {
                 if (updateLocalAddressBooks(account, syncResult))
                     for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
                         Logger.log.log(Level.INFO, "Running sync for address book", addressBookAccount)
-                        SyncWorker.requestSync(context, addressBookAccount)
+                        SyncWorker.requestSync(context, addressBookAccount, ContactsContract.AUTHORITY)
                     }
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't sync address books", e)
