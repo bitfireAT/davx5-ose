@@ -15,16 +15,16 @@ jobs:
           submodules: true
       - uses: actions/setup-java@v2
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: 11
-          cache: 'gradle'
+          cache: gradle
       - uses: gradle/wrapper-validation-action@v1
 
       - name: Prepare keystore
         run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
 
       - name: Build signed package
-        run: ./gradlew app:assembleRelease
+        run: ./gradlew --no-daemon app:assembleRelease
         env:
           ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
