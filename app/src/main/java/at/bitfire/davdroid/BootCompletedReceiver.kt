@@ -19,6 +19,9 @@ import at.bitfire.davdroid.log.Logger
 class BootCompletedReceiver: BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action != Intent.ACTION_BOOT_COMPLETED)
+            return
+
         Logger.log.info("Device has been rebooted; checking sync intervals etc.")
         // sync intervals are checked in App.onCreate()
     }
