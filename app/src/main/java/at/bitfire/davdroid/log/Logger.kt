@@ -27,7 +27,12 @@ import java.util.logging.Level
 
 object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
 
-    const val LOGGER_NAME = "davx5"
+    private const val LOGGER_NAME = "davx5"
+
+    /** log file name, relative to [debugDir] */
+    const val LOG_FILE_NAME = "davx5-log.txt"
+
+    /** verbose logging setting name */
     private const val LOG_TO_FILE = "log_to_file"
 
     val log: java.util.logging.Logger = java.util.logging.Logger.getLogger(LOGGER_NAME)
@@ -74,10 +79,17 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
         val nm = NotificationManagerCompat.from(context)
         // log to external file according to preferences
         if (logToFile) {
-            val logDir = debugDir() ?: return
-            val logFile = File(logDir, "davx5-log.txt")
+            val logDir = debugDir()
+            if (logDir == null) {
+                Toast.makeText(context, context.getString(R.string.logging_couldnt_create_file), Toast.LENGTH_LONG).show()
+                return
+            }
+
+            val logFile = File(logDir, LOG_FILE_NAME)
             if (logFile.createNewFile())
                 logFile.writeText("Log file created at ${Date()}; PID ${Process.myPid()}; UID ${Process.myUid()}\n")
+            else
+                logFile.appendText("Appending to existing log file; PID ${Process.myPid()}; UID ${Process.myUid()}\n")
 
             try {
                 val fileHandler = FileHandler(logFile.toString(), true).apply {
@@ -95,7 +107,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                         .setOngoing(true)
 
                 val shareIntent = DebugInfoActivity.IntentBuilder(context)
-                    .withLogFile(logFile)
+                    .withLogFile()
                     .newTask()
                     .share()
                 val pendingShare = PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
@@ -128,7 +140,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
     }
 
 
-    private fun debugDir(): File? {
+    fun debugDir(): File? {
         val dir = File(context.filesDir, "debug")
         if (dir.exists() && dir.isDirectory)
             return dir
@@ -136,7 +148,6 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
         if (dir.mkdir())
             return dir
 
-        Toast.makeText(context, context.getString(R.string.logging_couldnt_create_file), Toast.LENGTH_LONG).show()
         return null
     }
 

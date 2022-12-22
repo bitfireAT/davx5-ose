@@ -82,7 +82,7 @@ class DebugInfoActivity: AppCompatActivity() {
         /** dump of local resource related to the problem (plain-text [String]) */
         private const val EXTRA_LOCAL_RESOURCE = "localResource"
 
-        /** logs related to the problem (path to log file, plain-text [String]) */
+        /** whether to attach verbose logs ([Boolean]) */
         private const val EXTRA_LOG_FILE = "logFile"
 
         /** logs related to the problem (plain-text [String]) */
@@ -208,21 +208,24 @@ class DebugInfoActivity: AppCompatActivity() {
             initialized = true
 
             viewModelScope.launch(Dispatchers.Default) {
-                val logFileName = extras?.getString(EXTRA_LOG_FILE)
+                val logFile = extras?.getBoolean(EXTRA_LOG_FILE)
                 val logsText = extras?.getString(EXTRA_LOGS)
-                if (logFileName != null) {
-                    val file = File(logFileName)
-                    if (file.isFile && file.canRead())
-                        logFile.postValue(file)
-                    else
-                        Logger.log.warning("Can't read logs from $logFileName")
+                if (logFile == true) {
+                    val logDir = Logger.debugDir()
+                    if (logDir != null) {
+                        val file = File(logDir, Logger.LOG_FILE_NAME)
+                        if (file.isFile && file.canRead())
+                            this@ReportModel.logFile.postValue(file)
+                        else
+                            Logger.log.warning("Can't read logs from $logFile (directory: $logDir)")
+                    }
                 } else if (logsText != null) {
                     val file = File(debugInfoDir, FILE_LOGS)
                     if (!file.exists() || file.canWrite()) {
                         file.writer().buffered().use { writer ->
                             IOUtils.copy(StringReader(logsText), writer)
                         }
-                        logFile.postValue(file)
+                        this@ReportModel.logFile.postValue(file)
                     } else
                         Logger.log.warning("Can't write logs to $file")
                 }
@@ -663,9 +666,8 @@ class DebugInfoActivity: AppCompatActivity() {
             return this
         }
 
-        fun withLogFile(logFile: File?): IntentBuilder {
-            if (logFile != null)
-                intent.putExtra(EXTRA_LOG_FILE, logFile.absolutePath)
+        fun withLogFile(): IntentBuilder {
+            intent.putExtra(EXTRA_LOG_FILE, true)
             return this
         }
 
