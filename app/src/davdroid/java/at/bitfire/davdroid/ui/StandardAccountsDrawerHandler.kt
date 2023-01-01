@@ -35,6 +35,11 @@ open class StandardAccountsDrawerHandler @Inject constructor(): BaseAccountsDraw
                     activity,
                     Uri.parse("https://twitter.com/" + activity.getString(R.string.twitter_handle))
                 )
+            R.id.nav_mastodon ->
+                UiUtils.launchUri(
+                    activity,
+                    Uri.parse("https://fosstodon.org/@davx5app")
+                )
 
             R.id.nav_webdav_mounts ->
                 activity.startActivity(Intent(activity, WebdavMountsActivity::class.java))
