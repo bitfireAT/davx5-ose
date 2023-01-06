@@ -10,7 +10,6 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.StorageLowReceiver
@@ -73,9 +72,8 @@ class AppWarningsManager @Inject constructor(
             val dataSaverChangedFilter = IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED)
             context.registerReceiver(listener, dataSaverChangedFilter)
             dataSaverChangedListener = listener
-
-            checkDataSaver()
         }
+        checkDataSaver()
     }
 
     override fun onStatusChanged(which: Int) {
@@ -130,13 +128,15 @@ class AppWarningsManager @Inject constructor(
         }
     }
 
-    @RequiresApi(24)
     private fun checkDataSaver() {
-        context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
-            dataSaverEnabled.postValue(
-                connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED
-            )
-        }
+        dataSaverEnabled.postValue(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
+                    connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED
+                }
+            else
+                false
+        )
     }
 
     override fun close() {
