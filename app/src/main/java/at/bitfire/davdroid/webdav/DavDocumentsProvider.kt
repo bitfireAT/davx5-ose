@@ -68,11 +68,12 @@ class DavDocumentsProvider: DocumentsProvider() {
             ResourceType.NAME,
             CurrentUserPrivilegeSet.NAME,
             DisplayName.NAME,
+            GetETag.NAME,
             GetContentType.NAME,
             GetContentLength.NAME,
             GetLastModified.NAME,
             QuotaAvailableBytes.NAME,
-            QuotaUsedBytes.NAME
+            QuotaUsedBytes.NAME,
         )
 
         const val MAX_NAME_ATTEMPTS = 5
@@ -262,7 +263,10 @@ class DavDocumentsProvider: DocumentsProvider() {
 
                 resource.displayName = response[DisplayName::class.java]?.displayName
                 resource.mimeType = response[GetContentType::class.java]?.type
-                resource.eTag = response[GetETag::class.java]?.eTag
+                response[GetETag::class.java]?.let { getETag ->
+                    if (!getETag.weak)
+                        resource.eTag = resource.eTag
+                }
                 resource.lastModified = response[GetLastModified::class.java]?.lastModified
                 resource.size = response[GetContentLength::class.java]?.contentLength
 

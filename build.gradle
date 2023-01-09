@@ -10,7 +10,7 @@ buildscript {
     ext.versions = [
         aboutLibraries: '8.9.4',
         appIntro: '6.2.0',
-        dav4jvm: '2.2',
+        dav4jvm: 'aac98bd76cf3034194c9ba6d2bf58212083a72a0',
         hilt: '2.44.2',
         kotlin: '1.7.21',
         okhttp: '4.10.0',

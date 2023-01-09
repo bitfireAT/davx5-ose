@@ -6,7 +6,7 @@ package at.bitfire.davdroid.webdav
 
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
-import at.bitfire.dav4jvm.QuotedStringUtils
+import at.bitfire.dav4jvm.property.GetETag
 import at.bitfire.davdroid.HttpClient
 import okhttp3.HttpUrl
 import java.util.*
@@ -25,7 +25,9 @@ class HeadInfoDownloader(
 
         DavResource(client.okHttpClient, url).head { response ->
             response.header("ETag", null)?.let {
-                eTag = QuotedStringUtils.decodeQuotedString(it.removeSuffix("W/"))
+                val getETag = GetETag(it)
+                if (!getETag.weak)
+                    eTag = getETag.eTag
             }
             response.header("Last-Modified", null)?.let {
                 lastModified = HttpUtils.parseDate(it)
