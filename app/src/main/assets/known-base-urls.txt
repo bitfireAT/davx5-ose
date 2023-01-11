@@ -4,6 +4,7 @@ calendar.dingtalk.com/dav/
 cloud.disroot.org
 dav.edis.at
 dav.fruux.com
+dav.mailbox.org
 caldav.gmx.net
 carddav.gmx.net
 framagenda.org/remote.php/dav/
