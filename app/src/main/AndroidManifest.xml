@@ -144,7 +144,9 @@
         <activity
             android:name=".ui.account.AccountActivity"
             android:parentActivityName=".ui.AccountsActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true">
+        </activity>
         <activity
             android:name=".ui.account.CreateAddressBookActivity"
             android:label="@string/create_addressbook"
