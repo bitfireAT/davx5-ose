@@ -229,15 +229,14 @@ class AccountDetailsFragment : Fragment() {
 
             // insert home sets
             val homeSetDao = db.homeSetDao()
-            for (homeSet in info.homeSets) {
-                homeSetDao.insertOrReplace(HomeSet(0, serviceId, true, homeSet))
-            }
+            for (homeSet in info.homeSets)
+                homeSetDao.insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
 
             // insert collections
             val collectionDao = db.collectionDao()
             for (collection in info.collections.values) {
                 collection.serviceId = serviceId
-                collectionDao.insertOrReplace(collection)
+                collectionDao.insertOrUpdateByUrl(collection)
             }
 
             return serviceId

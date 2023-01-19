@@ -11,19 +11,14 @@ import android.content.Context
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.util.Log
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import androidx.work.impl.utils.SynchronousExecutor
 import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
-import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
@@ -31,8 +26,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import java.util.concurrent.TimeUnit
 
 @HiltAndroidTest
 class SyncWorkerTest {
@@ -74,7 +67,7 @@ class SyncWorkerTest {
     fun testRequestSync_enqueuesWorker() {
         SyncWorker.requestSync(context, account, CalendarContract.AUTHORITY)
         val workerName = SyncWorker.workerName(account, CalendarContract.AUTHORITY)
-        assertTrue(workScheduledOrRunning(workerName))
+        assertTrue(workScheduledOrRunning(context, workerName))
     }
 
     @Test
@@ -82,26 +75,9 @@ class SyncWorkerTest {
         SyncWorker.requestSync(context, account, CalendarContract.AUTHORITY)
         SyncWorker.stopSync(context, account, CalendarContract.AUTHORITY)
         val workerName = SyncWorker.workerName(account, CalendarContract.AUTHORITY)
-        assertFalse(workScheduledOrRunning(workerName))
+        assertFalse(workScheduledOrRunning(context, workerName))
 
         // here we could test whether stopping the work really interrupts the sync thread
-    }
-
-    private fun workScheduledOrRunning(workerName: String): Boolean {
-        val future: ListenableFuture<List<WorkInfo>> = WorkManager.getInstance(context).getWorkInfosForUniqueWork(workerName)
-        val workInfoList: List<WorkInfo>
-        try {
-            workInfoList = future.get()
-        } catch (e: Exception) {
-            Logger.log.severe("Failed to retrieve work info list for worker $workerName", )
-            return false
-        }
-        for (workInfo in workInfoList) {
-            val state = workInfo.state
-            if (state == WorkInfo.State.RUNNING || state == WorkInfo.State.ENQUEUED)
-                return true
-        }
-        return false
     }
 
 }

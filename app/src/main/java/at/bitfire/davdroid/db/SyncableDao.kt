@@ -9,6 +9,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Update
 
+@Deprecated("Use direct DB access instead")
 interface SyncableDao<T: IdEntity> {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

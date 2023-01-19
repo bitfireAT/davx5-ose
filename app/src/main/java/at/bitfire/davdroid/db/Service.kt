@@ -9,6 +9,11 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import okhttp3.HttpUrl
 
+/**
+ * A service entity.
+ *
+ * Services represent accounts and are unique. They are of type CardDAV or CalDAV and may have an associated principal.
+ */
 @Entity(tableName = "service",
         indices = [
             // only one service per type and account
@@ -16,13 +21,13 @@ import okhttp3.HttpUrl
         ])
 data class Service(
     @PrimaryKey(autoGenerate = true)
-    override var id: Long,
+    var id: Long,
 
     var accountName: String,
     var type: String,
 
     var principal: HttpUrl?
-): IdEntity {
+) {
 
     companion object {
         const val TYPE_CALDAV = "caldav"

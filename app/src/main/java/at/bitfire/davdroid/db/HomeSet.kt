@@ -21,7 +21,7 @@ import okhttp3.HttpUrl
 )
 data class HomeSet(
     @PrimaryKey(autoGenerate = true)
-    override var id: Long,
+    var id: Long,
 
     var serviceId: Long,
 
@@ -35,4 +35,4 @@ data class HomeSet(
     var privBind: Boolean = true,
 
     var displayName: String? = null
-): IdEntity
+)

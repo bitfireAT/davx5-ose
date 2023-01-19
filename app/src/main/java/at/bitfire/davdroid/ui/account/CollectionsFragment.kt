@@ -305,7 +305,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             }
 
         // observe RefreshCollectionsWorker status
-        val isRefreshing = RefreshCollectionsWorker.isWorkerInState(context, serviceId, WorkInfo.State.RUNNING)
+        val isRefreshing = RefreshCollectionsWorker.isWorkerInState(context, RefreshCollectionsWorker.workerName(serviceId), WorkInfo.State.RUNNING)
 
         // observe whether sync framework is active
         private var syncFrameworkStatusHandle: Any? = null

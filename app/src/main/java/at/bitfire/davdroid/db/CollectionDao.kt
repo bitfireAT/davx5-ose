@@ -6,13 +6,10 @@ package at.bitfire.davdroid.db
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
-interface CollectionDao: SyncableDao<Collection> {
+interface CollectionDao {
 
     @Query("SELECT DISTINCT color FROM collection WHERE serviceId=:id")
     fun colorsByServiceLive(id: Long): LiveData<List<Int>>
@@ -25,6 +22,9 @@ interface CollectionDao: SyncableDao<Collection> {
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId")
     fun getByService(serviceId: Long): List<Collection>
+
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND homeSetId IS :homeSetId")
+    fun getByServiceAndHomeset(serviceId: Long, homeSetId: Long?): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName, url")
     fun getByServiceAndType(serviceId: Long, type: String): List<Collection>
@@ -44,8 +44,12 @@ interface CollectionDao: SyncableDao<Collection> {
     @Query("SELECT collection.* FROM collection, homeset WHERE collection.serviceId=:serviceId AND type=:type AND homeSetId=homeset.id AND homeset.personal ORDER BY collection.displayName, collection.url")
     fun pagePersonalByServiceAndType(serviceId: Long, type: String): PagingSource<Int, Collection>
 
+    @Deprecated("Use getByServiceAndUrl instead")
     @Query("SELECT * FROM collection WHERE url=:url")
     fun getByUrl(url: String): Collection?
+
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND url=:url")
+    fun getByServiceAndUrl(serviceId: Long, url: String): Collection?
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVEVENT AND sync ORDER BY displayName, url")
     fun getSyncCalendars(serviceId: Long): List<Collection>
@@ -56,10 +60,29 @@ interface CollectionDao: SyncableDao<Collection> {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVTODO AND sync ORDER BY displayName, url")
     fun getSyncTaskLists(serviceId: Long): List<Collection>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertOrReplace(collection: Collection)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insert(collection: Collection): Long
 
-    @Insert
-    fun insert(collection: Collection)
+    @Update
+    fun update(collection: Collection)
+
+    /**
+     * Tries to insert new row, but updates existing row if already present.
+     * This method preserves the primary key, as opposed to using "@Insert(onConflict = OnConflictStrategy.REPLACE)"
+     * which will create a new row with incremented ID and thus breaks entity relationships!
+     *
+     * @return ID of the row, that has been inserted or updated. -1 If the insert fails due to other reasons.
+     */
+    @Transaction
+    fun insertOrUpdateByUrl(collection: Collection): Long = getByServiceAndUrl(
+        collection.serviceId,
+        collection.url.toString()
+    )?.let { localCollection ->
+        update(collection.copy(id = localCollection.id))
+        localCollection.id
+    } ?: insert(collection)
+
+    @Delete
+    fun delete(collection: Collection)
 
 }

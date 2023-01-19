@@ -7,6 +7,7 @@ package at.bitfire.davdroid.db
 import at.bitfire.davdroid.log.Logger
 import java.util.logging.Level
 
+@Deprecated("Use direct DB access instead")
 class DaoTools<T: IdEntity>(dao: SyncableDao<T>): SyncableDao<T> by dao {
 
     /**

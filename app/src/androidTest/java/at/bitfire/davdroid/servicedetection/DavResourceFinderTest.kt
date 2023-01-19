@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid.ui.setup
+package at.bitfire.davdroid.servicedetection
 
 import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
@@ -13,21 +13,17 @@ import at.bitfire.dav4jvm.property.ResourceType
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.servicedetection.DavResourceFinder
-import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
+import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.setup.LoginModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.junit.After
+import org.junit.*
 import org.junit.Assert.*
-import org.junit.Assume
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
 import java.net.URI
 import javax.inject.Inject
 
@@ -92,7 +88,7 @@ class DavResourceFinderTest {
         var info = ServiceInfo()
         DavResource(client.okHttpClient, server.url(PATH_CARDDAV + SUBPATH_PRINCIPAL))
                 .propfind(0, AddressbookHomeSet.NAME) { response, _ ->
-            finder.scanCardDavResponse(response, info)
+            finder.scanResponse(ResourceType.ADDRESSBOOK, response, info)
         }
         assertEquals(0, info.collections.size)
         assertEquals(1, info.homeSets.size)
@@ -102,7 +98,7 @@ class DavResourceFinderTest {
         info = ServiceInfo()
         DavResource(client.okHttpClient, server.url(PATH_CARDDAV + SUBPATH_ADDRESSBOOK))
                 .propfind(0, ResourceType.NAME) { response, _ ->
-            finder.scanCardDavResponse(response, info)
+            finder.scanResponse(ResourceType.ADDRESSBOOK, response, info)
         }
         assertEquals(1, info.collections.size)
         assertEquals(server.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), info.collections.keys.first())
