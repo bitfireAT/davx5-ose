@@ -28,6 +28,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -80,7 +81,7 @@ object SyncUtils {
         if (intent.resolveActivity(pm) != null)
             notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))
 
-        nm.notify(NotificationUtils.NOTIFY_TASKS_PROVIDER_TOO_OLD, notify.build())
+        nm.notifyIfPossible(NotificationUtils.NOTIFY_TASKS_PROVIDER_TOO_OLD, notify.build())
     }
 
     fun removePeriodicSyncs(account: Account, authority: String) {

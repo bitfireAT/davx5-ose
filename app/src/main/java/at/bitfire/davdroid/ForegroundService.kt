@@ -16,6 +16,7 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -88,7 +89,7 @@ class ForegroundService : Service() {
                     .setCategory(NotificationCompat.CATEGORY_ERROR)
 
             val nm = NotificationManagerCompat.from(context)
-            nm.notify(NotificationUtils.NOTIFY_BATTERY_OPTIMIZATION, builder.build())
+            nm.notifyIfPossible(NotificationUtils.NOTIFY_BATTERY_OPTIMIZATION, builder.build())
         }
     }
 

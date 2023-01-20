@@ -20,6 +20,7 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.PermissionsActivity
 
 object PermissionUtils {
@@ -119,7 +120,7 @@ object PermissionUtils {
                 .setAutoCancel(true)
                 .build()
         NotificationManagerCompat.from(context)
-                .notify(NotificationUtils.NOTIFY_PERMISSIONS, notify)
+                .notifyIfPossible(NotificationUtils.NOTIFY_PERMISSIONS, notify)
     }
 
     fun showAppSettings(context: Context) {

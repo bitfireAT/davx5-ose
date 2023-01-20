@@ -23,6 +23,7 @@ import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.webdav.cache.MemoryCache
 import at.bitfire.davdroid.webdav.cache.SegmentedCache
@@ -114,7 +115,7 @@ class RandomAccessCallback private constructor(
                 100
             else
                 (offset*100/fileSize).toInt()
-        notificationManager.notify(
+        notificationManager.notifyIfPossible(
             notificationTag,
             NotificationUtils.NOTIFY_WEBDAV_ACCESS,
             notification.setProgress(100, progress, false).build()

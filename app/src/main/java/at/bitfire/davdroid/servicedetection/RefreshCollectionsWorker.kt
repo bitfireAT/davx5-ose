@@ -29,6 +29,7 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -180,7 +181,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .build()
             NotificationManagerCompat.from(applicationContext)
-                .notify(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS, notify)
+                .notifyIfPossible(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS, notify)
             return Result.failure()
         }
 

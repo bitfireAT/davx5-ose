@@ -5,16 +5,20 @@
 package at.bitfire.davdroid.ui
 
 import android.annotation.TargetApi
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
+import java.util.logging.Level
 
 object NotificationUtils {
 
@@ -82,5 +86,17 @@ object NotificationUtils {
 
         return builder
     }
+
+
+    fun NotificationManagerCompat.notifyIfPossible(tag: String?, id: Int, notification: Notification) {
+        try {
+            notify(tag, id, notification)
+        } catch (e: SecurityException) {
+            Logger.log.log(Level.WARNING, "Couldn't post notification (SecurityException)", notification)
+        }
+    }
+
+    fun NotificationManagerCompat.notifyIfPossible(id: Int, notification: Notification) =
+        notifyIfPossible(null, id, notification)
 
 }

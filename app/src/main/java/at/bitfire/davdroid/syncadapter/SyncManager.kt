@@ -32,6 +32,7 @@ import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.SettingsActivity
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.Ical4Android
@@ -776,7 +777,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
         viewItemAction?.let { builder.addAction(it) }
 
-        notificationManager.notify(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR, builder.build())
+        notificationManager.notifyIfPossible(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR, builder.build())
     }
 
     private fun buildDebugInfoIntent(e: Throwable, local: ResourceType?, remote: HttpUrl?) =
@@ -828,7 +829,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
                 .priority = NotificationCompat.PRIORITY_LOW
-        notificationManager.notify(notificationTag, NotificationUtils.NOTIFY_INVALID_RESOURCE, builder.build())
+        notificationManager.notifyIfPossible(notificationTag, NotificationUtils.NOTIFY_INVALID_RESOURCE, builder.build())
     }
 
     protected abstract fun notifyInvalidResourceTitle(): String
