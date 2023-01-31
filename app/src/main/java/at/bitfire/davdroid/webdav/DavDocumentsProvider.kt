@@ -17,7 +17,6 @@ import android.graphics.Point
 import android.media.ThumbnailUtils
 import android.net.ConnectivityManager
 import android.os.Build
-import android.os.Bundle
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import android.os.storage.StorageManager
@@ -35,7 +34,6 @@ import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.MemoryCookieStore
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.DaoTools
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
@@ -55,6 +53,11 @@ import java.util.concurrent.*
 import java.util.logging.Level
 import kotlin.math.min
 
+/**
+ * Provides functionality on WebDav documents.
+ *
+ * Actual implementation should go into [DavDocumentsActor].
+ */
 class DavDocumentsProvider: DocumentsProvider() {
 
     @EntryPoint
@@ -92,9 +95,9 @@ class DavDocumentsProvider: DocumentsProvider() {
     private val documentDao by lazy { db.webDavDocumentDao() }
 
     private val credentialsStore by lazy { CredentialsStore(ourContext) }
-    val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
-    val headResponseCache by lazy { HeadResponseCache() }
-    val thumbnailCache by lazy { ThumbnailCache(ourContext) }
+    private val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
+    private val headResponseCache by lazy { HeadResponseCache() }
+    private val thumbnailCache by lazy { ThumbnailCache(ourContext) }
 
     private val connectivityManager by lazy { ourContext.getSystemService<ConnectivityManager>()!! }
     private val storageManager by lazy { ourContext.getSystemService<StorageManager>()!! }
@@ -102,7 +105,14 @@ class DavDocumentsProvider: DocumentsProvider() {
     private val executor by lazy {
         ThreadPoolExecutor(1, min(Runtime.getRuntime().availableProcessors(), 4), 30, TimeUnit.SECONDS, BlockingLifoQueue())
     }
-    private val runningQueryChildren = HashMap<Long, Future<List<Bundle>>>()
+    /** List of currently active [queryChildDocuments] runners.
+     *
+     *  Key: document ID (directory) for which children are listed.
+     *  Value: whether the runner is still running (*true*) or has already finished (*false*).
+     */
+    private val runningQueryChildren = ConcurrentHashMap<Long, Boolean>()
+
+    private val actor by lazy { DavDocumentsActor(ourContext, db, cookieStore, credentialsStore, authority) }
 
     override fun onCreate() = true
 
@@ -180,6 +190,14 @@ class DavDocumentsProvider: DocumentsProvider() {
         }
     }
 
+    /**
+     * Gets old or new children of given parent.
+     *
+     * Dispatches a worker querying the server for new children of given parent, and instantly
+     * returns old children (or nothing, on initial call).
+     * Once the worker finishes its query, it notifies the [android.content.ContentResolver] about
+     * change, which calls this method again. The worker being done
+     */
     @Synchronized
     override fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?): Cursor {
         Logger.log.fine("WebDAV queryChildDocuments $parentDocumentId $projection $sortOrder")
@@ -194,107 +212,35 @@ class DavDocumentsProvider: DocumentsProvider() {
             Document.COLUMN_SIZE,
             Document.COLUMN_LAST_MODIFIED
         )
+
+        // Register watcher
         val result = DocumentsCursor(columns)
         val notificationUri = buildChildDocumentsUri(authority, parentDocumentId)
-
-        val worker = runningQueryChildren.getOrPut(parentId) {
-            executor.submit(Callable {
-                val rows = doQueryChildren(parent)
-                ourContext.contentResolver.notifyChange(notificationUri, null)
-                return@Callable rows
-            })
-        }
-
-        if (!worker.isDone) {
-            // still loading, populate from cache
-            result.loading = true
-            for (child in documentDao.getChildren(parentId)) {
-                val bundle = child.toBundle(parent)
-                result.addRow(bundle)
-            }
-
-        } else {
-            try {
-                for (row in worker.get())
-                    result.addRow(row)
-            } catch (e: Exception) {
-                Logger.log.log(Level.WARNING, "Couldn't query children", e)
-                if (e is ExecutionException) {
-                    val cause = e.cause
-                    if (cause is HttpException) {
-                        result.error = "${cause.code} ${cause.message}"
-                    } else
-                        result.error = (cause ?: e).message
-                }
-            }
-            runningQueryChildren.remove(parentId)
-        }
-
         result.setNotificationUri(ourContext.contentResolver, notificationUri)
-        return result
-    }
 
-    @WorkerThread
-    private fun doQueryChildren(parent: WebDavDocument): List<Bundle> {
-        val oldChildren = documentDao.getChildren(parent.id)
-        val newChildren = hashMapOf<String, WebDavDocument>()
-
-        httpClient(parent.mountId).use { client ->
-            val parentUrl = parent.toHttpUrl(db)
-            val folder = DavCollection(client.okHttpClient, parentUrl)
-
-            folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
-                Logger.log.fine("$relation $response")
-
-                val resource: WebDavDocument =
-                    when (relation) {
-                        Response.HrefRelation.SELF ->       // it's about the parent
-                            parent
-                        Response.HrefRelation.MEMBER ->     // it's about a member
-                            WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = response.hrefName())
-                        else ->
-                            // we didn't request this; ignore it
-                            return@propfind
-                    }
-
-                response[ResourceType::class.java]?.types?.let { types ->
-                    resource.isDirectory = types.contains(ResourceType.COLLECTION)
-                }
-
-                resource.displayName = response[DisplayName::class.java]?.displayName
-                resource.mimeType = response[GetContentType::class.java]?.type
-                response[GetETag::class.java]?.let { getETag ->
-                    if (!getETag.weak)
-                        resource.eTag = resource.eTag
-                }
-                resource.lastModified = response[GetLastModified::class.java]?.lastModified
-                resource.size = response[GetContentLength::class.java]?.contentLength
-
-                val privs = response[CurrentUserPrivilegeSet::class.java]
-                resource.mayBind = privs?.mayBind
-                resource.mayUnbind = privs?.mayUnbind
-                resource.mayWriteContent = privs?.mayWriteContent
-
-                resource.quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes
-                resource.quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes
-
-                if (resource == parent)
-                    documentDao.update(resource)
-                else
-                    newChildren[resource.name] = resource
+        // Dispatch worker querying for the children and keep track of it
+        val running = runningQueryChildren.getOrPut(parentId) {
+            executor.submit {
+                actor.queryChildren(parent)
+                // Once the query is done, set query as finished (not running)
+                runningQueryChildren.put(parentId, false)
+                // .. and notify - effectively calling this method again
+                ourContext.contentResolver.notifyChange(notificationUri, null)
             }
+            true
         }
 
-        DaoTools(documentDao).syncAll(oldChildren, newChildren, selectKey = {
-                document -> document.name
-        })
+        if (running)        // worker still running
+            result.loading = true
+        else                // remove worker from list if done
+            runningQueryChildren.remove(parentId)
 
-        val result = ArrayList<Bundle>(newChildren.size)
-        for (child in newChildren.values) {
+        // Regardless of whether the worker is done, return the children we already have
+        for (child in documentDao.getChildren(parentId)) {
             val bundle = child.toBundle(parent)
-            Logger.log.fine("Found child: $bundle")
-            result += bundle
+            result.addRow(bundle)
         }
+
         return result
     }
 
@@ -329,7 +275,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             throw UnsupportedOperationException("Can't COPY between WebDAV servers")
 
         val dstDocId: String
-        httpClient(srcDoc.mountId).use { client ->
+        actor.httpClient(srcDoc.mountId).use { client ->
             val dav = DavResource(client.okHttpClient, srcDoc.toHttpUrl(db))
             try {
                 val dstUrl = dstFolder.toHttpUrl(db).newBuilder()
@@ -349,7 +295,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                     size = srcDoc.size
                 )).toString()
 
-                notifyFolderChanged(targetParentDocumentId)
+                actor.notifyFolderChanged(targetParentDocumentId)
             } catch (e: HttpException) {
                 if (e.code == HttpURLConnection.HTTP_NOT_FOUND)
                     throw FileNotFoundException()
@@ -367,7 +313,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         val createDirectory = mimeType == Document.MIME_TYPE_DIR
 
         var docId: Long? = null
-        httpClient(parent.mountId).use { client ->
+        actor.httpClient(parent.mountId).use { client ->
             for (attempt in 0..MAX_NAME_ATTEMPTS) {
                 val newName = displayNameToMemberName(displayName, attempt)
                 val newLocation = parentUrl.newBuilder()
@@ -392,7 +338,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                         isDirectory = createDirectory
                     ))
 
-                    notifyFolderChanged(parentDocumentId)
+                    actor.notifyFolderChanged(parentDocumentId)
                     break
                 } catch (e: HttpException) {
                     e.throwForDocumentProvider(true)
@@ -406,7 +352,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     override fun deleteDocument(documentId: String) {
         Logger.log.fine("WebDAV removeDocument $documentId")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
-        httpClient(doc.mountId).use { client ->
+        actor.httpClient(doc.mountId).use { client ->
             val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
             try {
                 dav.delete {
@@ -415,7 +361,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                 Logger.log.fine("Successfully removed")
                 documentDao.delete(doc)
 
-                notifyFolderChanged(doc.parentId)
+                actor.notifyFolderChanged(doc.parentId)
             } catch (e: HttpException) {
                 e.throwForDocumentProvider()
             }
@@ -434,7 +380,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             .addPathSegment(doc.name)
             .build()
 
-        httpClient(doc.mountId).use { client ->
+        actor.httpClient(doc.mountId).use { client ->
             val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
             try {
                 dav.move(newLocation, false) {
@@ -444,8 +390,8 @@ class DavDocumentsProvider: DocumentsProvider() {
                 doc.parentId = dstParent.id
                 documentDao.update(doc)
 
-                notifyFolderChanged(sourceParentDocumentId)
-                notifyFolderChanged(targetParentDocumentId)
+                actor.notifyFolderChanged(sourceParentDocumentId)
+                actor.notifyFolderChanged(targetParentDocumentId)
             } catch (e: HttpException) {
                 e.throwForDocumentProvider()
             }
@@ -458,7 +404,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         Logger.log.fine("WebDAV renameDocument $documentId $displayName")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
         val oldUrl = doc.toHttpUrl(db)
-        httpClient(doc.mountId).use { client ->
+        actor.httpClient(doc.mountId).use { client ->
             for (attempt in 0..MAX_NAME_ATTEMPTS) {
                 val newName = displayNameToMemberName(displayName, attempt)
                 val newLocation = oldUrl.newBuilder()
@@ -473,7 +419,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                     doc.name = newName
                     documentDao.update(doc)
 
-                    notifyFolderChanged(doc.parentId)
+                    actor.notifyFolderChanged(doc.parentId)
                     return doc.id.toString()
                 } catch (e: HttpException) {
                     e.throwForDocumentProvider(true)
@@ -505,7 +451,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
         val url = doc.toHttpUrl(db)
-        val client = httpClient(doc.mountId)
+        val client = actor.httpClient(doc.mountId)
 
         val modeFlags = ParcelFileDescriptor.parseMode(mode)
         val readAccess = when (mode) {
@@ -544,7 +490,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                     documentDao.update(doc)
                 }
 
-                notifyFolderChanged(doc.parentId)
+                actor.notifyFolderChanged(doc.parentId)
             }
 
             if (readAccess)
@@ -571,7 +517,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         val thumbFile = thumbnailCache.get(doc, sizeHint) {
             // create thumbnail
             val result = executor.submit(Callable<ByteArray> {
-                httpClient(doc.mountId).use { client ->
+                actor.httpClient(doc.mountId).use { client ->
                     val url = doc.toHttpUrl(db)
                     val dav = DavResource(client.okHttpClient, url)
                     var result: ByteArray? = null
@@ -619,26 +565,122 @@ class DavDocumentsProvider: DocumentsProvider() {
     }
 
 
-    // helpers
+    /**
+     * Acts on behalf of [DavDocumentsProvider].
+     *
+     * Encapsulates functionality to make it easily testable without generating lots of
+     * DocumentProviders during the tests.
+     *
+     * By containing the actual implementation logic of [DavDocumentsProvider], it adds a layer of separation
+     * to make the methods of [DavDocumentsProvider] more easily testable.
+     * [DavDocumentsProvider]s methods should do nothing more, but to call [DavDocumentsActor]s methods.
+     */
+    class DavDocumentsActor(
+        private val context: Context,
+        private val db: AppDatabase,
+        private val cookieStore: MutableMap<Long, CookieJar>,
+        private val credentialsStore: CredentialsStore,
+        private val authority: String
+    ) {
+        private val documentDao = db.webDavDocumentDao()
 
-    private fun httpClient(mountId: Long): HttpClient {
-        val builder = HttpClient.Builder(ourContext, loggerLevel = HttpLoggingInterceptor.Level.HEADERS)
-            .cookieStore(cookieStore.getOrPut(mountId) { MemoryCookieStore() })
+        /**
+         * Finds children of given parent [WebDavDocument]. After querying, it
+         * updates existing children, adds new ones or removes deleted ones.
+         *
+         * There must never be more than one running instance per [parent]!
+         *
+         * @param parent    folder to search for children
+         */
+        @WorkerThread
+        internal fun queryChildren(parent: WebDavDocument) {
+            val oldChildren = documentDao.getChildren(parent.id).associateBy { it.name }.toMutableMap() // "name" of file/folder must be unique
+            val newChildrenList = hashMapOf<String, WebDavDocument>()
 
-        credentialsStore.getCredentials(mountId)?.let { credentials ->
-            builder.addAuthentication(null, credentials, true)
+            httpClient(parent.mountId).use { client ->
+                val parentUrl = parent.toHttpUrl(db)
+                val folder = DavCollection(client.okHttpClient, parentUrl)
+
+                try {
+                    folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
+                        Logger.log.fine("$relation $response")
+
+                        val resource: WebDavDocument =
+                            when (relation) {
+                                Response.HrefRelation.SELF ->       // it's about the parent
+                                    parent
+                                Response.HrefRelation.MEMBER ->     // it's about a member
+                                    WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = response.hrefName())
+                                else ->
+                                    // we didn't request this; ignore it
+                                    return@propfind
+                            }
+
+                        response[ResourceType::class.java]?.types?.let { types ->
+                            resource.isDirectory = types.contains(ResourceType.COLLECTION)
+                        }
+
+                        resource.displayName = response[DisplayName::class.java]?.displayName
+                        resource.mimeType = response[GetContentType::class.java]?.type
+                        response[GetETag::class.java]?.let { getETag ->
+                            if (!getETag.weak)
+                                resource.eTag = resource.eTag
+                        }
+                        resource.lastModified = response[GetLastModified::class.java]?.lastModified
+                        resource.size = response[GetContentLength::class.java]?.contentLength
+
+                        val privs = response[CurrentUserPrivilegeSet::class.java]
+                        resource.mayBind = privs?.mayBind
+                        resource.mayUnbind = privs?.mayUnbind
+                        resource.mayWriteContent = privs?.mayWriteContent
+
+                        resource.quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes
+                        resource.quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes
+
+                        if (resource == parent)
+                            documentDao.update(resource)
+                        else {
+                            documentDao.insertOrUpdate(resource)
+                            newChildrenList[resource.name] = resource
+                        }
+
+                        // remove resource from known child nodes, because not found on server
+                        oldChildren.remove(resource.name)
+                    }
+                } catch (e: Exception) {
+                    Logger.log.log(Level.WARNING, "Couldn't query children", e)
+                }
+            }
+
+            // Delete child nodes which were not rediscovered (deleted serverside)
+            for ((_, oldChild) in oldChildren)
+                documentDao.delete(oldChild)
         }
 
-        return builder.build()
-    }
 
-    private fun notifyFolderChanged(parentDocumentId: Long?) {
-        if (parentDocumentId != null)
-            ourContext.contentResolver.notifyChange(buildChildDocumentsUri(authority, parentDocumentId.toString()), null)
-    }
+        // helpers
 
-    private fun notifyFolderChanged(parentDocumentId: String) {
-        ourContext.contentResolver.notifyChange(buildChildDocumentsUri(authority, parentDocumentId), null)
+        internal fun httpClient(mountId: Long): HttpClient {
+            val builder = HttpClient.Builder(context, loggerLevel = HttpLoggingInterceptor.Level.HEADERS)
+                .cookieStore(cookieStore.getOrPut(mountId) { MemoryCookieStore() })
+
+            credentialsStore.getCredentials(mountId)?.let { credentials ->
+                builder.addAuthentication(null, credentials, true)
+            }
+
+            return builder.build()
+        }
+
+        internal fun notifyFolderChanged(parentDocumentId: Long?) {
+            if (parentDocumentId != null)
+                context.contentResolver.notifyChange(buildChildDocumentsUri(authority, parentDocumentId.toString()), null)
+        }
+
+        internal fun notifyFolderChanged(parentDocumentId: String) {
+            context.contentResolver.notifyChange(buildChildDocumentsUri(authority, parentDocumentId), null)
+        }
+
+
     }
 
 
