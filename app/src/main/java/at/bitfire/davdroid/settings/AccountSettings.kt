@@ -161,7 +161,7 @@ class AccountSettings(
                     settings.getSavedAddressbooksSyncInterval()?.let { shouldBe ->
                         val current = settings.getSyncInterval(addressBooksAuthority)
                         if (current != shouldBe) {
-                            Logger.log.warning("${account.name}: $addressBooksAuthority sync interval should be $shouldBe but is $current -> setting to $current")
+                            Logger.log.warning("${account.name}: $addressBooksAuthority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
                             settings.setSyncInterval(addressBooksAuthority, shouldBe)
                         }
                     }
@@ -170,7 +170,7 @@ class AccountSettings(
                     settings.getSavedCalendarsSyncInterval()?.let { shouldBe ->
                         val current = settings.getSyncInterval(CalendarContract.AUTHORITY)
                         if (current != shouldBe) {
-                            Logger.log.warning("${account.name}: ${CalendarContract.AUTHORITY} sync interval should be $shouldBe but is $current -> setting to $current")
+                            Logger.log.warning("${account.name}: ${CalendarContract.AUTHORITY} sync interval should be $shouldBe but is $current -> setting to $shouldBe")
                             settings.setSyncInterval(CalendarContract.AUTHORITY, shouldBe)
                         }
                     }
@@ -180,7 +180,7 @@ class AccountSettings(
                         settings.getSavedTasksSyncInterval()?.let { shouldBe ->
                             val current = settings.getSyncInterval(taskAuthority)
                             if (current != shouldBe) {
-                                Logger.log.warning("${account.name}: $taskAuthority sync interval should be $shouldBe but is $current -> setting to $current")
+                                Logger.log.warning("${account.name}: $taskAuthority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
                                 settings.setSyncInterval(taskAuthority, shouldBe)
                             }
                         }
