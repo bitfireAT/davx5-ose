@@ -171,6 +171,7 @@
   <string name="app_settings_notification_settings">알림 설정</string>
   <string name="app_settings_notification_settings_summary">알림 채널 및 해당 설정 관리</string>
   <string name="app_settings_theme_title">테마 선택</string>
+  <string name="app_settings_language_system_default">시스템 기본값</string>
   <string-array name="app_settings_theme_names">
     <item>시스템 디자인</item>
     <item>밝은 테마</item>

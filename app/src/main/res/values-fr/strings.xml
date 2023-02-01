@@ -159,6 +159,7 @@
   <string name="app_settings_notification_settings">Paramètres de notification</string>
   <string name="app_settings_notification_settings_summary">Gérer les canaux de notification et leurs paramètres</string>
   <string name="app_settings_theme_title">Sélectionner un thème</string>
+  <string name="app_settings_language_system_default">Valeur du système</string>
   <string-array name="app_settings_theme_names">
     <item>Par défaut</item>
     <item>Clair</item>

@@ -172,6 +172,7 @@
   <string name="app_settings_notification_settings">Jakinarazpen-ezarpenak</string>
   <string name="app_settings_notification_settings_summary">Kudeatu jakinarazpen kanalak eta haien ezarpenak</string>
   <string name="app_settings_theme_title">Hautatu gaia</string>
+  <string name="app_settings_language_system_default">Sistemaren lehenetsia</string>
   <string-array name="app_settings_theme_names">
     <item>Sistemaren lehenetsia</item>
     <item>Argia</item>

@@ -25,7 +25,7 @@
   <string name="notification_channel_sync_io_errors_desc">タイムアウト、接続の問題など (多くの場合、一時的なもの)</string>
   <!--IntroActivity-->
   <string name="intro_slogan1">あなたのデータはあなたの手で</string>
-  <string name="intro_slogan2">コントロールを始めよう</string>
+  <string name="intro_slogan2">コントロールを始める</string>
   <string name="intro_battery_title">一定の間隔で同期</string>
   <string name="intro_battery_not_whitelisted">無効 (非推奨)</string>
   <string name="intro_battery_whitelisted">有効 (推奨)</string>
@@ -51,42 +51,42 @@
   <string name="intro_open_source_details">貢献/寄付の方法</string>
   <string name="intro_open_source_dont_show">しばらく非表示にする</string>
   <!--PermissionsActivity-->
-  <string name="permissions_title">権限の許可</string>
+  <string name="permissions_title">許可</string>
   <string name="permissions_text">%s が正しく動作するには権限を許可する必要があります</string>
   <string name="permissions_all_title">以下のすべて</string>
   <string name="permissions_all_status_off">すべての機能を使用する (推奨)</string>
   <string name="permissions_all_status_on">すべての権限が許可されました</string>
-  <string name="permissions_contacts_title">連絡先へのアクセス許可</string>
+  <string name="permissions_contacts_title">連絡先へのアクセス</string>
   <string name="permissions_contacts_status_off">連絡先を同期しない (非推奨)</string>
   <string name="permissions_contacts_status_on">連絡先を同期できます</string>
-  <string name="permissions_calendar_title">カレンダーへのアクセス許可</string>
+  <string name="permissions_calendar_title">カレンダーへのアクセス</string>
   <string name="permissions_calendar_status_off">カレンダーを同期しない (非推奨)</string>
   <string name="permissions_calendar_status_on">カレンダーを同期できます</string>
-  <string name="permissions_notification_title">通知の許可</string>
+  <string name="permissions_notification_title">通知の権限</string>
   <string name="permissions_notification_status_off">通知が無効です (非推奨)</string>
   <string name="permissions_notification_status_on">通知が有効です</string>
-  <string name="permissions_jtx_title">jtx Board の許可</string>
+  <string name="permissions_jtx_title">jtx Board へのアクセス</string>
   <string name="permissions_jtx_status_not_installed">日誌、メモ、タスクを同期しない (未インストール)</string>
   <string name="permissions_jtx_status_off">日誌、メモ、タスクを同期しない</string>
   <string name="permissions_jtx_status_on">日誌、メモ、タスクを同期できます</string>
-  <string name="permissions_opentasks_title">OpenTasks の許可</string>
-  <string name="permissions_tasksorg_title">Tasks の許可</string>
+  <string name="permissions_opentasks_title">OpenTasks へのアクセス</string>
+  <string name="permissions_tasksorg_title">Tasks へのアクセス</string>
   <string name="permissions_tasks_status_not_installed">タスクを同期しない (未インストール)</string>
   <string name="permissions_tasks_status_off">タスクを同期しない</string>
   <string name="permissions_tasks_status_on">タスクを同期できます</string>
-  <string name="permissions_autoreset_title">継続の許可</string>
+  <string name="permissions_autoreset_title">権限を維持</string>
   <string name="permissions_autoreset_status_off">権限が自動的にリセットされることがあります (非推奨)</string>
   <string name="permissions_autoreset_status_on">権限は自動でリセットされません</string>
   <string name="permissions_autoreset_instruction">許可から「アプリが使用されていない場合に権限を削除」を無効化してください</string>
   <string name="permissions_app_settings_hint">スイッチが機能しない場合、アプリ情報 / 許可 にアクセスしてください</string>
   <string name="permissions_app_settings">アプリ設定</string>
   <!--WifiPermissionsActivity-->
-  <string name="wifi_permissions_label">WiFi SSID の許可</string>
+  <string name="wifi_permissions_label">WiFi SSID へのアクセス</string>
   <string name="wifi_permissions_intro">現在の WiFi 名 (SSID) にアクセスするため、これらの条件を満たす必要があります:</string>
-  <string name="wifi_permissions_location_permission">正確な位置情報の許可</string>
-  <string name="wifi_permissions_location_permission_on">位置情報の権限が許可されています</string>
+  <string name="wifi_permissions_location_permission">正確な位置情報へのアクセス</string>
+  <string name="wifi_permissions_location_permission_on">位置情報へのアクセスが許可されています</string>
   <string name="wifi_permissions_location_permission_off">位置情報の権限が拒否されています</string>
-  <string name="wifi_permissions_background_location_permission">バックグラウンドでの位置情報の許可</string>
+  <string name="wifi_permissions_background_location_permission">バックグラウンドでの位置情報へのアクセス</string>
   <string name="wifi_permissions_background_location_permission_label">常に許可</string>
   <string name="wifi_permissions_background_location_permission_on"><![CDATA[位置情報の権限は <b>%s</b> に設定されています]]></string>
   <string name="wifi_permissions_background_location_permission_off"><![CDATA[位置情報の権限は <b>%s</b> に設定されていません]]></string>
@@ -131,6 +131,8 @@
   <string name="account_list_manage_connections">接続を管理</string>
   <string name="account_list_low_storage">残りのストレージ容量が少なくなっています。Android は同期を実行しません。</string>
   <string name="account_list_manage_storage">ストレージを管理</string>
+  <string name="account_list_datasaver_enabled">データサーバーが有効です。バックグラウンド同期が制限されています</string>
+  <string name="account_list_manage_datasaver">データサーバーを管理</string>
   <string name="account_list_empty">DAVx⁵ にようこそ！\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
   <string name="accounts_global_sync_disabled">システム全体の自動同期が無効です</string>
   <string name="accounts_global_sync_enable">有効</string>
@@ -180,6 +182,8 @@
   <string name="app_settings_notification_settings">通知設定</string>
   <string name="app_settings_notification_settings_summary">通知チャネルとその設定を管理します</string>
   <string name="app_settings_theme_title">テーマを選択</string>
+  <string name="app_settings_language_title">言語を選択</string>
+  <string name="app_settings_language_system_default">システム標準</string>
   <string-array name="app_settings_theme_names">
     <item>システムのデフォルト</item>
     <item>ライト</item>
@@ -201,7 +205,7 @@
   <string name="account_caldav_missing_tasks_permissions">タスクを同期しません (権限なし)</string>
   <string name="account_caldav_missing_permissions">カレンダーとタスクを同期しません (権限なし)</string>
   <string name="account_webcal_missing_calendar_permissions">カレンダーにアクセスできません (権限なし)</string>
-  <string name="account_permissions_action">権限の許可</string>
+  <string name="account_permissions_action">許可</string>
   <string name="account_no_address_books">アドレス帳は (まだ) ありません。</string>
   <string name="account_no_calendars">カレンダーは (まだ) ありません。</string>
   <string name="account_no_webcals">カレンダーのサブスクリプションは (まだ) ありません。</string>
@@ -407,8 +411,8 @@
   <string name="webdav_notification_upload">WebDAV ファイルをアップロードしています</string>
   <string name="webdav_provider_root_title">WebDAV マウント</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵ アクセス許可</string>
-  <string name="sync_error_permissions_text">追加のアクセス許可が必要です</string>
+  <string name="sync_error_permissions">DAVx⁵ の権限</string>
+  <string name="sync_error_permissions_text">アクセス権限の許可が必要です</string>
   <string name="sync_error_tasks_too_old">%s が古すぎます</string>
   <string name="sync_error_tasks_required_version">最小要求バージョン: %1$s</string>
   <string name="sync_error_authentication_failed">認証に失敗しました (ログイン情報を確認してください)</string>

@@ -179,6 +179,7 @@
   <string name="app_settings_notification_settings">Nastavení oznamování</string>
   <string name="app_settings_notification_settings_summary">Spravovat kanály oznamování a jejich nastavení</string>
   <string name="app_settings_theme_title">Vybrat vzhled</string>
+  <string name="app_settings_language_system_default">Systémová výchozí</string>
   <string-array name="app_settings_theme_names">
     <item>Výchozí systémový</item>
     <item>Světlý</item>
