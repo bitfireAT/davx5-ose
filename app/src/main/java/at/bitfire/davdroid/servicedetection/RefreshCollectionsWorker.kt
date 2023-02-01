@@ -227,11 +227,6 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
         private fun saveHomeset(homeset: HomeSet) = db.homeSetDao().insertOrUpdateByUrl(homeset)
         private fun saveCollection(newCollection: Collection) {
-            // Entity relation: use refHomeSet (if available) to determine homeset ID
-            newCollection.refHomeSet?.let { homeSet ->
-                newCollection.homeSetId = homeSet.id
-            }
-
             // remember locally set flags
             db.collectionDao().getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())?.let { oldCollection ->
                 newCollection.sync = oldCollection.sync
@@ -333,9 +328,12 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             getHomesets(service.id).forEach { (homeSetUrl, localHomeset) ->
                 Logger.log.fine("Listing home set $homeSetUrl")
 
-                // To find removed collections in this homeset: create a queue of existing collections and remove every collection that
+                // To find removed collections in this homeset: create a queue from existing collections and remove every collection that
                 // is successfully rediscovered. If there are collections left, after processing is done, these are marked homeless.
-                val localHomesetCollections = db.collectionDao().getByServiceAndHomeset(service.id, localHomeset.id).toMutableList()
+                val localHomesetCollections = db.collectionDao()
+                    .getByServiceAndHomeset(service.id, localHomeset.id)
+                    .associateBy { it.url }
+                    .toMutableMap()
 
                 try {
                     DavResource(httpClient, homeSetUrl).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, relation ->
@@ -354,7 +352,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         val collection = Collection.fromDavResponse(response) ?: return@propfind
 
                         collection.serviceId = service.id
-                        collection.refHomeSet = localHomeset
+                        collection.homeSetId = localHomeset.id
                         collection.sync = settings.getBoolean(Settings.SYNC_ALL_COLLECTIONS)
                         collection.owner = response[Owner::class.java]?.href?.let { response.href.resolve(it) }
 
@@ -364,8 +362,8 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         if (isUsableCollection(collection))
                             saveCollection(collection)
 
-                        // Remove this collection from queue
-                        localHomesetCollections.remove(collection)
+                        // Remove this collection from queue - because it was found in the home set
+                        localHomesetCollections.remove(collection.url)
                     }
                 } catch (e: HttpException) {
                     // delete home set locally if it was not accessible (40x)
@@ -373,10 +371,9 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         deleteHomeset(localHomeset)
                 }
 
-                // Mark leftover (not rediscovered) collections from queue as homeless (remove homeset association)
-                for (homelessCollection in localHomesetCollections) {
+                // Mark leftover (not rediscovered) collections from queue as homeless (remove association)
+                for ((_, homelessCollection) in localHomesetCollections) {
                     homelessCollection.homeSetId = null
-                    homelessCollection.refHomeSet = null
                     saveCollection(homelessCollection)
                 }
 

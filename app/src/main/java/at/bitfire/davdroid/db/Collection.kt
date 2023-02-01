@@ -81,10 +81,6 @@ data class Collection(
 
 ) {
 
-    @Ignore
-    var refHomeSet: HomeSet? = null
-
-
     companion object {
 
         const val TYPE_ADDRESSBOOK = "ADDRESS_BOOK"
