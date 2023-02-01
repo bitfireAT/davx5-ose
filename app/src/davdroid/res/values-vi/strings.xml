@@ -172,6 +172,7 @@
   <string name="app_settings_notification_settings">Cài đặt thông báo</string>
   <string name="app_settings_notification_settings_summary">Quản lý các kênh thông báo và cài đặt của chúng</string>
   <string name="app_settings_theme_title">Chọn chủ đề</string>
+  <string name="app_settings_language_system_default">Mặc định hệ thống</string>
   <string-array name="app_settings_theme_names">
     <item>Mặc định hệ thống</item>
     <item>Sáng</item>

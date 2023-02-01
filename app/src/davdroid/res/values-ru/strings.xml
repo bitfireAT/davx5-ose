@@ -131,6 +131,8 @@
   <string name="account_list_manage_connections">Управление подключениями</string>
   <string name="account_list_low_storage">Место для хранения мало. Android не будет выполнять синхронизацию.</string>
   <string name="account_list_manage_storage">Управление хранилищем</string>
+  <string name="account_list_datasaver_enabled">Экономия трафика включена. Фоновая синхронизация ограничена.</string>
+  <string name="account_list_manage_datasaver">Экономия трафика</string>
   <string name="account_list_empty">Добро пожаловать в DAVx⁵!\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
   <string name="accounts_global_sync_enable">Включить</string>
@@ -143,7 +145,7 @@
   <string name="battery_optimization_notify_text">Необходимо добавить в белый список оптимизации батареи</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Запущен в приоритетном режиме</string>
-  <string name="foreground_service_notify_text">Требуется для автоматической синхронизации на некоторых устройствах.</string>
+  <string name="foreground_service_notify_text">Необходим для автоматической синхронизации на некоторых устройствах.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отладка</string>
@@ -180,6 +182,8 @@
   <string name="app_settings_notification_settings">Настройки уведомлений</string>
   <string name="app_settings_notification_settings_summary">Управление каналами уведомлений и их настройками</string>
   <string name="app_settings_theme_title">Выбор темы</string>
+  <string name="app_settings_language_title">Выбрать язык</string>
+  <string name="app_settings_language_system_default">Определен системой</string>
   <string-array name="app_settings_theme_names">
     <item>Системная</item>
     <item>Светлая</item>

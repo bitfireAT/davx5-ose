@@ -41,6 +41,8 @@
   <string name="intro_tasks_title">Suport de tasques</string>
   <string name="intro_tasks_text1">Si el vostre servidor permet les tasques, es poden sincronitzar amb una aplicació que admeti tasques:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">Sembla que ja no es desenvolupa, no es recomana.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Algunes funcions <a href="https://www.davx5.com/faq/tasks/advanced-task-features">no estan disponibles</a> (encara).]]></string>
   <string name="intro_tasks_no_app_store">No hi ha cap mercat d\'aplicacions disponible</string>
   <string name="intro_tasks_dont_show">No necessito suport per les tasques.*</string>
@@ -129,6 +131,8 @@
   <string name="account_list_manage_connections">Gestiona les connexions</string>
   <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no executarà la sincronització.</string>
   <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
+  <string name="account_list_datasaver_enabled">S\'ha activat l\'estalviador de dades. La sincronització en segon pla està restringida.</string>
+  <string name="account_list_manage_datasaver">Gestió de l\'estalviador de dades</string>
   <string name="account_list_empty">Us donem la benvinguda a DAVx⁵! \n\nAra podeu afegir un compte CalDAV / CardDAV.</string>
   <string name="accounts_global_sync_disabled">La sincronització automàtica de tot el sistema està inhabilitada</string>
   <string name="accounts_global_sync_enable">Activa</string>
@@ -178,6 +182,8 @@
   <string name="app_settings_notification_settings">Configuració de les notificacions</string>
   <string name="app_settings_notification_settings_summary">Gestiona els canals de notificació i la seva configuració</string>
   <string name="app_settings_theme_title">Selecció del tema</string>
+  <string name="app_settings_language_title">Seleccioneu l\'idioma</string>
+  <string name="app_settings_language_system_default">Predeterminat del sistema</string>
   <string-array name="app_settings_theme_names">
     <item>Predeterminat del sistema</item>
     <item>Clar</item>

@@ -178,6 +178,7 @@
   <string name="app_settings_notification_settings">Aviseringsinställningar</string>
   <string name="app_settings_notification_settings_summary">Hantera aviseringskanaler och deras inställningar</string>
   <string name="app_settings_theme_title">Välj tema</string>
+  <string name="app_settings_language_system_default">Standardinställning för system</string>
   <string-array name="app_settings_theme_names">
     <item>Systemstandard</item>
     <item>Ljus</item>

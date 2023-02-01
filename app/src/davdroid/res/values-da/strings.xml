@@ -172,6 +172,7 @@
   <string name="app_settings_notification_settings">Notifikations indstillinger</string>
   <string name="app_settings_notification_settings_summary">Håndtér notifikationskanaler og deres opsætning</string>
   <string name="app_settings_theme_title">Vælg tema</string>
+  <string name="app_settings_language_system_default">System standard</string>
   <string-array name="app_settings_theme_names">
     <item>System standard</item>
     <item>Lys</item>

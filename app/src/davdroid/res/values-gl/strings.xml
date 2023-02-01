@@ -182,6 +182,8 @@
   <string name="app_settings_notification_settings">Axustes das notificacións</string>
   <string name="app_settings_notification_settings_summary">Xestiona as canles de notificación e os seus axustes</string>
   <string name="app_settings_theme_title">Elixe decorado</string>
+  <string name="app_settings_language_title">Elixe o idioma</string>
+  <string name="app_settings_language_system_default">Por defecto no sistema</string>
   <string-array name="app_settings_theme_names">
     <item>Por defecto no sistema</item>
     <item>Claro</item>

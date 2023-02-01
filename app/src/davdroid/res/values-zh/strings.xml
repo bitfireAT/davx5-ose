@@ -182,6 +182,8 @@
   <string name="app_settings_notification_settings">通知设置</string>
   <string name="app_settings_notification_settings_summary">管理通知渠道等设置</string>
   <string name="app_settings_theme_title">选择主题</string>
+  <string name="app_settings_language_title">选择语言</string>
+  <string name="app_settings_language_system_default">系统默认</string>
   <string-array name="app_settings_theme_names">
     <item>系统默认</item>
     <item>浅色</item>
