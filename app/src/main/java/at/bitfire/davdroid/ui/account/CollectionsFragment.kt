@@ -23,11 +23,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewbinding.ViewBinding
 import androidx.work.WorkInfo
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCollectionsBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -40,8 +40,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -96,7 +94,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         model.hasWriteableCollections.observe(viewLifecycleOwner, Observer {
             requireActivity().invalidateOptionsMenu()
         })
-        model.collectionsColors.observe(viewLifecycleOwner, Observer { colors: List<Int?> ->
+        model.collectionColors.observe(viewLifecycleOwner, Observer { colors: List<Int?> ->
             val realColors = colors.filterNotNull()
             if (realColors.isNotEmpty())
                 binding.swipeRefresh.setColorSchemeColors(*realColors.toIntArray())
@@ -124,16 +122,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val adapter = createAdapter()
         binding.list.layoutManager = LinearLayoutManager(requireActivity())
         binding.list.adapter = adapter
-        model.collectionsPager.observe(viewLifecycleOwner, Observer { data ->
+        model.collections.observe(viewLifecycleOwner, Observer { data ->
             lifecycleScope.launch {
-                val colors = data.flow.map { pagingData ->
-                    pagingData.map { collection ->
-                        collection.color ?: Constants.DAVDROID_GREEN_RGBA
-                    }
-                }
-                data.flow.collectLatest { pagingData ->
-                    adapter.submitData(pagingData)
-                }
+                adapter.submitData(data)
             }
         })
         adapter.addLoadStateListener { loadStates ->
@@ -291,17 +282,21 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val taskProvider by lazy { TaskUtils.currentProvider(context) }
 
         val hasWriteableCollections = db.homeSetDao().hasBindableByServiceLive(serviceId)
-        val collectionsColors = db.collectionDao().colorsByServiceLive(serviceId)
-        val collectionsPager: LiveData<Pager<Int, Collection>> =
-            Transformations.map(accountModel.showOnlyPersonal) { onlyPersonal ->
-                Pager(PagingConfig(pageSize = 25)) {
-                    if (onlyPersonal)
-                        // show only personal collections
-                        db.collectionDao().pagePersonalByServiceAndType(serviceId, collectionType)
-                    else
-                        // show all collections
-                        db.collectionDao().pageByServiceAndType(serviceId, collectionType)
-                }
+        val collectionColors = db.collectionDao().colorsByServiceLive(serviceId)
+        val collections: LiveData<PagingData<Collection>> =
+            Transformations.switchMap(accountModel.showOnlyPersonal) { onlyPersonal ->
+                Pager(
+                    PagingConfig(pageSize = 25),
+                    pagingSourceFactory = {
+                        Logger.log.info("Creating new pager onlyPersonal=$onlyPersonal")
+                        if (onlyPersonal)
+                            // show only personal collections
+                            db.collectionDao().pagePersonalByServiceAndType(serviceId, collectionType)
+                        else
+                            // show all collections
+                            db.collectionDao().pageByServiceAndType(serviceId, collectionType)
+                    }
+                ).liveData
             }
 
         // observe RefreshCollectionsWorker status
