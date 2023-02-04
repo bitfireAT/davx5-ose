@@ -285,7 +285,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val collectionColors = db.collectionDao().colorsByServiceLive(serviceId)
         val collections: LiveData<PagingData<Collection>> =
             Transformations.switchMap(accountModel.showOnlyPersonal) { onlyPersonal ->
-                Pager(
+                val pager = Pager(
                     PagingConfig(pageSize = 25),
                     pagingSourceFactory = {
                         Logger.log.info("Creating new pager onlyPersonal=$onlyPersonal")
@@ -296,7 +296,10 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                             // show all collections
                             db.collectionDao().pageByServiceAndType(serviceId, collectionType)
                     }
-                ).liveData
+                )
+                return@switchMap pager
+                    .liveData
+                    .cachedIn(viewModelScope)
             }
 
         // observe RefreshCollectionsWorker status
