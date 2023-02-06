@@ -60,8 +60,6 @@
 
         <service android:name=".ForegroundService"/>
 
-        <service android:name=".ForegroundService"/>
-
         <activity android:name=".ui.intro.IntroActivity" android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.AccountsActivity"
