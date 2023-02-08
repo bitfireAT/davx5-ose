@@ -1,0 +1,7 @@
+- WorkManager for manual sync
+- refactored service detection
+- improved compatibility with jtx Board
+- [WebDAV] better handling of weak ETags (improves compatibility with SeedVault+Apache)
+- [UI] added Mastodon link to navigation drawer
+- [UI] support per-app language selection (Android 13)
+- minor improvements and bug fixes
