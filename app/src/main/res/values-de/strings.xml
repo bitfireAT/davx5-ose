@@ -131,8 +131,8 @@
   <string name="account_list_manage_connections">Verbindungen steuern</string>
   <string name="account_list_low_storage">Speicher knapp. Android wird keine Synchronisierung ausführen.</string>
   <string name="account_list_manage_storage">Speicherplatz verwalten</string>
-  <string name="account_list_datasaver_enabled">Datensparer aktiviert. Die Hintergrundsynchronisierung ist eingeschränkt.</string>
-  <string name="account_list_manage_datasaver">Datensparer verwalten</string>
+  <string name="account_list_datasaver_enabled">Datensparen aktiviert. Die Hintergrundsynchronisierung ist eingeschränkt.</string>
+  <string name="account_list_manage_datasaver">Datensparen verwalten</string>
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
   <string name="accounts_global_sync_disabled">Systemweite automatische Synchronisierung ist nicht aktiv</string>
   <string name="accounts_global_sync_enable">Aktivieren</string>

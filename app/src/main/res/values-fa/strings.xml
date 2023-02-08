@@ -38,7 +38,7 @@
   <string name="intro_more_info">اطلاعات بیشتر</string>
   <string name="intro_tasks_jtx">jtx Board</string>
   <string name="intro_tasks_jtx_info"><![CDATA[از فعالیت، یادداشت و ثبت وقایع روزانه پشتیبانی می کند.]]></string>
-  <string name="intro_tasks_title">وظایف پشتیبانی</string>
+  <string name="intro_tasks_title">پشتیبانی فعالیت ها</string>
   <string name="intro_tasks_text1">اگر وظایف توسط سرور شما پشتیبانی شود، می توان آنها را همگام سازی کرد:</string>
   <string name="intro_tasks_opentasks">وظایف را باز کنید</string>
   <string name="intro_tasks_opentasks_info">عدم توسعه توسط برنامه نویسان - توصیه نمیشود.</string>
@@ -70,7 +70,7 @@
   <string name="permissions_jtx_status_off">تسک، ثبت وقایع و یادداشت ها همگام سازی نمی شوند.</string>
   <string name="permissions_jtx_status_on">تسک، ثبت وقایع و یادداشت ها همگام سازی می شوند.</string>
   <string name="permissions_opentasks_title">مجوزهای OpenTasks</string>
-  <string name="permissions_tasksorg_title">مجوز وظایف</string>
+  <string name="permissions_tasksorg_title">مجوز فعالیت ها</string>
   <string name="permissions_tasks_status_not_installed">بدون همگام سازی  (نصب نشده است)</string>
   <string name="permissions_tasks_status_off">عدم همگام سازی وظایف</string>
   <string name="permissions_tasks_status_on">امکان همگام سازی وظایف وجود دارد</string>
@@ -192,7 +192,7 @@
   <string name="app_settings_reset_hints_summary">نکاتی را که قبلاً رد شده اند دوباره فعال می کند</string>
   <string name="app_settings_reset_hints_success">همه نکات دوباره نشان داده خواهد شد</string>
   <string name="app_settings_integration">ادغام</string>
-  <string name="app_settings_tasks_provider">وظایف برنامه</string>
+  <string name="app_settings_tasks_provider">برنامه مدیریت فعالیت ها</string>
   <string name="app_settings_tasks_provider_synchronizing_with">همگام سازی با %s</string>
   <string name="app_settings_tasks_provider_none">برنامه سازگار یافت نشد</string>
   <!--AccountActivity-->
@@ -201,8 +201,8 @@
   <string name="account_webcal">Webcal</string>
   <string name="account_carddav_missing_permissions">بدون همگام سازی مخاطبین (مجوزهای از دست رفته)</string>
   <string name="account_caldav_missing_calendar_permissions">بدون همگام سازی تقویم (مجوزهای از دست رفته)</string>
-  <string name="account_caldav_missing_tasks_permissions">بدون همگام سازی کارها (مجوزهای از دست رفته)</string>
-  <string name="account_caldav_missing_permissions">بدون تقویم و وظایف همگام سازی (مجوزهای از دست رفته)</string>
+  <string name="account_caldav_missing_tasks_permissions">عدم همگام سازی فعالیت ها (مجوزها یافت نشد)</string>
+  <string name="account_caldav_missing_permissions">عدم همگام سازی تقویم و فعالیت ها (مجوزها یافت نشد)</string>
   <string name="account_webcal_missing_calendar_permissions">دسترسی به تقویم ها (مجوزهای از دست رفته) امکان پذیر نیست</string>
   <string name="account_permissions_action">مجوزها</string>
   <string name="account_no_address_books">هیچ کتاب آدرسی وجود ندارد (هنوز).</string>
@@ -224,7 +224,7 @@
   <string name="account_calendar">تقویم</string>
   <string name="account_task_list">لیست کار</string>
   <string name="account_journal">وقایع</string>
-  <string name="account_only_personal">فقط به صورت شخصی نشان داده شود</string>
+  <string name="account_only_personal">فقط شخصی ها را نمایش بده</string>
   <string name="account_refresh_address_book_list">تازه کردن لیست کتاب آدرس</string>
   <string name="account_create_new_address_book">کتاب آدرس جدید ایجاد کنید</string>
   <string name="account_refresh_calendar_list">تازه کردن لیست تقویم</string>
@@ -270,8 +270,8 @@
   <string name="settings_sync_interval_contacts">همگام سازی مخاطبین </string>
   <string name="settings_sync_summary_manually">فقط دستی</string>
   <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">هر %d دقیقه + بلافاصله با تغییرات محلی</string>
-  <string name="settings_sync_interval_calendars">تقویم ها همگام سازی می شوند. </string>
-  <string name="settings_sync_interval_tasks">کارها همگام سازی می شوند. </string>
+  <string name="settings_sync_interval_calendars">همگام سازی تقویم ها</string>
+  <string name="settings_sync_interval_tasks">همگام سازی فعالیت ها</string>
   <string-array name="settings_sync_interval_names">
     <item>فقط به صورت دستی</item>
     <item>هر ۱۵ دقیقه</item>
@@ -334,10 +334,10 @@
   <string name="create_calendar">تقویم ایجاد کنید</string>
   <string name="create_calendar_time_zone">منطقه زمانی</string>
   <string name="create_calendar_type">ورودی های احتمالی تقویم</string>
-  <string name="create_calendar_type_vevent">مناسبت ها</string>
-  <string name="create_calendar_type_vtodo">وظایف</string>
+  <string name="create_calendar_type_vevent">رویدادها</string>
+  <string name="create_calendar_type_vtodo">فعالیت ها</string>
   <string name="create_calendar_type_vjournal">یادداشت ها / ژورنال</string>
-  <string name="create_calendar_type_events_and_tasks">ترکیبی (رویدادها و وظایف)</string>
+  <string name="create_calendar_type_events_and_tasks">ترکیبی (رویدادها و فعالیت ها)</string>
   <string name="create_collection_color">رنگ</string>
   <string name="create_collection_creating">ایجاد مجموعه</string>
   <string name="create_collection_display_name">عنوان</string>
