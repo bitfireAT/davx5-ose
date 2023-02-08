@@ -184,13 +184,16 @@ class AddWebdavMountActivity: AppCompatActivity() {
 
         fun hasWebDav(mount: WebDavMount, credentials: Credentials?): Boolean {
             var supported = false
-            HttpClient.Builder(context, null, credentials).build().use { client ->
-                val dav = DavResource(client.okHttpClient, mount.url)
-                dav.options { davCapabilities, _ ->
-                    if (CollectionUtils.containsAny(davCapabilities, "1", "2", "3"))
-                        supported = true
+            HttpClient.Builder(context, null, credentials)
+                .setForeground(true)
+                .build()
+                .use { client ->
+                    val dav = DavResource(client.okHttpClient, mount.url)
+                    dav.options { davCapabilities, _ ->
+                        if (CollectionUtils.containsAny(davCapabilities, "1", "2", "3"))
+                            supported = true
+                    }
                 }
-            }
             return supported
         }
 
