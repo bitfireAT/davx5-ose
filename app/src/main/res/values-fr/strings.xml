@@ -36,10 +36,13 @@
   <string name="intro_autostart_dont_show">J\'ai fait les réglages nécessaires. Ne me le rappelez plus.*</string>
   <string name="intro_leave_unchecked">* Laisser non coché pour un rappel ultérieur. Peut être réinitialisé dans les paramètres de l\'application / %s.</string>
   <string name="intro_more_info">Plus d\'informations</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
   <string name="intro_tasks_jtx_info"><![CDATA[Prends en charge la synchro des Tâches, Journaux et Notes.]]></string>
   <string name="intro_tasks_title">Gestion des taches</string>
   <string name="intro_tasks_text1">Si les tâches sont prises en charge par votre serveur, elles peuvent être synchronisées avec une application de tâches externe :</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">Ne semble plus être développé - non recommandé.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Certaines fonctionnalités <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ne sont pas (encore) prises en charge</a>.]]></string>
   <string name="intro_tasks_no_app_store">Pas de magasin d\'application disponible</string>
   <string name="intro_tasks_dont_show">Je n\'ai pas besoin de support des tâches.*</string>
@@ -59,6 +62,13 @@
   <string name="permissions_calendar_title">Autorisations du calendrier</string>
   <string name="permissions_calendar_status_off">Pas de synchronisation du calendrier (non recommandé)</string>
   <string name="permissions_calendar_status_on">Synchronisation du calendrier possible</string>
+  <string name="permissions_notification_title">Autorisations des notifications</string>
+  <string name="permissions_notification_status_off">Notifications désactivées (non recommandé)</string>
+  <string name="permissions_notification_status_on">Notifications activées</string>
+  <string name="permissions_jtx_title">Autorisations jtx Board</string>
+  <string name="permissions_jtx_status_not_installed">Pas de synchronisation des tâches, journaux et notes (non installé)</string>
+  <string name="permissions_jtx_status_off">Pas de synchronisation des tâches, journaux et notes</string>
+  <string name="permissions_jtx_status_on">Synchronisation possible des tâches, des journaux et des notes</string>
   <string name="permissions_opentasks_title">Autorisations d\'OpenTasks</string>
   <string name="permissions_tasksorg_title">Autorisations de Tasks</string>
   <string name="permissions_tasks_status_not_installed">Pas de synchronisation des tâches (non installé)</string>
@@ -116,8 +126,13 @@
   <string name="navigation_drawer_community">Communauté</string>
   <string name="navigation_drawer_donate">Faire un don</string>
   <string name="navigation_drawer_privacy_policy">Politique de confidentialité</string>
+  <string name="account_list_no_notification_permission">Notifications désactivées. Vous ne serez pas averti des erreurs de synchronisation.</string>
   <string name="account_list_no_internet">Pas de connectivité Internet. Android ne pourra pas exécuter la synchronisation.</string>
+  <string name="account_list_manage_connections">Gérer les connexions</string>
   <string name="account_list_low_storage">L\'espace de stockage est presque plein. Android ne lancera pas la synchronisation.</string>
+  <string name="account_list_manage_storage">Gérer le stockage</string>
+  <string name="account_list_datasaver_enabled">L\'économiseur de données est activé. La synchronisation en arrière-plan est limitée.</string>
+  <string name="account_list_manage_datasaver">Gérer l\'économiseur de données</string>
   <string name="account_list_empty">Bienvenue sur kSync!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
   <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
   <string name="accounts_global_sync_enable">Activer</string>
@@ -126,6 +141,8 @@
   <string name="refresh_collections_worker_refresh_failed">La détection du service a échoué</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
   <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Ne peut pas fonctionner en premier plan</string>
+  <string name="battery_optimization_notify_text">Il est nécessaire de désactiver l’option \"Optimisation de la batterie\"</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Fonctionne au premier plan</string>
   <string name="foreground_service_notify_text">Sur certains appareils, cela est nécessaire pour la synchronisation automatique.</string>
@@ -159,6 +176,7 @@
   <string name="app_settings_notification_settings">Paramètres de notification</string>
   <string name="app_settings_notification_settings_summary">Gérer les canaux de notification et leurs paramètres</string>
   <string name="app_settings_theme_title">Sélectionner un thème</string>
+  <string name="app_settings_language_title">Choisir la langue</string>
   <string name="app_settings_language_system_default">Valeur du système</string>
   <string-array name="app_settings_theme_names">
     <item>Par défaut</item>
@@ -372,6 +390,7 @@
   <!--WebDAV accounts-->
   <string name="webdav_mounts_quota_used_available">Quota utitlisé : %1$s / disponible : %2$s</string>
   <string name="webdav_mounts_share_content">Partager le contenu</string>
+  <string name="webdav_mounts_unmount">Démonter</string>
   <string name="webdav_add_mount_display_name">Nom affiché</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL incorrecte</string>
@@ -379,6 +398,7 @@
   <string name="webdav_add_mount_password">Mot de passe</string>
   <string name="webdav_add_mount_add">Ajouter un point de montage</string>
   <string name="webdav_add_mount_no_support">Aucun service WebDAV à cette URL</string>
+  <string name="webdav_remove_mount_text">Les détails de la connexion seront perdus, mais aucun fichier ne sera supprimé.</string>
   <string name="webdav_notification_access">Accès au fichier WebDAV</string>
   <string name="webdav_notification_download">Téléchargement du fichier WebDAV</string>
   <string name="webdav_notification_upload">Téléversement du fichier WebDAV</string>
