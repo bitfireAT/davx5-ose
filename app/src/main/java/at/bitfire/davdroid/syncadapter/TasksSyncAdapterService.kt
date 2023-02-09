@@ -30,13 +30,9 @@ import java.util.logging.Level
  */
 open class TasksSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = TasksSyncAdapter(this, appDatabase)
+    override fun syncAdapter() = TasksSyncAdapter(this)
 
-
-	class TasksSyncAdapter(
-        context: Context,
-        appDatabase: AppDatabase,
-    ) : SyncAdapter(context, appDatabase) {
+    class TasksSyncAdapter(context: Context) : SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {

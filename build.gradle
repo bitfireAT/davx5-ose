@@ -1,18 +1,14 @@
-/*
- * Copyright (c) Ricki Hirner (bitfire web engineering).
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
- */
+/***************************************************************************************************
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ **************************************************************************************************/
 
 buildscript {
     ext.versions = [
         aboutLibraries: '8.9.4',
         appIntro: '6.2.0',
-        dav4jvm: 'c61e4b0c80a5a8de1df99b4997445bb323d3ea3d',
-        hilt: '2.44',
-        kotlin: '1.7.10',
+        dav4jvm: 'aac98bd76cf3034194c9ba6d2bf58212083a72a0',
+        hilt: '2.44.2',
+        kotlin: '1.7.21',
         okhttp: '4.10.0',
         // latest Apache Commons versions that don't require Java 8 (Android 7)
         commonsCollections: '4.2',
@@ -29,7 +25,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:7.4.0'
         classpath "com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}"
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${versions.aboutLibraries}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"

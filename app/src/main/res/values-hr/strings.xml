@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Račun (više) ne postoji</string>
-  <string name="account_title_address_book">DAVx⁵ Adresar</string>
+  <string name="account_title_address_book">kSync Adresar</string>
   <string name="address_books_authority_title">Adresari</string>
   <string name="help">Pomoć</string>
   <string name="manage_accounts">Upravljaj računima</string>
@@ -34,8 +34,6 @@
   <string name="intro_tasks_title">Podrška za zadatke</string>
   <string name="intro_tasks_text1">Ukoliko su zadatci podržani od strane vašeg poslužitelja, moguće ih je sinkronizirati sa podržanom aplikacijom za zadatke:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Za određene mogućnosti, poput podzadataka ili ponavljajućih zadataka, možda ćete trebati <a href="https://www.davx5.com/faq/tasks/advanced-task-features">dodatne aplikacije</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Neke mogućnosti <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nisu podržane</a> (još).]]></string>
   <string name="intro_tasks_no_app_store">Trgovina aplikacijama nije dostupna</string>
   <string name="intro_tasks_dont_show">Ne trebam podršku za zadatke.*</string>
@@ -108,13 +106,13 @@
   <string name="navigation_drawer_donate">Doniraj</string>
   <string name="navigation_drawer_privacy_policy">Pravila o zaštiti privatnosti</string>
   <string name="account_list_no_internet">Nema internet veze. Android neće pokrenuti sinkronizaciju.</string>
-  <string name="account_list_empty">Dobrodošli u DAVx⁵!\n\nSada možete dodati CalDAV/CardDAV račun.</string>
+  <string name="account_list_empty">Dobrodošli u kSync!\n\nSada možete dodati CalDAV/CardDAV račun.</string>
   <string name="accounts_global_sync_disabled">Automatska sinkronizacija je onemogućena na razini sustava</string>
   <string name="accounts_global_sync_enable">Omogući</string>
   <string name="accounts_sync_all">Sinkroniziraj sve račune</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Detekcija servisa nije uspjela</string>
-  <string name="dav_service_refresh_couldnt_refresh">Nije moguće osvježiti popis zbirki</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Detekcija servisa nije uspjela</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Nije moguće osvježiti popis zbirki</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Pokrenuto u prednjem planu</string>
@@ -341,7 +339,7 @@
   <string name="webdav_add_mount_username">Korisničko ime</string>
   <string name="webdav_add_mount_password">Lozinka</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵ dopuštenja</string>
+  <string name="sync_error_permissions">kSync dopuštenja</string>
   <string name="sync_error_permissions_text">Dodatna dopuštenja su potrebna</string>
   <string name="sync_error_tasks_too_old">%s prestar</string>
   <string name="sync_error_tasks_required_version">Najmanja potrebno verzija: %1$s</string>
@@ -356,6 +354,6 @@
   <string name="sync_invalid_task">Primljen je nevažeći zadatak sa poslužitelja</string>
   <string name="sync_invalid_resources_ignoring">Zanemarivanje jednog ili više nevaljanih resursa</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Sigurnost veze</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ je naišao na nepoznati certifikat. Želite li mu vjerovati?</string>
+  <string name="certificate_notification_connection_security">kSync: Sigurnost veze</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync je naišao na nepoznati certifikat. Želite li mu vjerovati?</string>
 </resources>

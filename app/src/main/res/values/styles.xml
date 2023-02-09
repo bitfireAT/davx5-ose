@@ -35,6 +35,8 @@
     <color name="backgroundColor">@color/grey200</color>
     <color name="errorColor">@color/red700</color>
 
+    <color name="mastodon">#6364FF</color>
+
     <!-- app theme -->
 
     <style name="AppTheme.Base" parent="Theme.MaterialComponents.DayNight"/>

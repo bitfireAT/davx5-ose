@@ -23,7 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.closeCompat
+import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials

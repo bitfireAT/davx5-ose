@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">계정이 존재하지 않음 (anymore)</string>
-  <string name="account_title_address_book">DAVx⁵ 주소록</string>
+  <string name="account_title_address_book">kSync 주소록</string>
   <string name="address_books_authority_title">주소록</string>
   <string name="field_required">이 field는 필수입니다.</string>
   <string name="help">도움말</string>
@@ -39,8 +39,6 @@
   <string name="intro_tasks_title">작업 지원</string>
   <string name="intro_tasks_text1">서버에서 작업을 지원하는 경우 지원되는 작업 앱과 동기화할 수 있습니다.</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[하위 작업 또는 반복 작업과 같은 일부 기능의 경우 <a href="https://www.davx5.com/faq/tasks/advanced-task-features">추가 앱</a>이 필요할 수 있습니다..]]></string>
-  <string name="intro_tasks_tasks_org">할일 목록</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[일부 기능은 <a href="https://www.davx5.com/faq/tasks/advanced-task-features">아직 지원되지 않습니다.</a>(yet)]]></string>
   <string name="intro_tasks_no_app_store">사용 가능한 앱 스토어 없음</string>
   <string name="intro_tasks_dont_show">업무 지원은 필요 없습니다.*</string>
@@ -123,14 +121,14 @@
   <string name="navigation_drawer_privacy_policy">개인 정보 보호 정책</string>
   <string name="account_list_no_internet">인터넷에 연결할 수 없습니다. Android가 동기화를 실행하지 않습니다.</string>
   <string name="account_list_low_storage">저장 공간이 부족합니다. Android가 동기화를 실행하지 않습니다.</string>
-  <string name="account_list_empty">DAVx⁵에 오신 것을 환영 합니다!/n/n
+  <string name="account_list_empty">kSync에 오신 것을 환영 합니다!/n/n
 당신은  CalDAV/CardDAV 계정을 지금 추가 할 수 있습니다.</string>
   <string name="accounts_global_sync_disabled">시스템 전체 자동 동기화가 비활성화됩니다.</string>
   <string name="accounts_global_sync_enable">활성</string>
   <string name="accounts_sync_all">모든 계정 동기화</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">서비스 검색 실패</string>
-  <string name="dav_service_refresh_couldnt_refresh">collection 목록을 새로 고칠 수 없습니다.</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">서비스 검색 실패</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">collection 목록을 새로 고칠 수 없습니다.</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">foreground에서 실행할 수 없습니다.</string>
   <string name="battery_optimization_notify_text">배터리 최적화 허용목록 필요</string>
@@ -173,6 +171,7 @@
   <string name="app_settings_notification_settings">알림 설정</string>
   <string name="app_settings_notification_settings_summary">알림 채널 및 해당 설정 관리</string>
   <string name="app_settings_theme_title">테마 선택</string>
+  <string name="app_settings_language_system_default">시스템 기본값</string>
   <string-array name="app_settings_theme_names">
     <item>시스템 디자인</item>
     <item>밝은 테마</item>
@@ -398,7 +397,7 @@
   <string name="webdav_notification_upload">Uploading WebDAV file</string>
   <string name="webdav_provider_root_title">WebDAV mount</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵ 권한</string>
+  <string name="sync_error_permissions">kSync 권한</string>
   <string name="sync_error_permissions_text">추가 권한 필요</string>
   <string name="sync_error_tasks_too_old">%s는 너무 오래되었습니다.</string>
   <string name="sync_error_tasks_required_version">최소 필요 버전: %1$s</string>

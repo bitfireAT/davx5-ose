@@ -10,13 +10,13 @@ jobs:
           submodules: true
       - uses: actions/setup-java@v2
         with:
-          distribution: zulu
+          distribution: temurin
           java-version: 11
           cache: gradle
       - uses: gradle/wrapper-validation-action@v1
 
       - name: Run lint and unit tests
-        run: ./gradlew app:check
+        run: ./gradlew --no-daemon app:check
       - name: Archive results
         uses: actions/upload-artifact@v2
         with:
@@ -38,20 +38,17 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - uses: gradle/wrapper-validation-action@v1
-
-      - name: Cache gradle dependencies
-        uses: actions/cache@v2
+      - uses: actions/setup-java@v2
         with:
-          key: ${{ runner.os }}
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
+          distribution: temurin
+          java-version: 11
+          cache: gradle
+      - uses: gradle/wrapper-validation-action@v1
 
       - name: Start emulator
         run: start-emulator.sh
       - name: Run connected tests
-        run: ./gradlew app:connectedCheck
+        run: ./gradlew --no-daemon app:connectedCheck
       - name: Archive results
         if: always()
         uses: actions/upload-artifact@v2

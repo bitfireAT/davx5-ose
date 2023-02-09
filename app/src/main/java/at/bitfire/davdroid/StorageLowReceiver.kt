@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +29,7 @@ class StorageLowReceiver private constructor(
 
     @Module
     @InstallIn(SingletonComponent::class)
-    object storageLowReceiverModule {
+    object StorageLowReceiverModule {
         @Provides
         @Singleton
         fun storageLowReceiver(@ApplicationContext context: Context) = StorageLowReceiver(context)
@@ -74,7 +75,7 @@ class StorageLowReceiver private constructor(
             notify.setContentIntent(PendingIntent.getActivity(context, 0, settingsIntent, PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE))
 
         val nm = NotificationManagerCompat.from(context)
-        nm.notify(NotificationUtils.NOTIFY_LOW_STORAGE, notify.build())
+        nm.notifyIfPossible(NotificationUtils.NOTIFY_LOW_STORAGE, notify.build())
     }
 
     fun onStorageOk() {

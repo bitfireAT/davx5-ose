@@ -12,19 +12,21 @@ import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import androidx.core.content.getSystemService
-import at.bitfire.davdroid.ConcurrentUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.InvalidAccountException
-import at.bitfire.davdroid.PermissionUtils
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
-import dagger.hilt.android.AndroidEntryPoint
+import at.bitfire.davdroid.util.ConcurrentUtils
+import at.bitfire.davdroid.util.PermissionUtils
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import java.util.*
 import java.util.logging.Level
-import javax.inject.Inject
 
-@AndroidEntryPoint
 abstract class SyncAdapterService: Service() {
 
     companion object {
@@ -61,9 +63,6 @@ abstract class SyncAdapterService: Service() {
         const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
     }
 
-    @Inject lateinit var appDatabase: AppDatabase
-
-
     protected abstract fun syncAdapter(): AbstractThreadedSyncAdapter
 
     override fun onBind(intent: Intent?) = syncAdapter().syncAdapterBinder!!
@@ -78,8 +77,7 @@ abstract class SyncAdapterService: Service() {
      * Also provides some useful methods that can be used by derived sync adapters.
      */
     abstract class SyncAdapter(
-        context: Context,
-        val db: AppDatabase
+        context: Context
     ): AbstractThreadedSyncAdapter(
         context,
         true    // isSyncable shouldn't be -1 because DAVx5 sets it to 0 or 1.
@@ -102,6 +100,17 @@ abstract class SyncAdapterService: Service() {
             }
 
         }
+
+
+        @EntryPoint
+        @InstallIn(SingletonComponent::class)
+        interface SyncAdapterEntryPoint {
+            fun appDatabase(): AppDatabase
+        }
+
+        private val syncAdapterEntryPoint = EntryPointAccessors.fromApplication(context, SyncAdapterEntryPoint::class.java)
+        internal val db = syncAdapterEntryPoint.appDatabase()
+
 
 
         abstract fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult)
@@ -136,8 +145,9 @@ abstract class SyncAdapterService: Service() {
                 }
             })
                 Logger.log.log(Level.INFO, "Sync for $currentSyncKey finished", syncResult)
-            else
+            else {
                 Logger.log.warning("There's already another running sync for $currentSyncKey, aborting")
+            }
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {

@@ -39,8 +39,6 @@
   <string name="intro_tasks_title">Feladatok támogatása</string>
   <string name="intro_tasks_text1">Ha a szerver támogatja a feladatokat, akkor a következő feladat alkalmazásokkal lehet szinkronizálni őket:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Néhány funkcióhoz, mint az alfeladatok vagy ismétlődő feladatok, szükség lehet <a href="https://www.davx5.com/faq/tasks/advanced-task-features">további alkalmazásokra </a>.]]></string>
-  <string name="intro_tasks_tasks_org">Feladatok</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Néhány funkció <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nem támogatott</a> (még).]]></string>
   <string name="intro_tasks_no_app_store">Nincs elérhető alkalmazás-áruház</string>
   <string name="intro_tasks_dont_show">Nincs szükségem a feladatok támogatására.*</string>
@@ -127,9 +125,9 @@
   <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
   <string name="accounts_global_sync_enable">Bekapcsolás</string>
   <string name="accounts_sync_all">Az összes fiók szinkronizálása</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
-  <string name="dav_service_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Nem lehetséges az előtérben való futtatás</string>
   <string name="battery_optimization_notify_text">Kivétel az akkumulátorhasználat optimalizálása alól</string>

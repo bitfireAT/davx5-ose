@@ -200,6 +200,31 @@
                         app:layout_constraintTop_toBottomOf="@id/contactsSwitch" />
 
                     <TextView
+                        android:id="@+id/notificationHeading"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:text="@string/permissions_notification_title"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textColor="@color/infomaniakTitle"
+                        android:visibility="@{model.haveNotificationPermissions != null ? View.VISIBLE : View.GONE}"
+                        app:drawableStartCompat="@drawable/ic_notifications"
+                        app:layout_constraintBottom_toBottomOf="@id/notificationSwitch"
+                        app:layout_constraintEnd_toStartOf="@id/notificationSwitch"
+                        app:layout_constraintStart_toEndOf="@id/start"
+                        app:layout_constraintTop_toTopOf="@id/notificationSwitch" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/notificationSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="@={model.needNotificationPermissions}"
+                        android:clickable="@{!model.haveNotificationPermissions}"
+                        android:visibility="@{model.haveNotificationPermissions != null ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toStartOf="@id/end"
+                        app:layout_constraintTop_toBottomOf="@id/calendarSwitch" />
+
+                    <TextView
                         android:id="@+id/openTasksHeading"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -223,7 +248,7 @@
                         android:clickable="@{!model.haveOpenTasksPermissions}"
                         android:visibility="@{model.haveOpenTasksPermissions != null ? View.VISIBLE : View.GONE}"
                         app:layout_constraintEnd_toStartOf="@id/end"
-                        app:layout_constraintTop_toBottomOf="@id/calendarSwitch" />
+                        app:layout_constraintTop_toBottomOf="@id/notificationSwitch" />
 
                     <TextView
                         android:id="@+id/tasksOrgHeading"

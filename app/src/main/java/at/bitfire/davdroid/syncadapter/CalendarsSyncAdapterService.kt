@@ -27,13 +27,9 @@ import kotlin.collections.set
 
 class CalendarsSyncAdapterService: SyncAdapterService() {
 
-    override fun syncAdapter() = CalendarsSyncAdapter(this, appDatabase)
+    override fun syncAdapter() = CalendarsSyncAdapter(this)
 
-
-	class CalendarsSyncAdapter(
-        context: Context,
-        appDatabase: AppDatabase
-    ) : SyncAdapter(context, appDatabase) {
+    class CalendarsSyncAdapter(context: Context) : SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {

@@ -20,6 +20,7 @@ import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.AccountsActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -64,7 +65,7 @@ abstract class AppDatabase: RoomDatabase() {
                             .setContentIntent(PendingIntent.getActivity(context, 0, launcherIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
                             .setAutoCancel(true)
                             .build()
-                        nm.notify(NotificationUtils.NOTIFY_DATABASE_CORRUPTED, notify)
+                        nm.notifyIfPossible(NotificationUtils.NOTIFY_DATABASE_CORRUPTED, notify)
 
                         // remove all accounts because they're unfortunately useless without database
                         val am = AccountManager.get(context)

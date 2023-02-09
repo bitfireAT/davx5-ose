@@ -27,6 +27,11 @@
                 android:icon="@drawable/twitter"
                 android:title="\@davx5app"
                 tools:ignore="HardcodedText"/>
+            <item
+                android:id="@+id/nav_mastodon"
+                android:icon="@drawable/mastodon"
+                android:title="\@davx5app\@fosstodon.org"
+                tools:ignore="HardcodedText"/>
         </menu>
     </item>
 

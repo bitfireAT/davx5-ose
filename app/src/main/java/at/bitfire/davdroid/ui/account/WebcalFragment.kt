@@ -22,9 +22,9 @@ import androidx.lifecycle.*
 import androidx.room.Transaction
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.PermissionUtils
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.closeCompat
+import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection

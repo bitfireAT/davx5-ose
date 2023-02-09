@@ -24,7 +24,7 @@
   <string name="notification_channel_sync_io_errors">Netwerk en I/O fouten</string>
   <string name="notification_channel_sync_io_errors_desc">Timeouts, connectie problemen, etc. (vaak tijdelijk).</string>
   <!--IntroActivity-->
-  <string name="intro_slogan1">Jouw gegevens, Jouw keuze</string>
+  <string name="intro_slogan1">Jouw gegevens. Jouw keuze.</string>
   <string name="intro_slogan2">Houd zelf de controle</string>
   <string name="intro_battery_title">regelmatige sync-intervallen</string>
   <string name="intro_battery_not_whitelisted">Uitgeschakeld (niet aanbevolen)</string>
@@ -41,11 +41,11 @@
   <string name="intro_tasks_title">Ondersteunt taken</string>
   <string name="intro_tasks_text1">Als de server taken ondersteunt, synchroniseert een geschikte taken-app ze:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Voor functies als subtaken of herhalende taken zijn mogelijk <a href="https://www.davx5.com/faq/tasks/advanced-task-features">extra apps</a> nodig.]]></string>
-  <string name="intro_tasks_tasks_org">Taken</string>
+  <string name="intro_tasks_opentasks_info">Schijnt niet meer ontwikkeld te worden - niet aanbevolen.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Sommige functies<a href="https://www.davx5.com/faq/tasks/advanced-task-features">worden (nog) niet ondersteund</a>.]]></string>
   <string name="intro_tasks_no_app_store">Geen app-store beschikbaar</string>
-  <string name="intro_tasks_dont_show">Er is geen taakondersteuning nodig.*</string>
+  <string name="intro_tasks_dont_show">Ik hoef geen ondersteuning van taken.*</string>
   <string name="intro_open_source_title">Open-source software</string>
   <string name="intro_open_source_text">We zijn blij dat de keuze valt op open source software %s. Ontwikkelen, onderhouden en ondersteunen is veel werk. Overweeg daarom bij te dragen (kan op vele manieren) of een donatie. Wij waarderen het zeer!</string>
   <string name="intro_open_source_details">Hoe bijdragen/doneren</string>
@@ -62,6 +62,9 @@
   <string name="permissions_calendar_title">Kalender machtigingen</string>
   <string name="permissions_calendar_status_off">Geen kalenders synchroniseren (niet aanbevolen)</string>
   <string name="permissions_calendar_status_on"> Kalenders synchroniseren mogelijk</string>
+  <string name="permissions_notification_title">Toestemming voor meldingen</string>
+  <string name="permissions_notification_status_off">Meldingen uitgeschakeld (niet aanbevolen)</string>
+  <string name="permissions_notification_status_on">Meldingen ingeschakeld</string>
   <string name="permissions_jtx_title">jtx Board-rechten</string>
   <string name="permissions_jtx_status_not_installed">Geen taak-, kalender- en notitiesync (niet geïnstalleerd)</string>
   <string name="permissions_jtx_status_off">Geen taak-, kalender- en notitiesync</string>
@@ -123,15 +126,20 @@
   <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
+  <string name="account_list_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
   <string name="account_list_no_internet">Geen internetverbinding. Android synchroniseert niet.</string>
+  <string name="account_list_manage_connections">Verbindingen beheren</string>
   <string name="account_list_low_storage">Er is te weinig opslagruimte. Android zal niet synchroniseren.</string>
+  <string name="account_list_manage_storage">Opslag beheren</string>
+  <string name="account_list_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
+  <string name="account_list_manage_datasaver">Beheer van gegevensbesparing</string>
   <string name="account_list_empty">Welkom bij kSync!\n\nJe kunt nu een CalDAV/CardDAV account toevoegen.</string>
   <string name="accounts_global_sync_disabled">Automatisch synchroniseren is voor alle accounts uitgeschakeld</string>
   <string name="accounts_global_sync_enable">Inschakelen</string>
   <string name="accounts_sync_all">Alle accounts synchroniseren</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Service herkenning is mislukt</string>
-  <string name="dav_service_refresh_couldnt_refresh">De collectielijst is niet bijgewerkt</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Service herkenning is mislukt</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">De collectielijst is niet bijgewerkt</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Kan niet op de voorgrond draaien</string>
   <string name="battery_optimization_notify_text">Toestemming tot onbeperkt batterijgebruik is vereist</string>
@@ -174,6 +182,8 @@
   <string name="app_settings_notification_settings">App-meldingen</string>
   <string name="app_settings_notification_settings_summary">Meldingskanalen en hun instellingen beheren</string>
   <string name="app_settings_theme_title">Thema selecteren</string>
+  <string name="app_settings_language_title">Selecteer taal</string>
+  <string name="app_settings_language_system_default">Systeemstandaard</string>
   <string-array name="app_settings_theme_names">
     <item>Systeem standaard</item>
     <item>Licht</item>

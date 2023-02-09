@@ -7,7 +7,7 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
-import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.ical4android.JtxCollection

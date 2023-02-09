@@ -8,7 +8,7 @@ import androidx.room.*
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.StringUtils
@@ -26,12 +26,28 @@ import org.apache.commons.lang3.StringUtils
 )
 data class Collection(
     @PrimaryKey(autoGenerate = true)
-    override var id: Long = 0,
+    var id: Long = 0,
 
+    /**
+     * Service, which this collection belongs to. Services are unique, so a [Collection] is uniquely
+     * identifiable via its [serviceId] and [url].
+     */
     var serviceId: Long = 0,
+
+    /**
+     * A home set this collection belongs to. Multiple homesets are not supported.
+     * If *null* the collection is considered homeless.
+     */
     var homeSetId: Long? = null,
 
+    /**
+     * Type of service. CalDAV or CardDAV
+     */
     var type: String,
+
+    /**
+     * Address where this collection lives
+     */
     var url: HttpUrl,
 
     var privWriteContent: Boolean = true,
@@ -63,11 +79,7 @@ data class Collection(
     /** whether this collection has been selected for synchronization */
     var sync: Boolean = false
 
-): IdEntity {
-
-    @Ignore
-    var refHomeSet: HomeSet? = null
-
+) {
 
     companion object {
 
@@ -160,12 +172,6 @@ data class Collection(
         }
 
     }
-
-
-    // non-persistent properties
-    @Ignore
-    var confirmed: Boolean = false
-
 
     // calculated properties
     fun title() = displayName ?: DavUtils.lastSegmentOfUrl(url)

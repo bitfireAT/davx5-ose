@@ -19,6 +19,7 @@ import android.provider.ContactsContract
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
@@ -27,16 +28,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.DavUtils
-import at.bitfire.davdroid.InvalidAccountException
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.closeCompat
+import at.bitfire.davdroid.*
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
+import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
+import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -106,7 +106,6 @@ class RenameAccountFragment: DialogFragment() {
     @HiltViewModel
     class Model @Inject constructor(
         @ApplicationContext val context: Context,
-        val accountsUpdatedListener: AccountsUpdatedListener,
         val db: AppDatabase
     ): ViewModel() {
 
@@ -123,35 +122,35 @@ class RenameAccountFragment: DialogFragment() {
             }
 
             val authorities = arrayOf(
-                    context.getString(R.string.address_books_authority),
-                    CalendarContract.AUTHORITY,
-                    TaskProvider.ProviderName.OpenTasks.authority
+                context.getString(R.string.address_books_authority),
+                CalendarContract.AUTHORITY,
+                TaskProvider.ProviderName.OpenTasks.authority
             )
             val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
 
             val accountManager = AccountManager.get(context)
             try {
                 /* https://github.com/bitfireAT/davx5/issues/135
-                Take AccountsUpdatedListenerLock so that the AccountsUpdateListener doesn't run while we rename the account
+                Lock accounts cleanup so that the AccountsCleanupWorker doesn't run while we rename the account
                 because this can cause problems when:
                 1. The account is renamed.
-                2. The AccountsUpdateListener is called BEFORE the services table is updated.
-                   → AccountsUpdateListener removes the "orphaned" services because they belong to the old account which doesn't exist anymore
+                2. The AccountsCleanupWorker is called BEFORE the services table is updated.
+                   → AccountsCleanupWorker removes the "orphaned" services because they belong to the old account which doesn't exist anymore
                 3. Now the services would be renamed, but they're not here anymore. */
-                accountsUpdatedListener.mutex.acquire()
+                AccountsCleanupWorker.lockAccountsCleanup()
 
-                accountManager.renameAccount(oldAccount, newName, {
-                    if (it.result?.name == newName /* success */)
+                accountManager.renameAccount(oldAccount, newName, @MainThread {
+                    if (it.result?.name == newName /* account has new name -> success */)
                         viewModelScope.launch(Dispatchers.Default + NonCancellable) {
-                            onAccountRenamed(accountManager, oldAccount, newName, syncIntervals)
-
-                            // release AccountsUpdatedListener mutex at the end of this async coroutine
-                            accountsUpdatedListener.mutex.release()
+                            try {
+                                onAccountRenamed(accountManager, oldAccount, newName, syncIntervals)
+                            } finally {
+                                // release AccountsCleanupWorker mutex at the end of this async coroutine
+                                AccountsCleanupWorker.unlockAccountsCleanup()
+                            }
                         } else
-                            // release AccountsUpdatedListener mutex now
-                            accountsUpdatedListener.mutex.release()
-
-
+                            // release AccountsCleanupWorker mutex now
+                            AccountsCleanupWorker.unlockAccountsCleanup()
                 }, null)
             } catch (e: Exception) {
                 Logger.log.log(Level.WARNING, "Couldn't rename account", e)
@@ -220,7 +219,7 @@ class RenameAccountFragment: DialogFragment() {
             }
 
             // synchronize again
-            DavUtils.requestSync(context, newAccount)
+            SyncWorker.requestSync(context, newAccount)
         }
 
     }

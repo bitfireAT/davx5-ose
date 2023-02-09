@@ -19,6 +19,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -115,7 +116,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                         pendingPref
                 ).build())
 
-                nm.notify(NotificationUtils.NOTIFY_VERBOSE_LOGGING, builder.build())
+                nm.notifyIfPossible(NotificationUtils.NOTIFY_VERBOSE_LOGGING, builder.build())
             } catch(e: IOException) {
                 log.log(Level.SEVERE, "Couldn't create log file", e)
                 Toast.makeText(context, context.getString(R.string.logging_couldnt_create_file), Toast.LENGTH_LONG).show()

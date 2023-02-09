@@ -49,7 +49,7 @@ class SyncAdapterTest {
     fun setUp() {
         hiltRule.inject()
 
-        syncAdapter = TestSyncAdapter(context, db)
+        syncAdapter = TestSyncAdapter(targetContext)
     }
 
 
@@ -117,11 +117,11 @@ class SyncAdapterTest {
         assertEquals(1, syncAdapter.syncCalled.get())
 
         // check whether contextClassLoader is set
-        assertEquals(context.classLoader, Thread.currentThread().contextClassLoader)
+        assertEquals(targetContext.classLoader, Thread.currentThread().contextClassLoader)
     }
 
 
-    class TestSyncAdapter(context: Context, db: AppDatabase): SyncAdapterService.SyncAdapter(context, db) {
+    class TestSyncAdapter(context: Context): SyncAdapterService.SyncAdapter(context) {
 
         companion object {
             /**

@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui.account
 
 import android.content.*
 import android.os.Bundle
-import android.os.IBinder
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.*
@@ -23,23 +22,24 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewbinding.ViewBinding
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.DavService
+import androidx.work.WorkInfo
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCollectionsBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
+import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.PermissionsActivity
+import at.bitfire.davdroid.util.LiveDataUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -94,7 +94,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         model.hasWriteableCollections.observe(viewLifecycleOwner, Observer {
             requireActivity().invalidateOptionsMenu()
         })
-        model.collectionsColors.observe(viewLifecycleOwner, Observer { colors: List<Int?> ->
+        model.collectionColors.observe(viewLifecycleOwner, Observer { colors: List<Int?> ->
             val realColors = colors.filterNotNull()
             if (realColors.isNotEmpty())
                 binding.swipeRefresh.setColorSchemeColors(*realColors.toIntArray())
@@ -122,16 +122,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val adapter = createAdapter()
         binding.list.layoutManager = LinearLayoutManager(requireActivity())
         binding.list.adapter = adapter
-        model.collectionsPager.observe(viewLifecycleOwner, Observer { data ->
+        model.collections.observe(viewLifecycleOwner, Observer { data ->
             lifecycleScope.launch {
-                val colors = data.flow.map { pagingData ->
-                    pagingData.map { collection ->
-                        collection.color ?: Constants.DAVDROID_GREEN_RGBA
-                    }
-                }
-                data.flow.collectLatest { pagingData ->
-                    adapter.submitData(pagingData)
-                }
+                adapter.submitData(data)
             }
         })
         adapter.addLoadStateListener { loadStates ->
@@ -161,18 +154,18 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =
-        when (item.itemId) {
-            R.id.refresh -> {
-                onRefresh()
-                true
+            when (item.itemId) {
+                R.id.refresh -> {
+                    onRefresh()
+                    true
+                }
+                R.id.showOnlyPersonal -> {
+                    accountModel.toggleShowOnlyPersonal()
+                    true
+                }
+                else ->
+                    false
             }
-            R.id.showOnlyPersonal -> {
-                accountModel.toggleShowOnlyPersonal()
-                true
-            }
-            else ->
-                false
-        }
 
     override fun onRefresh() {
         model.refresh()
@@ -208,10 +201,10 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         companion object {
             private val DIFF_CALLBACK = object: DiffUtil.ItemCallback<Collection>() {
                 override fun areItemsTheSame(oldItem: Collection, newItem: Collection) =
-                    oldItem.id == newItem.id
+                        oldItem.id == newItem.id
 
                 override fun areContentsTheSame(oldItem: Collection, newItem: Collection) =
-                    oldItem == newItem
+                        oldItem == newItem
             }
         }
 
@@ -236,7 +229,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
             with(popup.menu.findItem(R.id.force_read_only)) {
                 if (item.type == Collection.TYPE_WEBCAL)
-                // Webcal collections are always read-only
+                    // Webcal collections are always read-only
                     isVisible = false
                 else {
                     // non-Webcal collection
@@ -278,7 +271,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         @Assisted val accountModel: AccountActivity.Model,
         @Assisted val serviceId: Long,
         @Assisted val collectionType: String
-    ): ViewModel(), DavService.RefreshingStatusListener, SyncStatusObserver {
+    ): ViewModel(), SyncStatusObserver {
 
         @AssistedFactory
         interface Factory {
@@ -289,80 +282,78 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val taskProvider by lazy { TaskUtils.currentProvider(context) }
 
         val hasWriteableCollections = db.homeSetDao().hasBindableByServiceLive(serviceId)
-        val collectionsColors = db.collectionDao().colorsByServiceLive(serviceId)
-        val collectionsPager: LiveData<Pager<Int, Collection>> =
-            Transformations.map(accountModel.showOnlyPersonal) { onlyPersonal ->
-                Pager(PagingConfig(pageSize = 25)) {
-                    if (onlyPersonal)
-                    // show only personal collections
-                        db.collectionDao().pagePersonalByServiceAndType(serviceId, collectionType)
-                    else
-                    // show all collections
-                        db.collectionDao().pageByServiceAndType(serviceId, collectionType)
-                }
+        val collectionColors = db.collectionDao().colorsByServiceLive(serviceId)
+        val collections: LiveData<PagingData<Collection>> =
+            Transformations.switchMap(accountModel.showOnlyPersonal) { onlyPersonal ->
+                val pager = Pager(
+                    PagingConfig(pageSize = 25),
+                    pagingSourceFactory = {
+                        Logger.log.info("Creating new pager onlyPersonal=$onlyPersonal")
+                        if (onlyPersonal)
+                            // show only personal collections
+                            db.collectionDao().pagePersonalByServiceAndType(serviceId, collectionType)
+                        else
+                            // show all collections
+                            db.collectionDao().pageByServiceAndType(serviceId, collectionType)
+                    }
+                )
+                return@switchMap pager
+                    .liveData
+                    .cachedIn(viewModelScope)
             }
 
-        // observe DavService refresh status
-        @Volatile
-        private var davService: DavService.InfoBinder? = null
-        private var davServiceConn: ServiceConnection? = null
-        private val svcConn = object: ServiceConnection {
-            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                val svc = service as DavService.InfoBinder
-                davService = svc
-                svc.addRefreshingStatusListener(this@Model, true)
-            }
-            override fun onServiceDisconnected(name: ComponentName?) {
-                davService = null
-            }
-        }
-        val isRefreshing = MutableLiveData<Boolean>()
+        // observe RefreshCollectionsWorker status
+        val isRefreshing = RefreshCollectionsWorker.isWorkerInState(context, RefreshCollectionsWorker.workerName(serviceId), WorkInfo.State.RUNNING)
 
-        // observe whether sync is active
-        private var syncStatusHandle: Any? = null
-        val isSyncActive = MutableLiveData<Boolean>()
-        val isSyncPending = MutableLiveData<Boolean>()
+        // observe whether sync framework is active
+        private var syncFrameworkStatusHandle: Any? = null
+        private val isSyncFrameworkActive = MutableLiveData<Boolean>()
+        private val isSyncFrameworkPending = MutableLiveData<Boolean>()
 
+        // observe SyncWorker state
+        private val authorities =
+            if (collectionType == Collection.TYPE_ADDRESSBOOK)
+                listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
+            else
+                listOf(CalendarContract.AUTHORITY, taskProvider?.authority).filterNotNull()
+        private val isSyncWorkerRunning = SyncWorker.isSomeWorkerInState(context,
+            WorkInfo.State.RUNNING,
+            accountModel.account,
+            authorities)
+        private val isSyncWorkerEnqueued = SyncWorker.isSomeWorkerInState(context,
+            WorkInfo.State.ENQUEUED,
+            accountModel.account,
+            authorities)
+
+        // observe and combine states of sync framework and SyncWorker
+        val isSyncActive = LiveDataUtils.liveDataLogicOr(listOf(isSyncFrameworkActive, isSyncWorkerRunning))
+        val isSyncPending = LiveDataUtils.liveDataLogicOr(listOf(isSyncFrameworkPending, isSyncWorkerEnqueued))
 
         init {
-            if (context.bindService(Intent(context, DavService::class.java), svcConn, Context.BIND_AUTO_CREATE))
-                davServiceConn = svcConn
-
             viewModelScope.launch(Dispatchers.Default) {
-                syncStatusHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING + ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this@Model)
-                checkSyncStatus()
+                syncFrameworkStatusHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING +
+                        ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this@Model)
+                checkSyncFrameworkStatus()
             }
         }
 
         override fun onCleared() {
-            syncStatusHandle?.let { ContentResolver.removeStatusChangeListener(it) }
-
-            davService?.removeRefreshingStatusListener(this)
-            davServiceConn?.let {
-                context.unbindService(it)
-                davServiceConn = null
+            syncFrameworkStatusHandle?.let {
+                ContentResolver.removeStatusChangeListener(it)
             }
-        }
-
-        fun refresh() {
-            DavService.refreshCollections(context, serviceId)
-        }
-
-        @AnyThread
-        override fun onDavRefreshStatusChanged(id: Long, refreshing: Boolean) {
-            if (id == serviceId)
-                isRefreshing.postValue(refreshing)
         }
 
         @AnyThread
         override fun onStatusChanged(which: Int) {
-            checkSyncStatus()
+            checkSyncFrameworkStatus()
         }
 
         @AnyThread
         @Synchronized
-        private fun checkSyncStatus() {
+        private fun checkSyncFrameworkStatus() {
+            // SyncFramework only, isSyncFrameworkActive/Pending gets combined in logic OR with SyncWorker state
             if (collectionType == Collection.TYPE_ADDRESSBOOK) {
+                // CardDAV tab
                 val mainAuthority = context.getString(R.string.address_books_authority)
                 val mainSyncActive = ContentResolver.isSyncActive(accountModel.account, mainAuthority)
                 val mainSyncPending = ContentResolver.isSyncPending(accountModel.account, mainAuthority)
@@ -371,20 +362,29 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                 val syncActive = addrBookAccounts.any { ContentResolver.isSyncActive(it, ContactsContract.AUTHORITY) }
                 val syncPending = addrBookAccounts.any { ContentResolver.isSyncPending(it, ContactsContract.AUTHORITY) }
 
-                isSyncActive.postValue(mainSyncActive || syncActive)
-                isSyncPending.postValue(mainSyncPending || syncPending)
+                isSyncFrameworkActive.postValue(mainSyncActive || syncActive)
+                isSyncFrameworkPending.postValue(mainSyncPending || syncPending)
+
             } else {
+                // CalDAV tab
                 val authorities = mutableListOf(CalendarContract.AUTHORITY)
                 taskProvider?.let {
                     authorities += it.authority
                 }
-                isSyncActive.postValue(authorities.any {
+                isSyncFrameworkActive.postValue(authorities.any {
                     ContentResolver.isSyncActive(accountModel.account, it)
                 })
-                isSyncPending.postValue(authorities.any {
+                isSyncFrameworkPending.postValue(authorities.any {
                     ContentResolver.isSyncPending(accountModel.account, it)
                 })
             }
+        }
+
+
+        // actions
+
+        fun refresh() {
+            RefreshCollectionsWorker.refreshCollections(context, serviceId)
         }
 
     }

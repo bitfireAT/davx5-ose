@@ -41,8 +41,8 @@
   <string name="intro_tasks_title">Unterstützung für Aufgaben</string>
   <string name="intro_tasks_text1">Falls der Server Aufgaben unterstützt, können sie mit einer unterstützten App synchronisiert werden:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Für spezielle Funktionen wie Unteraufgaben oder wiederkehrende Augaben werden <a href="https://www.davx5.com/faq/tasks/advanced-task-features">zusätzliche Apps</a> benötigt.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
+  <string name="intro_tasks_opentasks_info">Wird anscheinend nicht weiterentwickelt - nicht empfehlenswert.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Einige Funktionen <a href="https://www.davx5.com/faq/tasks/advanced-task-features">werden (noch) nicht unterstützt</a>.]]></string>
   <string name="intro_tasks_no_app_store">Kein App-Store verfügbar</string>
   <string name="intro_tasks_dont_show">Ich brauche keine Unterstützung für Aufgaben.*</string>
@@ -62,6 +62,9 @@
   <string name="permissions_calendar_title">Kalender-Berechtigungen</string>
   <string name="permissions_calendar_status_off">Keine Kalendersynchronisierung (nicht empfohlen)</string>
   <string name="permissions_calendar_status_on">Kalendersynchronisierung möglich</string>
+  <string name="permissions_notification_title">Benachrichtigungsberechtigung</string>
+  <string name="permissions_notification_status_off">Benachrichtigungen deaktiviert (nicht empfohlen)</string>
+  <string name="permissions_notification_status_on">Benachrichtigungen aktiviert</string>
   <string name="permissions_jtx_title">jtx Board-Berechtigungen</string>
   <string name="permissions_jtx_status_not_installed">Keine Synchronisierung von Aufgaben, Journalen &amp; Notizen (nicht installiert)</string>
   <string name="permissions_jtx_status_off">Keine Synchronisierung von Aufgaben, Journalen und Notizen</string>
@@ -123,15 +126,20 @@
   <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_donate">Spenden</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
+  <string name="account_list_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisation informiert.</string>
   <string name="account_list_no_internet">Keine Internet-Verbindung. Android wird die Synchronisierung daher nicht starten.</string>
+  <string name="account_list_manage_connections">Verbindungen steuern</string>
   <string name="account_list_low_storage">Speicher knapp. Android wird keine Synchronisierung ausführen.</string>
+  <string name="account_list_manage_storage">Speicherplatz verwalten</string>
+  <string name="account_list_datasaver_enabled">Datensparen aktiviert. Die Hintergrundsynchronisierung ist eingeschränkt.</string>
+  <string name="account_list_manage_datasaver">Datensparen verwalten</string>
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
   <string name="accounts_global_sync_disabled">Systemweite automatische Synchronisierung ist nicht aktiv</string>
   <string name="accounts_global_sync_enable">Aktivieren</string>
   <string name="accounts_sync_all">Alle Konten synchronisieren</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Diensterkennung fehlgeschlagen</string>
-  <string name="dav_service_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Diensterkennung fehlgeschlagen</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Darf nicht im Vordergrund ausgeführt werden</string>
   <string name="battery_optimization_notify_text">Ausnahme von Akku-Optimierung erforderlich</string>
@@ -174,6 +182,8 @@
   <string name="app_settings_notification_settings">Benachrichtigungseinstellungen</string>
   <string name="app_settings_notification_settings_summary">Benachrichtigungskanäle und -einstellungen verwalten</string>
   <string name="app_settings_theme_title">Aussehen wählen</string>
+  <string name="app_settings_language_title">Sprache wählen</string>
+  <string name="app_settings_language_system_default">Systemvorgabe</string>
   <string-array name="app_settings_theme_names">
     <item>wie System</item>
     <item>heller Stil</item>

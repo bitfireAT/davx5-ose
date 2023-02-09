@@ -12,11 +12,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -105,7 +106,7 @@ class StreamingFileDescriptor(
                     notification.setContentTitle(context.getString(R.string.webdav_notification_download))
                     if (length == -1L)
                         // unknown file size, show notification now (no updates on progress)
-                        notificationManager.notify(
+                        notificationManager.notifyIfPossible(
                             notificationTag,
                             NotificationUtils.NOTIFY_WEBDAV_ACCESS,
                             notification
@@ -124,7 +125,7 @@ class StreamingFileDescriptor(
                             while (bytes != -1) {
                                 // update notification (if file size is known)
                                 if (length != -1L)
-                                    notificationManager.notify(
+                                    notificationManager.notifyIfPossible(
                                         notificationTag,
                                         NotificationUtils.NOTIFY_WEBDAV_ACCESS,
                                         notification
@@ -155,7 +156,7 @@ class StreamingFileDescriptor(
             override fun contentType(): MediaType? = mimeType
             override fun isOneShot() = true
             override fun writeTo(sink: BufferedSink) {
-                notificationManager.notify(
+                notificationManager.notifyIfPossible(
                     notificationTag,
                     NotificationUtils.NOTIFY_WEBDAV_ACCESS,
                     notification

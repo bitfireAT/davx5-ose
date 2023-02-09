@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">kSync</string>
   <string name="account_invalid">Kontot finns inte (längre)</string>
-  <string name="account_title_address_book">DAVx⁵ Adressbok</string>
+  <string name="account_title_address_book">kSync Adressbok</string>
   <string name="address_books_authority_title">Adressböcker</string>
   <string name="dialog_remove">Ta bort</string>
   <string name="dialog_deny">Avbryt</string>
@@ -41,8 +41,6 @@
   <string name="intro_tasks_title">Ärendestöd</string>
   <string name="intro_tasks_text1">Om ärenden stöds av din server kan de synkroniseras med en ärendeapp som stöds:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[För vissa funktioner som deluppgifter eller återkommande uppgifter kan du behöva <a href="https://www.davx5.com/faq/tasks/advanced-task-features"> ytterligare appar </a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Vissa funktioner <a href="https://www.davx5.com/faq/tasks/advanced-task-features">stöds inte</a> (ännu).]]></string>
   <string name="intro_tasks_no_app_store">Ingen app butik tillgänglig</string>
   <string name="intro_tasks_dont_show">Jag behöver inte stöd för att-göra.*</string>
@@ -62,6 +60,9 @@
   <string name="permissions_calendar_title">Kalenderbehörigheter</string>
   <string name="permissions_calendar_status_off">Synkronisera inte kalendern (ej rekommenderat)</string>
   <string name="permissions_calendar_status_on">Synkronisering av kalender möjlig</string>
+  <string name="permissions_notification_title">Notifieringsbehörigheter</string>
+  <string name="permissions_notification_status_off">Notifieringar avaktiverade (ej rekommenderat)</string>
+  <string name="permissions_notification_status_on">Notifieringar aktiva</string>
   <string name="permissions_jtx_title">jtx Bordsbehörigheter</string>
   <string name="permissions_jtx_status_not_installed">Ingen uppgift, journaler &amp; anteckningssynkronisering (ej installerad)</string>
   <string name="permissions_jtx_status_off">Ingen synkronisering av uppgifter, journaler, anteckningar</string>
@@ -123,15 +124,18 @@
   <string name="navigation_drawer_community">Gemenskap</string>
   <string name="navigation_drawer_donate">Donera</string>
   <string name="navigation_drawer_privacy_policy">Integritetspolicy</string>
+  <string name="account_list_no_notification_permission">Notifieringar avstängda. Du kommer inte bli informerad om synkroniseringsfel.</string>
   <string name="account_list_no_internet">Ingen internetanslutning. Android kommer inte att köra synkronisering.</string>
+  <string name="account_list_manage_connections">Hantera anslutningar</string>
   <string name="account_list_low_storage">Lagringsutrymme lågt. Android kommer inte att köra synkronisering.</string>
-  <string name="account_list_empty">Välkommen till DAVx⁵!\n\nDu kan lägga till ett CalDAV/CardDAV-konto nu.</string>
+  <string name="account_list_manage_storage">Hantera lagring</string>
+  <string name="account_list_empty">Välkommen till kSync!\n\nDu kan lägga till ett CalDAV/CardDAV-konto nu.</string>
   <string name="accounts_global_sync_disabled">Systemomfattande automatisk synkronisering är inaktiverad</string>
   <string name="accounts_global_sync_enable">Aktivera</string>
   <string name="accounts_sync_all">Synkronisera alla konton</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Servicedetektering misslyckades</string>
-  <string name="dav_service_refresh_couldnt_refresh">Det gick inte att uppdatera samlingslistan</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Servicedetektering misslyckades</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Det gick inte att uppdatera samlingslistan</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Kan inte köras i förgrunden</string>
   <string name="battery_optimization_notify_text">Vitlista för batterioptimering krävs</string>
@@ -174,6 +178,7 @@
   <string name="app_settings_notification_settings">Aviseringsinställningar</string>
   <string name="app_settings_notification_settings_summary">Hantera aviseringskanaler och deras inställningar</string>
   <string name="app_settings_theme_title">Välj tema</string>
+  <string name="app_settings_language_system_default">Standardinställning för system</string>
   <string-array name="app_settings_theme_names">
     <item>Systemstandard</item>
     <item>Ljus</item>
@@ -403,7 +408,7 @@
   <string name="webdav_notification_upload">Laddar upp WebDAV-fil</string>
   <string name="webdav_provider_root_title">WebDAV-fäste</string>
   <!--sync adapters-->
-  <string name="sync_error_permissions">DAVx⁵-behörigheter</string>
+  <string name="sync_error_permissions">kSync-behörigheter</string>
   <string name="sync_error_permissions_text">Ytterligare behörigheter krävs</string>
   <string name="sync_error_tasks_too_old">%s för gammal</string>
   <string name="sync_error_tasks_required_version">Minsta obligatoriska version: %1$s</string>
@@ -418,6 +423,6 @@
   <string name="sync_invalid_task">Fick ogiltigt ärende från servern</string>
   <string name="sync_invalid_resources_ignoring">Ignorerar en eller flera ogiltiga resurser</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Anslutningssäkerhet</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ har stött på ett okänt certifikat. Vill du lita på det?</string>
+  <string name="certificate_notification_connection_security">kSync: Anslutningssäkerhet</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync har stött på ett okänt certifikat. Vill du lita på det?</string>
 </resources>

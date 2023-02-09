@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid
 
+import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.*
 import org.junit.Test

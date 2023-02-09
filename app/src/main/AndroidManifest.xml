@@ -48,9 +48,16 @@
         android:theme="@style/AppTheme"
         android:resizeableActivity="true"
         tools:ignore="UnusedAttribute"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:localeConfig="@xml/locales_config">
 
-        <service android:name=".DavService"/>
+        <!-- required for Hilt/WorkManager integration -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove">
+        </provider>
+
         <service android:name=".ForegroundService"/>
 
         <activity android:name=".ui.intro.IntroActivity" android:theme="@style/AppTheme.NoActionBar" />
@@ -123,12 +130,20 @@
                 <data android:scheme="carddavs"/>
                 <data android:scheme="davx5"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="loginFlow" /> <!-- Ensures this filter matches, even if the sending app is not defining an action -->
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+            </intent-filter>
         </activity>
 
         <activity
             android:name=".ui.account.AccountActivity"
             android:parentActivityName=".ui.AccountsActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true">
+        </activity>
         <activity
             android:name=".ui.account.CreateAddressBookActivity"
             android:label="@string/create_addressbook"
@@ -284,6 +299,17 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/debug_paths" />
         </provider>
+
+
+        <!-- Support language selection on Android 12 and lower -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
 
     </application>
 

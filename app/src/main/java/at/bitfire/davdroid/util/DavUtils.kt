@@ -2,20 +2,23 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.util
 
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
-import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.core.content.getSystemService
+import androidx.work.WorkInfo
+import at.bitfire.davdroid.Android10Resolver
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.syncadapter.SyncWorker
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -178,27 +181,22 @@ object DavUtils {
         if (addrBookAccounts.any { ContentResolver.isSyncActive(it, ContactsContract.AUTHORITY) })
             return SyncStatus.ACTIVE
 
-        // check get pending syncs
+        // check pending syncs
         if (authorities.any { ContentResolver.isSyncPending(account, it) } ||
             addrBookAccounts.any { ContentResolver.isSyncPending(it, ContactsContract.AUTHORITY) })
             return SyncStatus.PENDING
 
+        // Also check SyncWorkers
+        val pending = SyncWorker.isSomeWorkerInState(context, WorkInfo.State.ENQUEUED, account, authorities.toList()).value
+        if (pending != null && pending == true)
+            return SyncStatus.PENDING
+        val running = SyncWorker.isSomeWorkerInState(context, WorkInfo.State.RUNNING, account, authorities.toList()).value
+        if (running != null && running == true)
+            return SyncStatus.ACTIVE
+
         return SyncStatus.IDLE
     }
 
-    /**
-     * Requests an immediate, manual sync of all available authorities for the given account.
-     *
-     * @param account account to sync
-     */
-    fun requestSync(context: Context, account: Account) {
-        for (authority in syncAuthorities(context)) {
-            val extras = Bundle(2)
-            extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)        // manual sync
-            extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)     // run immediately (don't queue)
-            ContentResolver.requestSync(account, authority, extras)
-        }
-    }
 
     /**
      * Returns a list of all available sync authorities for main accounts (!= address book accounts):

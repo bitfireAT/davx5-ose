@@ -6,11 +6,12 @@ dav.edis.at
 dav.fruux.com
 caldav.gmx.net
 carddav.gmx.net
+framagenda.org/remote.php/dav/
 icloud.com
 cloud.liberta.vip
 office.luckycloud.de
 calendar.mail.ru
-mailbox.org
+dav.mailbox.org
 mailfence.com
 posteo.de:8443
 dav.runbox.com

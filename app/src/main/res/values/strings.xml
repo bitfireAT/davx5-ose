@@ -50,8 +50,8 @@
     <string name="intro_tasks_title">Tasks support</string>
     <string name="intro_tasks_text1">If tasks are supported by your server, they can be synchronized with a supported tasks app:</string>
     <string name="intro_tasks_opentasks">OpenTasks</string>
-    <string name="intro_tasks_opentasks_info"><![CDATA[For some features like subtasks or recurring tasks, you may need <a href="https://www.davx5.com/faq/tasks/advanced-task-features">additional apps</a>.]]></string>
-    <string name="intro_tasks_tasks_org">Tasks</string>
+    <string name="intro_tasks_opentasks_info">Doesn\'t seem to be developed anymore – not recommended.</string>
+    <string name="intro_tasks_tasks_org">Tasks.org</string>
     <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">are not supported</a> (yet).]]></string>
     <string name="intro_tasks_no_app_store">No app store available</string>
     <string name="intro_tasks_dont_show">I don\'t need tasks support.*</string>
@@ -72,6 +72,9 @@
     <string name="permissions_calendar_title">Calendar permissions</string>
     <string name="permissions_calendar_status_off">No calendar sync (not recommended)</string>
     <string name="permissions_calendar_status_on">Calendar sync possible</string>
+    <string name="permissions_notification_title">Notification permission</string>
+    <string name="permissions_notification_status_off">Notifications disabled (not recommended)</string>
+    <string name="permissions_notification_status_on">Notifications enabled</string>
     <string name="permissions_jtx_title">jtx Board permissions</string>
     <string name="permissions_jtx_status_not_installed">No task, journals &amp; notes sync (not installed)</string>
     <string name="permissions_jtx_status_off">No tasks, journals, notes sync</string>
@@ -137,16 +140,21 @@
     <string name="navigation_drawer_community">Community</string>
     <string name="navigation_drawer_donate">Donate</string>
     <string name="navigation_drawer_privacy_policy">Privacy policy</string>
+    <string name="account_list_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
     <string name="account_list_no_internet">No Internet connectivity. Android will not run synchronization.</string>
+    <string name="account_list_manage_connections">Manage connections</string>
     <string name="account_list_low_storage">Storage space low. Android will not run synchronization.</string>
+    <string name="account_list_manage_storage">Manage storage</string>
+    <string name="account_list_datasaver_enabled">Data saver enabled. Background synchronization is restricted.</string>
+    <string name="account_list_manage_datasaver">Manage data saver</string>
     <string name="account_list_empty">Welcome to kSync!\n\nYou can add a CalDAV/CardDAV account now.</string>
     <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
     <string name="accounts_global_sync_enable">Enable</string>
     <string name="accounts_sync_all">Sync all accounts</string>
 
-    <!-- DavService -->
-    <string name="dav_service_refresh_failed">Service detection failed</string>
-    <string name="dav_service_refresh_couldnt_refresh">Couldn\'t refresh collection list</string>
+    <!-- RefreshCollectionsWorker -->
+    <string name="refresh_collections_worker_refresh_failed">Service detection failed</string>
+    <string name="refresh_collections_worker_refresh_couldnt_refresh">Couldn\'t refresh collection list</string>
 
     <!-- Battery Optimization -->
     <string name="battery_optimization_notify_title">Can not run in foreground</string>
@@ -198,6 +206,8 @@
     <string name="app_settings_notification_settings">Notification settings</string>
     <string name="app_settings_notification_settings_summary">Manage notification channels and their settings</string>
     <string name="app_settings_theme_title">Select theme</string>
+    <string name="app_settings_language_title">Select language</string>
+    <string name="app_settings_language_system_default">System default</string>
     <string-array name="app_settings_theme_names">
         <item>System default</item>
         <item>Light</item>

@@ -36,13 +36,13 @@
   <string name="intro_autostart_dont_show">Я выполнил необходимые настройки. Больше не напоминать.*</string>
   <string name="intro_leave_unchecked">* Чтобы получить предупреждение позже, снимите флажок. Можно сбросить в настройках приложения  / %s.</string>
   <string name="intro_more_info">Дополнительная информация</string>
-  <string name="intro_tasks_jtx">Панель jtx</string>
-  <string name="intro_tasks_jtx_info"><![CDATA[Поддержка синхронизации задач, журналов и заметок.]]></string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Поддерживает синхронизацию задач, журналов и заметок.]]></string>
   <string name="intro_tasks_title">Поддержка задач</string>
   <string name="intro_tasks_text1">Если задачи поддерживаются вашим сервером, их можно синхронизировать при помощи соответствующего приложения:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Для некоторых возможностей, таких как подзадачи или повторяющиеся задачи, вам могут потребоваться <a href="https://www.davx5.com/faq/tasks/advanced-task-features">дополнительные приложения</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
+  <string name="intro_tasks_opentasks_info">По всей видимости, больше не разрабатывается (не рекомендуется)</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Некоторые возможности <a href="https://www.davx5.com/faq/tasks/advanced-task-features">не поддерживаются</a> (пока).]]></string>
   <string name="intro_tasks_no_app_store">Магазин приложений недоступен</string>
   <string name="intro_tasks_dont_show">Мне не нужна поддержка задач.*</string>
@@ -62,7 +62,10 @@
   <string name="permissions_calendar_title">Разрешения для календаря</string>
   <string name="permissions_calendar_status_off">Календарь не синхронизируется (не рекомендуется)</string>
   <string name="permissions_calendar_status_on">Синхронизация календаря возможна</string>
-  <string name="permissions_jtx_title">Разрешения панели jtx</string>
+  <string name="permissions_notification_title">Разрешение на уведомление</string>
+  <string name="permissions_notification_status_off">Уведомления отключены (не рекомендуется)</string>
+  <string name="permissions_notification_status_on">Уведомления включены</string>
+  <string name="permissions_jtx_title">Разрешения jtx Board</string>
   <string name="permissions_jtx_status_not_installed">Не синхронизируются задачи, журналы и заметки (не установлено)</string>
   <string name="permissions_jtx_status_off">Не синхронизируются задачи, журналы, заметки</string>
   <string name="permissions_jtx_status_on">Возможна синхронизация задач, журналов и заметок</string>
@@ -71,7 +74,7 @@
   <string name="permissions_tasks_status_not_installed">Задачи не синхронизируются (не установлены)</string>
   <string name="permissions_tasks_status_off">Не синхронизируются задачи</string>
   <string name="permissions_tasks_status_on">Синхронизация задач возможна</string>
-  <string name="permissions_autoreset_title">Сохранить разрешения</string>
+  <string name="permissions_autoreset_title">Сохранять разрешения</string>
   <string name="permissions_autoreset_status_off">Разрешения могут быть сброшены автоматически (не рекомендуется)</string>
   <string name="permissions_autoreset_status_on">Разрешения не будут сброшены автоматически</string>
   <string name="permissions_autoreset_instruction">Выберите Разрешения &gt; снимите флажок \"Удалить разрешения, если приложение не используется\".</string>
@@ -123,21 +126,26 @@
   <string name="navigation_drawer_community">Сообщество</string>
   <string name="navigation_drawer_donate">Пожертвовать</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
+  <string name="account_list_no_notification_permission">Уведомления отключены. Вы не будете получать уведомления об ошибках синхронизации.</string>
   <string name="account_list_no_internet">Нет подключения к интернету. Android не будет выполнять синхронизацию.</string>
+  <string name="account_list_manage_connections">Управление подключениями</string>
   <string name="account_list_low_storage">Место для хранения мало. Android не будет выполнять синхронизацию.</string>
+  <string name="account_list_manage_storage">Управление хранилищем</string>
+  <string name="account_list_datasaver_enabled">Экономия трафика включена. Фоновая синхронизация ограничена.</string>
+  <string name="account_list_manage_datasaver">Экономия трафика</string>
   <string name="account_list_empty">Добро пожаловать в kSync!\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
   <string name="accounts_global_sync_enable">Включить</string>
   <string name="accounts_sync_all">Синхронизировать все аккаунты</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Не удалось обнаружить службу</string>
-  <string name="dav_service_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Не удалось обнаружить службу</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Невозможно запустить в приоритетном режиме</string>
   <string name="battery_optimization_notify_text">Необходимо добавить в белый список оптимизации батареи</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Запущен в приоритетном режиме</string>
-  <string name="foreground_service_notify_text">Требуется для автоматической синхронизации на некоторых устройствах.</string>
+  <string name="foreground_service_notify_text">Необходим для автоматической синхронизации на некоторых устройствах.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отладка</string>
@@ -147,8 +155,8 @@
   <string name="app_settings_logging_on">Логирование активно</string>
   <string name="app_settings_logging_off">Логирование отключено</string>
   <string name="app_settings_battery_optimization">Оптимизация батареи</string>
-  <string name="app_settings_battery_optimization_whitelisted">Приложение внесено в белый список (рекомендуется)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Приложение не внесено в белый список (рекомендуется)</string>
+  <string name="app_settings_battery_optimization_whitelisted">Приложение добавлено в белый список (рекомендуется)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Приложение не добавлено в белый список (не рекомендуется)</string>
   <string name="app_settings_foreground_service">Приоритетный режим</string>
   <string name="app_settings_foreground_service_details">Может помочь, если ваше устройство препятствует автоматической синхронизации</string>
   <string name="app_settings_connection">Соединение</string>
@@ -174,6 +182,8 @@
   <string name="app_settings_notification_settings">Настройки уведомлений</string>
   <string name="app_settings_notification_settings_summary">Управление каналами уведомлений и их настройками</string>
   <string name="app_settings_theme_title">Выбор темы</string>
+  <string name="app_settings_language_title">Выбрать язык</string>
+  <string name="app_settings_language_system_default">Определен системой</string>
   <string-array name="app_settings_theme_names">
     <item>Системная</item>
     <item>Светлая</item>

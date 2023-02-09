@@ -10,16 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import at.bitfire.davdroid.PermissionUtils
-import at.bitfire.davdroid.PermissionUtils.CALENDAR_PERMISSIONS
-import at.bitfire.davdroid.PermissionUtils.CONTACT_PERMISSIONS
+import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
+import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
 import at.bitfire.davdroid.R
 import at.bitfire.ical4android.TaskProvider
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
-import dagger.multibindings.IntoSet
 import javax.inject.Inject
 
 class PermissionsIntroFragment : Fragment() {

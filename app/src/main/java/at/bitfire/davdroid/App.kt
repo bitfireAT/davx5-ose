@@ -10,6 +10,8 @@ import android.net.Uri
 import android.os.StrictMode
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
@@ -24,7 +26,7 @@ import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 @HiltAndroidApp
-class App: Application(), Thread.UncaughtExceptionHandler {
+class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provider {
 
     companion object {
 
@@ -43,6 +45,7 @@ class App: Application(), Thread.UncaughtExceptionHandler {
     @Inject lateinit var accountsUpdatedListener: AccountsUpdatedListener
     @Inject lateinit var storageLowReceiver: StorageLowReceiver
 
+    @Inject lateinit var workerFactory: HiltWorkerFactory
 
     override fun onCreate() {
         super.onCreate()
@@ -91,6 +94,11 @@ class App: Application(), Thread.UncaughtExceptionHandler {
             AccountSettings.repairSyncIntervals(this)
         }
     }
+
+    override fun getWorkManagerConfiguration() =
+        Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 
     override fun uncaughtException(t: Thread, e: Throwable) {
         Logger.log.log(Level.SEVERE, "Unhandled exception!", e)

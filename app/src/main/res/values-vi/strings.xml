@@ -41,8 +41,6 @@
   <string name="intro_tasks_title">Hỗ trợ công việc</string>
   <string name="intro_tasks_text1">Nếu máy chủ của bạn hỗ trợ công việc, chúng có thể được đồng bộ hoá bằng một ứng dụng công việc được hỗ trợ:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Đối với một số tính năng như công việc con hoặc công việc lặp lại, bạn có thể sẽ cần <a href="https://www.davx5.com/faq/tasks/advanced-task-features">các ứng dụng bổ sung</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tasks</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Một số tính năng (chưa) <a href="https://www.davx5.com/faq/tasks/advanced-task-features">không được hỗ trợ</a>.]]></string>
   <string name="intro_tasks_no_app_store">Không có cửa hàng ứng dụng nào có sẵn</string>
   <string name="intro_tasks_dont_show">Tôi không cần hỗ trợ công việc.*</string>
@@ -129,9 +127,9 @@
   <string name="accounts_global_sync_disabled">Đồng bộ hoá tự động trên toàn hệ thống bị tắt</string>
   <string name="accounts_global_sync_enable">Bật</string>
   <string name="accounts_sync_all">Đồng bộ tất cả tài khoản</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Dò tìm dịch vụ thất bại</string>
-  <string name="dav_service_refresh_couldnt_refresh">Không thể làm mới danh sách bộ sưu tập</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Dò tìm dịch vụ thất bại</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Không thể làm mới danh sách bộ sưu tập</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Không thể chạy ở trước</string>
   <string name="battery_optimization_notify_text">Bắt buộc không tối ưu hoá pin</string>
@@ -174,6 +172,7 @@
   <string name="app_settings_notification_settings">Cài đặt thông báo</string>
   <string name="app_settings_notification_settings_summary">Quản lý các kênh thông báo và cài đặt của chúng</string>
   <string name="app_settings_theme_title">Chọn chủ đề</string>
+  <string name="app_settings_language_system_default">Mặc định hệ thống</string>
   <string-array name="app_settings_theme_names">
     <item>Mặc định hệ thống</item>
     <item>Sáng</item>

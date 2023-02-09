@@ -37,7 +37,6 @@
   <string name="intro_tasks_title">Υποστήριξη εργασιών</string>
   <string name="intro_tasks_text1">Εάν οι εργασίες υποστηρίζονται από τον server σας, μπορούν να συγχρονιστούν με μια υποστηριζόμενη εφαρμογή εργασιών:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_tasks_org">Εργασίες</string>
   <string name="intro_tasks_no_app_store">Δεν υπάρχει διαθέσιμο κατάστημα εφαρμογών</string>
   <string name="intro_tasks_dont_show">Δεν χρειάζομαι υποστήριξη εργασιών.*</string>
   <string name="intro_open_source_title">Λογισμικό ανοικτού κώδικα</string>
@@ -113,9 +112,9 @@
   <string name="accounts_global_sync_disabled">Ο αυτόματος συγχρονισμός σε όλο το σύστημα είναι απενεργοποιημένος</string>
   <string name="accounts_global_sync_enable">Ενεργοποίηση</string>
   <string name="accounts_sync_all">Συγχρονισμός όλων των λογαριασμών</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Αποτυχία ανίχνευσης υπηρεσίας</string>
-  <string name="dav_service_refresh_couldnt_refresh">Αδυναμία ανανέωσης της λίστας συλλογής</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Αποτυχία ανίχνευσης υπηρεσίας</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Αδυναμία ανανέωσης της λίστας συλλογής</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Αδυναμία εκτέλεσης στο προσκήνιο</string>
   <!--ForegroundService-->

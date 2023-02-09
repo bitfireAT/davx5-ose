@@ -32,6 +32,7 @@ import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.SettingsActivity
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.Ical4Android
@@ -520,7 +521,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      *
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
-    protected open fun syncRemote(listRemote: (DavResponseCallback) -> Unit) {
+    protected open fun syncRemote(listRemote: (MultiResponseCallback) -> Unit) {
         // thread-safe sync stats
         val nInserted = AtomicInteger()
         val nUpdated = AtomicInteger()
@@ -611,9 +612,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
     }
 
-    protected abstract fun listAllRemote(callback: DavResponseCallback)
+    protected abstract fun listAllRemote(callback: MultiResponseCallback)
 
-    protected open fun listRemoteChanges(syncState: SyncState?, callback: DavResponseCallback): Pair<SyncToken, Boolean> {
+    protected open fun listRemoteChanges(syncState: SyncState?, callback: MultiResponseCallback): Pair<SyncToken, Boolean> {
         var furtherResults = false
 
         val report = davCollection.reportChanges(
@@ -625,7 +626,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     furtherResults = response.status?.code == 507
 
                 Response.HrefRelation.MEMBER ->
-                    callback(response, relation)
+                    callback.onResponse(response, relation)
 
                 else ->
                     Logger.log.fine("Unexpected sync-collection response: $response")
@@ -775,9 +776,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setPriority(priority)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
         viewItemAction?.let { builder.addAction(it) }
-        builder.addAction(buildRetryAction())
 
-        notificationManager.notify(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR, builder.build())
+        notificationManager.notifyIfPossible(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR, builder.build())
     }
 
     private fun buildDebugInfoIntent(e: Throwable, local: ResourceType?, remote: HttpUrl?) =
@@ -795,32 +795,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             )
             .withRemoteResource(remote)
             .build()
-
-    private fun buildRetryAction(): NotificationCompat.Action {
-        val retryIntent = Intent(context, DavService::class.java)
-        retryIntent.action = DavService.ACTION_FORCE_SYNC
-
-        val syncAuthority: String
-        val syncAccount: Account
-        if (authority == ContactsContract.AUTHORITY) {
-            // if this is a contacts sync, retry syncing all address books of the main account
-            syncAuthority = context.getString(R.string.address_books_authority)
-            syncAccount = mainAccount
-        } else {
-            syncAuthority = authority
-            syncAccount = account
-        }
-
-        retryIntent.data = Uri.parse("sync://").buildUpon()
-                .authority(syncAuthority)
-                .appendPath(syncAccount.type)
-                .appendPath(syncAccount.name)
-                .build()
-
-        return NotificationCompat.Action(
-                android.R.drawable.ic_menu_rotate, context.getString(R.string.sync_error_retry),
-                PendingIntent.getService(context, 0, retryIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-    }
 
     private fun buildViewItemAction(local: ResourceType): NotificationCompat.Action? {
         Logger.log.log(Level.FINE, "Adding view action for local resource", local)
@@ -855,7 +829,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
                 .priority = NotificationCompat.PRIORITY_LOW
-        notificationManager.notify(notificationTag, NotificationUtils.NOTIFY_INVALID_RESOURCE, builder.build())
+        notificationManager.notifyIfPossible(notificationTag, NotificationUtils.NOTIFY_INVALID_RESOURCE, builder.build())
     }
 
     protected abstract fun notifyInvalidResourceTitle(): String

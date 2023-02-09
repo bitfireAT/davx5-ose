@@ -8,7 +8,7 @@ import android.content.Intent
 import android.view.*
 import androidx.fragment.app.FragmentManager
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.PermissionUtils
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
 import at.bitfire.davdroid.db.Collection

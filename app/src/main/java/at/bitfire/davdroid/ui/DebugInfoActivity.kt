@@ -43,9 +43,13 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.ical4android.util.MiscUtils.ContentProviderClientHelper.closeCompat
 import at.bitfire.ical4android.TaskProvider.ProviderName
+import at.bitfire.ical4android.util.MiscUtils
+import at.bitfire.ical4android.util.MiscUtils.ContentProviderClientHelper.closeCompat
+import at.bitfire.ical4android.util.MiscUtils.UriHelper.asSyncAdapter as asCalendarSyncAdapter
+import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract
+import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -67,7 +71,7 @@ import java.util.zip.ZipOutputStream
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DebugInfoActivity: AppCompatActivity() {
+class DebugInfoActivity : AppCompatActivity() {
 
     companion object {
         /** [android.accounts.Account] (as [android.os.Parcelable]) related to problem */
@@ -123,7 +127,7 @@ class DebugInfoActivity: AppCompatActivity() {
                     when {
                         cause.code == 403 -> R.string.debug_info_http_403_description
                         cause.code == 404 -> R.string.debug_info_http_404_description
-                        cause.code/100 == 5 -> R.string.debug_info_http_5xx_description
+                        cause.code / 100 == 5 -> R.string.debug_info_http_5xx_description
                         else -> R.string.debug_info_unexpected_error
                     }
                 else
@@ -163,11 +167,11 @@ class DebugInfoActivity: AppCompatActivity() {
     fun shareArchive() {
         model.generateZip { zipFile ->
             val builder = ShareCompat.IntentBuilder.from(this)
-                    .setEmailTo(Array(1) { "support@infomaniak.com" }) // kSync
-                    .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
-                    .setText(getString(R.string.debug_info_attached))
-                    .setType("*/*")     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
-                    .setStream(FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), zipFile))
+                .setEmailTo(Array(1) { "support@infomaniak.com" }) // kSync
+                .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
+                .setText(getString(R.string.debug_info_attached))
+                .setType("*/*")     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
+                .setStream(FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), zipFile))
             builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             builder.startChooser()
         }
@@ -177,10 +181,12 @@ class DebugInfoActivity: AppCompatActivity() {
     @HiltViewModel
     class ReportModel @Inject constructor(
         @ApplicationContext val context: Context
-    ): ViewModel() {
+    ) : ViewModel() {
 
-        @Inject lateinit var db: AppDatabase
-        @Inject lateinit var settings: SettingsManager
+        @Inject
+        lateinit var db: AppDatabase
+        @Inject
+        lateinit var settings: SettingsManager
 
         private var initialized = false
 
@@ -238,11 +244,11 @@ class DebugInfoActivity: AppCompatActivity() {
                 remoteResource.postValue(remote)
 
                 generateDebugInfo(
-                        extras?.getParcelable(EXTRA_ACCOUNT),
-                        extras?.getString(EXTRA_AUTHORITY),
-                        throwable,
-                        local,
-                        remote
+                    extras?.getParcelable(EXTRA_ACCOUNT),
+                    extras?.getString(EXTRA_AUTHORITY),
+                    throwable,
+                    local,
+                    remote
                 )
             }
         }
@@ -295,20 +301,20 @@ class DebugInfoActivity: AppCompatActivity() {
                     val pm = context.packageManager
 
                     val packageNames = mutableSetOf(      // we always want info about these packages:
-                            BuildConfig.APPLICATION_ID,            // DAVx5
-                            ProviderName.JtxBoard.packageName,     // jtx Board
-                            ProviderName.OpenTasks.packageName,    // OpenTasks
-                            ProviderName.TasksOrg.packageName      // tasks.org
+                        BuildConfig.APPLICATION_ID,            // DAVx5
+                        ProviderName.JtxBoard.packageName,     // jtx Board
+                        ProviderName.OpenTasks.packageName,    // OpenTasks
+                        ProviderName.TasksOrg.packageName      // tasks.org
                     )
                     // ... and info about contact and calendar provider
                     for (authority in arrayOf(ContactsContract.AUTHORITY, CalendarContract.AUTHORITY))
                         pm.resolveContentProvider(authority, 0)?.let { packageNames += it.packageName }
                     // ... and info about contact, calendar, task-editing apps
                     val dataUris = arrayOf(
-                            ContactsContract.Contacts.CONTENT_URI,
-                            CalendarContract.Events.CONTENT_URI,
-                            TaskContract.Tasks.getContentUri(ProviderName.OpenTasks.authority),
-                            TaskContract.Tasks.getContentUri(ProviderName.TasksOrg.authority)
+                        ContactsContract.Contacts.CONTENT_URI,
+                        CalendarContract.Events.CONTENT_URI,
+                        TaskContract.Tasks.getContentUri(ProviderName.OpenTasks.authority),
+                        TaskContract.Tasks.getContentUri(ProviderName.TasksOrg.authority)
                     )
                     for (uri in dataUris) {
                         val viewIntent = Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(uri, /* some random ID */ 1))
@@ -326,13 +332,13 @@ class DebugInfoActivity: AppCompatActivity() {
                             if (appInfo.flags.and(ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0)
                                 notes += "<em>on external storage</em>"
                             table.addLine(
-                                    info.packageName, info.versionName, PackageInfoCompat.getLongVersionCode(info),
-                                    pm.getInstallerPackageName(info.packageName) ?: '—', notes.joinToString(", ")
+                                info.packageName, info.versionName, PackageInfoCompat.getLongVersionCode(info),
+                                pm.getInstallerPackageName(info.packageName) ?: '—', notes.joinToString(", ")
                             )
-                        } catch(e: PackageManager.NameNotFoundException) {
+                        } catch (e: PackageManager.NameNotFoundException) {
                         }
                     writer.append(table.toString())
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     Logger.log.log(Level.SEVERE, "Couldn't get software information", e)
                 }
 
@@ -342,11 +348,11 @@ class DebugInfoActivity: AppCompatActivity() {
                 else
                     Locale.getDefault()
                 writer.append(
-                        "\nSYSTEM INFORMATION\n\n" +
-                        "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
-                        "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n" +
-                        "Locale(s): $locales\n" +
-                        "Time zone: ${TimeZone.getDefault().id}\n"
+                    "\nSYSTEM INFORMATION\n\n" +
+                            "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
+                            "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n" +
+                            "Locale(s): $locales\n" +
+                            "Time zone: ${TimeZone.getDefault().id}\n"
                 )
                 val filesPath = Environment.getDataDirectory()
                 val statFs = StatFs(filesPath.path)
@@ -363,15 +369,15 @@ class DebugInfoActivity: AppCompatActivity() {
                     connectivityManager.allNetworks.sortedByDescending { it == activeNetwork }.forEach { network ->
                         val properties = connectivityManager.getLinkProperties(network)
                         connectivityManager.getNetworkCapabilities(network)?.let { capabilities ->
-                            writer  .append(if (network == activeNetwork) " ☒ " else " ☐ ")
-                                    .append(properties?.interfaceName ?: "?")
-                                    .append("\n   - ")
-                                    .append(capabilities.toString().replace('&',' '))
-                                    .append('\n')
+                            writer.append(if (network == activeNetwork) " ☒ " else " ☐ ")
+                                .append(properties?.interfaceName ?: "?")
+                                .append("\n   - ")
+                                .append(capabilities.toString().replace('&', ' '))
+                                .append('\n')
                         }
                         if (properties != null) {
-                            writer  .append("   - DNS: ")
-                                    .append(properties.dnsServers.joinToString(", ") { it.hostAddress })
+                            writer.append("   - DNS: ")
+                                .append(properties.dnsServers.joinToString(", ") { it.hostAddress })
                             if (Build.VERSION.SDK_INT >= 28 && properties.isPrivateDnsActive)
                                 writer.append(" (private mode)")
                             writer.append('\n')
@@ -384,12 +390,14 @@ class DebugInfoActivity: AppCompatActivity() {
                             writer.append("System default proxy: ${proxy.host}:${proxy.port}\n")
                         }
                     if (Build.VERSION.SDK_INT >= 24)
-                        writer.append("Data saver: ").append(when (connectivityManager.restrictBackgroundStatus) {
-                            ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED -> "enabled"
-                            ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED -> "whitelisted"
-                            ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED -> "disabled"
-                            else -> connectivityManager.restrictBackgroundStatus.toString()
-                        }).append('\n')
+                        writer.append("Data saver: ").append(
+                            when (connectivityManager.restrictBackgroundStatus) {
+                                ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED -> "enabled"
+                                ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED -> "whitelisted"
+                                ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED -> "disabled"
+                                else -> connectivityManager.restrictBackgroundStatus.toString()
+                            }
+                        ).append('\n')
                     writer.append('\n')
                 }
 
@@ -399,20 +407,20 @@ class DebugInfoActivity: AppCompatActivity() {
                     context.getSystemService<UsageStatsManager>()?.let { statsManager ->
                         val bucket = statsManager.appStandbyBucket
                         writer.append("App standby bucket: $bucket")
-                            if (bucket > UsageStatsManager.STANDBY_BUCKET_ACTIVE)
-                                writer.append(" (RESTRICTED!)")
+                        if (bucket > UsageStatsManager.STANDBY_BUCKET_ACTIVE)
+                            writer.append(" (RESTRICTED!)")
                         writer.append('\n')
                     }
                 if (Build.VERSION.SDK_INT >= 23)
                     context.getSystemService<PowerManager>()?.let { powerManager ->
                         writer.append("Power saving disabled: ")
-                                .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")
-                                .append('\n')
+                            .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")
+                            .append('\n')
                     }
                 // system-wide sync
-                writer  .append("System-wide synchronization: ")
-                        .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
-                        .append('\n')
+                writer.append("System-wide synchronization: ")
+                    .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
+                    .append('\n')
                 // notifications
                 val nm = NotificationManagerCompat.from(context)
                 writer.append("\nNotifications")
@@ -440,12 +448,14 @@ class DebugInfoActivity: AppCompatActivity() {
                 val ownPkgInfo = context.packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, PackageManager.GET_PERMISSIONS)
                 for (permission in ownPkgInfo.requestedPermissions) {
                     val shortPermission = permission.removePrefix("android.permission.")
-                    writer  .append(" - $shortPermission: ")
-                            .append(if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
+                    writer.append(" - $shortPermission: ")
+                        .append(
+                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
                                 "granted"
                             else
-                                "denied")
-                            .append('\n')
+                                "denied"
+                        )
+                        .append('\n')
                 }
                 writer.append('\n')
 
@@ -461,8 +471,8 @@ class DebugInfoActivity: AppCompatActivity() {
                     while (iter.hasNext()) {
                         val addressBookAccount = iter.next()
                         val mainAccount = Account(
-                                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_MAIN_ACCOUNT_NAME),
-                                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_MAIN_ACCOUNT_TYPE)
+                            accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_MAIN_ACCOUNT_NAME),
+                            accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_MAIN_ACCOUNT_TYPE)
                         )
                         if (mainAccount == account) {
                             dumpAddressBookAccount(addressBookAccount, accountManager, writer)
@@ -531,7 +541,7 @@ class DebugInfoActivity: AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         onSuccess(zipFile)
                     }
-                } catch(e: IOException) {
+                } catch (e: IOException) {
                     // creating attachment with debug info failed
                     Logger.log.log(Level.SEVERE, "Couldn't attach debug info", e)
                     Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show()
@@ -543,19 +553,21 @@ class DebugInfoActivity: AppCompatActivity() {
 
         private fun dumpMainAccount(account: Account, writer: Writer) {
             writer.append(" - Account: ${account.name}\n")
-            writer.append(dumpAccount(account, AccountDumpInfo.mainAccount(context)))
+            writer.append(dumpAccount(account, AccountDumpInfo.mainAccount(context, account)))
             try {
                 val accountSettings = AccountSettings(context, account)
                 writer.append("  WiFi only: ${accountSettings.getSyncWifiOnly()}")
                 accountSettings.getSyncWifiOnlySSIDs()?.let { ssids ->
                     writer.append(", SSIDs: ${ssids.joinToString(", ")}")
                 }
-                writer.append("\n  Contact group method: ${accountSettings.getGroupMethod()}\n" +
-                        "  Time range (past days): ${accountSettings.getTimeRangePastDays()}\n" +
-                        "  Default alarm (min before): ${accountSettings.getDefaultAlarm()}\n" +
-                        "  Manage calendar colors: ${accountSettings.getManageCalendarColors()}\n" +
-                        "  Use event colors: ${accountSettings.getEventColors()}\n")
-            } catch(e: InvalidAccountException) {
+                writer.append(
+                    "\n  Contact group method: ${accountSettings.getGroupMethod()}\n" +
+                            "  Time range (past days): ${accountSettings.getTimeRangePastDays()}\n" +
+                            "  Default alarm (min before): ${accountSettings.getDefaultAlarm()}\n" +
+                            "  Manage calendar colors: ${accountSettings.getManageCalendarColors()}\n" +
+                            "  Use event colors: ${accountSettings.getEventColors()}\n"
+                )
+            } catch (e: InvalidAccountException) {
                 writer.append("$e\n")
             }
             writer.append('\n')
@@ -563,10 +575,10 @@ class DebugInfoActivity: AppCompatActivity() {
 
         private fun dumpAddressBookAccount(account: Account, accountManager: AccountManager, writer: Writer) {
             writer.append("  * Address book: ${account.name}\n")
-            val table = dumpAccount(account, AccountDumpInfo.addressBookAccount())
-            writer  .append(TextTable.indent(table, 4))
-                    .append("URL: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL)}\n")
-                    .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
+            val table = dumpAccount(account, AccountDumpInfo.addressBookAccount(account))
+            writer.append(TextTable.indent(table, 4))
+                .append("URL: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL)}\n")
+                .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
         }
 
         private fun dumpAccount(account: Account, infos: Iterable<AccountDumpInfo>): String {
@@ -577,23 +589,25 @@ class DebugInfoActivity: AppCompatActivity() {
                 if (info.countUri != null)
                     try {
                         client = context.contentResolver.acquireContentProviderClient(info.authority)
-                        if (client != null) {
-                            client.query(info.countUri, null, "account_name=? AND account_type=?", arrayOf(account.name, account.type), null)?.use { cursor ->
+                        if (client != null)
+                            client.query(info.countUri, null, null, null, null)?.use { cursor ->
                                 nrEntries = "${cursor.count} ${info.countStr}"
                             }
-                        }
-                    } catch(ignored: Exception) {
+                        else
+                            nrEntries = "n/a"
+                    } catch (e: Exception) {
+                        nrEntries = e.toString()
                     } finally {
                         client?.closeCompat()
                     }
                 table.addLine(
-                        info.authority,
-                        ContentResolver.getIsSyncable(account, info.authority),
-                        ContentResolver.getSyncAutomatically(account, info.authority),
-                        ContentResolver.getPeriodicSyncs(account, info.authority).firstOrNull()?.let { periodicSync ->
-                            "${periodicSync.period / 60} min"
-                        },
-                        nrEntries
+                    info.authority,
+                    ContentResolver.getIsSyncable(account, info.authority),
+                    ContentResolver.getSyncAutomatically(account, info.authority),
+                    ContentResolver.getPeriodicSyncs(account, info.authority).firstOrNull()?.let { periodicSync ->
+                        "${periodicSync.period / 60} min"
+                    },
+                    nrEntries
                 )
             }
             return table.toString()
@@ -603,23 +617,25 @@ class DebugInfoActivity: AppCompatActivity() {
 
 
     data class AccountDumpInfo(
-            val authority: String,
-            val countUri: Uri?,
-            val countStr: String?) {
+        val account: Account,
+        val authority: String,
+        val countUri: Uri?,
+        val countStr: String?,
+    ) {
 
         companion object {
 
-            fun mainAccount(context: Context) = listOf(
-                    AccountDumpInfo(context.getString(R.string.address_books_authority), null, null),
-                    AccountDumpInfo(CalendarContract.AUTHORITY, CalendarContract.Events.CONTENT_URI, "event(s)"),
-                    AccountDumpInfo(ProviderName.JtxBoard.authority, JtxContract.JtxICalObject.CONTENT_URI, "jtx Board ICalObject(s)"),
-                    AccountDumpInfo(ProviderName.OpenTasks.authority, TaskContract.Tasks.getContentUri(ProviderName.OpenTasks.authority), "OpenTasks task(s)"),
-                    AccountDumpInfo(ProviderName.TasksOrg.authority, TaskContract.Tasks.getContentUri(ProviderName.TasksOrg.authority), "tasks.org task(s)"),
-                    AccountDumpInfo(ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI, "wrongly assigned raw contact(s)")
+            fun mainAccount(context: Context, account: Account) = listOf(
+                AccountDumpInfo(account, context.getString(R.string.address_books_authority), null, null),
+                AccountDumpInfo(account, CalendarContract.AUTHORITY, CalendarContract.Events.CONTENT_URI.asCalendarSyncAdapter(account), "event(s)"),
+                AccountDumpInfo(account, ProviderName.JtxBoard.authority, JtxContract.JtxICalObject.CONTENT_URI.asJtxSyncAdapter(account), "jtx Board ICalObject(s)"),
+                AccountDumpInfo(account, ProviderName.OpenTasks.authority, TaskContract.Tasks.getContentUri(ProviderName.OpenTasks.authority).asCalendarSyncAdapter(account), "OpenTasks task(s)"),
+                AccountDumpInfo(account, ProviderName.TasksOrg.authority, TaskContract.Tasks.getContentUri(ProviderName.TasksOrg.authority).asCalendarSyncAdapter(account), "tasks.org task(s)"),
+                AccountDumpInfo(account, ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI.asContactsSyncAdapter(account), "wrongly assigned raw contact(s)")
             )
 
-            fun addressBookAccount() = listOf(
-                    AccountDumpInfo(ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI, "raw contact(s)")
+            fun addressBookAccount(account: Account) = listOf(
+                AccountDumpInfo(account, ContactsContract.AUTHORITY, ContactsContract.RawContacts.CONTENT_URI.asContactsSyncAdapter(account), "raw contact(s)")
             )
 
         }
@@ -630,7 +646,7 @@ class DebugInfoActivity: AppCompatActivity() {
     class IntentBuilder(context: Context) {
 
         companion object {
-            val MAX_ELEMENT_SIZE = 800*FileUtils.ONE_KB.toInt()
+            val MAX_ELEMENT_SIZE = 800 * FileUtils.ONE_KB.toInt()
         }
 
         val intent = Intent(context, DebugInfoActivity::class.java)

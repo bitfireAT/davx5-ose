@@ -40,8 +40,6 @@
   <string name="intro_tasks_title">Gestion des taches</string>
   <string name="intro_tasks_text1">Si les tâches sont prises en charge par votre serveur, elles peuvent être synchronisées avec une application de tâches externe :</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Pour certaines fonctionnalités comme les sous-tâches ou les tâches récurrentes, vous pouvez avoir besoin <a href="https://www.davx5.com/faq/tasks/advanced-task-features">d\'applications supplémentaires</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Taches</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Certaines fonctionnalités <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ne sont pas (encore) prises en charge</a>.]]></string>
   <string name="intro_tasks_no_app_store">Pas de magasin d\'application disponible</string>
   <string name="intro_tasks_dont_show">Je n\'ai pas besoin de support des tâches.*</string>
@@ -124,9 +122,9 @@
   <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
   <string name="accounts_global_sync_enable">Activer</string>
   <string name="accounts_sync_all">Synchroniser tous les comptes</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">La détection du service a échoué</string>
-  <string name="dav_service_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">La détection du service a échoué</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Fonctionne au premier plan</string>
@@ -161,6 +159,7 @@
   <string name="app_settings_notification_settings">Paramètres de notification</string>
   <string name="app_settings_notification_settings_summary">Gérer les canaux de notification et leurs paramètres</string>
   <string name="app_settings_theme_title">Sélectionner un thème</string>
+  <string name="app_settings_language_system_default">Valeur du système</string>
   <string-array name="app_settings_theme_names">
     <item>Par défaut</item>
     <item>Clair</item>

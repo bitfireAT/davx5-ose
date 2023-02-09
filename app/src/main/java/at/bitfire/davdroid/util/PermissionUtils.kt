@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.util
 
 import android.Manifest
 import android.app.PendingIntent
@@ -16,19 +16,22 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
+import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.PermissionsActivity
 
 object PermissionUtils {
 
     val CONTACT_PERMISSIONS = arrayOf(
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.WRITE_CONTACTS
+        Manifest.permission.READ_CONTACTS,
+        Manifest.permission.WRITE_CONTACTS
     )
     val CALENDAR_PERMISSIONS = arrayOf(
-            Manifest.permission.READ_CALENDAR,
-            Manifest.permission.WRITE_CALENDAR
+        Manifest.permission.READ_CALENDAR,
+        Manifest.permission.WRITE_CALENDAR
     )
 
     val WIFI_SSID_PERMISSIONS =
@@ -117,7 +120,7 @@ object PermissionUtils {
                 .setAutoCancel(true)
                 .build()
         NotificationManagerCompat.from(context)
-                .notify(NotificationUtils.NOTIFY_PERMISSIONS, notify)
+                .notifyIfPossible(NotificationUtils.NOTIFY_PERMISSIONS, notify)
     }
 
     fun showAppSettings(context: Context) {

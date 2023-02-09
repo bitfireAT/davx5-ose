@@ -41,8 +41,8 @@
   <string name="intro_tasks_title">Podpora úkolů</string>
   <string name="intro_tasks_text1">Pokud jsou úkoly podporovány vámi využívaným serverem, je možné je synchronizovat pomocí podporované aplikace pro úkoly:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Pro některé funkce, jako jsou dílčí a opakující se úkoly nejspíš budete potřebovat <a href="https://www.davx5.com/faq/tasks/advanced-task-features">další aplikace</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Úkoly</string>
+  <string name="intro_tasks_opentasks_info">Nezdá se už být vyvíjeno – nedoporučeno.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Některé funkce (ještě) <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nejsou podporovány</a>.]]></string>
   <string name="intro_tasks_no_app_store">Není k dispozici žádný obchod s aplikacemi</string>
   <string name="intro_tasks_dont_show">Nepotřebuji podporu pro úkoly.*</string>
@@ -62,6 +62,8 @@
   <string name="permissions_calendar_title">Oprávnění pro přístup ke kalendáři</string>
   <string name="permissions_calendar_status_off">Bez synchronizace kalendáře (nedoporučeno)</string>
   <string name="permissions_calendar_status_on">Synchronizace kalendáře možná</string>
+  <string name="permissions_notification_status_off">Upozornění vypnuta (nedoporučeno)</string>
+  <string name="permissions_notification_status_on">Upozornění zapnuta</string>
   <string name="permissions_jtx_title">Oprávnění pro jtx Board</string>
   <string name="permissions_jtx_status_not_installed">Bez synchronizace úkolů, žurnálů a poznámek (není nainstalováno)</string>
   <string name="permissions_jtx_status_off">Bez synchronizace úkolů, žurnálů a poznámek</string>
@@ -123,15 +125,18 @@
   <string name="navigation_drawer_community">Komunita</string>
   <string name="navigation_drawer_donate">Obdarovat</string>
   <string name="navigation_drawer_privacy_policy">Ochrana soukromí</string>
+  <string name="account_list_no_notification_permission">Upozornění vypnuta. Nebudete upozorněni na chyby při synchronizaci.</string>
   <string name="account_list_no_internet">Bez připojení k Internetu. Systém Android synchronizaci nespustí.</string>
+  <string name="account_list_manage_connections">Spravovat spojení</string>
   <string name="account_list_low_storage">Zbývá málo místa na úložišti. Systém Android nespustí synchronizaci.</string>
+  <string name="account_list_manage_storage">Spravovat úložiště</string>
   <string name="account_list_empty">Vítejte v aplikaci kSync!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizace v rámci celého systému je vypnutá</string>
   <string name="accounts_global_sync_enable">Zapnout</string>
   <string name="accounts_sync_all">Synchronizovat všechny účty</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Vyhledání služby se nezdařilo</string>
-  <string name="dav_service_refresh_couldnt_refresh">Nedaří se znovu načíst seznam sady</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Vyhledání služby se nezdařilo</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Nedaří se znovu načíst seznam sady</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Běh na pozadí není zařízením umožňován</string>
   <string name="battery_optimization_notify_text">Je zapotřebí zařadit na seznam výjimek z optimalizace akumulátoru</string>
@@ -174,6 +179,7 @@
   <string name="app_settings_notification_settings">Nastavení oznamování</string>
   <string name="app_settings_notification_settings_summary">Spravovat kanály oznamování a jejich nastavení</string>
   <string name="app_settings_theme_title">Vybrat vzhled</string>
+  <string name="app_settings_language_system_default">Systémová výchozí</string>
   <string-array name="app_settings_theme_names">
     <item>Výchozí systémový</item>
     <item>Světlý</item>

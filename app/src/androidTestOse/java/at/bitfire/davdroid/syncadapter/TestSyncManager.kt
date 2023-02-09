@@ -9,10 +9,10 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4jvm.DavCollection
-import at.bitfire.dav4jvm.DavResponseCallback
+import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.property.GetCTag
-import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.resource.LocalResource
@@ -67,12 +67,12 @@ class TestSyncManager(
 
     var listAllRemoteResult = emptyList<Pair<Response, Response.HrefRelation>>()
     var didListAllRemote = false
-    override fun listAllRemote(callback: DavResponseCallback) {
+    override fun listAllRemote(callback: MultiResponseCallback) {
         if (didListAllRemote)
             throw IllegalStateException("listAllRemote() must not be called twice")
         didListAllRemote = true
         for (result in listAllRemoteResult)
-            callback(result.first, result.second)
+            callback.onResponse(result.first, result.second)
     }
 
     var assertDownloadRemote = emptyMap<HttpUrl, String>()

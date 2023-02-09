@@ -1,0 +1,3 @@
+* marked as compatible with Android 13 (handle notification permission)
+* better read-only address book support
+* minor improvements and bug fixes

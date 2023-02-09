@@ -41,8 +41,8 @@
   <string name="intro_tasks_title">Soporte para Tasks</string>
   <string name="intro_tasks_text1">Se as tarefas están soportadas polo teu servidor, poden ser sincronizadas cunha app que soporte tarefas:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
-  <string name="intro_tasks_opentasks_info"><![CDATA[Para funcións como subtarefas ou tarefas recurrentes, poderías precisar <a href="https://www.davx5.com/faq/tasks/advanced-task-features">apps adicionais</a>.]]></string>
-  <string name="intro_tasks_tasks_org">Tarefas</string>
+  <string name="intro_tasks_opentasks_info">Semella que xa non está en desenvolvemento – non recomendado.</string>
+  <string name="intro_tasks_tasks_org">Task.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Algunhas características <a href="https://www.davx5.com/faq/tasks/advanced-task-features">non están soportadas</a>  (aínda).]]></string>
   <string name="intro_tasks_no_app_store">Sen tenda de apps dispoñible</string>
   <string name="intro_tasks_dont_show">Non necesito soporte para tarefas.*</string>
@@ -62,6 +62,9 @@
   <string name="permissions_calendar_title">Permisos de calendario</string>
   <string name="permissions_calendar_status_off">Sen sincronización de calendario (non se recomenda)</string>
   <string name="permissions_calendar_status_on">É posible sincronizar o calendario</string>
+  <string name="permissions_notification_title">Permiso de notificacións</string>
+  <string name="permissions_notification_status_off">Notificacións desactivadas (non recomendado)</string>
+  <string name="permissions_notification_status_on">Notificacións activadas</string>
   <string name="permissions_jtx_title">permisos para jtx Board</string>
   <string name="permissions_jtx_status_not_installed">Sen sincr. de tarefas, diarios e notas (non instalado)</string>
   <string name="permissions_jtx_status_off">Sen sincr. de tarefas, diarios, notas</string>
@@ -123,15 +126,20 @@
   <string name="navigation_drawer_community">Comunidade</string>
   <string name="navigation_drawer_donate">Doar</string>
   <string name="navigation_drawer_privacy_policy">Política de Privacidade</string>
+  <string name="account_list_no_notification_permission">Notificacións desactivadas. Non verás os avisos de erro na sincr.</string>
   <string name="account_list_no_internet">Sen conexión a internet. Android non sincronizará.</string>
+  <string name="account_list_manage_connections">Xestionar conexións</string>
   <string name="account_list_low_storage">Queda pouco espazo, Android non executará a sincronización.</string>
+  <string name="account_list_manage_storage">Xestionar almacenaxe</string>
+  <string name="account_list_datasaver_enabled">O aforro de datos está activado. A sincronización en segundo plano está restrinxida.</string>
+  <string name="account_list_manage_datasaver">Xestionar aforro de datos</string>
   <string name="account_list_empty">Benvida a kSync!\n\nXa podes engadir unha conta CalDAV/CardDAV</string>
   <string name="accounts_global_sync_disabled">A sincronización global automática do sistema está desactivada</string>
   <string name="accounts_global_sync_enable">Activar</string>
   <string name="accounts_sync_all">Sincroniza todas as contas</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Fallou a detección do servizo</string>
-  <string name="dav_service_refresh_couldnt_refresh">Non se actualizou a lista da colección</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Fallou a detección do servizo</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Non se actualizou a lista da colección</string>
   <!--Battery Optimization-->
   <string name="battery_optimization_notify_title">Non pode executarse en segundo plano</string>
   <string name="battery_optimization_notify_text">Require ter permiso para optimizacións de batería</string>
@@ -174,6 +182,8 @@
   <string name="app_settings_notification_settings">Axustes das notificacións</string>
   <string name="app_settings_notification_settings_summary">Xestiona as canles de notificación e os seus axustes</string>
   <string name="app_settings_theme_title">Elixe decorado</string>
+  <string name="app_settings_language_title">Elixe o idioma</string>
+  <string name="app_settings_language_system_default">Por defecto no sistema</string>
   <string-array name="app_settings_theme_names">
     <item>Por defecto no sistema</item>
     <item>Claro</item>

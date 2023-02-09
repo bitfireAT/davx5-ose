@@ -11,7 +11,7 @@ import okhttp3.HttpUrl
 @Entity(tableName = "webdav_mount")
 data class WebDavMount(
     @PrimaryKey(autoGenerate = true)
-    override var id: Long = 0,
+    var id: Long = 0,
 
     /** display name of the WebDAV mount */
     var name: String,
@@ -21,4 +21,4 @@ data class WebDavMount(
 
     // credentials are stored using CredentialsStore
 
-): IdEntity
+)

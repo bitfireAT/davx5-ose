@@ -6,35 +6,25 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.AccountManager
 import android.app.Activity
-import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
-import android.content.SyncStatusObserver
 import android.content.pm.ShortcutManager
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.annotation.AnyThread
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountsBinding
+import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,9 +41,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     @Inject lateinit var accountsDrawerHandler: AccountsDrawerHandler
 
     private lateinit var binding: ActivityAccountsBinding
-    private val model by viewModels<Model>()
-
-    private var syncStatusSnackbar: Snackbar? = null
 
     private lateinit var infomaniakLogin: InfomaniakLogin
 
@@ -86,27 +73,10 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         }
         binding.content.fab.show()
 
-        model.showSyncDisabled.observe(this) { syncDisabled ->
-            if (syncDisabled) {
-                val snackbar = Snackbar
-                    .make(binding.content.coordinator, R.string.accounts_global_sync_disabled, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.accounts_global_sync_enable) {
-                        ContentResolver.setMasterSyncAutomatically(true)
-                    }
-                snackbar.show()
-                syncStatusSnackbar = snackbar
-            } else {
-                syncStatusSnackbar?.let { snackbar ->
-                    snackbar.dismiss()
-                    syncStatusSnackbar = null
-                }
-            }
-        }
-
         setSupportActionBar(binding.content.toolbar)
 
         val toggle = ActionBarDrawerToggle(
-            this, binding.drawerLayout, binding.content.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+                this, binding.drawerLayout, binding.content.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
@@ -158,7 +128,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
 
     private fun allAccounts() =
-        AccountManager.get(this).getAccountsByType(getString(R.string.account_type))
+            AccountManager.get(this).getAccountsByType(getString(R.string.account_type))
 
     fun syncAllAccounts(item: MenuItem? = null) {
         if (Build.VERSION.SDK_INT >= 25)
@@ -166,32 +136,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         val accounts = allAccounts()
         for (account in accounts)
-            DavUtils.requestSync(this, account)
-    }
-
-
-    @HiltViewModel
-    class Model @Inject constructor(
-        @ApplicationContext val context: Context
-    ): ViewModel(), SyncStatusObserver {
-
-        private var syncStatusObserver: Any? = null
-        val showSyncDisabled = MutableLiveData(false)
-
-        init {
-            syncStatusObserver = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
-            onStatusChanged(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS)
-        }
-
-        override fun onCleared() {
-            ContentResolver.removeStatusChangeListener(syncStatusObserver)
-        }
-
-        @AnyThread
-        override fun onStatusChanged(which: Int) {
-            showSyncDisabled.postValue(!ContentResolver.getMasterSyncAutomatically())
-        }
-
+            SyncWorker.requestSync(this, account)
     }
 
 }

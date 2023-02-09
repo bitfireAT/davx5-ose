@@ -10,15 +10,14 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.ical4android.AndroidTaskList
 import at.bitfire.ical4android.AndroidTaskListFactory
 import at.bitfire.ical4android.TaskProvider
-import org.dmfs.tasks.contract.TaskContract.TaskLists
-import org.dmfs.tasks.contract.TaskContract.Tasks
+import org.dmfs.tasks.contract.TaskContract.*
 import java.util.logging.Level
 
 class LocalTaskList private constructor(
@@ -58,6 +57,11 @@ class LocalTaskList private constructor(
 
             if (withColor)
                 values.put(TaskLists.LIST_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)
+
+            if (info.privWriteContent && !info.forceReadOnly)
+                values.put(TaskListColumns.ACCESS_LEVEL, TaskListColumns.ACCESS_LEVEL_OWNER)
+            else
+                values.put(TaskListColumns.ACCESS_LEVEL, TaskListColumns.ACCESS_LEVEL_READ)
 
             return values
         }

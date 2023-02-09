@@ -9,11 +9,11 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.Bundle
 import at.bitfire.dav4jvm.DavCalendar
-import at.bitfire.dav4jvm.DavResponseCallback
+import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.DavUtils
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.SyncState
@@ -83,7 +83,7 @@ class TasksSyncManager(
         os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
     }
 
-    override fun listAllRemote(callback: DavResponseCallback) {
+    override fun listAllRemote(callback: MultiResponseCallback) {
         remoteExceptionContext { remote ->
             Logger.log.info("Querying tasks")
             remote.calendarQuery("VTODO", null, null, callback)

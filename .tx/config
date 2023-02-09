@@ -2,25 +2,31 @@
 host = https://www.transifex.com
 
 [davx5.app]
+resource_name = App strings (all flavors)
 source_file = app/src/main/res/values/strings.xml
 source_lang = en
 minimum_perc = 20
 file_filter = app/src/main/res/values-<lang>/strings.xml
-lang_map = ar_SA: ar, fi_FI: fi, fr_FR: fr-rFR, nb_NO: nb, sk_SK: sk, sl_SI: sl, tr_TR: tr, zh_CN: zh, zh_TW: zh-rTW
+lang_map = ar_SA: ar, en_GB: en-rGB, fi_FI: fi, fr_FR: fr-rFR, nb_NO: nb, sk_SK: sk, sl_SI: sl, tr_TR: tr, zh_CN: zh, zh_TW: zh-rTW
 type = ANDROID
 
+
+# Attention: fastlane directories are like "en-us", not "en-rUS"!
+
 [davx5.metadata-short-description]
+resource_name = Metadata: short description
 source_file = fastlane/metadata/android/en-US/short_description.txt
 source_lang = en
 minimum_perc = 100
 file_filter = fastlane/metadata/android/<lang>/short_description.txt
-lang_map = ar_SA: ar, fi_FI: fi, fr_FR: fr-FR, nb_NO: nb, sk_SK: sk, sl_SI: sl, tr_TR: tr, zh_CN: zh, zh_TW: zh-TW
+lang_map = ar_SA: ar, en_GB: en-GB, fi_FI: fi, fr_FR: fr-FR, nb_NO: nb, sk_SK: sk, sl_SI: sl, tr_TR: tr, zh_CN: zh, zh_TW: zh-TW
 type = TXT
 
 [davx5.metadata-full-description]
+resource_name = Metadata: full description
 source_file = fastlane/metadata/android/en-US/full_description.txt
 source_lang = en
 minimum_perc = 100
 file_filter = fastlane/metadata/android/<lang>/full_description.txt
-lang_map = ar_SA: ar, fi_FI: fi, fr_FR: fr-FR, nb_NO: nb, sk_SK: sk, sl_SI: sl, tr_TR: tr, zh_CN: zh, zh_TW: zh-TW
+lang_map = ar_SA: ar, en_GB: en-GB, fi_FI: fi, fr_FR: fr-FR, nb_NO: nb, sk_SK: sk, sl_SI: sl, tr_TR: tr, zh_CN: zh, zh_TW: zh-TW
 type = TXT

@@ -24,13 +24,9 @@ class ContactsSyncAdapterService: SyncAdapterService() {
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"
     }
 
-    override fun syncAdapter() = ContactsSyncAdapter(this, appDatabase)
+    override fun syncAdapter() = ContactsSyncAdapter(this)
 
-
-	class ContactsSyncAdapter(
-        context: Context,
-        appDatabase: AppDatabase
-    ) : SyncAdapter(context, appDatabase) {
+    class ContactsSyncAdapter(context: Context) : SyncAdapter(context) {
 
         override fun sync(account: Account, extras: Bundle, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult) {
             try {

@@ -29,9 +29,9 @@
   <string name="navigation_drawer_faq">SSS</string>
   <string name="navigation_drawer_donate">Bağış yap</string>
   <string name="account_list_empty">kSync\'e hoşgeldin!\n\nŞimdi bir CalDAV/CardDAV hesabı ekleyebilirsin.</string>
-  <!--DavService-->
-  <string name="dav_service_refresh_failed">Servis keşfi başarısız</string>
-  <string name="dav_service_refresh_couldnt_refresh">Kolleksiyon listesi yenilenemedi</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Servis keşfi başarısız</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Kolleksiyon listesi yenilenemedi</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
   <!--AppSettingsActivity-->

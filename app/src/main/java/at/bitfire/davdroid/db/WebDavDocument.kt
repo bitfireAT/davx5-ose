@@ -12,7 +12,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.davdroid.DavUtils.MEDIA_TYPE_OCTET_STREAM
+import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -31,7 +31,7 @@ import java.io.FileNotFoundException
 data class WebDavDocument(
 
     @PrimaryKey(autoGenerate = true)
-    override var id: Long = 0,
+    var id: Long = 0,
 
     /** refers to the [WebDavMount] the document belongs to */
     val mountId: Long,
@@ -56,7 +56,7 @@ data class WebDavDocument(
     var quotaAvailable: Long? = null,
     var quotaUsed: Long? = null
 
-): IdEntity {
+) {
 
     @SuppressLint("InlinedApi")
     fun toBundle(parent: WebDavDocument?): Bundle {

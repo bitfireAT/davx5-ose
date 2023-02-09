@@ -1,0 +1,433 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">kSync</string>
+  <string name="account_invalid">Account does not exist (anymore)</string>
+  <string name="account_title_address_book">kSync Address book</string>
+  <string name="address_books_authority_title">Address books</string>
+  <string name="dialog_remove">Remove</string>
+  <string name="dialog_deny">Cancel</string>
+  <string name="field_required">This field is required</string>
+  <string name="help">Help</string>
+  <string name="manage_accounts">Manage accounts</string>
+  <string name="share">Share</string>
+  <string name="database_destructive_migration_title">Database corrupted</string>
+  <string name="database_destructive_migration_text">All accounts have been removed locally.</string>
+  <string name="notification_channel_debugging">Debugging</string>
+  <string name="notification_channel_general">Other important messages</string>
+  <string name="notification_channel_status">Low-priority status messages</string>
+  <string name="notification_channel_sync">Synchronisation</string>
+  <string name="notification_channel_sync_errors">Synchronisation errors</string>
+  <string name="notification_channel_sync_errors_desc">Important errors which stop synchronisation like unexpected server replies</string>
+  <string name="notification_channel_sync_warnings">Synchronisation warnings</string>
+  <string name="notification_channel_sync_warnings_desc">Non-fatal synchronisation problems like certain invalid files</string>
+  <string name="notification_channel_sync_io_errors">Network and I/O errors</string>
+  <string name="notification_channel_sync_io_errors_desc">Timeouts, connection problems, etc. (often temporary)</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">Your data. Your choice.</string>
+  <string name="intro_slogan2">Take control.</string>
+  <string name="intro_battery_title">Regular sync intervals</string>
+  <string name="intro_battery_not_whitelisted">Disabled (not recommended)</string>
+  <string name="intro_battery_whitelisted">Enabled (recommended)</string>
+  <string name="intro_battery_text">For synchronisation at regular intervals, %s must be allowed to run in the background. Otherwise, Android may pause synchronisation at any time.</string>
+  <string name="intro_battery_dont_show">I don\'t need regular sync intervals.*</string>
+  <string name="intro_autostart_title">%s compatibility</string>
+  <string name="intro_autostart_text">This device probably blocks synchronisation. If you\'re affected, you can only resolve this manually.</string>
+  <string name="intro_autostart_dont_show">I have done the required settings. Don\'t remind me anymore.*</string>
+  <string name="intro_leave_unchecked">* Leave unchecked to be reminded later. Can be reset in app settings / %s.</string>
+  <string name="intro_more_info">More information</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Supports sync of Tasks, Journals and Notes.]]></string>
+  <string name="intro_tasks_title">Tasks support</string>
+  <string name="intro_tasks_text1">If tasks are supported by your server, they can be synchronised with a supported tasks app:</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">Doesn\'t seem to be developed anymore – not recommended.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">are not supported</a> (yet).]]></string>
+  <string name="intro_tasks_no_app_store">No app store available</string>
+  <string name="intro_tasks_dont_show">I don\'t need tasks support.*</string>
+  <string name="intro_open_source_title">Open-source software</string>
+  <string name="intro_open_source_text">We\'re happy that you use %s, which is open-source software. Development, maintenance and support are hard work. Please consider contributing (there are many ways) or a donation. It would be highly appreciated!</string>
+  <string name="intro_open_source_details">How to contribute/donate</string>
+  <string name="intro_open_source_dont_show">Don\'t show in the near future</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">Permissions</string>
+  <string name="permissions_text">%s requires permissions to work properly.</string>
+  <string name="permissions_all_title">All of the below</string>
+  <string name="permissions_all_status_off">Use this to enable all features (recommended)</string>
+  <string name="permissions_all_status_on">All permissions granted</string>
+  <string name="permissions_contacts_title">Contacts permissions</string>
+  <string name="permissions_contacts_status_off">No contact sync (not recommended)</string>
+  <string name="permissions_contacts_status_on">Contact sync possible</string>
+  <string name="permissions_calendar_title">Calendar permissions</string>
+  <string name="permissions_calendar_status_off">No calendar sync (not recommended)</string>
+  <string name="permissions_calendar_status_on">Calendar sync possible</string>
+  <string name="permissions_notification_title">Notification permission</string>
+  <string name="permissions_notification_status_off">Notifications disabled (not recommended)</string>
+  <string name="permissions_notification_status_on">Notifications enabled</string>
+  <string name="permissions_jtx_title">jtx Board permissions</string>
+  <string name="permissions_jtx_status_not_installed">No task, journals &amp; notes sync (not installed)</string>
+  <string name="permissions_jtx_status_off">No tasks, journals, notes sync</string>
+  <string name="permissions_jtx_status_on">Tasks, journals, notes sync possible</string>
+  <string name="permissions_opentasks_title">OpenTasks permissions</string>
+  <string name="permissions_tasksorg_title">Tasks permissions</string>
+  <string name="permissions_tasks_status_not_installed">No task sync (not installed)</string>
+  <string name="permissions_tasks_status_off">No task sync</string>
+  <string name="permissions_tasks_status_on">Task sync possible</string>
+  <string name="permissions_autoreset_title">Keep permissions</string>
+  <string name="permissions_autoreset_status_off">Permissions may be reset automatically (not recommended)</string>
+  <string name="permissions_autoreset_status_on">Permissions won\'t be reset automatically</string>
+  <string name="permissions_autoreset_instruction">Click Permissions &gt; uncheck \"Remove permissions if app isn\'t used\"</string>
+  <string name="permissions_app_settings_hint">If a switch doesn\'t work, use app settings / Permissions.</string>
+  <string name="permissions_app_settings">App settings</string>
+  <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID permissions</string>
+  <string name="wifi_permissions_intro">To be able to access the current WiFi name (SSID), these conditions must be met:</string>
+  <string name="wifi_permissions_location_permission">Precise location permission</string>
+  <string name="wifi_permissions_location_permission_on">Location permission granted</string>
+  <string name="wifi_permissions_location_permission_off">Location permission denied</string>
+  <string name="wifi_permissions_background_location_permission">Background location permission</string>
+  <string name="wifi_permissions_background_location_permission_label">Allow all the time</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Location permission set to <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Location permission not set to <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s uses the Location permission only to determine the current WiFi\'s SSID for SSID-restricted accounts. This will happen even when the app is in background. No location data are collected, stored, processed or sent anywhere.</string>
+  <string name="wifi_permissions_location_enabled">Location always enabled</string>
+  <string name="wifi_permissions_location_enabled_on">Location service is enabled</string>
+  <string name="wifi_permissions_location_enabled_off">Location service is disabled</string>
+  <!--AboutActivity-->
+  <string name="about_translations">Translations</string>
+  <string name="about_libraries">Libraries</string>
+  <string name="about_version">Version %1$s (%2$d)</string>
+  <string name="about_build_date">Compiled on %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) and contributors</string>
+  <string name="about_flavor_info">This version is only eligible for distribution over Google Play.</string>
+  <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Thanks to: </i> %s]]></string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Couldn\'t create log file</string>
+  <string name="logging_notification_text">Now logging all %s activities</string>
+  <string name="logging_notification_view_share">View/share</string>
+  <string name="logging_notification_disable">Disable</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Open navigation drawer</string>
+  <string name="navigation_drawer_close">Close navigation drawer</string>
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
+  <string name="navigation_drawer_about">About / License</string>
+  <string name="navigation_drawer_beta_feedback">Beta feedback</string>
+  <string name="install_email_client">Please install an email client</string>
+  <string name="install_browser">Please install a Web browser</string>
+  <string name="navigation_drawer_settings">Settings</string>
+  <string name="navigation_drawer_news_updates">News &amp; updates</string>
+  <string name="navigation_drawer_tools">Tools</string>
+  <string name="navigation_drawer_external_links">External links</string>
+  <string name="navigation_drawer_website">Web site</string>
+  <string name="navigation_drawer_manual">Manual</string>
+  <string name="navigation_drawer_faq">FAQ</string>
+  <string name="navigation_drawer_community">Community</string>
+  <string name="navigation_drawer_donate">Donate</string>
+  <string name="navigation_drawer_privacy_policy">Privacy policy</string>
+  <string name="account_list_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
+  <string name="account_list_no_internet">No Internet connectivity. Android will not run synchronisation.</string>
+  <string name="account_list_manage_connections">Manage connections</string>
+  <string name="account_list_low_storage">Storage space low. Android will not run synchronisation.</string>
+  <string name="account_list_manage_storage">Manage storage</string>
+  <string name="account_list_datasaver_enabled">Data saver enabled. Background synchronisation is restricted.</string>
+  <string name="account_list_manage_datasaver">Manage data saver</string>
+  <string name="account_list_empty">Welcome to kSync!\n\nYou can add a CalDAV/CardDAV account now.</string>
+  <string name="accounts_global_sync_disabled">System-wide automatic synchronisation is disabled</string>
+  <string name="accounts_global_sync_enable">Enable</string>
+  <string name="accounts_sync_all">Sync all accounts</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Service detection failed</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Couldn\'t refresh collection list</string>
+  <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Can not run in foreground</string>
+  <string name="battery_optimization_notify_text">Battery optimisation whitelisting required</string>
+  <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Running in foreground</string>
+  <string name="foreground_service_notify_text">On some devices, this is necessary for automatic synchronisation.</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Settings</string>
+  <string name="app_settings_debug">Debugging</string>
+  <string name="app_settings_show_debug_info">Show debug info</string>
+  <string name="app_settings_show_debug_info_details">View/share software and configuration details</string>
+  <string name="app_settings_logging">Verbose logging</string>
+  <string name="app_settings_logging_on">Logging is active</string>
+  <string name="app_settings_logging_off">Logging is disabled</string>
+  <string name="app_settings_battery_optimization">Battery optimisation</string>
+  <string name="app_settings_battery_optimization_whitelisted">App is whitelisted (recommended)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">App is not whitelisted (not recommended)</string>
+  <string name="app_settings_foreground_service">Keep in foreground</string>
+  <string name="app_settings_foreground_service_details">May help if your device prevents automatic synchronisation</string>
+  <string name="app_settings_connection">Connection</string>
+  <string name="app_settings_proxy">Proxy type</string>
+  <string-array name="app_settings_proxy_types">
+    <item>System default</item>
+    <item>No proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (for Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Proxy host name</string>
+  <string name="app_settings_proxy_port">Proxy port</string>
+  <string name="app_settings_security">Security</string>
+  <string name="app_settings_security_app_permissions">App permissions</string>
+  <string name="app_settings_security_app_permissions_summary">Review permissions required for synchronisation</string>
+  <string name="app_settings_distrust_system_certs">Distrust system certificates</string>
+  <string name="app_settings_distrust_system_certs_on">System and user-added CAs won\'t be trusted</string>
+  <string name="app_settings_distrust_system_certs_off">System and user-added CAs will be trusted (recommended)</string>
+  <string name="app_settings_reset_certificates">Reset (un)trusted certificates</string>
+  <string name="app_settings_reset_certificates_summary">Resets trust of all custom certificates</string>
+  <string name="app_settings_reset_certificates_success">All custom certificates have been cleared</string>
+  <string name="app_settings_user_interface">User interface</string>
+  <string name="app_settings_notification_settings">Notification settings</string>
+  <string name="app_settings_notification_settings_summary">Manage notification channels and their settings</string>
+  <string name="app_settings_theme_title">Select theme</string>
+  <string name="app_settings_language_title">Select language</string>
+  <string name="app_settings_language_system_default">System default</string>
+  <string-array name="app_settings_theme_names">
+    <item>System default</item>
+    <item>Light</item>
+    <item>Dark</item>
+  </string-array>
+  <string name="app_settings_reset_hints">Reset hints</string>
+  <string name="app_settings_reset_hints_summary">Re-enables hints which have been dismissed previously</string>
+  <string name="app_settings_reset_hints_success">All hints will be shown again</string>
+  <string name="app_settings_integration">Integration</string>
+  <string name="app_settings_tasks_provider">Tasks app</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">Synchronising with %s</string>
+  <string name="app_settings_tasks_provider_none">No compatible tasks app found</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">No contacts sync (missing permissions)</string>
+  <string name="account_caldav_missing_calendar_permissions">No calendar sync (missing permissions)</string>
+  <string name="account_caldav_missing_tasks_permissions">No tasks sync (missing permissions)</string>
+  <string name="account_caldav_missing_permissions">No calendar and tasks sync (missing permissions)</string>
+  <string name="account_webcal_missing_calendar_permissions">Can\'t access calendars (missing permissions)</string>
+  <string name="account_permissions_action">Permissions</string>
+  <string name="account_no_address_books">There are no address books (yet).</string>
+  <string name="account_no_calendars">There are no calendars (yet).</string>
+  <string name="account_no_webcals">There are no calendar subscriptions (yet).</string>
+  <string name="account_swipe_down">Swipe down to refresh the list from the server.</string>
+  <string name="account_synchronize_now">Synchronise now</string>
+  <string name="account_synchronizing_now">Synchronising now</string>
+  <string name="account_settings">Account settings</string>
+  <string name="account_rename">Rename account</string>
+  <string name="account_rename_new_name">Unsaved local data may be dismissed. Re-synchronisation is required after renaming. New account name:</string>
+  <string name="account_rename_rename">Rename</string>
+  <string name="account_rename_couldnt_rename">Couldn\'t rename account</string>
+  <string name="account_delete">Delete account</string>
+  <string name="account_delete_confirmation_title">Really delete account?</string>
+  <string name="account_delete_confirmation_text">All local copies of address books, calendars and task lists will be deleted.</string>
+  <string name="account_synchronize_this_collection">synchronise this collection</string>
+  <string name="account_read_only">read-only</string>
+  <string name="account_calendar">calendar</string>
+  <string name="account_task_list">task list</string>
+  <string name="account_journal">journal</string>
+  <string name="account_only_personal">Show only personal</string>
+  <string name="account_refresh_address_book_list">Refresh address book list</string>
+  <string name="account_create_new_address_book">Create new address book</string>
+  <string name="account_refresh_calendar_list">Refresh calendar list</string>
+  <string name="account_create_new_calendar">Create new calendar</string>
+  <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
+  <string name="account_install_icsx5">Install ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Add account</string>
+  <string name="login_type_email">Login with email address</string>
+  <string name="login_email_address">Email address</string>
+  <string name="login_email_address_error">Valid email address required</string>
+  <string name="login_password">Password</string>
+  <string name="login_password_required">Password required</string>
+  <string name="login_type_url">Login with URL and user name</string>
+  <string name="login_url_must_be_http_or_https">URL must begin with http(s)://</string>
+  <string name="login_user_name">User name</string>
+  <string name="login_user_name_required">User name required</string>
+  <string name="login_base_url">Base URL</string>
+  <string name="login_type_url_certificate">Login with URL and client certificate</string>
+  <string name="login_select_certificate">Select certificate</string>
+  <string name="login_login">Login</string>
+  <string name="login_create_account">Create account</string>
+  <string name="login_account_name">Account name</string>
+  <string name="login_account_avoid_apostrophe">Use of apostrophes (\') have been reported to cause problems on some devices.</string>
+  <string name="login_account_name_info">Use your email address as account name because Android will use the account name as ORGANISER field for events you create. You can\'t have two accounts with the same name.</string>
+  <string name="login_account_contact_group_method">Contact group method:</string>
+  <string name="login_account_name_required">Account name required</string>
+  <string name="login_account_name_already_taken">Account name already taken</string>
+  <string name="login_account_not_created">Account could not be created</string>
+  <string name="login_type_advanced">Advanced login (special use cases)</string>
+  <string name="login_use_username_password">Use username/password</string>
+  <string name="login_use_client_certificate">Use client certificate</string>
+  <string name="login_no_certificate_found">No certificate found</string>
+  <string name="login_install_certificate">Install certificate</string>
+  <string name="login_configuration_detection">Configuration detection</string>
+  <string name="login_querying_server">Please wait, querying server…</string>
+  <string name="login_no_caldav_carddav">Couldn\'t find CalDAV or CardDAV service.</string>
+  <string name="login_username_password_wrong">Username (email address) / password wrong?</string>
+  <string name="login_view_logs">Show details</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Settings: %s</string>
+  <string name="settings_sync">Synchronisation</string>
+  <string name="settings_sync_interval_contacts">Contacts sync. interval</string>
+  <string name="settings_sync_summary_manually">Only manually</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Every %d minutes + immediately on local changes</string>
+  <string name="settings_sync_interval_calendars">Calendars sync. interval</string>
+  <string name="settings_sync_interval_tasks">Tasks sync. interval</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Only manually</item>
+    <item>Every 15 minutes</item>
+    <item>Every 30 minutes</item>
+    <item>Every hour</item>
+    <item>Every 2 hours</item>
+    <item>Every 4 hours</item>
+    <item>Once a day</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Sync over WiFi only</string>
+  <string name="settings_sync_wifi_only_on">Synchronisation is restricted to WiFi connections</string>
+  <string name="settings_sync_wifi_only_off">Connection type is not taken into consideration</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID restriction</string>
+  <string name="settings_sync_wifi_only_ssids_on">Will only sync over %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Will only sync over %s (requires active location services)</string>
+  <string name="settings_sync_wifi_only_ssids_off">All WiFi connections will be used</string>
+  <string name="settings_sync_wifi_only_ssids_message">Comma-separated names (SSIDs) of allowed WiFi networks (leave blank for all)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID restriction requires further settings</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Manage</string>
+  <string name="settings_more_info_faq">More information (FAQ)</string>
+  <string name="settings_authentication">Authentication</string>
+  <string name="settings_username">User name</string>
+  <string name="settings_enter_username">Enter user name:</string>
+  <string name="settings_password">Password</string>
+  <string name="settings_password_summary">Update the password according to your server.</string>
+  <string name="settings_enter_password">Enter your password:</string>
+  <string name="settings_certificate_alias">Client certificate alias</string>
+  <string name="settings_certificate_alias_empty">No certificate selected</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Past event time limit</string>
+  <string name="settings_sync_time_range_past_none">All events will be synchronised</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Events more than one day in the past will be ignored</item>
+    <item quantity="other">Events more than %d days in the past will be ignored</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past will be ignored (may be 0). Leave blank to synchronise all events.</string>
+  <string name="settings_default_alarm">Default reminder</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Default reminder one minute before event</item>
+    <item quantity="other">Default reminder %d minutes before event</item>
+  </plurals>
+  <string name="settings_default_alarm_off">No default reminders are created</string>
+  <string name="settings_default_alarm_message">If default reminders shall be created for events without reminder: the desired number of minutes before the event. Leave blank to disable default reminders.</string>
+  <string name="settings_manage_calendar_colors">Manage calendar colours</string>
+  <string name="settings_manage_calendar_colors_on">Calendar colours are reset at each sync</string>
+  <string name="settings_manage_calendar_colors_off">Calendar colours can be set by other apps</string>
+  <string name="settings_event_colors">Event colour support</string>
+  <string name="settings_event_colors_on">Event colours are synced</string>
+  <string name="settings_event_colors_off">Event colours are not synced</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Contact group method</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Groups are separate vCards</item>
+    <item>Groups are per-contact categories</item>
+  </string-array>
+  <string name="settings_contact_group_method_change">Change group method</string>
+  <!--collection management-->
+  <string name="create_addressbook">Create address book</string>
+  <string name="create_addressbook_display_name_hint">My Address Book</string>
+  <string name="create_calendar">Create calendar</string>
+  <string name="create_calendar_time_zone">Time zone</string>
+  <string name="create_calendar_type">Possible calendar entries</string>
+  <string name="create_calendar_type_vevent">Events</string>
+  <string name="create_calendar_type_vtodo">Tasks</string>
+  <string name="create_calendar_type_vjournal">Notes / journal</string>
+  <string name="create_calendar_type_events_and_tasks">Combined (events and tasks)</string>
+  <string name="create_collection_color">Colour</string>
+  <string name="create_collection_creating">Creating collection</string>
+  <string name="create_collection_display_name">Title</string>
+  <string name="create_collection_display_name_required">Title is required</string>
+  <string name="create_collection_description">Description</string>
+  <string name="create_collection_optional">optional</string>
+  <string name="create_collection_home_set">Storage location</string>
+  <string name="create_collection_home_set_required">Storage location is required</string>
+  <string name="create_collection_create">Create</string>
+  <string name="delete_collection">Delete collection</string>
+  <string name="delete_collection_confirm_title">Are you sure?</string>
+  <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed permanently.</string>
+  <string name="delete_collection_data_shall_be_deleted">These data shall be deleted from the server.</string>
+  <string name="delete_collection_deleting_collection">Deleting collection</string>
+  <string name="collection_force_read_only">Force read-only</string>
+  <string name="collection_properties">Properties</string>
+  <string name="collection_properties_url">Address (URL):</string>
+  <string name="collection_properties_copy_url">Copy URL</string>
+  <string name="collection_properties_owner">Owner:</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Debug info</string>
+  <string name="debug_info_archive_caption">ZIP archive</string>
+  <string name="debug_info_archive_subtitle">Contains debug info and logs</string>
+  <string name="debug_info_archive_text">Share the archive to transfer it to a computer, to send it by email or to attach it to a support ticket.</string>
+  <string name="debug_info_archive_share">Share archive</string>
+  <string name="debug_info_attached">Debug info attached to this message (requires attachment support of the receiving app).</string>
+  <string name="debug_info_http_error">HTTP Error</string>
+  <string name="debug_info_server_error">Server Error</string>
+  <string name="debug_info_webdav_error">WebDAV Error</string>
+  <string name="debug_info_io_error">I/O Error</string>
+  <string name="debug_info_http_403_description">The request has been denied. Check involved resources and debug info for details.</string>
+  <string name="debug_info_http_404_description">The requested resource doesn\'t exist (anymore). Check involved resources and debug info for details.</string>
+  <string name="debug_info_http_5xx_description">A server-side problem occured. Please contact your server support.</string>
+  <string name="debug_info_unexpected_error">An unexpected error has occured. View debug info for details.</string>
+  <string name="debug_info_view_details">View details</string>
+  <string name="debug_info_subtitle">Debug info have been collected</string>
+  <string name="debug_info_involved_caption">Involved resources</string>
+  <string name="debug_info_involved_subtitle">Related to the problem</string>
+  <string name="debug_info_involved_remote">Remote resource:</string>
+  <string name="debug_info_involved_local">Local resource:</string>
+  <string name="debug_info_involved_view">View with app</string>
+  <string name="debug_info_logs_caption">Logs</string>
+  <string name="debug_info_logs_subtitle">Verbose logs are available</string>
+  <string name="debug_info_logs_view">View logs</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">An error has occurred.</string>
+  <string name="exception_httpexception">An HTTP error has occurred.</string>
+  <string name="exception_ioexception">An I/O error has occurred.</string>
+  <string name="exception_show_details">Show details</string>
+  <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Synchronisation paused</string>
+  <string name="storage_low_notify_text">Almost no free space left</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">WebDAV mounts</string>
+  <string name="webdav_mounts_quota_used_available">Quota used: %1$s / available: %2$s</string>
+  <string name="webdav_mounts_share_content">Share content</string>
+  <string name="webdav_mounts_unmount">Unmount</string>
+  <string name="webdav_add_mount_title">Add WebDAV mount</string>
+  <string name="webdav_mounts_empty">Directly access your cloud files by adding a WebDAV mount!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[See the manual for <a href="%1$s">how WebDAV mounts work</a>.</string>]]></string>
+  <string name="webdav_add_mount_display_name">Display name</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">Invalid URL</string>
+  <string name="webdav_add_mount_username">User name</string>
+  <string name="webdav_add_mount_password">Password</string>
+  <string name="webdav_add_mount_add">Add mount</string>
+  <string name="webdav_add_mount_no_support">No WebDAV service at this URL</string>
+  <string name="webdav_remove_mount_title">Remove mount point</string>
+  <string name="webdav_remove_mount_text">Connection details will be lost, but no files will be deleted.</string>
+  <string name="webdav_notification_access">Accessing WebDAV file</string>
+  <string name="webdav_notification_download">Downloading WebDAV file</string>
+  <string name="webdav_notification_upload">Uploading WebDAV file</string>
+  <string name="webdav_provider_root_title">WebDAV mount</string>
+  <!--sync adapters-->
+  <string name="sync_error_permissions">kSync permissions</string>
+  <string name="sync_error_permissions_text">Additional permissions required</string>
+  <string name="sync_error_tasks_too_old">%s too old</string>
+  <string name="sync_error_tasks_required_version">Minimum required version: %1$s</string>
+  <string name="sync_error_authentication_failed">Authentication failed (check login credentials)</string>
+  <string name="sync_error_io">Network or I/O error – %s</string>
+  <string name="sync_error_http_dav">HTTP server error – %s</string>
+  <string name="sync_error_local_storage">Local storage error – %s</string>
+  <string name="sync_error_retry">Retry</string>
+  <string name="sync_error_view_item">View item</string>
+  <string name="sync_invalid_contact">Received invalid contact from server</string>
+  <string name="sync_invalid_event">Received invalid event from server</string>
+  <string name="sync_invalid_task">Received invalid task from server</string>
+  <string name="sync_invalid_resources_ignoring">Ignoring one or more invalid resources</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">kSync: Connection security</string>
+  <string name="trust_certificate_unknown_certificate_found">kSync has encountered an unknown certificate. Do you want to trust it?</string>
+</resources>
