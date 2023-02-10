@@ -74,11 +74,22 @@ class TasksFragment: Fragment() {
         model.showInstallTasks.value = model.dontShow.get() || model.currentProvider.value != null
 
         // kSync
-        binding.installOpenTasksButton.setOnClickListener {
-            installApp(ProviderName.OpenTasks.packageName)
+        binding.installJTXButton.setOnClickListener {
+            installApp(ProviderName.JtxBoard.packageName)
         }
         // kSync
-        model.selectPreferredProvider(ProviderName.OpenTasks)
+        model.selectPreferredProvider(ProviderName.JtxBoard)
+
+        model.jtxRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
+            if (shallBeInstalled && model.jtxInstalled.value == false) {
+                model.jtxRequested.value = false
+                installApp(ProviderName.JtxBoard.packageName)
+            }
+        }
+        model.jtxSelected.observe(viewLifecycleOwner) { selected ->
+            if (selected && model.currentProvider.value != ProviderName.JtxBoard)
+                model.selectPreferredProvider(ProviderName.JtxBoard)
+        }
 
 //        binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
 

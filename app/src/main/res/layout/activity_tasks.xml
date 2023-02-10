@@ -103,7 +103,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/openTasksLogo"
+                        android:id="@+id/jtxLogo"
                         android:layout_width="42dp"
                         android:layout_height="42dp"
                         android:layout_marginStart="@dimen/marginStandardInfomaniak"
@@ -116,7 +116,7 @@
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/ic_opentasks"
+                            android:src="@drawable/ic_jtxboard"
                             tools:ignore="ContentDescription" />
                     </com.google.android.material.card.MaterialCardView>
 
@@ -125,22 +125,22 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/marginStandardMediumInfomaniak"
-                        android:text="@string/intro_tasks_opentasks"
+                        android:text="@string/intro_tasks_jtx"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-                        app:layout_constraintBottom_toBottomOf="@id/openTasksLogo"
-                        app:layout_constraintEnd_toStartOf="@+id/installOpenTasksButton"
-                        app:layout_constraintStart_toEndOf="@id/openTasksLogo"
-                        app:layout_constraintTop_toTopOf="@id/openTasksLogo" />
+                        app:layout_constraintBottom_toBottomOf="@id/jtxLogo"
+                        app:layout_constraintEnd_toStartOf="@+id/installJTXButton"
+                        app:layout_constraintStart_toEndOf="@id/jtxLogo"
+                        app:layout_constraintTop_toTopOf="@id/jtxLogo" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/installOpenTasksButton"
+                        android:id="@+id/installJTXButton"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/marginStandardMediumInfomaniak"
-                        android:drawableEnd="@{!model.openTasksInstalled ? null : @drawable/ic_check_circle}"
-                        android:enabled="@{!model.openTasksInstalled}"
-                        android:text="@{!model.openTasksInstalled ? @string/infomaniak_install_button : @string/infomaniak_installed_button}"
+                        android:drawableEnd="@{!model.jtxInstalled ? null : @drawable/ic_check_circle}"
+                        android:enabled="@{!model.jtxInstalled}"
+                        android:text="@{!model.jtxInstalled ? @string/infomaniak_install_button : @string/infomaniak_installed_button}"
                         app:layout_constraintBottom_toBottomOf="@id/text2"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/text2" />
