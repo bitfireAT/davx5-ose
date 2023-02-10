@@ -78,6 +78,14 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
         return LocalJtxICalObject.Factory.fromProvider(this, values)
     }
 
+    /**
+     * Finds and returns a recurring instance of a [LocalJtxICalObject]
+     */
+    fun findRecurring(uid: String, recurid: String, dtstart: Long): LocalJtxICalObject? {
+        val values = queryRecur(uid, recurid, dtstart) ?: return null
+        return LocalJtxICalObject.Factory.fromProvider(this, values)
+    }
+
     override fun markNotDirty(flags: Int)= updateSetFlags(flags)
 
     override fun removeNotDirtyMarked(flags: Int) = deleteByFlags(flags)
