@@ -16,7 +16,8 @@ import org.apache.commons.lang3.StringUtils
 @Entity(tableName = "collection",
         foreignKeys = [
             ForeignKey(entity = Service::class, parentColumns = arrayOf("id"), childColumns = arrayOf("serviceId"), onDelete = ForeignKey.CASCADE),
-            ForeignKey(entity = HomeSet::class, parentColumns = arrayOf("id"), childColumns = arrayOf("homeSetId"), onDelete = ForeignKey.SET_NULL)
+            ForeignKey(entity = HomeSet::class, parentColumns = arrayOf("id"), childColumns = arrayOf("homeSetId"), onDelete = ForeignKey.SET_NULL),
+            ForeignKey(entity = Principal::class, parentColumns = arrayOf("id"), childColumns = arrayOf("ownerId"), onDelete = ForeignKey.SET_NULL)
         ],
         indices = [
             Index("serviceId","type"),
@@ -41,12 +42,17 @@ data class Collection(
     var homeSetId: Long? = null,
 
     /**
+     * Principal who is owner of this collection.
+     */
+    var ownerId: Long? = null,
+
+    /**
      * Type of service. CalDAV or CardDAV
      */
     var type: String,
 
     /**
-     * Address where this collection lives
+     * Address where this collection lives - with trailing slash
      */
     var url: HttpUrl,
 
@@ -56,7 +62,6 @@ data class Collection(
 
     var displayName: String? = null,
     var description: String? = null,
-    var owner: HttpUrl? = null,
 
     // CalDAV only
     var color: Int? = null,
@@ -111,9 +116,6 @@ data class Collection(
             }
 
             val displayName = StringUtils.trimToNull(dav[DisplayName::class.java]?.displayName)
-            val owner = dav[Owner::class.java]?.href?.let { ownerHref ->
-                dav.href.resolve(ownerHref)
-            }
 
             var description: String? = null
             var color: Int? = null
@@ -160,7 +162,6 @@ data class Collection(
                     privWriteContent = privWriteContent,
                     privUnbind = privUnbind,
                     displayName = displayName,
-                    owner = owner,
                     description = description,
                     color = color,
                     timezone = timezone,

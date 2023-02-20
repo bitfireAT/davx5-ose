@@ -53,19 +53,29 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="4dp"
-                android:visibility="@{model.collection.owner != null ? View.VISIBLE : View.GONE}"
+                android:visibility="@{model.owner.displayName != null || model.owner.url != null ? View.VISIBLE : View.GONE}"
                 android:text="@string/collection_properties_owner"
-                android:labelFor="@id/owner" />
+                android:labelFor="@id/ownerDisplayName" />
 
             <TextView
-                android:id="@+id/owner"
+                android:id="@+id/ownerDisplayName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="@{model.collection.owner != null ? View.VISIBLE : View.GONE}"
+                android:visibility="@{model.owner.displayName != null ? View.VISIBLE : View.GONE}"
+                android:textSize="16sp"
+                android:textIsSelectable="true"
+                android:text="@{model.owner.displayName}"
+                tools:text="Max Murmelmann"/>
+
+            <TextView
+                android:id="@+id/ownerUrl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{model.owner.displayName == null &amp;&amp; model.owner.url != null ? View.VISIBLE : View.GONE}"
                 android:fontFamily="monospace"
                 android:textSize="12sp"
                 android:textIsSelectable="true"
-                android:text="@{model.collection.owner.toString()}"
+                android:text="@{model.owner.url.toString()}"
                 tools:text="/remote.php/dav/principals/users/sample-owner/"/>
 
         </LinearLayout>

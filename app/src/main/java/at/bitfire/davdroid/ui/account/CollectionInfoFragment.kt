@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.databinding.CollectionPropertiesBinding
@@ -66,6 +67,11 @@ class CollectionInfoFragment: DialogFragment() {
         }
 
         var collection = db.collectionDao().getLive(collectionId)
+        var owner = Transformations.switchMap(collection) { collection ->
+            collection.ownerId?.let { ownerId ->
+                db.principalDao().getLive(ownerId)
+            }
+        }
 
     }
 

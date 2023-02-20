@@ -31,7 +31,7 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
                 put(JtxContract.JtxCollection.URL, info.url.toString())
                 put(JtxContract.JtxCollection.DISPLAYNAME, info.displayName ?: DavUtils.lastSegmentOfUrl(info.url))
                 put(JtxContract.JtxCollection.DESCRIPTION, info.description)
-                put(JtxContract.JtxCollection.OWNER, info.owner?.toString())
+                put(JtxContract.JtxCollection.OWNER, info.ownerId)
                 put(JtxContract.JtxCollection.COLOR, info.color)
                 put(JtxContract.JtxCollection.SUPPORTSVEVENT, info.supportsVEVENT)
                 put(JtxContract.JtxCollection.SUPPORTSVJOURNAL, info.supportsVJOURNAL)
