@@ -60,6 +60,11 @@ Set<String> getLocales(String flavor) {
     logger.trace("Getting main locales ($mainDir)...")
     def mainLocales = getLocalesForFlavor(mainDir)
 
+    // Get a list of locales for the davdroid directory
+    def davdroidDir = new File(dir, 'davdroid')
+    logger.trace("Getting davdroid locales ($davdroidDir)...")
+    def davdroidLocales = getLocalesForFlavor(davdroidDir)
+
     // Get the current flavor
     def flavorDir = new File(dir, flavor)
     logger.trace("Getting locales for flavor $flavor ($flavorDir)...")
@@ -69,6 +74,7 @@ Set<String> getLocales(String flavor) {
     // We use Set for avoiding duplicates
     Set<String> locales = new LinkedHashSet()
     locales.addAll(mainLocales)
+    locales.addAll(davdroidLocales)
     locales.addAll(flavorLocales)
 
     // Log the available locales
