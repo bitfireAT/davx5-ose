@@ -11,11 +11,14 @@ import okhttp3.HttpUrl
 @Dao
 interface PrincipalDao {
 
-    @Query("SELECT * FROM principal WHERE serviceId=:serviceId")
-    fun get(serviceId: Long): List<Principal>
+    @Query("SELECT * FROM principal WHERE id=:id")
+    fun get(id: Long): Principal
 
     @Query("SELECT * FROM principal WHERE id=:id")
     fun getLive(id: Long): LiveData<Principal>
+
+    @Query("SELECT * FROM principal WHERE serviceId=:serviceId")
+    fun getByService(serviceId: Long): List<Principal>
 
     @Query("SELECT * FROM principal WHERE serviceId=:serviceId AND url=:url")
     fun getByUrl(serviceId: Long, url: HttpUrl): Principal?

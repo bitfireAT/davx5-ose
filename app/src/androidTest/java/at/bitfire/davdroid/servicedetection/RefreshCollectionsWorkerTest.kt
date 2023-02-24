@@ -306,12 +306,12 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh - homesets and their collections
-        assertEquals(0, db.principalDao().get(service.id).size)
+        assertEquals(0, db.principalDao().getByService(service.id).size)
         RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
             .refreshHomesetsAndTheirCollections()
 
         // Check principal saved and the collection was updated with its reference
-        val principals = db.principalDao().get(service.id)
+        val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
         assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL"), principals[0].url)
         assertEquals(null, principals[0].displayName)
@@ -401,12 +401,12 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh homeless collections
-        assertEquals(0, db.principalDao().get(service.id).size)
+        assertEquals(0, db.principalDao().getByService(service.id).size)
         RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
             .refreshHomelessCollections()
 
         // Check principal saved and the collection was updated with its reference
-        val principals = db.principalDao().get(service.id)
+        val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
         assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL"), principals[0].url)
         assertEquals(null, principals[0].displayName)
@@ -449,7 +449,7 @@ class RefreshCollectionsWorkerTest {
             .refreshPrincipals()
 
         // Check principal now got a display name
-        val principals = db.principalDao().get(service.id)
+        val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
         assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL"), principals[0].url)
         assertEquals("Mr. Wobbles", principals[0].displayName)
@@ -473,7 +473,7 @@ class RefreshCollectionsWorkerTest {
             .refreshPrincipals()
 
         // Check principal was deleted
-        val principals = db.principalDao().get(service.id)
+        val principals = db.principalDao().getByService(service.id)
         assertEquals(0, principals.size)
     }
 

@@ -427,7 +427,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          */
         internal fun refreshPrincipals() {
             // Refresh principals (collection owner urls)
-            val principals = db.principalDao().get(service.id)
+            val principals = db.principalDao().getByService(service.id)
             for (oldPrincipal in principals) {
                 val principalUrl = oldPrincipal.url
                 Logger.log.fine("Querying principal $principalUrl")

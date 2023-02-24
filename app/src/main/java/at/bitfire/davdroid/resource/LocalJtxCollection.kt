@@ -7,13 +7,15 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
-import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.db.*
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxCollectionFactory
 import at.bitfire.ical4android.JtxICalObject
 import at.techbee.jtx.JtxContract
+import java.util.logging.Level
 
 class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Long):
     JtxCollection<JtxICalObject>(account, client, LocalJtxICalObject.Factory, id),
@@ -21,17 +23,20 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
 
     companion object {
 
-        fun create(account: Account, client: ContentProviderClient, info: Collection) {
-            val values = valuesFromCollection(info, account)
+        fun create(account: Account, client: ContentProviderClient, info: Collection, owner: Principal?) {
+            val values = valuesFromCollection(info, account, owner)
             create(account, client, values)
         }
 
-        fun valuesFromCollection(info: Collection, account: Account) =
+        fun valuesFromCollection(info: Collection, account: Account, owner: Principal?) =
             ContentValues().apply {
                 put(JtxContract.JtxCollection.URL, info.url.toString())
                 put(JtxContract.JtxCollection.DISPLAYNAME, info.displayName ?: DavUtils.lastSegmentOfUrl(info.url))
                 put(JtxContract.JtxCollection.DESCRIPTION, info.description)
-                put(JtxContract.JtxCollection.OWNER, info.ownerId)
+                if (owner != null)
+                    put(JtxContract.JtxCollection.OWNER, owner.url.toString())
+                else Logger.log.log(Level.SEVERE, "No collection owner given. Will create jtx collection without owner")
+                put(JtxContract.JtxCollection.OWNER_DISPLAYNAME, owner?.displayName)
                 put(JtxContract.JtxCollection.COLOR, info.color)
                 put(JtxContract.JtxCollection.SUPPORTSVEVENT, info.supportsVEVENT)
                 put(JtxContract.JtxCollection.SUPPORTSVJOURNAL, info.supportsVJOURNAL)
@@ -50,8 +55,8 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
         get() = SyncState.fromString(syncstate)
         set(value) { syncstate = value.toString() }
 
-    fun updateCollection(info: Collection) {
-        val values = valuesFromCollection(info, account)
+    fun updateCollection(info: Collection, owner: Principal?) {
+        val values = valuesFromCollection(info, account, owner)
         update(values)
     }
 

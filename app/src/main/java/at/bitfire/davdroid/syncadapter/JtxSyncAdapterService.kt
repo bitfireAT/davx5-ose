@@ -95,7 +95,8 @@ class JtxSyncAdapterService: SyncAdapterService() {
                     } else {
                         // remote CollectionInfo found for this local collection, update data
                         Logger.log.log(Level.FINE, "Updating local collection $url", info)
-                        jtxCollection.updateCollection(info)
+                        val owner = info.ownerId?.let { db.principalDao().get(it) }
+                        jtxCollection.updateCollection(info, owner)
                         // we already have a local task list for this remote collection, don't take into consideration anymore
                         remoteCollections -= url
                     }
@@ -104,7 +105,8 @@ class JtxSyncAdapterService: SyncAdapterService() {
             // create new local collections
             for ((_,info) in remoteCollections) {
                 Logger.log.log(Level.INFO, "Adding local collections", info)
-                LocalJtxCollection.create(account, client, info)
+                val owner = info.ownerId?.let { db.principalDao().get(it) }
+                LocalJtxCollection.create(account, client, info, owner)
             }
         }
     }
