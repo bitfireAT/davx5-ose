@@ -14,11 +14,11 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
+import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import at.bitfire.davdroid.InvalidAccountException
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
@@ -29,12 +29,16 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 
+/**
+ * Utility methods related to synchronization management (authorities, workers etc.)
+ */
 object SyncUtils {
 
     @EntryPoint
@@ -87,6 +91,29 @@ object SyncUtils {
     fun removePeriodicSyncs(account: Account, authority: String) {
         for (sync in ContentResolver.getPeriodicSyncs(account, authority))
             ContentResolver.removePeriodicSync(sync.account, sync.authority, sync.extras)
+    }
+
+    /**
+     * Returns a list of all available sync authorities for main accounts (!= address book accounts):
+     *
+     *   1. address books authority (not [ContactsContract.AUTHORITY], but the one which manages address book accounts)
+     *   1. calendar authority
+     *   1. tasks authority (if available)
+     *
+     * Checking the availability of authorities may be relatively expensive, so the
+     * result should be cached for the current operation.
+     *
+     * @return list of available sync authorities for main accounts
+     */
+    fun syncAuthorities(context: Context): List<String> {
+        val result = mutableListOf(
+            context.getString(R.string.address_books_authority),
+            CalendarContract.AUTHORITY
+        )
+        TaskUtils.currentProvider(context)?.let { taskProvider ->
+            result += taskProvider.authority
+        }
+        return result
     }
 
 

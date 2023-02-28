@@ -12,7 +12,6 @@ import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
 import at.bitfire.davdroid.HttpClient
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger

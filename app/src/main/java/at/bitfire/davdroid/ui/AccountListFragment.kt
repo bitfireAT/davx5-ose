@@ -10,27 +10,33 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.app.Activity
 import android.app.Application
-import android.content.*
+import android.content.ContentResolver
+import android.content.Intent
+import android.content.SyncStatusObserver
 import android.content.pm.PackageManager
-import android.net.*
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.*
+import androidx.annotation.AnyThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.davdroid.util.DavUtils.SyncStatus
+import androidx.work.WorkInfo
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountListBinding
 import at.bitfire.davdroid.databinding.AccountListItemBinding
+import at.bitfire.davdroid.syncadapter.SyncStatus
+import at.bitfire.davdroid.syncadapter.SyncUtils
+import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.account.AccountActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -108,6 +114,7 @@ class AccountListFragment: Fragment() {
             }
         }
 
+        // Accounts adapter
         val accountAdapter = AccountAdapter(requireActivity())
         binding.list.apply {
             layoutManager = LinearLayoutManager(requireActivity())
@@ -222,9 +229,39 @@ class AccountListFragment: Fragment() {
         val storageLow = warnings.storageLow
 
         // Accounts
-        val accounts = MutableLiveData<List<AccountInfo>>()
+        private val accountsUpdated = MutableLiveData<Boolean>()
+        private val syncFrameworkStatusChanged = MutableLiveData<Boolean>()
+        private val syncWorkersActive = SyncWorker.existsWithStatuses(
+            application.applicationContext, listOf(WorkInfo.State.RUNNING))
+
+        val accounts = object : MediatorLiveData<List<AccountInfo>>() {
+            init {
+                addSource(accountsUpdated) { recalculate() }
+                addSource(syncFrameworkStatusChanged) { recalculate() }
+                addSource(syncWorkersActive) { recalculate() }
+            }
+
+            fun recalculate() {
+                val context = getApplication<Application>()
+                val collator = Collator.getInstance()
+
+                val sortedAccounts = accountManager
+                    .getAccountsByType(context.getString(R.string.account_type))
+                    .sortedArrayWith { a, b ->
+                        collator.compare(a.name, b.name)
+                    }
+                val accountsWithInfo = sortedAccounts.map { account ->
+                    AccountInfo(
+                        account,
+                        SyncStatus.fromAccount(context, syncAuthorities, account)
+                    )
+                }
+                value = accountsWithInfo
+            }
+        }
+
         private val accountManager = AccountManager.get(application)!!
-        private val syncAuthorities by lazy { DavUtils.syncAuthorities(application) }
+        private val syncAuthorities by lazy { SyncUtils.syncAuthorities(application) }
 
         init {
             // watch accounts
@@ -237,30 +274,14 @@ class AccountListFragment: Fragment() {
             )
         }
 
+        @AnyThread
         override fun onAccountsUpdated(newAccounts: Array<out Account>) {
-            reloadAccounts()
+            accountsUpdated.postValue(true)
         }
 
+        @AnyThread
         override fun onStatusChanged(which: Int) {
-            reloadAccounts()
-        }
-
-        private fun reloadAccounts() {
-            val context = getApplication<Application>()
-            val collator = Collator.getInstance()
-
-            val sortedAccounts = accountManager
-                .getAccountsByType(context.getString(R.string.account_type))
-                .sortedArrayWith { a, b ->
-                    collator.compare(a.name, b.name)
-                }
-            val accountsWithInfo = sortedAccounts.map { account ->
-                AccountInfo(
-                    account,
-                    DavUtils.accountSyncStatus(context, syncAuthorities, account)
-                )
-            }
-            accounts.postValue(accountsWithInfo)
+            syncFrameworkStatusChanged.postValue(true)
         }
 
         override fun onCleared() {

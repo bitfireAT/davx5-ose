@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials
@@ -33,6 +32,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.syncadapter.SyncUtils
+import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.TaskProvider

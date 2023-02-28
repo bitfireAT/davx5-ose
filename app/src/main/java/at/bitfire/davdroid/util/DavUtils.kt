@@ -4,21 +4,12 @@
 
 package at.bitfire.davdroid.util
 
-import android.accounts.Account
-import android.content.ContentResolver
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
-import android.provider.CalendarContract
-import android.provider.ContactsContract
 import androidx.core.content.getSystemService
-import androidx.work.WorkInfo
 import at.bitfire.davdroid.Android10Resolver
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.TaskUtils
-import at.bitfire.davdroid.syncadapter.SyncWorker
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -27,13 +18,9 @@ import java.net.InetAddress
 import java.util.*
 
 /**
- * Some WebDAV and related network utility methods
- */
+ * Some WebDAV and HTTP network utility methods.
+  */
 object DavUtils {
-
-    enum class SyncStatus {
-        ACTIVE, PENDING, IDLE
-    }
 
     val DNS_QUAD9 = InetAddress.getByAddress(byteArrayOf(9,9,9,9))
 
@@ -51,7 +38,6 @@ object DavUtils {
         return String.format(Locale.ROOT, "#%06X%02X", color, alpha)
     }
 
-
     fun lastSegmentOfUrl(url: HttpUrl): String {
         // the list returned by HttpUrl.pathSegments() is unmodifiable, so we have to create a copy
         val segments = LinkedList(url.pathSegments)
@@ -59,7 +45,6 @@ object DavUtils {
 
         return segments.firstOrNull { it.isNotEmpty() } ?: "/"
     }
-
 
     fun prepareLookup(context: Context, lookup: Lookup) {
         if (Build.VERSION.SDK_INT >= 29) {
@@ -161,66 +146,6 @@ object DavUtils {
                 }
         }
         return paths
-    }
-
-
-    /**
-     * Returns the sync status of a given account. Checks the account itself and possible
-     * sub-accounts (address book accounts).
-     *
-     * @param authorities sync authorities to check (usually taken from [syncAuthorities])
-     *
-     * @return sync status of the given account
-     */
-    fun accountSyncStatus(context: Context, authorities: Iterable<String>, account: Account): SyncStatus {
-        // check active syncs
-        if (authorities.any { ContentResolver.isSyncActive(account, it) })
-            return SyncStatus.ACTIVE
-
-        val addrBookAccounts = LocalAddressBook.findAll(context, null, account).map { it.account }
-        if (addrBookAccounts.any { ContentResolver.isSyncActive(it, ContactsContract.AUTHORITY) })
-            return SyncStatus.ACTIVE
-
-        // check pending syncs
-        if (authorities.any { ContentResolver.isSyncPending(account, it) } ||
-            addrBookAccounts.any { ContentResolver.isSyncPending(it, ContactsContract.AUTHORITY) })
-            return SyncStatus.PENDING
-
-        // Also check SyncWorkers
-        val pending = SyncWorker.isSomeWorkerInState(context, WorkInfo.State.ENQUEUED, account, authorities.toList()).value
-        if (pending != null && pending == true)
-            return SyncStatus.PENDING
-        val running = SyncWorker.isSomeWorkerInState(context, WorkInfo.State.RUNNING, account, authorities.toList()).value
-        if (running != null && running == true)
-            return SyncStatus.ACTIVE
-
-        return SyncStatus.IDLE
-    }
-
-
-    /**
-     * Returns a list of all available sync authorities for main accounts (!= address book accounts):
-     *
-     *   1. address books authority (not [ContactsContract.AUTHORITY], but the one which manages address book accounts)
-     *   1. calendar authority
-     *   1. tasks authority (if available)
-     *
-     * Checking the availability of authorities may be relatively expensive, so the
-     * result should be cached for the current operation.
-     *
-     * @return list of available sync authorities for main accounts
-     */
-    fun syncAuthorities(context: Context): List<String> {
-        val result = mutableListOf(
-                context.getString(R.string.address_books_authority),
-                CalendarContract.AUTHORITY
-        )
-
-        TaskUtils.currentProvider(context)?.let { taskProvider ->
-            result += taskProvider.authority
-        }
-
-        return result
     }
 
 
