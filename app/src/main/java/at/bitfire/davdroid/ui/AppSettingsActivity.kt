@@ -20,6 +20,7 @@ import androidx.preference.*
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.ForegroundService
+import at.bitfire.davdroid.Locator
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.Settings
@@ -255,14 +256,9 @@ class AppSettingsActivity: AppCompatActivity() {
                     // Start with the "System default" option on top
                     Settings.LANGUAGE_SYSTEM to context.getString(R.string.app_settings_language_system_default)
                 )
-                // Create another map with the languages available from TRANSLATION_ARRAY
-                val availableLanguages = BuildConfig.TRANSLATION_ARRAY
-                    .map { lang ->
-                        // Fix the language code in case there are 3-character languages
-                        val fixedLang = resourceQualifierToLanguageTag(lang)
-                        val locale = Locale.forLanguageTag(fixedLang)
-                        locale.language to locale.displayName
-                    }
+                // Create another map with the languages available from Locales
+                val availableLanguages = Locator.Locales
+                    .map { locale -> locale.language to locale.displayName }
                     // Sort alphabetically by the name displayed
                     .sortedBy { it.second }
                 // Add all the available languages to the original list

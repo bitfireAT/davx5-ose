@@ -7,8 +7,7 @@ apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-
-apply from: 'locales.gradle'
+apply plugin: 'com.arnyminerz.locator'
 
 android {
     compileSdkVersion 33
@@ -35,16 +34,6 @@ android {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas")
             }
-        }
-
-        applicationVariants.all { variant ->
-            def locales = getLocales(variant.flavorName)
-
-            variant.buildConfigField "String[]", "TRANSLATION_ARRAY", "new String[]{\"" + locales.join("\",\"") + "\"}"
-            variant.mergedFlavor.resourceConfigurations.clear()
-            variant.mergedFlavor.resourceConfigurations.addAll(locales)
-
-            generateLocalesConfig(variant.flavorName, locales)
         }
     }
 
@@ -75,8 +64,6 @@ android {
     }
 
     sourceSets {
-        ose.res.srcDirs += "build/generated/res/locale-ose"
-
         androidTest.java.srcDirs = [ "src/androidTest/java" ]
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
