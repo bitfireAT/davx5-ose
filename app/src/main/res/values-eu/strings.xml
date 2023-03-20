@@ -41,6 +41,8 @@
   <string name="intro_tasks_title">Tasks bateragarritasuna</string>
   <string name="intro_tasks_text1">Zereginak zure zerbitzarian onartuta badaude, onartutako zeregin aplikazio batekin sinkronizatu daitezke:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">Badirudi ez dela garatzen – ez da gomendatzen.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Ezaugarri batzuk <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ez dira onartzen</a> (oraindik).]]></string>
   <string name="intro_tasks_no_app_store">Ez dago denda aplikaziorik eskuragarri </string>
   <string name="intro_tasks_dont_show">Ez dut zereginen funtzionalitatea behar.*</string>
@@ -60,6 +62,9 @@
   <string name="permissions_calendar_title">Egutegiaren baimenak</string>
   <string name="permissions_calendar_status_off">Egutegi sinkronizaziorik ez (ez gomendatuta)</string>
   <string name="permissions_calendar_status_on">Egutegiaren sinkronizazioa posible</string>
+  <string name="permissions_notification_title">Jakinarazpen baimena</string>
+  <string name="permissions_notification_status_off">Jakinarazpenak desgaituta (ez gomendatuta)</string>
+  <string name="permissions_notification_status_on">Jakinarazpenak gaituta</string>
   <string name="permissions_jtx_title">jtx taularen baimenak</string>
   <string name="permissions_jtx_status_not_installed">Zereginen, egunkarien eta noten sinkronizaziorik ez (instalatu gabe)</string>
   <string name="permissions_jtx_status_off">Zeregin, egunkari, noten sinkronizaziorik ez</string>
@@ -121,8 +126,13 @@
   <string name="navigation_drawer_community">Komunitatea</string>
   <string name="navigation_drawer_donate">Dohaintza egin</string>
   <string name="navigation_drawer_privacy_policy">Pribatutasun gidalerroak</string>
+  <string name="account_list_no_notification_permission">Jakinarazpenak desgaituta. Ez zaitugu sinkronizazio-erroreei buruz jakinaraziko.</string>
   <string name="account_list_no_internet">Ez dago internetik. Androidek ez du sinkronizaziorik egingo.</string>
+  <string name="account_list_manage_connections">Kudeatu konexioak</string>
   <string name="account_list_low_storage">Biltegiratze-lekua baxua da. Androidek ez du sinkronizatuko.</string>
+  <string name="account_list_manage_storage">Kudeatu biltegia</string>
+  <string name="account_list_datasaver_enabled">Datu-aurrezpena gaituta. Atzeko planoko sinkronizazioa murriztuko da.</string>
+  <string name="account_list_manage_datasaver">Kudeatu datu-aurrezpena</string>
   <string name="account_list_empty">Ongi etorri DAVx⁵ aplikaziora!\n\nCalDAV/CardDAV kontu bat gehitu dezakezu orain.</string>
   <string name="accounts_global_sync_disabled">Sistema osoko sinkronizazio automatikoa desgaituta dago</string>
   <string name="accounts_global_sync_enable">Gaitu</string>
@@ -172,6 +182,7 @@
   <string name="app_settings_notification_settings">Jakinarazpen-ezarpenak</string>
   <string name="app_settings_notification_settings_summary">Kudeatu jakinarazpen kanalak eta haien ezarpenak</string>
   <string name="app_settings_theme_title">Hautatu gaia</string>
+  <string name="app_settings_language_title">Hautatu hizkuntza</string>
   <string name="app_settings_language_system_default">Sistemaren lehenetsia</string>
   <string-array name="app_settings_theme_names">
     <item>Sistemaren lehenetsia</item>

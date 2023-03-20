@@ -37,7 +37,7 @@
   <string name="intro_leave_unchecked">* 未チェックのままにすると後でリマインドします。アプリの設定 / %s でリセットできます</string>
   <string name="intro_more_info">追加情報</string>
   <string name="intro_tasks_jtx">jtx Board</string>
-  <string name="intro_tasks_jtx_info"><![CDATA[日誌、メモ、タスクの同期に対応]]></string>
+  <string name="intro_tasks_jtx_info"><![CDATA[ジャーナル、メモ、タスクの同期に対応]]></string>
   <string name="intro_tasks_title">タスクの同期に対応</string>
   <string name="intro_tasks_text1">お使いのサーバーがタスクに対応している場合、対応するアプリで同期できます:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -66,9 +66,9 @@
   <string name="permissions_notification_status_off">通知が無効です (非推奨)</string>
   <string name="permissions_notification_status_on">通知が有効です</string>
   <string name="permissions_jtx_title">jtx Board へのアクセス</string>
-  <string name="permissions_jtx_status_not_installed">日誌、メモ、タスクを同期しない (未インストール)</string>
-  <string name="permissions_jtx_status_off">日誌、メモ、タスクを同期しない</string>
-  <string name="permissions_jtx_status_on">日誌、メモ、タスクを同期できます</string>
+  <string name="permissions_jtx_status_not_installed">ジャーナル、メモ、タスクを同期しない (未インストール)</string>
+  <string name="permissions_jtx_status_off">ジャーナル、メモ、タスクを同期しない</string>
+  <string name="permissions_jtx_status_on">ジャーナル、メモ、タスクを同期できます</string>
   <string name="permissions_opentasks_title">OpenTasks へのアクセス</string>
   <string name="permissions_tasksorg_title">Tasks へのアクセス</string>
   <string name="permissions_tasks_status_not_installed">タスクを同期しない (未インストール)</string>
@@ -224,7 +224,7 @@
   <string name="account_read_only">読み取り専用</string>
   <string name="account_calendar">カレンダー</string>
   <string name="account_task_list">タスクリスト</string>
-  <string name="account_journal">日誌</string>
+  <string name="account_journal">ジャーナル</string>
   <string name="account_only_personal">プライベートのみ表示</string>
   <string name="account_refresh_address_book_list">アドレス帳リストを更新</string>
   <string name="account_create_new_address_book">新しいアドレス帳を作成</string>
@@ -335,7 +335,7 @@
   <string name="create_calendar_type">可能なカレンダーエントリー</string>
   <string name="create_calendar_type_vevent">イベント</string>
   <string name="create_calendar_type_vtodo">タスク</string>
-  <string name="create_calendar_type_vjournal">メモ / 日誌</string>
+  <string name="create_calendar_type_vjournal">メモ / ジャーナル</string>
   <string name="create_calendar_type_events_and_tasks">組み合わせ (イベントとタスク)</string>
   <string name="create_collection_color">色</string>
   <string name="create_collection_creating">コレクションの作成中</string>

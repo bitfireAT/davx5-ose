@@ -68,7 +68,7 @@
   <string name="permissions_jtx_title">jtx Board-Berechtigungen</string>
   <string name="permissions_jtx_status_not_installed">Keine Synchronisierung von Aufgaben, Journalen &amp; Notizen (nicht installiert)</string>
   <string name="permissions_jtx_status_off">Keine Synchronisierung von Aufgaben, Journalen und Notizen</string>
-  <string name="permissions_jtx_status_on">Synchronisierung von Aufgaben, Journalen, Notizen möglich </string>
+  <string name="permissions_jtx_status_on">Synchronisierung von Aufgaben, Journaleinträgen, Notizen möglich </string>
   <string name="permissions_opentasks_title">OpenTasks-Berechtigungen</string>
   <string name="permissions_tasksorg_title">Tasks-Berechtigungen</string>
   <string name="permissions_tasks_status_not_installed">Keine Aufgabensynchronisierung (nicht installiert)</string>
