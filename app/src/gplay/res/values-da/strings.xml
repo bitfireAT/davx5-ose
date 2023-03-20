@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_rate_us">Bedøm i Google Play</string>
+    <string name="button_buy_badge_free">GRATIS</string>
+    <string name="button_buy_badge_bought">Tak!</string>
+    <string name="network_problems">Der opstod et netværksproblem, prøv igen senere.</string>
+</resources>

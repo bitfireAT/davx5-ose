@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_support_project">Lagundu proiektua</string>
+    <string name="nav_earn_badges">Lagundu bereizgarriekin</string>
+    <string name="nav_rate_us">Eman iritzia Google Play-en</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one"> Bereizgarri bat irabazi dituzu, eskerrik asko!</item>
+        <item quantity="other">%d bereizgarri irabazi dituzu, eskerrik asko!</item>
+    </plurals>
+    <string name="available_badges">Bereizgarri eskuragarriak</string>
+    <string name="available_badges_empty">Sentitzen dugu, ezin izan dira bereizgarriak kargatu. Saioa hasi duzu Play Store-n?</string>
+    <string name="what_are_badges">Zer dira bereizgarriak</string>
+    <string name="what_are_badges_title">Zer dira bereizgarriak</string>
+    <string name="what_are_badges_body">Bereizgarriak aplikazioan egindako ordainketa bakun sinpleak dira. Bereizgarri bat irabaziko duzu eta honekin lagundu ahal diguzu denboran zehar.</string>
+    <string name="why_badges_title">Zergatik DAVx5-ek ezaugarririk gabeko bereizgarriak ematen ditu?</string>
+    <string name="why_badges_body">DAVx5 asko hazi egin da urteekin! Funtzionalitate berriak garatzen jarraitzen ditugu, laguntza ematen, eta aplikazioa eguneratzen dugu hurrengo Android bertsioetarako. Bereizgarri horiek ordainketa puntualak dira, eta kafe bat, edo bi&#8230; edo 10 :-) erostearekin proiektua babesten duzula erakusten diguzu. Ahalik eta irekien izan nahi gara eta, beraz, inoiz ez da gauza berririk egongo aplikazioan ordainketarik behar duenik.</string>
+    <string name="button_buy_badge_free">DOAN</string>
+    <string name="button_buy_badge_bought">Eskerrik asko!</string>
+    <string name="earn_badges">Irabazi bereizgarriak laguntzeko!</string>
+    <string name="billing_unavailable">Fakturazio APIa ez dago eskuragarri, Play Store eguneratuta dago eta zure Google kontuan saioa hasita al duzu?</string>
+    <string name="network_problems">Sare arazoak izan dira, mesedez saiatu berriro geroago.</string>
+</resources>
