@@ -52,7 +52,7 @@
   <string name="intro_open_source_dont_show">Не показывать в ближайшем будущем</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Разрешения</string>
-  <string name="permissions_text">%s необходимы разрешения для корректной работы.</string>
+  <string name="permissions_text">Для правильной работы %s требуются разрешения.</string>
   <string name="permissions_all_title">Все нижеперечисленное</string>
   <string name="permissions_all_status_off">Используйте для включения всех опций (рекомендуется)</string>
   <string name="permissions_all_status_on">Все разрешения предоставлены</string>
@@ -145,7 +145,7 @@
   <string name="battery_optimization_notify_text">Необходимо добавить в белый список оптимизации батареи</string>
   <!--ForegroundService-->
   <string name="foreground_service_notify_title">Запущен в приоритетном режиме</string>
-  <string name="foreground_service_notify_text">Необходим для автоматической синхронизации на некоторых устройствах.</string>
+  <string name="foreground_service_notify_text">Для автосинхронизации на ряде устройств.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Настройки</string>
   <string name="app_settings_debug">Отладка</string>
@@ -185,7 +185,7 @@
   <string name="app_settings_language_title">Выбрать язык</string>
   <string name="app_settings_language_system_default">Определен системой</string>
   <string-array name="app_settings_theme_names">
-    <item>Системная</item>
+    <item>Определена системой</item>
     <item>Светлая</item>
     <item>Темная</item>
   </string-array>

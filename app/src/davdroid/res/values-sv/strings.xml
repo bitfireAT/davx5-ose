@@ -41,6 +41,8 @@
   <string name="intro_tasks_title">Ärendestöd</string>
   <string name="intro_tasks_text1">Om ärenden stöds av din server kan de synkroniseras med en ärendeapp som stöds:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">Verkar inte utvecklas och underhållas längre - ej rekommenderad.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Vissa funktioner <a href="https://www.davx5.com/faq/tasks/advanced-task-features">stöds inte</a> (ännu).]]></string>
   <string name="intro_tasks_no_app_store">Ingen app butik tillgänglig</string>
   <string name="intro_tasks_dont_show">Jag behöver inte stöd för att-göra.*</string>
@@ -129,6 +131,8 @@
   <string name="account_list_manage_connections">Hantera anslutningar</string>
   <string name="account_list_low_storage">Lagringsutrymme lågt. Android kommer inte att köra synkronisering.</string>
   <string name="account_list_manage_storage">Hantera lagring</string>
+  <string name="account_list_datasaver_enabled">Begränsad data-synkronisering aktiverad. Begränsad bakgrundssynkronisering.</string>
+  <string name="account_list_manage_datasaver">Hantera begränsad data-synkronisering</string>
   <string name="account_list_empty">Välkommen till DAVx⁵!\n\nDu kan lägga till ett CalDAV/CardDAV-konto nu.</string>
   <string name="accounts_global_sync_disabled">Systemomfattande automatisk synkronisering är inaktiverad</string>
   <string name="accounts_global_sync_enable">Aktivera</string>
@@ -178,6 +182,7 @@
   <string name="app_settings_notification_settings">Aviseringsinställningar</string>
   <string name="app_settings_notification_settings_summary">Hantera aviseringskanaler och deras inställningar</string>
   <string name="app_settings_theme_title">Välj tema</string>
+  <string name="app_settings_language_title">Välj språk</string>
   <string name="app_settings_language_system_default">Standardinställning för system</string>
   <string-array name="app_settings_theme_names">
     <item>Systemstandard</item>
