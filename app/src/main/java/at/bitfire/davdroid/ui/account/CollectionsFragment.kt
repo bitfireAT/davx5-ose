@@ -284,7 +284,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val hasWriteableCollections = db.homeSetDao().hasBindableByServiceLive(serviceId)
         val collectionColors = db.collectionDao().colorsByServiceLive(serviceId)
         val collections: LiveData<PagingData<Collection>> =
-            Transformations.switchMap(accountModel.showOnlyPersonal) { onlyPersonal ->
+            accountModel.showOnlyPersonal.switchMap { onlyPersonal ->
                 val pager = Pager(
                     PagingConfig(pageSize = 25),
                     pagingSourceFactory = {

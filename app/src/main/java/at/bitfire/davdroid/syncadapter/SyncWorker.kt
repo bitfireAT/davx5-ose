@@ -16,7 +16,7 @@ import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import androidx.work.*
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -102,7 +102,7 @@ class SyncWorker @AssistedInject constructor(
             )
 
         fun isWorkerInState(context: Context, workState: WorkInfo.State, account: Account, authority: String) =
-            Transformations.map(WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName(account, authority))) { workInfoList ->
+            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName(account, authority)).map { workInfoList ->
                 workInfoList.any { workInfo -> workInfo.state == workState }
             }
 
@@ -117,9 +117,9 @@ class SyncWorker @AssistedInject constructor(
             val workQuery = WorkQuery.Builder
                 .fromStates(statuses)
                 .build()
-            return Transformations.map(
-                WorkManager.getInstance(context).getWorkInfosLiveData(workQuery)
-            ) { it.isNotEmpty() }
+            return WorkManager.getInstance(context).getWorkInfosLiveData(workQuery).map {
+                it.isNotEmpty()
+            }
         }
 
     }

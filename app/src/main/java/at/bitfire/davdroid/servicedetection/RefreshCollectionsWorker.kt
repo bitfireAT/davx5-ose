@@ -11,7 +11,7 @@ import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import androidx.work.*
 import at.bitfire.dav4jvm.*
 import at.bitfire.dav4jvm.exception.HttpException
@@ -125,9 +125,10 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          * @param workState     state of worker to match
          * @return boolean      true if worker with matching state was found
          */
-        fun isWorkerInState(context: Context, workerName: String, workState: WorkInfo.State) = Transformations.map(
-            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName)
-        ) { workInfoList -> workInfoList.any { workInfo -> workInfo.state == workState } }
+        fun isWorkerInState(context: Context, workerName: String, workState: WorkInfo.State) =
+            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName).map {
+                workInfoList -> workInfoList.any { workInfo -> workInfo.state == workState }
+            }
 
     }
 
