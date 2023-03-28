@@ -27,7 +27,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
 import at.bitfire.davdroid.InvalidAccountException
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
@@ -35,7 +34,9 @@ import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.SyncAdapterService
+import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.UiUtils
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
@@ -555,13 +556,12 @@ class SettingsActivity: AppCompatActivity() {
         }
 
         private fun resync(authority: String, fullResync: Boolean) {
-            val args = Bundle(1)
-            args.putBoolean(if (fullResync)
-                    SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC
+            val resync =
+                if (fullResync)
+                    SyncWorker.FULL_RESYNC
                 else
-                    SyncAdapterService.SYNC_EXTRAS_RESYNC, true)
-
-            ContentResolver.requestSync(account, authority, args)
+                    SyncWorker.RESYNC
+            SyncWorker.requestSync(context, account, authority, resync)
         }
 
     }
