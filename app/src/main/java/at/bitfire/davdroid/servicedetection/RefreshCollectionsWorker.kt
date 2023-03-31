@@ -432,13 +432,17 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             for (oldPrincipal in principals) {
                 val principalUrl = oldPrincipal.url
                 Logger.log.fine("Querying principal $principalUrl")
-                DavResource(httpClient, principalUrl).propfind(0, *DAV_PRINCIPAL_PROPERTIES) { response, _ ->
-                    if (!response.isSuccess())
-                        return@propfind
-                    Principal.fromDavResponse(service.id, response)?.let { principal ->
-                        Logger.log.fine("Got principal: $principal")
-                        db.principalDao().insertOrUpdate(service.id, principal)
+                try {
+                    DavResource(httpClient, principalUrl).propfind(0, *DAV_PRINCIPAL_PROPERTIES) { response, _ ->
+                        if (!response.isSuccess())
+                            return@propfind
+                        Principal.fromDavResponse(service.id, response)?.let { principal ->
+                            Logger.log.fine("Got principal: $principal")
+                            db.principalDao().insertOrUpdate(service.id, principal)
+                        }
                     }
+                } catch (e: HttpException) {
+                    Logger.log.info("Principal update failed with response code ${e.code}. principalUrl=$principalUrl")
                 }
             }
 
