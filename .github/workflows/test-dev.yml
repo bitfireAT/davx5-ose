@@ -12,8 +12,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 11
-          cache: gradle
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: gradle/gradle-build-action@v2
 
       - name: Run lint and unit tests
         run: ./gradlew --no-daemon app:check
@@ -42,8 +41,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 11
-          cache: gradle
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: gradle/gradle-build-action@v2
 
       - name: Start emulator
         run: start-emulator.sh
@@ -56,4 +54,3 @@ jobs:
           name: test-results
           path: |
             app/build/reports
-
