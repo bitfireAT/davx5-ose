@@ -16,7 +16,7 @@ import java.net.InetAddress
 
 class Android10ResolverTest {
 
-    val FQDN_DAVX5 = "www.google.com"
+    val FQDN_DAVX5 = "www.davx5.com"
 
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
