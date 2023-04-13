@@ -9,9 +9,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.arnyminerz.locator'
 
+// Android configuration
 android {
     compileSdkVersion 33
-    buildToolsVersion '33.0.0'
+    buildToolsVersion '33.0.2'
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
@@ -108,7 +109,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.2'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"
@@ -118,8 +119,8 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.concurrent:concurrent-futures-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.fragment:fragment-ktx:1.5.5'
+    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'androidx.fragment:fragment-ktx:1.5.6'
     implementation 'androidx.hilt:hilt-work:1.0.0'
     kapt 'androidx.hilt:hilt-compiler:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
@@ -128,11 +129,11 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'androidx.security:security-crypto:1.1.0-alpha05'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.work:work-runtime-ktx:2.8.0'
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.8.0'
 
-    def room_version = '2.5.0'
+    def room_version = '2.5.1'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.room:room-paging:$room_version"
@@ -167,7 +168,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
-    androidTestImplementation 'androidx.work:work-testing:2.8.0'
+    androidTestImplementation 'androidx.work:work-testing:2.8.1'
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
     androidTestImplementation 'io.mockk:mockk-android:1.13.4'
     androidTestImplementation 'junit:junit:4.13.2'
