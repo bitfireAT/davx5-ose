@@ -8,15 +8,17 @@
 
 package com.infomaniak.sync.ui
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import at.bitfire.davdroid.BuildConfig.APPLICATION_ID
 import at.bitfire.davdroid.BuildConfig.CLIENT_ID
 import at.bitfire.davdroid.R
@@ -35,9 +37,6 @@ import com.infomaniak.sync.GlobalConstants.SYNC_INFOMANIAK
 import com.infomaniak.sync.GlobalConstants.TOKEN_LOGIN_URL
 import com.infomaniak.sync.model.InfomaniakPassword
 import com.infomaniak.sync.model.InfomaniakUser
-import java.net.URI
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,6 +44,10 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.ResponseBody
+import java.net.URI
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class InfomaniakDetectConfigurationFragment : Fragment() {
@@ -54,12 +57,6 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
     private lateinit var binding: InfomaniakLoadingViewBinding
 
     lateinit var code: String
-
-    companion object {
-        fun newInstance(code: String) = InfomaniakDetectConfigurationFragment().apply {
-            this.code = code
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,7 +113,7 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
         }
     }
 
-    private fun getCredential(): Credentials? {
+    private suspend fun getCredential(): Credentials? {
 
         try {
 
@@ -125,11 +122,8 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
 
             val gson = Gson()
 
-            val infomaniakLogin = InfomaniakLogin(
-                context = requireContext(),
-                appUID = APPLICATION_ID,
-                clientID = CLIENT_ID
-            )
+            val infomaniakLogin = requireContext().getInfomaniakLogin()
+
             var formBuilder: MultipartBody.Builder = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("grant_type", "authorization_code")
@@ -196,7 +190,7 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
                 responseBody = response.body ?: return null
 
                 bodyResult = responseBody.string()
-                if (response.isSuccessful) {
+                val credentials = if (response.isSuccessful) {
                     jsonResult = JsonParser.parseString(bodyResult)
                     val infomaniakPassword = gson.fromJson(
                         jsonResult.asJsonObject.getAsJsonObject("data"),
@@ -205,13 +199,31 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
 
                     publishProgress(getText(R.string.login_querying_server))
 
-                    return Credentials(infomaniakUser.login, infomaniakPassword.password, null)
-                }
+                    Credentials(infomaniakUser.login, infomaniakPassword.password, null)
+                } else null
+
+                infomaniakLogin.deleteToken(
+                    okHttpClient,
+                    apiToken,
+                    onError = {
+                        Log.e("deleteTokenError", "Api response error : $it}")
+                    }
+                )
+
+                return credentials
             }
             return null
         } catch (exception: Exception) {
             exception.printStackTrace()
             return null
         }
+    }
+
+    companion object {
+        fun newInstance(code: String) = InfomaniakDetectConfigurationFragment().apply {
+            this.code = code
+        }
+
+        fun Context.getInfomaniakLogin() = InfomaniakLogin(this, appUID = APPLICATION_ID, clientID = CLIENT_ID)
     }
 }

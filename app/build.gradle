@@ -179,6 +179,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 
     // kSync
-    implementation 'com.github.Infomaniak:android-login:2.3.0'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.github.Infomaniak:android-login:2.7.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
 }

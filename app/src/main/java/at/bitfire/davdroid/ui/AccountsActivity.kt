@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
@@ -24,6 +25,7 @@ import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.infomaniak.lib.login.InfomaniakLogin
+import com.infomaniak.sync.ui.InfomaniakDetectConfigurationFragment.Companion.getInfomaniakLogin
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,14 +37,31 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     companion object {
         const val REQUEST_INTRO = 0
-        private const val WEB_VIEW_LOGIN_REQ = 1
     }
 
     @Inject lateinit var accountsDrawerHandler: AccountsDrawerHandler
 
     private lateinit var binding: ActivityAccountsBinding
 
-    private lateinit var infomaniakLogin: InfomaniakLogin
+    private val infomaniakLogin: InfomaniakLogin by lazy { getInfomaniakLogin() }
+
+    private val webViewLoginResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            with(result) {
+                if (resultCode == RESULT_OK) {
+                    val code = data?.extras?.getString(InfomaniakLogin.CODE_TAG)
+                    if (code.isNullOrBlank()) {
+                        val translatedError = data?.extras?.getString(InfomaniakLogin.ERROR_TRANSLATED_TAG)
+                        Toast.makeText(this@AccountsActivity, translatedError, Toast.LENGTH_LONG).show()
+                    } else {
+                        Intent(this@AccountsActivity, LoginActivity::class.java).apply {
+                            putExtra("code", code)
+                            startActivity(this)
+                        }
+                    }
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,16 +79,9 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         binding = ActivityAccountsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // kSync
-        infomaniakLogin = InfomaniakLogin(
-                context = this,
-                clientID = BuildConfig.CLIENT_ID,
-                appUID = BuildConfig.APPLICATION_ID
-        )
-
         binding.content.fab.setOnClickListener {
 //            startActivity(Intent(this, LoginActivity::class.java))
-            infomaniakLogin.startWebViewLogin(WEB_VIEW_LOGIN_REQ)
+            infomaniakLogin.startWebViewLogin(webViewLoginResultLauncher)
         }
         binding.content.fab.show()
 
@@ -97,18 +109,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_INTRO && resultCode == Activity.RESULT_CANCELED)
             finish()
-        else if (requestCode == WEB_VIEW_LOGIN_REQ && resultCode == RESULT_OK) {
-            val code = data?.extras?.getString(InfomaniakLogin.CODE_TAG)
-            if (code.isNullOrBlank()) {
-                val translatedError = data?.extras?.getString(InfomaniakLogin.ERROR_TRANSLATED_TAG)
-                Toast.makeText(this, translatedError, Toast.LENGTH_LONG).show()
-            } else {
-                Intent(this, LoginActivity::class.java).apply {
-                    putExtra("code", code)
-                    startActivity(this)
-                }
-            }
-        }
         else
             super.onActivityResult(requestCode, resultCode, data)
     }
