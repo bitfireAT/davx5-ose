@@ -15,12 +15,12 @@ import android.provider.ContactsContract
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.work.*
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.LiveDataUtils
 import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.ical4android.TaskProvider
@@ -55,7 +55,7 @@ class SyncWorker @AssistedInject constructor(
          * @param account   account to sync
          */
         fun requestSync(context: Context, account: Account) {
-            for (authority in DavUtils.syncAuthorities(context))
+            for (authority in SyncUtils.syncAuthorities(context))
                 requestSync(context, account, authority)
         }
 
@@ -96,7 +96,7 @@ class SyncWorker @AssistedInject constructor(
          * @param authorities  type of sync work
          * @return boolean     *true* if at least one worker with matching state was found; *false* otherwise
          */
-        fun isSomeWorkerInState(context: Context, workState: WorkInfo.State, account: Account, authorities: List<String>) =
+        fun existsForAccount(context: Context, workState: WorkInfo.State, account: Account, authorities: List<String>) =
             LiveDataUtils.liveDataLogicOr(
                 authorities.map { authority -> isWorkerInState(context, workState, account, authority) }
             )
@@ -106,6 +106,21 @@ class SyncWorker @AssistedInject constructor(
                 workInfoList.any { workInfo -> workInfo.state == workState }
             }
 
+
+        /**
+         * Finds out whether SyncWorkers with given statuses exist
+         *
+         * @param statuses statuses to check
+         * @return whether SyncWorkers matching the statuses were found
+         */
+        fun existsWithStatuses(context: Context, statuses: List<WorkInfo.State>): LiveData<Boolean> {
+            val workQuery = WorkQuery.Builder
+                .fromStates(statuses)
+                .build()
+            return Transformations.map(
+                WorkManager.getInstance(context).getWorkInfosLiveData(workQuery)
+            ) { it.isNotEmpty() }
+        }
 
     }
 

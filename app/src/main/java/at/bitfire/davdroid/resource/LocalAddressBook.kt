@@ -14,14 +14,14 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.util.Base64
-import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountUtils
-import at.bitfire.davdroid.syncadapter.SyncUtils
+import at.bitfire.davdroid.syncadapter.SyncUtils.removePeriodicSyncs
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.vcard4android.*
 import java.io.ByteArrayOutputStream
 import java.util.*
@@ -287,7 +287,7 @@ open class LocalAddressBook(
             ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1)
         if (!ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY))
             ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
-        SyncUtils.removePeriodicSyncs(account, ContactsContract.AUTHORITY)
+        removePeriodicSyncs(account, ContactsContract.AUTHORITY)
     }
 
 

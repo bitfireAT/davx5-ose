@@ -19,11 +19,10 @@ import at.bitfire.dav4jvm.property.*
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.*
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.HomeSet
-import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -75,6 +74,12 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             AddressbookDescription.NAME, SupportedAddressData.NAME,
             CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME,
             Source.NAME
+        )
+
+        // Principal properties to ask the server
+        val DAV_PRINCIPAL_PROPERTIES = arrayOf(
+            DisplayName.NAME,
+            ResourceType.NAME
         )
 
         /**
@@ -149,17 +154,20 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                     val httpClient = client.okHttpClient
                     val refresher = Refresher(db, service, settings, httpClient)
 
-                    // refresh home set list (from principal url) and save them
+                    // refresh home set list (from principal url)
                     service.principal?.let { principalUrl ->
                         Logger.log.fine("Querying principal $principalUrl for home sets")
                         refresher.queryHomeSets(principalUrl)
                     }
 
-                    // now refresh home sets and their member collections
+                    // refresh home sets and their member collections
                     refresher.refreshHomesetsAndTheirCollections()
 
-                    // also check/refresh collections without a homeset
+                    // also refresh collections without a home set
                     refresher.refreshHomelessCollections()
+
+                    // Lastly, refresh the principals (collection owners)
+                    refresher.refreshPrincipals()
                 }
 
         } catch(e: InvalidAccountException) {
@@ -219,24 +227,6 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         val httpClient: OkHttpClient
     ) {
 
-        private fun getHomesets(serviceId: Long) = db.homeSetDao().getByService(serviceId).associateBy { it.url }.toMutableMap()
-        private fun getHomelessCollections(serviceId: Long) = db.collectionDao().getByServiceAndHomeset(serviceId, null).associateBy { it.url }.toMutableMap()
-
-        private fun deleteHomeset(homeset: HomeSet) = db.homeSetDao().delete(homeset)
-        private fun deleteCollection(collection: Collection) = db.collectionDao().delete(collection)
-
-        private fun saveHomeset(homeset: HomeSet) = db.homeSetDao().insertOrUpdateByUrl(homeset)
-        private fun saveCollection(newCollection: Collection) {
-            // remember locally set flags
-            db.collectionDao().getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())?.let { oldCollection ->
-                newCollection.sync = oldCollection.sync
-                newCollection.forceReadOnly = oldCollection.forceReadOnly
-            }
-
-            // commit to database
-            db.collectionDao().insertOrUpdateByUrl(newCollection)
-        }
-
         /**
          * Checks if the given URL defines home sets and adds them to given home set list.
          *
@@ -280,7 +270,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         for (href in homeSet.hrefs)
                             dav.location.resolve(href)?.let {
                                 val foundUrl = UrlUtils.withTrailingSlash(it)
-                                saveHomeset(HomeSet(0, service.id, personal, foundUrl))
+                                db.homeSetDao().insertOrUpdateByUrl(HomeSet(0, service.id, personal, foundUrl))
                             }
                     }
 
@@ -325,7 +315,8 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          * and a null value for it's homeset. Refreshing of collections without homesets is then handled by [refreshHomelessCollections].
          */
         internal fun refreshHomesetsAndTheirCollections() {
-            getHomesets(service.id).forEach { (homeSetUrl, localHomeset) ->
+            val homesets = db.homeSetDao().getByService(service.id).associateBy { it.url }.toMutableMap()
+            for((homeSetUrl, localHomeset) in homesets) {
                 Logger.log.fine("Listing home set $homeSetUrl")
 
                 // To find removed collections in this homeset: create a queue from existing collections and remove every collection that
@@ -345,7 +336,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                             // this response is about the homeset itself
                             localHomeset.displayName = response[DisplayName::class.java]?.displayName
                             localHomeset.privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind ?: true
-                            saveHomeset(localHomeset)
+                            db.homeSetDao().insertOrUpdateByUrl(localHomeset)
                         }
 
                         // in any case, check whether the response is about a usable collection
@@ -354,13 +345,21 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         collection.serviceId = service.id
                         collection.homeSetId = localHomeset.id
                         collection.sync = settings.getBoolean(Settings.SYNC_ALL_COLLECTIONS)
-                        collection.owner = response[Owner::class.java]?.href?.let { response.href.resolve(it) }
+
+                        // .. and save the principal url (collection owner)
+                        response[Owner::class.java]?.href
+                            ?.let { response.href.resolve(it) }
+                            ?.let { principalUrl ->
+                                val principal = Principal.fromServiceAndUrl(service, principalUrl)
+                                val id = db.principalDao().insertOrUpdate(service.id, principal)
+                                collection.ownerId = id
+                            }
 
                         Logger.log.log(Level.FINE, "Found collection", collection)
 
                         // save or update collection if usable (ignore it otherwise)
                         if (isUsableCollection(collection))
-                            saveCollection(collection)
+                            db.collectionDao().insertOrUpdateByUrlAndRememberFlags(collection)
 
                         // Remove this collection from queue - because it was found in the home set
                         localHomesetCollections.remove(collection.url)
@@ -368,13 +367,13 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 } catch (e: HttpException) {
                     // delete home set locally if it was not accessible (40x)
                     if (e.code in arrayOf(403, 404, 410))
-                        deleteHomeset(localHomeset)
+                        db.homeSetDao().delete(localHomeset)
                 }
 
                 // Mark leftover (not rediscovered) collections from queue as homeless (remove association)
                 for ((_, homelessCollection) in localHomesetCollections) {
                     homelessCollection.homeSetId = null
-                    saveCollection(homelessCollection)
+                    db.collectionDao().insertOrUpdateByUrlAndRememberFlags(homelessCollection)
                 }
 
             }
@@ -386,29 +385,65 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          * It queries each stored collection with a homeSetId of "null" and either updates or deletes (if inaccessible or unusable) them.
          */
         internal fun refreshHomelessCollections() {
-            getHomelessCollections(service.id).forEach { (url, localCollection) ->
-                try {
-                    DavResource(httpClient, url).propfind(0, *DAV_COLLECTION_PROPERTIES) { response, _ ->
-                        if (!response.isSuccess()) {
-                            deleteCollection(localCollection)
-                            return@propfind
-                        }
-
-                        // Save or update the collection, if usable, otherwise delete it
-                        Collection.fromDavResponse(response)?.let { collection ->
-                            if (!isUsableCollection(collection))
-                                return@let
-                            collection.serviceId = localCollection.serviceId       // use same service ID as previous entry
-                            saveCollection(collection)
-                        } ?: deleteCollection(localCollection)
+            val homelessCollections = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
+            for((url, localCollection) in homelessCollections) try {
+                DavResource(httpClient, url).propfind(0, *DAV_COLLECTION_PROPERTIES) { response, _ ->
+                    if (!response.isSuccess()) {
+                        db.collectionDao().delete(localCollection)
+                        return@propfind
                     }
-                } catch (e: HttpException) {
-                    // delete collection locally if it was not accessible (40x)
-                    if (e.code in arrayOf(403, 404, 410))
-                        deleteCollection(localCollection)
-                    else
-                        throw e
+
+                    // Save or update the collection, if usable, otherwise delete it
+                    Collection.fromDavResponse(response)?.let { collection ->
+                        if (!isUsableCollection(collection))
+                            return@let
+                        collection.serviceId = localCollection.serviceId       // use same service ID as previous entry
+
+                        // .. and save the principal url (collection owner)
+                        response[Owner::class.java]?.href
+                            ?.let { response.href.resolve(it) }
+                            ?.let { principalUrl ->
+                                val principal = Principal.fromServiceAndUrl(service, principalUrl)
+                                val principalId = db.principalDao().insertOrUpdate(service.id, principal)
+                                collection.ownerId = principalId
+                            }
+
+                        db.collectionDao().insertOrUpdateByUrlAndRememberFlags(collection)
+                    } ?: db.collectionDao().delete(localCollection)
                 }
+            } catch (e: HttpException) {
+                // delete collection locally if it was not accessible (40x)
+                if (e.code in arrayOf(403, 404, 410))
+                    db.collectionDao().delete(localCollection)
+                else
+                    throw e
+            }
+
+        }
+
+        /**
+         * Refreshes the principals (get their current display names).
+         * Also removes principals which do not own any collections anymore.
+         */
+        internal fun refreshPrincipals() {
+            // Refresh principals (collection owner urls)
+            val principals = db.principalDao().getByService(service.id)
+            for (oldPrincipal in principals) {
+                val principalUrl = oldPrincipal.url
+                Logger.log.fine("Querying principal $principalUrl")
+                DavResource(httpClient, principalUrl).propfind(0, *DAV_PRINCIPAL_PROPERTIES) { response, _ ->
+                    if (!response.isSuccess())
+                        return@propfind
+                    Principal.fromDavResponse(service.id, response)?.let { principal ->
+                        Logger.log.fine("Got principal: $principal")
+                        db.principalDao().insertOrUpdate(service.id, principal)
+                    }
+                }
+            }
+
+            // Delete principals which don't own any collections
+            db.principalDao().getAllWithoutCollections().forEach {principal ->
+                db.principalDao().delete(principal)
             }
         }
 

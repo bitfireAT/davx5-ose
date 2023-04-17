@@ -71,6 +71,7 @@ interface CollectionDao {
      * This method preserves the primary key, as opposed to using "@Insert(onConflict = OnConflictStrategy.REPLACE)"
      * which will create a new row with incremented ID and thus breaks entity relationships!
      *
+     * @param collection Collection to be inserted or updated
      * @return ID of the row, that has been inserted or updated. -1 If the insert fails due to other reasons.
      */
     @Transaction
@@ -81,6 +82,23 @@ interface CollectionDao {
         update(collection.copy(id = localCollection.id))
         localCollection.id
     } ?: insert(collection)
+
+    /**
+     * Inserts or updates the collection. On update it will not update flag values ([Collection.sync],
+     * [Collection.forceReadOnly]), but use the values of the already existing collection.
+     *
+     * @param newCollection Collection to be inserted or updated
+     */
+    fun insertOrUpdateByUrlAndRememberFlags(newCollection: Collection) {
+        // remember locally set flags
+        getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())?.let { oldCollection ->
+            newCollection.sync = oldCollection.sync
+            newCollection.forceReadOnly = oldCollection.forceReadOnly
+        }
+
+        // commit to database
+        insertOrUpdateByUrl(newCollection)
+    }
 
     @Delete
     fun delete(collection: Collection)

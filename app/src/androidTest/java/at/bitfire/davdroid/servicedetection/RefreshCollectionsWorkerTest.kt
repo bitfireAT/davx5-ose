@@ -12,15 +12,10 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
-import at.bitfire.dav4jvm.DavResource
-import at.bitfire.dav4jvm.property.AddressbookHomeSet
 import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
-import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.*
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.db.HomeSet
-import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -31,6 +26,7 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import org.apache.commons.lang3.StringUtils
 import org.junit.*
 import org.junit.Assert.*
 
@@ -70,9 +66,9 @@ class RefreshCollectionsWorkerTest {
     companion object {
         private const val PATH_CALDAV = "/caldav"
         private const val PATH_CARDDAV = "/carddav"
-        private const val PATH_CALDAV_AND_CARDDAV = "/both-caldav-carddav"
 
         private const val SUBPATH_PRINCIPAL = "/principal"
+        private const val SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS = "/principal2"
         private const val SUBPATH_ADDRESSBOOK_HOMESET = "/addressbooks-homeset"
         private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty"
         private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts"
@@ -139,10 +135,8 @@ class RefreshCollectionsWorkerTest {
         val baseUrl = mockServer.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)
 
         // Query home sets
-        DavResource(client.okHttpClient, baseUrl).propfind(0, AddressbookHomeSet.NAME) { response, _ ->
-            RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
-                .queryHomeSets(baseUrl)
-        }
+        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+            .queryHomeSets(baseUrl)
 
         // Check home sets have been saved to database
         assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET/"), db.homeSetDao().getByService(service.id).first().url)
@@ -171,6 +165,7 @@ class RefreshCollectionsWorkerTest {
                 1,
                 service.id,
                 homesetId,
+                1, // will have gotten an owner too
                 Collection.TYPE_ADDRESSBOOK,
                 mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
                 displayName = "My Contacts",
@@ -190,6 +185,7 @@ class RefreshCollectionsWorkerTest {
                 0,
                 service.id,
                 null,
+                null,
                 Collection.TYPE_ADDRESSBOOK,
                 mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
                 displayName = "My Contacts",
@@ -206,6 +202,7 @@ class RefreshCollectionsWorkerTest {
             Collection(
                 collectionId,
                 service.id,
+                null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
                 mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
@@ -226,6 +223,7 @@ class RefreshCollectionsWorkerTest {
                 0,
                 service.id,
                 null,
+                null,
                 Collection.TYPE_ADDRESSBOOK,
                 mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
                 displayName = "My Contacts",
@@ -244,6 +242,7 @@ class RefreshCollectionsWorkerTest {
             Collection(
                 collectionId,
                 service.id,
+                null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
                 mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
@@ -271,6 +270,7 @@ class RefreshCollectionsWorkerTest {
                 0,
                 service.id,
                 homesetId,
+                null,
                 Collection.TYPE_ADDRESSBOOK,
                 mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
             )
@@ -282,6 +282,43 @@ class RefreshCollectionsWorkerTest {
 
         // Check the collection, is now marked as homeless
         assertEquals(null, db.collectionDao().get(collectionId)!!.homeSetId)
+    }
+
+    @Test
+    fun refreshHomesetsAndTheirCollections_addsOwnerUrls() {
+        val service = createTestService(Service.TYPE_CARDDAV)!!
+
+        // save a homeset in DB
+        val homesetId = db.homeSetDao().insert(
+            HomeSet(id=0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+        )
+
+        // place collection in DB - as part of the homeset
+        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+            Collection(
+                0,
+                service.id,
+                homesetId, // part of above home set
+                null,
+                Collection.TYPE_ADDRESSBOOK,
+                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
+            )
+        )
+
+        // Refresh - homesets and their collections
+        assertEquals(0, db.principalDao().getByService(service.id).size)
+        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+            .refreshHomesetsAndTheirCollections()
+
+        // Check principal saved and the collection was updated with its reference
+        val principals = db.principalDao().getByService(service.id)
+        assertEquals(1, principals.size)
+        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL"), principals[0].url)
+        assertEquals(null, principals[0].displayName)
+        assertEquals(
+            principals[0].id,
+            db.collectionDao().get(collectionId)!!.ownerId
+        )
     }
 
 
@@ -296,6 +333,7 @@ class RefreshCollectionsWorkerTest {
             Collection(
                 0,
                 service.id,
+                null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
                 mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
@@ -312,6 +350,7 @@ class RefreshCollectionsWorkerTest {
                 collectionId,
                 service.id,
                 null,
+                1, // will have gotten an owner too
                 Collection.TYPE_ADDRESSBOOK,
                 mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
                 displayName = "My Contacts",
@@ -331,6 +370,7 @@ class RefreshCollectionsWorkerTest {
                 0,
                 service.id,
                 null,
+                null,
                 Collection.TYPE_ADDRESSBOOK,
                 mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_INACCESSIBLE")
             )
@@ -343,10 +383,104 @@ class RefreshCollectionsWorkerTest {
         // Check the collection got deleted
         assertEquals(null, db.collectionDao().get(collectionId))
     }
-    
+
+    @Test
+    fun refreshHomelessCollections_addsOwnerUrls() {
+        val service = createTestService(Service.TYPE_CARDDAV)!!
+
+        // place homeless collection in DB
+        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+            Collection(
+                0,
+                service.id,
+                null,
+                null,
+                Collection.TYPE_ADDRESSBOOK,
+                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
+            )
+        )
+
+        // Refresh homeless collections
+        assertEquals(0, db.principalDao().getByService(service.id).size)
+        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+            .refreshHomelessCollections()
+
+        // Check principal saved and the collection was updated with its reference
+        val principals = db.principalDao().getByService(service.id)
+        assertEquals(1, principals.size)
+        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL"), principals[0].url)
+        assertEquals(null, principals[0].displayName)
+        assertEquals(
+            principals[0].id,
+            db.collectionDao().get(collectionId)!!.ownerId
+        )
+    }
+
+
+    // refreshPrincipals
+
+    @Test
+    fun refreshPrincipals_updatesPrincipal() {
+        val service = createTestService(Service.TYPE_CARDDAV)!!
+
+        // place principal without display name in db
+        val principalId = db.principalDao().insert(
+            Principal(
+                0,
+                service.id,
+                mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL"), // no trailing slash
+                null // no display name for now
+            )
+        )
+        // add an associated collection - as the principal is rightfully removed otherwise
+        db.collectionDao().insertOrUpdateByUrl(
+            Collection(
+                0,
+                service.id,
+                null,
+                principalId, // create association with principal
+                Collection.TYPE_ADDRESSBOOK,
+                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), // with trailing slash
+            )
+        )
+
+        // Refresh principals
+        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+            .refreshPrincipals()
+
+        // Check principal now got a display name
+        val principals = db.principalDao().getByService(service.id)
+        assertEquals(1, principals.size)
+        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL"), principals[0].url)
+        assertEquals("Mr. Wobbles", principals[0].displayName)
+    }
+
+    @Test
+    fun refreshPrincipals_deletesPrincipalsWithoutCollections() {
+        val service = createTestService(Service.TYPE_CARDDAV)!!
+
+        // place principal without collections in DB
+        db.principalDao().insert(
+            Principal(
+                0,
+                service.id,
+                mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS/")
+            )
+        )
+
+        // Refresh principals - detecting it does not own collections
+        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+            .refreshPrincipals()
+
+        // Check principal was deleted
+        val principals = db.principalDao().getByService(service.id)
+        assertEquals(0, principals.size)
+    }
+
+
     // Test helpers and dependencies
     
-    fun createTestService(serviceType: String) : Service? {
+    private fun createTestService(serviceType: String) : Service? {
         val service = Service(id=0, accountName="test", type=serviceType, principal = null)
         val serviceId = db.serviceDao().insertOrReplace(service)
         return db.serviceDao().get(serviceId)
@@ -355,7 +489,7 @@ class RefreshCollectionsWorkerTest {
     class TestDispatcher: Dispatcher() {
 
         override fun dispatch(request: RecordedRequest): MockResponse {
-            val path = request.path!!
+            val path = StringUtils.removeEnd(request.path!!, "/")
 
             if (request.method.equals("PROPFIND", true)) {
                 val properties = when (path) {
@@ -366,18 +500,29 @@ class RefreshCollectionsWorkerTest {
                         "</current-user-principal>"
 
                     PATH_CARDDAV + SUBPATH_PRINCIPAL ->
+                        "<resourcetype><principal/></resourcetype>" +
+                        "<displayname>Mr. Wobbles</displayname>" +
                         "<CARD:addressbook-home-set>" +
                         "   <href>${PATH_CARDDAV}${SUBPATH_ADDRESSBOOK_HOMESET}</href>" +
                         "</CARD:addressbook-home-set>"
 
-                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK + "/",
+                    PATH_CARDDAV + SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS ->
+                        "<CARD:addressbook-home-set>" +
+                        "   <href>${PATH_CARDDAV}${SUBPATH_ADDRESSBOOK_HOMESET_EMPTY}</href>" +
+                        "</CARD:addressbook-home-set>" +
+                        "<displayname>Mr. Wobbles Jr.</displayname>"
+
+                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK,
                     PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET ->
                         "<resourcetype>" +
                         "   <collection/>" +
                         "   <CARD:addressbook/>" +
                         "</resourcetype>" +
                         "<displayname>My Contacts</displayname>" +
-                        "<CARD:addressbook-description>My Contacts Description</CARD:addressbook-description>"
+                        "<CARD:addressbook-description>My Contacts Description</CARD:addressbook-description>" +
+                        "<owner>" +
+                        "   <href>${PATH_CARDDAV + SUBPATH_PRINCIPAL}</href>" +
+                        "</owner>"
 
                     PATH_CALDAV + SUBPATH_PRINCIPAL ->
                         "<CAL:calendar-user-address-set>" +
@@ -386,11 +531,13 @@ class RefreshCollectionsWorkerTest {
                         "  <href>mailto:email2@example.com</href>" +
                         "</CAL:calendar-user-address-set>"
 
+                    SUBPATH_ADDRESSBOOK_HOMESET_EMPTY -> ""
+
                     else -> ""
                 }
 
-                var responseBody: String = ""
-                var responseCode: Int = 207
+                var responseBody = ""
+                var responseCode = 207
                 when (path) {
                     PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET ->
                         responseBody =

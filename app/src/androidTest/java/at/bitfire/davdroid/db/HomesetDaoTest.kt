@@ -4,26 +4,32 @@
 
 package at.bitfire.davdroid.db
 
-import androidx.room.Room
-import androidx.test.platform.app.InstrumentationRegistry
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
+@HiltAndroidTest
 class HomesetDaoTest {
 
-    private lateinit var db: AppDatabase
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var db: AppDatabase
 
     @Before
-    fun createDb() {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+    fun setUp() {
+        hiltRule.inject()
     }
 
     @After
-    fun closeDb() {
+    fun tearDown() {
         db.close()
     }
 

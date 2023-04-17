@@ -20,6 +20,7 @@ import androidx.preference.*
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.ForegroundService
+import at.bitfire.davdroid.Locator
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.Settings
@@ -42,6 +43,27 @@ class AppSettingsActivity: AppCompatActivity() {
 
     companion object {
         const val EXTRA_SCROLL_TO = "scrollTo"
+
+        /**
+         * Matches all language qualifiers with a region of three characters, which is not supported
+         * by Java's Locale.
+         * @see resourceQualifierToLanguageTag
+         */
+        private val langRegex = Regex(".*-.{3}")
+
+        /**
+         * Converts the language qualifier given from Android to Java Locale language tag.
+         * @param lang The qualifier to convert. Example: `en`, `zh-rTW`...
+         * @return A correct language code to be introduced into [java.util.Locale.forLanguageTag].
+         */
+        fun resourceQualifierToLanguageTag(lang: String): String {
+            // If the language qualifier is correct, return it
+            if (!lang.matches(langRegex)) return lang
+            // Otherwise, fix it
+            val hyphenIndex = lang.indexOf('-')
+            // Remove the first character of the 3 (rGB -> GB, rTW -> TW)
+            return lang.substring(0, hyphenIndex) + "-" + lang.substring(hyphenIndex + 2)
+        }
     }
 
 
@@ -230,19 +252,27 @@ class AppSettingsActivity: AppCompatActivity() {
                 }
             }
             findPreference<ListPreference>(Settings.LANGUAGE)!!.apply {
-                val languageOptions = mutableListOf<Locale?>(null)
-                for (language in BuildConfig.TRANSLATION_ARRAY) {
-                    languageOptions.add(Locale.forLanguageTag(language))
-                }
-                this.entries  = languageOptions.map { language -> language?.displayLanguage ?: context.getText(R.string.app_settings_language_system_default) }.toTypedArray()
-                this.entryValues = languageOptions.map { language -> language?.language ?: Settings.LANGUAGE_SYSTEM }.toTypedArray()
+                val languageOptions = mutableMapOf(
+                    // Start with the "System default" option on top
+                    Settings.LANGUAGE_SYSTEM to context.getString(R.string.app_settings_language_system_default)
+                )
+                // Create another map with the languages available from Locales
+                val availableLanguages = Locator.Locales
+                    .map { locale -> locale.language to locale.displayName }
+                    // Sort alphabetically by the name displayed
+                    .sortedBy { it.second }
+                // Add all the available languages to the original list
+                languageOptions.putAll(availableLanguages)
+
+                this.entries  = languageOptions.values.toTypedArray()
+                this.entryValues = languageOptions.keys.toTypedArray()
 
                 val appCompatLocales = AppCompatDelegate.getApplicationLocales()
                 var currentLocale: Locale? = null
                 if(!appCompatLocales.isEmpty) {
                     for (i in 0 until appCompatLocales.size()) {
                         val locale = appCompatLocales[i] ?: continue
-                        if (languageOptions.contains(appCompatLocales[i]!!)) {
+                        if (languageOptions.containsKey(appCompatLocales[i]!!.language)) {
                             currentLocale = locale
                             break
                         }

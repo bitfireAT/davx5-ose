@@ -7,8 +7,7 @@ apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-
-apply from: 'locales.gradle'
+apply plugin: 'com.arnyminerz.locator'
 
 android {
     compileSdkVersion 33
@@ -18,11 +17,12 @@ android {
         applicationId 'com.infomaniak.sync'
         resValue 'string', 'application_id', applicationId
 
-        versionCode 403000005
-        versionName '4.3'
+        versionCode 403010002
+        versionName '4.3.1'
+
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
-        setProperty "archivesBaseName", "davx5-ose-" + getVersionName()
+        setProperty "archivesBaseName", "ksync-" + getVersionName()
 
         minSdkVersion 21        // Android 5
         targetSdkVersion 33     // Android 13
@@ -37,16 +37,6 @@ android {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas")
             }
-        }
-
-        applicationVariants.all { variant ->
-            def locales = getLocales(variant.flavorName)
-
-            variant.buildConfigField "String[]", "TRANSLATION_ARRAY", "new String[]{\"" + locales.join("\",\"") + "\"}"
-            variant.mergedFlavor.resourceConfigurations.clear()
-            variant.mergedFlavor.resourceConfigurations.addAll(locales)
-
-            generateLocalesConfig(variant.flavorName, locales)
         }
     }
 
@@ -77,8 +67,6 @@ android {
     }
 
     sourceSets {
-        ose.res.srcDirs += "build/generated/res/locale-ose"
-
         androidTest.java.srcDirs = [ "src/androidTest/java" ]
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
@@ -121,15 +109,15 @@ dependencies {
     implementation project(':ical4android')
     implementation project(':vcard4android')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.0'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.2'
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"
 
-    implementation 'androidx.appcompat:appcompat:1.6.0'
-    implementation 'androidx.browser:browser:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.browser:browser:1.5.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.concurrent:concurrent-futures-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
@@ -141,9 +129,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
     implementation 'androidx.preference:preference-ktx:1.2.0'
-    implementation 'androidx.security:security-crypto:1.1.0-alpha04'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha05'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+    implementation 'androidx.work:work-runtime-ktx:2.8.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.8.0'
 
@@ -182,7 +170,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
-    androidTestImplementation 'androidx.work:work-testing:2.7.1'
+    androidTestImplementation 'androidx.work:work-testing:2.8.0'
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
     androidTestImplementation 'io.mockk:mockk-android:1.13.4'
     androidTestImplementation 'junit:junit:4.13.2'

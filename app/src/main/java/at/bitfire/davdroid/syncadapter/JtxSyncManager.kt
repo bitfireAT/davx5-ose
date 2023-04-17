@@ -131,28 +131,44 @@ class JtxSyncManager(
             return
         }
 
-        if (icalobjects.size == 1) {
-            val newData = icalobjects.first()
+        Logger.log.log(Level.INFO, "Found ${icalobjects.size} entries in $fileName", icalobjects)
 
-            // update local task, if it exists
-            localExceptionContext(localCollection.findByName(fileName)) { local ->
-                if (local != null) {
-                    Logger.log.log(Level.INFO, "Updating $fileName in local task list", newData)
-                    local.eTag = eTag
-                    local.update(newData)
-                    syncResult.stats.numUpdates++
-                } else {
-                    Logger.log.log(Level.INFO, "Adding $fileName to local task list", newData)
-
-                    localExceptionContext(LocalJtxICalObject(localCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)) {
-                        it.applyNewData(newData)
-                        it.add()
+        icalobjects.forEach { jtxICalObject ->
+            // if the entry is a recurring entry (and therefore has a recurid)
+            // we udpate the existing (generated) entry
+            if(jtxICalObject.recurid != null) {
+                localExceptionContext(localCollection.findRecurring(jtxICalObject.uid, jtxICalObject.recurid!!, jtxICalObject.dtstart!!)) { local ->
+                    Logger.log.log(Level.INFO, "Updating $fileName with recur instance ${jtxICalObject.recurid} in local list", jtxICalObject)
+                    if(local != null) {
+                        local.update(jtxICalObject)
+                        syncResult.stats.numUpdates++
+                    } else {
+                        localExceptionContext(LocalJtxICalObject(localCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)) {
+                            it.applyNewData(jtxICalObject)
+                            it.add()
+                        }
+                        syncResult.stats.numInserts++
                     }
-                    syncResult.stats.numInserts++
+                }
+            } else {
+                // otherwise we insert or update the main entry
+                localExceptionContext(localCollection.findByName(fileName)) { local ->
+                    if (local != null) {
+                        Logger.log.log(Level.INFO, "Updating $fileName in local list", jtxICalObject)
+                        local.eTag = eTag
+                        local.update(jtxICalObject)
+                        syncResult.stats.numUpdates++
+                    } else {
+                        Logger.log.log(Level.INFO, "Adding $fileName to local list", jtxICalObject)
+
+                        localExceptionContext(LocalJtxICalObject(localCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)) {
+                            it.applyNewData(jtxICalObject)
+                            it.add()
+                        }
+                        syncResult.stats.numInserts++
+                    }
                 }
             }
-        } else
-            Logger.log.info("Received VCALENDAR with not exactly one VTODO or VJOURNAL; ignoring $fileName")
+        }
     }
-
 }

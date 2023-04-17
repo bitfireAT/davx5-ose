@@ -316,11 +316,11 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                 listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
             else
                 listOf(CalendarContract.AUTHORITY, taskProvider?.authority).filterNotNull()
-        private val isSyncWorkerRunning = SyncWorker.isSomeWorkerInState(context,
+        private val isSyncWorkerRunning = SyncWorker.existsForAccount(context,
             WorkInfo.State.RUNNING,
             accountModel.account,
             authorities)
-        private val isSyncWorkerEnqueued = SyncWorker.isSomeWorkerInState(context,
+        private val isSyncWorkerEnqueued = SyncWorker.existsForAccount(context,
             WorkInfo.State.ENQUEUED,
             accountModel.account,
             authorities)
