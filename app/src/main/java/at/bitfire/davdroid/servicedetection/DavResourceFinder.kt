@@ -22,7 +22,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.Type
-import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
 import java.net.URI
@@ -40,8 +39,8 @@ import java.util.logging.Logger
  * - homeset/collections (multistatus responses are handled through dav4jvm).
  */
 class DavResourceFinder(
-        val context: Context,
-        private val loginModel: LoginModel
+    val context: Context,
+    private val loginModel: LoginModel
 ): AutoCloseable {
 
     enum class Service(val wellKnownName: String) {
@@ -308,6 +307,8 @@ class DavResourceFinder(
         principal?.let {
             if (providesService(it, serviceType))
                 config.principal = principal
+            else
+                log.warning("Principal $principal doesn't provide $serviceType service")
         }
     }
 
@@ -416,7 +417,7 @@ class DavResourceFinder(
 
                     // service check
                     if (service != null && !providesService(it, service))
-                        log.info("$it doesn't provide required $service service")
+                        log.warning("Principal $it doesn't provide $service service")
                     else
                         principal = it
                 }
