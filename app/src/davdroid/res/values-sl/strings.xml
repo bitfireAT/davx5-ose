@@ -2,20 +2,34 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Račun ne obstaja (več)</string>
   <string name="account_title_address_book">DAVx⁵ imenik</string>
   <string name="address_books_authority_title">Seznami s stiki</string>
+  <string name="dialog_remove">Odstrani</string>
+  <string name="dialog_deny">Preklic</string>
+  <string name="field_required">To polje je obvezno</string>
   <string name="help">Pomoč</string>
   <string name="manage_accounts">Urejanje prijav</string>
+  <string name="share">Deli</string>
+  <string name="database_destructive_migration_title">Okvarjena baza podatkov</string>
+  <string name="database_destructive_migration_text">Vsi računi so bili lokalno odstranjeni.</string>
   <string name="notification_channel_debugging">Razhroščevalnik</string>
   <string name="notification_channel_general">Ostale pomembne nastavitve</string>
+  <string name="notification_channel_status">Statusno sporočilo nizke prioritete</string>
   <string name="notification_channel_sync">Sinhronizacija</string>
   <string name="notification_channel_sync_errors">Napake v sinhronizaciji</string>
-  <string name="notification_channel_sync_errors_desc">Pomembne napake, ki zaustavijo sinhronizacijo(npr. nepričakovani odgovori strežnika)</string>
+  <string name="notification_channel_sync_errors_desc">Pomembne napake, ki zaustavijo sinhronizacijo (npr. nepričakovani odgovori strežnika)</string>
   <string name="notification_channel_sync_warnings">Opozorila med sinhronizacijo</string>
   <string name="notification_channel_sync_warnings_desc">Neusodni problemi v sinhronizaciji npr. določene neveljavne datoteke</string>
   <string name="notification_channel_sync_io_errors">Omrežje in I/O napake</string>
   <string name="notification_channel_sync_io_errors_desc">Pavze, povezave v povezavi z omrežjem, itd. (ponavadi začasno)</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">Tvoji podatki. Tvoja izbira.</string>
+  <string name="intro_slogan2">Prevzemi nadzor</string>
+  <string name="intro_battery_not_whitelisted">Onemogočeno (nepriporočljivo)</string>
+  <string name="intro_battery_whitelisted">Omogočeno (priporočljivo)</string>
+  <string name="intro_battery_dont_show">Ne potrebujem enakomernih intervalov sinhroniziranja</string>
+  <string name="intro_autostart_title">%szdružljivost</string>
   <string name="intro_more_info">Več informacij</string>
   <!--PermissionsActivity-->
   <!--WifiPermissionsActivity-->
@@ -91,6 +105,8 @@
   <string name="account_read_only">samo za branje</string>
   <string name="account_calendar">koledar</string>
   <string name="account_task_list">seznam opravil</string>
+  <string name="account_journal">dnevnik</string>
+  <string name="account_only_personal">Pokaži samo osebno</string>
   <string name="account_refresh_address_book_list">Osveži seznam imenikov</string>
   <string name="account_create_new_address_book">Ustvari nov imenik</string>
   <string name="account_refresh_calendar_list">Osveži seznam koledarjev</string>
