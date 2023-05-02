@@ -68,6 +68,7 @@ class RefreshCollectionsWorkerTest {
         private const val PATH_CARDDAV = "/carddav"
 
         private const val SUBPATH_PRINCIPAL = "/principal"
+        private const val SUBPATH_PRINCIPAL_INACCESSIBLE = "/inaccessible-principal"
         private const val SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS = "/principal2"
         private const val SUBPATH_ADDRESSBOOK_HOMESET = "/addressbooks-homeset"
         private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty"
@@ -420,6 +421,42 @@ class RefreshCollectionsWorkerTest {
     // refreshPrincipals
 
     @Test
+    fun refreshPrincipals_inaccessiblePrincipal() {
+        val service = createTestService(Service.TYPE_CARDDAV)!!
+
+        // place principal without display name in db
+        val principalId = db.principalDao().insert(
+            Principal(
+                0,
+                service.id,
+                mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL_INACCESSIBLE"), // no trailing slash
+                null // no display name for now
+            )
+        )
+        // add an associated collection - as the principal is rightfully removed otherwise
+        db.collectionDao().insertOrUpdateByUrl(
+            Collection(
+                0,
+                service.id,
+                null,
+                principalId, // create association with principal
+                Collection.TYPE_ADDRESSBOOK,
+                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), // with trailing slash
+            )
+        )
+
+        // Refresh principals
+        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+            .refreshPrincipals()
+
+        // Check principal was not updated
+        val principals = db.principalDao().getByService(service.id)
+        assertEquals(1, principals.size)
+        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL_INACCESSIBLE"), principals[0].url)
+        assertEquals(null, principals[0].displayName)
+    }
+
+    @Test
     fun refreshPrincipals_updatesPrincipal() {
         val service = createTestService(Service.TYPE_CARDDAV)!!
 
@@ -551,6 +588,7 @@ class RefreshCollectionsWorkerTest {
                             "</response>" +
                             "</multistatus>"
 
+                    PATH_CARDDAV + SUBPATH_PRINCIPAL_INACCESSIBLE,
                     PATH_CARDDAV + SUBPATH_ADDRESSBOOK_INACCESSIBLE ->
                         responseCode = 404
 

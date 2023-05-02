@@ -106,7 +106,7 @@ class TasksSyncManager(
 
                     val calendarData = response[CalendarData::class.java]
                     val iCal = calendarData?.iCalendar
-                            ?: throw DavException("Received multi-get response without address data")
+                            ?: throw DavException("Received multi-get response without task data")
 
                     processVTodo(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(iCal))
                 }

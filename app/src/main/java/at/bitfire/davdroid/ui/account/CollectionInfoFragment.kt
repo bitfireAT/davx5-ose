@@ -10,9 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.switchMap
 import at.bitfire.davdroid.databinding.CollectionPropertiesBinding
 import at.bitfire.davdroid.db.AppDatabase
 import dagger.assisted.Assisted
@@ -67,7 +67,7 @@ class CollectionInfoFragment: DialogFragment() {
         }
 
         var collection = db.collectionDao().getLive(collectionId)
-        var owner = Transformations.switchMap(collection) { collection ->
+        var owner = collection.switchMap { collection ->
             collection.ownerId?.let { ownerId ->
                 db.principalDao().getLive(ownerId)
             }

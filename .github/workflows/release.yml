@@ -16,13 +16,11 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: temurin
-          java-version: 11
-          cache: gradle
-      - uses: gradle/wrapper-validation-action@v1
+          java-version: 17
+      - uses: gradle/gradle-build-action@v2
 
       - name: Prepare keystore
         run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
-
       - name: Build signed package
         run: ./gradlew --no-daemon app:assembleRelease
         env:

@@ -159,29 +159,35 @@ class AccountSettings(
 
                     // repair address book sync
                     settings.getSavedAddressbooksSyncInterval()?.let { shouldBe ->
-                        val current = settings.getSyncInterval(addressBooksAuthority)
+                        val authority = addressBooksAuthority
+                        val current = settings.getSyncInterval(authority)
                         if (current != shouldBe) {
-                            Logger.log.warning("${account.name}: $addressBooksAuthority sync interval should be $shouldBe but is $current -> setting to $current")
-                            settings.setSyncInterval(addressBooksAuthority, shouldBe)
+                            Logger.log.warning("${account.name}: $authority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
+                            if (!settings.setSyncInterval(authority, shouldBe))
+                                Logger.log.warning("${account.name}: repairing/setting the sync interval for $authority failed")
                         }
                     }
 
                     // repair calendar sync
                     settings.getSavedCalendarsSyncInterval()?.let { shouldBe ->
-                        val current = settings.getSyncInterval(CalendarContract.AUTHORITY)
+                        val authority = CalendarContract.AUTHORITY
+                        val current = settings.getSyncInterval(authority)
                         if (current != shouldBe) {
-                            Logger.log.warning("${account.name}: ${CalendarContract.AUTHORITY} sync interval should be $shouldBe but is $current -> setting to $current")
-                            settings.setSyncInterval(CalendarContract.AUTHORITY, shouldBe)
+                            Logger.log.warning("${account.name}: $authority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
+                            if (!settings.setSyncInterval(authority, shouldBe))
+                                Logger.log.warning("${account.name}: repairing/setting the sync interval for $authority failed")
                         }
                     }
 
                     if (taskAuthority != null)
                     // repair calendar sync
                         settings.getSavedTasksSyncInterval()?.let { shouldBe ->
-                            val current = settings.getSyncInterval(taskAuthority)
+                            val authority = taskAuthority
+                            val current = settings.getSyncInterval(authority)
                             if (current != shouldBe) {
-                                Logger.log.warning("${account.name}: $taskAuthority sync interval should be $shouldBe but is $current -> setting to $current")
-                                settings.setSyncInterval(taskAuthority, shouldBe)
+                                Logger.log.warning("${account.name}: $authority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
+                                if (!settings.setSyncInterval(authority, shouldBe))
+                                    Logger.log.warning("${account.name}: repairing/setting the sync interval for $authority failed")
                             }
                         }
                 } catch (ignored: InvalidAccountException) {

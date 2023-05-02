@@ -16,7 +16,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
 import com.infomaniak.sync.ui.InfomaniakDetectConfigurationFragment
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import com.infomaniak.lib.login.R as RLogin
 
 /**
  * Activity to initially connect to a server and create an account.
@@ -70,7 +70,7 @@ class LoginActivity: AppCompatActivity() {
                     fragment = InfomaniakDetectConfigurationFragment.newInstance(code)
                 }
             } else {
-                Toast.makeText(this, getString(R.string.an_error_has_occurred), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(RLogin.string.an_error_has_occurred), Toast.LENGTH_LONG).show()
                 onBackPressed()
             }
 

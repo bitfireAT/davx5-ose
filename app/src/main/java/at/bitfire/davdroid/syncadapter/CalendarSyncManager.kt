@@ -132,7 +132,7 @@ class CalendarSyncManager(
 
                     val calendarData = response[CalendarData::class.java]
                     val iCal = calendarData?.iCalendar
-                            ?: throw DavException("Received multi-get response without address data")
+                            ?: throw DavException("Received multi-get response without calendar data")
 
                     processVEvent(DavUtils.lastSegmentOfUrl(response.href), eTag, scheduleTag, StringReader(iCal))
                 }

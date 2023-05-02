@@ -12,11 +12,12 @@ import android.content.SyncResult
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import androidx.annotation.IntDef
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import androidx.work.*
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -44,6 +45,13 @@ class SyncWorker @AssistedInject constructor(
         const val ARG_ACCOUNT_TYPE = "accountType"
         const val ARG_AUTHORITY = "authority"
 
+        const val ARG_RESYNC = "resync"
+        @IntDef(NO_RESYNC, RESYNC, FULL_RESYNC)
+        annotation class ArgResync
+        const val NO_RESYNC = 0
+        const val RESYNC = 1
+        const val FULL_RESYNC = 2
+
         fun workerName(account: Account, authority: String): String {
             return "explicit-sync $authority ${account.type}/${account.name}"
         }
@@ -54,9 +62,9 @@ class SyncWorker @AssistedInject constructor(
          *
          * @param account   account to sync
          */
-        fun requestSync(context: Context, account: Account) {
+        fun requestSync(context: Context, account: Account, @ArgResync resync: Int = NO_RESYNC) {
             for (authority in SyncUtils.syncAuthorities(context))
-                requestSync(context, account, authority)
+                requestSync(context, account, authority, resync)
         }
 
         /**
@@ -64,15 +72,17 @@ class SyncWorker @AssistedInject constructor(
          *
          * @param account     account to sync
          * @param authority   authority to sync (for instance: [CalendarContract.AUTHORITY]])
+         * @param resync      whether to request re-synchronization
          */
-        fun requestSync(context: Context, account: Account, authority: String) {
-            val arguments = Data.Builder()
+        fun requestSync(context: Context, account: Account, authority: String, @ArgResync resync: Int = NO_RESYNC) {
+            val argumentsBuilder = Data.Builder()
                 .putString(ARG_AUTHORITY, authority)
                 .putString(ARG_ACCOUNT_NAME, account.name)
                 .putString(ARG_ACCOUNT_TYPE, account.type)
-                .build()
+            if (resync != 0)
+                argumentsBuilder.putInt(ARG_RESYNC, resync)
             val workRequest = OneTimeWorkRequestBuilder<SyncWorker>()
-                .setInputData(arguments)
+                .setInputData(argumentsBuilder.build())
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
 
@@ -102,7 +112,7 @@ class SyncWorker @AssistedInject constructor(
             )
 
         fun isWorkerInState(context: Context, workState: WorkInfo.State, account: Account, authority: String) =
-            Transformations.map(WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName(account, authority))) { workInfoList ->
+            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName(account, authority)).map { workInfoList ->
                 workInfoList.any { workInfo -> workInfo.state == workState }
             }
 
@@ -117,9 +127,9 @@ class SyncWorker @AssistedInject constructor(
             val workQuery = WorkQuery.Builder
                 .fromStates(statuses)
                 .build()
-            return Transformations.map(
-                WorkManager.getInstance(context).getWorkInfosLiveData(workQuery)
-            ) { it.isNotEmpty() }
+            return WorkManager.getInstance(context).getWorkInfosLiveData(workQuery).map {
+                it.isNotEmpty()
+            }
         }
 
     }
@@ -152,13 +162,19 @@ class SyncWorker @AssistedInject constructor(
                 throw IllegalArgumentException("Invalid authority $authority")
         }
 
-        // Pass flags to the sync adapter. Note that these are sync framework flags, but they don't
-        // have anything to do with the sync framework anymore. They only exist because we still use
-        // the same sync code called from two locations (from the WorkManager and from the sync framework).
-        val extras = Bundle(2)
+        // Pass flags to the sync adapter. Note that these may be sync framework flags, but they
+        // don't have anything to do with the sync framework anymore. They only exist because we
+        // still use the same sync code called from two locations (from WorkManager and from the
+        // sync framework).
+        val extras = Bundle()
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)        // manual sync
         extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)     // run immediately (don't queue)
-        val result = SyncResult()
+
+        // pass flags which are used by the sync code
+        when (extras.getInt(ARG_RESYNC)) {
+            FULL_RESYNC -> extras.putBoolean(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC, true)
+            RESYNC -> extras.putBoolean(SyncAdapterService.SYNC_EXTRAS_RESYNC, true)
+        }
 
         val provider: ContentProviderClient? =
             try {
@@ -172,6 +188,7 @@ class SyncWorker @AssistedInject constructor(
             return Result.failure()
         }
 
+        val result = SyncResult()
         try {
             syncThread = Thread.currentThread()
             syncAdapter.onPerformSync(account, extras, authority, provider, result)

@@ -11,7 +11,7 @@ import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import androidx.work.*
 import at.bitfire.dav4jvm.*
 import at.bitfire.dav4jvm.exception.HttpException
@@ -125,9 +125,10 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          * @param workState     state of worker to match
          * @return boolean      true if worker with matching state was found
          */
-        fun isWorkerInState(context: Context, workerName: String, workState: WorkInfo.State) = Transformations.map(
-            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName)
-        ) { workInfoList -> workInfoList.any { workInfo -> workInfo.state == workState } }
+        fun isWorkerInState(context: Context, workerName: String, workState: WorkInfo.State) =
+            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName).map {
+                workInfoList -> workInfoList.any { workInfo -> workInfo.state == workState }
+            }
 
     }
 
@@ -431,13 +432,17 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             for (oldPrincipal in principals) {
                 val principalUrl = oldPrincipal.url
                 Logger.log.fine("Querying principal $principalUrl")
-                DavResource(httpClient, principalUrl).propfind(0, *DAV_PRINCIPAL_PROPERTIES) { response, _ ->
-                    if (!response.isSuccess())
-                        return@propfind
-                    Principal.fromDavResponse(service.id, response)?.let { principal ->
-                        Logger.log.fine("Got principal: $principal")
-                        db.principalDao().insertOrUpdate(service.id, principal)
+                try {
+                    DavResource(httpClient, principalUrl).propfind(0, *DAV_PRINCIPAL_PROPERTIES) { response, _ ->
+                        if (!response.isSuccess())
+                            return@propfind
+                        Principal.fromDavResponse(service.id, response)?.let { principal ->
+                            Logger.log.fine("Got principal: $principal")
+                            db.principalDao().insertOrUpdate(service.id, principal)
+                        }
                     }
+                } catch (e: HttpException) {
+                    Logger.log.info("Principal update failed with response code ${e.code}. principalUrl=$principalUrl")
                 }
             }
 

@@ -37,7 +37,7 @@
   <string name="intro_leave_unchecked">* 未チェックのままにすると後でリマインドします。アプリの設定 / %s でリセットできます</string>
   <string name="intro_more_info">追加情報</string>
   <string name="intro_tasks_jtx">jtx Board</string>
-  <string name="intro_tasks_jtx_info"><![CDATA[日誌、メモ、タスクの同期に対応]]></string>
+  <string name="intro_tasks_jtx_info"><![CDATA[ジャーナル、メモ、タスクの同期に対応]]></string>
   <string name="intro_tasks_title">タスクの同期に対応</string>
   <string name="intro_tasks_text1">お使いのサーバーがタスクに対応している場合、対応するアプリで同期できます:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
@@ -66,9 +66,9 @@
   <string name="permissions_notification_status_off">通知が無効です (非推奨)</string>
   <string name="permissions_notification_status_on">通知が有効です</string>
   <string name="permissions_jtx_title">jtx Board へのアクセス</string>
-  <string name="permissions_jtx_status_not_installed">日誌、メモ、タスクを同期しない (未インストール)</string>
-  <string name="permissions_jtx_status_off">日誌、メモ、タスクを同期しない</string>
-  <string name="permissions_jtx_status_on">日誌、メモ、タスクを同期できます</string>
+  <string name="permissions_jtx_status_not_installed">ジャーナル、メモ、タスクを同期しない (未インストール)</string>
+  <string name="permissions_jtx_status_off">ジャーナル、メモ、タスクを同期しない</string>
+  <string name="permissions_jtx_status_on">ジャーナル、メモ、タスクを同期できます</string>
   <string name="permissions_opentasks_title">OpenTasks へのアクセス</string>
   <string name="permissions_tasksorg_title">Tasks へのアクセス</string>
   <string name="permissions_tasks_status_not_installed">タスクを同期しない (未インストール)</string>
@@ -224,7 +224,7 @@
   <string name="account_read_only">読み取り専用</string>
   <string name="account_calendar">カレンダー</string>
   <string name="account_task_list">タスクリスト</string>
-  <string name="account_journal">日誌</string>
+  <string name="account_journal">ジャーナル</string>
   <string name="account_only_personal">プライベートのみ表示</string>
   <string name="account_refresh_address_book_list">アドレス帳リストを更新</string>
   <string name="account_create_new_address_book">新しいアドレス帳を作成</string>
@@ -302,24 +302,24 @@
   <string name="settings_certificate_alias">クライアント証明書の別名</string>
   <string name="settings_certificate_alias_empty">証明書が選択されていません</string>
   <string name="settings_caldav">CalDAV</string>
-  <string name="settings_sync_time_range_past">過去イベントの時間限度</string>
-  <string name="settings_sync_time_range_past_none">すべてのイベントが同期されます</string>
+  <string name="settings_sync_time_range_past">過去の予定の読み込み制限</string>
+  <string name="settings_sync_time_range_past_none">すべての予定が同期されます</string>
   <plurals name="settings_sync_time_range_past_days">
-    <item quantity="other">%d 日より前のイベントは無視されます</item>
+    <item quantity="other">%d 日より前の予定は無視されます</item>
   </plurals>
-  <string name="settings_sync_time_range_past_message">この日数より過去のイベントは無視されます (0 も可)。すべてのイベントを同期させるには、空白のままにしてください。</string>
+  <string name="settings_sync_time_range_past_message">この日数より過去の予定は無視されます (0 も可)。すべての予定を同期するには、空白のままにしてください。</string>
   <string name="settings_default_alarm">デフォルトのリマインダー</string>
   <plurals name="settings_default_alarm_on">
-    <item quantity="other">デフォルトのリマインダーはイベントの %d 分前です</item>
+    <item quantity="other">デフォルトのリマインダーは予定の %d 分前です</item>
   </plurals>
   <string name="settings_default_alarm_off">デフォルトのリマインダーはありません</string>
-  <string name="settings_default_alarm_message">デフォルトのリマインダーは、リマインダーのないイベントに適用されます。希望する分数を入力してください。デフォルトのリマインダーを無効にするには、空白のままにしてください。</string>
+  <string name="settings_default_alarm_message">デフォルトのリマインダーは、リマインダーのない予定に適用されます。希望する分数を入力してください。デフォルトのリマインダーを無効にするには、空白のままにしてください。</string>
   <string name="settings_manage_calendar_colors">カレンダーの色を管理</string>
   <string name="settings_manage_calendar_colors_on">カレンダーの色は同期ごとにリセットされます</string>
   <string name="settings_manage_calendar_colors_off">カレンダーの色は他のアプリで設定できます</string>
-  <string name="settings_event_colors">イベントの色への対応</string>
-  <string name="settings_event_colors_on">イベントの色が同期されます</string>
-  <string name="settings_event_colors_off">イベントの色は同期されません</string>
+  <string name="settings_event_colors">予定の色への対応</string>
+  <string name="settings_event_colors_on">予定の色が同期されます</string>
+  <string name="settings_event_colors_off">予定の色は同期されません</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">連絡先のグループ方法</string>
   <string-array name="settings_contact_group_method_entries">
@@ -333,10 +333,10 @@
   <string name="create_calendar">カレンダーを作成</string>
   <string name="create_calendar_time_zone">タイムゾーン</string>
   <string name="create_calendar_type">可能なカレンダーエントリー</string>
-  <string name="create_calendar_type_vevent">イベント</string>
+  <string name="create_calendar_type_vevent">予定</string>
   <string name="create_calendar_type_vtodo">タスク</string>
-  <string name="create_calendar_type_vjournal">メモ / 日誌</string>
-  <string name="create_calendar_type_events_and_tasks">組み合わせ (イベントとタスク)</string>
+  <string name="create_calendar_type_vjournal">メモ / ジャーナル</string>
+  <string name="create_calendar_type_events_and_tasks">組み合わせ (予定とタスク)</string>
   <string name="create_collection_color">色</string>
   <string name="create_collection_creating">コレクションの作成中</string>
   <string name="create_collection_display_name">タイトル</string>
@@ -422,7 +422,7 @@
   <string name="sync_error_retry">再試行</string>
   <string name="sync_error_view_item">アイテムを表示</string>
   <string name="sync_invalid_contact">サーバーから無効な連絡先を受信しました</string>
-  <string name="sync_invalid_event">サーバーから無効なイベントを受信しました</string>
+  <string name="sync_invalid_event">サーバーから無効な予定を受信しました</string>
   <string name="sync_invalid_task">サーバーから無効なタスクを受信しました</string>
   <string name="sync_invalid_resources_ignoring">1 または複数の無効なリソースを無視します</string>
   <!--cert4android-->

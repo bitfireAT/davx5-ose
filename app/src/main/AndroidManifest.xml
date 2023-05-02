@@ -39,6 +39,11 @@
 
     <!-- ical4android declares task access permissions -->
 
+    <!-- Disable GPS capability requirement, which is implicitly derived from ACCESS_FINE_LOCATION
+    permission and makes app unusable on some devices without GPS. We need location permissions only
+    to get the current WiFi SSID, and we don't need GPS for that. -->
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
     <application
         android:name=".App"
         android:allowBackup="false"
