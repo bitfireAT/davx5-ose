@@ -2,6 +2,6 @@ Infomaniak Sync ermöglicht die Synchronisation der Kontakte und Kalender zwisch
 
 Mit dieser App können Sie überall Ihre Kontakte und Kalender auf Ihren Android-Geräten abrufen.
 
-Diese App basiert auf der Open-Source-Lösung DAVx5 und gewährleistet die Vertraulichkeit Ihrer personenbezogenen Daten.
+Diese App basiert auf der Open-Source-Lösung DAVx⁵ und gewährleistet die Vertraulichkeit Ihrer personenbezogenen Daten.
 
 Weitere Informationen über den Infomaniak-Workspace: https://www.infomaniak.com/de/profi-tools/workspace

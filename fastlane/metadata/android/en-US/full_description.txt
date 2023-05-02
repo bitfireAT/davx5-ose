@@ -2,6 +2,6 @@ Infomaniak Sync enables you to synchronise your contacts and calendars between I
 
 Thanks to this app, you can view your contacts and calendars anywhere, directly on your Android devices.
 
-Based on the Open Source DAVx5 solution, this application guarantees the privacy of your personal data
+Based on the Open Source DAVx⁵ solution, this application guarantees the privacy of your personal data
 
 To find out more about Infomaniak's WorkSpace: https://www.infomaniak.com/fr/outils-professionnels/workspace
