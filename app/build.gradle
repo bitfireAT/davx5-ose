@@ -48,8 +48,14 @@ android {
 
     buildFeatures {
         buildConfig = true
+        compose = true
         viewBinding = true
         dataBinding = true
+    }
+    composeOptions {
+        // Keep this in sync with Kotlin version:
+        // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
+        kotlinCompilerExtensionVersion = "1.4.6"
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
@@ -131,19 +137,27 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.8.0'
 
-    def room_version = '2.5.1'
-    implementation "androidx.room:room-runtime:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
-    implementation "androidx.room:room-paging:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
-    androidTestImplementation "androidx.room:room-testing:$room_version"
+    // Jetpack Compose
+    def composeBom = platform("androidx.compose:compose-bom:${versions.composeBom}")
+    implementation composeBom
+    androidTestImplementation composeBom
+    implementation 'androidx.compose.material:material'
+    implementation 'com.google.accompanist:accompanist-themeadapter-material:0.30.1'
 
+    // Jetpack Room
+    implementation "androidx.room:room-runtime:${versions.room}"
+    implementation "androidx.room:room-ktx:${versions.room}"
+    implementation "androidx.room:room-paging:${versions.room}"
+    kapt "androidx.room:room-compiler:${versions.room}"
+    androidTestImplementation "androidx.room:room-testing:${versions.room}"
+
+    // third-party libs
     implementation 'com.jaredrummler:colorpicker:1.1.0'
     implementation "com.github.AppIntro:AppIntro:${versions.appIntro}"
     implementation("com.github.bitfireAT:dav4jvm:${versions.dav4jvm}") {
         exclude group: 'junit'
     }
-    implementation "com.mikepenz:aboutlibraries:${versions.aboutLibraries}"
+    implementation "com.mikepenz:aboutlibraries-compose:${versions.aboutLibraries}"
     implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
     implementation "com.squareup.okhttp3:okhttp-brotli:${versions.okhttp}"
     implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
