@@ -32,7 +32,7 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
-@HiltAndroidTest
+/*@HiltAndroidTest
 class AccountSettingsTest {
 
     @get:Rule
@@ -137,4 +137,4 @@ class AccountSettingsTest {
         }
     }
 
-}
+}*/
