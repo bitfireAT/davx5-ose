@@ -10,7 +10,7 @@ import android.content.ContentResolver
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.util.Log
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.annotation.RequiresApi
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.testing.WorkManagerTestInitHelper
@@ -19,7 +19,6 @@ import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
-import at.bitfire.davdroid.syncadapter.SyncManagerTest
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -31,7 +30,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -40,16 +38,13 @@ class AccountSettingsTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
-
     @Inject
     lateinit var settingsManager: SettingsManager
 
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
-    val account = Account(javaClass.canonicalName, SyncManagerTest.context.getString(R.string.account_type))
+    val account = Account(javaClass.canonicalName, context.getString(R.string.account_type))
     val fakeCredentials = Credentials("test", "test")
 
     val authorities = listOf(
@@ -84,9 +79,9 @@ class AccountSettingsTest {
     }
 
     @After
+    @RequiresApi(22)
     fun removeAccount() {
-        val futureResult = AccountManager.get(context).removeAccount(account, {}, null)
-        assertTrue(futureResult.getResult(10, TimeUnit.SECONDS))
+        AccountManager.get(context).removeAccountExplicitly(account)
     }
 
 
@@ -141,4 +136,5 @@ class AccountSettingsTest {
             assertEquals(AccountSettings.SYNC_INTERVAL_MANUALLY, settings.getSyncInterval(authority))
         }
     }
+
 }

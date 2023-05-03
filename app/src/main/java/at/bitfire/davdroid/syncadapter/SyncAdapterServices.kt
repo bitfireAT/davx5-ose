@@ -13,6 +13,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.os.Bundle
+import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import java.util.logging.Level
@@ -45,8 +46,15 @@ abstract class SyncAdapterService: Service() {
             val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
             Logger.log.info("Sync request via sync adapter (upload=$upload)")
 
+            val accountSettings = try {
+                AccountSettings(context, account)
+            } catch (e: InvalidAccountException) {
+                Logger.log.log(Level.WARNING, "Account doesn't exist anymore", e)
+                return
+            }
+
             // Should we run the sync at all?
-            if (!SyncWorker.wifiConditionsMet(context, AccountSettings(context, account))) {
+            if (!SyncWorker.wifiConditionsMet(context, accountSettings)) {
                 Logger.log.info("Sync conditions not met. Aborting sync adapter")
                 return
             }
