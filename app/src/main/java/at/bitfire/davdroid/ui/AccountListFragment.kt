@@ -11,14 +11,18 @@ import android.accounts.OnAccountsUpdateListener
 import android.app.Activity
 import android.app.Application
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
-import android.content.SyncStatusObserver
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.AnyThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -31,11 +35,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.WorkQuery
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountListBinding
 import at.bitfire.davdroid.databinding.AccountListItemBinding
-import at.bitfire.davdroid.syncadapter.SyncStatus
 import at.bitfire.davdroid.syncadapter.SyncUtils
+import at.bitfire.davdroid.syncadapter.SyncUtils.syncAuthorities
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.account.AccountActivity
 import com.google.android.material.snackbar.Snackbar
@@ -52,7 +58,6 @@ class AccountListFragment: Fragment() {
     val model by viewModels<Model>()
 
     private var syncStatusSnackbar: Snackbar? = null
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setHasOptionsMenu(true)
@@ -215,7 +220,7 @@ class AccountListFragment: Fragment() {
     class Model @Inject constructor(
         application: Application,
         private val warnings: AppWarningsManager
-    ): AndroidViewModel(application), OnAccountsUpdateListener, SyncStatusObserver {
+    ): AndroidViewModel(application), OnAccountsUpdateListener {
 
         data class AccountInfo(
             val account: Account,
@@ -230,14 +235,11 @@ class AccountListFragment: Fragment() {
 
         // Accounts
         private val accountsUpdated = MutableLiveData<Boolean>()
-        private val syncFrameworkStatusChanged = MutableLiveData<Boolean>()
-        private val syncWorkersActive = SyncWorker.existsWithStatuses(
-            application.applicationContext, listOf(WorkInfo.State.RUNNING))
+        private val syncWorkersActive = SyncWorker.exists(application, listOf(WorkInfo.State.RUNNING))
 
         val accounts = object : MediatorLiveData<List<AccountInfo>>() {
             init {
                 addSource(accountsUpdated) { recalculate() }
-                addSource(syncFrameworkStatusChanged) { recalculate() }
                 addSource(syncWorkersActive) { recalculate() }
             }
 
@@ -253,7 +255,7 @@ class AccountListFragment: Fragment() {
                 val accountsWithInfo = sortedAccounts.map { account ->
                     AccountInfo(
                         account,
-                        SyncStatus.fromAccount(context, syncAuthorities, account)
+                        SyncStatus.fromAccount(context, account, syncAuthorities)
                     )
                 }
                 value = accountsWithInfo
@@ -266,12 +268,6 @@ class AccountListFragment: Fragment() {
         init {
             // watch accounts
             accountManager.addOnAccountsUpdatedListener(this, null, true)
-
-            // watch account status
-            ContentResolver.addStatusChangeListener(
-                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE or ContentResolver.SYNC_OBSERVER_TYPE_PENDING,
-                this
-            )
         }
 
         @AnyThread
@@ -279,14 +275,50 @@ class AccountListFragment: Fragment() {
             accountsUpdated.postValue(true)
         }
 
-        @AnyThread
-        override fun onStatusChanged(which: Int) {
-            syncFrameworkStatusChanged.postValue(true)
-        }
-
         override fun onCleared() {
             accountManager.removeOnAccountsUpdatedListener(this)
             warnings.close()
+        }
+
+    }
+
+    enum class SyncStatus {
+        ACTIVE, PENDING, IDLE;
+
+        companion object {
+            /**
+             * Returns the sync status of a given account. Checks the account itself and possible
+             * sub-accounts (address book accounts).
+             *
+             * @param account       account to check
+             * @param authorities   sync authorities to check (usually taken from [syncAuthorities])
+             *
+             * @return sync status of the given account
+             */
+            fun fromAccount(context: Context, account: Account, authorities: List<String>): SyncStatus {
+                val workerNames = authorities.map { authority ->
+                    SyncWorker.workerName(account, authority)
+                }
+                val workQuery = WorkQuery.Builder
+                    .fromTags(listOf(SyncWorker.TAG_SYNC))
+                    .addUniqueWorkNames(workerNames)
+                    .addStates(listOf(WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED))
+                    .build()
+
+                val workInfos = WorkManager.getInstance(context).getWorkInfos(workQuery).get()
+
+                return when {
+                    workInfos.any { workInfo ->
+                        workInfo.state == WorkInfo.State.RUNNING
+                    } -> ACTIVE
+
+                    workInfos.any {workInfo ->
+                        workInfo.state == WorkInfo.State.ENQUEUED
+                    } -> PENDING
+
+                    else -> IDLE
+                }
+            }
         }
 
     }

@@ -11,6 +11,7 @@ import android.content.pm.ShortcutManager
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
@@ -109,9 +110,16 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         if (Build.VERSION.SDK_INT >= 25)
             getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
 
+        // Check we are connected
+        if (!SyncWorker.wifiAvailable(applicationContext)) {
+            Toast.makeText(this, R.string.no_internet_connection, Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // Enqueue sync worker for all accounts and authorities
         val accounts = allAccounts()
         for (account in accounts)
-            SyncWorker.requestSync(this, account)
+            SyncWorker.enqueueAllAuthorities(this, account)
     }
 
 }

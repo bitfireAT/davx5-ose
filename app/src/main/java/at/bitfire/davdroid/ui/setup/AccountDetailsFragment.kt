@@ -53,7 +53,7 @@ class AccountDetailsFragment : Fragment() {
     @Inject lateinit var settings: SettingsManager
 
     val loginModel by activityViewModels<LoginModel>()
-    val model by viewModels<AccountDetailsModel>()
+    val model by viewModels<Model>()
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -140,7 +140,7 @@ class AccountDetailsFragment : Fragment() {
 
 
     @HiltViewModel
-    class AccountDetailsModel @Inject constructor(
+    class Model @Inject constructor(
         @ApplicationContext val context: Context,
         val db: AppDatabase,
         val settingsManager: SettingsManager
@@ -155,6 +155,16 @@ class AccountDetailsFragment : Fragment() {
             nameError.value = null
         }
 
+        /**
+         * Creates a new main account with discovered services and enables periodic syncs with
+         * default sync interval times.
+         *
+         * @param name Name of the account
+         * @param credentials Server credentials
+         * @param config Discovered server capabilities for syncable authorities
+         * @param groupMethod Whether CardDAV contact groups are separate VCards or as contact categories
+         * @return *true* if account creation was succesful; *false* otherwise (for instance because an account with this name already exists)
+         */
         fun createAccount(name: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): LiveData<Boolean> {
             val result = MutableLiveData<Boolean>()
             viewModelScope.launch(Dispatchers.Default + NonCancellable) {
@@ -175,6 +185,7 @@ class AccountDetailsFragment : Fragment() {
                     val accountSettings = AccountSettings(context, account)
                     val defaultSyncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
 
+                    // Configure CardDAV service
                     val addrBookAuthority = context.getString(R.string.address_books_authority)
                     if (config.cardDAV != null) {
                         // insert CardDAV service
@@ -192,6 +203,7 @@ class AccountDetailsFragment : Fragment() {
                     } else
                         ContentResolver.setIsSyncable(account, addrBookAuthority, 0)
 
+                    // Configure CalDAV service
                     if (config.calDAV != null) {
                         // insert CalDAV service
                         val id = insertService(name, Service.TYPE_CALDAV, config.calDAV)
@@ -203,12 +215,15 @@ class AccountDetailsFragment : Fragment() {
                         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
                         accountSettings.setSyncInterval(CalendarContract.AUTHORITY, defaultSyncInterval)
 
+                        // if task provider present, set task sync interval and enable sync
                         val taskProvider = TaskUtils.currentProvider(context)
                         if (taskProvider != null) {
                             ContentResolver.setIsSyncable(account, taskProvider.authority, 1)
                             accountSettings.setSyncInterval(taskProvider.authority, defaultSyncInterval)
                             // further changes will be handled by TasksWatcher on app start or when tasks app is (un)installed
-                        }
+                            Logger.log.info("Tasks provider ${taskProvider.authority} found. Tasks sync enabled.")
+                        } else
+                            Logger.log.info("No tasks provider found. Did not enable tasks sync.")
                     } else
                         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
 

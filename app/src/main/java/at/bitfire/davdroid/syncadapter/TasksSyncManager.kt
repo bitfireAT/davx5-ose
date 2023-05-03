@@ -7,7 +7,6 @@ package at.bitfire.davdroid.syncadapter
 import android.accounts.Account
 import android.content.Context
 import android.content.SyncResult
-import android.os.Bundle
 import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
@@ -42,7 +41,7 @@ class TasksSyncManager(
     account: Account,
     accountSettings: AccountSettings,
     httpClient: HttpClient,
-    extras: Bundle,
+    extras: Array<String>,
     authority: String,
     syncResult: SyncResult,
     localCollection: LocalTaskList

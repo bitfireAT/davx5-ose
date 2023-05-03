@@ -329,7 +329,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
                 try {
                     DavResource(httpClient, homeSetUrl).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, relation ->
-                        // NB: This callback may be called multiple times ([MultiResponseCallback])
+                        // Note: This callback may be called multiple times ([MultiResponseCallback])
                         if (!response.isSuccess())
                             return@propfind
 

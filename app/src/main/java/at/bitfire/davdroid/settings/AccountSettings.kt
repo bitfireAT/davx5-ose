@@ -6,10 +6,7 @@ package at.bitfire.davdroid.settings
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
-import android.content.ContentResolver
-import android.content.ContentUris
-import android.content.ContentValues
-import android.content.Context
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Parcel
@@ -31,6 +28,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.ical4android.AndroidCalendar
@@ -79,7 +77,7 @@ class AccountSettings(
 
     companion object {
 
-        const val CURRENT_VERSION = 13
+        const val CURRENT_VERSION = 14
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
@@ -148,53 +146,6 @@ class AccountSettings(
             return bundle
         }
 
-        fun repairSyncIntervals(context: Context) {
-            val addressBooksAuthority = context.getString(R.string.address_books_authority)
-            val taskAuthority = TaskUtils.currentProvider(context)?.authority
-
-            val am = AccountManager.get(context)
-            for (account in am.getAccountsByType(context.getString(R.string.account_type)))
-                try {
-                    val settings = AccountSettings(context, account)
-
-                    // repair address book sync
-                    settings.getSavedAddressbooksSyncInterval()?.let { shouldBe ->
-                        val authority = addressBooksAuthority
-                        val current = settings.getSyncInterval(authority)
-                        if (current != shouldBe) {
-                            Logger.log.warning("${account.name}: $authority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
-                            if (!settings.setSyncInterval(authority, shouldBe))
-                                Logger.log.warning("${account.name}: repairing/setting the sync interval for $authority failed")
-                        }
-                    }
-
-                    // repair calendar sync
-                    settings.getSavedCalendarsSyncInterval()?.let { shouldBe ->
-                        val authority = CalendarContract.AUTHORITY
-                        val current = settings.getSyncInterval(authority)
-                        if (current != shouldBe) {
-                            Logger.log.warning("${account.name}: $authority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
-                            if (!settings.setSyncInterval(authority, shouldBe))
-                                Logger.log.warning("${account.name}: repairing/setting the sync interval for $authority failed")
-                        }
-                    }
-
-                    if (taskAuthority != null)
-                    // repair calendar sync
-                        settings.getSavedTasksSyncInterval()?.let { shouldBe ->
-                            val authority = taskAuthority
-                            val current = settings.getSyncInterval(authority)
-                            if (current != shouldBe) {
-                                Logger.log.warning("${account.name}: $authority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
-                                if (!settings.setSyncInterval(authority, shouldBe))
-                                    Logger.log.warning("${account.name}: repairing/setting the sync interval for $authority failed")
-                            }
-                        }
-                } catch (ignored: InvalidAccountException) {
-                    // account doesn't exist (anymore)
-                }
-        }
-
     }
 
 
@@ -250,81 +201,125 @@ class AccountSettings(
 
     // sync. settings
 
+    /**
+     * Gets the currently set sync interval for this account in seconds.
+     *
+     * @param authority authority to check (for instance: [CalendarContract.AUTHORITY]])
+     * @return sync interval in seconds; *[SYNC_INTERVAL_MANUALLY]* if manual sync; *null* if not set
+     */
     fun getSyncInterval(authority: String): Long? {
         if (ContentResolver.getIsSyncable(account, authority) <= 0)
             return null
 
-        return if (ContentResolver.getSyncAutomatically(account, authority))
-            ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.period ?: SYNC_INTERVAL_MANUALLY
-        else
-            SYNC_INTERVAL_MANUALLY
+        val key = when {
+            authority == context.getString(R.string.address_books_authority) ->
+                KEY_SYNC_INTERVAL_ADDRESSBOOKS
+            authority == CalendarContract.AUTHORITY ->
+                KEY_SYNC_INTERVAL_CALENDARS
+            TaskProvider.ProviderName.values().any { it.authority == authority } ->
+                KEY_SYNC_INTERVAL_TASKS
+            else -> throw IllegalArgumentException("Authority does not exist: $authority")
+        }
+        return accountManager.getUserData(account, key)?.toLong()
     }
-
+    
     /**
-     * Sets the sync interval and enables/disables automatic sync for the given account and authority.
+     * Sets the sync interval and en- or disables periodic sync for the given account and authority.
      * Does *not* call [ContentResolver.setIsSyncable].
      *
-     * This method blocks until the settings have arrived in the sync framework, so it should not
-     * be called from the UI thread.
+     * This method blocks until a worker as been created and enqueued (sync active) or removed
+     * (sync disabled), so it should not be called from the UI thread.
      *
      * @param authority sync authority (like [CalendarContract.AUTHORITY])
      * @param seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
-     * otherwise: automatic sync will be enabled and set to the given number of seconds
+     * otherwise (≥ 15 min): automatic sync will be enabled and set to the given number of seconds
      *
      * @return whether the sync interval was successfully set
+     * @throws IllegalArgumentException when [seconds] is not [SYNC_INTERVAL_MANUALLY] but less than 15 min
      */
     @WorkerThread
     fun setSyncInterval(authority: String, seconds: Long): Boolean {
-        /* Ugly hack: because there is no callback for when the sync status/interval has been
-        updated, we need to make this call blocking. */
-        val setInterval: () -> Boolean =
-                if (seconds == SYNC_INTERVAL_MANUALLY) {
-                    {
-                        Logger.log.fine("Disabling automatic sync of $account/$authority")
-                        ContentResolver.setSyncAutomatically(account, authority, false)
+        if (seconds != SYNC_INTERVAL_MANUALLY && seconds < 60*15)
+            throw IllegalArgumentException("<15 min is not supported by Android")
 
-                        /* return */ !ContentResolver.getSyncAutomatically(account, authority)
-                    }
-                } else {
-                    {
-                        Logger.log.fine("Setting automatic sync of $account/$authority to $seconds seconds")
-                        ContentResolver.setSyncAutomatically(account, authority, true)
-                        ContentResolver.addPeriodicSync(account, authority, Bundle(), seconds)
-
-                        /* return */ ContentResolver.getSyncAutomatically(account, authority) &&
-                                ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.period == seconds
-                    }
-                }
-
-        // try up to 10 times with 100 ms pause
-        var success = false
-        for (idxTry in 0 until 10) {
-            success = setInterval()
-            if (success)
-                break
-            Thread.sleep(100)
-        }
-
-        if (!success)
+        val onlyManually = seconds == SYNC_INTERVAL_MANUALLY
+        try {
+            if (onlyManually) {
+                Logger.log.fine("Disabling periodic sync of $account/$authority")
+                PeriodicSyncWorker.disable(context, account, authority)
+            } else {
+                Logger.log.fine("Setting periodic sync of $account/$authority to $seconds seconds")
+                PeriodicSyncWorker.enable(context, account, authority, seconds)
+            }.result.get() // On operation (enable/disable) failure exception is thrown
+        } catch (e: Exception) {
+            Logger.log.log(Level.SEVERE, "Failed to set sync interval of $account/$authority to $seconds seconds", e)
             return false
-
-        // store sync interval in account settings (used when the provider is switched)
-        when {
-            authority == context.getString(R.string.address_books_authority) ->
-                accountManager.setUserData(account, KEY_SYNC_INTERVAL_ADDRESSBOOKS, seconds.toString())
-
-            authority == CalendarContract.AUTHORITY ->
-                accountManager.setUserData(account, KEY_SYNC_INTERVAL_CALENDARS, seconds.toString())
-
-            TaskProvider.ProviderName.values().any { it.authority == authority } ->
-                accountManager.setUserData(account, KEY_SYNC_INTERVAL_TASKS, seconds.toString())
         }
+
+        // Also enable/disable content change triggered syncs (SyncFramework automatic sync).
+        // We could make this a separate user adjustable setting later on.
+        setSyncOnContentChange(authority, !onlyManually)
+
+        // Store (user defined) sync interval in account settings. Used when the provider is
+        // switched or re-installed
+        val key = when {
+            authority == context.getString(R.string.address_books_authority) ->
+                 KEY_SYNC_INTERVAL_ADDRESSBOOKS
+            authority == CalendarContract.AUTHORITY ->
+                KEY_SYNC_INTERVAL_CALENDARS
+            TaskProvider.ProviderName.values().any { it.authority == authority } ->
+                KEY_SYNC_INTERVAL_TASKS
+            else ->
+                throw IllegalArgumentException("Sync interval not applicable to authority $authority")
+        }
+        accountManager.setUserData(account, key, seconds.toString())
 
         return true
     }
 
-    fun getSavedAddressbooksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_ADDRESSBOOKS)?.toLong()
-    fun getSavedCalendarsSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_CALENDARS)?.toLong()
+    /**
+     * Enables/disables sync adapter automatic sync (content triggered sync) for the given
+     * account and authority. Does *not* call [ContentResolver.setIsSyncable].
+     *
+     * We use the sync adapter framework only for the trigger, actual syncing is implemented
+     * with WorkManager. The trigger comes in through SyncAdapterService.
+     *
+     * This method blocks until the sync-on-content-change has been enabled or disabled, so it
+     * should not be called from the UI thread.
+     *
+     * @param enable    *true* enables automatic sync; *false* disables it
+     * @param authority sync authority (like [CalendarContract.AUTHORITY])
+     * @return whether the content triggered sync was enabled successfully
+     */
+    @WorkerThread
+    fun setSyncOnContentChange(authority: String, enable: Boolean): Boolean {
+        // Enable content change triggers (sync adapter framework)
+        val setContentTrigger: () -> Boolean =
+            /* Ugly hack: because there is no callback for when the sync status/interval has been
+            updated, we need to make this call blocking. */
+            if (enable) {{
+                Logger.log.fine("Enabling content-triggered sync of $account/$authority")
+                ContentResolver.setSyncAutomatically(account, authority, true) // enables content triggers
+                // Remove unwanted sync framework periodic syncs created by setSyncAutomatically
+                for (periodicSync in ContentResolver.getPeriodicSyncs(account, authority))
+                    ContentResolver.removePeriodicSync(periodicSync.account, periodicSync.authority, periodicSync.extras)
+                /* return */ ContentResolver.getSyncAutomatically(account, authority)
+            }} else {{
+                Logger.log.fine("Disabling content-triggered sync of $account/$authority")
+                ContentResolver.setSyncAutomatically(account, authority, false) // disables content triggers
+                /* return */ !ContentResolver.getSyncAutomatically(account, authority)
+            }}
+
+        // try up to 10 times with 100 ms pause
+        for (idxTry in 0 until 10) {
+            if (setContentTrigger())
+                // successfully set
+                return true
+            Thread.sleep(100)
+        }
+        return false
+    }
+
     fun getSavedTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
 
     fun getSyncWifiOnly() =
@@ -467,6 +462,62 @@ class AccountSettings(
         }
     }
 
+    /**
+     * Disables all sync adapter periodic syncs for every authority. Then enables
+     * corresponding PeriodicSyncWorkers
+     */
+    @Suppress("unused","FunctionName")
+    fun update_13_14() {
+        val authorities = listOf(
+            context.getString(R.string.address_books_authority),
+            CalendarContract.AUTHORITY,
+            TaskProvider.ProviderName.JtxBoard.authority,
+            TaskProvider.ProviderName.OpenTasks.authority,
+            TaskProvider.ProviderName.TasksOrg.authority
+        )
+
+        for (authority in authorities) {
+            // Enable PeriodicSyncWorker (WorkManager), with known intervals
+            v14_enableWorkManager(authority)
+            // Disable periodic syncs (sync adapter framework)
+            v14_disableSyncFramework(authority)
+        }
+    }
+    private fun v14_enableWorkManager(authority: String) {
+        getSyncInterval(authority)?.let { syncInterval ->
+            if (!setSyncInterval(authority, syncInterval))
+                Logger.log.severe("Failed to enable PeriodicSyncWorker for $authority")
+        }
+    }
+    private fun v14_disableSyncFramework(authority: String) {
+        // Cancel potentially running sync
+        ContentResolver.cancelSync(account, authority)
+
+        // Disable periodic syncs (sync adapter framework)
+        val disable: () -> Boolean = {
+            /* Ugly hack: because there is no callback for when the sync status/interval has been
+            updated, we need to make this call blocking. */
+            val syncs = ContentResolver.getPeriodicSyncs(account, authority)
+            for (sync in syncs) {
+                Logger.log.fine("Disabling sync framework periodic syncs of $account/$authority")
+                ContentResolver.removePeriodicSync(sync.account, sync.authority, sync.extras)
+            }
+            /* return */
+            !syncs.all { sync ->
+                ContentResolver.getPeriodicSyncs(sync.account, sync.authority).isEmpty()
+            }
+        }
+        // try up to 10 times with 100 ms pause
+        var success = false
+        for (idxTry in 0 until 10) {
+            success = disable()
+            if (success)
+                break
+            Thread.sleep(100)
+        }
+        if (!success)
+            Logger.log.severe("Failed to disable sync framework periodic syncs for $authority")
+    }
 
     @Suppress("unused","FunctionName")
     /**

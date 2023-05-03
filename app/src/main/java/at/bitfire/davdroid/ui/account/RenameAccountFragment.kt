@@ -165,9 +165,9 @@ class RenameAccountFragment: DialogFragment() {
             Logger.log.info("Updating account name references")
 
             // cancel maybe running synchronization
-            ContentResolver.cancelSync(oldAccount, null)
+            SyncWorker.cancelSync(context, oldAccount)
             for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
-                ContentResolver.cancelSync(addrBookAccount, null)
+                SyncWorker.cancelSync(context, addrBookAccount)
 
             // update account name references in database
             try {
@@ -219,7 +219,7 @@ class RenameAccountFragment: DialogFragment() {
             }
 
             // synchronize again
-            SyncWorker.requestSync(context, newAccount)
+            SyncWorker.enqueueAllAuthorities(context, newAccount)
         }
 
     }

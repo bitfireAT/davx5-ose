@@ -10,7 +10,6 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.*
 import android.widget.PopupMenu
-import androidx.annotation.AnyThread
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -28,18 +27,15 @@ import at.bitfire.davdroid.databinding.AccountCollectionsBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.PermissionsActivity
-import at.bitfire.davdroid.util.LiveDataUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -271,7 +267,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         @Assisted val accountModel: AccountActivity.Model,
         @Assisted val serviceId: Long,
         @Assisted val collectionType: String
-    ): ViewModel(), SyncStatusObserver {
+    ): ViewModel() {
 
         @AssistedFactory
         interface Factory {
@@ -305,81 +301,20 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         // observe RefreshCollectionsWorker status
         val isRefreshing = RefreshCollectionsWorker.isWorkerInState(context, RefreshCollectionsWorker.workerName(serviceId), WorkInfo.State.RUNNING)
 
-        // observe whether sync framework is active
-        private var syncFrameworkStatusHandle: Any? = null
-        private val isSyncFrameworkActive = MutableLiveData<Boolean>()
-        private val isSyncFrameworkPending = MutableLiveData<Boolean>()
-
         // observe SyncWorker state
         private val authorities =
             if (collectionType == Collection.TYPE_ADDRESSBOOK)
                 listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
             else
                 listOf(CalendarContract.AUTHORITY, taskProvider?.authority).filterNotNull()
-        private val isSyncWorkerRunning = SyncWorker.existsForAccount(context,
-            WorkInfo.State.RUNNING,
+        val isSyncActive = SyncWorker.exists(context,
+            listOf(WorkInfo.State.RUNNING),
             accountModel.account,
             authorities)
-        private val isSyncWorkerEnqueued = SyncWorker.existsForAccount(context,
-            WorkInfo.State.ENQUEUED,
+        val isSyncPending = SyncWorker.exists(context,
+            listOf(WorkInfo.State.ENQUEUED),
             accountModel.account,
             authorities)
-
-        // observe and combine states of sync framework and SyncWorker
-        val isSyncActive = LiveDataUtils.liveDataLogicOr(listOf(isSyncFrameworkActive, isSyncWorkerRunning))
-        val isSyncPending = LiveDataUtils.liveDataLogicOr(listOf(isSyncFrameworkPending, isSyncWorkerEnqueued))
-
-        init {
-            viewModelScope.launch(Dispatchers.Default) {
-                syncFrameworkStatusHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_PENDING +
-                        ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this@Model)
-                checkSyncFrameworkStatus()
-            }
-        }
-
-        override fun onCleared() {
-            syncFrameworkStatusHandle?.let {
-                ContentResolver.removeStatusChangeListener(it)
-            }
-        }
-
-        @AnyThread
-        override fun onStatusChanged(which: Int) {
-            checkSyncFrameworkStatus()
-        }
-
-        @AnyThread
-        @Synchronized
-        private fun checkSyncFrameworkStatus() {
-            // SyncFramework only, isSyncFrameworkActive/Pending gets combined in logic OR with SyncWorker state
-            if (collectionType == Collection.TYPE_ADDRESSBOOK) {
-                // CardDAV tab
-                val mainAuthority = context.getString(R.string.address_books_authority)
-                val mainSyncActive = ContentResolver.isSyncActive(accountModel.account, mainAuthority)
-                val mainSyncPending = ContentResolver.isSyncPending(accountModel.account, mainAuthority)
-
-                val addrBookAccounts = LocalAddressBook.findAll(context, null, accountModel.account).map { it.account }
-                val syncActive = addrBookAccounts.any { ContentResolver.isSyncActive(it, ContactsContract.AUTHORITY) }
-                val syncPending = addrBookAccounts.any { ContentResolver.isSyncPending(it, ContactsContract.AUTHORITY) }
-
-                isSyncFrameworkActive.postValue(mainSyncActive || syncActive)
-                isSyncFrameworkPending.postValue(mainSyncPending || syncPending)
-
-            } else {
-                // CalDAV tab
-                val authorities = mutableListOf(CalendarContract.AUTHORITY)
-                taskProvider?.let {
-                    authorities += it.authority
-                }
-                isSyncFrameworkActive.postValue(authorities.any {
-                    ContentResolver.isSyncActive(accountModel.account, it)
-                })
-                isSyncFrameworkPending.postValue(authorities.any {
-                    ContentResolver.isSyncPending(accountModel.account, it)
-                })
-            }
-        }
-
 
         // actions
 

@@ -17,6 +17,7 @@
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="share">Share</string>
+    <string name="no_internet_connection">No internet connection</string>
 
     <string name="database_destructive_migration_title">Database corrupted</string>
     <string name="database_destructive_migration_text">All accounts have been removed locally.</string>
@@ -241,7 +242,6 @@
     <string name="account_no_webcals">There are no calendar subscriptions (yet).</string>
     <string name="account_swipe_down">Swipe down to refresh the list from the server.</string>
     <string name="account_synchronize_now">Synchronize now</string>
-    <string name="account_synchronizing_now">Synchronizing now</string>
     <string name="account_settings">Account settings</string>
     <string name="account_rename">Rename account</string>
     <string name="account_rename_new_name">Unsaved local data may be dismissed. Re-synchronization is required after renaming. New account name:</string>
@@ -481,7 +481,7 @@
     <string name="webdav_notification_upload">Uploading WebDAV file</string>
     <string name="webdav_provider_root_title">WebDAV mount</string>
 
-    <!-- sync adapters -->
+    <!-- sync -->
     <string name="sync_error_permissions">DAVx⁵ permissions</string>
     <string name="sync_error_permissions_text">Additional permissions required</string>
     <string name="sync_error_tasks_too_old">%s too old</string>
@@ -491,6 +491,7 @@
     <string name="sync_error_http_dav">HTTP server error – %s</string>
     <string name="sync_error_local_storage">Local storage error – %s</string>
     <string name="sync_error_retry">Retry</string>
+    <string name="sync_error_retry_limit_reached">Soft error (max retries reached)</string>
     <string name="sync_error_view_item">View item</string>
     <string name="sync_invalid_contact">Received invalid contact from server</string>
     <string name="sync_invalid_event">Received invalid event from server</string>

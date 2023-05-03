@@ -21,15 +21,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.*
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.databinding.ActivityAccountBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.syncadapter.SyncWorker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -88,8 +87,8 @@ class AccountActivity: AppCompatActivity() {
         })
 
         binding.sync.setOnClickListener {
-            SyncWorker.requestSync(this, model.account)
-            Snackbar.make(binding.viewPager, R.string.account_synchronizing_now, Snackbar.LENGTH_LONG).show()
+            // enqueue sync worker for all authorities of this account
+            SyncWorker.enqueueAllAuthorities(this, model.account)
         }
     }
 
@@ -229,12 +228,12 @@ class AccountActivity: AppCompatActivity() {
         override fun getItemPosition(obj: Any) = POSITION_NONE
 
         override fun getPageTitle(position: Int): String =
-                when (position) {
-                    idxCardDav -> activity.getString(R.string.account_carddav)
-                    idxCalDav -> activity.getString(R.string.account_caldav)
-                    idxWebcal -> activity.getString(R.string.account_webcal)
-                    else -> throw IllegalArgumentException()
-                }
+            when (position) {
+                idxCardDav -> activity.getString(R.string.account_carddav)
+                idxCalDav -> activity.getString(R.string.account_caldav)
+                idxWebcal -> activity.getString(R.string.account_webcal)
+                else -> throw IllegalArgumentException()
+            }
 
     }
 

@@ -20,7 +20,6 @@ import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountUtils
-import at.bitfire.davdroid.syncadapter.SyncUtils.removePeriodicSyncs
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.vcard4android.*
 import java.io.ByteArrayOutputStream
@@ -63,7 +62,7 @@ open class LocalAddressBook(
                 throw IllegalStateException("Couldn't create address book account")
 
             val addressBook = LocalAddressBook(context, account, provider)
-            addressBook.updateSyncSettings()
+            addressBook.updateSyncFrameworkSettings()
 
             // initialize Contacts Provider Settings
             val values = ContentValues(2)
@@ -230,7 +229,7 @@ open class LocalAddressBook(
     fun update(info: Collection, forceReadOnly: Boolean) {
         val newAccountName = accountName(mainAccount, info)
 
-        if (account.name != newAccountName && Build.VERSION.SDK_INT >= 21) {
+        if (account.name != newAccountName) {
             // no need to re-assign contacts to new account, because they will be deleted by contacts provider in any case
             val accountManager = AccountManager.get(context)
             val future = accountManager.renameAccount(account, newAccountName, null, null)
@@ -261,7 +260,7 @@ open class LocalAddressBook(
         }
 
         // make sure it will still be synchronized when contacts are updated
-        updateSyncSettings()
+        updateSyncFrameworkSettings()
     }
 
     fun delete() {
@@ -277,17 +276,23 @@ open class LocalAddressBook(
     /**
      * Updates the sync framework settings for this address book:
      *
-     * - Contacts sync of this address book account shall be possible → isSyncable = 1
-     * - When a contact is changed, a sync shall be initiated (ContactsSyncAdapter) -> syncAutomatically = true
-     * - However, we don't want a periodic (ContactsSyncAdapter) sync for this address book
-     * because contact synchronization is handled by AddressBooksSyncAdapter
-     * (which has its own periodic sync according to the account's contacts sync interval). */
-    fun updateSyncSettings() {
+     * - Contacts sync of this address book account shall be possible -> isSyncable = 1
+     * - When a contact is changed, a sync shall be initiated -> syncAutomatically = true
+     * - Remove unwanted sync framework periodic syncs created by setSyncAutomatically, as
+     * we use PeriodicSyncWorker for scheduled syncs
+     */
+    fun updateSyncFrameworkSettings() {
+        // Enable sync-ability
         if (ContentResolver.getIsSyncable(account, ContactsContract.AUTHORITY) != 1)
             ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1)
+
+        // Enable content trigger
         if (!ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY))
             ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true)
-        removePeriodicSyncs(account, ContactsContract.AUTHORITY)
+
+        // Remove periodic syncs (setSyncAutomatically also creates periodic syncs, which we don't want)
+        for (periodicSync in ContentResolver.getPeriodicSyncs(account, ContactsContract.AUTHORITY))
+            ContentResolver.removePeriodicSync(periodicSync.account, periodicSync.authority, periodicSync.extras)
     }
 
 

@@ -31,6 +31,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
+import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.BuildConfig
@@ -43,13 +45,12 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
+import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
-import at.bitfire.ical4android.util.MiscUtils
 import at.bitfire.ical4android.util.MiscUtils.ContentProviderClientHelper.closeCompat
-import at.bitfire.ical4android.util.MiscUtils.UriHelper.asSyncAdapter as asCalendarSyncAdapter
-import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract
-import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -62,6 +63,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.apache.commons.text.WordUtils
 import org.dmfs.tasks.contract.TaskContract
 import java.io.*
 import java.util.*
@@ -69,6 +71,9 @@ import java.util.logging.Level
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import javax.inject.Inject
+import at.bitfire.ical4android.util.MiscUtils.UriHelper.asSyncAdapter as asCalendarSyncAdapter
+import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
+import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
 @AndroidEntryPoint
 class DebugInfoActivity : AppCompatActivity() {
@@ -458,8 +463,8 @@ class DebugInfoActivity : AppCompatActivity() {
                 }
                 writer.append('\n')
 
-                writer.append("\nACCOUNTS\n\n")
                 // main accounts
+                writer.append("\nACCOUNTS\n\n")
                 val accountManager = AccountManager.get(context)
                 val mainAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type))
                 val addressBookAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).toMutableList()
@@ -553,6 +558,7 @@ class DebugInfoActivity : AppCompatActivity() {
         private fun dumpMainAccount(account: Account, writer: Writer) {
             writer.append(" - Account: ${account.name}\n")
             writer.append(dumpAccount(account, AccountDumpInfo.mainAccount(context, account)))
+            writer.append(dumpSyncWorkersInfo(account))
             try {
                 val accountSettings = AccountSettings(context, account)
                 writer.append("  WiFi only: ${accountSettings.getSyncWifiOnly()}")
@@ -581,7 +587,7 @@ class DebugInfoActivity : AppCompatActivity() {
         }
 
         private fun dumpAccount(account: Account, infos: Iterable<AccountDumpInfo>): String {
-            val table = TextTable("Authority", "Syncable", "Auto-sync", "Interval", "Entries")
+            val table = TextTable("Authority", "getIsSyncable", "getSyncAutomatically", "PeriodicSyncWorker", "Interval", "Entries")
             for (info in infos) {
                 var nrEntries = "—"
                 var client: ContentProviderClient? = null
@@ -599,15 +605,50 @@ class DebugInfoActivity : AppCompatActivity() {
                     } finally {
                         client?.closeCompat()
                     }
+                val accountSettings = AccountSettings(context, account)
                 table.addLine(
                     info.authority,
                     ContentResolver.getIsSyncable(account, info.authority),
-                    ContentResolver.getSyncAutomatically(account, info.authority),
-                    ContentResolver.getPeriodicSyncs(account, info.authority).firstOrNull()?.let { periodicSync ->
-                        "${periodicSync.period / 60} min"
-                    },
+                    ContentResolver.getSyncAutomatically(account, info.authority),  // content-triggered sync
+                    PeriodicSyncWorker.isEnabled(context, account, info.authority), // should always be false for address book accounts
+                    accountSettings.getSyncInterval(info.authority)?.let {"${it/60} min"},
                     nrEntries
                 )
+            }
+            return table.toString()
+        }
+
+        /**
+         * Gets sync workers info
+         * Note: WorkManager does not return worker names when queried, so we create them and ask
+         * whether they exist one by one
+         */
+        private fun dumpSyncWorkersInfo(account: Account): String {
+            val table = TextTable("Tags", "Authority", "State", "Retries", "Generation", "ID")
+            listOf(
+                context.getString(R.string.address_books_authority),
+                CalendarContract.AUTHORITY,
+                TaskProvider.ProviderName.JtxBoard.authority,
+                TaskProvider.ProviderName.OpenTasks.authority,
+                TaskProvider.ProviderName.TasksOrg.authority
+            ).forEach { authority ->
+                for (workerName in listOf(
+                    SyncWorker.workerName(account, authority),
+                    PeriodicSyncWorker.workerName(account, authority)
+                )) {
+                    WorkManager.getInstance(context).getWorkInfos(
+                        WorkQuery.Builder.fromUniqueWorkNames(listOf(workerName)).build()
+                    ).get().forEach { workInfo ->
+                        table.addLine(
+                            workInfo.tags.map { StringUtils.removeStartIgnoreCase(it, SyncWorker::class.java.getPackage()!!.name + ".") },
+                            authority,
+                            workInfo.state,
+                            workInfo.runAttemptCount,
+                            workInfo.generation,
+                            workInfo.id
+                        )
+                    }
+                }
             }
             return table.toString()
         }

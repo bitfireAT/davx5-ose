@@ -88,11 +88,6 @@ object SyncUtils {
         nm.notifyIfPossible(NotificationUtils.NOTIFY_TASKS_PROVIDER_TOO_OLD, notify.build())
     }
 
-    fun removePeriodicSyncs(account: Account, authority: String) {
-        for (sync in ContentResolver.getPeriodicSyncs(account, authority))
-            ContentResolver.removePeriodicSync(sync.account, sync.authority, sync.extras)
-    }
-
     /**
      * Returns a list of all available sync authorities for main accounts (!= address book accounts):
      *
@@ -115,7 +110,6 @@ object SyncUtils {
         }
         return result
     }
-
 
     // task sync utils
 

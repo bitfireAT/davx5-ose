@@ -11,7 +11,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.net.Uri
-import android.os.Bundle
 import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.ContactsContract
@@ -68,7 +67,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     val account: Account,
     val accountSettings: AccountSettings,
     val httpClient: HttpClient,
-    val extras: Bundle,
+    val extras: Array<String>,
     val authority: String,
     val syncResult: SyncResult,
     val localCollection: CollectionType
@@ -159,7 +158,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             Logger.log.info("Processing local deletes/updates")
             val modificationsPresent = processLocallyDeleted() || uploadDirty()
 
-            if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC)) {
+            if (extras.contains(Syncer.SYNC_EXTRAS_FULL_RESYNC)) {
                 Logger.log.info("Forcing re-synchronization of all entries")
 
                 // forget sync state of collection (→ initial sync in case of SyncAlgorithm.COLLECTION_SYNC)
@@ -256,7 +255,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         }, { e, local, remote ->
             when (e) {
-                // sync was cancelled or account has been removed: re-throw to SyncAdapterService
+                // sync was cancelled or account has been removed: re-throw to SyncAdapterService (now BaseSyncer)
                 is InterruptedException,
                 is InterruptedIOException,
                 is InvalidAccountException ->
@@ -466,8 +465,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * [uploadDirty] were true), a sync is always required and this method
      * should *not* be evaluated.
      *
-     * Will return _true_ if [SyncAdapterService.SYNC_EXTRAS_RESYNC] and/or
-     * [SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC] is set in [extras].
+     * Will return _true_ if [Syncer.SYNC_EXTRAS_RESYNC] and/or
+     * [Syncer.SYNC_EXTRAS_FULL_RESYNC] is set in [extras].
      *
      * @param state remote sync state to compare local sync state with
      *
@@ -475,8 +474,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * sync algorithm is required
      */
     protected open fun syncRequired(state: SyncState?): Boolean {
-        if (extras.containsKey(SyncAdapterService.SYNC_EXTRAS_RESYNC) ||
-            extras.containsKey(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC))
+        if (extras.contains(Syncer.SYNC_EXTRAS_RESYNC) ||
+            extras.contains(Syncer.SYNC_EXTRAS_FULL_RESYNC))
             return true
 
         val localState = localCollection.lastSyncState
