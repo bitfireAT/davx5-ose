@@ -7,7 +7,6 @@ apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.arnyminerz.locator'
 
 // Android configuration
 android {

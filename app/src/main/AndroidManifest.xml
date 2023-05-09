@@ -53,8 +53,7 @@
         android:theme="@style/AppTheme"
         android:resizeableActivity="true"
         tools:ignore="UnusedAttribute"
-        android:supportsRtl="true"
-        android:localeConfig="@xml/locales_config">
+        android:supportsRtl="true">
 
         <!-- required for Hilt/WorkManager integration -->
         <provider
@@ -299,18 +298,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/debug_paths" />
         </provider>
-
-
-        <!-- Support language selection on Android 12 and lower -->
-        <service
-            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
-            android:enabled="false"
-            android:exported="false">
-            <meta-data
-                android:name="autoStoreLocales"
-                android:value="true" />
-        </service>
-
     </application>
 
     <!-- package visiblity – which apps do we need to see? -->
