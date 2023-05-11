@@ -6,17 +6,26 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.app.Application
 import android.app.usage.UsageStatsManager
-import android.content.*
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.ContentUris
+import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
+import android.os.LocaleList
+import android.os.PowerManager
+import android.os.StatFs
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
@@ -27,9 +36,8 @@ import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
@@ -51,22 +59,25 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import at.bitfire.ical4android.util.MiscUtils.ContentProviderClientHelper.closeCompat
 import at.techbee.jtx.JtxContract
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.apache.commons.text.WordUtils
 import org.dmfs.tasks.contract.TaskContract
-import java.io.*
-import java.util.*
+import java.io.File
+import java.io.IOError
+import java.io.IOException
+import java.io.StringReader
+import java.io.Writer
+import java.util.Locale
+import java.util.TimeZone
 import java.util.logging.Level
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -116,9 +127,9 @@ class DebugInfoActivity : AppCompatActivity() {
         binding.model = model
         binding.lifecycleOwner = this
 
-        model.cause.observe(this, Observer { cause ->
+        model.cause.observe(this) { cause ->
             if (cause == null)
-                return@Observer
+                return@observe
 
             binding.causeCaption.text = when (cause) {
                 is HttpException -> getString(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
@@ -138,11 +149,15 @@ class DebugInfoActivity : AppCompatActivity() {
                 else
                     R.string.debug_info_unexpected_error
             )
-        })
+        }
 
-        model.debugInfo.observe(this, Observer { debugInfo ->
+        model.debugInfo.observe(this) { debugInfo ->
             val showDebugInfo = View.OnClickListener {
-                val uri = FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), debugInfo)
+                val uri = FileProvider.getUriForFile(
+                    this,
+                    getString(R.string.authority_debug_provider),
+                    debugInfo
+                )
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.setDataAndType(uri, "text/plain")
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -156,9 +171,9 @@ class DebugInfoActivity : AppCompatActivity() {
                 isEnabled = true
             }
             binding.zipShare.setOnClickListener { shareArchive() }
-        })
+        }
 
-        model.logFile.observe(this, Observer { logs ->
+        model.logFile.observe(this) { logs ->
             binding.logsView.setOnClickListener {
                 val uri = FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), logs)
                 val intent = Intent(Intent.ACTION_VIEW)
@@ -166,27 +181,50 @@ class DebugInfoActivity : AppCompatActivity() {
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 startActivity(Intent.createChooser(intent, null))
             }
-        })
+        }
+
+        model.zipFile.observe(this) { zipFile ->
+            if (zipFile != null) {
+                // ZIP file is ready
+                val builder = ShareCompat.IntentBuilder(this)
+                    .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
+                    .setText(getString(R.string.debug_info_attached))
+                    .setType("*/*")     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
+                    .setStream(
+                        FileProvider.getUriForFile(
+                            this,
+                            getString(R.string.authority_debug_provider),
+                            zipFile
+                        )
+                    )
+                builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+                builder.startChooser()
+
+                // Not beautiful, because it changes model data from the view.
+                // See https://github.com/android/architecture-components-samples/issues/63
+                model.zipFile.value = null
+            }
+        }
+
+        model.error.observe(this) { message ->
+            if (message != null) {
+                Snackbar.make(binding.fab, message, Snackbar.LENGTH_LONG).show()
+
+                // Reset error message so that it won't be shown when activity is re-created
+                model.error.value = null
+            }
+        }
     }
 
     fun shareArchive() {
-        model.generateZip { zipFile ->
-            val builder = ShareCompat.IntentBuilder.from(this)
-                .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
-                .setText(getString(R.string.debug_info_attached))
-                .setType("*/*")     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
-                .setStream(FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), zipFile))
-            builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
-            builder.startChooser()
-        }
+        model.generateZip()
     }
 
 
     @HiltViewModel
     class ReportModel @Inject constructor(
-        @ApplicationContext val context: Context
-    ) : ViewModel() {
-
+        val context: Application
+    ) : AndroidViewModel(context) {
         @Inject
         lateinit var db: AppDatabase
         @Inject
@@ -200,11 +238,13 @@ class DebugInfoActivity : AppCompatActivity() {
         val remoteResource = MutableLiveData<String>()
         val debugInfo = MutableLiveData<File>()
 
+        // feedback for UI
         val zipProgress = MutableLiveData(false)
         val zipFile = MutableLiveData<File>()
+        val error = MutableLiveData<String>()
 
         // private storage, not readable by others
-        private val debugInfoDir = File(context.filesDir, "debug")
+        private val debugInfoDir = File(getApplication<Application>().filesDir, "debug")
 
         init {
             // create debug info directory
@@ -339,7 +379,7 @@ class DebugInfoActivity : AppCompatActivity() {
                                 info.packageName, info.versionName, PackageInfoCompat.getLongVersionCode(info),
                                 pm.getInstallerPackageName(info.packageName) ?: '—', notes.joinToString(", ")
                             )
-                        } catch (e: PackageManager.NameNotFoundException) {
+                        } catch (ignored: PackageManager.NameNotFoundException) {
                         }
                     writer.append(table.toString())
                 } catch (e: Exception) {
@@ -504,52 +544,49 @@ class DebugInfoActivity : AppCompatActivity() {
             debugInfo.postValue(debugInfoFile)
         }
 
-        fun generateZip(onSuccess: (File) -> Unit) {
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    zipProgress.postValue(true)
+        fun generateZip() {
+            try {
+                zipProgress.postValue(true)
 
-                    val zipFile = File(debugInfoDir, "davx5-debug.zip")
-                    Logger.log.fine("Writing debug info to ${zipFile.absolutePath}")
-                    ZipOutputStream(zipFile.outputStream().buffered()).use { zip ->
-                        zip.setLevel(9)
-                        debugInfo.value?.let { debugInfo ->
-                            zip.putNextEntry(ZipEntry("debug-info.txt"))
-                            debugInfo.inputStream().use {
-                                IOUtils.copy(it, zip)
-                            }
-                            zip.closeEntry()
+                val file = File(debugInfoDir, "davx5-debug.zip")
+                Logger.log.fine("Writing debug info to ${file.absolutePath}")
+                ZipOutputStream(file.outputStream().buffered()).use { zip ->
+                    zip.setLevel(9)
+                    debugInfo.value?.let { debugInfo ->
+                        zip.putNextEntry(ZipEntry("debug-info.txt"))
+                        debugInfo.inputStream().use {
+                            IOUtils.copy(it, zip)
                         }
-
-                        val logs = logFile.value
-                        if (logs != null) {
-                            // verbose logs available
-                            zip.putNextEntry(ZipEntry(logs.name))
-                            logs.inputStream().use {
-                                IOUtils.copy(it, zip)
-                            }
-                            zip.closeEntry()
-                        } else {
-                            // logcat (short logs)
-                            try {
-                                Runtime.getRuntime().exec("logcat -d").also { logcat ->
-                                    zip.putNextEntry(ZipEntry("logcat.txt"))
-                                    IOUtils.copy(logcat.inputStream, zip)
-                                }
-                            } catch (e: Exception) {
-                                Logger.log.log(Level.SEVERE, "Couldn't attach logcat", e)
-                            }
-                        }
+                        zip.closeEntry()
                     }
 
-                    withContext(Dispatchers.Main) {
-                        onSuccess(zipFile)
+                    val logs = logFile.value
+                    if (logs != null) {
+                        // verbose logs available
+                        zip.putNextEntry(ZipEntry(logs.name))
+                        logs.inputStream().use {
+                            IOUtils.copy(it, zip)
+                        }
+                        zip.closeEntry()
+                    } else {
+                        // logcat (short logs)
+                        try {
+                            Runtime.getRuntime().exec("logcat -d").also { logcat ->
+                                zip.putNextEntry(ZipEntry("logcat.txt"))
+                                IOUtils.copy(logcat.inputStream, zip)
+                            }
+                        } catch (e: Exception) {
+                            Logger.log.log(Level.SEVERE, "Couldn't attach logcat", e)
+                        }
                     }
-                } catch (e: IOException) {
-                    // creating attachment with debug info failed
-                    Logger.log.log(Level.SEVERE, "Couldn't attach debug info", e)
-                    Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show()
                 }
+
+                // success, show ZIP file
+                zipFile.postValue(file)
+            } catch (e: Exception) {
+                Logger.log.log(Level.SEVERE, "Couldn't generate debug info ZIP", e)
+                error.postValue(e.localizedMessage)
+            } finally {
                 zipProgress.postValue(false)
             }
         }
