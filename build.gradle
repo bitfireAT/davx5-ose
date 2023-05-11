@@ -7,7 +7,7 @@ buildscript {
         aboutLibraries: '10.6.2',
         appIntro: '6.2.0',
         composeBom: '2023.04.01',
-        dav4jvm: 'aac98bd76cf3034194c9ba6d2bf58212083a72a0',
+        dav4jvm: '47dd6a9',
         hilt: '2.45',
         kotlin: '1.8.20',
         okhttp: '4.10.0',
