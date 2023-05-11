@@ -143,7 +143,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             accountModel.showOnlyPersonal.value?.let { value ->
                 showOnlyPersonal.isChecked = value
             }
-            accountModel.showOnlyPersonal_writable.value?.let { writable ->
+            accountModel.showOnlyPersonalWritable.value?.let { writable ->
                 showOnlyPersonal.isEnabled = writable
             }
         }

@@ -235,7 +235,13 @@ class AccountListFragment: Fragment() {
 
         // Accounts
         private val accountsUpdated = MutableLiveData<Boolean>()
-        private val syncWorkersActive = SyncWorker.exists(application, listOf(WorkInfo.State.RUNNING))
+        private val syncWorkersActive = SyncWorker.exists(
+            application,
+            listOf(
+                WorkInfo.State.RUNNING,
+                WorkInfo.State.ENQUEUED
+            )
+        )
 
         val accounts = object : MediatorLiveData<List<AccountInfo>>() {
             init {
