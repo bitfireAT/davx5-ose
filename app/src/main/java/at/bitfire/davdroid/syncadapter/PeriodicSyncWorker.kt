@@ -55,7 +55,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
          * @param interval   interval between recurring syncs in seconds
          * @return operation object to check when and whether activation was successful
          */
-        fun enable(context: Context, account: Account, authority: String, interval: Long): Operation {
+        fun enable(context: Context, account: Account, authority: String, interval: Long, syncWifiOnly: Boolean): Operation {
             val arguments = Data.Builder()
                 .putString(ARG_AUTHORITY, authority)
                 .putString(ARG_ACCOUNT_NAME, account.name)
@@ -63,7 +63,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
                 .build()
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(
-                    if (AccountSettings(context, account).getSyncWifiOnly())
+                    if (syncWifiOnly)
                         NetworkType.UNMETERED
                     else
                         NetworkType.CONNECTED

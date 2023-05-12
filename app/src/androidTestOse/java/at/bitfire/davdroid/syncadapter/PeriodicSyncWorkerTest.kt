@@ -84,14 +84,14 @@ class PeriodicSyncWorkerTest {
 
     @Test
     fun enable_enqueuesPeriodicWorker() {
-        PeriodicSyncWorker.enable(context, account, CalendarContract.AUTHORITY, 60)
+        PeriodicSyncWorker.enable(context, account, CalendarContract.AUTHORITY, 60, false)
         val workerName = PeriodicSyncWorker.workerName(account, CalendarContract.AUTHORITY)
         assertTrue(workScheduledOrRunning(context, workerName))
     }
 
     @Test
     fun disable_removesPeriodicWorker() {
-        PeriodicSyncWorker.enable(context, account, CalendarContract.AUTHORITY, 60)
+        PeriodicSyncWorker.enable(context, account, CalendarContract.AUTHORITY, 60, false)
         PeriodicSyncWorker.disable(context, account, CalendarContract.AUTHORITY)
         val workerName = PeriodicSyncWorker.workerName(account, CalendarContract.AUTHORITY)
         assertFalse(workScheduledOrRunning(context, workerName))
