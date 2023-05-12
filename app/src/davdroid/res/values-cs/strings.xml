@@ -207,7 +207,6 @@
   <string name="account_no_webcals">(Zatím) zde nejsou žádná přihlášení se k odebírání kalendáře.</string>
   <string name="account_swipe_down">Seznam ze serveru znovu načtete přejetím prstem dolů.</string>
   <string name="account_synchronize_now">Synchronizovat nyní</string>
-  <string name="account_synchronizing_now">Probíhá synchronizace</string>
   <string name="account_settings">Nastavení účtu</string>
   <string name="account_rename">Přejmenovat účet</string>
   <string name="account_rename_new_name">Neuložená místní data mohou být vynechána. Po přejmenování je vyžadována nová synchronizace. Nové jméno účtu:</string>
@@ -412,7 +411,7 @@
   <string name="webdav_notification_download">Stahuje se WebDAV soubor</string>
   <string name="webdav_notification_upload">Nahrává se WebDAV soubor</string>
   <string name="webdav_provider_root_title">WebDAV připojení</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">DAVx⁵ oprávnění</string>
   <string name="sync_error_permissions_text">Vyžadována dodatečná oprávnění</string>
   <string name="sync_error_tasks_too_old">Příliš stará verze %s</string>

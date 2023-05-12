@@ -199,7 +199,6 @@
   <string name="account_no_webcals">No hay suscripciones a calendarios (todavía).</string>
   <string name="account_swipe_down">Desliza hacia abajo para actualizar la lista desde el servidor. </string>
   <string name="account_synchronize_now">Sincronizar ahora</string>
-  <string name="account_synchronizing_now">Sincronizando…</string>
   <string name="account_settings">Ajustes de cuenta</string>
   <string name="account_rename">Renombrar cuenta</string>
   <string name="account_rename_new_name">Información local no guardada puede ser desechada. Se requiere resincronizar después de renombrar. Nuevo nombre de cuenta:</string>
@@ -402,7 +401,7 @@
   <string name="webdav_notification_download">Descargando el fichero WebDAV</string>
   <string name="webdav_notification_upload">Subiendo fichero WebDAV</string>
   <string name="webdav_provider_root_title">Montaje WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Permisos de DAVx⁵</string>
   <string name="sync_error_permissions_text">Permisos adicionales requeridos</string>
   <string name="sync_error_tasks_too_old">%s muy antiguo</string>

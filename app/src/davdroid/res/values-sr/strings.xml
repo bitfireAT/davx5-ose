@@ -127,7 +127,6 @@
   <string name="account_no_calendars">Нема календара (још увек).</string>
   <string name="account_swipe_down">Повуците на доле да би сте освежили списак са сервера.</string>
   <string name="account_synchronize_now">Синхронизуј одмах</string>
-  <string name="account_synchronizing_now">Синхронизујем</string>
   <string name="account_settings">Поставке налога</string>
   <string name="account_rename">Преименуј налог</string>
   <string name="account_rename_new_name">Несачувани локални подаци могу бити изгубљни. Потребна је ресинхронизација након преименовања. Нови назив налога:</string>
@@ -268,7 +267,7 @@
   <string name="webdav_add_mount_display_name">Име за приказ</string>
   <string name="webdav_add_mount_username">Корисничко име</string>
   <string name="webdav_add_mount_password">Лозинка</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">ДАВдроид дозволе</string>
   <string name="sync_error_permissions_text">Потребне су додатне доволе</string>
   <string name="sync_error_authentication_failed">Аутентификација није успела (проверите акредитиве за пријаву)</string>

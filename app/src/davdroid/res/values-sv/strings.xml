@@ -211,7 +211,6 @@
   <string name="account_no_webcals">Det finns inga kalenderprenumerationer (ännu).</string>
   <string name="account_swipe_down">Svep nedåt för att uppdatera listan från servern.</string>
   <string name="account_synchronize_now">Synkronisera nu</string>
-  <string name="account_synchronizing_now">Synkroniserar nu</string>
   <string name="account_settings">Kontoinställningar</string>
   <string name="account_rename">Byt namn på kontot</string>
   <string name="account_rename_new_name">Lokala data som inte har sparats kan avvisas. Omsynkronisering krävs efter byte av namn. Nytt kontonamn:</string>
@@ -412,7 +411,7 @@
   <string name="webdav_notification_download">Laddar ner WebDAV-fil</string>
   <string name="webdav_notification_upload">Laddar upp WebDAV-fil</string>
   <string name="webdav_provider_root_title">WebDAV-fäste</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">DAVx⁵-behörigheter</string>
   <string name="sync_error_permissions_text">Ytterligare behörigheter krävs</string>
   <string name="sync_error_tasks_too_old">%s för gammal</string>

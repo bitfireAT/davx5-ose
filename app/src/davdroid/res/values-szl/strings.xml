@@ -102,7 +102,6 @@
   <string name="account_no_webcals">Niy ma (jeszcze) żodnych subskrypcyji kalyndorzōw.</string>
   <string name="account_swipe_down">Przeciōng w dōł, żeby ôdświyżyć lista ze serwera.</string>
   <string name="account_synchronize_now">Synchrōnizuj teroz</string>
-  <string name="account_synchronizing_now">Synchronizacyjo trwo</string>
   <string name="account_settings">Sztelōnki kōnta</string>
   <string name="account_rename">Przemianuj kōnto</string>
   <string name="account_rename_new_name">Niyspamiyntane dane lokalne mogōm być skasowane. Synchrōnizacyjo na nowo je wymogano po przemianowaniu. Nowe miano kōnta:</string>
@@ -243,7 +242,7 @@
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Miano używocza</string>
   <string name="webdav_add_mount_password">Hasło</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Uprawniynia DAVx⁵</string>
   <string name="sync_error_permissions_text">Wymogane ekstra uprawniynia</string>
   <string name="sync_error_authentication_failed">Autoryzacyjo sie niy podarziła (dej pozōr na dane logowanio)</string>

@@ -211,7 +211,6 @@
   <string name="account_no_webcals">Ez dago egutegi harpidetzarik (oraindik).</string>
   <string name="account_swipe_down">Lerratu beherantz zerbitzariaren zerrenda freskatzeko.</string>
   <string name="account_synchronize_now">Sinkronizatu orain</string>
-  <string name="account_synchronizing_now">Sinkronizatzen orain</string>
   <string name="account_settings">Kontuaren ezarpenak</string>
   <string name="account_rename">Berrizendatu kontua</string>
   <string name="account_rename_new_name">Gorde gabeko datu lokalak baztertu daitezke. Berriro sinkronizatu behar da izena aldatu ostean. Kontuaren izen berria:</string>
@@ -412,7 +411,7 @@
   <string name="webdav_notification_download">WebDAV fitxategia deskargatzen</string>
   <string name="webdav_notification_upload">WebDAV fitxategia kargatzen</string>
   <string name="webdav_provider_root_title">WebDAV muntaia</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">DAVx⁵ baimenak</string>
   <string name="sync_error_permissions_text">Baimen gehigarriak beharrezkoak</string>
   <string name="sync_error_tasks_too_old">%s zaharregia</string>

@@ -211,7 +211,6 @@
   <string name="account_no_webcals">Non tes subscricións a calendario (aínda).</string>
   <string name="account_swipe_down">Arrastra hacia abaixo para actualizar a lista desde o servidor.</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
-  <string name="account_synchronizing_now">Sincronizando</string>
   <string name="account_settings">Axustes da conta</string>
   <string name="account_rename">Renomear conta</string>
   <string name="account_rename_new_name">Os datos locais non gardados perderanse. A resincronización é precisa tras renomear. Novo nome da conta:</string>
@@ -412,7 +411,7 @@
   <string name="webdav_notification_download">Descargando ficheiro WebDAV</string>
   <string name="webdav_notification_upload">Subindo ficheiro WebDAV</string>
   <string name="webdav_provider_root_title">Montaxe WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Permisos DAVx⁵</string>
   <string name="sync_error_permissions_text">Precísanse permisos adicionais</string>
   <string name="sync_error_tasks_too_old">%s demasiado antigo</string>
@@ -422,6 +421,7 @@
   <string name="sync_error_http_dav">Fallo servidor HTTP – %s</string>
   <string name="sync_error_local_storage">Fallo almacenamento local – %s</string>
   <string name="sync_error_retry">Reintentar</string>
+  <string name="sync_error_retry_limit_reached">Erro (acadouse o máx. de reintentos)</string>
   <string name="sync_error_view_item">Ver elemento</string>
   <string name="sync_invalid_contact">Recibido contacto non válido desde o servidor</string>
   <string name="sync_invalid_event">Recibido evento non válido desde o servidor</string>
