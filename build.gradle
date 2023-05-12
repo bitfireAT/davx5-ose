@@ -9,7 +9,7 @@ buildscript {
         composeBom: '2023.04.01',
         dav4jvm: '47dd6a9',
         hilt: '2.45',
-        kotlin: '1.8.20',
+        kotlin: '1.8.21',       // keep in sync with app/build.gradle composeOptions.kotlinCompilerExtensionVersion
         okhttp: '4.10.0',
         room: '2.5.1',
         // latest Apache Commons versions that don't require Java 8 (Android 7)
