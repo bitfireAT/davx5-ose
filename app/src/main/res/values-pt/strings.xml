@@ -145,7 +145,6 @@
   <string name="account_no_webcals">Não há assinaturas de calendário (ainda).</string>
   <string name="account_swipe_down">Deslize para baixo para atualizar a lista do servidor.</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
-  <string name="account_synchronizing_now">Sincronizando</string>
   <string name="account_settings">Configurações da conta</string>
   <string name="account_rename">Renomear conta</string>
   <string name="account_rename_new_name">Dados locais que não foram salvos podem ser descartados. É necessário efetuar uma nova sincronização após renomear. Novo nome da conta:</string>
@@ -312,7 +311,7 @@
   <string name="webdav_mounts_share_content">Partilhar conteúdo</string>
   <string name="webdav_add_mount_username">Nome do usuário</string>
   <string name="webdav_add_mount_password">Palavra passe</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Permissões do DAVx⁵</string>
   <string name="sync_error_permissions_text">É necessário permissões adicionais</string>
   <string name="sync_error_tasks_required_version">Versão mínima exigida: %1$s</string>

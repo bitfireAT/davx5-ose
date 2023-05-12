@@ -83,7 +83,6 @@
   <string name="account_no_webcals">Neexistujú žiadne odbery pre kalendár (zatiaľ)</string>
   <string name="account_swipe_down">Potiahnite nadol aby ste znovu načítali zoznam zo serveru</string>
   <string name="account_synchronize_now">Teraz synchronizovať</string>
-  <string name="account_synchronizing_now">Práve sa synchronizuje</string>
   <string name="account_settings">Nastavenia používateľského účtu</string>
   <string name="account_rename">Premenovať používateľský účet</string>
   <string name="account_rename_new_name">Neuložené miestne dáta môžu byť zabudnuté. Po premenovaní je potrebná opätovná synchronizácia. Nové meno účtu:</string>
@@ -226,7 +225,7 @@
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Meno používateľa</string>
   <string name="webdav_add_mount_password">Heslo</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Oprávnenia DAVx⁵ </string>
   <string name="sync_error_permissions_text">Vyžadujú sa dodatočné oprávnenia</string>
   <string name="sync_error_authentication_failed">Overenie zlyhalo  (skontroluje prihlasovacie údaje)</string>

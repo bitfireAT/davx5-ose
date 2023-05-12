@@ -174,7 +174,6 @@
   <string name="account_no_webcals">Δεν υπάρχουν συνδρομές ημερολογίου (ακόμα).</string>
   <string name="account_swipe_down">Σύρετε προς τα κάτω για να ανανεώσετε τη λίστα από το διακομιστή.</string>
   <string name="account_synchronize_now">Συγχρονισμός τώρα</string>
-  <string name="account_synchronizing_now">Γίνεται συγχρονισμός τώρα</string>
   <string name="account_settings">Ρυθμίσεις λογαριασμού</string>
   <string name="account_rename">Μετονομασία λογαριασμού</string>
   <string name="account_rename_new_name">Τα μη αποθηκευμένα τοπικά δεδομένα ενδέχεται να απορριφθούν. Απαιτείται εκ νέου συγχρονισμός μετά τη μετονομασία. Νέο όνομα λογαριασμού:</string>
@@ -357,7 +356,7 @@
   <string name="webdav_notification_download">Kαταφόρτωση αρχείου WebDAV</string>
   <string name="webdav_notification_upload">Ανέβασμα αρχείου WebDAV</string>
   <string name="webdav_provider_root_title">Bάση WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
   <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>
   <string name="sync_error_tasks_too_old">Παλιά έκδοση %s</string>

@@ -211,7 +211,6 @@
   <string name="account_no_webcals">Er zijn (nog) geen kalender abonnementen.</string>
   <string name="account_swipe_down">Omlaag vegen om de lijst van de server te actualiseren.</string>
   <string name="account_synchronize_now">Nu synchroniseren</string>
-  <string name="account_synchronizing_now">Synchroniseert…</string>
   <string name="account_settings">Account instellingen</string>
   <string name="account_rename">Naam account wijzigen</string>
   <string name="account_rename_new_name">Niet opgeslagen lokale gegevens kunnen verloren gaan. Synchroniseren is vereist na verandering van naam. Nieuwe accountnaam:</string>
@@ -412,7 +411,7 @@
   <string name="webdav_notification_download">WebDAV-bestand downloaden</string>
   <string name="webdav_notification_upload">WebDAV-bestand uploaden</string>
   <string name="webdav_provider_root_title">WebDAV-koppeling</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">DAVx⁵ rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
   <string name="sync_error_tasks_too_old">%ste oud</string>

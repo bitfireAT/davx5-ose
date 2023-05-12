@@ -211,7 +211,6 @@
   <string name="account_no_webcals">Нет подписок на календарь (пока).</string>
   <string name="account_swipe_down">Потяните вниз, чтобы обновить список с сервера.</string>
   <string name="account_synchronize_now">Синхронизировать</string>
-  <string name="account_synchronizing_now">Синхронизация</string>
   <string name="account_settings">Настройки аккаунта</string>
   <string name="account_rename">Переименовать аккаунт</string>
   <string name="account_rename_new_name">Несохраненные локальные данные могут быть потеряны. Необходима повторная синхронизация после переименования. Новое имя аккаунта:</string>
@@ -416,7 +415,7 @@
   <string name="webdav_notification_download">Загрузка файла WebDAV</string>
   <string name="webdav_notification_upload">Выгрузка файла WebDAV</string>
   <string name="webdav_provider_root_title">Точка монтирования WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Разрешения DAVx⁵</string>
   <string name="sync_error_permissions_text">Требуются дополнительные разрешения</string>
   <string name="sync_error_tasks_too_old">Приложение %s устарело</string>
@@ -426,6 +425,7 @@
   <string name="sync_error_http_dav">Ошибка HTTP-сервера – %s</string>
   <string name="sync_error_local_storage">Ошибка локального хранилища – %s</string>
   <string name="sync_error_retry">Повторить</string>
+  <string name="sync_error_retry_limit_reached">Ошибка (достигнуто максимальное количество повторных попыток)</string>
   <string name="sync_error_view_item">Просмотр элемента</string>
   <string name="sync_invalid_contact">Получен неверный контакт с сервера</string>
   <string name="sync_invalid_event">Получено недействительное событие от сервера</string>

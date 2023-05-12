@@ -210,7 +210,6 @@
   <string name="account_no_webcals">هیچ اشتراک تقویمی وجود ندارد (هنوز).</string>
   <string name="account_swipe_down">برای تازه کردن لیست از سرور ، صفحه را به پایین بکشید.</string>
   <string name="account_synchronize_now">اکنون همگام سازی کنید</string>
-  <string name="account_synchronizing_now">در حال همگام سازی </string>
   <string name="account_settings">تنظیمات حساب</string>
   <string name="account_rename">تغییر نام حساب</string>
   <string name="account_rename_new_name">داده های محلی ذخیره نشده ممکن است از بین بروند. پس از تغییر نام مجدداً همگام سازی لازم است. نام حساب جدید:</string>
@@ -399,7 +398,7 @@
   <string name="webdav_notification_access">دسترسی به فایل WebDAB</string>
   <string name="webdav_notification_download">بارگیری فایل WebDAV</string>
   <string name="webdav_notification_upload">بارگذاری فایل WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">مجوزهای همگام‌ساز DAVx⁵</string>
   <string name="sync_error_permissions_text">مجوزهای اضافی لازم است</string>
   <string name="sync_error_tasks_too_old">%s خیلی قدیمی است</string>

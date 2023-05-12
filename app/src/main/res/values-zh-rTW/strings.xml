@@ -109,7 +109,6 @@
   <string name="account_no_webcals">（目前）沒有行事曆訂閲</string>
   <string name="account_swipe_down">下拉可從伺服器獲取最新清單</string>
   <string name="account_synchronize_now">立即同步</string>
-  <string name="account_synchronizing_now">同步中</string>
   <string name="account_settings">帳號設定</string>
   <string name="account_rename">重新命名帳號</string>
   <string name="account_rename_new_name">尚未儲存的本地資料可能會消失。重新命名後必須再次執行同步。新的帳號名稱：</string>
@@ -250,7 +249,7 @@
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">使用者帳號</string>
   <string name="webdav_add_mount_password">密碼</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">DAVx⁵ 權限</string>
   <string name="sync_error_permissions_text">需要額外的權限</string>
   <string name="sync_error_authentication_failed">鑒權失敗（你需要檢查登錄憑證）</string>

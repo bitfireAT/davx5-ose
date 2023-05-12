@@ -211,7 +211,6 @@
   <string name="account_no_webcals">Der er endnu ingen kalender abonnementer.</string>
   <string name="account_swipe_down">Træk ned for at genopfriske listen fra serveren.</string>
   <string name="account_synchronize_now">Synkronisere</string>
-  <string name="account_synchronizing_now">Synkroniserer</string>
   <string name="account_settings">Opsætning af konti</string>
   <string name="account_rename">Omdøb konto</string>
   <string name="account_rename_new_name">Lokale data der ikke er gemt kan gå tabt. Gen-synkronisering er krævet efter omdøbning. Nyt kontonavn: </string>
@@ -412,7 +411,7 @@
   <string name="webdav_notification_download">Hent WebDAV fil</string>
   <string name="webdav_notification_upload">Overfør WebDAV fil</string>
   <string name="webdav_provider_root_title">Montere WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">DAVx⁵-rettigheder</string>
   <string name="sync_error_permissions_text">Yderligere adgang påkrævet</string>
   <string name="sync_error_tasks_too_old">%s for gammel</string>

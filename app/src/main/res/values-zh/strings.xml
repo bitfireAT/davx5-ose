@@ -11,6 +11,7 @@
   <string name="help">帮助</string>
   <string name="manage_accounts">管理账户</string>
   <string name="share">分享</string>
+  <string name="no_internet_sync_scheduled">无互联网，正安排同步</string>
   <string name="database_destructive_migration_title">数据库损坏</string>
   <string name="database_destructive_migration_text">所有帐户已在本地删除。</string>
   <string name="notification_channel_debugging">调试</string>
@@ -211,7 +212,6 @@
   <string name="account_no_webcals">暂无日历订阅。</string>
   <string name="account_swipe_down">下拉可从服务器获取最新列表。</string>
   <string name="account_synchronize_now"> 立即同步</string>
-  <string name="account_synchronizing_now">正在同步</string>
   <string name="account_settings">账户设置</string>
   <string name="account_rename">重命名账户</string>
   <string name="account_rename_new_name">重命名后，未上传的本地修改会被撤销，您需要重新执行同步。新账户名：</string>
@@ -410,7 +410,7 @@
   <string name="webdav_notification_download">正在下载 WebDAV 文件</string>
   <string name="webdav_notification_upload">正在上传 WebDAV 文件</string>
   <string name="webdav_provider_root_title">WebDAV 文件系统</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">DAVx⁵ 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>
   <string name="sync_error_tasks_too_old">%s太旧</string>
@@ -420,6 +420,7 @@
   <string name="sync_error_http_dav">HTTP 服务器错误 – %s</string>
   <string name="sync_error_local_storage">本地存储错误 – %s</string>
   <string name="sync_error_retry">重试</string>
+  <string name="sync_error_retry_limit_reached">软错误（达到最大重试次数）</string>
   <string name="sync_error_view_item">显示项目</string>
   <string name="sync_invalid_contact">从服务器收到无效的通讯录</string>
   <string name="sync_invalid_event">从服务器收到无效的日历事件</string>

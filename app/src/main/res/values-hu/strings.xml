@@ -197,7 +197,6 @@
   <string name="account_no_webcals">Nem iratkozott fel egyetlen naptárra sem (még).</string>
   <string name="account_swipe_down">Lefelé húzással frissítse a listát a szerverről.</string>
   <string name="account_synchronize_now">Szinkronizálás most</string>
-  <string name="account_synchronizing_now">Szinkronizálás</string>
   <string name="account_settings">Fiókbeállítások</string>
   <string name="account_rename">Fiók átnevezése</string>
   <string name="account_rename_new_name">Az elmentetlen helyben tárolt adatok elvesznek.  Az átnevezés után szinkronizálásra lesz szükség.  Új fióknév:</string>
@@ -396,7 +395,7 @@
   <string name="webdav_notification_download">WebDAV fájl letöltése</string>
   <string name="webdav_notification_upload">WebDAV fájl feltöltése</string>
   <string name="webdav_provider_root_title">WebDAV kötetek</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">DAVx⁵ engedélyek </string>
   <string name="sync_error_permissions_text">További engedélyek szükségesek</string>
   <string name="sync_error_tasks_too_old">%s túl régi</string>

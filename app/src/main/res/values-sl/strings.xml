@@ -31,7 +31,26 @@
   <string name="intro_battery_dont_show">Ne potrebujem enakomernih intervalov sinhroniziranja</string>
   <string name="intro_autostart_title">%szdružljivost</string>
   <string name="intro_more_info">Več informacij</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_no_app_store">Nobene trgovine z aplikacijami ni na voljo</string>
+  <string name="intro_open_source_title">Odprtokodna programska oprema</string>
+  <string name="intro_open_source_details">Kako prispevati ali donirati</string>
+  <string name="intro_open_source_dont_show">Ne prikaži v bližnji prihodnosti</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">Dovoljenja</string>
+  <string name="permissions_all_title">Vse spodaj</string>
+  <string name="permissions_all_status_off">Uporabi to da omogočiš vse funkcije (priporočeno)</string>
+  <string name="permissions_all_status_on">Vsa dovoljenja odobrena</string>
+  <string name="permissions_contacts_title">Dovoljenje za dostop do imenika</string>
+  <string name="permissions_contacts_status_off">Ne sinhroniziraj imenika (ni priporočeno)</string>
+  <string name="permissions_contacts_status_on">Možnost sinhronizacije imenika</string>
+  <string name="permissions_calendar_title">Dovoljenje za dostop do koledarja</string>
+  <string name="permissions_calendar_status_off">Ne sihroniziraj koledarja (ni priporočeno)</string>
+  <string name="permissions_calendar_status_on">Možnost sinhronizacije koledarja</string>
+  <string name="permissions_notification_title">Dovoljenje za prikaz obvestil</string>
+  <string name="permissions_notification_status_off">Obvestila onemogočena (ni priporočeno)</string>
+  <string name="permissions_notification_status_on">Obvestila omogočena</string>
+  <string name="permissions_jtx_title">jtx Board dovoljenja</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">Knjižnice </string>
@@ -88,12 +107,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_permissions_action">Dovoljenja</string>
   <string name="account_no_address_books">Trenutno ni nobenega imenika (še).</string>
   <string name="account_no_calendars">Trenutno ni nobenega koledarja (še).</string>
   <string name="account_no_webcals">Trenutno ni nobene koledar naročnine (še).</string>
   <string name="account_swipe_down">Potegni navzdol za osvežitev strežniškega seznama.</string>
   <string name="account_synchronize_now">Sinhroniziraj zdaj</string>
-  <string name="account_synchronizing_now">Sinhronizacija v teku</string>
   <string name="account_settings">Nastavitve računa</string>
   <string name="account_rename">Preimenuj račun</string>
   <string name="account_rename_new_name">Neshranjeni lokalni podatki bodo izbrisani. Ponovna sinhronizacija je potrebna po preimenovanju. Novo ime računa:</string>
@@ -225,7 +244,7 @@
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Uporabniško ime</string>
   <string name="webdav_add_mount_password">Geslo</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">DAVx⁵ dovoljenja</string>
   <string name="sync_error_permissions_text">Dodatna dovoljenja so zahtevana</string>
   <string name="sync_error_authentication_failed">Avtentikacija ni uspela (preverite podatke prijave)</string>

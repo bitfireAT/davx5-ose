@@ -211,7 +211,6 @@
   <string name="account_no_webcals">No hi ha subscripcions a calendaris (encara).</string>
   <string name="account_swipe_down">Llisca avall per a refrescar la llista del servidor.</string>
   <string name="account_synchronize_now">Sincronitza ara</string>
-  <string name="account_synchronizing_now">Sincronitzant ara</string>
   <string name="account_settings">Configuració del compte</string>
   <string name="account_rename">Canvia el nom del compte</string>
   <string name="account_rename_new_name">Les dades locals no desades es poden desestimar. Es requereix tornar a sincronitzar després del canvi de nom. Nom nou del compte:</string>
@@ -412,7 +411,7 @@
   <string name="webdav_notification_download">S\'està baixant el fitxer WebDAV</string>
   <string name="webdav_notification_upload">S\'està pujant el fitxer WebDAV</string>
   <string name="webdav_provider_root_title">Muntatge WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Permisos del DAVx⁵</string>
   <string name="sync_error_permissions_text">Es requereixen permisos addicionals</string>
   <string name="sync_error_tasks_too_old">%s és massa antiga</string>
