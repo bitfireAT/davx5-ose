@@ -16,8 +16,8 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 403030000
-        versionName '4.3.3-alpha.1'
+        versionCode 403030001
+        versionName '4.3.3-beta.1'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
