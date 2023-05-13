@@ -15,7 +15,7 @@ jobs:
       - uses: gradle/gradle-build-action@v2
 
       - name: Run lint and unit tests
-        run: ./gradlew --no-daemon app:check
+        run: ./gradlew app:check
       - name: Archive results
         uses: actions/upload-artifact@v2
         with:
@@ -74,7 +74,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew --no-daemon app:connectedCheck
+          script: ./gradlew app:connectedCheck
 
       - name: Archive results
         if: always()
