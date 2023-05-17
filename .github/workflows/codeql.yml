@@ -8,6 +8,9 @@ on:
     branches: [ "dev-ose" ]
   schedule:
     - cron: '22 10 * * 1'
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analyze:
