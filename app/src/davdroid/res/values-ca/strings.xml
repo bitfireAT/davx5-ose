@@ -11,6 +11,7 @@
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gestiona comptes</string>
   <string name="share">Comparteix</string>
+  <string name="no_internet_sync_scheduled">Sense Internet, es planifica la sincronització</string>
   <string name="database_destructive_migration_title">Base de dades malmesa</string>
   <string name="database_destructive_migration_text">S\'han eliminat localment tots els comptes.</string>
   <string name="notification_channel_debugging">Depurador</string>
@@ -354,6 +355,8 @@
   <string name="delete_collection_deleting_collection">S\'està suprimint la col·lecció</string>
   <string name="collection_force_read_only">Força que sigui de només lectura</string>
   <string name="collection_properties">Propietats</string>
+  <string name="collection_properties_sync_time">Darrera sincronització:</string>
+  <string name="collection_properties_sync_time_never">No s\'ha sincronitzat mai</string>
   <string name="collection_properties_url">Adreça (URL):</string>
   <string name="collection_properties_copy_url">Copia l\'URL</string>
   <string name="collection_properties_owner">Propietari:</string>
@@ -421,6 +424,7 @@
   <string name="sync_error_http_dav">Error del servidor HTTP: %s</string>
   <string name="sync_error_local_storage">Error d\'emmagatzematge local: %s</string>
   <string name="sync_error_retry">Reintenta</string>
+  <string name="sync_error_retry_limit_reached">Error de programari (s\'ha arribat al màxim de reintents)</string>
   <string name="sync_error_view_item">Veure element</string>
   <string name="sync_invalid_contact">S\'ha rebut un contacte no vàlid del servidor</string>
   <string name="sync_invalid_event">S\'ha rebut un esdeveniment no vàlid del servidor</string>

@@ -11,6 +11,7 @@
   <string name="help">Hulp</string>
   <string name="manage_accounts">Accounts beheren</string>
   <string name="share">Delen</string>
+  <string name="no_internet_sync_scheduled">Geen internet, planning de sync</string>
   <string name="database_destructive_migration_title">Database beschadigd</string>
   <string name="database_destructive_migration_text">Alle accounts zijn lokaal verwijderd.</string>
   <string name="notification_channel_debugging">Debuggen</string>
@@ -421,6 +422,7 @@
   <string name="sync_error_http_dav">HTTP-server fout - %s</string>
   <string name="sync_error_local_storage">Lokale opslag fout - %s</string>
   <string name="sync_error_retry">Opnieuw</string>
+  <string name="sync_error_retry_limit_reached">Soft error (max. aantal pogingen bereikt)</string>
   <string name="sync_error_view_item">Item bekijken</string>
   <string name="sync_invalid_contact">Ongeldig contact ontvangen van server</string>
   <string name="sync_invalid_event">Ongeldige gebeurtenis ontvangen van server</string>

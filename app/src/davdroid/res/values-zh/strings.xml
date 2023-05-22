@@ -353,6 +353,8 @@
   <string name="delete_collection_deleting_collection">正在删除集合</string>
   <string name="collection_force_read_only">强制只读</string>
   <string name="collection_properties">属性</string>
+  <string name="collection_properties_sync_time">上次同步：</string>
+  <string name="collection_properties_sync_time_never">从未同步</string>
   <string name="collection_properties_url">地址 (URL):</string>
   <string name="collection_properties_copy_url">复制 URL</string>
   <string name="collection_properties_owner">所有者：</string>
