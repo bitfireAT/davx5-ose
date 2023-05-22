@@ -11,6 +11,7 @@
   <string name="help">Помощь</string>
   <string name="manage_accounts">Управление аккаунтами</string>
   <string name="share">Поделиться</string>
+  <string name="no_internet_sync_scheduled">Нет интернета, синхронизация по расписанию</string>
   <string name="database_destructive_migration_title">База данных повреждена</string>
   <string name="database_destructive_migration_text">Все учетные записи были удалены локально.</string>
   <string name="notification_channel_debugging">Отладка</string>
@@ -358,6 +359,8 @@
   <string name="delete_collection_deleting_collection">Удаление коллекции</string>
   <string name="collection_force_read_only">Только для чтения</string>
   <string name="collection_properties">Свойства</string>
+  <string name="collection_properties_sync_time">Последняя синхронизация:</string>
+  <string name="collection_properties_sync_time_never">Никогда не синхронизировалось</string>
   <string name="collection_properties_url">Адрес (URL):</string>
   <string name="collection_properties_copy_url">Скопировать URL</string>
   <string name="collection_properties_owner">Владелец:</string>

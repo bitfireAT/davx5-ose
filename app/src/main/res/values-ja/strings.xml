@@ -353,6 +353,8 @@
   <string name="delete_collection_deleting_collection">コレクションの削除中</string>
   <string name="collection_force_read_only">読み取り専用にする</string>
   <string name="collection_properties">プロパティ</string>
+  <string name="collection_properties_sync_time">最終同期:</string>
+  <string name="collection_properties_sync_time_never">同期されていません</string>
   <string name="collection_properties_url">アドレス (URL):</string>
   <string name="collection_properties_copy_url">URL をコピー</string>
   <string name="collection_properties_owner">所有者:</string>
