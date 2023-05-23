@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -86,7 +87,9 @@ class CollectionInfoFragment: DialogFragment() {
             val collectionState = model.collection.observeAsState()
             collectionState.value?.let { collection ->
                 Text(stringResource(R.string.collection_properties_url), style = MaterialTheme.typography.h5)
-                Text(collection.url.toString(), modifier = Modifier.padding(bottom = 16.dp), fontFamily = FontFamily.Monospace)
+                SelectionContainer {
+                    Text(collection.url.toString(), modifier = Modifier.padding(bottom = 16.dp), fontFamily = FontFamily.Monospace)
+                }
             }
 
             // Owner
