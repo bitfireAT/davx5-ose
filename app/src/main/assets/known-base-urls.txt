@@ -24,3 +24,5 @@ calendar.zoho.com
 calendar.zoho.eu
 contacts.zoho.com
 contacts.zoho.eu
+caldav.mailo.com
+carddav.mailo.com
