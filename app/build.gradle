@@ -106,7 +106,7 @@ android {
 }
 
 dependencies {
-    implementation project(':cert4android')
+    implementation "com.github.bitfireAT:cert4android:${versions.cert4android}"
     implementation project(':ical4android')
     implementation project(':vcard4android')
 
