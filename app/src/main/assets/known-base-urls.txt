@@ -13,6 +13,8 @@ office.luckycloud.de
 calendar.mail.ru
 dav.mailbox.org
 mailfence.com
+caldav.mailo.com
+carddav.mailo.com
 posteo.de:8443
 dav.runbox.com
 live.teambox.eu
