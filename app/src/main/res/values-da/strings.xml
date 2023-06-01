@@ -11,6 +11,7 @@
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrer konti</string>
   <string name="share">Del</string>
+  <string name="no_internet_sync_scheduled">Ingen internet, planlægger synkronisering</string>
   <string name="database_destructive_migration_title">Database ødelagt</string>
   <string name="database_destructive_migration_text">Alle konti er fjernet lokalt.</string>
   <string name="notification_channel_debugging">Fejlsøgning</string>
@@ -354,6 +355,8 @@
   <string name="delete_collection_deleting_collection">Sletter CalDAV-sæt</string>
   <string name="collection_force_read_only">Sæt skrivebeskyttet</string>
   <string name="collection_properties">Egenskaber</string>
+  <string name="collection_properties_sync_time">Sidst synkroniseret:</string>
+  <string name="collection_properties_sync_time_never">Aldrig synkroniseret</string>
   <string name="collection_properties_url">Adresse (URL):</string>
   <string name="collection_properties_copy_url">Kopiere URL</string>
   <string name="collection_properties_owner">Ejer:</string>
@@ -421,6 +424,7 @@
   <string name="sync_error_http_dav">HTTP-serverfejl - %s</string>
   <string name="sync_error_local_storage">Lokal lagringsfejl - %s</string>
   <string name="sync_error_retry">Gentag</string>
+  <string name="sync_error_retry_limit_reached">Blød fejl (maks forsøg nået)</string>
   <string name="sync_error_view_item">Vis element</string>
   <string name="sync_invalid_contact">Modtaget ugyldig kontakt fra server</string>
   <string name="sync_invalid_event">Modtaget ugyldig begivenhed fra server</string>

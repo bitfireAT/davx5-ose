@@ -249,7 +249,7 @@
   <string name="login_login">Inici de sessió</string>
   <string name="login_create_account">Crea un compte</string>
   <string name="login_account_name">Nom del compte</string>
-  <string name="login_account_avoid_apostrophe">S\'ha informat que l\'ús d\'apòstrofs (\'), causa problemes en alguns dispositius.</string>
+  <string name="login_account_avoid_apostrophe">S\'ha informat que l\'ús d\'apòstrofs (\') causa problemes en alguns dispositius.</string>
   <string name="login_account_name_info">Utilitzeu la vostra adreça de correu electrònic com a nom del compte perquè l\'Android utilitzarà el nom del compte com a camp ORGANITZADOR per als esdeveniments que creeu. No poden haver-hi dos comptes amb el mateix nom.</string>
   <string name="login_account_contact_group_method">Mètode dels grups de contactes:</string>
   <string name="login_account_name_required">Nom del compte obligatori</string>
