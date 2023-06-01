@@ -16,6 +16,7 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
+import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.EntryPoint
@@ -173,9 +174,9 @@ class AccountSettings(
     // authentication settings
 
     fun credentials() = Credentials(
-            accountManager.getUserData(account, KEY_USERNAME),
-            accountManager.getPassword(account),
-            accountManager.getUserData(account, KEY_CERTIFICATE_ALIAS)
+        accountManager.getUserData(account, KEY_USERNAME),
+        accountManager.getPassword(account),
+        accountManager.getUserData(account, KEY_CERTIFICATE_ALIAS)
     )
 
     fun credentials(credentials: Credentials) {
@@ -208,7 +209,9 @@ class AccountSettings(
         }
         return accountManager.getUserData(account, key)?.toLong()
     }
-    
+
+    fun getTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
+
     /**
      * Sets the sync interval and en- or disables periodic sync for the given account and authority.
      * Does *not* call [ContentResolver.setIsSyncable].
@@ -228,29 +231,10 @@ class AccountSettings(
         if (seconds != SYNC_INTERVAL_MANUALLY && seconds < 60*15)
             throw IllegalArgumentException("<15 min is not supported by Android")
 
-        val onlyManually = seconds == SYNC_INTERVAL_MANUALLY
-        try {
-            if (onlyManually) {
-                Logger.log.fine("Disabling periodic sync of $account/$authority")
-                PeriodicSyncWorker.disable(context, account, authority)
-            } else {
-                Logger.log.fine("Setting periodic sync of $account/$authority to $seconds seconds")
-                PeriodicSyncWorker.enable(context, account, authority, seconds, getSyncWifiOnly())
-            }.result.get() // On operation (enable/disable) failure exception is thrown
-        } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Failed to set sync interval of $account/$authority to $seconds seconds", e)
-            return false
-        }
-
-        // Also enable/disable content change triggered syncs (SyncFramework automatic sync).
-        // We could make this a separate user adjustable setting later on.
-        setSyncOnContentChange(authority, !onlyManually)
-
-        // Store (user defined) sync interval in account settings. Used when the provider is
-        // switched or re-installed
+        // Store (user defined) sync interval in account settings
         val key = when {
             authority == context.getString(R.string.address_books_authority) ->
-                 KEY_SYNC_INTERVAL_ADDRESSBOOKS
+                KEY_SYNC_INTERVAL_ADDRESSBOOKS
             authority == CalendarContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_CALENDARS
             TaskProvider.ProviderName.values().any { it.authority == authority } ->
@@ -259,6 +243,13 @@ class AccountSettings(
                 throw IllegalArgumentException("Sync interval not applicable to authority $authority")
         }
         accountManager.setUserData(account, key, seconds.toString())
+
+        // update sync workers (needs already updated sync interval in AccountSettings)
+        updatePeriodicSyncWorker(authority, seconds, getSyncWifiOnly())
+
+        // Also enable/disable content change triggered syncs (SyncFramework automatic sync).
+        // We could make this a separate user adjustable setting later on.
+        setSyncOnContentChange(authority, seconds != SYNC_INTERVAL_MANUALLY)
 
         return true
     }
@@ -306,15 +297,19 @@ class AccountSettings(
         return false
     }
 
-    fun getSavedTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
-
     fun getSyncWifiOnly() =
             if (settings.containsKey(KEY_WIFI_ONLY))
                 settings.getBoolean(KEY_WIFI_ONLY)
             else
                 accountManager.getUserData(account, KEY_WIFI_ONLY) != null
-    fun setSyncWiFiOnly(wiFiOnly: Boolean) =
-            accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
+
+    fun setSyncWiFiOnly(wiFiOnly: Boolean) {
+        accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
+
+        // update sync workers (needs already updated wifi-only flag in AccountSettings)
+        for (authority in SyncUtils.syncAuthorities(context))
+            updatePeriodicSyncWorker(authority, getSyncInterval(authority), wiFiOnly)
+    }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
             if (getSyncWifiOnly()) {
@@ -327,6 +322,30 @@ class AccountSettings(
                 null
     fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
             accountManager.setUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
+
+    /**
+     * Updates the periodic sync worker of an authority according to
+     *
+     * - the sync interval and
+     * - the _Sync WiFi only_ flag.
+     *
+     * @param authority   periodic sync workers for this authority will be updated
+     * @param seconds     sync interval in seconds (`null` or [SYNC_INTERVAL_MANUALLY] disables periodic sync)
+     * @param wiFiOnly    sync Wifi only flag
+     */
+    fun updatePeriodicSyncWorker(authority: String, seconds: Long?, wiFiOnly: Boolean) {
+        try {
+            if (seconds == null || seconds == SYNC_INTERVAL_MANUALLY) {
+                Logger.log.fine("Disabling periodic sync of $account/$authority")
+                PeriodicSyncWorker.disable(context, account, authority)
+            } else {
+                Logger.log.fine("Setting periodic sync of $account/$authority to $seconds seconds (wifiOnly=$wiFiOnly)")
+                PeriodicSyncWorker.enable(context, account, authority, seconds, wiFiOnly)
+            }.result.get() // On operation (enable/disable) failure exception is thrown
+        } catch (e: Exception) {
+            Logger.log.log(Level.SEVERE, "Failed to set sync interval of $account/$authority to $seconds seconds", e)
+        }
+    }
 
 
     // CalDAV settings

@@ -280,14 +280,6 @@
                 android:resource="@xml/contacts"/>
         </service>
 
-        <receiver
-            android:name=".BootCompletedReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
         <!-- provider to share debug info/logs -->
         <provider
             android:name="androidx.core.content.FileProvider"
