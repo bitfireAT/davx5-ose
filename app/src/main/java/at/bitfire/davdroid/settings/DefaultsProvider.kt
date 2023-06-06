@@ -4,13 +4,7 @@
 
 package at.bitfire.davdroid.settings
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.net.ConnectivityManager
-import android.os.Build
-import androidx.core.content.getSystemService
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -26,11 +20,11 @@ class DefaultsProvider(
 
     override val booleanDefaults = mutableMapOf(
         Pair(Settings.DISTRUST_SYSTEM_CERTIFICATES, false),
-        Pair(Settings.SYNC_ALL_COLLECTIONS, false),
         Pair(Settings.FORCE_READ_ONLY_ADDRESSBOOKS, false)
     )
 
     override val intDefaults = mapOf(
+        Pair(Settings.PRESELECT_COLLECTIONS, Settings.PRESELECT_COLLECTIONS_NONE),
         Pair(Settings.PROXY_TYPE, Settings.PROXY_TYPE_SYSTEM),
         Pair(Settings.PROXY_PORT, 9050)     // Orbot SOCKS
     )
@@ -40,7 +34,8 @@ class DefaultsProvider(
     )
 
     override val stringDefaults = mapOf(
-        Pair(Settings.PROXY_HOST, "localhost")
+        Pair(Settings.PROXY_HOST, "localhost"),
+        Pair(Settings.PRESELECT_COLLECTIONS_EXCLUDED, "/z-app-generated--contactsinteraction--recent/") // Nextcloud "Recently Contacted" address book
     )
 
     class Factory @Inject constructor(): SettingsProviderFactory {
