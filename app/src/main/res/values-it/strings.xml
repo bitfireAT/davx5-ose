@@ -174,7 +174,6 @@
   <string name="account_no_webcals">Non ci sono sottoscrizioni a calendari (ancora)</string>
   <string name="account_swipe_down">Scorri in basso per aggiornare la lista dal server</string>
   <string name="account_synchronize_now">Sincronizza adesso</string>
-  <string name="account_synchronizing_now">Sincronizzazione in corso</string>
   <string name="account_settings">Impostazioni account</string>
   <string name="account_rename">Rinomina account</string>
   <string name="account_rename_new_name">I dati locali non salvati potrebbero essere rimossi. È necessario effettuare la risincronizzazione dopo la rinomina. Nuovo nome dell\'account:</string>
@@ -373,7 +372,7 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="webdav_notification_download">File di download WebDAV</string>
   <string name="webdav_notification_upload">Caricare file WebDAV</string>
   <string name="webdav_provider_root_title">Installazione WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Autorizzazioni kSync</string>
   <string name="sync_error_permissions_text">Autorizzazioni addizionali richieste</string>
   <string name="sync_error_tasks_too_old">%s troppo vecchio</string>

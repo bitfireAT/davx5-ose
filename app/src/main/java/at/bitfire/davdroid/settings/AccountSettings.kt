@@ -5,53 +5,25 @@ package at.bitfire.davdroid.settings
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.annotation.SuppressLint
-import android.content.ContentResolver
-import android.content.ContentUris
-import android.content.ContentValues
-import android.content.Context
-import android.content.pm.PackageManager
+import android.content.*
 import android.os.Bundle
-import android.os.Parcel
-import android.os.RemoteException
 import android.provider.CalendarContract
-import android.provider.CalendarContract.ExtendedProperties
-import android.provider.ContactsContract
-import android.util.Base64
 import androidx.annotation.WorkerThread
-import androidx.core.content.ContextCompat
-import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalTask
-import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
-import at.bitfire.davdroid.util.closeCompat
-import at.bitfire.ical4android.AndroidCalendar
-import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.TaskProvider
-import at.bitfire.ical4android.TaskProvider.ProviderName.OpenTasks
-import at.bitfire.ical4android.UnknownProperty
-import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
-import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import net.fortuna.ical4j.model.Property
-import net.fortuna.ical4j.model.property.Url
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.StringUtils
-import org.dmfs.tasks.contract.TaskContract
-import java.io.ByteArrayInputStream
-import java.io.ObjectInputStream
 import java.util.logging.Level
 
 /**
@@ -79,7 +51,7 @@ class AccountSettings(
 
     companion object {
 
-        const val CURRENT_VERSION = 13
+        const val CURRENT_VERSION = 14
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
@@ -133,6 +105,10 @@ class AccountSettings(
 
         const val SYNC_INTERVAL_MANUALLY = -1L
 
+        /** Static property to indicate whether AccountSettings migration is currently running.
+         * **Access must be `synchronized` with `AccountSettings::class.java`.** */
+        @Volatile
+        var currentlyUpdating = false
 
         fun initialUserData(credentials: Credentials?): Bundle {
             val bundle = Bundle(2)
@@ -146,53 +122,6 @@ class AccountSettings(
             }
 
             return bundle
-        }
-
-        fun repairSyncIntervals(context: Context) {
-            val addressBooksAuthority = context.getString(R.string.address_books_authority)
-            val taskAuthority = TaskUtils.currentProvider(context)?.authority
-
-            val am = AccountManager.get(context)
-            for (account in am.getAccountsByType(context.getString(R.string.account_type)))
-                try {
-                    val settings = AccountSettings(context, account)
-
-                    // repair address book sync
-                    settings.getSavedAddressbooksSyncInterval()?.let { shouldBe ->
-                        val authority = addressBooksAuthority
-                        val current = settings.getSyncInterval(authority)
-                        if (current != shouldBe) {
-                            Logger.log.warning("${account.name}: $authority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
-                            if (!settings.setSyncInterval(authority, shouldBe))
-                                Logger.log.warning("${account.name}: repairing/setting the sync interval for $authority failed")
-                        }
-                    }
-
-                    // repair calendar sync
-                    settings.getSavedCalendarsSyncInterval()?.let { shouldBe ->
-                        val authority = CalendarContract.AUTHORITY
-                        val current = settings.getSyncInterval(authority)
-                        if (current != shouldBe) {
-                            Logger.log.warning("${account.name}: $authority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
-                            if (!settings.setSyncInterval(authority, shouldBe))
-                                Logger.log.warning("${account.name}: repairing/setting the sync interval for $authority failed")
-                        }
-                    }
-
-                    if (taskAuthority != null)
-                    // repair calendar sync
-                        settings.getSavedTasksSyncInterval()?.let { shouldBe ->
-                            val authority = taskAuthority
-                            val current = settings.getSyncInterval(authority)
-                            if (current != shouldBe) {
-                                Logger.log.warning("${account.name}: $authority sync interval should be $shouldBe but is $current -> setting to $shouldBe")
-                                if (!settings.setSyncInterval(authority, shouldBe))
-                                    Logger.log.warning("${account.name}: repairing/setting the sync interval for $authority failed")
-                            }
-                        }
-                } catch (ignored: InvalidAccountException) {
-                    // account doesn't exist (anymore)
-                }
         }
 
     }
@@ -224,11 +153,20 @@ class AccountSettings(
             try {
                 version = Integer.parseInt(versionStr)
             } catch (e: NumberFormatException) {
+                Logger.log.log(Level.SEVERE, "Invalid account version: $versionStr", e)
             }
             Logger.log.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
 
-            if (version < CURRENT_VERSION)
-                update(version)
+            if (version < CURRENT_VERSION) {
+                if (currentlyUpdating) {
+                    Logger.log.severe("Redundant call: migration created AccountSettings(). This must never happen.")
+                    throw IllegalStateException("Redundant call: migration created AccountSettings()")
+                } else {
+                    currentlyUpdating = true
+                    update(version)
+                    currentlyUpdating = false
+                }
+            }
         }
     }
 
@@ -236,9 +174,9 @@ class AccountSettings(
     // authentication settings
 
     fun credentials() = Credentials(
-            accountManager.getUserData(account, KEY_USERNAME),
-            accountManager.getPassword(account),
-            accountManager.getUserData(account, KEY_CERTIFICATE_ALIAS)
+        accountManager.getUserData(account, KEY_USERNAME),
+        accountManager.getPassword(account),
+        accountManager.getUserData(account, KEY_CERTIFICATE_ALIAS)
     )
 
     fun credentials(credentials: Credentials) {
@@ -250,90 +188,128 @@ class AccountSettings(
 
     // sync. settings
 
+    /**
+     * Gets the currently set sync interval for this account in seconds.
+     *
+     * @param authority authority to check (for instance: [CalendarContract.AUTHORITY]])
+     * @return sync interval in seconds; *[SYNC_INTERVAL_MANUALLY]* if manual sync; *null* if not set
+     */
     fun getSyncInterval(authority: String): Long? {
         if (ContentResolver.getIsSyncable(account, authority) <= 0)
             return null
 
-        return if (ContentResolver.getSyncAutomatically(account, authority))
-            ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.period ?: SYNC_INTERVAL_MANUALLY
-        else
-            SYNC_INTERVAL_MANUALLY
+        val key = when {
+            authority == context.getString(R.string.address_books_authority) ->
+                KEY_SYNC_INTERVAL_ADDRESSBOOKS
+            authority == CalendarContract.AUTHORITY ->
+                KEY_SYNC_INTERVAL_CALENDARS
+            TaskProvider.ProviderName.values().any { it.authority == authority } ->
+                KEY_SYNC_INTERVAL_TASKS
+            else -> throw IllegalArgumentException("Authority does not exist: $authority")
+        }
+        return accountManager.getUserData(account, key)?.toLong()
     }
 
+    fun getTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
+
     /**
-     * Sets the sync interval and enables/disables automatic sync for the given account and authority.
+     * Sets the sync interval and en- or disables periodic sync for the given account and authority.
      * Does *not* call [ContentResolver.setIsSyncable].
      *
-     * This method blocks until the settings have arrived in the sync framework, so it should not
-     * be called from the UI thread.
+     * This method blocks until a worker as been created and enqueued (sync active) or removed
+     * (sync disabled), so it should not be called from the UI thread.
      *
      * @param authority sync authority (like [CalendarContract.AUTHORITY])
      * @param seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
-     * otherwise: automatic sync will be enabled and set to the given number of seconds
+     * otherwise (≥ 15 min): automatic sync will be enabled and set to the given number of seconds
      *
      * @return whether the sync interval was successfully set
+     * @throws IllegalArgumentException when [seconds] is not [SYNC_INTERVAL_MANUALLY] but less than 15 min
      */
     @WorkerThread
     fun setSyncInterval(authority: String, seconds: Long): Boolean {
-        /* Ugly hack: because there is no callback for when the sync status/interval has been
-        updated, we need to make this call blocking. */
-        val setInterval: () -> Boolean =
-                if (seconds == SYNC_INTERVAL_MANUALLY) {
-                    {
-                        Logger.log.fine("Disabling automatic sync of $account/$authority")
-                        ContentResolver.setSyncAutomatically(account, authority, false)
+        if (seconds != SYNC_INTERVAL_MANUALLY && seconds < 60*15)
+            throw IllegalArgumentException("<15 min is not supported by Android")
 
-                        /* return */ !ContentResolver.getSyncAutomatically(account, authority)
-                    }
-                } else {
-                    {
-                        Logger.log.fine("Setting automatic sync of $account/$authority to $seconds seconds")
-                        ContentResolver.setSyncAutomatically(account, authority, true)
-                        ContentResolver.addPeriodicSync(account, authority, Bundle(), seconds)
-
-                        /* return */ ContentResolver.getSyncAutomatically(account, authority) &&
-                                ContentResolver.getPeriodicSyncs(account, authority).firstOrNull()?.period == seconds
-                    }
-                }
-
-        // try up to 10 times with 100 ms pause
-        var success = false
-        for (idxTry in 0 until 10) {
-            success = setInterval()
-            if (success)
-                break
-            Thread.sleep(100)
-        }
-
-        if (!success)
-            return false
-
-        // store sync interval in account settings (used when the provider is switched)
-        when {
+        // Store (user defined) sync interval in account settings
+        val key = when {
             authority == context.getString(R.string.address_books_authority) ->
-                accountManager.setUserData(account, KEY_SYNC_INTERVAL_ADDRESSBOOKS, seconds.toString())
-
+                KEY_SYNC_INTERVAL_ADDRESSBOOKS
             authority == CalendarContract.AUTHORITY ->
-                accountManager.setUserData(account, KEY_SYNC_INTERVAL_CALENDARS, seconds.toString())
-
+                KEY_SYNC_INTERVAL_CALENDARS
             TaskProvider.ProviderName.values().any { it.authority == authority } ->
-                accountManager.setUserData(account, KEY_SYNC_INTERVAL_TASKS, seconds.toString())
+                KEY_SYNC_INTERVAL_TASKS
+            else ->
+                throw IllegalArgumentException("Sync interval not applicable to authority $authority")
         }
+        accountManager.setUserData(account, key, seconds.toString())
+
+        // update sync workers (needs already updated sync interval in AccountSettings)
+        updatePeriodicSyncWorker(authority, seconds, getSyncWifiOnly())
+
+        // Also enable/disable content change triggered syncs (SyncFramework automatic sync).
+        // We could make this a separate user adjustable setting later on.
+        setSyncOnContentChange(authority, seconds != SYNC_INTERVAL_MANUALLY)
 
         return true
     }
 
-    fun getSavedAddressbooksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_ADDRESSBOOKS)?.toLong()
-    fun getSavedCalendarsSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_CALENDARS)?.toLong()
-    fun getSavedTasksSyncInterval() = accountManager.getUserData(account, KEY_SYNC_INTERVAL_TASKS)?.toLong()
+    /**
+     * Enables/disables sync adapter automatic sync (content triggered sync) for the given
+     * account and authority. Does *not* call [ContentResolver.setIsSyncable].
+     *
+     * We use the sync adapter framework only for the trigger, actual syncing is implemented
+     * with WorkManager. The trigger comes in through SyncAdapterService.
+     *
+     * This method blocks until the sync-on-content-change has been enabled or disabled, so it
+     * should not be called from the UI thread.
+     *
+     * @param enable    *true* enables automatic sync; *false* disables it
+     * @param authority sync authority (like [CalendarContract.AUTHORITY])
+     * @return whether the content triggered sync was enabled successfully
+     */
+    @WorkerThread
+    fun setSyncOnContentChange(authority: String, enable: Boolean): Boolean {
+        // Enable content change triggers (sync adapter framework)
+        val setContentTrigger: () -> Boolean =
+            /* Ugly hack: because there is no callback for when the sync status/interval has been
+            updated, we need to make this call blocking. */
+            if (enable) {{
+                Logger.log.fine("Enabling content-triggered sync of $account/$authority")
+                ContentResolver.setSyncAutomatically(account, authority, true) // enables content triggers
+                // Remove unwanted sync framework periodic syncs created by setSyncAutomatically
+                for (periodicSync in ContentResolver.getPeriodicSyncs(account, authority))
+                    ContentResolver.removePeriodicSync(periodicSync.account, periodicSync.authority, periodicSync.extras)
+                /* return */ ContentResolver.getSyncAutomatically(account, authority)
+            }} else {{
+                Logger.log.fine("Disabling content-triggered sync of $account/$authority")
+                ContentResolver.setSyncAutomatically(account, authority, false) // disables content triggers
+                /* return */ !ContentResolver.getSyncAutomatically(account, authority)
+            }}
+
+        // try up to 10 times with 100 ms pause
+        for (idxTry in 0 until 10) {
+            if (setContentTrigger())
+                // successfully set
+                return true
+            Thread.sleep(100)
+        }
+        return false
+    }
 
     fun getSyncWifiOnly() =
             if (settings.containsKey(KEY_WIFI_ONLY))
                 settings.getBoolean(KEY_WIFI_ONLY)
             else
                 accountManager.getUserData(account, KEY_WIFI_ONLY) != null
-    fun setSyncWiFiOnly(wiFiOnly: Boolean) =
-            accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
+
+    fun setSyncWiFiOnly(wiFiOnly: Boolean) {
+        accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
+
+        // update sync workers (needs already updated wifi-only flag in AccountSettings)
+        for (authority in SyncUtils.syncAuthorities(context))
+            updatePeriodicSyncWorker(authority, getSyncInterval(authority), wiFiOnly)
+    }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
             if (getSyncWifiOnly()) {
@@ -346,6 +322,30 @@ class AccountSettings(
                 null
     fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
             accountManager.setUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
+
+    /**
+     * Updates the periodic sync worker of an authority according to
+     *
+     * - the sync interval and
+     * - the _Sync WiFi only_ flag.
+     *
+     * @param authority   periodic sync workers for this authority will be updated
+     * @param seconds     sync interval in seconds (`null` or [SYNC_INTERVAL_MANUALLY] disables periodic sync)
+     * @param wiFiOnly    sync Wifi only flag
+     */
+    fun updatePeriodicSyncWorker(authority: String, seconds: Long?, wiFiOnly: Boolean) {
+        try {
+            if (seconds == null || seconds == SYNC_INTERVAL_MANUALLY) {
+                Logger.log.fine("Disabling periodic sync of $account/$authority")
+                PeriodicSyncWorker.disable(context, account, authority)
+            } else {
+                Logger.log.fine("Setting periodic sync of $account/$authority to $seconds seconds (wifiOnly=$wiFiOnly)")
+                PeriodicSyncWorker.enable(context, account, authority, seconds, wiFiOnly)
+            }.result.get() // On operation (enable/disable) failure exception is thrown
+        } catch (e: Exception) {
+            Logger.log.log(Level.SEVERE, "Failed to set sync interval of $account/$authority to $seconds seconds", e)
+        }
+    }
 
 
     // CalDAV settings
@@ -456,8 +456,16 @@ class AccountSettings(
             val fromVersion = toVersion-1
             Logger.log.info("Updating account ${account.name} from version $fromVersion to $toVersion")
             try {
-                val updateProc = this::class.java.getDeclaredMethod("update_${fromVersion}_$toVersion")
-                updateProc.invoke(this)
+                val migrations = AccountSettingsMigrations(
+                    context = context,
+                    db = db,
+                    settings = settings,
+                    account = account,
+                    accountManager = accountManager,
+                    accountSettings = this
+                )
+                val updateProc = AccountSettingsMigrations::class.java.getDeclaredMethod("update_${fromVersion}_$toVersion")
+                updateProc.invoke(migrations)
 
                 Logger.log.info("Account version update successful")
                 accountManager.setUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
@@ -466,296 +474,5 @@ class AccountSettings(
             }
         }
     }
-
-
-    @Suppress("unused","FunctionName")
-    /**
-     * Not a per-account migration, but not a database migration, too, so it fits best there.
-     * Best future solution would be that SettingsManager manages versions and migrations.
-     *
-     * Updates proxy settings from override_proxy_* to proxy_type, proxy_host, proxy_port.
-     */
-    private fun update_12_13() {
-        // proxy settings are managed by SharedPreferencesProvider
-        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-        // old setting names
-        val overrideProxy = "override_proxy"
-        val overrideProxyHost = "override_proxy_host"
-        val overrideProxyPort = "override_proxy_port"
-
-        val edit = preferences.edit()
-        if (preferences.contains(overrideProxy)) {
-            if (preferences.getBoolean(overrideProxy, false))
-                // override_proxy set, migrate to proxy_type = HTTP
-                edit.putInt(Settings.PROXY_TYPE, Settings.PROXY_TYPE_HTTP)
-            edit.remove(overrideProxy)
-        }
-        if (preferences.contains(overrideProxyHost)) {
-            preferences.getString(overrideProxyHost, null)?.let { host ->
-                edit.putString(Settings.PROXY_HOST, host)
-            }
-            edit.remove(overrideProxyHost)
-        }
-        if (preferences.contains(overrideProxyPort)) {
-            val port = preferences.getInt(overrideProxyPort, 0)
-            if (port != 0)
-                edit.putInt(Settings.PROXY_PORT, port)
-            edit.remove(overrideProxyPort)
-        }
-        edit.apply()
-    }
-
-
-    @Suppress("unused","FunctionName")
-    /**
-     * Store event URLs as URL (extended property) instead of unknown property. At the same time,
-     * convert legacy unknown properties to the current format.
-     */
-    private fun update_11_12() {
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-            val provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)
-            if (provider != null)
-                try {
-                    // Attention: CalendarProvider does NOT limit the results of the ExtendedProperties query
-                    // to the given account! So all extended properties will be processed number-of-accounts times.
-                    val extUri = ExtendedProperties.CONTENT_URI.asSyncAdapter(account)
-
-                    provider.query(extUri, arrayOf(
-                            ExtendedProperties._ID,     // idx 0
-                            ExtendedProperties.NAME,    // idx 1
-                            ExtendedProperties.VALUE    // idx 2
-                    ), null, null, null)?.use { cursor ->
-                        while (cursor.moveToNext()) {
-                            val id = cursor.getLong(0)
-                            val rawValue = cursor.getString(2)
-
-                            val uri by lazy {
-                                ContentUris.withAppendedId(ExtendedProperties.CONTENT_URI, id).asSyncAdapter(account)
-                            }
-
-                            when (cursor.getString(1)) {
-                                UnknownProperty.CONTENT_ITEM_TYPE -> {
-                                    // unknown property; check whether it's a URL
-                                    try {
-                                        val property = UnknownProperty.fromJsonString(rawValue)
-                                        if (property is Url) {  // rewrite to MIMETYPE_URL
-                                            val newValues = ContentValues(2)
-                                            newValues.put(ExtendedProperties.NAME, AndroidEvent.MIMETYPE_URL)
-                                            newValues.put(ExtendedProperties.VALUE, property.value)
-                                            provider.update(uri, newValues, null, null)
-                                        }
-                                    } catch (e: Exception) {
-                                        Logger.log.log(Level.WARNING, "Couldn't rewrite URL from unknown property to ${AndroidEvent.MIMETYPE_URL}", e)
-                                    }
-                                }
-                                "unknown-property" -> {
-                                    // unknown property (deprecated format); convert to current format
-                                    try {
-                                        val stream = ByteArrayInputStream(Base64.decode(rawValue, Base64.NO_WRAP))
-                                        ObjectInputStream(stream).use {
-                                            (it.readObject() as? Property)?.let { property ->
-                                                // rewrite to current format
-                                                val newValues = ContentValues(2)
-                                                newValues.put(ExtendedProperties.NAME, UnknownProperty.CONTENT_ITEM_TYPE)
-                                                newValues.put(ExtendedProperties.VALUE, UnknownProperty.toJsonString(property))
-                                                provider.update(uri, newValues, null, null)
-                                            }
-                                        }
-                                    } catch(e: Exception) {
-                                        Logger.log.log(Level.WARNING, "Couldn't rewrite deprecated unknown property to current format", e)
-                                    }
-                                }
-                                "unknown-property.v2" -> {
-                                    // unknown property (deprecated MIME type); rewrite to current MIME type
-                                    val newValues = ContentValues(1)
-                                    newValues.put(ExtendedProperties.NAME, UnknownProperty.CONTENT_ITEM_TYPE)
-                                    provider.update(uri, newValues, null, null)
-                                }
-                            }
-                        }
-                    }
-                } finally {
-                    provider.closeCompat()
-                }
-        }
-    }
-
-    @Suppress("unused","FunctionName")
-    /**
-     * The tasks sync interval should be stored in account settings. It's used to set the sync interval
-     * again when the tasks provider is switched.
-     */
-    private fun update_10_11() {
-        TaskUtils.currentProvider(context)?.let { provider ->
-            val interval = getSyncInterval(provider.authority)
-            if (interval != null)
-                accountManager.setUserData(account, KEY_SYNC_INTERVAL_TASKS, interval.toString())
-        }
-    }
-
-    @Suppress("unused","FunctionName")
-    /**
-     * Task synchronization now handles alarms, categories, relations and unknown properties.
-     * Setting task ETags to null will cause them to be downloaded (and parsed) again.
-     *
-     * Also update the allowed reminder types for calendars.
-     **/
-    private fun update_9_10() {
-        TaskProvider.acquire(context, OpenTasks)?.use { provider ->
-            val tasksUri = provider.tasksUri().asSyncAdapter(account)
-            val emptyETag = ContentValues(1)
-            emptyETag.putNull(LocalTask.COLUMN_ETAG)
-            provider.client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
-        }
-
-        @SuppressLint("Recycle")
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-            context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-                provider.update(CalendarContract.Calendars.CONTENT_URI.asSyncAdapter(account),
-                        AndroidCalendar.calendarBaseValues, null, null)
-                provider.closeCompat()
-            }
-    }
-
-    @Suppress("unused","FunctionName")
-    /**
-     * It seems that somehow some non-CalDAV accounts got OpenTasks syncable, which caused battery problems.
-     * Disable it on those accounts for the future.
-     */
-    private fun update_8_9() {
-        val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
-        if (!hasCalDAV && ContentResolver.getIsSyncable(account, OpenTasks.authority) != 0) {
-            Logger.log.info("Disabling OpenTasks sync for $account")
-            ContentResolver.setIsSyncable(account, OpenTasks.authority, 0)
-        }
-    }
-
-    @Suppress("unused","FunctionName")
-    @SuppressLint("Recycle")
-    /**
-     * There is a mistake in this method. [TaskContract.Tasks.SYNC_VERSION] is used to store the
-     * SEQUENCE and should not be used for the eTag.
-     */
-    private fun update_7_8() {
-        TaskProvider.acquire(context, OpenTasks)?.use { provider ->
-            // ETag is now in sync_version instead of sync1
-            // UID  is now in _uid         instead of sync2
-            provider.client.query(provider.tasksUri().asSyncAdapter(account),
-                    arrayOf(TaskContract.Tasks._ID, TaskContract.Tasks.SYNC1, TaskContract.Tasks.SYNC2),
-                    "${TaskContract.Tasks.ACCOUNT_TYPE}=? AND ${TaskContract.Tasks.ACCOUNT_NAME}=?",
-                    arrayOf(account.type, account.name), null)!!.use { cursor ->
-                while (cursor.moveToNext()) {
-                    val id = cursor.getLong(0)
-                    val eTag = cursor.getString(1)
-                    val uid = cursor.getString(2)
-                    val values = ContentValues(4)
-                    values.put(TaskContract.Tasks._UID, uid)
-                    values.put(TaskContract.Tasks.SYNC_VERSION, eTag)
-                    values.putNull(TaskContract.Tasks.SYNC1)
-                    values.putNull(TaskContract.Tasks.SYNC2)
-                    Logger.log.log(Level.FINER, "Updating task $id", values)
-                    provider.client.update(
-                            ContentUris.withAppendedId(provider.tasksUri(), id).asSyncAdapter(account),
-                            values, null, null)
-                }
-            }
-        }
-    }
-
-    @Suppress("unused")
-    @SuppressLint("Recycle")
-    private fun update_6_7() {
-        // add calendar colors
-        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
-            try {
-                AndroidCalendar.insertColors(provider, account)
-            } finally {
-                provider.closeCompat()
-            }
-        }
-
-        // update allowed WiFi settings key
-        val onlySSID = accountManager.getUserData(account, "wifi_only_ssid")
-        accountManager.setUserData(account, KEY_WIFI_ONLY_SSIDS, onlySSID)
-        accountManager.setUserData(account, "wifi_only_ssid", null)
-    }
-
-    @Suppress("unused")
-    @SuppressLint("Recycle", "ParcelClassLoader")
-    private fun update_5_6() {
-        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { provider ->
-            val parcel = Parcel.obtain()
-            try {
-                // don't run syncs during the migration
-                ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0)
-                ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 0)
-                ContentResolver.cancelSync(account, null)
-
-                // get previous address book settings (including URL)
-                val raw = ContactsContract.SyncState.get(provider, account)
-                if (raw == null)
-                    Logger.log.info("No contacts sync state, ignoring account")
-                else {
-                    parcel.unmarshall(raw, 0, raw.size)
-                    parcel.setDataPosition(0)
-                    val params = parcel.readBundle()!!
-                    val url = params.getString("url")?.toHttpUrlOrNull()
-                    if (url == null)
-                        Logger.log.info("No address book URL, ignoring account")
-                    else {
-                        // create new address book
-                        val info = Collection(url = url, type = Collection.TYPE_ADDRESSBOOK, displayName = account.name)
-                        Logger.log.log(Level.INFO, "Creating new address book account", url)
-                        val addressBookAccount = Account(LocalAddressBook.accountName(account, info), context.getString(R.string.account_type_address_book))
-                        if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.url.toString())))
-                            throw ContactsStorageException("Couldn't create address book account")
-
-                        // move contacts to new address book
-                        Logger.log.info("Moving contacts from $account to $addressBookAccount")
-                        val newAccount = ContentValues(2)
-                        newAccount.put(ContactsContract.RawContacts.ACCOUNT_NAME, addressBookAccount.name)
-                        newAccount.put(ContactsContract.RawContacts.ACCOUNT_TYPE, addressBookAccount.type)
-                        val affected = provider.update(ContactsContract.RawContacts.CONTENT_URI.buildUpon()
-                                .appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
-                                .appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type)
-                                .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(),
-                                newAccount,
-                                "${ContactsContract.RawContacts.ACCOUNT_NAME}=? AND ${ContactsContract.RawContacts.ACCOUNT_TYPE}=?",
-                                arrayOf(account.name, account.type))
-                        Logger.log.info("$affected contacts moved to new address book")
-                    }
-
-                    ContactsContract.SyncState.set(provider, account, null)
-                }
-            } catch(e: RemoteException) {
-                throw ContactsStorageException("Couldn't migrate contacts to new address book", e)
-            } finally {
-                parcel.recycle()
-                provider.closeCompat()
-            }
-        }
-
-        // update version number so that further syncs don't repeat the migration
-        accountManager.setUserData(account, KEY_SETTINGS_VERSION, "6")
-
-        // request sync of new address book account
-        ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 1)
-        setSyncInterval(context.getString(R.string.address_books_authority), 4*3600)
-    }
-
-    /* Android 7.1.1 OpenTasks fix */
-    @Suppress("unused")
-    private fun update_4_5() {
-        // call PackageChangedReceiver which then enables/disables OpenTasks sync when it's (not) available
-        SyncUtils.updateTaskSync(context)
-    }
-
-    @Suppress("unused")
-    private fun update_3_4() {
-        setGroupMethod(GroupMethod.CATEGORIES)
-    }
-
-    // updates from AccountSettings version 2 and below are not supported anymore
 
 }

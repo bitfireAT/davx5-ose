@@ -211,7 +211,6 @@
   <string name="account_no_webcals">(Noch) keine Kalender-Abos vorhanden</string>
   <string name="account_swipe_down">Nach unten wischen, um neue Einträge am Server zu suchen.</string>
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
-  <string name="account_synchronizing_now">Synchronisierung gestartet</string>
   <string name="account_settings">Konto-Einstellungen</string>
   <string name="account_rename">Konto umbenennen</string>
   <string name="account_rename_new_name">Ungespeicherte lokale Änderungen können verloren gehen. Nach dem Umbenennen muss neu synchronisiert werden. Neuer Kontoname:</string>
@@ -412,7 +411,7 @@
   <string name="webdav_notification_download">WebDAV-Download</string>
   <string name="webdav_notification_upload">WebDAV-Upload</string>
   <string name="webdav_provider_root_title">WebDAV-Zugang</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">kSync-Berechtigungen</string>
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
   <string name="sync_error_tasks_too_old">%s zu alt</string>

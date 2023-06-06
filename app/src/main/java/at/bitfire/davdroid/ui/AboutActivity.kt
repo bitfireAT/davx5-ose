@@ -15,6 +15,9 @@ import android.util.DisplayMetrics
 import android.view.*
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -33,8 +36,8 @@ import at.bitfire.davdroid.databinding.AboutBinding
 import at.bitfire.davdroid.databinding.AboutLanguagesBinding
 import at.bitfire.davdroid.databinding.AboutTranslationBinding
 import at.bitfire.davdroid.databinding.ActivityAboutBinding
-import com.mikepenz.aboutlibraries.Libs
-import com.mikepenz.aboutlibraries.LibsBuilder
+import com.google.accompanist.themeadapter.material.MdcTheme
+import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 import dagger.BindsOptionalOf
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -89,7 +92,7 @@ class AboutActivity: AppCompatActivity() {
 
 
     private inner class TabsAdapter(
-            fm: FragmentManager
+        fm: FragmentManager
     ): FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
         override fun getCount() = 3
@@ -105,18 +108,7 @@ class AboutActivity: AppCompatActivity() {
                 when (position) {
                     0 -> AppFragment()
                     1 -> LanguagesFragment()
-                    else -> {
-                        LibsBuilder()
-                                .withFields(R.string::class.java.fields)        // mandatory for non-standard build flavors
-                                .withLicenseShown(true)
-                                .withAboutIconShown(false)
-
-                                // https://github.com/mikepenz/AboutLibraries/issues/490
-                                .withLibraryModification("org_brotli__dec", Libs.LibraryFields.LIBRARY_NAME, "Brotli")
-                                .withLibraryModification("org_brotli__dec", Libs.LibraryFields.AUTHOR_NAME, "Google")
-
-                                .supportFragment()
-                    }
+                    else -> LibsFragment()
                 }
     }
 
@@ -134,7 +126,7 @@ class AboutActivity: AppCompatActivity() {
     }
 
     @AndroidEntryPoint
-    class AppFragment: Fragment() {
+    class AppFragment : Fragment() {
 
         private var _binding: AboutBinding? = null
         private val binding get() = _binding!!
@@ -235,6 +227,21 @@ class AboutActivity: AppCompatActivity() {
 
             override fun getItemCount() = translations.size
         }
+
+    }
+
+    class LibsFragment : Fragment() {
+
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+            ComposeView(requireContext()).apply {
+                setContent {
+                    MdcTheme {
+                        LibrariesContainer(
+                            Modifier.fillMaxSize()
+                        )
+                    }
+                }
+            }
 
     }
 

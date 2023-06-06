@@ -161,6 +161,12 @@
   <string name="app_settings_foreground_service_details">Peut aider si votre appareil empêche la synchronisation automatique</string>
   <string name="app_settings_connection">Connexion</string>
   <string name="app_settings_proxy">Type de Proxy</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Par défaut (système)</item>
+    <item>Pas de proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (pour Orbot)</item>
+  </string-array>
   <string name="app_settings_proxy_host">Nom de l\'hôte du proxy</string>
   <string name="app_settings_proxy_port">Port du proxy</string>
   <string name="app_settings_security">Sécurité</string>
@@ -205,7 +211,6 @@
   <string name="account_no_webcals">Il n\'y a pas (encore) d\'abonnement à des calendriers.</string>
   <string name="account_swipe_down">Glisser vers le bas pour rafraîchir la liste à partir du serveur.</string>
   <string name="account_synchronize_now">Synchroniser maintenant</string>
-  <string name="account_synchronizing_now">Synchronisation en cours</string>
   <string name="account_settings">Paramètres du compte</string>
   <string name="account_rename">Renommer le compte</string>
   <string name="account_rename_new_name">Les données locales non enregistrées pourraient être perdues. Une re-synchronisation est nécessaire après avoir renommé le compte. Nouveau nom du compte : </string>
@@ -388,9 +393,13 @@
   <string name="storage_low_notify_title">Synchronisation suspendue</string>
   <string name="storage_low_notify_text">L\'espace de stockage est presque plein</string>
   <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">Points de montage WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Quota utitlisé : %1$s / disponible : %2$s</string>
   <string name="webdav_mounts_share_content">Partager le contenu</string>
   <string name="webdav_mounts_unmount">Démonter</string>
+  <string name="webdav_add_mount_title">Ajouter un point de montage WebDAV</string>
+  <string name="webdav_mounts_empty">Accédez directement à vos fichiers du cloud en ajoutant un point de montage WebDAV !</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Consultez le manuel pour voir <a href="%1$s">comment fonctionnent les points de montage WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Nom affiché</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL incorrecte</string>
@@ -398,11 +407,13 @@
   <string name="webdav_add_mount_password">Mot de passe</string>
   <string name="webdav_add_mount_add">Ajouter un point de montage</string>
   <string name="webdav_add_mount_no_support">Aucun service WebDAV à cette URL</string>
+  <string name="webdav_remove_mount_title">Retirer le point de montage</string>
   <string name="webdav_remove_mount_text">Les détails de la connexion seront perdus, mais aucun fichier ne sera supprimé.</string>
   <string name="webdav_notification_access">Accès au fichier WebDAV</string>
   <string name="webdav_notification_download">Téléchargement du fichier WebDAV</string>
   <string name="webdav_notification_upload">Téléversement du fichier WebDAV</string>
-  <!--sync adapters-->
+  <string name="webdav_provider_root_title">Point de montage WebDAV</string>
+  <!--sync-->
   <string name="sync_error_permissions">Autorisations kSync</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
   <string name="sync_error_tasks_too_old">%s trop vieux</string>

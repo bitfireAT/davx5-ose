@@ -231,8 +231,13 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         /**
          * Checks if the given URL defines home sets and adds them to given home set list.
          *
-         * @param url Principal URL to query
-         * @param personal Whether this is the "outer" call of the recursion.
+         * @param principalUrl          Principal URL to query
+         * @param forPersonalHomeset    Whether this is the first call of this recursive method.
+         * Indicates that these found home sets are considered "personal", as they belong to the
+         * current-user-principal.
+         *
+         * Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
+         * other principals and still be considered "personal" (belonging to the current-user-principal).
          *
          * *true* = found home sets belong to the current-user-principal; recurse if
          * calendar proxies or group memberships are found
@@ -243,7 +248,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          * @throws HttpException
          * @throws at.bitfire.dav4jvm.exception.DavException
          */
-        internal fun queryHomeSets(url: HttpUrl, personal: Boolean = true) {
+        internal fun queryHomeSets(principalUrl: HttpUrl, forPersonalHomeset: Boolean = true) {
             val related = mutableSetOf<HttpUrl>()
 
             // Define homeset class and properties to look for
@@ -261,7 +266,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 else -> throw IllegalArgumentException()
             }
 
-            val dav = DavResource(httpClient, url)
+            val dav = DavResource(httpClient, principalUrl)
             try {
                 // Query for the given service with properties
                 dav.propfind(0, *properties) { davResponse, _ ->
@@ -271,12 +276,13 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         for (href in homeSet.hrefs)
                             dav.location.resolve(href)?.let {
                                 val foundUrl = UrlUtils.withTrailingSlash(it)
-                                db.homeSetDao().insertOrUpdateByUrl(HomeSet(0, service.id, personal, foundUrl))
+                                // Save the homeset - personal if outer call of recursion
+                                db.homeSetDao().insertOrUpdateByUrl(HomeSet(0, service.id, forPersonalHomeset, foundUrl))
                             }
                     }
 
                     // If personal (outer call of recursion), find/refresh related resources
-                    if (personal) {
+                    if (forPersonalHomeset) {
                         val relatedResourcesTypes = mapOf(
                             CalendarProxyReadFor::class.java to "read-only proxy for",      // calendar-proxy-read-for
                             CalendarProxyWriteFor::class.java to "read/write proxy for ",   // calendar-proxy-read/write-for
@@ -329,7 +335,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
                 try {
                     DavResource(httpClient, homeSetUrl).propfind(1, *DAV_COLLECTION_PROPERTIES) { response, relation ->
-                        // NB: This callback may be called multiple times ([MultiResponseCallback])
+                        // Note: This callback may be called multiple times ([MultiResponseCallback])
                         if (!response.isSuccess())
                             return@propfind
 

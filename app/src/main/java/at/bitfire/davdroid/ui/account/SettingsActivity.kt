@@ -6,10 +6,8 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.annotation.SuppressLint
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.content.SyncStatusObserver
 import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -27,16 +25,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
 import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.SyncAdapterService
+import at.bitfire.davdroid.syncadapter.Syncer
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.UiUtils
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
@@ -390,7 +388,7 @@ class SettingsActivity: AppCompatActivity() {
         @ApplicationContext val context: Context,
         val settings: SettingsManager,
         @Assisted val account: Account
-    ): ViewModel(), SyncStatusObserver, SettingsManager.OnChangeListener {
+    ): ViewModel(), SettingsManager.OnChangeListener {
 
         @AssistedFactory
         interface Factory {
@@ -398,8 +396,6 @@ class SettingsActivity: AppCompatActivity() {
         }
 
         private var accountSettings: AccountSettings? = null
-
-        private var statusChangeListener: Any? = null
 
         // settings
         val syncIntervalContacts = MutableLiveData<Long>()
@@ -433,24 +429,13 @@ class SettingsActivity: AppCompatActivity() {
             accountSettings = AccountSettings(context, account)
 
             settings.addOnChangeListener(this)
-            statusChangeListener = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
 
             reload()
         }
 
         override fun onCleared() {
             super.onCleared()
-
-            statusChangeListener?.let {
-                ContentResolver.removeStatusChangeListener(it)
-                statusChangeListener = null
-            }
             settings.removeOnChangeListener(this)
-        }
-
-        override fun onStatusChanged(which: Int) {
-            Logger.log.info("Sync settings changed")
-            reload()
         }
 
         override fun onSettingsChanged() {
@@ -545,8 +530,8 @@ class SettingsActivity: AppCompatActivity() {
          * Initiates calendar re-synchronization.
          *
          * @param fullResync whether sync shall download all events again
-         * (_true_: sets [SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC],
-         * _false_: sets [ContentResolver.SYNC_EXTRAS_MANUAL])
+         * (_true_: sets [Syncer.SYNC_EXTRAS_FULL_RESYNC],
+         * _false_: sets [Syncer.SYNC_EXTRAS_RESYNC])
          * @param tasks whether tasks shall be synchronized, too (false: only events, true: events and tasks)
          */
         private fun resyncCalendars(fullResync: Boolean, tasks: Boolean) {
@@ -555,13 +540,17 @@ class SettingsActivity: AppCompatActivity() {
                 resync(TaskProvider.ProviderName.OpenTasks.authority, fullResync)
         }
 
+        /**
+         * Initiates re-synchronization for given authority.
+         *
+         * @param authority authority to re-sync
+         * @param fullResync whether sync shall download all events again
+         * (_true_: sets [Syncer.SYNC_EXTRAS_FULL_RESYNC],
+         * _false_: sets [Syncer.SYNC_EXTRAS_RESYNC])
+         */
         private fun resync(authority: String, fullResync: Boolean) {
-            val resync =
-                if (fullResync)
-                    SyncWorker.FULL_RESYNC
-                else
-                    SyncWorker.RESYNC
-            SyncWorker.requestSync(context, account, authority, resync)
+            val resync = if (fullResync) SyncWorker.FULL_RESYNC else SyncWorker.RESYNC
+            SyncWorker.enqueue(context, account, authority, resync)
         }
 
     }

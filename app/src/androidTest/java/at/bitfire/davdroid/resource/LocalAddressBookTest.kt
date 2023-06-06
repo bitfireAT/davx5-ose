@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -18,7 +19,7 @@ import org.junit.Test
 @HiltAndroidTest
 class LocalAddressBookTest {
 
-    @get:Rule()
+    @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext

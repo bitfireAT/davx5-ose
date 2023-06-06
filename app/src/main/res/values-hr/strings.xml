@@ -162,7 +162,6 @@
   <string name="account_no_webcals">Ne postoje pretplate na kalendar (još).</string>
   <string name="account_swipe_down">Povucite prstom prema dolje za osvježavanje popisa sa poslužitelja.</string>
   <string name="account_synchronize_now">Sinkroniziraj sada</string>
-  <string name="account_synchronizing_now">Upravo sinkronizira</string>
   <string name="account_settings">Postavke računa</string>
   <string name="account_rename">Preimenuj račun</string>
   <string name="account_rename_new_name">Ne spremljeni lokalni podatci mogu biti odbačeni. Ponovna sinkronizacija je potrebna nakon preimenovanja. Novi naziv računa:</string>
@@ -338,7 +337,7 @@
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Korisničko ime</string>
   <string name="webdav_add_mount_password">Lozinka</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">kSync dopuštenja</string>
   <string name="sync_error_permissions_text">Dodatna dopuštenja su potrebna</string>
   <string name="sync_error_tasks_too_old">%s prestar</string>

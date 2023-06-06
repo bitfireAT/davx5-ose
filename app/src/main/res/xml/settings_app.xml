@@ -99,11 +99,11 @@
             android:entryValues="@array/app_settings_theme_values"
             android:persistent="false" />
 
-        <ListPreference
+        <!-- <ListPreference
             android:key="language"
             android:icon="@drawable/ic_language"
             android:title="@string/app_settings_language_title"
-            android:persistent="false" />
+            android:persistent="false" /> -->
 
         <Preference
             android:key="reset_hints"

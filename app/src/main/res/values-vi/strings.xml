@@ -200,7 +200,6 @@
   <string name="account_no_webcals">Chưa có lượt đăng ký lịch nào.</string>
   <string name="account_swipe_down">Vuốt xuống để làm mới danh sách từ máy chủ.</string>
   <string name="account_synchronize_now">Đồng bộ hoá ngay</string>
-  <string name="account_synchronizing_now">Đang đồng bộ hoá ngay</string>
   <string name="account_settings">Cài đặt tài khoản</string>
   <string name="account_rename">Đổi tên tài khoản</string>
   <string name="account_rename_new_name">Dữ liệu cục bộ chưa được lưu có thể sẽ bị bỏ qua. Yêu cầu đồng bộ hoá lại sau khi đổi tên. Tên tài khoản mới:</string>
@@ -399,7 +398,7 @@
   <string name="webdav_notification_download">Đang tải xuống tệp WebDAV</string>
   <string name="webdav_notification_upload">Đang tải lên tệp WebDAV</string>
   <string name="webdav_provider_root_title">Nơi gắn WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Quyền của kSync</string>
   <string name="sync_error_permissions_text">Yêu cầu quyền bổ sung</string>
   <string name="sync_error_tasks_too_old">%s quá cũ</string>

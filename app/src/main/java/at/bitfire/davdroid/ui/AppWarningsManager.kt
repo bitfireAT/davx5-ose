@@ -54,7 +54,7 @@ class AppWarningsManager @Inject constructor(
     init {
         Logger.log.fine("Watching for warning conditions")
 
-        // Automatic sync
+        // Automatic Sync
         syncStatusObserver = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
         onStatusChanged(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS)
 

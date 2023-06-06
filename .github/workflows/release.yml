@@ -3,6 +3,9 @@ on:
   push:
     tags:
       - v*
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     name: Create release
@@ -10,10 +13,10 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
@@ -22,7 +25,9 @@ jobs:
       - name: Prepare keystore
         run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
       - name: Build signed package
-        run: ./gradlew --no-daemon app:assembleRelease
+        # --no-configuration-cache is only required for AboutLibraries (bitfireAT/davx5#263, mikepenz/AboutLibraries#857)
+        # Remove it as soon as AboutLibraries is compatbile with the gradle configuration cache.
+        run: ./gradlew --no-configuration-cache --no-daemon app:assembleRelease
         env:
           ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}

@@ -10,7 +10,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncResult
 import android.os.Build
-import android.os.Bundle
 import at.bitfire.dav4jvm.DavAddressBook
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
@@ -83,7 +82,7 @@ class ContactsSyncManager(
     account: Account,
     accountSettings: AccountSettings,
     httpClient: HttpClient,
-    extras: Bundle,
+    extras: Array<String>,
     authority: String,
     syncResult: SyncResult,
     val provider: ContentProviderClient,
@@ -114,7 +113,7 @@ class ContactsSyncManager(
             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
             val reallyDirty = localCollection.verifyDirty()
             val deleted = localCollection.findDeleted().size
-            if (extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD) && reallyDirty == 0 && deleted == 0) {
+            if (extras.contains(ContentResolver.SYNC_EXTRAS_UPLOAD) && reallyDirty == 0 && deleted == 0) {
                 Logger.log.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
                 return false
             }
@@ -216,7 +215,7 @@ class ContactsSyncManager(
             groupStrategy.beforeUploadDirty()
 
         // generate UID/file name for newly created contacts
-        var superModified = super.uploadDirty()
+        val superModified = super.uploadDirty()
 
         // return true when any operation returned true
         return modified or superModified

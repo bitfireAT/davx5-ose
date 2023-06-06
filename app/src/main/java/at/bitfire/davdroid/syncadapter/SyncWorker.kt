@@ -8,30 +8,52 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.content.SyncResult
-import android.os.Bundle
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.wifi.WifiManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.IntDef
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorker
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import androidx.work.*
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.WorkQuery
+import androidx.work.WorkRequest
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.util.LiveDataUtils
+import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.ical4android.TaskProvider
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
 /**
- * Handles sync requests
+ * Handles immediate sync requests, status queries and cancellation for one or multiple authorities
  */
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
@@ -41,104 +63,224 @@ class SyncWorker @AssistedInject constructor(
 
     companion object {
 
-        const val ARG_ACCOUNT_NAME = "accountName"
-        const val ARG_ACCOUNT_TYPE = "accountType"
-        const val ARG_AUTHORITY = "authority"
+        // Worker input parameters
+        internal const val ARG_ACCOUNT_NAME = "accountName"
+        internal const val ARG_ACCOUNT_TYPE = "accountType"
+        internal const val ARG_AUTHORITY = "authority"
 
-        const val ARG_RESYNC = "resync"
+        private const val ARG_UPLOAD = "upload"
+
+        private const val ARG_RESYNC = "resync"
         @IntDef(NO_RESYNC, RESYNC, FULL_RESYNC)
         annotation class ArgResync
         const val NO_RESYNC = 0
         const val RESYNC = 1
         const val FULL_RESYNC = 2
 
-        fun workerName(account: Account, authority: String): String {
-            return "explicit-sync $authority ${account.type}/${account.name}"
-        }
+        // This SyncWorker's tag
+        const val TAG_SYNC = "sync"
+
+        /**
+         * How often this work will be retried to run after soft (network) errors.
+         *
+         * Retry strategy is defined in work request ([enqueue]).
+         */
+        internal const val MAX_RUN_ATTEMPTS = 5
+
+        /**
+         * Name of this worker.
+         * Used to distinguish between other work processes. There must only ever be one worker with the exact same name.
+         */
+        fun workerName(account: Account, authority: String) =
+            "$TAG_SYNC $authority ${account.type}/${account.name}"
 
         /**
          * Requests immediate synchronization of an account with all applicable
          * authorities (contacts, calendars, …).
          *
-         * @param account   account to sync
+         * @see enqueue
          */
-        fun requestSync(context: Context, account: Account, @ArgResync resync: Int = NO_RESYNC) {
+        fun enqueueAllAuthorities(
+            context: Context,
+            account: Account,
+            @ArgResync resync: Int = NO_RESYNC,
+            upload: Boolean = false
+        ) {
             for (authority in SyncUtils.syncAuthorities(context))
-                requestSync(context, account, authority, resync)
+                enqueue(context, account, authority, resync, upload)
         }
 
         /**
          * Requests immediate synchronization of an account with a specific authority.
          *
-         * @param account     account to sync
-         * @param authority   authority to sync (for instance: [CalendarContract.AUTHORITY]])
-         * @param resync      whether to request re-synchronization
+         * @param account       account to sync
+         * @param authority     authority to sync (for instance: [CalendarContract.AUTHORITY])
+         * @param resync        whether to request (full) re-synchronization or not
+         * @param upload        see [ContentResolver.SYNC_EXTRAS_UPLOAD] used only for contacts sync
+         *                      and android 7 workaround
          */
-        fun requestSync(context: Context, account: Account, authority: String, @ArgResync resync: Int = NO_RESYNC) {
+        fun enqueue(
+            context: Context,
+            account: Account,
+            authority: String,
+            @ArgResync resync: Int = NO_RESYNC,
+            upload: Boolean = false
+        ) {
+            // Worker arguments
             val argumentsBuilder = Data.Builder()
                 .putString(ARG_AUTHORITY, authority)
                 .putString(ARG_ACCOUNT_NAME, account.name)
                 .putString(ARG_ACCOUNT_TYPE, account.type)
-            if (resync != 0)
+            if (resync != NO_RESYNC)
                 argumentsBuilder.putInt(ARG_RESYNC, resync)
+            argumentsBuilder.putBoolean(ARG_UPLOAD, upload)
+
+            // build work request
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)   // require a network connection
+                .build()
             val workRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+                .addTag(TAG_SYNC)
                 .setInputData(argumentsBuilder.build())
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .setBackoffCriteria(
+                    BackoffPolicy.EXPONENTIAL,
+                    WorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .setConstraints(constraints)
                 .build()
 
+            // enqueue and start syncing
+            Logger.log.log(Level.INFO, "Enqueueing unique worker: ${workerName(account, authority)}")
             WorkManager.getInstance(context).enqueueUniqueWork(
                 workerName(account, authority),
-                ExistingWorkPolicy.KEEP,    // if sync is already running, just continue
+                ExistingWorkPolicy.KEEP,    // If sync is already running, just continue.
+                                            // Existing retried work will not be replaced (for instance when
+                                            // PeriodicSyncWorker enqueues another scheduled sync).
                 workRequest
             )
         }
 
-        fun stopSync(context: Context, account: Account, authority: String) {
-            WorkManager.getInstance(context).cancelUniqueWork(workerName(account, authority))
+        /**
+         * Stops running sync worker or removes pending sync from queue, for all authorities.
+         */
+        fun cancelSync(context: Context, account: Account) {
+            for (authority in SyncUtils.syncAuthorities(context))
+                WorkManager.getInstance(context).cancelUniqueWork(workerName(account, authority))
         }
 
         /**
-         * Will tell whether a worker exists, which belongs to given account and authorities,
-         * and that is in the given worker state.
+         * Will tell whether >0 [SyncWorker] exists, belonging to given account and authorities,
+         * and which are/is in the given worker state.
          *
-         * @param workState    state of worker to match
+         * @param workStates   list of states of workers to match
          * @param account      the account which the workers belong to
-         * @param authorities  type of sync work
-         * @return boolean     *true* if at least one worker with matching state was found; *false* otherwise
+         * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
+         * @return *true* if at least one worker with matching query was found; *false* otherwise
          */
-        fun existsForAccount(context: Context, workState: WorkInfo.State, account: Account, authorities: List<String>) =
-            LiveDataUtils.liveDataLogicOr(
-                authorities.map { authority -> isWorkerInState(context, workState, account, authority) }
-            )
-
-        fun isWorkerInState(context: Context, workState: WorkInfo.State, account: Account, authority: String) =
-            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName(account, authority)).map { workInfoList ->
-                workInfoList.any { workInfo -> workInfo.state == workState }
-            }
+        fun exists(
+            context: Context,
+            workStates: List<WorkInfo.State>,
+            account: Account? = null,
+            authorities: List<String>? = null
+        ): LiveData<Boolean> {
+            val workQuery = WorkQuery.Builder
+                .fromTags(listOf(TAG_SYNC))
+                .addStates(workStates)
+            if (account != null && authorities != null)
+                workQuery.addUniqueWorkNames(
+                    authorities.map { authority -> workerName(account, authority) }
+                )
+            return WorkManager.getInstance(context)
+                .getWorkInfosLiveData(workQuery.build()).map { workInfoList ->
+                    workInfoList.isNotEmpty()
+                }
+        }
 
 
         /**
-         * Finds out whether SyncWorkers with given statuses exist
+         * Checks whether user imposed sync conditions from settings are met:
+         * - Sync only on WiFi?
+         * - Sync only on specific WiFi (SSID)?
          *
-         * @param statuses statuses to check
-         * @return whether SyncWorkers matching the statuses were found
+         * @param accountSettings Account settings of the account to check (and is to be synced)
+         * @return *true* if conditions are met; *false* if not
          */
-        fun existsWithStatuses(context: Context, statuses: List<WorkInfo.State>): LiveData<Boolean> {
-            val workQuery = WorkQuery.Builder
-                .fromStates(statuses)
-                .build()
-            return WorkManager.getInstance(context).getWorkInfosLiveData(workQuery).map {
-                it.isNotEmpty()
+        internal fun wifiConditionsMet(context: Context, accountSettings: AccountSettings): Boolean {
+            // May we sync without WiFi?
+            if (!accountSettings.getSyncWifiOnly())
+                return true     // yes, continue
+
+            // WiFi required, is it available?
+            if (!wifiAvailable(context)) {
+                Logger.log.info("Not on connected WiFi, stopping")
+                return false
             }
+            // If execution reaches this point, we're on a connected WiFi
+
+            // Check whether we are connected to the correct WiFi (in case SSID was provided)
+            return correctWifiSsid(context, accountSettings)
         }
 
+        /**
+         * Checks whether we are connected to working WiFi
+         */
+        internal fun wifiAvailable(context: Context): Boolean {
+            val connectivityManager = context.getSystemService<ConnectivityManager>()!!
+            connectivityManager.allNetworks.forEach { network ->
+                connectivityManager.getNetworkCapabilities(network)?.let { capabilities ->
+                    if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
+                        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED))
+                        return true
+                }
+            }
+            return false
+        }
+
+        /**
+         * Checks whether we are connected to the correct wifi (SSID) defined by user in the
+         * account settings.
+         *
+         * Note: Should be connected to some wifi before calling.
+         *
+         * @param accountSettings Settings of account to check
+         * @return *true* if connected to the correct wifi OR no wifi names were specified in
+         * account settings; *false* otherwise
+         */
+        internal fun correctWifiSsid(context: Context, accountSettings: AccountSettings): Boolean {
+            accountSettings.getSyncWifiOnlySSIDs()?.let { onlySSIDs ->
+                // check required permissions and location status
+                if (!PermissionUtils.canAccessWifiSsid(context)) {
+                    // not all permissions granted; show notification
+                    val intent = Intent(context, WifiPermissionsActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, accountSettings.account)
+                    PermissionUtils.notifyPermissions(context, intent)
+
+                    Logger.log.warning("Can't access WiFi SSID, aborting sync")
+                    return false
+                }
+
+                val wifi = context.getSystemService<WifiManager>()!!
+                val info = wifi.connectionInfo
+                if (info == null || !onlySSIDs.contains(info.ssid.trim('"'))) {
+                    Logger.log.info("Connected to wrong WiFi network (${info.ssid}), aborting sync")
+                    return false
+                }
+                Logger.log.fine("Connected to WiFi network ${info.ssid}")
+            }
+            return true
+        }
     }
 
+    private val notificationManager = NotificationManagerCompat.from(applicationContext)
 
     /** thread which runs the actual sync code (can be interrupted to stop synchronization)  */
     var syncThread: Thread? = null
 
     override fun doWork(): Result {
+        // ensure we got the required arguments
         val account = Account(
             inputData.getString(ARG_ACCOUNT_NAME) ?: throw IllegalArgumentException("$ARG_ACCOUNT_NAME required"),
             inputData.getString(ARG_ACCOUNT_TYPE) ?: throw IllegalArgumentException("$ARG_ACCOUNT_TYPE required")
@@ -146,36 +288,34 @@ class SyncWorker @AssistedInject constructor(
         val authority = inputData.getString(ARG_AUTHORITY) ?: throw IllegalArgumentException("$ARG_AUTHORITY required")
         Logger.log.info("Running sync worker: account=$account, authority=$authority")
 
-        val syncAdapter = when (authority) {
+        // What are we going to sync? Select syncer based on authority
+        val syncer: Syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                AddressBooksSyncAdapterService.AddressBooksSyncAdapter(applicationContext)
+                AddressBookSyncer(applicationContext)
             CalendarContract.AUTHORITY ->
-                CalendarsSyncAdapterService.CalendarsSyncAdapter(applicationContext)
+                CalendarSyncer(applicationContext)
             ContactsContract.AUTHORITY ->
-                ContactsSyncAdapterService.ContactsSyncAdapter(applicationContext)
+                ContactSyncer(applicationContext)
             TaskProvider.ProviderName.JtxBoard.authority ->
-                JtxSyncAdapterService.JtxSyncAdapter(applicationContext)
+                JtxSyncer(applicationContext)
             TaskProvider.ProviderName.OpenTasks.authority,
             TaskProvider.ProviderName.TasksOrg.authority ->
-                TasksSyncAdapterService.TasksSyncAdapter(applicationContext)
+                TaskSyncer(applicationContext)
             else ->
                 throw IllegalArgumentException("Invalid authority $authority")
         }
 
-        // Pass flags to the sync adapter. Note that these may be sync framework flags, but they
-        // don't have anything to do with the sync framework anymore. They only exist because we
-        // still use the same sync code called from two locations (from WorkManager and from the
-        // sync framework).
-        val extras = Bundle()
-        extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)        // manual sync
-        extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)     // run immediately (don't queue)
-
-        // pass flags which are used by the sync code
-        when (extras.getInt(ARG_RESYNC)) {
-            FULL_RESYNC -> extras.putBoolean(SyncAdapterService.SYNC_EXTRAS_FULL_RESYNC, true)
-            RESYNC -> extras.putBoolean(SyncAdapterService.SYNC_EXTRAS_RESYNC, true)
+        // pass possibly supplied flags to the selected syncer
+        val extras = mutableListOf<String>()
+        when (inputData.getInt(ARG_RESYNC, NO_RESYNC)) {
+            RESYNC ->      extras.add(Syncer.SYNC_EXTRAS_RESYNC)
+            FULL_RESYNC -> extras.add(Syncer.SYNC_EXTRAS_FULL_RESYNC)
         }
+        if (inputData.getBoolean(ARG_UPLOAD, false))
+            // Comes in through SyncAdapterService and is used only by ContactsSyncManager for an Android 7 workaround.
+            extras.add(ContentResolver.SYNC_EXTRAS_UPLOAD)
 
+        // acquire ContentProviderClient of authority to be synced
         val provider: ContentProviderClient? =
             try {
                 applicationContext.contentResolver.acquireContentProviderClient(authority)
@@ -188,21 +328,58 @@ class SyncWorker @AssistedInject constructor(
             return Result.failure()
         }
 
+        // Start syncing. We still use the sync adapter framework's SyncResult to pass the sync results, but this
+        // is only for legacy reasons and can be replaced by an own result class in the future.
         val result = SyncResult()
         try {
             syncThread = Thread.currentThread()
-            syncAdapter.onPerformSync(account, extras, authority, provider, result)
+            syncer.onPerformSync(account, extras.toTypedArray(), authority, provider, result)
         } catch (e: SecurityException) {
-            syncAdapter.onSecurityException(account, extras, authority, result)
+            Logger.log.log(Level.WARNING, "Security exception when opening content provider for $authority")
         } finally {
             provider.closeCompat()
         }
 
-        if (result.hasError())
-            return Result.failure(Data.Builder()
+        // Check for errors
+        if (result.hasError()) {
+            val syncResult = Data.Builder()
                 .putString("syncresult", result.toString())
                 .putString("syncResultStats", result.stats.toString())
-                .build())
+                .build()
+
+            // On soft errors the sync is retried a few times before considered failed
+            if (result.hasSoftError()) {
+                Logger.log.warning("Soft error while syncing: result=$result, stats=${result.stats}")
+                if (runAttemptCount < MAX_RUN_ATTEMPTS) {
+                    Logger.log.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
+                    return Result.retry()
+                }
+
+                Logger.log.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
+
+                notificationManager.notifyIfPossible(
+                    NotificationUtils.NOTIFY_SYNC_ERROR,
+                    NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_SYNC_IO_ERRORS)
+                        .setSmallIcon(R.drawable.ic_sync_problem_notify)
+                        .setContentTitle(account.name)
+                        .setContentText(applicationContext.getString(R.string.sync_error_retry_limit_reached))
+                        .setSubText(account.name)
+                        .setOnlyAlertOnce(true)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setCategory(NotificationCompat.CATEGORY_ERROR)
+                        .build()
+                )
+
+                return Result.failure(syncResult)
+            }
+
+            // On a hard error - fail with an error message
+            // Note: SyncManager should have notified the user
+            if (result.hasHardError()) {
+                Logger.log.warning("Hard error while syncing: result=$result, stats=${result.stats}")
+                return Result.failure(syncResult)
+            }
+        }
 
         return Result.success()
     }

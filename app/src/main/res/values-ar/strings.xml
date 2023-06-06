@@ -75,7 +75,6 @@
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
   <string name="account_synchronize_now">زامن الآن</string>
-  <string name="account_synchronizing_now">المزامنة جارية</string>
   <string name="account_settings">إعدادات الحساب</string>
   <string name="account_rename">إعادة تسمية الحساب</string>
   <string name="account_rename_new_name">البيانات المحلية غير المحفوظة قد يجري استبعادها.  مطلوب إعادة المزامنة بعد إعادة التسمية.  الاسم الجديد للحساب:</string>
@@ -207,7 +206,7 @@
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">اسم المستخدم</string>
   <string name="webdav_add_mount_password">كلمة المرور</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">أذونات kSync</string>
   <string name="sync_error_permissions_text">مطلوب أذونات إضافية</string>
   <string name="sync_error_authentication_failed">فشلت المصادقة (تحقق من بيانات تسجيل الدخول)</string>

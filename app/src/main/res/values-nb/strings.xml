@@ -79,7 +79,6 @@
   <string name="account_no_webcals">Du abonnerer ikke på noen kalendere (enda).</string>
   <string name="account_swipe_down">Dra ned for å oppdatere listen fra serveren.</string>
   <string name="account_synchronize_now">Synkroniser nå</string>
-  <string name="account_synchronizing_now">Synkroniserer nå</string>
   <string name="account_settings">Kontoinnstillinger</string>
   <string name="account_rename">Gi konto nytt navn</string>
   <string name="account_rename_new_name">Ulagret lokal data kan bli avslått. Ny synkronisering kreves etter ny navngivning. Nytt kontonavn:</string>
@@ -203,7 +202,7 @@
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Brukernavn</string>
   <string name="webdav_add_mount_password">Passord</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">kSync-tilganger</string>
   <string name="sync_error_permissions_text">Ytterligere tilganger kreves</string>
   <string name="sync_error_io">Nettverk- og I/O-feil - %s</string>

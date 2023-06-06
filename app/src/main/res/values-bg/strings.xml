@@ -211,7 +211,6 @@
   <string name="account_no_webcals">Няма абонаменти за календари (все още)</string>
   <string name="account_swipe_down">Дръпнете надолу за презареждане от сървъра.</string>
   <string name="account_synchronize_now">Синхронизация</string>
-  <string name="account_synchronizing_now">Извършва се синхронизация</string>
   <string name="account_settings">Настройки на регистрацията</string>
   <string name="account_rename">Преименуване на регистрация</string>
   <string name="account_rename_new_name">Незапазените местни данни могат да бъдат отхвърлени. След преименуването е нужно синхронизиране. Ново име на регистрацията:</string>
@@ -412,7 +411,7 @@
   <string name="webdav_notification_download">Изтегля се файл на WebDAV</string>
   <string name="webdav_notification_upload">Изпраща се файл на WebDAV</string>
   <string name="webdav_provider_root_title">Дял на WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Разрешения на kSync</string>
   <string name="sync_error_permissions_text">Необходими са допълнителни разрешения</string>
   <string name="sync_error_tasks_too_old">Приложението %s е твърде старо</string>
@@ -422,6 +421,7 @@
   <string name="sync_error_http_dav">Грешка в сървъра на HTTP – %s</string>
   <string name="sync_error_local_storage">Грешка в местното хранилище – %s</string>
   <string name="sync_error_retry">Повторен опит</string>
+  <string name="sync_error_retry_limit_reached">Грешка (достигнат максимален брой опити)</string>
   <string name="sync_error_view_item">Преглед</string>
   <string name="sync_invalid_contact">Получен е недействителен контакт от сървъра</string>
   <string name="sync_invalid_event">Получено е недействително събитие от сървъра</string>

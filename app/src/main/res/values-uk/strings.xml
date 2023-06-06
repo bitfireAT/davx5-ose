@@ -126,7 +126,6 @@
   <string name="account_no_webcals">Немає підписок на календар (поки що).</string>
   <string name="account_swipe_down">Потягніть донизу, аби оновити список з серверу.</string>
   <string name="account_synchronize_now">Синхронізувати зараз</string>
-  <string name="account_synchronizing_now">Синхронізація</string>
   <string name="account_settings">Налаштування облікового запису</string>
   <string name="account_rename">Перейменувати обліковий запис</string>
   <string name="account_rename_new_name">Незбережені локальні дані можуть бути втрачені. Необхідно виконати синхронізацію після перейменування. Нова назва облікового запису:</string>
@@ -284,7 +283,7 @@
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Ім\'я користувача</string>
   <string name="webdav_add_mount_password">Пароль</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Дозволи kSync</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>
   <string name="sync_error_authentication_failed">Помилка аутентифікації (перевірте обліковий запис)</string>

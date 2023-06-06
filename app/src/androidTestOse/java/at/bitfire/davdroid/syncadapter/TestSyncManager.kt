@@ -7,7 +7,6 @@ package at.bitfire.davdroid.syncadapter
 import android.accounts.Account
 import android.content.Context
 import android.content.SyncResult
-import android.os.Bundle
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
@@ -26,7 +25,7 @@ import org.junit.Assert.assertEquals
 class TestSyncManager(
         context: Context,
         account: Account,
-        extras: Bundle,
+        extras: Array<String>,
         authority: String,
         httpClient: HttpClient,
         syncResult: SyncResult,

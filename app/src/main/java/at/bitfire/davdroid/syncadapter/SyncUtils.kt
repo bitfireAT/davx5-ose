@@ -88,11 +88,6 @@ object SyncUtils {
         nm.notifyIfPossible(NotificationUtils.NOTIFY_TASKS_PROVIDER_TOO_OLD, notify.build())
     }
 
-    fun removePeriodicSyncs(account: Account, authority: String) {
-        for (sync in ContentResolver.getPeriodicSyncs(account, authority))
-            ContentResolver.removePeriodicSync(sync.account, sync.authority, sync.extras)
-    }
-
     /**
      * Returns a list of all available sync authorities for main accounts (!= address book accounts):
      *
@@ -115,7 +110,6 @@ object SyncUtils {
         }
         return result
     }
-
 
     // task sync utils
 
@@ -161,7 +155,7 @@ object SyncUtils {
             ContentResolver.setIsSyncable(account, authority, 1)
             try {
                 val settings = AccountSettings(context, account)
-                val interval = settings.getSavedTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
+                val interval = settings.getTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
                 settings.setSyncInterval(authority, interval)
             } catch (e: InvalidAccountException) {
                 // account has already been removed

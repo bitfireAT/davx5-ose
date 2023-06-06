@@ -4,33 +4,69 @@
 
 package at.bitfire.davdroid
 
-import android.app.Application
 import android.content.Context
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import at.bitfire.davdroid.log.Logger
-import com.google.common.util.concurrent.ListenableFuture
+import androidx.work.WorkQuery
+import org.jetbrains.annotations.TestOnly
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 object TestUtils {
 
-    val targetApplication by lazy { InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application }
+    @TestOnly
+    fun workScheduledOrRunning(context: Context, workerName: String): Boolean =
+        workInStates(context, workerName, listOf(
+            WorkInfo.State.ENQUEUED,
+            WorkInfo.State.RUNNING
+        ))
 
-    fun workScheduledOrRunning(context: Context, workerName: String): Boolean {
-        val future: ListenableFuture<List<WorkInfo>> = WorkManager.getInstance(context).getWorkInfosForUniqueWork(workerName)
-        val workInfoList: List<WorkInfo>
-        try {
-            workInfoList = future.get()
-        } catch (e: Exception) {
-            Logger.log.severe("Failed to retrieve work info list for worker $workerName", )
-            return false
+    @TestOnly
+    fun workScheduledOrRunningOrSuccessful(context: Context, workerName: String): Boolean =
+        workInStates(context, workerName, listOf(
+            WorkInfo.State.ENQUEUED,
+            WorkInfo.State.RUNNING,
+            WorkInfo.State.SUCCEEDED
+        ))
+
+    @TestOnly
+    fun workInStates(context: Context, workerName: String, states: List<WorkInfo.State>): Boolean =
+        WorkManager.getInstance(context).getWorkInfos(WorkQuery.Builder
+            .fromUniqueWorkNames(listOf(workerName))
+            .addStates(states)
+            .build()
+        ).get().isNotEmpty()
+
+
+    /* Copyright 2019 Google LLC.
+    SPDX-License-Identifier: Apache-2.0 */
+    @TestOnly
+    fun <T> LiveData<T>.getOrAwaitValue(
+        time: Long = 2,
+        timeUnit: TimeUnit = TimeUnit.SECONDS
+    ): T {
+        var data: T? = null
+        val latch = CountDownLatch(1)
+        val observer = object : Observer<T> {
+            override fun onChanged(value: T) {
+                data = value
+                latch.countDown()
+                this@getOrAwaitValue.removeObserver(this)
+            }
         }
-        for (workInfo in workInfoList) {
-            val state = workInfo.state
-            if (state == WorkInfo.State.RUNNING || state == WorkInfo.State.ENQUEUED)
-                return true
+
+        this.observeForever(observer)
+
+        // Don't wait indefinitely if the LiveData is not set.
+        if (!latch.await(time, timeUnit)) {
+            throw TimeoutException("LiveData value was never set.")
         }
-        return false
+
+        @Suppress("UNCHECKED_CAST")
+        return data as T
     }
 
 }

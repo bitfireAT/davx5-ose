@@ -11,6 +11,7 @@
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gestiona comptes</string>
   <string name="share">Comparteix</string>
+  <string name="no_internet_sync_scheduled">Sense Internet, es planifica la sincronització</string>
   <string name="database_destructive_migration_title">Base de dades malmesa</string>
   <string name="database_destructive_migration_text">S\'han eliminat localment tots els comptes.</string>
   <string name="notification_channel_debugging">Depurador</string>
@@ -211,7 +212,6 @@
   <string name="account_no_webcals">No hi ha subscripcions a calendaris (encara).</string>
   <string name="account_swipe_down">Llisca avall per a refrescar la llista del servidor.</string>
   <string name="account_synchronize_now">Sincronitza ara</string>
-  <string name="account_synchronizing_now">Sincronitzant ara</string>
   <string name="account_settings">Configuració del compte</string>
   <string name="account_rename">Canvia el nom del compte</string>
   <string name="account_rename_new_name">Les dades locals no desades es poden desestimar. Es requereix tornar a sincronitzar després del canvi de nom. Nom nou del compte:</string>
@@ -249,7 +249,7 @@
   <string name="login_login">Inici de sessió</string>
   <string name="login_create_account">Crea un compte</string>
   <string name="login_account_name">Nom del compte</string>
-  <string name="login_account_avoid_apostrophe">S\'ha informat que l\'ús d\'apòstrofs (\'), causa problemes en alguns dispositius.</string>
+  <string name="login_account_avoid_apostrophe">S\'ha informat que l\'ús d\'apòstrofs (\') causa problemes en alguns dispositius.</string>
   <string name="login_account_name_info">Utilitzeu la vostra adreça de correu electrònic com a nom del compte perquè l\'Android utilitzarà el nom del compte com a camp ORGANITZADOR per als esdeveniments que creeu. No poden haver-hi dos comptes amb el mateix nom.</string>
   <string name="login_account_contact_group_method">Mètode dels grups de contactes:</string>
   <string name="login_account_name_required">Nom del compte obligatori</string>
@@ -355,6 +355,8 @@
   <string name="delete_collection_deleting_collection">S\'està suprimint la col·lecció</string>
   <string name="collection_force_read_only">Força que sigui de només lectura</string>
   <string name="collection_properties">Propietats</string>
+  <string name="collection_properties_sync_time">Darrera sincronització:</string>
+  <string name="collection_properties_sync_time_never">No s\'ha sincronitzat mai</string>
   <string name="collection_properties_url">Adreça (URL):</string>
   <string name="collection_properties_copy_url">Copia l\'URL</string>
   <string name="collection_properties_owner">Propietari:</string>
@@ -412,7 +414,7 @@
   <string name="webdav_notification_download">S\'està baixant el fitxer WebDAV</string>
   <string name="webdav_notification_upload">S\'està pujant el fitxer WebDAV</string>
   <string name="webdav_provider_root_title">Muntatge WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Permisos del kSync</string>
   <string name="sync_error_permissions_text">Es requereixen permisos addicionals</string>
   <string name="sync_error_tasks_too_old">%s és massa antiga</string>
@@ -422,6 +424,7 @@
   <string name="sync_error_http_dav">Error del servidor HTTP: %s</string>
   <string name="sync_error_local_storage">Error d\'emmagatzematge local: %s</string>
   <string name="sync_error_retry">Reintenta</string>
+  <string name="sync_error_retry_limit_reached">Error de programari (s\'ha arribat al màxim de reintents)</string>
   <string name="sync_error_view_item">Veure element</string>
   <string name="sync_invalid_contact">S\'ha rebut un contacte no vàlid del servidor</string>
   <string name="sync_invalid_event">S\'ha rebut un esdeveniment no vàlid del servidor</string>

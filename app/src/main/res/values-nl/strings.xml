@@ -11,6 +11,7 @@
   <string name="help">Hulp</string>
   <string name="manage_accounts">Accounts beheren</string>
   <string name="share">Delen</string>
+  <string name="no_internet_sync_scheduled">Geen internet, planning de sync</string>
   <string name="database_destructive_migration_title">Database beschadigd</string>
   <string name="database_destructive_migration_text">Alle accounts zijn lokaal verwijderd.</string>
   <string name="notification_channel_debugging">Debuggen</string>
@@ -211,7 +212,6 @@
   <string name="account_no_webcals">Er zijn (nog) geen kalender abonnementen.</string>
   <string name="account_swipe_down">Omlaag vegen om de lijst van de server te actualiseren.</string>
   <string name="account_synchronize_now">Nu synchroniseren</string>
-  <string name="account_synchronizing_now">Synchroniseert…</string>
   <string name="account_settings">Account instellingen</string>
   <string name="account_rename">Naam account wijzigen</string>
   <string name="account_rename_new_name">Niet opgeslagen lokale gegevens kunnen verloren gaan. Synchroniseren is vereist na verandering van naam. Nieuwe accountnaam:</string>
@@ -412,7 +412,7 @@
   <string name="webdav_notification_download">WebDAV-bestand downloaden</string>
   <string name="webdav_notification_upload">WebDAV-bestand uploaden</string>
   <string name="webdav_provider_root_title">WebDAV-koppeling</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">kSync rechten</string>
   <string name="sync_error_permissions_text">Aanvullende rechten vereist</string>
   <string name="sync_error_tasks_too_old">%ste oud</string>
@@ -422,6 +422,7 @@
   <string name="sync_error_http_dav">HTTP-server fout - %s</string>
   <string name="sync_error_local_storage">Lokale opslag fout - %s</string>
   <string name="sync_error_retry">Opnieuw</string>
+  <string name="sync_error_retry_limit_reached">Soft error (max. aantal pogingen bereikt)</string>
   <string name="sync_error_view_item">Item bekijken</string>
   <string name="sync_invalid_contact">Ongeldig contact ontvangen van server</string>
   <string name="sync_invalid_event">Ongeldige gebeurtenis ontvangen van server</string>

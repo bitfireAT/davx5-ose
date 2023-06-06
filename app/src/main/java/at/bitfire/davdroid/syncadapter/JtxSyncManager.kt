@@ -7,7 +7,6 @@ package at.bitfire.davdroid.syncadapter
 import android.accounts.Account
 import android.content.Context
 import android.content.SyncResult
-import android.os.Bundle
 import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
@@ -38,7 +37,7 @@ class JtxSyncManager(
     context: Context,
     account: Account,
     accountSettings: AccountSettings,
-    extras: Bundle,
+    extras: Array<String>,
     httpClient: HttpClient,
     authority: String,
     syncResult: SyncResult,

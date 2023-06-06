@@ -13,7 +13,6 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
 import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -89,9 +88,6 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
 
             // create/update app shortcuts
             UiUtils.updateShortcuts(this)
-
-            // check/repair sync intervals
-            AccountSettings.repairSyncIntervals(this)
         }
     }
 

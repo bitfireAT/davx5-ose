@@ -211,7 +211,6 @@
   <string name="account_no_webcals">Nie ma (jeszcze) subskrypcji kalendarzy.</string>
   <string name="account_swipe_down">Przesuń palcem w dół, aby odświeżyć listę z serwera.</string>
   <string name="account_synchronize_now">Synchronizuj teraz</string>
-  <string name="account_synchronizing_now">Trwa synchronizacja</string>
   <string name="account_settings">Ustawienia konta</string>
   <string name="account_rename">Zmień nazwę konta</string>
   <string name="account_rename_new_name">Niezapisane dane lokalne mogą zostać usunięte. Po zmianie nazwy jest wymagana ponowna synchronizacja. Nowa nazwa konta:</string>
@@ -416,7 +415,7 @@
   <string name="webdav_notification_download">Pobieranie pliku WebDAV</string>
   <string name="webdav_notification_upload">Wgrywanie pliku WebDAV</string>
   <string name="webdav_provider_root_title">Punkt linkowania WebDAV</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">Uprawnienia kSync</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>
   <string name="sync_error_tasks_too_old">%s zbyt stary/a</string>

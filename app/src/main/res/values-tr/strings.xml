@@ -48,7 +48,6 @@
   <!--AccountActivity-->
   <string name="account_caldav">CalDAV</string>
   <string name="account_synchronize_now">Şimdi senkronize et</string>
-  <string name="account_synchronizing_now">Senkronize ediyor</string>
   <string name="account_settings">Hesap ayarları</string>
   <string name="account_delete">Hesabı sil</string>
   <string name="account_delete_confirmation_title">Hesap gerçekten silinsin mi?</string>
@@ -129,7 +128,7 @@
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Kullanıcı adı</string>
   <string name="webdav_add_mount_password">Parola</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">kSync izinleri</string>
   <string name="sync_error_permissions_text">Ek izinler zorunludur</string>
   <!--cert4android-->

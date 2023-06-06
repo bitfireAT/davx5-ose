@@ -11,6 +11,7 @@
   <string name="help">ヘルプ</string>
   <string name="manage_accounts">アカウントの管理</string>
   <string name="share">共有</string>
+  <string name="no_internet_sync_scheduled">インターネット接続がありません。同期を待機しています</string>
   <string name="database_destructive_migration_title">データベースが破損しています</string>
   <string name="database_destructive_migration_text">すべてのアカウントがローカルから削除されました</string>
   <string name="notification_channel_debugging">デバッグ中</string>
@@ -211,7 +212,6 @@
   <string name="account_no_webcals">カレンダーのサブスクリプションは (まだ) ありません。</string>
   <string name="account_swipe_down">下にスワイプすると、サーバーからリストを更新します。</string>
   <string name="account_synchronize_now">今すぐ同期</string>
-  <string name="account_synchronizing_now">同期しています</string>
   <string name="account_settings">アカウント設定</string>
   <string name="account_rename">アカウントの名前を変更</string>
   <string name="account_rename_new_name">未保存のローカルデータが破棄されることがあります。名前の変更後に再同期が必要です。新しいアカウント名:</string>
@@ -353,6 +353,8 @@
   <string name="delete_collection_deleting_collection">コレクションの削除中</string>
   <string name="collection_force_read_only">読み取り専用にする</string>
   <string name="collection_properties">プロパティ</string>
+  <string name="collection_properties_sync_time">最終同期:</string>
+  <string name="collection_properties_sync_time_never">同期されていません</string>
   <string name="collection_properties_url">アドレス (URL):</string>
   <string name="collection_properties_copy_url">URL をコピー</string>
   <string name="collection_properties_owner">所有者:</string>
@@ -410,7 +412,7 @@
   <string name="webdav_notification_download">WebDAV ファイルをダウンロードしています</string>
   <string name="webdav_notification_upload">WebDAV ファイルをアップロードしています</string>
   <string name="webdav_provider_root_title">WebDAV マウント</string>
-  <!--sync adapters-->
+  <!--sync-->
   <string name="sync_error_permissions">kSync アクセス許可</string>
   <string name="sync_error_permissions_text">アクセス権限の許可が必要です</string>
   <string name="sync_error_tasks_too_old">%s が古すぎます</string>
@@ -420,6 +422,7 @@
   <string name="sync_error_http_dav">HTTP サーバーエラー – %s</string>
   <string name="sync_error_local_storage">内蔵ストレージエラー – %s</string>
   <string name="sync_error_retry">再試行</string>
+  <string name="sync_error_retry_limit_reached">ソフトエラー (再試行回数の上限に到達)</string>
   <string name="sync_error_view_item">アイテムを表示</string>
   <string name="sync_invalid_contact">サーバーから無効な連絡先を受信しました</string>
   <string name="sync_invalid_event">サーバーから無効な予定を受信しました</string>
