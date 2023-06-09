@@ -8,9 +8,9 @@ import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
+import android.app.Application
 import android.app.Dialog
 import android.content.ContentResolver
-import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -24,9 +24,8 @@ import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.*
 import at.bitfire.davdroid.db.AppDatabase
@@ -41,7 +40,6 @@ import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -81,9 +79,14 @@ class RenameAccountFragment: DialogFragment() {
         layout.setPadding(8*density, 8*density, 8*density, 8*density)
         layout.addView(editText)
 
-        model.finished.observe(this, Observer {
-            this@RenameAccountFragment.requireActivity().finish()
-        })
+        model.errorMessage.observe(this) { msg ->
+            // we use a Toast to show the error message because a Snackbar is not usable for the input dialog fragment
+            Toast.makeText(requireActivity(), msg, Toast.LENGTH_LONG).show()
+        }
+
+        model.finishActivity.observe(this) {
+            requireActivity().finish()
+        }
 
         return MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(R.string.account_rename)
@@ -95,8 +98,6 @@ class RenameAccountFragment: DialogFragment() {
                         return@OnClickListener
 
                     model.renameAccount(oldAccount, newName)
-
-                    requireActivity().finish()
                 })
                 .setNegativeButton(android.R.string.cancel) { _, _ -> }
                 .create()
@@ -105,19 +106,28 @@ class RenameAccountFragment: DialogFragment() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        @ApplicationContext val context: Context,
+        application: Application,
         val db: AppDatabase
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
 
-        val finished = MutableLiveData<Boolean>()
+        val errorMessage = MutableLiveData<String>()
+        val finishActivity = MutableLiveData<Boolean>()
 
+        /**
+         * Will try to rename the given account to given string
+         *
+         * @param oldAccount the account to be renamed
+         * @param newName the new name
+         */
         fun renameAccount(oldAccount: Account, newName: String) {
+            val context: Application = getApplication()
+
             // remember sync intervals
             val oldSettings = try {
                 AccountSettings(context, oldAccount)
             } catch (e: InvalidAccountException) {
-                Toast.makeText(context, R.string.account_invalid, Toast.LENGTH_LONG).show()
-                finished.value = true
+                errorMessage.postValue(context.getString(R.string.account_invalid))
+                finishActivity.value = true
                 return
             }
 
@@ -129,6 +139,13 @@ class RenameAccountFragment: DialogFragment() {
             val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
 
             val accountManager = AccountManager.get(context)
+            // check whether name is already taken
+            if (accountManager.getAccountsByType(context.getString(R.string.account_type)).map { it.name }.contains(newName)) {
+                Logger.log.log(Level.WARNING, "Account with name \"$newName\" already exists")
+                errorMessage.postValue(context.getString(R.string.account_rename_exists_already))
+                return
+            }
+
             try {
                 /* https://github.com/bitfireAT/davx5/issues/135
                 Lock accounts cleanup so that the AccountsCleanupWorker doesn't run while we rename the account
@@ -139,6 +156,7 @@ class RenameAccountFragment: DialogFragment() {
                 3. Now the services would be renamed, but they're not here anymore. */
                 AccountsCleanupWorker.lockAccountsCleanup()
 
+                // Renaming account
                 accountManager.renameAccount(oldAccount, newName, @MainThread {
                     if (it.result?.name == newName /* account has new name -> success */)
                         viewModelScope.launch(Dispatchers.Default + NonCancellable) {
@@ -151,10 +169,13 @@ class RenameAccountFragment: DialogFragment() {
                         } else
                             // release AccountsCleanupWorker mutex now
                             AccountsCleanupWorker.unlockAccountsCleanup()
+
+                    // close AccountActivity with old name
+                    finishActivity.postValue(true)
                 }, null)
             } catch (e: Exception) {
                 Logger.log.log(Level.WARNING, "Couldn't rename account", e)
-                Toast.makeText(context, R.string.account_rename_couldnt_rename, Toast.LENGTH_LONG).show()
+                errorMessage.postValue(context.getString(R.string.account_rename_couldnt_rename))
             }
         }
 
@@ -163,6 +184,7 @@ class RenameAccountFragment: DialogFragment() {
         fun onAccountRenamed(accountManager: AccountManager, oldAccount: Account, newName: String, syncIntervals: List<Pair<String, Long?>>) {
             // account has now been renamed
             Logger.log.info("Updating account name references")
+            val context: Application = getApplication()
 
             // cancel maybe running synchronization
             SyncWorker.cancelSync(context, oldAccount)
@@ -173,8 +195,8 @@ class RenameAccountFragment: DialogFragment() {
             try {
                 db.serviceDao().renameAccount(oldAccount.name, newName)
             } catch (e: Exception) {
-                Toast.makeText(context, R.string.account_rename_couldnt_rename, Toast.LENGTH_LONG).show()
                 Logger.log.log(Level.SEVERE, "Couldn't update service DB", e)
+                errorMessage.postValue(context.getString(R.string.account_rename_couldnt_rename))
                 return
             }
 
