@@ -13,7 +13,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -33,6 +32,7 @@ import at.bitfire.davdroid.databinding.BuyBadgeItemBinding
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.SettingsManager
 import com.android.billingclient.api.*
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.AndroidEntryPoint
@@ -164,6 +164,14 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                     }
                 )
                 badgesAdapter.update(badges)
+            }
+        }
+
+        // Show Snack bar when something goes wrong
+        model.errorMessage.observe(this) { errorMessage ->
+            if (errorMessage != null) {
+                Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG).show()
+                model.errorMessage.value = null
             }
         }
     }
@@ -331,6 +339,8 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
         internal val playClient = PlayClient(app)
 
+        val errorMessage = playClient.errorMessage
+
         /**
          * List of badges available to buy
          */
@@ -426,7 +436,6 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
     }
 
-
     class PlayClient(
         val context: Context
     ) : Closeable, PurchasesUpdatedListener, BillingClientStateListener,
@@ -437,6 +446,8 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
          */
         val productDetailsList = MutableLiveData<List<ProductDetails>>()
         val purchases = MutableLiveData<List<Purchase>>()
+
+        val errorMessage = MutableLiveData<String>()
 
         private val billingClient: BillingClient = BillingClient.newBuilder(context)
             .setListener(this)
@@ -490,9 +501,9 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                 BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
                 BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE,
                 BillingClient.BillingResponseCode.SERVICE_TIMEOUT ->
-                    Toast.makeText(context.applicationContext, context.getString(R.string.network_problems), Toast.LENGTH_LONG).show()
+                    errorMessage.postValue(context.getString(R.string.network_problems))
                 BillingClient.BillingResponseCode.BILLING_UNAVAILABLE ->
-                    Toast.makeText(context.applicationContext, context.getString(R.string.billing_unavailable), Toast.LENGTH_LONG).show()
+                    errorMessage.postValue(context.getString(R.string.billing_unavailable))
             }
         }
 

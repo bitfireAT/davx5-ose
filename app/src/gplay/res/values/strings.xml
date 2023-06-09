@@ -17,6 +17,6 @@
     <string name="button_buy_badge_free">FREE</string>
     <string name="button_buy_badge_bought">Thank you!</string>
     <string name="earn_badges">Earn badges to support us!</string>
-    <string name="billing_unavailable">Billing API unavailable, is the Play Store up-to-date and are you logged in to your Google account?</string>
-    <string name="network_problems">There were network problems, please try again later.</string>
+    <string name="billing_unavailable">Billing API not available</string>
+    <string name="network_problems">Network problems, please try again later.</string>
 </resources>
