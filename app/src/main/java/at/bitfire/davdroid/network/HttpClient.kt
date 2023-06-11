@@ -208,7 +208,7 @@ class HttpClient private constructor(
             return this
         }
 
-        fun withDiskCache(context: Context): Builder {
+        fun withDiskCache(): Builder {
             for (dir in arrayOf(context.externalCacheDir, context.cacheDir).filterNotNull()) {
                 if (dir.exists() && dir.canWrite()) {
                     val cacheDir = File(dir, "HttpClient")
