@@ -215,6 +215,7 @@
   <string name="account_rename">Renommer le compte</string>
   <string name="account_rename_new_name">Les données locales non enregistrées pourraient être perdues. Une re-synchronisation est nécessaire après avoir renommé le compte. Nouveau nom du compte : </string>
   <string name="account_rename_rename">Renommer</string>
+  <string name="account_rename_exists_already">Le nom du compte est déjà pris</string>
   <string name="account_rename_couldnt_rename">Impossible de renommer le compte</string>
   <string name="account_delete">Supprimer le compte</string>
   <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte?</string>

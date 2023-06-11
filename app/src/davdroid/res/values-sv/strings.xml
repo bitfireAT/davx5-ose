@@ -215,6 +215,7 @@
   <string name="account_rename">Byt namn på kontot</string>
   <string name="account_rename_new_name">Lokala data som inte har sparats kan avvisas. Omsynkronisering krävs efter byte av namn. Nytt kontonamn:</string>
   <string name="account_rename_rename">Byt namn</string>
+  <string name="account_rename_exists_already">Kontonamn är upptaget</string>
   <string name="account_rename_couldnt_rename">Kunde inte ändra namn på kontot</string>
   <string name="account_delete">Ta bort kontot</string>
   <string name="account_delete_confirmation_title">Vill du verkligen ta bort kontot?</string>

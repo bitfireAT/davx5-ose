@@ -166,6 +166,7 @@
   <string name="account_rename">Preimenuj račun</string>
   <string name="account_rename_new_name">Ne spremljeni lokalni podatci mogu biti odbačeni. Ponovna sinkronizacija je potrebna nakon preimenovanja. Novi naziv računa:</string>
   <string name="account_rename_rename">Preimenuj</string>
+  <string name="account_rename_exists_already">Naziv računa se već koristi</string>
   <string name="account_rename_couldnt_rename">Račun nije moguće preimenovati</string>
   <string name="account_delete">Obriši račun</string>
   <string name="account_delete_confirmation_title">Stvarno izbrisati račun?</string>

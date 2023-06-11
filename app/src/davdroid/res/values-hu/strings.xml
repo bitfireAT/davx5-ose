@@ -201,6 +201,7 @@
   <string name="account_rename">Fiók átnevezése</string>
   <string name="account_rename_new_name">Az elmentetlen helyben tárolt adatok elvesznek.  Az átnevezés után szinkronizálásra lesz szükség.  Új fióknév:</string>
   <string name="account_rename_rename">Átnevez</string>
+  <string name="account_rename_exists_already">A fióknév már használatban van</string>
   <string name="account_rename_couldnt_rename">A fiók átnevezése nem sikerült.</string>
   <string name="account_delete">Fiók törlése</string>
   <string name="account_delete_confirmation_title">Valóban törölni akarja a fiókot?</string>

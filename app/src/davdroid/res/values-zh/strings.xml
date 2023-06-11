@@ -216,6 +216,7 @@
   <string name="account_rename">重命名账户</string>
   <string name="account_rename_new_name">重命名后，未上传的本地修改会被撤销，您需要重新执行同步。新账户名：</string>
   <string name="account_rename_rename">重命名</string>
+  <string name="account_rename_exists_already">账户名已被占用</string>
   <string name="account_rename_couldnt_rename">无法重命名账户</string>
   <string name="account_delete">删除账户</string>
   <string name="account_delete_confirmation_title">真的要删除账户吗？</string>

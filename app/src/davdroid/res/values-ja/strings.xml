@@ -216,6 +216,7 @@
   <string name="account_rename">アカウントの名前を変更</string>
   <string name="account_rename_new_name">未保存のローカルデータが破棄されることがあります。名前の変更後に再同期が必要です。新しいアカウント名:</string>
   <string name="account_rename_rename">名前を変更</string>
+  <string name="account_rename_exists_already">アカウント名はすでに取得されています</string>
   <string name="account_rename_couldnt_rename">アカウントの名前を変更できません</string>
   <string name="account_delete">アカウントを削除</string>
   <string name="account_delete_confirmation_title">本当にアカウントを削除しますか？</string>

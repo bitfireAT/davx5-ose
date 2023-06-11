@@ -216,6 +216,7 @@
   <string name="account_rename">Naam account wijzigen</string>
   <string name="account_rename_new_name">Niet opgeslagen lokale gegevens kunnen verloren gaan. Synchroniseren is vereist na verandering van naam. Nieuwe accountnaam:</string>
   <string name="account_rename_rename">Naam wijzigen</string>
+  <string name="account_rename_exists_already">Accountnaam is al in gebruik</string>
   <string name="account_rename_couldnt_rename">Naam account is niet gewijzigd</string>
   <string name="account_delete">Account verwijderen</string>
   <string name="account_delete_confirmation_title">Account echt verwijderen?</string>
@@ -355,6 +356,8 @@
   <string name="delete_collection_deleting_collection">Verwijdert collectie</string>
   <string name="collection_force_read_only">Forceer alleen-lezen</string>
   <string name="collection_properties">Eigenschappen</string>
+  <string name="collection_properties_sync_time">Laatst gesynchroniseerd:</string>
+  <string name="collection_properties_sync_time_never">Nooit gesynchroniseerd:</string>
   <string name="collection_properties_url">Adres (URL):</string>
   <string name="collection_properties_copy_url">URL kopiëren</string>
   <string name="collection_properties_owner">Eigenaar:</string>
