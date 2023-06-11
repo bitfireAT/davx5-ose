@@ -12,7 +12,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
-import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -109,7 +109,7 @@ class RefreshCollectionsWorkerTest {
         loginModel.baseURI = URI.create("/")
         loginModel.credentials = Credentials("mock", "12345")
 
-        client = HttpClient.Builder()
+        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext)
             .addAuthentication(null, loginModel.credentials!!)
             .build()
 

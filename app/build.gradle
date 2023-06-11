@@ -28,6 +28,10 @@ android {
 
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
+        manifestPlaceholders = [
+            'appAuthRedirectScheme': applicationId
+        ]
+
         testInstrumentationRunner "at.bitfire.davdroid.CustomTestRunner"
 
         kapt {
@@ -123,7 +127,7 @@ dependencies {
     implementation 'androidx.concurrent:concurrent-futures-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'androidx.fragment:fragment-ktx:1.5.7'
+    implementation 'androidx.fragment:fragment-ktx:1.6.0'
     implementation 'androidx.hilt:hilt-work:1.0.0'
     kapt 'androidx.hilt:hilt-compiler:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
@@ -135,6 +139,7 @@ dependencies {
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.9.0'
+    implementation 'net.openid:appauth:0.11.1'
 
     // Jetpack Compose
     def composeBom = platform("androidx.compose:compose-bom:${versions.composeBom}")
@@ -142,6 +147,8 @@ dependencies {
     androidTestImplementation composeBom
     implementation 'androidx.compose.material:material'
     implementation 'androidx.compose.runtime:runtime-livedata'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'com.google.accompanist:accompanist-themeadapter-material:0.30.1'
 
     // Jetpack Room

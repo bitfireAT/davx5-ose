@@ -5,6 +5,7 @@
 package at.bitfire.davdroid
 
 import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

@@ -28,13 +28,13 @@ import kotlin.concurrent.thread
 
 class DetectConfigurationFragment: Fragment() {
 
-    val loginModel by activityViewModels<LoginModel>()
-    val model by viewModels<DetectConfigurationModel>()
+    private val loginModel by activityViewModels<LoginModel>()
+    private val model by viewModels<DetectConfigurationModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model.detectConfiguration(loginModel).observe(this, { result ->
+        model.detectConfiguration(loginModel).observe(this) { result ->
             // save result for next step
             loginModel.configuration = result
 
@@ -50,7 +50,7 @@ class DetectConfigurationFragment: Fragment() {
                 parentFragmentManager.beginTransaction()
                         .add(NothingDetectedFragment(), null)
                         .commit()
-        })
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =

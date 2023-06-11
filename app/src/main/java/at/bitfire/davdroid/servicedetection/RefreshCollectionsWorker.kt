@@ -43,7 +43,6 @@ import at.bitfire.dav4jvm.property.ResourceType
 import at.bitfire.dav4jvm.property.Source
 import at.bitfire.dav4jvm.property.SupportedAddressData
 import at.bitfire.dav4jvm.property.SupportedCalendarComponentSet
-import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -52,6 +51,7 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings

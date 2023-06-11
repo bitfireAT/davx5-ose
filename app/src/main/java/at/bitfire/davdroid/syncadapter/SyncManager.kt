@@ -27,6 +27,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.db.SyncStats
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.*
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity

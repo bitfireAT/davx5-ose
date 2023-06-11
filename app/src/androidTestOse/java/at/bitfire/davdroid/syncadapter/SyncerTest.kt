@@ -9,7 +9,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.R
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

@@ -10,7 +10,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.ResourceType
-import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
@@ -68,7 +68,7 @@ class DavResourceFinderTest {
         loginModel.credentials = Credentials("mock", "12345")
 
         finder = DavResourceFinder(InstrumentationRegistry.getInstrumentation().targetContext, loginModel)
-        client = HttpClient.Builder()
+        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext)
                 .addAuthentication(null, loginModel.credentials!!)
                 .build()
 

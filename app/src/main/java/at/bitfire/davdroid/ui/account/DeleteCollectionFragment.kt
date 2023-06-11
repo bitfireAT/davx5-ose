@@ -14,7 +14,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
-import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.databinding.DeleteCollectionBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection

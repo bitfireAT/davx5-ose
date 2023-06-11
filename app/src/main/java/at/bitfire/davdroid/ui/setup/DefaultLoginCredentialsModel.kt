@@ -25,9 +25,10 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
 
     private var initialized = false
 
-    val loginWithEmailAddress = MutableLiveData<Boolean>()
-    val loginWithUrlAndUsername = MutableLiveData<Boolean>()
-    val loginAdvanced = MutableLiveData<Boolean>()
+    val loginWithEmailAddress = MutableLiveData(true)
+    val loginWithUrlAndUsername = MutableLiveData(false)
+    val loginAdvanced = MutableLiveData(false)
+    val loginGoogle = MutableLiveData(false)
 
     val baseUrl = MutableLiveData<String>()
     val baseUrlError = MutableLiveData<String>()
@@ -42,14 +43,9 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
     val certificateAlias = MutableLiveData<String>()
     val certificateAliasError = MutableLiveData<String>()
 
-    val loginUseUsernamePassword = MutableLiveData<Boolean>()
-    val loginUseClientCertificate = MutableLiveData<Boolean>()
+    val loginUseUsernamePassword = MutableLiveData(false)
+    val loginUseClientCertificate = MutableLiveData(false)
 
-    init {
-        loginWithEmailAddress.value = true
-        loginUseClientCertificate.value = false
-        loginUseUsernamePassword.value = false
-    }
 
     fun clearUrlError(s: Editable) {
         if (s.toString() != "https://") {

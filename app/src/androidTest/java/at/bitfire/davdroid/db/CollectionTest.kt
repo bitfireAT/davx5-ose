@@ -6,9 +6,10 @@ package at.bitfire.davdroid.db
 
 import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
+import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.ResourceType
-import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -43,7 +44,7 @@ class CollectionTest {
 
     @Before
     fun setUp() {
-        httpClient = HttpClient.Builder().build()
+        httpClient = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build()
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }
 
