@@ -145,7 +145,7 @@
   <string name="battery_optimization_notify_title">Non pode executarse en segundo plano</string>
   <string name="battery_optimization_notify_text">Require ter permiso para optimizacións de batería</string>
   <!--ForegroundService-->
-  <string name="foreground_service_notify_title">A funcionar en primeiro plano</string>
+  <string name="foreground_service_notify_title">Executándose en primeiro plano</string>
   <string name="foreground_service_notify_text">En algúns dispositivos esto é necesario para a sincronización automática.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Axustes</string>
@@ -216,6 +216,7 @@
   <string name="account_rename">Renomear conta</string>
   <string name="account_rename_new_name">Os datos locais non gardados perderanse. A resincronización é precisa tras renomear. Novo nome da conta:</string>
   <string name="account_rename_rename">Renomear</string>
+  <string name="account_rename_exists_already">O nome de conta xa está a ser utilizado</string>
   <string name="account_rename_couldnt_rename">Non cambiou o nome da conta</string>
   <string name="account_delete">Eliminar conta</string>
   <string name="account_delete_confirmation_title">Desexas eliminar a conta?</string>

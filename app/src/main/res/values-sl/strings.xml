@@ -117,6 +117,7 @@
   <string name="account_rename">Preimenuj račun</string>
   <string name="account_rename_new_name">Neshranjeni lokalni podatki bodo izbrisani. Ponovna sinhronizacija je potrebna po preimenovanju. Novo ime računa:</string>
   <string name="account_rename_rename">Preimenuj</string>
+  <string name="account_rename_exists_already">Ima računa že obstaja</string>
   <string name="account_delete">Izbriši račun</string>
   <string name="account_delete_confirmation_title">Ali res želite izbrisati račun?</string>
   <string name="account_delete_confirmation_text">Vse lokalne kopije imenika, koledarjev in seznamov opravil bodo izbrisane.</string>

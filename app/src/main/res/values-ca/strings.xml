@@ -216,6 +216,7 @@
   <string name="account_rename">Canvia el nom del compte</string>
   <string name="account_rename_new_name">Les dades locals no desades es poden desestimar. Es requereix tornar a sincronitzar després del canvi de nom. Nom nou del compte:</string>
   <string name="account_rename_rename">Canvia el nom</string>
+  <string name="account_rename_exists_already">Nom de compte existent</string>
   <string name="account_rename_couldnt_rename">No s\'ha pogut canviar el nom del compte</string>
   <string name="account_delete">Suprimeix el compte</string>
   <string name="account_delete_confirmation_title">Segur que vols suprimir el compte?</string>

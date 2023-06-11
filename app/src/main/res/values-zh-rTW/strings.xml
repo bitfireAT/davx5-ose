@@ -113,6 +113,7 @@
   <string name="account_rename">重新命名帳號</string>
   <string name="account_rename_new_name">尚未儲存的本地資料可能會消失。重新命名後必須再次執行同步。新的帳號名稱：</string>
   <string name="account_rename_rename">重新命名</string>
+  <string name="account_rename_exists_already">這個賬號名稱已經被取過了</string>
   <string name="account_rename_couldnt_rename">無法重新命名帳號</string>
   <string name="account_delete">刪除帳號</string>
   <string name="account_delete_confirmation_title">確定要刪除帳號？</string>

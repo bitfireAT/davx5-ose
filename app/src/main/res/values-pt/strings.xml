@@ -149,6 +149,7 @@
   <string name="account_rename">Renomear conta</string>
   <string name="account_rename_new_name">Dados locais que não foram salvos podem ser descartados. É necessário efetuar uma nova sincronização após renomear. Novo nome da conta:</string>
   <string name="account_rename_rename">Renomear</string>
+  <string name="account_rename_exists_already">O nome da conta já foi utilizado</string>
   <string name="account_rename_couldnt_rename">Não foi possível renomear a conta</string>
   <string name="account_delete">Excluir conta</string>
   <string name="account_delete_confirmation_title">Deseja excluir a conta?</string>

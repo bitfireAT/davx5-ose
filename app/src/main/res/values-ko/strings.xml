@@ -203,6 +203,7 @@
   <string name="account_rename">계정 이름 바꾸기</string>
   <string name="account_rename_new_name">저장되지 않은 로컬 데이터는 삭제될 수 있습니다. 이름을 변경한 후 다시 동기화해야 합니다. 새 계정 이름:</string>
   <string name="account_rename_rename">이름 바꾸기</string>
+  <string name="account_rename_exists_already">계정 이름이 이미 사용되었습니다.</string>
   <string name="account_rename_couldnt_rename">계정 이름을 바꿀 수 없습니다.</string>
   <string name="account_delete">계정 삭제</string>
   <string name="account_delete_confirmation_title">정말 계정을 삭제하시겠습니까?</string>
