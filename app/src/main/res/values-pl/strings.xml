@@ -215,6 +215,7 @@
   <string name="account_rename">Zmień nazwę konta</string>
   <string name="account_rename_new_name">Niezapisane dane lokalne mogą zostać usunięte. Po zmianie nazwy jest wymagana ponowna synchronizacja. Nowa nazwa konta:</string>
   <string name="account_rename_rename">Zmień nazwę</string>
+  <string name="account_rename_exists_already">Nazwa konta jest już zajęta</string>
   <string name="account_rename_couldnt_rename">Nie udało się zmienić nazwy konta</string>
   <string name="account_delete">Usuń konto</string>
   <string name="account_delete_confirmation_title">Naprawdę chcesz usunąć konto?</string>

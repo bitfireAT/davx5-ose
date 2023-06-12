@@ -83,6 +83,7 @@
   <string name="account_rename">Gi konto nytt navn</string>
   <string name="account_rename_new_name">Ulagret lokal data kan bli avslått. Ny synkronisering kreves etter ny navngivning. Nytt kontonavn:</string>
   <string name="account_rename_rename">Gi nytt navn</string>
+  <string name="account_rename_exists_already">Brukernavnet er allerede i bruk</string>
   <string name="account_delete">Slett konto</string>
   <string name="account_delete_confirmation_title">Vil du virkeling slette kontoen?</string>
   <string name="account_delete_confirmation_text">Alle lokale kopier av adressebøker, kalendere og gjøremålslister vil bli slettet.</string>

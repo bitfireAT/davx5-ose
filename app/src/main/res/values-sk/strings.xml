@@ -87,6 +87,7 @@
   <string name="account_rename">Premenovať používateľský účet</string>
   <string name="account_rename_new_name">Neuložené miestne dáta môžu byť zabudnuté. Po premenovaní je potrebná opätovná synchronizácia. Nové meno účtu:</string>
   <string name="account_rename_rename">Premenovať</string>
+  <string name="account_rename_exists_already">Meno účtu sa už používa</string>
   <string name="account_delete">Odstrániť účet</string>
   <string name="account_delete_confirmation_title">Skutočne si želáte odstrániť účet?</string>
   <string name="account_delete_confirmation_text">Všetky miestne kópie adresárov, kalendárov a zoznamov úloh budú vymazané.</string>

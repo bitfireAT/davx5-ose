@@ -6,7 +6,7 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.annotation.SuppressLint
-import android.content.Context
+import android.app.Application
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -42,7 +42,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -121,7 +120,7 @@ class SettingsActivity: AppCompatActivity() {
         private fun initSettings() {
             // preference group: sync
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_contacts_key))!!.let {
-                model.syncIntervalContacts.observe(viewLifecycleOwner, { interval: Long? ->
+                model.syncIntervalContacts.observe(viewLifecycleOwner) { interval: Long? ->
                     if (interval != null) {
                         it.isEnabled = true
                         it.isVisible = true
@@ -137,10 +136,10 @@ class SettingsActivity: AppCompatActivity() {
                         }
                     } else
                         it.isVisible = false
-                })
+                }
             }
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_calendars_key))!!.let {
-                model.syncIntervalCalendars.observe(viewLifecycleOwner, { interval: Long? ->
+                model.syncIntervalCalendars.observe(viewLifecycleOwner) { interval: Long? ->
                     if (interval != null) {
                         it.isEnabled = true
                         it.isVisible = true
@@ -156,10 +155,10 @@ class SettingsActivity: AppCompatActivity() {
                         }
                     } else
                         it.isVisible = false
-                })
+                }
             }
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_tasks_key))!!.let {
-                model.syncIntervalTasks.observe(viewLifecycleOwner, { interval: Long? ->
+                model.syncIntervalTasks.observe(viewLifecycleOwner) { interval: Long? ->
                     val provider = model.tasksProvider
                     if (provider != null && interval != null) {
                         it.isEnabled = true
@@ -176,25 +175,25 @@ class SettingsActivity: AppCompatActivity() {
                         }
                     } else
                         it.isVisible = false
-                })
+                }
             }
 
             findPreference<SwitchPreferenceCompat>(getString(R.string.settings_sync_wifi_only_key))!!.let {
-                model.syncWifiOnly.observe(viewLifecycleOwner, { wifiOnly ->
+                model.syncWifiOnly.observe(viewLifecycleOwner) { wifiOnly ->
                     it.isEnabled = !settings.containsKey(AccountSettings.KEY_WIFI_ONLY)
                     it.isChecked = wifiOnly
                     it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, wifiOnly ->
                         model.updateSyncWifiOnly(wifiOnly as Boolean)
                         false
                     }
-                })
+                }
             }
 
             findPreference<EditTextPreference>(getString(R.string.settings_sync_wifi_only_ssids_key))!!.let {
-                model.syncWifiOnly.observe(viewLifecycleOwner, { wifiOnly ->
+                model.syncWifiOnly.observe(viewLifecycleOwner) { wifiOnly ->
                     it.isEnabled = wifiOnly && settings.isWritable(AccountSettings.KEY_WIFI_ONLY_SSIDS)
-                })
-                model.syncWifiOnlySSIDs.observe(viewLifecycleOwner, { onlySSIDs ->
+                }
+                model.syncWifiOnlySSIDs.observe(viewLifecycleOwner) { onlySSIDs ->
                     checkWifiPermissions()
 
                     if (onlySSIDs != null) {
@@ -214,14 +213,14 @@ class SettingsActivity: AppCompatActivity() {
                         model.updateSyncWifiOnlySSIDs(newOnlySSIDs)
                         false
                     }
-                })
+                }
             }
 
             // preference group: authentication
             val prefUserName = findPreference<EditTextPreference>("username")!!
             val prefPassword = findPreference<EditTextPreference>("password")!!
             val prefCertAlias = findPreference<Preference>("certificate_alias")!!
-            model.credentials.observe(viewLifecycleOwner, { credentials ->
+            model.credentials.observe(viewLifecycleOwner) { credentials ->
                 prefUserName.summary = credentials.userName
                 prefUserName.text = credentials.userName
                 prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newUserName ->
@@ -245,10 +244,10 @@ class SettingsActivity: AppCompatActivity() {
                     }, null, null, null, -1, credentials.certificateAlias)
                     true
                 }
-            })
+            }
 
             // preference group: CalDAV
-            model.hasCalDav.observe(viewLifecycleOwner, { hasCalDav ->
+            model.hasCalDav.observe(viewLifecycleOwner) { hasCalDav ->
                 if (!hasCalDav)
                     findPreference<PreferenceGroup>(getString(R.string.settings_caldav_key))!!.isVisible = false
                 else {
@@ -260,7 +259,7 @@ class SettingsActivity: AppCompatActivity() {
 
                     findPreference<EditTextPreference>(getString(R.string.settings_sync_time_range_past_key))!!.let { pref ->
                         if (hasCalendars)
-                            model.timeRangePastDays.observe(viewLifecycleOwner, { pastDays ->
+                            model.timeRangePastDays.observe(viewLifecycleOwner) { pastDays ->
                                 if (model.syncIntervalCalendars.value != null) {
                                     pref.isVisible = true
                                     if (pastDays != null) {
@@ -281,14 +280,14 @@ class SettingsActivity: AppCompatActivity() {
                                     }
                                 } else
                                     pref.isVisible = false
-                            })
+                            }
                         else
                             pref.isVisible = false
                     }
 
                     findPreference<EditTextPreference>(getString(R.string.settings_key_default_alarm))!!.let { pref ->
                         if (hasCalendars)
-                            model.defaultAlarmMinBefore.observe(viewLifecycleOwner, { minBefore ->
+                            model.defaultAlarmMinBefore.observe(viewLifecycleOwner) { minBefore ->
                                 pref.isVisible = true
                                 if (minBefore != null) {
                                     pref.text = minBefore.toString()
@@ -306,25 +305,25 @@ class SettingsActivity: AppCompatActivity() {
                                     model.updateDefaultAlarm(minBefore)
                                     false
                                 }
-                            })
+                            }
                         else
                             pref.isVisible = false
                     }
 
                     findPreference<SwitchPreferenceCompat>(getString(R.string.settings_manage_calendar_colors_key))!!.let {
-                        model.manageCalendarColors.observe(viewLifecycleOwner, { manageCalendarColors ->
+                        model.manageCalendarColors.observe(viewLifecycleOwner) { manageCalendarColors ->
                             it.isEnabled = !settings.containsKey(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
                             it.isChecked = manageCalendarColors
                             it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                                 model.updateManageCalendarColors(newValue as Boolean)
                                 false
                             }
-                        })
+                        }
                     }
 
                     findPreference<SwitchPreferenceCompat>(getString(R.string.settings_event_colors_key))!!.let { pref ->
                         if (hasCalendars)
-                            model.eventColors.observe(viewLifecycleOwner, { eventColors ->
+                            model.eventColors.observe(viewLifecycleOwner) { eventColors ->
                                 pref.isVisible = true
                                 pref.isEnabled = !settings.containsKey(AccountSettings.KEY_EVENT_COLORS)
                                 pref.isChecked = eventColors
@@ -332,22 +331,22 @@ class SettingsActivity: AppCompatActivity() {
                                     model.updateEventColors(newValue as Boolean)
                                     false
                                 }
-                            })
+                            }
                         else
                             pref.isVisible = false
                     }
                 }
-            })
+            }
 
             // preference group: CardDAV
-            model.syncIntervalContacts.observe(viewLifecycleOwner, { contactsSyncInterval ->
+            model.syncIntervalContacts.observe(viewLifecycleOwner) { contactsSyncInterval ->
                 val hasCardDav = contactsSyncInterval != null
                 if (!hasCardDav)
                     findPreference<PreferenceGroup>(getString(R.string.settings_carddav_key))!!.isVisible = false
                 else {
                     findPreference<PreferenceGroup>(getString(R.string.settings_carddav_key))!!.isVisible = true
                     findPreference<ListPreference>(getString(R.string.settings_contact_group_method_key))!!.let {
-                        model.contactGroupMethod.observe(viewLifecycleOwner, { groupMethod ->
+                        model.contactGroupMethod.observe(viewLifecycleOwner) { groupMethod ->
                             if (model.syncIntervalContacts.value != null) {
                                 it.isVisible = true
                                 it.value = groupMethod.name
@@ -363,10 +362,10 @@ class SettingsActivity: AppCompatActivity() {
                                 }
                             } else
                                 it.isVisible = false
-                        })
+                        }
                     }
                 }
-            })
+            }
         }
 
         @SuppressLint("WrongConstant")
@@ -385,7 +384,7 @@ class SettingsActivity: AppCompatActivity() {
 
 
     class Model @AssistedInject constructor(
-        @ApplicationContext val context: Context,
+        val application: Application,
         val settings: SettingsManager,
         @Assisted val account: Account
     ): ViewModel(), SettingsManager.OnChangeListener {
@@ -400,7 +399,7 @@ class SettingsActivity: AppCompatActivity() {
         // settings
         val syncIntervalContacts = MutableLiveData<Long>()
         val syncIntervalCalendars = MutableLiveData<Long>()
-        val tasksProvider = TaskUtils.currentProvider(context)
+        val tasksProvider = TaskUtils.currentProvider(application)
         val syncIntervalTasks = MutableLiveData<Long>()
         val hasCalDav = object: MediatorLiveData<Boolean>() {
             init {
@@ -426,7 +425,7 @@ class SettingsActivity: AppCompatActivity() {
 
 
         init {
-            accountSettings = AccountSettings(context, account)
+            accountSettings = AccountSettings(application, account)
 
             settings.addOnChangeListener(this)
 
@@ -446,7 +445,7 @@ class SettingsActivity: AppCompatActivity() {
         fun reload() {
             val accountSettings = accountSettings ?: return
 
-            syncIntervalContacts.postValue(accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)))
+            syncIntervalContacts.postValue(accountSettings.getSyncInterval(application.getString(R.string.address_books_authority)))
             syncIntervalCalendars.postValue(accountSettings.getSyncInterval(CalendarContract.AUTHORITY))
             syncIntervalTasks.postValue(tasksProvider?.let { accountSettings.getSyncInterval(it.authority) })
 
@@ -523,7 +522,7 @@ class SettingsActivity: AppCompatActivity() {
             accountSettings?.setGroupMethod(groupMethod)
             reload()
 
-            resync(context.getString(R.string.address_books_authority), fullResync = true)
+            resync(application.getString(R.string.address_books_authority), fullResync = true)
         }
 
         /**
@@ -550,7 +549,7 @@ class SettingsActivity: AppCompatActivity() {
          */
         private fun resync(authority: String, fullResync: Boolean) {
             val resync = if (fullResync) SyncWorker.FULL_RESYNC else SyncWorker.RESYNC
-            SyncWorker.enqueue(context, account, authority, resync)
+            SyncWorker.enqueue(application, account, authority, resync)
         }
 
     }

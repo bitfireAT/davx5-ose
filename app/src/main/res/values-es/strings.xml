@@ -203,6 +203,7 @@
   <string name="account_rename">Renombrar cuenta</string>
   <string name="account_rename_new_name">Información local no guardada puede ser desechada. Se requiere resincronizar después de renombrar. Nuevo nombre de cuenta:</string>
   <string name="account_rename_rename">Renombrar</string>
+  <string name="account_rename_exists_already">El nombre de la cuenta ya está siendo utilizado</string>
   <string name="account_rename_couldnt_rename">No se puede renombrar la cuenta</string>
   <string name="account_delete">Eliminar cuenta</string>
   <string name="account_delete_confirmation_title">¿Seguro que deseas eliminar la cuenta?</string>

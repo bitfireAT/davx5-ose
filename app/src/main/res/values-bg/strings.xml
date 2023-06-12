@@ -215,6 +215,7 @@
   <string name="account_rename">Преименуване на регистрация</string>
   <string name="account_rename_new_name">Незапазените местни данни могат да бъдат отхвърлени. След преименуването е нужно синхронизиране. Ново име на регистрацията:</string>
   <string name="account_rename_rename">Преименуване</string>
+  <string name="account_rename_exists_already">Това име на регистрация вече се използва</string>
   <string name="account_rename_couldnt_rename">Грешка при преименуване</string>
   <string name="account_delete">Премахване на регистрация</string>
   <string name="account_delete_confirmation_title">Да бъде ли премахната регистрацията?</string>

@@ -8,7 +8,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
 import androidx.core.content.getSystemService
-import at.bitfire.davdroid.Android10Resolver
+import at.bitfire.davdroid.network.Android10Resolver
 import at.bitfire.davdroid.log.Logger
 import okhttp3.HttpUrl
 import okhttp3.MediaType

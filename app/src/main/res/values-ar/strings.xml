@@ -79,6 +79,7 @@
   <string name="account_rename">إعادة تسمية الحساب</string>
   <string name="account_rename_new_name">البيانات المحلية غير المحفوظة قد يجري استبعادها.  مطلوب إعادة المزامنة بعد إعادة التسمية.  الاسم الجديد للحساب:</string>
   <string name="account_rename_rename">إعادة تسمية</string>
+  <string name="account_rename_exists_already">اسم الحساب مأخوذ بالفعل</string>
   <string name="account_delete">حذف الحساب</string>
   <string name="account_delete_confirmation_title">هل تريد حذف الحساب فعلاً ؟</string>
   <string name="account_delete_confirmation_text">سيتم حذف كل النسخ المحليّة من دفاتر العناوين والتقاويم وقوائم المهام.</string>

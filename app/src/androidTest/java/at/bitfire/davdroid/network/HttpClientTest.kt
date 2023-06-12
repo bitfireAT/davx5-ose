@@ -2,9 +2,12 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.network
 
 import android.security.NetworkSecurityPolicy
+import androidx.test.platform.app.InstrumentationRegistry
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -13,16 +16,23 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assume
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
+@HiltAndroidTest
 class HttpClientTest {
 
     lateinit var server: MockWebServer
     lateinit var httpClient: HttpClient
 
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
     @Before
     fun setUp() {
-        httpClient = HttpClient.Builder().build()
+        hiltRule.inject()
+
+        httpClient = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build()
 
         server = MockWebServer()
         server.start(30000)

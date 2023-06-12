@@ -216,6 +216,7 @@
   <string name="account_rename">Переименовать аккаунт</string>
   <string name="account_rename_new_name">Несохраненные локальные данные могут быть потеряны. Необходима повторная синхронизация после переименования. Новое имя аккаунта:</string>
   <string name="account_rename_rename">Переименовать</string>
+  <string name="account_rename_exists_already">Название аккаунта уже используется</string>
   <string name="account_rename_couldnt_rename">Не удалось переименовать аккаунт</string>
   <string name="account_delete">Удалить аккаунт</string>
   <string name="account_delete_confirmation_title">Вы действительно хотите удалить аккаунт?</string>

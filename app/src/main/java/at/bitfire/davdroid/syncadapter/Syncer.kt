@@ -8,7 +8,7 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
-import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger

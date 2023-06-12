@@ -246,6 +246,7 @@
     <string name="account_rename">Rename account</string>
     <string name="account_rename_new_name">Unsaved local data may be dismissed. Re-synchronization is required after renaming. New account name:</string>
     <string name="account_rename_rename">Rename</string>
+    <string name="account_rename_exists_already">Account name already taken</string>
     <string name="account_rename_couldnt_rename">Couldn\'t rename account</string>
     <string name="account_delete">Delete account</string>
     <string name="account_delete_confirmation_title">Really delete account?</string>
@@ -291,6 +292,10 @@
     <string name="login_use_client_certificate">Use client certificate</string>
     <string name="login_no_certificate_found">No certificate found</string>
     <string name="login_install_certificate">Install certificate</string>
+    <string name="login_type_google">Google Contacts / Calendar</string>
+    <string name="login_google_guide">Please read our guide about the login to Google. There may be unexpected warnings which are explained there.</string>
+    <string name="login_google_account">Google account</string>
+    <string name="login_google_disclaimer">%s is not affiliated to, nor has it been authorized, sponsored or otherwise approved by Google LLC.</string>
 
     <string name="login_configuration_detection">Configuration detection</string>
     <string name="login_querying_server">Please wait, querying server…</string>

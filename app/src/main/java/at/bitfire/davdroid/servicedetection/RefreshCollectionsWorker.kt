@@ -12,16 +12,46 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.lifecycle.map
-import androidx.work.*
-import at.bitfire.dav4jvm.*
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.MultiResponseCallback
+import at.bitfire.dav4jvm.Property
+import at.bitfire.dav4jvm.Response
+import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.HttpClient
+import at.bitfire.dav4jvm.property.AddressbookDescription
+import at.bitfire.dav4jvm.property.AddressbookHomeSet
+import at.bitfire.dav4jvm.property.CalendarColor
+import at.bitfire.dav4jvm.property.CalendarDescription
+import at.bitfire.dav4jvm.property.CalendarHomeSet
+import at.bitfire.dav4jvm.property.CalendarProxyReadFor
+import at.bitfire.dav4jvm.property.CalendarProxyWriteFor
+import at.bitfire.dav4jvm.property.CurrentUserPrivilegeSet
+import at.bitfire.dav4jvm.property.DisplayName
+import at.bitfire.dav4jvm.property.GroupMembership
+import at.bitfire.dav4jvm.property.HrefListProperty
+import at.bitfire.dav4jvm.property.Owner
+import at.bitfire.dav4jvm.property.ResourceType
+import at.bitfire.dav4jvm.property.Source
+import at.bitfire.dav4jvm.property.SupportedAddressData
+import at.bitfire.dav4jvm.property.SupportedCalendarComponentSet
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.*
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.HomeSet
+import at.bitfire.davdroid.db.Principal
+import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
@@ -84,7 +114,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
         /**
          * Uniquely identifies a refresh worker. Useful for stopping work, or querying its state.
-         * 
+         *
          * @param serviceId     what service (CalDAV/CardDAV) the worker is running for
          */
         fun workerName(serviceId: Long): String = "$REFRESH_COLLECTIONS_WORKER_TAG-$serviceId"
@@ -276,8 +306,9 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         for (href in homeSet.hrefs)
                             dav.location.resolve(href)?.let {
                                 val foundUrl = UrlUtils.withTrailingSlash(it)
-                                // Save the homeset - personal if outer call of recursion
-                                db.homeSetDao().insertOrUpdateByUrl(HomeSet(0, service.id, forPersonalHomeset, foundUrl))
+                                db.homeSetDao().insertOrUpdateByUrl(
+                                    HomeSet(0, service.id, forPersonalHomeset, foundUrl)
+                                )
                             }
                     }
 
@@ -351,7 +382,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
                         collection.serviceId = service.id
                         collection.homeSetId = localHomeset.id
-                        collection.sync = settings.getBoolean(Settings.SYNC_ALL_COLLECTIONS)
+                        collection.sync = shouldPreselect(collection, homesets.values)
 
                         // .. and save the principal url (collection owner)
                         response[Owner::class.java]?.href
@@ -467,6 +498,49 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             (service.type == Service.TYPE_CARDDAV && collection.type == Collection.TYPE_ADDRESSBOOK) ||
                     (service.type == Service.TYPE_CALDAV && arrayOf(Collection.TYPE_CALENDAR, Collection.TYPE_WEBCAL).contains(collection.type)) ||
                     (collection.type == Collection.TYPE_WEBCAL && collection.source != null)
+
+        /**
+         * Whether to preselect the given collection for synchronisation, according to the
+         * settings [Settings.PRESELECT_COLLECTIONS] (see there for allowed values) and
+         * [Settings.PRESELECT_COLLECTIONS_EXCLUDED].
+         *
+         * A collection is considered _personal_ if it is found in one of the current-user-principal's home-sets.
+         *
+         * Before a collection is pre-selected, we check whether its URL matches the regexp in
+         * [Settings.PRESELECT_COLLECTIONS_EXCLUDED], in which case *false* is returned.
+         *
+         * @param collection the collection to check
+         * @param homesets list of home-sets (to check whether collection is in a personal home-set)
+         * @return *true* if the collection should be preselected for synchronization; *false* otherwise
+         */
+        internal fun shouldPreselect(collection: Collection, homesets: Iterable<HomeSet>): Boolean {
+            val shouldPreselect = settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS)
+
+            val excluded by lazy {
+                val excludedRegex = settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED)
+                if (!excludedRegex.isNullOrEmpty())
+                    Regex(excludedRegex).containsMatchIn(collection.url.toString())
+                else
+                    false
+            }
+
+            return when (shouldPreselect) {
+                Settings.PRESELECT_COLLECTIONS_ALL ->
+                    // preselect if collection url is not excluded
+                    !excluded
+
+                Settings.PRESELECT_COLLECTIONS_PERSONAL ->
+                    // preselect if is personal (in a personal home-set), but not excluded
+                    homesets
+                        .filter { homeset -> homeset.personal }
+                        .map { homeset -> homeset.id }
+                        .contains(collection.homeSetId)
+                        && !excluded
+
+                else -> // don't preselect
+                    false
+            }
+        }
     }
 
 }

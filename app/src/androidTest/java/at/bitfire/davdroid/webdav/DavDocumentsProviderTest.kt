@@ -7,7 +7,7 @@ package at.bitfire.davdroid.webdav
 import android.content.Context
 import android.security.NetworkSecurityPolicy
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
@@ -65,7 +65,7 @@ class DavDocumentsProviderTest {
         loginModel.baseURI = URI.create("/")
         loginModel.credentials = Credentials("mock", "12345")
 
-        client = HttpClient.Builder()
+        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext)
             .addAuthentication(null, loginModel.credentials!!)
             .build()
 

@@ -23,6 +23,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import net.openid.appauth.AuthState
 import org.apache.commons.lang3.StringUtils
 import java.util.logging.Level
 
@@ -62,6 +63,9 @@ class AccountSettings(
 
         const val KEY_USERNAME = "user_name"
         const val KEY_CERTIFICATE_ALIAS = "certificate_alias"
+
+        /** OAuth [AuthState] (serialized as JSON) */
+        const val KEY_AUTH_STATE = "auth_state"
 
         const val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
         const val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
@@ -111,14 +115,18 @@ class AccountSettings(
         var currentlyUpdating = false
 
         fun initialUserData(credentials: Credentials?): Bundle {
-            val bundle = Bundle(2)
+            val bundle = Bundle()
             bundle.putString(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
 
             if (credentials != null) {
                 if (credentials.userName != null)
                     bundle.putString(KEY_USERNAME, credentials.userName)
+
                 if (credentials.certificateAlias != null)
                     bundle.putString(KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
+
+                if (credentials.authState != null)
+                    bundle.putString(KEY_AUTH_STATE, credentials.authState.jsonSerializeString())
             }
 
             return bundle
@@ -176,13 +184,24 @@ class AccountSettings(
     fun credentials() = Credentials(
         accountManager.getUserData(account, KEY_USERNAME),
         accountManager.getPassword(account),
-        accountManager.getUserData(account, KEY_CERTIFICATE_ALIAS)
+
+        accountManager.getUserData(account, KEY_CERTIFICATE_ALIAS),
+
+        accountManager.getUserData(account, KEY_AUTH_STATE)?.let { json ->
+            AuthState.jsonDeserialize(json)
+        }
     )
 
     fun credentials(credentials: Credentials) {
+        // Basic/Digest auth
         accountManager.setUserData(account, KEY_USERNAME, credentials.userName)
         accountManager.setPassword(account, credentials.password)
+
+        // client certificate
         accountManager.setUserData(account, KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
+
+        // OAuth
+        accountManager.setUserData(account, KEY_AUTH_STATE, credentials.authState?.jsonSerializeString())
     }
 
 

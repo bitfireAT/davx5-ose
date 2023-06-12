@@ -7,7 +7,7 @@ package at.bitfire.davdroid.webdav
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.property.GetETag
-import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.network.HttpClient
 import okhttp3.HttpUrl
 import java.util.*
 import java.util.concurrent.Callable

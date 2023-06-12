@@ -215,6 +215,7 @@
   <string name="account_rename">Berrizendatu kontua</string>
   <string name="account_rename_new_name">Gorde gabeko datu lokalak baztertu daitezke. Berriro sinkronizatu behar da izena aldatu ostean. Kontuaren izen berria:</string>
   <string name="account_rename_rename">Berrizendatu</string>
+  <string name="account_rename_exists_already">Kontuaren izena hartuta dago</string>
   <string name="account_rename_couldnt_rename">Ezin izan da kontua berrizendatu</string>
   <string name="account_delete">Ezabatu kontua</string>
   <string name="account_delete_confirmation_title">Ezabatu kontua?</string>

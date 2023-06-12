@@ -178,6 +178,7 @@
   <string name="account_rename">Μετονομασία λογαριασμού</string>
   <string name="account_rename_new_name">Τα μη αποθηκευμένα τοπικά δεδομένα ενδέχεται να απορριφθούν. Απαιτείται εκ νέου συγχρονισμός μετά τη μετονομασία. Νέο όνομα λογαριασμού:</string>
   <string name="account_rename_rename">Μετονομασία</string>
+  <string name="account_rename_exists_already">Το όνομα λογαριασμού έχει ήδη ληφθεί</string>
   <string name="account_rename_couldnt_rename">Αδυναμία μετονομασίας λογαριασμού</string>
   <string name="account_delete">Διαγραφή λογαριασμού</string>
   <string name="account_delete_confirmation_title">Θέλετε να διαγράψετε τον λογαριασμό;</string>

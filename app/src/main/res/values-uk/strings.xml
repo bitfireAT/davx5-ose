@@ -130,6 +130,7 @@
   <string name="account_rename">Перейменувати обліковий запис</string>
   <string name="account_rename_new_name">Незбережені локальні дані можуть бути втрачені. Необхідно виконати синхронізацію після перейменування. Нова назва облікового запису:</string>
   <string name="account_rename_rename">Перейменувати</string>
+  <string name="account_rename_exists_already">Ім\'я запису вже зайняте</string>
   <string name="account_rename_couldnt_rename">Не вдалося перейменувати облікувку</string>
   <string name="account_delete">Видалити запис</string>
   <string name="account_delete_confirmation_title">Дійсно видалити обліковий запис?</string>

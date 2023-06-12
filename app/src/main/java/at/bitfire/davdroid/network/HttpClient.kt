@@ -1,8 +1,8 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
-package at.bitfire.davdroid
+package at.bitfire.davdroid.network
 
 import android.content.Context
 import android.os.Build
@@ -10,6 +10,7 @@ import android.security.KeyChain
 import at.bitfire.cert4android.CustomCertManager
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
@@ -19,6 +20,8 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import net.openid.appauth.AuthState
+import net.openid.appauth.AuthorizationService
 import okhttp3.*
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
@@ -37,7 +40,8 @@ import javax.net.ssl.*
 
 class HttpClient private constructor(
     val okHttpClient: OkHttpClient,
-    private val certManager: CustomCertManager?
+    private val certManager: CustomCertManager? = null,
+    private var authService: AuthorizationService? = null
 ): AutoCloseable {
 
     @EntryPoint
@@ -79,14 +83,15 @@ class HttpClient private constructor(
                 .addInterceptor(UserAgentInterceptor)
     }
 
-
     override fun close() {
+        authService?.dispose()
         okHttpClient.cache?.close()
         certManager?.close()
     }
 
+
     class Builder(
-        val context: Context? = null,
+        val context: Context,
         accountSettings: AccountSettings? = null,
         val logger: java.util.logging.Logger? = Logger.log,
         val loggerLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
@@ -97,6 +102,7 @@ class HttpClient private constructor(
         }
 
         private var appInForeground = false
+        private var authService: AuthorizationService? = null
         private var certManagerProducer: CertManagerProducer? = null
         private var certificateAlias: String? = null
         private var offerCompression: Boolean = false
@@ -114,60 +120,68 @@ class HttpClient private constructor(
                 orig.addNetworkInterceptor(loggingInterceptor)
             }
 
-            if (context != null) {
-                val settings = EntryPointAccessors.fromApplication(context, HttpClientEntryPoint::class.java).settingsManager()
+            val settings = EntryPointAccessors.fromApplication(context, HttpClientEntryPoint::class.java).settingsManager()
 
-                // custom proxy support
-                try {
-                    val proxyTypeValue = settings.getInt(Settings.PROXY_TYPE)
-                    if (proxyTypeValue != Settings.PROXY_TYPE_SYSTEM) {
-                        // we set our own proxy
-                        val address by lazy {           // lazy because not required for PROXY_TYPE_NONE
-                            InetSocketAddress(
-                                settings.getString(Settings.PROXY_HOST),
-                                settings.getInt(Settings.PROXY_PORT)
-                            )
-                        }
-                        val proxy =
-                            when (proxyTypeValue) {
-                                Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
-                                Settings.PROXY_TYPE_HTTP -> Proxy(Proxy.Type.HTTP, address)
-                                Settings.PROXY_TYPE_SOCKS -> Proxy(Proxy.Type.SOCKS, address)
-                                else -> throw IllegalArgumentException("Invalid proxy type")
-                            }
-                        orig.proxy(proxy)
-                        Logger.log.log(Level.INFO, "Using proxy setting", proxy)
+            // custom proxy support
+            try {
+                val proxyTypeValue = settings.getInt(Settings.PROXY_TYPE)
+                if (proxyTypeValue != Settings.PROXY_TYPE_SYSTEM) {
+                    // we set our own proxy
+                    val address by lazy {           // lazy because not required for PROXY_TYPE_NONE
+                        InetSocketAddress(
+                            settings.getString(Settings.PROXY_HOST),
+                            settings.getInt(Settings.PROXY_PORT)
+                        )
                     }
-                } catch (e: Exception) {
-                    Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
+                    val proxy =
+                        when (proxyTypeValue) {
+                            Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
+                            Settings.PROXY_TYPE_HTTP -> Proxy(Proxy.Type.HTTP, address)
+                            Settings.PROXY_TYPE_SOCKS -> Proxy(Proxy.Type.SOCKS, address)
+                            else -> throw IllegalArgumentException("Invalid proxy type")
+                        }
+                    orig.proxy(proxy)
+                    Logger.log.log(Level.INFO, "Using proxy setting", proxy)
                 }
+            } catch (e: Exception) {
+                Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
+            }
 
-                customCertManager() {
-                    // by default, use a CustomCertManager that respects the "distrust system certificates" setting
-                    val trustSystemCerts = !settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
-                    CustomCertManager(context, true /*BuildConfig.customCertsUI*/, trustSystemCerts)
-                }
+            customCertManager {
+                // by default, use a CustomCertManager that respects the "distrust system certificates" setting
+                val trustSystemCerts = !settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
+                CustomCertManager(context, true /*BuildConfig.customCertsUI*/, trustSystemCerts)
             }
 
             // use account settings for authentication and cookies
-            accountSettings?.let {
-                addAuthentication(null, it.credentials())
-            }
+            if (accountSettings != null)
+                addAuthentication(null, accountSettings.credentials(), authStateCallback = { authState: AuthState ->
+                    accountSettings.credentials(Credentials(authState = authState))
+                })
         }
 
-        constructor(context: Context, host: String?, credentials: Credentials?): this(context) {
+        constructor(context: Context, host: String?, credentials: Credentials?) : this(context) {
             if (credentials != null)
                 addAuthentication(host, credentials)
         }
 
-        fun addAuthentication(host: String?, credentials: Credentials, insecurePreemptive: Boolean = false): Builder {
+        fun addAuthentication(host: String?, credentials: Credentials, insecurePreemptive: Boolean = false, authStateCallback: BearerAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
             if (credentials.userName != null && credentials.password != null) {
                 val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.userName, credentials.password, insecurePreemptive)
                 orig.addNetworkInterceptor(authHandler)
                     .authenticator(authHandler)
             }
+
             if (credentials.certificateAlias != null)
                 certificateAlias = credentials.certificateAlias
+
+            credentials.authState?.let { authState ->
+                val newAuthService = GoogleOAuth.createAuthService(context)
+                authService = newAuthService
+                BearerAuthInterceptor.fromAuthState(newAuthService, authState, authStateCallback)?.let { bearerAuthInterceptor ->
+                    orig.addNetworkInterceptor(bearerAuthInterceptor)
+                }
+            }
             return this
         }
 
@@ -194,7 +208,7 @@ class HttpClient private constructor(
             return this
         }
 
-        fun withDiskCache(context: Context): Builder {
+        fun withDiskCache(): Builder {
             for (dir in arrayOf(context.externalCacheDir, context.cacheDir).filterNotNull()) {
                 if (dir.exists() && dir.canWrite()) {
                     val cacheDir = File(dir, "HttpClient")
@@ -218,8 +232,6 @@ class HttpClient private constructor(
 
             var keyManager: KeyManager? = null
             certificateAlias?.let { alias ->
-                val context = requireNotNull(context)
-
                 // get provider certificate and private key
                 val certs = KeyChain.getCertificateChain(context, alias) ?: return@let
                 val key = KeyChain.getPrivateKey(context, alias) ?: return@let
@@ -248,30 +260,33 @@ class HttpClient private constructor(
                 orig.protocols(listOf(Protocol.HTTP_1_1))
             }
 
-            if (certManagerProducer != null || keyManager != null) {
-                val certManager = certManagerProducer?.certManager()
-                certManager?.appInForeground = appInForeground
+            val certManager =
+                if (certManagerProducer != null || keyManager != null) {
+                    val manager = certManagerProducer?.certManager()
+                    manager?.appInForeground = appInForeground
 
-                val trustManager = certManager ?: {     // fall back to system default trust manager
-                    val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-                    factory.init(null as KeyStore?)
-                    factory.trustManagers.first() as X509TrustManager
-                }()
+                    val trustManager = manager ?: {     // fall back to system default trust manager
+                        val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                        factory.init(null as KeyStore?)
+                        factory.trustManagers.first() as X509TrustManager
+                    }()
 
-                val hostnameVerifier = certManager?.hostnameVerifier(OkHostnameVerifier)
-                    ?: OkHostnameVerifier
+                    val hostnameVerifier = manager?.hostnameVerifier(OkHostnameVerifier)
+                        ?: OkHostnameVerifier
 
-                val sslContext = SSLContext.getInstance("TLS")
-                sslContext.init(
-                    if (keyManager != null) arrayOf(keyManager) else null,
-                    arrayOf(trustManager),
-                    null)
-                orig.sslSocketFactory(sslContext.socketFactory, trustManager)
-                orig.hostnameVerifier(hostnameVerifier)
+                    val sslContext = SSLContext.getInstance("TLS")
+                    sslContext.init(
+                        if (keyManager != null) arrayOf(keyManager) else null,
+                        arrayOf(trustManager),
+                        null)
+                    orig.sslSocketFactory(sslContext.socketFactory, trustManager)
+                    orig.hostnameVerifier(hostnameVerifier)
 
-                return HttpClient(orig.build(), certManager)
-            } else
-                return HttpClient(orig.build(), null)
+                    manager
+                } else
+                    null
+
+            return HttpClient(orig.build(), certManager = certManager, authService = authService)
         }
 
     }

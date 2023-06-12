@@ -216,6 +216,7 @@
   <string name="account_rename">Omdøb konto</string>
   <string name="account_rename_new_name">Lokale data der ikke er gemt kan gå tabt. Gen-synkronisering er krævet efter omdøbning. Nyt kontonavn: </string>
   <string name="account_rename_rename">Omdøbe</string>
+  <string name="account_rename_exists_already">Konto navn er allerede i brug</string>
   <string name="account_rename_couldnt_rename">Kunne ikke omdøbe konto</string>
   <string name="account_delete">Slet konto</string>
   <string name="account_delete_confirmation_title">Slet konto?</string>

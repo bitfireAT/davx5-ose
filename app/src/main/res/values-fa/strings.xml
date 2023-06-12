@@ -214,6 +214,7 @@
   <string name="account_rename">تغییر نام حساب</string>
   <string name="account_rename_new_name">داده های محلی ذخیره نشده ممکن است از بین بروند. پس از تغییر نام مجدداً همگام سازی لازم است. نام حساب جدید:</string>
   <string name="account_rename_rename">تغییر نام</string>
+  <string name="account_rename_exists_already">نام حساب قبلاً گرفته شده است</string>
   <string name="account_rename_couldnt_rename">نمی‌توانید نام حساب را تغییر دهید</string>
   <string name="account_delete">حذف حساب</string>
   <string name="account_delete_confirmation_title">واقعاً حساب حذف شود؟</string>

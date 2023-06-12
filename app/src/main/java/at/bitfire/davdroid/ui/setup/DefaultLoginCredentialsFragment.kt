@@ -67,11 +67,18 @@ class DefaultLoginCredentialsFragment : Fragment() {
         }
 
         v.login.setOnClickListener {
-            if (validate())
+            if (validate()) {
+                val nextFragment =
+                    if (model.loginGoogle.value == true)
+                        GoogleLoginFragment()
+                    else
+                        DetectConfigurationFragment()
+
                 parentFragmentManager.beginTransaction()
-                        .replace(android.R.id.content, DetectConfigurationFragment(), null)
-                        .addToBackStack(null)
-                        .commit()
+                    .replace(android.R.id.content, nextFragment, null)
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
 
         return v.root
@@ -193,6 +200,10 @@ class DefaultLoginCredentialsFragment : Fragment() {
                         else ->
                             null
                     }
+            }
+
+            model.loginGoogle.value == true -> {
+                valid = true
             }
         }
 

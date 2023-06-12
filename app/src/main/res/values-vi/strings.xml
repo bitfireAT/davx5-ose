@@ -204,6 +204,7 @@
   <string name="account_rename">Đổi tên tài khoản</string>
   <string name="account_rename_new_name">Dữ liệu cục bộ chưa được lưu có thể sẽ bị bỏ qua. Yêu cầu đồng bộ hoá lại sau khi đổi tên. Tên tài khoản mới:</string>
   <string name="account_rename_rename">Đổi tên</string>
+  <string name="account_rename_exists_already">Tên tài khoản đã được sử dụng</string>
   <string name="account_rename_couldnt_rename">Không thể đổi tên tài khoản</string>
   <string name="account_delete">Xoá tài khoản</string>
   <string name="account_delete_confirmation_title">Thực sự xoá tài khoản?</string>

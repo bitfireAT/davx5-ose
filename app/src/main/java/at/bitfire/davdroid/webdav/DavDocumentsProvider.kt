@@ -30,8 +30,8 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.HttpClient
-import at.bitfire.davdroid.MemoryCookieStore
+import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument

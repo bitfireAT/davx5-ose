@@ -12,9 +12,10 @@ import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.exception.UnauthorizedException
 import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.HttpClient
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.StringHandler
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.setup.LoginModel
 import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl
@@ -451,11 +452,11 @@ class DavResourceFinder(
     ) {
 
         data class ServiceInfo(
-                var principal: HttpUrl? = null,
-                val homeSets: MutableSet<HttpUrl> = HashSet(),
-                val collections: MutableMap<HttpUrl, Collection> = HashMap(),
+            var principal: HttpUrl? = null,
+            val homeSets: MutableSet<HttpUrl> = HashSet(),
+            val collections: MutableMap<HttpUrl, Collection> = HashMap(),
 
-                val emails: MutableList<String> = LinkedList()
+            val emails: MutableList<String> = LinkedList()
         )
 
         override fun toString(): String {

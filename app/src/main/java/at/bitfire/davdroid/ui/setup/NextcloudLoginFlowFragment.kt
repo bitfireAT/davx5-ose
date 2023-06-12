@@ -24,7 +24,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.davdroid.HttpClient
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
@@ -271,10 +271,10 @@ class NextcloudLoginFlowFragment: Fragment() {
     class Factory @Inject constructor(): LoginCredentialsFragmentFactory {
 
         override fun getFragment(intent: Intent) =
-                if (intent.hasExtra(EXTRA_LOGIN_FLOW))
-                    NextcloudLoginFlowFragment()
-                else
-                    null
+            if (intent.hasExtra(EXTRA_LOGIN_FLOW))
+                NextcloudLoginFlowFragment()
+            else
+                null
 
     }
 

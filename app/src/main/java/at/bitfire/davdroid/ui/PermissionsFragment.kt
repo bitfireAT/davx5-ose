@@ -50,37 +50,40 @@ class PermissionsFragment: Fragment() {
             model.checkPermissions()
         }
 
-        model.needAutoResetPermission.observe(viewLifecycleOwner, { keepPermissions ->
+        model.needAutoResetPermission.observe(viewLifecycleOwner) { keepPermissions ->
             if (keepPermissions == true && model.haveAutoResetPermission.value == false) {
                 Toast.makeText(requireActivity(), R.string.permissions_autoreset_instruction, Toast.LENGTH_LONG).show()
-                startActivity(Intent(Intent.ACTION_AUTO_REVOKE_PERMISSIONS, Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)))
+                startActivity(Intent(
+                    Intent.ACTION_AUTO_REVOKE_PERMISSIONS,
+                    Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                ))
             }
-        })
-        model.needContactsPermissions.observe(viewLifecycleOwner, { needContacts ->
+        }
+        model.needContactsPermissions.observe(viewLifecycleOwner) { needContacts ->
             if (needContacts && model.haveContactsPermissions.value == false)
                 requestPermission.launch(CONTACT_PERMISSIONS)
-        })
-        model.needCalendarPermissions.observe(viewLifecycleOwner, { needCalendars ->
+        }
+        model.needCalendarPermissions.observe(viewLifecycleOwner) { needCalendars ->
             if (needCalendars && model.haveCalendarPermissions.value == false)
                 requestPermission.launch(CALENDAR_PERMISSIONS)
-        })
-        model.needNotificationPermissions.observe(viewLifecycleOwner, { needNotifications ->
+        }
+        model.needNotificationPermissions.observe(viewLifecycleOwner) { needNotifications ->
             if (needNotifications == true && model.haveNotificationPermissions.value == false)
                 requestPermission.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS))
-        })
-        model.needOpenTasksPermissions.observe(viewLifecycleOwner, { needOpenTasks ->
+        }
+        model.needOpenTasksPermissions.observe(viewLifecycleOwner) { needOpenTasks ->
             if (needOpenTasks == true && model.haveOpenTasksPermissions.value == false)
                 requestPermission.launch(TaskProvider.PERMISSIONS_OPENTASKS)
-        })
-        model.needTasksOrgPermissions.observe(viewLifecycleOwner, { needTasksOrg ->
+        }
+        model.needTasksOrgPermissions.observe(viewLifecycleOwner) { needTasksOrg ->
             if (needTasksOrg == true && model.haveTasksOrgPermissions.value == false)
                 requestPermission.launch(TaskProvider.PERMISSIONS_TASKS_ORG)
-        })
-        model.needJtxPermissions.observe(viewLifecycleOwner, { needJtx ->
+        }
+        model.needJtxPermissions.observe(viewLifecycleOwner) { needJtx ->
             if (needJtx == true && model.haveJtxPermissions.value == false)
                 requestPermission.launch(TaskProvider.PERMISSIONS_JTX)
-        })
-        model.needAllPermissions.observe(viewLifecycleOwner, { needAll ->
+        }
+        model.needAllPermissions.observe(viewLifecycleOwner) { needAll ->
             if (needAll && model.haveAllPermissions.value == false) {
                 val all = mutableSetOf(*CONTACT_PERMISSIONS, *CALENDAR_PERMISSIONS, Manifest.permission.POST_NOTIFICATIONS)
                 if (model.haveOpenTasksPermissions.value != null)
@@ -91,7 +94,7 @@ class PermissionsFragment: Fragment() {
                     all.addAll(TaskProvider.PERMISSIONS_JTX)
                 requestPermission.launch(all.toTypedArray())
             }
-        })
+        }
 
         binding.appSettings.setOnClickListener {
             PermissionUtils.showAppSettings(requireActivity())
