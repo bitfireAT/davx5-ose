@@ -4,11 +4,9 @@
 
 package at.bitfire.davdroid.network
 
-import android.content.Context
 import android.net.Uri
 import at.bitfire.davdroid.BuildConfig
 import net.openid.appauth.AuthorizationRequest
-import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 
@@ -27,14 +25,12 @@ object GoogleOAuth {
         Uri.parse("https://oauth2.googleapis.com/token")
     )
 
-    fun authRequestBuilder() =
+    fun authRequestBuilder(clientId: String?) =
         AuthorizationRequest.Builder(
             serviceConfig,
-            CLIENT_ID,
+            clientId ?: CLIENT_ID,
             ResponseTypeValues.CODE,
             Uri.parse(BuildConfig.APPLICATION_ID + ":/oauth/redirect")
         )
-
-    fun createAuthService(context: Context) = AuthorizationService(context)
 
 }

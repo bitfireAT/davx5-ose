@@ -47,6 +47,7 @@ class HttpClient private constructor(
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface HttpClientEntryPoint {
+        fun authorizationService(): AuthorizationService
         fun settingsManager(): SettingsManager
     }
 
@@ -176,7 +177,7 @@ class HttpClient private constructor(
                 certificateAlias = credentials.certificateAlias
 
             credentials.authState?.let { authState ->
-                val newAuthService = GoogleOAuth.createAuthService(context)
+                val newAuthService = EntryPointAccessors.fromApplication(context, HttpClientEntryPoint::class.java).authorizationService()
                 authService = newAuthService
                 BearerAuthInterceptor.fromAuthState(newAuthService, authState, authStateCallback)?.let { bearerAuthInterceptor ->
                     orig.addNetworkInterceptor(bearerAuthInterceptor)
