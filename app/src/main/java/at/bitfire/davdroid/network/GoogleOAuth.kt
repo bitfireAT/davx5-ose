@@ -12,7 +12,7 @@ import net.openid.appauth.ResponseTypeValues
 
 object GoogleOAuth {
 
-    // davx5integration@gmail.com
+    // davx5integration@gmail.com (for davx5-ose)
     private const val CLIENT_ID = "1069050168830-eg09u4tk1cmboobevhm4k3bj1m4fav9i.apps.googleusercontent.com"
 
     val SCOPES = arrayOf(

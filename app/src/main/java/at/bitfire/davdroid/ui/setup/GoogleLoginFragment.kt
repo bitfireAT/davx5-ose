@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -96,30 +97,37 @@ class GoogleLoginFragment: Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val v = ComposeView(requireActivity())
-        v.setContent {
-            GoogleLogin(onLogin = { account, clientId ->
-                loginModel.baseURI = googleBaseUri(account)
+        val view = ComposeView(requireActivity()).apply {
+            setContent {
+                GoogleLogin(onLogin = { account, clientId ->
+                    loginModel.baseURI = googleBaseUri(account)
 
-                val authRequest = GoogleOAuth.authRequestBuilder(clientId)
-                    .setScopes(*GoogleOAuth.SCOPES)
-                    .setLoginHint(account)
-                    .build()
-                authRequestContract.launch(authRequest)
-            })
+                    val authRequest = GoogleOAuth.authRequestBuilder(clientId)
+                        .setScopes(*GoogleOAuth.SCOPES)
+                        .setLoginHint(account)
+                        .build()
+                    authRequestContract.launch(authRequest)
+                })
+            }
         }
 
         model.credentials.observe(viewLifecycleOwner) { credentials ->
-            loginModel.credentials = credentials
+            if (credentials != null) {
+                // pass credentials to login model
+                loginModel.credentials = credentials
 
-            // continue with service detection
-            parentFragmentManager.beginTransaction()
-                .replace(android.R.id.content, DetectConfigurationFragment(), null)
-                .addToBackStack(null)
-                .commit()
+                // continue with service detection
+                parentFragmentManager.beginTransaction()
+                    .replace(android.R.id.content, DetectConfigurationFragment(), null)
+                    .addToBackStack(null)
+                    .commit()
+
+                // reset because setting credentials LiveData represents a one-shot action
+                model.credentials.value = null
+            }
         }
 
-        return v
+        return view
     }
 
 
@@ -140,7 +148,6 @@ class GoogleLoginFragment: Fragment() {
                     // success
                     authState.update(tokenResponse, refreshTokenException)
                     // save authState (= refresh token)
-
                     credentials.postValue(Credentials(authState = authState))
                 }
             }
@@ -189,7 +196,7 @@ fun GoogleLogin(
                 }
             }
 
-            val email = remember { mutableStateOf("") }
+            val email = rememberSaveable { mutableStateOf("") }
             val emailError = remember { mutableStateOf(false) }
             OutlinedTextField(
                 email.value,
@@ -204,7 +211,7 @@ fun GoogleLogin(
                     .padding(top = 8.dp)
             )
 
-            val userClientId = remember { mutableStateOf("") }
+            val userClientId = rememberSaveable { mutableStateOf("") }
             val userClientIdError = remember { mutableStateOf(false) }
             OutlinedTextField(
                 userClientId.value,
