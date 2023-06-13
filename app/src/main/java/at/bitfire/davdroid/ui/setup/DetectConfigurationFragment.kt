@@ -18,11 +18,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.lang.ref.WeakReference
+import java.net.URI
 import java.util.logging.Level
 import kotlin.concurrent.thread
 
@@ -31,10 +33,14 @@ class DetectConfigurationFragment: Fragment() {
     private val loginModel by activityViewModels<LoginModel>()
     private val model by viewModels<DetectConfigurationModel>()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model.detectConfiguration(loginModel).observe(this) { result ->
+        val baseURI = loginModel.baseURI ?: return
+        val credentials = loginModel.credentials ?: return
+
+        model.detectConfiguration(baseURI, credentials).observe(this) { result ->
             // save result for next step
             loginModel.configuration = result
 
@@ -57,14 +63,12 @@ class DetectConfigurationFragment: Fragment() {
             inflater.inflate(R.layout.detect_configuration, container, false)!!
 
 
-    class DetectConfigurationModel(
-            application: Application
-    ): AndroidViewModel(application) {
+    class DetectConfigurationModel(application: Application): AndroidViewModel(application) {
 
         private var detectionThread: WeakReference<Thread>? = null
         private var result = MutableLiveData<DavResourceFinder.Configuration>()
 
-        fun detectConfiguration(loginModel: LoginModel): LiveData<DavResourceFinder.Configuration> {
+        fun detectConfiguration(baseURI: URI, credentials: Credentials): LiveData<DavResourceFinder.Configuration> {
             synchronized(result) {
                 if (detectionThread != null)
                     // detection already running
@@ -77,7 +81,7 @@ class DetectConfigurationFragment: Fragment() {
                 }
 
                 try {
-                    DavResourceFinder(getApplication(), loginModel).use { finder ->
+                    DavResourceFinder(getApplication(), baseURI, credentials).use { finder ->
                         result.postValue(finder.findInitialConfiguration())
                     }
                 } catch(e: Exception) {

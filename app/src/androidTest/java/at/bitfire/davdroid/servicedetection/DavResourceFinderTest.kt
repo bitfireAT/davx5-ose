@@ -10,20 +10,27 @@ import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.ResourceType
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.setup.LoginModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.junit.*
-import org.junit.Assert.*
+import org.junit.After
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Assume
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import java.net.URI
 import javax.inject.Inject
 
@@ -56,20 +63,18 @@ class DavResourceFinderTest {
 
     lateinit var finder: DavResourceFinder
     lateinit var client: HttpClient
-    lateinit var loginModel: LoginModel
 
     @Before
     fun initServerAndClient() {
         server.dispatcher = TestDispatcher()
         server.start()
 
-        loginModel = LoginModel()
-        loginModel.baseURI = URI.create("/")
-        loginModel.credentials = Credentials("mock", "12345")
+        val baseURI = URI.create("/")
+        val credentials = Credentials("mock", "12345")
 
-        finder = DavResourceFinder(InstrumentationRegistry.getInstrumentation().targetContext, loginModel)
+        finder = DavResourceFinder(InstrumentationRegistry.getInstrumentation().targetContext, baseURI, credentials)
         client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext)
-                .addAuthentication(null, loginModel.credentials!!)
+                .addAuthentication(null, credentials)
                 .build()
 
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)

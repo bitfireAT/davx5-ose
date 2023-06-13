@@ -16,7 +16,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.ui.setup.LoginModel
 import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -38,10 +37,15 @@ import java.util.logging.Logger
  * - services (CalDAV and/or CardDAV),
  * - principal,
  * - homeset/collections (multistatus responses are handled through dav4jvm).
+ *
+ * @param context        to build the HTTP client
+ * @param baseURI        user-given base URI (either mailto: URI or http(s):// URL)
+ * @param credentials    optional login credentials (username/password, client certificate, OAuth state)
  */
 class DavResourceFinder(
     val context: Context,
-    private val loginModel: LoginModel
+    private val baseURI: URI,
+    credentials: Credentials? = null
 ): AutoCloseable {
 
     enum class Service(val wellKnownName: String) {
@@ -61,7 +65,7 @@ class DavResourceFinder(
     var encountered401 = false
 
     private val httpClient: HttpClient = HttpClient.Builder(context, logger = log).let {
-        loginModel.credentials?.let { credentials ->
+        credentials?.let { credentials ->
             it.addAuthentication(null, credentials)
         }
         it.setForeground(true)
@@ -109,9 +113,6 @@ class DavResourceFinder(
     }
 
     private fun findInitialConfiguration(service: Service): Configuration.ServiceInfo? {
-        // user-given base URI (either mailto: URI or http(s):// URL)
-        val baseURI = loginModel.baseURI!!
-
         // domain for service discovery
         var discoveryFQDN: String? = null
 
