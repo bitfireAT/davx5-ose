@@ -1,4 +1,3 @@
 
 include ':app'
 include ':ical4android'
-include ':vcard4android'

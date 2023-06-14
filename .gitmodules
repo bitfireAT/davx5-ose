@@ -1,6 +1,3 @@
 [submodule "ical4android"]
 	path = ical4android
 	url = https://github.com/bitfireAT/ical4android.git
-[submodule "vcard4android"]
-	path = vcard4android
-	url = https://github.com/bitfireAT/vcard4android.git

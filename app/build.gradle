@@ -112,7 +112,7 @@ android {
 dependencies {
     implementation "com.github.bitfireAT:cert4android:${versions.cert4android}"
     implementation project(':ical4android')
-    implementation project(':vcard4android')
+    implementation "com.github.bitfireAT:vcard4android:${versions.vcard4android}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1"
