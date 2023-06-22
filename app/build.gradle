@@ -14,7 +14,7 @@ android {
     buildToolsVersion '33.0.2'
 
     defaultConfig {
-        applicationId "at.bitfire.davdroid"
+        applicationId "com.twake.android.sync"
 
         versionCode 403030006
         versionName '4.3.3'
