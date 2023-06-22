@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">Twake Sync</string>
   <string name="account_invalid">帐户（已）不存在</string>
   <string name="account_title_address_book">DAVx⁵ 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>

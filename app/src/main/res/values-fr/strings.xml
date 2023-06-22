@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">Twake Sync</string>
   <string name="account_invalid">Le compte n’existe plus (désormais)</string>
   <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
   <string name="address_books_authority_title">Carnets d\'adresses</string>

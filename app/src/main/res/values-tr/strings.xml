@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
+  <string name="app_name">Twake Sync</string>
   <string name="address_books_authority_title">Rehberler</string>
   <string name="help">Yardım</string>
   <string name="manage_accounts">Hesapları yönet</string>
