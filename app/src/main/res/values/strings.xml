@@ -9,7 +9,7 @@
     <string name="account_type" translatable="false">bitfire.at.davdroid</string>
     <string name="account_type_address_book" translatable="false">at.bitfire.davdroid.address_book</string>
     <string name="account_title_address_book">DAVx⁵ Address book</string>
-    <string name="address_books_authority" translatable="false">at.bitfire.davdroid.addressbooks</string>
+    <string name="address_books_authority" translatable="false">com.twake.android.sync.addressbooks</string>
     <string name="address_books_authority_title">Address books</string>
     <string name="dialog_remove">Remove</string>
     <string name="dialog_deny">Cancel</string>
@@ -424,7 +424,7 @@
     <string name="collection_properties_owner">Owner:</string>
 
     <!-- debugging and DebugInfoActivity -->
-    <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>
+    <string name="authority_debug_provider" translatable="false">com.twake.android.sync.debug</string>
     <string name="debug_info_title">Debug info</string>
     <string name="debug_info_archive_caption">ZIP archive</string>
     <string name="debug_info_archive_subtitle">Contains debug info and logs</string>
@@ -461,7 +461,7 @@
     <string name="storage_low_notify_text">Almost no free space left</string>
 
     <!-- WebDAV accounts -->
-    <string name="webdav_authority" translatable="false">at.bitfire.davdroid.webdav</string>
+    <string name="webdav_authority" translatable="false">com.twake.android.sync.webdav</string>
     <string name="webdav_mounts_title">WebDAV mounts</string>
     <string name="webdav_mounts_quota_used_available">Quota used: %1$s / available: %2$s</string>
     <string name="webdav_mounts_share_content">Share content</string>
