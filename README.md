@@ -1,6 +1,5 @@
 
 [![Website](https://img.shields.io/website?style=flat-square&up_color=%237cb342&url=https%3A%2F%2Fwww.davx5.com)](https://www.davx5.com/)
-[![Twitter](https://img.shields.io/twitter/follow/davx5app?color=%237cb342&label=%40davx5app&style=flat-square)](https://twitter.com/davx5app)
 [![F-Droid](https://img.shields.io/f-droid/v/at.bitfire.davdroid?style=flat-square)](https://f-droid.org/packages/at.bitfire.davdroid/)
 [![License](https://img.shields.io/github/license/bitfireAT/davx5-ose?style=flat-square)](https://github.com/bitfireAT/davx5-ose/blob/main/LICENSE)
 [![Development tests](https://github.com/bitfireAT/davx5-ose/actions/workflows/test-dev.yml/badge.svg)](https://github.com/bitfireAT/davx5-ose/actions/workflows/test-dev.yml)
@@ -19,7 +18,6 @@ DAVx⁵ is licensed under the [GPLv3 License](LICENSE).
 News and updates: 
 
 * [@davx5app@fosstodon.org](https://fosstodon.org/@davx5app) on Mastodon
-* [@davx5app](https://twitter.com/davx5app) on Twitter
 
 **Help, feature requests, bug reports: [DAVx⁵ discussions](https://github.com/bitfireAT/davx5-ose/discussions)**
 
