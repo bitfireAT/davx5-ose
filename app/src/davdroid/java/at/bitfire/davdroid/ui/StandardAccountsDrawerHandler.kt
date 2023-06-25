@@ -30,11 +30,6 @@ open class StandardAccountsDrawerHandler @Inject constructor(): BaseAccountsDraw
     override fun onNavigationItemSelected(activity: Activity, item: MenuItem) {
         when (item.itemId) {
 
-            R.id.nav_twitter ->
-                UiUtils.launchUri(
-                    activity,
-                    Uri.parse("https://twitter.com/" + activity.getString(R.string.twitter_handle))
-                )
             R.id.nav_mastodon ->
                 UiUtils.launchUri(
                     activity,
