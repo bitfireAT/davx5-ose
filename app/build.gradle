@@ -109,9 +109,20 @@ android {
     }
 }
 
+configurations {
+    all {
+        // exclude modules which are in conflict with system libraries
+        exclude module: "commons-logging"
+        exclude group: "org.json", module: "json"
+
+        // Groovy requires SDK 26+, and it's not required, so exclude it
+        exclude group: 'org.codehaus.groovy'
+    }
+}
+
 dependencies {
     implementation "com.github.bitfireAT:cert4android:${versions.cert4android}"
-    implementation project(':ical4android')
+    implementation "com.github.bitfireAT:ical4android:${versions.ical4android}"
     implementation "com.github.bitfireAT:vcard4android:${versions.vcard4android}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"

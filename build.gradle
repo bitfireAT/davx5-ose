@@ -10,15 +10,16 @@ buildscript {
         hilt: '2.46.1',
         kotlin: '1.8.21',       // keep in sync with app/build.gradle composeOptions.kotlinCompilerExtensionVersion
         okhttp: '4.10.0',
-        room: '2.5.1',
+        room: '2.5.2',
         // latest Apache Commons versions that don't require Java 8 (Android 7)
         commonsCollections: '4.2',
         commonsLang: '3.8.1',
         commonsText: '1.3',
         // own libraries
         cert4android: 'c87a7e9',
-        vcard4android: 'c2f201a',
-        dav4jvm: '47dd6a9'
+        dav4jvm: '47dd6a9',
+        ical4android: '0b1a068',
+        vcard4android: 'c2f201a'
     ]
 
     repositories {

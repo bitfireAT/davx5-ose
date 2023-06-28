@@ -1,3 +1,2 @@
 
 include ':app'
-include ':ical4android'
