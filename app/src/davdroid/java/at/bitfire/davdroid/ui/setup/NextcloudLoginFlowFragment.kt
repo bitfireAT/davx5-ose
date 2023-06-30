@@ -30,6 +30,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.DebugInfoActivity
+import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import com.google.android.material.snackbar.Snackbar
 import dagger.Binds
 import dagger.Module
@@ -89,11 +90,11 @@ class NextcloudLoginFlowFragment: Fragment() {
             // reset URL so that the browser isn't shown another time
             loginFlowModel.loginUrl.value = null
 
-            if (haveCustomTabs(loginUri)) {
+            if (haveCustomTabs(requireActivity())) {
                 // Custom Tabs are available
                 val browser = CustomTabsIntent.Builder()
-                        .setToolbarColor(resources.getColor(R.color.primaryColor))
-                        .build()
+                    .setToolbarColor(resources.getColor(R.color.primaryColor))
+                    .build()
                 browser.intent.data = loginUri
                 startActivityForResult(browser.intent, REQUEST_BROWSER, browser.startAnimationBundle)
 
@@ -133,24 +134,6 @@ class NextcloudLoginFlowFragment: Fragment() {
         loginFlowModel.setUrl(entryUrl)
 
         return view
-    }
-
-    private fun haveCustomTabs(uri: Uri): Boolean {
-        val browserIntent = Intent()
-                .setAction(Intent.ACTION_VIEW)
-                .addCategory(Intent.CATEGORY_BROWSABLE)
-                .setData(uri)
-        val pm = requireActivity().packageManager
-        val appsSupportingCustomTabs = pm.queryIntentActivities(browserIntent, 0)
-        for (pkg in appsSupportingCustomTabs) {
-            // check whether app resolves Custom Tabs service, too
-            val serviceIntent = Intent(ACTION_CUSTOM_TABS_CONNECTION).apply {
-                setPackage(pkg.activityInfo.packageName)
-            }
-            if (pm.resolveService(serviceIntent, 0) != null)
-                return true
-        }
-        return false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
