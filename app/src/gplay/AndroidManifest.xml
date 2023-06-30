@@ -9,6 +9,18 @@
             android:label="@string/earn_badges"
             android:parentActivityName=".ui.account.AccountActivity"/>
 
+        <!-- AppAuth login flow redirect -->
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="at.bitfire.davdroid" android:path="/oauth2/redirect"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
