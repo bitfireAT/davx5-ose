@@ -66,6 +66,7 @@ class AccountDetailsFragment : Fragment() {
         // default account name
         model.name.value =
                 config.calDAV?.emails?.firstOrNull()
+                        ?: loginModel.suggestedAccountName
                         ?: loginModel.credentials?.userName
                         ?: loginModel.credentials?.certificateAlias
                         ?: loginModel.baseURI?.host

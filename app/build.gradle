@@ -28,10 +28,6 @@ android {
 
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
-        manifestPlaceholders = [
-            'appAuthRedirectScheme': applicationId
-        ]
-
         testInstrumentationRunner "at.bitfire.davdroid.CustomTestRunner"
 
         kapt {
@@ -72,8 +68,9 @@ android {
     }
 
     sourceSets {
-        androidTest.java.srcDirs = [ "src/androidTest/java" ]
-        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+        androidTest {
+            assets.srcDirs += files("$projectDir/schemas".toString())
+        }
     }
 
     signingConfigs {

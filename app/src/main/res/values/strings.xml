@@ -299,6 +299,7 @@
     <string name="login_google_client_id_description">You may use your own client ID, in case our does not work.</string>
     <string name="login_google_client_id_description_link">Show me how!</string>
     <string name="login_google_disclaimer">%s is not affiliated to, nor has it been authorized, sponsored or otherwise approved by Google LLC.</string>
+    <string name="login_oauth_couldnt_obtain_auth_code">Couldn\'t obtain authorization code</string>
 
     <string name="login_configuration_detection">Configuration detection</string>
     <string name="login_querying_server">Please wait, querying server…</string>
@@ -349,7 +350,10 @@
     <string name="settings_sync_wifi_only_ssids_permissions_action">Manage</string>
     <string name="settings_more_info_faq">More information (FAQ)</string>
     <string name="settings_authentication">Authentication</string>
-    <string name="settings_username_key" translatable="false">username</string>
+    <string name="settings_oauth_key" translatable="false">oauth</string>
+    <string name="settings_oauth">Re-authenticate</string>
+    <string name="settings_oauth_summary">Perform OAuth login again</string>
+    <string name="settings_username_key">username</string>
     <string name="settings_username">User name</string>
     <string name="settings_enter_username">Enter user name:</string>
     <string name="settings_password_key" translatable="false">password</string>

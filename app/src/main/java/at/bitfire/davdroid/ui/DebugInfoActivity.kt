@@ -598,11 +598,27 @@ class DebugInfoActivity : AppCompatActivity() {
 
 
         private fun dumpMainAccount(account: Account, writer: Writer) {
-            writer.append(" - Account: ${account.name}\n")
+            writer.append("\n\n - Account: ${account.name}\n")
             writer.append(dumpAccount(account, AccountDumpInfo.mainAccount(context, account)))
-            writer.append(dumpSyncWorkersInfo(account))
             try {
                 val accountSettings = AccountSettings(context, account)
+
+                val credentials = accountSettings.credentials()
+                val authStr = mutableListOf<String>()
+                if (credentials.userName != null)
+                    authStr += "user name"
+                if (credentials.password != null)
+                    authStr += "password"
+                if (credentials.certificateAlias != null)
+                    authStr += "client certificate"
+                credentials.authState?.let { authState ->
+                    authStr += "OAuth [${authState.authorizationServiceConfiguration?.authorizationEndpoint}]"
+                }
+                if (authStr.isNotEmpty())
+                    writer  .append("  Authentication: ")
+                            .append(authStr.joinToString(", "))
+                            .append("\n")
+
                 writer.append("  WiFi only: ${accountSettings.getSyncWifiOnly()}")
                 accountSettings.getSyncWifiOnlySSIDs()?.let { ssids ->
                     writer.append(", SSIDs: ${ssids.joinToString(", ")}")
@@ -614,6 +630,10 @@ class DebugInfoActivity : AppCompatActivity() {
                             "  Manage calendar colors: ${accountSettings.getManageCalendarColors()}\n" +
                             "  Use event colors: ${accountSettings.getEventColors()}\n"
                 )
+
+                writer.append("\nSync workers:\n")
+                    .append(dumpSyncWorkersInfo(account))
+                    .append("\n")
             } catch (e: InvalidAccountException) {
                 writer.append("$e\n")
             }
@@ -625,7 +645,7 @@ class DebugInfoActivity : AppCompatActivity() {
             val table = dumpAccount(account, AccountDumpInfo.addressBookAccount(account))
             writer.append(TextTable.indent(table, 4))
                 .append("URL: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_URL)}\n")
-                .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
+                .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n")
         }
 
         private fun dumpAccount(account: Account, infos: Iterable<AccountDumpInfo>): String {

@@ -7,6 +7,7 @@ package at.bitfire.davdroid.servicedetection
 import android.accounts.Account
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -27,6 +28,7 @@ import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.exception.UnauthorizedException
 import at.bitfire.dav4jvm.property.AddressbookDescription
 import at.bitfire.dav4jvm.property.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.CalendarColor
@@ -59,6 +61,7 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.account.SettingsActivity
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -204,6 +207,16 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         } catch(e: InvalidAccountException) {
             Logger.log.log(Level.SEVERE, "Invalid account", e)
             return Result.failure()
+        } catch (e: UnauthorizedException) {
+            Logger.log.log(Level.SEVERE, "Not authorized (anymore)", e)
+            // notify that we need to re-authenticate in the account settings
+            val settingsIntent = Intent(applicationContext, SettingsActivity::class.java)
+                .putExtra(SettingsActivity.EXTRA_ACCOUNT, account)
+            notifyRefreshError(
+                applicationContext.getString(R.string.sync_error_authentication_failed),
+                settingsIntent
+            )
+            return Result.failure()
         } catch(e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
@@ -211,18 +224,14 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .withCause(e)
                 .withAccount(account)
                 .build()
-            val notify = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_GENERAL)
-                .setSmallIcon(R.drawable.ic_sync_problem_notify)
-                .setContentTitle(applicationContext.getString(R.string.refresh_collections_worker_refresh_failed))
-                .setContentText(applicationContext.getString(R.string.refresh_collections_worker_refresh_couldnt_refresh))
-                .setContentIntent(PendingIntent.getActivity(applicationContext, 0, debugIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-                .setSubText(account.name)
-                .setCategory(NotificationCompat.CATEGORY_ERROR)
-                .build()
-            NotificationManagerCompat.from(applicationContext)
-                .notifyIfPossible(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS, notify)
+            notifyRefreshError(
+                applicationContext.getString(R.string.refresh_collections_worker_refresh_couldnt_refresh),
+                debugIntent
+            )
             return Result.failure()
         }
+
+
 
         // Success
         return Result.success()
@@ -247,6 +256,18 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             completer.set(ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification))
         }
 
+    private fun notifyRefreshError(contentText: String, contentIntent: Intent) {
+        val notify = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_GENERAL)
+            .setSmallIcon(R.drawable.ic_sync_problem_notify)
+            .setContentTitle(applicationContext.getString(R.string.refresh_collections_worker_refresh_failed))
+            .setContentText(contentText)
+            .setContentIntent(PendingIntent.getActivity(applicationContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+            .setSubText(account.name)
+            .setCategory(NotificationCompat.CATEGORY_ERROR)
+            .build()
+        NotificationManagerCompat.from(applicationContext)
+            .notifyIfPossible(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS, notify)
+    }
 
     /**
      * Contains the methods, which do the actual refreshing work. Collected here for testability

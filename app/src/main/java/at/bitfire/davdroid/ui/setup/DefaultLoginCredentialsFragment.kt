@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.setup
 
 import android.content.Intent
 import android.net.MailTo
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,6 +20,7 @@ import androidx.fragment.app.viewModels
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.LoginCredentialsFragmentBinding
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.ui.UiUtils
 import com.google.android.material.snackbar.Snackbar
 import dagger.Binds
 import dagger.Module
@@ -66,7 +68,7 @@ class DefaultLoginCredentialsFragment : Fragment() {
             }, null, null, null, -1, model.certificateAlias.value)
         }
 
-        v.login.setOnClickListener {
+        v.login.setOnClickListener { _ ->
             if (validate()) {
                 val nextFragment =
                     if (model.loginGoogle.value == true)

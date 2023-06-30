@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.app.Application
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -47,12 +48,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.network.GoogleOAuth
 import at.bitfire.davdroid.ui.UiUtils
 import com.google.accompanist.themeadapter.material.MdcTheme
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -62,9 +64,12 @@ import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.ResponseTypeValues
 import net.openid.appauth.TokenResponse
 import org.apache.commons.lang3.StringUtils
 import java.net.URI
+import java.util.logging.Level
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -72,7 +77,29 @@ class GoogleLoginFragment: Fragment() {
 
     companion object {
 
+        // Support site
         val URI_TESTED_WITH_GOOGLE: Uri = Uri.parse("https://www.davx5.com/tested-with/google")
+
+        // davx5integration@gmail.com (for davx5-ose)
+        private const val CLIENT_ID = "1069050168830-eg09u4tk1cmboobevhm4k3bj1m4fav9i.apps.googleusercontent.com"
+
+        val SCOPES = arrayOf(
+            "https://www.googleapis.com/auth/calendar",     // CalDAV
+            "https://www.googleapis.com/auth/carddav"       // CardDAV
+        )
+
+        private val serviceConfig = AuthorizationServiceConfiguration(
+            Uri.parse("https://accounts.google.com/o/oauth2/v2/auth"),
+            Uri.parse("https://oauth2.googleapis.com/token")
+        )
+
+        fun authRequestBuilder(clientId: String?) =
+            AuthorizationRequest.Builder(
+                serviceConfig,
+                clientId ?: CLIENT_ID,
+                ResponseTypeValues.CODE,
+                Uri.parse(BuildConfig.APPLICATION_ID + ":/oauth2/redirect")
+            )
 
         fun googleBaseUri(googleAccount: String): URI =
             URI("https", "www.google.com", "/calendar/dav/$googleAccount/events/", null)
@@ -92,21 +119,28 @@ class GoogleLoginFragment: Fragment() {
         if (authResponse != null)
             model.authenticate(authResponse)
         else
-            Logger.log.warning("Couldn't obtain authorization code")
+            Snackbar.make(requireView(), R.string.login_oauth_couldnt_obtain_auth_code, Snackbar.LENGTH_LONG).show()
     }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = ComposeView(requireActivity()).apply {
             setContent {
-                GoogleLogin(onLogin = { account, clientId ->
-                    loginModel.baseURI = googleBaseUri(account)
+                GoogleLogin(onLogin = { accountEmail, clientId ->
+                    loginModel.baseURI = googleBaseUri(accountEmail)
+                    loginModel.suggestedAccountName = accountEmail
 
-                    val authRequest = GoogleOAuth.authRequestBuilder(clientId)
-                        .setScopes(*GoogleOAuth.SCOPES)
-                        .setLoginHint(account)
+                    val authRequest = authRequestBuilder(clientId)
+                        .setScopes(*SCOPES)
+                        .setLoginHint(accountEmail)
                         .build()
-                    authRequestContract.launch(authRequest)
+
+                    try {
+                        authRequestContract.launch(authRequest)
+                    } catch (e: ActivityNotFoundException) {
+                        Logger.log.log(Level.WARNING, "Couldn't start OAuth intent", e)
+                        Snackbar.make(requireView(), getString(R.string.install_browser), Snackbar.LENGTH_LONG).show()
+                    }
                 })
             }
         }
@@ -164,7 +198,7 @@ class GoogleLoginFragment: Fragment() {
 
 @Composable
 fun GoogleLogin(
-    onLogin: (account: String, clientId: String?) -> Unit
+    onLogin: (accountEmail: String, clientId: String?) -> Unit
 ) {
     val context = LocalContext.current
     MdcTheme {

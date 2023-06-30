@@ -25,16 +25,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
 import at.bitfire.davdroid.InvalidAccountException
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.Syncer
 import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.syncadapter.Syncer
 import at.bitfire.davdroid.ui.UiUtils
+import at.bitfire.davdroid.ui.setup.GoogleLoginFragment
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
@@ -217,32 +218,53 @@ class SettingsActivity: AppCompatActivity() {
             }
 
             // preference group: authentication
-            val prefUserName = findPreference<EditTextPreference>("username")!!
-            val prefPassword = findPreference<EditTextPreference>("password")!!
-            val prefCertAlias = findPreference<Preference>("certificate_alias")!!
-            model.credentials.observe(viewLifecycleOwner) { credentials ->
-                prefUserName.summary = credentials.userName
-                prefUserName.text = credentials.userName
-                prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newUserName ->
-                    model.updateCredentials(Credentials(newUserName as String, credentials.password, credentials.certificateAlias))
-                    false
-                }
+            val authCategory: PreferenceCategory = findPreference("authentication")!!
+            val prefUserName = findPreference<EditTextPreference>(getString(R.string.settings_username_key))!!
+            val prefPassword = findPreference<EditTextPreference>(getString(R.string.settings_password_key))!!
+            val prefCertAlias = findPreference<Preference>(getString(R.string.settings_certificate_alias_key))!!
+            val prefOAuth = findPreference<Preference>(getString(R.string.settings_oauth_key))!!
 
-                if (credentials.userName != null) {
-                    prefPassword.isVisible = true
-                    prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newPassword ->
-                        model.updateCredentials(Credentials(credentials.userName, newPassword as String, credentials.certificateAlias))
+            model.credentials.observe(viewLifecycleOwner) { credentials ->
+                if (credentials.authState != null) {
+                    // using OAuth, hide other settings
+                    authCategory.removePreference(prefUserName)
+                    authCategory.removePreference(prefPassword)
+                    authCategory.removePreference(prefCertAlias)
+
+                    prefOAuth.setOnPreferenceClickListener {
+                        parentFragmentManager.beginTransaction()
+                            .replace(android.R.id.content, GoogleLoginFragment(), null)
+                            .addToBackStack(null)
+                            .commit()
+                        true
+                    }
+                } else {
+                    // not using OAuth, hide OAuth setting
+                    authCategory.removePreference(prefOAuth)
+
+                    prefUserName.summary = credentials.userName
+                    prefUserName.text = credentials.userName
+                    prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newUserName ->
+                        model.updateCredentials(Credentials(newUserName as String, credentials.password, credentials.certificateAlias))
                         false
                     }
-                } else
-                    prefPassword.isVisible = false
 
-                prefCertAlias.summary = credentials.certificateAlias ?: getString(R.string.settings_certificate_alias_empty)
-                prefCertAlias.setOnPreferenceClickListener {
-                    KeyChain.choosePrivateKeyAlias(requireActivity(), { newAlias ->
-                        model.updateCredentials(Credentials(credentials.userName, credentials.password, newAlias))
-                    }, null, null, null, -1, credentials.certificateAlias)
-                    true
+                    if (credentials.userName != null) {
+                        prefPassword.isVisible = true
+                        prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newPassword ->
+                            model.updateCredentials(Credentials(credentials.userName, newPassword as String, credentials.certificateAlias))
+                            false
+                        }
+                    } else
+                        prefPassword.isVisible = false
+
+                    prefCertAlias.summary = credentials.certificateAlias ?: getString(R.string.settings_certificate_alias_empty)
+                    prefCertAlias.setOnPreferenceClickListener {
+                        KeyChain.choosePrivateKeyAlias(requireActivity(), { newAlias ->
+                            model.updateCredentials(Credentials(credentials.userName, credentials.password, newAlias))
+                        }, null, null, null, -1, credentials.certificateAlias)
+                        true
+                    }
                 }
             }
 
