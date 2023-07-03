@@ -118,6 +118,7 @@ class SyncWorker @AssistedInject constructor(
          * @param resync        whether to request (full) re-synchronization or not
          * @param upload        see [ContentResolver.SYNC_EXTRAS_UPLOAD] used only for contacts sync
          *                      and android 7 workaround
+         * @return existing or newly created worker name
          */
         fun enqueue(
             context: Context,
@@ -125,7 +126,7 @@ class SyncWorker @AssistedInject constructor(
             authority: String,
             @ArgResync resync: Int = NO_RESYNC,
             upload: Boolean = false
-        ) {
+        ): String {
             // Worker arguments
             val argumentsBuilder = Data.Builder()
                 .putString(ARG_AUTHORITY, authority)
@@ -152,14 +153,16 @@ class SyncWorker @AssistedInject constructor(
                 .build()
 
             // enqueue and start syncing
-            Logger.log.log(Level.INFO, "Enqueueing unique worker: ${workerName(account, authority)}")
+            val name = workerName(account, authority)
+            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name")
             WorkManager.getInstance(context).enqueueUniqueWork(
-                workerName(account, authority),
+                name,
                 ExistingWorkPolicy.KEEP,    // If sync is already running, just continue.
                                             // Existing retried work will not be replaced (for instance when
                                             // PeriodicSyncWorker enqueues another scheduled sync).
                 workRequest
             )
+            return name
         }
 
         /**

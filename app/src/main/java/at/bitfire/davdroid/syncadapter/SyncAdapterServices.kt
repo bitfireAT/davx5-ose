@@ -13,9 +13,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.os.Bundle
+import androidx.lifecycle.Observer
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Level
 
 abstract class SyncAdapterService: Service() {
@@ -44,7 +49,7 @@ abstract class SyncAdapterService: Service() {
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             // We seem to have to pass this old SyncFramework extra for an Android 7 workaround
             val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
-            Logger.log.info("Sync request via sync adapter (upload=$upload)")
+            Logger.log.info("Sync request via sync framework (upload=$upload)")
 
             val accountSettings = try {
                 AccountSettings(context, account)
@@ -55,12 +60,54 @@ abstract class SyncAdapterService: Service() {
 
             // Should we run the sync at all?
             if (!SyncWorker.wifiConditionsMet(context, accountSettings)) {
-                Logger.log.info("Sync conditions not met. Aborting sync adapter")
+                Logger.log.info("Sync conditions not met. Aborting sync framework initiated sync")
                 return
             }
 
-            Logger.log.fine("Sync adapter now handing over to SyncWorker")
-            SyncWorker.enqueue(context, account, authority, upload = upload)
+            Logger.log.fine("Sync framework now starting SyncWorker")
+            val workerName = SyncWorker.enqueue(context, account, authority, upload = upload)
+
+            // Block the onPerformSync method to simulate an ongoing sync
+            Logger.log.fine("Blocking sync framework until SyncWorker finishes")
+
+            // Because we are not allowed to observe worker state on a background thread, we can not
+            // use it to block the sync adapter. Instead we check periodically whether the sync has
+            // finished, putting the thread to sleep in between checks.
+            val workManager = WorkManager.getInstance(context)
+            val status = workManager.getWorkInfosForUniqueWorkLiveData(workerName)
+
+            var finished = false
+            val lock = Object()
+
+            val observer = Observer<List<WorkInfo>> { workInfoList ->
+                for (workInfo in workInfoList) {
+                    if (workInfo.state.isFinished) {
+                        synchronized(lock) {
+                            finished = true
+                            lock.notify()
+                        }
+                    }
+                }
+            }
+
+            runBlocking(Dispatchers.Main) {     // observeForever not allowed in background thread
+                status.observeForever(observer)
+            }
+
+            synchronized(lock) {
+                try {
+                    if (!finished)
+                        lock.wait(10*60*1000)  // wait max 10 minutes
+                } catch (e: InterruptedException) {
+                    Logger.log.info("Interrupted while blocking sync framework. Sync may still be running")
+                }
+            }
+
+            runBlocking(Dispatchers.Main) {
+                status.removeObserver(observer)
+            }
+
+            Logger.log.info("Returning to sync framework")
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
