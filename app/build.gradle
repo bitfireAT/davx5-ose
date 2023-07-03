@@ -17,8 +17,8 @@ android {
         applicationId 'com.infomaniak.sync'
         resValue 'string', 'application_id', applicationId
 
-        versionCode 403040000
-        versionName '4.3.4'
+        versionCode 403040101
+        versionName '4.3.4.1'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 

@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
+  <string name="account_invalid">账户（已）不存在</string>
   <string name="app_name">kSync</string>
-  <string name="account_invalid">帐户（已）不存在</string>
   <string name="account_title_address_book">kSync 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>
   <string name="dialog_remove">删除</string>
@@ -261,6 +261,10 @@
   <string name="login_use_client_certificate">使用客户端证书</string>
   <string name="login_no_certificate_found">没有找到证书</string>
   <string name="login_install_certificate">安装证书</string>
+  <string name="login_type_google">Google 联系人/日历</string>
+  <string name="login_google_guide">请阅读我们有关 Google 登录的指南，其中可能对意料之外警告信息作出解释。</string>
+  <string name="login_google_account">Google 账户</string>
+  <string name="login_google_disclaimer">%s 与 Google LLC 之间没有隶属关系，也非由 Google LLC 所授权、赞助或批准。 </string>
   <string name="login_configuration_detection">正在配置</string>
   <string name="login_querying_server">正在与服务器通信，请稍等…</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>

@@ -261,6 +261,10 @@
   <string name="login_use_client_certificate">Usar certificado cliente</string>
   <string name="login_no_certificate_found">Non se atopa certificado</string>
   <string name="login_install_certificate">Instalar certificado</string>
+  <string name="login_type_google">Contactos / Calendario de Google</string>
+  <string name="login_google_guide">Le as instruccións sobre como acceder a Google. Podería ver avisos que están explicados nelas.</string>
+  <string name="login_google_account">Conta de Google</string>
+  <string name="login_google_disclaimer">%s non ten filiación, nin autorización, patrocinio ou calquera outra relación con Google LLC.</string>
   <string name="login_configuration_detection">Detección da configuración</string>
   <string name="login_querying_server">Agarda por favor, consultando o servidor…</string>
   <string name="login_no_caldav_carddav">Non se atopou servizo CalDAV ou CardDAV.</string>

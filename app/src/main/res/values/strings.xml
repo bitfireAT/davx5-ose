@@ -293,8 +293,12 @@
     <string name="login_no_certificate_found">No certificate found</string>
     <string name="login_install_certificate">Install certificate</string>
     <string name="login_type_google">Google Contacts / Calendar</string>
-    <string name="login_google_guide">Please read our guide about the login to Google. There may be unexpected warnings which are explained there.</string>
+    <string name="login_google_see_tested_with">Please see our \"Tested with Google\" page for up-to-date information.</string>
+    <string name="login_google_unexpected_warnings">You may experience unexpected warnings and/or have to create your own client ID.</string>
     <string name="login_google_account">Google account</string>
+    <string name="login_google_client_id">Client ID (optional)</string>
+    <string name="login_google_client_id_description">You may use your own client ID, in case our does not work.</string>
+    <string name="login_google_client_id_description_link">Show me how!</string>
     <string name="login_google_disclaimer">%s is not affiliated to, nor has it been authorized, sponsored or otherwise approved by Google LLC.</string>
 
     <string name="login_configuration_detection">Configuration detection</string>

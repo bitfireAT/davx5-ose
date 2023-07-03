@@ -71,7 +71,7 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
                         .add(DetectConfigurationFragment.NothingDetectedFragment(), null)
                         .commit()
                 } else {
-                    detectConfigurationModel.detectConfiguration(loginModel).observe(
+                    detectConfigurationModel.detectConfiguration(loginModel.baseURI!!, loginModel.credentials!!).observe(
                         this@InfomaniakDetectConfigurationFragment,
                         Observer { result ->
 
