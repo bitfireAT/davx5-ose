@@ -20,6 +20,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
+import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -171,6 +172,10 @@ class AccountDetailsFragmentTest {
         mockkStatic(ContentResolver::class)
         every { ContentResolver.setIsSyncable(any(), any(), any()) } returns Unit
         every { ContentResolver.getIsSyncable(any(), any()) } returns 1
+
+        // Create account will try to start an initial collection refresh, which we don't need, so we mockk it
+        mockkObject(RefreshCollectionsWorker.Companion)
+        every { RefreshCollectionsWorker.refreshCollections(any(), any()) } returns ""
 
         // Create account -> should also set tasks sync interval in settings
         val accountCreated = AccountDetailsFragment.Model(targetContext, db, settingsManager)
