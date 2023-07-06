@@ -38,9 +38,8 @@ class DetectConfigurationFragment: Fragment() {
         super.onCreate(savedInstanceState)
 
         val baseURI = loginModel.baseURI ?: return
-        val credentials = loginModel.credentials ?: return
 
-        model.detectConfiguration(baseURI, credentials).observe(this) { result ->
+        model.detectConfiguration(baseURI, loginModel.credentials).observe(this) { result ->
             // save result for next step
             loginModel.configuration = result
 
@@ -68,7 +67,7 @@ class DetectConfigurationFragment: Fragment() {
         private var detectionThread: WeakReference<Thread>? = null
         private var result = MutableLiveData<DavResourceFinder.Configuration>()
 
-        fun detectConfiguration(baseURI: URI, credentials: Credentials): LiveData<DavResourceFinder.Configuration> {
+        fun detectConfiguration(baseURI: URI, credentials: Credentials?): LiveData<DavResourceFinder.Configuration> {
             synchronized(result) {
                 if (detectionThread != null)
                     // detection already running
