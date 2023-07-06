@@ -73,7 +73,7 @@ import java.util.logging.Level
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class GoogleLoginFragment: Fragment() {
+class GoogleLoginFragment(private val defaultEmail: String? = null): Fragment() {
 
     companion object {
 
@@ -126,7 +126,7 @@ class GoogleLoginFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = ComposeView(requireActivity()).apply {
             setContent {
-                GoogleLogin(onLogin = { accountEmail, clientId ->
+                GoogleLogin(defaultEmail = defaultEmail, onLogin = { accountEmail, clientId ->
                     loginModel.baseURI = googleBaseUri(accountEmail)
                     loginModel.suggestedAccountName = accountEmail
 
@@ -198,6 +198,7 @@ class GoogleLoginFragment: Fragment() {
 
 @Composable
 fun GoogleLogin(
+    defaultEmail: String?,
     onLogin: (accountEmail: String, clientId: String?) -> Unit
 ) {
     val context = LocalContext.current
@@ -230,7 +231,7 @@ fun GoogleLogin(
                 }
             }
 
-            val email = rememberSaveable { mutableStateOf("") }
+            val email = rememberSaveable { mutableStateOf(defaultEmail ?: "") }
             val emailError = remember { mutableStateOf(false) }
             OutlinedTextField(
                 email.value,
@@ -288,5 +289,5 @@ fun GoogleLogin(
 @Composable
 @Preview
 fun PreviewGoogleLogin() {
-    GoogleLogin(onLogin = { _, _ -> })
+    GoogleLogin(null) { _, _ -> }
 }

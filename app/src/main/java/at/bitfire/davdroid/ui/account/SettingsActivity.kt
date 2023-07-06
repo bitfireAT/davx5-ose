@@ -218,7 +218,6 @@ class SettingsActivity: AppCompatActivity() {
             }
 
             // preference group: authentication
-            val authCategory: PreferenceCategory = findPreference("authentication")!!
             val prefUserName = findPreference<EditTextPreference>(getString(R.string.settings_username_key))!!
             val prefPassword = findPreference<EditTextPreference>(getString(R.string.settings_password_key))!!
             val prefCertAlias = findPreference<Preference>(getString(R.string.settings_certificate_alias_key))!!
@@ -227,25 +226,34 @@ class SettingsActivity: AppCompatActivity() {
             model.credentials.observe(viewLifecycleOwner) { credentials ->
                 if (credentials.authState != null) {
                     // using OAuth, hide other settings
-                    authCategory.removePreference(prefUserName)
-                    authCategory.removePreference(prefPassword)
-                    authCategory.removePreference(prefCertAlias)
+                    prefOAuth.isVisible = true
+                    prefUserName.isVisible = false
+                    prefPassword.isVisible = false
+                    prefCertAlias.isVisible = false
 
                     prefOAuth.setOnPreferenceClickListener {
                         parentFragmentManager.beginTransaction()
-                            .replace(android.R.id.content, GoogleLoginFragment(), null)
+                            .replace(android.R.id.content, GoogleLoginFragment(account.name), null)
                             .addToBackStack(null)
                             .commit()
                         true
                     }
                 } else {
-                    // not using OAuth, hide OAuth setting
-                    authCategory.removePreference(prefOAuth)
+                    // not using OAuth, hide OAuth setting, show the others
+                    prefOAuth.isVisible = false
+                    prefUserName.isVisible = true
+                    prefPassword.isVisible = true
+                    prefCertAlias.isVisible = true
 
                     prefUserName.summary = credentials.userName
                     prefUserName.text = credentials.userName
                     prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newUserName ->
-                        model.updateCredentials(Credentials(newUserName as String, credentials.password, credentials.certificateAlias))
+                        val newUserNameOrNull = StringUtils.trimToNull(newUserName as String)
+                        model.updateCredentials(Credentials(
+                            userName = newUserNameOrNull,
+                            password = credentials.password,
+                            certificateAlias = credentials.certificateAlias)
+                        )
                         false
                     }
 
