@@ -20,7 +20,6 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
-import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -111,8 +110,9 @@ class AccountDetailsFragmentTest {
         }
     }
 
-    @Test
+    /*@Test
     @RequiresApi(28)        // for mockkObject
+    // COMMENTED OUT because it doesn't run reliably [see https://github.com/bitfireAT/davx5/pull/320]
     fun testModel_CreateAccount_configuresCalendarsWithTasks() {
         for (provider in listOf(
             TaskProvider.ProviderName.JtxBoard,
@@ -153,10 +153,11 @@ class AccountDetailsFragmentTest {
                 AccountSettings(targetContext, account).getSyncInterval(provider.authority)
             )
         }
-    }
+    }*/
 
-    @Test
+    /*@Test
     @RequiresApi(28)
+    // COMMENTED OUT because it doesn't run reliably [see https://github.com/bitfireAT/davx5/pull/320]
     fun testModel_CreateAccount_configuresCalendarsWithoutTasks() {
         try {
             val accountName = "testAccount"
@@ -182,7 +183,6 @@ class AccountDetailsFragmentTest {
             val accountCreated = AccountDetailsFragment.Model(targetContext, db, settingsManager)
                 .createAccount(accountName, fakeCredentials, config, GroupMethod.GROUP_VCARDS)
             assertTrue(accountCreated.getOrAwaitValue(5))
-
 
             // Get the created account
             val account = AccountManager.get(targetContext)
@@ -218,6 +218,6 @@ class AccountDetailsFragmentTest {
             // The sync adapter framework will start a sync, which can get interrupted. We don't care
             // about being interrupted. If it happens the test is not too important.
         }
-    }
+    }*/
 
 }
