@@ -13,9 +13,11 @@ import android.content.SyncResult
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.IntDef
+import androidx.annotation.RequiresApi
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -283,6 +285,14 @@ class SyncWorker @AssistedInject constructor(
     var syncThread: Thread? = null
 
     override fun doWork(): Result {
+
+        // Check internet connection. This is especially important on API 26+ where when a VPN is used,
+        // WorkManager may start the SyncWorker without a working underlying Internet connection.
+        if (Build.VERSION.SDK_INT >= 23 && !internetAvailable(applicationContext)) {
+            Logger.log.info("WorkManager started SyncWorker without Internet connection. Aborting.")
+            return Result.failure()
+        }
+        
         // ensure we got the required arguments
         val account = Account(
             inputData.getString(ARG_ACCOUNT_NAME) ?: throw IllegalArgumentException("$ARG_ACCOUNT_NAME required"),
@@ -385,6 +395,31 @@ class SyncWorker @AssistedInject constructor(
         }
 
         return Result.success()
+    }
+
+    /**
+     * Checks whether we are connected to the internet.
+     *
+     * On API 26+ devices, when a VPN is used, WorkManager might start the SyncWorker without an
+     * internet connection. To prevent this we do an extra check at the start of doWork() with this
+     * method.
+     *
+     * Every VPN connection also has an underlying non-vpn connection, which we find with
+     * [NetworkCapabilities.NET_CAPABILITY_NOT_VPN] and then check if that has validated internet
+     * access or not, using [NetworkCapabilities.NET_CAPABILITY_VALIDATED].
+     *
+     * @return whether we are connected to the internet
+     */
+    @RequiresApi(23)
+    private fun internetAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService<ConnectivityManager>()!!
+        return connectivityManager.allNetworks.any { network ->
+            connectivityManager.getNetworkCapabilities(network)?.let { capabilities ->
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)      // filter out VPNs
+                        && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                        && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            } ?: false
+        }
     }
 
     override fun onStopped() {

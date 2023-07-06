@@ -33,7 +33,8 @@ import org.junit.*
 import org.junit.Assert.*
 import javax.inject.Inject
 
-@HiltAndroidTest
+// COMMENTED OUT because it doesn't run reliably [see https://github.com/bitfireAT/davx5/pull/320]
+/*@HiltAndroidTest
 class AccountDetailsFragmentTest {
 
     @get:Rule
@@ -110,9 +111,8 @@ class AccountDetailsFragmentTest {
         }
     }
 
-    /*@Test
+    @Test
     @RequiresApi(28)        // for mockkObject
-    // COMMENTED OUT because it doesn't run reliably [see https://github.com/bitfireAT/davx5/pull/320]
     fun testModel_CreateAccount_configuresCalendarsWithTasks() {
         for (provider in listOf(
             TaskProvider.ProviderName.JtxBoard,
@@ -153,11 +153,10 @@ class AccountDetailsFragmentTest {
                 AccountSettings(targetContext, account).getSyncInterval(provider.authority)
             )
         }
-    }*/
+    }
 
-    /*@Test
+    @Test
     @RequiresApi(28)
-    // COMMENTED OUT because it doesn't run reliably [see https://github.com/bitfireAT/davx5/pull/320]
     fun testModel_CreateAccount_configuresCalendarsWithoutTasks() {
         try {
             val accountName = "testAccount"
@@ -218,6 +217,6 @@ class AccountDetailsFragmentTest {
             // The sync adapter framework will start a sync, which can get interrupted. We don't care
             // about being interrupted. If it happens the test is not too important.
         }
-    }*/
+    }
 
-}
+}*/
