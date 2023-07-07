@@ -101,8 +101,15 @@ class GoogleLoginFragment(private val defaultEmail: String? = null): Fragment() 
                 Uri.parse(BuildConfig.APPLICATION_ID + ":/oauth2/redirect")
             )
 
+        /**
+         * Gets the Google CalDAV/CardDAV base URI. See https://developers.google.com/calendar/caldav/v2/guide;
+         * _calid_ of the primary calendar is the account name.
+         *
+         * This URL allows CardDAV (over well-known URLs) and CalDAV detection including calendar-homesets and secondary
+         * calendars.
+         */
         fun googleBaseUri(googleAccount: String): URI =
-            URI("https", "www.google.com", "/calendar/dav/$googleAccount/events/", null)
+            URI("https", "apidata.googleusercontent.com", "/caldav/v2/$googleAccount/user", null)
 
     }
 
