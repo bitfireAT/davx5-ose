@@ -13,13 +13,13 @@ object Settings {
 
     const val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
 
-    const val PROXY_TYPE = "proxy_type"
+    const val PROXY_TYPE = "proxy_type"         // Integer
     const val PROXY_TYPE_SYSTEM = -1
     const val PROXY_TYPE_NONE = 0
     const val PROXY_TYPE_HTTP = 1
     const val PROXY_TYPE_SOCKS = 2
-    const val PROXY_HOST = "proxy_host"
-    const val PROXY_PORT = "proxy_port"
+    const val PROXY_HOST = "proxy_host"         // String
+    const val PROXY_PORT = "proxy_port"         // Integer
 
     /**
      * Default sync interval (long), in seconds.
