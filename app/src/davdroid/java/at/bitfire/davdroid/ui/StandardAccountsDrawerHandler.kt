@@ -11,10 +11,6 @@ import android.view.MenuItem
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import javax.inject.Inject
 
 /**
@@ -52,19 +48,19 @@ open class StandardAccountsDrawerHandler @Inject constructor(): BaseAccountsDraw
             R.id.nav_faq ->
                 UiUtils.launchUri(
                     activity,
-                    App.homepageUrl(activity).buildUpon().appendPath("faq").build()
+                    App.homepageUrl(activity, "faq")
                 )
             R.id.nav_community ->
                 UiUtils.launchUri(activity, Uri.parse(COMMUNITY_URL))
             R.id.nav_donate ->
                 UiUtils.launchUri(
                     activity,
-                    App.homepageUrl(activity).buildUpon().appendPath("donate").build()
+                    App.homepageUrl(activity, "donate")
                 )
             R.id.nav_privacy ->
                 UiUtils.launchUri(
                     activity,
-                    App.homepageUrl(activity).buildUpon().appendPath("privacy").build()
+                    App.homepageUrl(activity, App.HOMEPAGE_PRIVACY)
                 )
 
             else ->
