@@ -262,7 +262,6 @@
   <string name="login_no_certificate_found">Geen certificaat gevonden</string>
   <string name="login_install_certificate">Certificaat installeren</string>
   <string name="login_type_google">Google Contacten / Kalender</string>
-  <string name="login_google_guide">Lees onze handleiding over het inloggen bij Google. Er kunnen onverwachte waarschuwingen zijn die daar worden uitgelegd.</string>
   <string name="login_google_account">Google account</string>
   <string name="login_google_disclaimer">%s is niet gelieerd aan, en is ook niet geautoriseerd, gesponsord of anderszins goedgekeurd door Google LLC.</string>
   <string name="login_configuration_detection">Configuratie detecteren</string>

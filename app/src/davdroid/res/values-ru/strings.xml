@@ -164,7 +164,7 @@
   <string name="app_settings_proxy">Тип прокси</string>
   <string-array name="app_settings_proxy_types">
     <item>Определен системой</item>
-    <item>Нет прокси</item>
+    <item>Без прокси</item>
     <item>HTTP</item>
     <item>SOCKS (для Orbot)</item>
   </string-array>
@@ -173,11 +173,11 @@
   <string name="app_settings_security">Безопасность</string>
   <string name="app_settings_security_app_permissions">Разрешения приложения</string>
   <string name="app_settings_security_app_permissions_summary">Проверка разрешений, необходимых для синхронизации</string>
-  <string name="app_settings_distrust_system_certs">Недоверие к сертификатам системы</string>
+  <string name="app_settings_distrust_system_certs">Сертификаты системы</string>
   <string name="app_settings_distrust_system_certs_on">Не доверять системным и пользовательским CA</string>
   <string name="app_settings_distrust_system_certs_off">Доверять системным и пользовательским CA (рекомендуется)</string>
-  <string name="app_settings_reset_certificates">Сброс (не)доверенных сертификатов</string>
-  <string name="app_settings_reset_certificates_summary">Отменить доверие ко всем пользовательским сертификатам</string>
+  <string name="app_settings_reset_certificates">Сброс сертификатов</string>
+  <string name="app_settings_reset_certificates_summary">Отменяет доверие ко всем пользовательским сертификатам</string>
   <string name="app_settings_reset_certificates_success">Все пользовательские сертификаты были удалены</string>
   <string name="app_settings_user_interface">Интерфейс пользователя</string>
   <string name="app_settings_notification_settings">Настройки уведомлений</string>
@@ -261,6 +261,15 @@
   <string name="login_use_client_certificate">Использовать сертификат клиента</string>
   <string name="login_no_certificate_found">Сертификат не найден</string>
   <string name="login_install_certificate">Установить сертификат</string>
+  <string name="login_type_google">Google Контакты / Календарь</string>
+  <string name="login_google_see_tested_with">Актуальную информацию смотрите на нашей странице \" Протестировано с Google\".</string>
+  <string name="login_google_unexpected_warnings">Вы можете столкнуться с неожиданными предупреждениями и/или вам придется создать свой собственный ID клиента.</string>
+  <string name="login_google_account">Google аккаунт</string>
+  <string name="login_google_client_id">ID клиента (необязательно)</string>
+  <string name="login_google_client_id_description">Вы можете использовать свой собственный ID клиента, если наш не работает.</string>
+  <string name="login_google_client_id_description_link">Покажите мне как!</string>
+  <string name="login_google_disclaimer">%s не является аффилированным лицом, не уполномочена, не спонсируется или иным образом не одобрена компанией Google LLC.</string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Не удалось получить код авторизации</string>
   <string name="login_configuration_detection">Обнаружение конфигурации</string>
   <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>
   <string name="login_no_caldav_carddav">Не удалось найти службу CalDAV или CardDAV.</string>
@@ -295,12 +304,15 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">Управлять</string>
   <string name="settings_more_info_faq">Дополнительная информация (FAQ)</string>
   <string name="settings_authentication">Аутентификация</string>
+  <string name="settings_oauth">Повторная аутентификация</string>
+  <string name="settings_oauth_summary">Выполните вход через OAuth повторно</string>
+  <string name="settings_username_key">имя пользователя</string>
   <string name="settings_username">Имя пользователя</string>
   <string name="settings_enter_username">Введите имя пользователя:</string>
   <string name="settings_password">Пароль</string>
   <string name="settings_password_summary">Обновить пароль</string>
   <string name="settings_enter_password">Введите свой пароль:</string>
-  <string name="settings_certificate_alias">Привязка сертификата клиента</string>
+  <string name="settings_certificate_alias">Сертификат клиента</string>
   <string name="settings_certificate_alias_empty">Сертификат не выбран</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Ограничение по времени для прошедших событий</string>
