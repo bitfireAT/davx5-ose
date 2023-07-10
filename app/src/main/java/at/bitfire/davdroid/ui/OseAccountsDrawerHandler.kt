@@ -48,19 +48,19 @@ class OseAccountsDrawerHandler @Inject constructor(): BaseAccountsDrawerHandler(
             R.id.nav_faq ->
                 UiUtils.launchUri(
                     activity,
-                    App.homepageUrl(activity).buildUpon().appendPath("faq").build()
+                    App.homepageUrl(activity, "faq")
                 )
             R.id.nav_community ->
                 UiUtils.launchUri(activity, Uri.parse(COMMUNITY_URL))
             R.id.nav_donate ->
                 UiUtils.launchUri(
                     activity,
-                    App.homepageUrl(activity).buildUpon().appendPath("donate").build()
+                    App.homepageUrl(activity, "donate")
                 )
             R.id.nav_privacy ->
                 UiUtils.launchUri(
                     activity,
-                    App.homepageUrl(activity).buildUpon().appendPath("privacy").build()
+                    App.homepageUrl(activity, App.HOMEPAGE_PRIVACY)
                 )
 
             else ->

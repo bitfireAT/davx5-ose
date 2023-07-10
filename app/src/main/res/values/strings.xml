@@ -298,7 +298,8 @@
     <string name="login_google_client_id">Client ID (optional)</string>
     <string name="login_google_client_id_description">You may use your own client ID, in case our does not work.</string>
     <string name="login_google_client_id_description_link">Show me how!</string>
-    <string name="login_google_disclaimer">%s is not affiliated to, nor has it been authorized, sponsored or otherwise approved by Google LLC.</string>
+    <string name="login_google_client_privacy_policy"><![CDATA[%1s transfers your Google Contacts and Calendar data solely for synchronization with this device. See our <a href="%2s">Privacy policy</a> for details.]]></string>
+    <string name="login_google_client_limited_use"><![CDATA[%1s complies with the <a href="%2s">Google API Services User Data Policy</a>, including the Limited Use requirements.]]></string>
     <string name="login_oauth_couldnt_obtain_auth_code">Couldn\'t obtain authorization code</string>
 
     <string name="login_configuration_detection">Configuration detection</string>
