@@ -206,8 +206,6 @@
     <string name="app_settings_notification_settings">Notification settings</string>
     <string name="app_settings_notification_settings_summary">Manage notification channels and their settings</string>
     <string name="app_settings_theme_title">Select theme</string>
-    <string name="app_settings_language_title">Select language</string>
-    <string name="app_settings_language_system_default">System default</string>
     <string-array name="app_settings_theme_names">
         <item>System default</item>
         <item>Light</item>
@@ -275,7 +273,6 @@
     <string name="login_user_name">User name</string>
     <string name="login_user_name_required">User name required</string>
     <string name="login_base_url">Base URL</string>
-    <string name="login_type_url_certificate">Login with URL and client certificate</string>
     <string name="login_select_certificate">Select certificate</string>
     <string name="login_login">Login</string>
     <string name="login_create_account">Create account</string>
@@ -296,10 +293,8 @@
     <string name="login_google_unexpected_warnings">You may experience unexpected warnings and/or have to create your own client ID.</string>
     <string name="login_google_account">Google account</string>
     <string name="login_google_client_id">Client ID (optional)</string>
-    <string name="login_google_client_id_description">You may use your own client ID, in case our does not work.</string>
-    <string name="login_google_client_id_description_link">Show me how!</string>
-    <string name="login_google_client_privacy_policy"><![CDATA[%1s transfers your Google Contacts and Calendar data solely for synchronization with this device. See our <a href="%2s">Privacy policy</a> for details.]]></string>
-    <string name="login_google_client_limited_use"><![CDATA[%1s complies with the <a href="%2s">Google API Services User Data Policy</a>, including the Limited Use requirements.]]></string>
+    <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfers your Google Contacts and Calendar data solely for synchronization with this device. See our <a href="%2$s">Privacy policy</a> for details.]]></string>
+    <string name="login_google_client_limited_use"><![CDATA[%1$s complies with the <a href="%2$s">Google API Services User Data Policy</a>, including the Limited Use requirements.]]></string>
     <string name="login_oauth_couldnt_obtain_auth_code">Couldn\'t obtain authorization code</string>
 
     <string name="login_configuration_detection">Configuration detection</string>
@@ -349,7 +344,6 @@
     <string name="settings_sync_wifi_only_ssids_message">Comma-separated names (SSIDs) of allowed WiFi networks (leave blank for all)</string>
     <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID restriction requires further settings</string>
     <string name="settings_sync_wifi_only_ssids_permissions_action">Manage</string>
-    <string name="settings_more_info_faq">More information (FAQ)</string>
     <string name="settings_authentication">Authentication</string>
     <string name="settings_oauth_key" translatable="false">oauth</string>
     <string name="settings_oauth">Re-authenticate</string>
@@ -402,18 +396,15 @@
         <item>Groups are separate vCards</item>
         <item>Groups are per-contact categories</item>
     </string-array>
-    <string name="settings_contact_group_method_change">Change group method</string>
 
     <!-- collection management -->
     <string name="create_addressbook">Create address book</string>
-    <string name="create_addressbook_display_name_hint">My Address Book</string>
     <string name="create_calendar">Create calendar</string>
     <string name="create_calendar_time_zone">Time zone</string>
     <string name="create_calendar_type">Possible calendar entries</string>
     <string name="create_calendar_type_vevent">Events</string>
     <string name="create_calendar_type_vtodo">Tasks</string>
     <string name="create_calendar_type_vjournal">Notes / journal</string>
-    <string name="create_calendar_type_events_and_tasks">Combined (events and tasks)</string>
     <string name="create_collection_color">Color</string>
     <string name="create_collection_creating">Creating collection</string>
     <string name="create_collection_display_name">Title</string>
@@ -427,13 +418,11 @@
     <string name="delete_collection_confirm_title">Are you sure?</string>
     <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed permanently.</string>
     <string name="delete_collection_data_shall_be_deleted">These data shall be deleted from the server.</string>
-    <string name="delete_collection_deleting_collection">Deleting collection</string>
     <string name="collection_force_read_only">Force read-only</string>
     <string name="collection_properties">Properties</string>
     <string name="collection_properties_sync_time">Last synced:</string>
     <string name="collection_properties_sync_time_never">Never synced</string>
     <string name="collection_properties_url">Address (URL):</string>
-    <string name="collection_properties_copy_url">Copy URL</string>
     <string name="collection_properties_owner">Owner:</string>
 
     <!-- debugging and DebugInfoActivity -->
@@ -458,7 +447,6 @@
     <string name="debug_info_involved_subtitle">Related to the problem</string>
     <string name="debug_info_involved_remote">Remote resource:</string>
     <string name="debug_info_involved_local">Local resource:</string>
-    <string name="debug_info_involved_view">View with app</string>
     <string name="debug_info_logs_caption">Logs</string>
     <string name="debug_info_logs_subtitle">Verbose logs are available</string>
     <string name="debug_info_logs_view">View logs</string>
@@ -505,7 +493,6 @@
     <string name="sync_error_io">Network or I/O error – %s</string>
     <string name="sync_error_http_dav">HTTP server error – %s</string>
     <string name="sync_error_local_storage">Local storage error – %s</string>
-    <string name="sync_error_retry">Retry</string>
     <string name="sync_error_retry_limit_reached">Soft error (max retries reached)</string>
     <string name="sync_error_view_item">View item</string>
     <string name="sync_invalid_contact">Received invalid contact from server</string>
