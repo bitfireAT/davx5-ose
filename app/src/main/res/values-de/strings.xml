@@ -261,7 +261,6 @@
   <string name="login_no_certificate_found">Kein Zertifikat gefunden</string>
   <string name="login_install_certificate">Zertifikat installieren </string>
   <string name="login_type_google">Google-Kontakte / -Kalender</string>
-  <string name="login_google_guide">Bitte lesen Sie unsere Anleitung zur Anmeldung bei Google. Es kann dabei unvorhergesehen zu Warnhinweisen kommen, die dort erklärt werden. </string>
   <string name="login_google_account">Google-Konto</string>
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>

@@ -23,11 +23,6 @@
         android:visible="false" >
         <menu>
             <item
-                android:id="@+id/nav_twitter"
-                android:icon="@drawable/twitter"
-                android:title="\@davx5app"
-                tools:ignore="HardcodedText"/>
-            <item
                 android:id="@+id/nav_mastodon"
                 android:icon="@drawable/mastodon"
                 android:title="\@davx5app\@fosstodon.org"

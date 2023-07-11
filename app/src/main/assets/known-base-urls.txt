@@ -4,7 +4,17 @@ calendar.dingtalk.com/dav/
 cloud.disroot.org
 dav.edis.at
 dav.fruux.com
+caldav.gmx.com
+caldav.gmx.co.uk
+caldav.gmx.de
+caldav.gmx.es
+caldav.gmx.fr
 caldav.gmx.net
+carddav.gmx.com
+carddav.gmx.co.uk
+carddav.gmx.de
+carddav.gmx.es
+carddav.gmx.fr
 carddav.gmx.net
 framagenda.org/remote.php/dav/
 icloud.com

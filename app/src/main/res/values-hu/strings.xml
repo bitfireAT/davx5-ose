@@ -5,10 +5,13 @@
   <string name="account_invalid">A felhasználói fiók (már) nem létezik</string>
   <string name="account_title_address_book">kSync címjegyzék</string>
   <string name="address_books_authority_title">Címjegyzékek</string>
+  <string name="dialog_remove">Eltávolítás</string>
+  <string name="dialog_deny">Mégse</string>
   <string name="field_required">Ennek e mezőnek a megadása kötelező</string>
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
   <string name="share">Megosztás</string>
+  <string name="no_internet_sync_scheduled">Nincs hálózati kapcsolat.  A szinkronizálás beütemezése</string>
   <string name="database_destructive_migration_title">Az adatbázis megsérült</string>
   <string name="database_destructive_migration_text">A fiókok törölve lettek az eszközön.</string>
   <string name="notification_channel_debugging">Hibakeresés</string>
@@ -39,6 +42,8 @@
   <string name="intro_tasks_title">Feladatok támogatása</string>
   <string name="intro_tasks_text1">Ha a szerver támogatja a feladatokat, akkor a következő feladat alkalmazásokkal lehet szinkronizálni őket:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">A fejlesztése leállt – nem ajánlott.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Néhány funkció <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nem támogatott</a> (még).]]></string>
   <string name="intro_tasks_no_app_store">Nincs elérhető alkalmazás-áruház</string>
   <string name="intro_tasks_dont_show">Nincs szükségem a feladatok támogatására.*</string>
@@ -58,6 +63,9 @@
   <string name="permissions_calendar_title">Naptár-engedélyek</string>
   <string name="permissions_calendar_status_off">A naptárak szinkronizálásának mellőzése (nem javasolt)</string>
   <string name="permissions_calendar_status_on">A naptárak szinkronizálása (javasolt)</string>
+  <string name="permissions_notification_title">Értesítések engedélyezése</string>
+  <string name="permissions_notification_status_off">Az értesítések tiltása (nem ajánlott)</string>
+  <string name="permissions_notification_status_on">Értesítések engedélyezése</string>
   <string name="permissions_jtx_title">jtx Board engedélyek</string>
   <string name="permissions_jtx_status_not_installed">Nincs feladat, napló- és jegyzetszinkronizálás (nincs telepítve)</string>
   <string name="permissions_jtx_status_off">Nincsenek szinkronizálandó feladatok, naplóbejegyzések és jegyzetek</string>
@@ -119,8 +127,13 @@
   <string name="navigation_drawer_community">Közösség</string>
   <string name="navigation_drawer_donate">Támogatás</string>
   <string name="navigation_drawer_privacy_policy">Adatvédelmi politika</string>
+  <string name="account_list_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
   <string name="account_list_no_internet">Nincs Internet-elérés.  Az Android rendszer nem fogja elvégezni a szinkronizálst</string>
+  <string name="account_list_manage_connections">Kapcsolatok kezelése</string>
   <string name="account_list_low_storage">Kevés a rendelkezésre álló tárhely.  A rendszer nem fog szinkronizálást végezni.</string>
+  <string name="account_list_manage_storage">Tárhely kezelése</string>
+  <string name="account_list_datasaver_enabled">Az adatcsökkentés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
+  <string name="account_list_manage_datasaver">Adatcsökkentés kezelése</string>
   <string name="account_list_empty">Üdvözöljük a kSync felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
   <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
   <string name="accounts_global_sync_enable">Bekapcsolás</string>
@@ -170,6 +183,8 @@
   <string name="app_settings_notification_settings">Értesítési beállíások</string>
   <string name="app_settings_notification_settings_summary">Az értesítési csatornák és azok beállításának kezelése</string>
   <string name="app_settings_theme_title">Stílus kiválasztása</string>
+  <string name="app_settings_language_title">Nyelv kiválasztása</string>
+  <string name="app_settings_language_system_default">Alapértelmezett</string>
   <string-array name="app_settings_theme_names">
     <item>Rendszerbeállítás szerinti</item>
     <item>Világos</item>
@@ -246,6 +261,14 @@
   <string name="login_use_client_certificate">Tanúsítvány használata</string>
   <string name="login_no_certificate_found">Nem található tanúsítvány</string>
   <string name="login_install_certificate">Tanúsítvány telepítése</string>
+  <string name="login_type_google">Google Naptár / Névjegyek</string>
+  <string name="login_google_see_tested_with">Kérjük, olvassa el a \"Google Tesztelve\" oldalunkat friss információkért.</string>
+  <string name="login_google_unexpected_warnings">Nem zárhatók ki váratlan figyelmeztetések, és lehet, hogy szükség lesz saját Client ID létrehozására is.</string>
+  <string name="login_google_account">Google fiók</string>
+  <string name="login_google_client_id">Client ID (opcionális)</string>
+  <string name="login_google_client_id_description">Saját Client ID is használható, amennyiben az alapértelmezett nem működne.</string>
+  <string name="login_google_client_id_description_link">Mutasd, hogyan!</string>
+  <string name="login_google_disclaimer">%s  nem áll kapcsolatban a Google LLC-vel, és nem rendelkezik annak anyagi támogatásával vagy bármiféle különleges engedélyével vagy jóváhagyásával.</string>
   <string name="login_configuration_detection">A konfiguráció felderítése</string>
   <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése…</string>
   <string name="login_no_caldav_carddav">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
@@ -341,6 +364,8 @@
   <string name="delete_collection_deleting_collection">Gyűjtemény törlése</string>
   <string name="collection_force_read_only">Csak olvashatóvá tétel</string>
   <string name="collection_properties">Tulajdonságok</string>
+  <string name="collection_properties_sync_time">Utolsó szinkronizálás:</string>
+  <string name="collection_properties_sync_time_never">Még soha</string>
   <string name="collection_properties_url">Cím (URL):</string>
   <string name="collection_properties_copy_url">URL másolása</string>
   <string name="collection_properties_owner">Tulajdonos:</string>
@@ -392,6 +417,8 @@
   <string name="webdav_add_mount_password">Jelszó</string>
   <string name="webdav_add_mount_add">WebDAV kötet hozzáadása</string>
   <string name="webdav_add_mount_no_support">Ezen a címen nincs WebDAV szolgáltatás</string>
+  <string name="webdav_remove_mount_title">WebDAV kötet lecsatolása</string>
+  <string name="webdav_remove_mount_text">A kapcsolat beállításai elvesznek, de maguk a fájlok nem.</string>
   <string name="webdav_notification_access">Hozzáférés WebDAV fájlhoz</string>
   <string name="webdav_notification_download">WebDAV fájl letöltése</string>
   <string name="webdav_notification_upload">WebDAV fájl feltöltése</string>
@@ -406,6 +433,7 @@
   <string name="sync_error_http_dav">HTTP kiszolgálóhiba - %s</string>
   <string name="sync_error_local_storage">Tárhelyhiba - %s</string>
   <string name="sync_error_retry">Újbóli próbálkozás</string>
+  <string name="sync_error_retry_limit_reached">Nem végzetes hiba (az újrapróbálkozások száma elérte a maximumot)</string>
   <string name="sync_error_view_item">Elem megtekintése</string>
   <string name="sync_invalid_contact">A szerver érvénytelen névjegyet küldött</string>
   <string name="sync_invalid_event">A szerver érvénytelen eseményt küldött</string>

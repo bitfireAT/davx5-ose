@@ -11,6 +11,7 @@
   <string name="help">Laguntza</string>
   <string name="manage_accounts">Kudeatu kontuak</string>
   <string name="share">Partekatu</string>
+  <string name="no_internet_sync_scheduled">Ez dago internetik, sinkronizazioa programatuta</string>
   <string name="database_destructive_migration_title">Datu-basea hondatua</string>
   <string name="database_destructive_migration_text">Kontu lokal guztiak ezabatu dira.</string>
   <string name="notification_channel_debugging">Arazten</string>
@@ -260,6 +261,14 @@
   <string name="login_use_client_certificate">Erabili bezero ziurtagiria</string>
   <string name="login_no_certificate_found">Ez da ziurtagiririk aurkitu</string>
   <string name="login_install_certificate">Instalatu ziurtagiria</string>
+  <string name="login_type_google">Google Kontaktuak / Egutegia</string>
+  <string name="login_google_see_tested_with">Mesedez, ikusi gure \"Google-ekin probatuta\" orria informazio eguneraturako.</string>
+  <string name="login_google_unexpected_warnings">Oharrak jaso edo zure bezero ID sortzea beharrezkoa izatea gertatu daiteke.</string>
+  <string name="login_google_account">Google kontua</string>
+  <string name="login_google_client_id">Bezeroaren ID (aukerazkoa)</string>
+  <string name="login_google_client_id_description">Zure bezeroaren ID erabili dezakezu, gureak funtzionatzen ez badu.</string>
+  <string name="login_google_client_id_description_link">Erakutsi nola!</string>
+  <string name="login_google_disclaimer">%s ez dago afiliatuta, eta ez du Google LLCk baimendu, babestu edo onartu.</string>
   <string name="login_configuration_detection">Konfigurazio detekzioa</string>
   <string name="login_querying_server">Mesedez itxaron, zerbitzaria kontsultatzen...</string>
   <string name="login_no_caldav_carddav">Ezin izan da CalDAV edo CardDAV zerbitzua aurkitu.</string>
@@ -355,6 +364,8 @@
   <string name="delete_collection_deleting_collection">Kolekzioa ezabatzen</string>
   <string name="collection_force_read_only">Behartu irakurri-soilik</string>
   <string name="collection_properties">Propietateak</string>
+  <string name="collection_properties_sync_time">Azkenengoz sinkronizatuta:</string>
+  <string name="collection_properties_sync_time_never">Ez da inoiz sinkronizatu</string>
   <string name="collection_properties_url">Helbidea (URL):</string>
   <string name="collection_properties_copy_url">Kopiatu URL</string>
   <string name="collection_properties_owner">Jabea:</string>
@@ -422,6 +433,7 @@
   <string name="sync_error_http_dav">HTTP zerbitzari-errorea – %s</string>
   <string name="sync_error_local_storage">Biltegiratze lokal errorea – %s</string>
   <string name="sync_error_retry">Saiatu berriz</string>
+  <string name="sync_error_retry_limit_reached">Errore leuna (saiakera maximora heldu da)</string>
   <string name="sync_error_view_item">Ikusi elementua</string>
   <string name="sync_invalid_contact">Kontaktu baliogabea jaso da zerbitzaritik</string>
   <string name="sync_invalid_event">Gertaera baliogabea jaso da zerbitzaritik</string>

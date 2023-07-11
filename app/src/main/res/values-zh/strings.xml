@@ -262,9 +262,14 @@
   <string name="login_no_certificate_found">没有找到证书</string>
   <string name="login_install_certificate">安装证书</string>
   <string name="login_type_google">Google 联系人/日历</string>
-  <string name="login_google_guide">请阅读我们有关 Google 登录的指南，其中可能对意料之外警告信息作出解释。</string>
+  <string name="login_google_see_tested_with">请参阅我们的“Tested with”页面的 Google 部分获得最新信息。</string>
+  <string name="login_google_unexpected_warnings">你可能遇到意外的警告和/或者不得不创建自己的 client ID。</string>
   <string name="login_google_account">Google 账户</string>
+  <string name="login_google_client_id">Client ID (可选)</string>
+  <string name="login_google_client_id_description">如果我们的 client ID 不起作用，你可以使用自己的 client ID</string>
+  <string name="login_google_client_id_description_link">现在就展示给我看！</string>
   <string name="login_google_disclaimer">%s 与 Google LLC 之间没有隶属关系，也非由 Google LLC 所授权、赞助或批准。 </string>
+  <string name="login_oauth_couldnt_obtain_auth_code">无法获得身份验证码</string>
   <string name="login_configuration_detection">正在配置</string>
   <string name="login_querying_server">正在与服务器通信，请稍等…</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>
@@ -299,6 +304,9 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
   <string name="settings_more_info_faq">更多信息（常见问题）</string>
   <string name="settings_authentication">认证</string>
+  <string name="settings_oauth">重新验证身份</string>
+  <string name="settings_oauth_summary">再次进行 OAuth 登录</string>
+  <string name="settings_username_key">用户名</string>
   <string name="settings_username">用户名</string>
   <string name="settings_enter_username">输入用户名</string>
   <string name="settings_password">密码</string>

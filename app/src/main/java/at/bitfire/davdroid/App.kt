@@ -29,15 +29,32 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
 
     companion object {
 
+        const val HOMEPAGE_PRIVACY = "privacy"
+
         fun getLauncherBitmap(context: Context) =
                 AppCompatResources.getDrawable(context, R.mipmap.ic_launcher)?.toBitmap()
 
-        fun homepageUrl(context: Context) =
-                Uri.parse(context.getString(R.string.homepage_url)).buildUpon()
-                        .appendQueryParameter("pk_campaign", BuildConfig.APPLICATION_ID)
-                        .appendQueryParameter("pk_kwd", context::class.java.simpleName)
-                        .appendQueryParameter("app-version", BuildConfig.VERSION_NAME)
-                        .build()!!
+        /**
+         * Gets the DAVx5 Web site URL that should be used to open in the user's browser.
+         * Package ID, version number and calling context name will be appended as arguments.
+         *
+         * @param context   context name to use
+         * @param page      optional page segment to append (for instance: [HOMEPAGE_PRIVACY]])
+         *
+         * @return the Uri for the browser
+         */
+        fun homepageUrl(context: Context, page: String? = null): Uri {
+            val builder = Uri.parse(context.getString(R.string.homepage_url)).buildUpon()
+
+            if (page != null)
+                builder.appendPath(page)
+
+            return builder
+                .appendQueryParameter("pk_campaign", BuildConfig.APPLICATION_ID)
+                .appendQueryParameter("pk_kwd", context::class.java.simpleName)
+                .appendQueryParameter("app-version", BuildConfig.VERSION_NAME)
+                .build()
+        }
 
     }
 

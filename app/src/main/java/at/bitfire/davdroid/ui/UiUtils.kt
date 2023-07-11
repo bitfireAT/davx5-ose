@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.browser.customtabs.CustomTabsClient
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -35,6 +36,8 @@ object UiUtils {
 
     const val SHORTCUT_SYNC_ALL = "syncAllAccounts"
     const val SNACKBAR_LENGTH_VERY_LONG = 5000          // 5s
+
+    fun haveCustomTabs(context: Context) = CustomTabsClient.getPackageName(context, null, false) != null
 
     /**
      * Starts the [Intent.ACTION_VIEW] intent with the given URL, if possible.

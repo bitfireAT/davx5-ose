@@ -5,13 +5,16 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.app.Application
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -41,18 +44,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.App
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.network.GoogleOAuth
 import at.bitfire.davdroid.ui.UiUtils
 import com.google.accompanist.themeadapter.material.MdcTheme
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -62,20 +69,55 @@ import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.ResponseTypeValues
 import net.openid.appauth.TokenResponse
 import org.apache.commons.lang3.StringUtils
 import java.net.URI
+import java.util.logging.Level
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class GoogleLoginFragment: Fragment() {
+class GoogleLoginFragment(private val defaultEmail: String? = null): Fragment() {
 
     companion object {
 
+        // Google API Services User Data Policy
+        val GOOGLE_POLICY_URL = "https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes"
+
+        // Support site
         val URI_TESTED_WITH_GOOGLE: Uri = Uri.parse("https://www.davx5.com/tested-with/google")
 
+        // davx5integration@gmail.com (for davx5-ose)
+        private const val CLIENT_ID = "1069050168830-eg09u4tk1cmboobevhm4k3bj1m4fav9i.apps.googleusercontent.com"
+
+        val SCOPES = arrayOf(
+            "https://www.googleapis.com/auth/calendar",     // CalDAV
+            "https://www.googleapis.com/auth/carddav"       // CardDAV
+        )
+
+        private val serviceConfig = AuthorizationServiceConfiguration(
+            Uri.parse("https://accounts.google.com/o/oauth2/v2/auth"),
+            Uri.parse("https://oauth2.googleapis.com/token")
+        )
+
+        fun authRequestBuilder(clientId: String?) =
+            AuthorizationRequest.Builder(
+                serviceConfig,
+                clientId ?: CLIENT_ID,
+                ResponseTypeValues.CODE,
+                Uri.parse(BuildConfig.APPLICATION_ID + ":/oauth2/redirect")
+            )
+
+        /**
+         * Gets the Google CalDAV/CardDAV base URI. See https://developers.google.com/calendar/caldav/v2/guide;
+         * _calid_ of the primary calendar is the account name.
+         *
+         * This URL allows CardDAV (over well-known URLs) and CalDAV detection including calendar-homesets and secondary
+         * calendars.
+         */
         fun googleBaseUri(googleAccount: String): URI =
-            URI("https", "www.google.com", "/calendar/dav/$googleAccount/events/", null)
+            URI("https", "apidata.googleusercontent.com", "/caldav/v2/$googleAccount/user", null)
 
     }
 
@@ -92,21 +134,28 @@ class GoogleLoginFragment: Fragment() {
         if (authResponse != null)
             model.authenticate(authResponse)
         else
-            Logger.log.warning("Couldn't obtain authorization code")
+            Snackbar.make(requireView(), R.string.login_oauth_couldnt_obtain_auth_code, Snackbar.LENGTH_LONG).show()
     }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = ComposeView(requireActivity()).apply {
             setContent {
-                GoogleLogin(onLogin = { account, clientId ->
-                    loginModel.baseURI = googleBaseUri(account)
+                GoogleLogin(defaultEmail = defaultEmail, onLogin = { accountEmail, clientId ->
+                    loginModel.baseURI = googleBaseUri(accountEmail)
+                    loginModel.suggestedAccountName = accountEmail
 
-                    val authRequest = GoogleOAuth.authRequestBuilder(clientId)
-                        .setScopes(*GoogleOAuth.SCOPES)
-                        .setLoginHint(account)
+                    val authRequest = authRequestBuilder(clientId)
+                        .setScopes(*SCOPES)
+                        .setLoginHint(accountEmail)
                         .build()
-                    authRequestContract.launch(authRequest)
+
+                    try {
+                        authRequestContract.launch(authRequest)
+                    } catch (e: ActivityNotFoundException) {
+                        Logger.log.log(Level.WARNING, "Couldn't start OAuth intent", e)
+                        Snackbar.make(requireView(), getString(R.string.install_browser), Snackbar.LENGTH_LONG).show()
+                    }
                 })
             }
         }
@@ -164,7 +213,8 @@ class GoogleLoginFragment: Fragment() {
 
 @Composable
 fun GoogleLogin(
-    onLogin: (account: String, clientId: String?) -> Unit
+    defaultEmail: String?,
+    onLogin: (accountEmail: String, clientId: String?) -> Unit
 ) {
     val context = LocalContext.current
     MdcTheme {
@@ -196,7 +246,7 @@ fun GoogleLogin(
                 }
             }
 
-            val email = rememberSaveable { mutableStateOf("") }
+            val email = rememberSaveable { mutableStateOf(defaultEmail ?: "") }
             val emailError = remember { mutableStateOf(false) }
             OutlinedTextField(
                 email.value,
@@ -242,11 +292,25 @@ fun GoogleLogin(
                 Text(stringResource(R.string.login_login))
             }
 
-            Text(
-                stringResource(R.string.login_google_disclaimer, stringResource(R.string.app_name)),
-                style = MaterialTheme.typography.body2,
-                modifier = Modifier.padding(top = 24.dp))
+            AndroidView({ context ->
+                TextView(context, null, 0, com.google.accompanist.themeadapter.material.R.style.TextAppearance_MaterialComponents_Body2).apply {
+                    text = HtmlCompat.fromHtml(context.getString(R.string.login_google_client_privacy_policy,
+                        context.getString(R.string.app_name),
+                        App.homepageUrl(context, App.HOMEPAGE_PRIVACY)
+                    ), 0)
+                    movementMethod = LinkMovementMethod.getInstance()
+                }
+            }, modifier = Modifier.padding(top = 12.dp))
 
+            AndroidView({ context ->
+                TextView(context, null, 0, com.google.accompanist.themeadapter.material.R.style.TextAppearance_MaterialComponents_Body2).apply {
+                    text = HtmlCompat.fromHtml(context.getString(R.string.login_google_client_limited_use,
+                        context.getString(R.string.app_name),
+                        GoogleLoginFragment.GOOGLE_POLICY_URL
+                    ), 0)
+                    movementMethod = LinkMovementMethod.getInstance()
+                }
+            }, modifier = Modifier.padding(top = 12.dp))
         }
     }
 }
@@ -254,5 +318,5 @@ fun GoogleLogin(
 @Composable
 @Preview
 fun PreviewGoogleLogin() {
-    GoogleLogin(onLogin = { _, _ -> })
+    GoogleLogin(null) { _, _ -> }
 }

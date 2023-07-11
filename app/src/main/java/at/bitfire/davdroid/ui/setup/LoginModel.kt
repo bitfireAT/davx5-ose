@@ -16,4 +16,9 @@ class LoginModel: ViewModel() {
 
     var configuration: DavResourceFinder.Configuration? = null
 
+    /**
+     * Account name that should be used as default account name when no email addresses have been found.
+     */
+    var suggestedAccountName: String? = null
+
 }

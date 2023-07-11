@@ -22,7 +22,7 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.util.Date
 import java.util.logging.FileHandler
 import java.util.logging.Level
 
@@ -75,8 +75,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
         val nm = NotificationManagerCompat.from(context)
         // log to external file according to preferences
         if (logToFile) {
-            val logDir = debugDir() ?: return
-            val logFile = File(logDir, "davx5-log.txt")
+            val logFile = getDebugLogFile() ?: return log.warning("Log file could not be retrieved.")
             if (logFile.createNewFile())
                 logFile.writeText("Log file created at ${Date()}; PID ${Process.myPid()}; UID ${Process.myUid()}\n")
 
@@ -96,7 +95,6 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                         .setOngoing(true)
 
                 val shareIntent = DebugInfoActivity.IntentBuilder(context)
-                    .withLogFile(logFile)
                     .newTask()
                     .share()
                 val pendingShare = PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
@@ -129,7 +127,13 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
     }
 
 
-    private fun debugDir(): File? {
+    /**
+     * Creates (when necessary) and returns the directory where all the debug files (such as log files) are stored.
+     * Must match the contents of `res/xml/debug.paths.xml`.
+     *
+     * @return The directory where all debug info are stored, or `null` if the directory couldn't be created successfully.
+     */
+    fun debugDir(): File? {
         val dir = File(context.filesDir, "debug")
         if (dir.exists() && dir.isDirectory)
             return dir
@@ -139,6 +143,16 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
 
         Toast.makeText(context, context.getString(R.string.logging_couldnt_create_file), Toast.LENGTH_LONG).show()
         return null
+    }
+
+    /**
+     * The file (in [debugDir]) where verbose logs are stored.
+     *
+     * @return The file where verbose logs are stored, or `null` if there's no [debugDir].
+     */
+    fun getDebugLogFile(): File? {
+        val logDir = debugDir() ?: return null
+        return File(logDir, "davx5-log.txt")
     }
 
 }

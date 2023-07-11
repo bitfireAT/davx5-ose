@@ -64,6 +64,10 @@
 
         <service android:name=".ForegroundService"/>
 
+        <!-- Remove the node added by AppAuth -->
+        <activity android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            tools:node="remove"/>
+
         <activity android:name=".ui.intro.IntroActivity" android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="com.infomaniak.lib.login.WebViewLoginActivity"

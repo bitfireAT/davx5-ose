@@ -261,6 +261,15 @@
   <string name="login_use_client_certificate">クライアント証明書を使用</string>
   <string name="login_no_certificate_found">証明書が見つかりませんでした</string>
   <string name="login_install_certificate">証明書をインストール</string>
+  <string name="login_type_google">Google コンタクト / カレンダー</string>
+  <string name="login_google_see_tested_with">最新情報は \"Tested with Google\" のページをご確認ください。</string>
+  <string name="login_google_unexpected_warnings">未知のエラーに遭遇したり、クライアント ID を作成するように求められたりする場合があります。</string>
+  <string name="login_google_account">Google アカウント</string>
+  <string name="login_google_client_id">クライアント ID (オプション)</string>
+  <string name="login_google_client_id_description">うまく機能しない場合、ユニークなクライアント ID が必要かもしれません。</string>
+  <string name="login_google_client_id_description_link">詳しく知りたい！</string>
+  <string name="login_google_disclaimer">%s は Google LLC によるアフィリエイト、認定、支援、承認のいずれも受けていません。</string>
+  <string name="login_oauth_couldnt_obtain_auth_code">認証コードを取得できませんでした</string>
   <string name="login_configuration_detection">設定の検出</string>
   <string name="login_querying_server">しばらくお待ちください。サーバーに問い合わせ中…</string>
   <string name="login_no_caldav_carddav">CalDAV または CardDAV サービスが見つかりませんでした。</string>
@@ -295,6 +304,9 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
   <string name="settings_more_info_faq">詳細情報 (FAQ)</string>
   <string name="settings_authentication">認証</string>
+  <string name="settings_oauth">再認証</string>
+  <string name="settings_oauth_summary">もう一度 OAuth ログインを実行</string>
+  <string name="settings_username_key">ユーザー名</string>
   <string name="settings_username">ユーザー名</string>
   <string name="settings_enter_username">ユーザー名を入力:</string>
   <string name="settings_password">パスワード</string>

@@ -17,8 +17,8 @@ android {
         applicationId 'com.infomaniak.sync'
         resValue 'string', 'application_id', applicationId
 
-        versionCode 403040101
-        versionName '4.3.4.1'
+        versionCode 403050002
+        versionName '4.3.5'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
@@ -30,10 +30,6 @@ android {
         buildConfigField "String", "userAgent", "\"kSync\""
 
         buildConfigField "String", "CLIENT_ID", '"CE011334-F75A-4263-9F9F-45FC5A142F59"'
-
-        manifestPlaceholders = [
-            'appAuthRedirectScheme': applicationId
-        ]
 
         testInstrumentationRunner "at.bitfire.davdroid.CustomTestRunner"
 
@@ -75,8 +71,9 @@ android {
     }
 
     sourceSets {
-        androidTest.java.srcDirs = [ "src/androidTest/java" ]
-        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+        androidTest {
+            assets.srcDirs += files("$projectDir/schemas".toString())
+        }
     }
 
     signingConfigs {
@@ -112,11 +109,18 @@ android {
     }
 }
 
-dependencies {
-    implementation "com.github.bitfireAT:cert4android:${versions.cert4android}"
-    implementation project(':ical4android')
-    implementation project(':vcard4android')
+configurations {
+    all {
+        // exclude modules which are in conflict with system libraries
+        exclude module: "commons-logging"
+        exclude group: "org.json", module: "json"
 
+        // Groovy requires SDK 26+, and it's not required, so exclude it
+        exclude group: 'org.codehaus.groovy'
+    }
+}
+
+dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
@@ -124,6 +128,7 @@ dependencies {
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"
 
+    // support libs
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.browser:browser:1.5.0'
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -142,12 +147,9 @@ dependencies {
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.9.0'
-    implementation 'net.openid:appauth:0.11.1'
 
     // Jetpack Compose
-    def composeBom = platform("androidx.compose:compose-bom:${versions.composeBom}")
-    implementation composeBom
-    androidTestImplementation composeBom
+    implementation platform("androidx.compose:compose-bom:${versions.composeBom}")
     implementation 'androidx.compose.material:material'
     implementation 'androidx.compose.runtime:runtime-livedata'
     debugImplementation 'androidx.compose.ui:ui-tooling'
@@ -160,6 +162,11 @@ dependencies {
     implementation "androidx.room:room-paging:${versions.room}"
     kapt "androidx.room:room-compiler:${versions.room}"
     androidTestImplementation "androidx.room:room-testing:${versions.room}"
+
+    // own libraries
+    implementation "com.github.bitfireAT:cert4android:${versions.cert4android}"
+    implementation "com.github.bitfireAT:ical4android:${versions.ical4android}"
+    implementation "com.github.bitfireAT:vcard4android:${versions.vcard4android}"
 
     // third-party libs
     implementation 'com.jaredrummler:colorpicker:1.1.0'
@@ -175,6 +182,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.8.0'
     //noinspection GradleDependency - dnsjava 3+ needs Java 8/Android 7
     implementation 'dnsjava:dnsjava:2.1.9'
+    implementation 'net.openid:appauth:0.11.1'
     //noinspection GradleDependency
     implementation "org.apache.commons:commons-collections4:${versions.commonsCollections}"
     //noinspection GradleDependency
