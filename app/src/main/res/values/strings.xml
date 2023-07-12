@@ -239,6 +239,7 @@
     <string name="account_no_webcals">There are no calendar subscriptions (yet).</string>
     <string name="account_swipe_down">Swipe down to refresh the list from the server.</string>
     <string name="account_synchronize_now">Synchronize now</string>
+    <string name="account_synchronize_collections">Synchronize collections</string>
     <string name="account_settings">Account settings</string>
     <string name="account_rename">Rename account</string>
     <string name="account_rename_new_name">Unsaved local data may be dismissed. Re-synchronization is required after renaming. New account name:</string>
