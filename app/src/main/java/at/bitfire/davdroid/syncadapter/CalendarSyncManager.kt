@@ -35,6 +35,8 @@ import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
 import java.time.Duration
+import java.time.Instant
+import java.time.ZonedDateTime
 import java.util.*
 import java.util.logging.Level
 
@@ -102,11 +104,8 @@ class CalendarSyncManager(
 
     override fun listAllRemote(callback: MultiResponseCallback) {
         // calculate time range limits
-        var limitStart: Date? = null
-        accountSettings.getTimeRangePastDays()?.let { pastDays ->
-            val calendar = Calendar.getInstance()
-            calendar.add(Calendar.DAY_OF_MONTH, -pastDays)
-            limitStart = calendar.time
+        val limitStart = accountSettings.getTimeRangePastDays()?.let { pastDays ->
+            ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
         return remoteExceptionContext { remote ->
