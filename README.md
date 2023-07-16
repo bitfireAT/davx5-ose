@@ -2,6 +2,7 @@
 [![Website](https://img.shields.io/website?style=flat-square&up_color=%237cb342&url=https%3A%2F%2Fwww.davx5.com)](https://www.davx5.com/)
 [![F-Droid](https://img.shields.io/f-droid/v/at.bitfire.davdroid?style=flat-square)](https://f-droid.org/packages/at.bitfire.davdroid/)
 [![License](https://img.shields.io/github/license/bitfireAT/davx5-ose?style=flat-square)](https://github.com/bitfireAT/davx5-ose/blob/main/LICENSE)
+[![Follow @davx5app@fosstodon.org](https://img.shields.io/mastodon/follow/109598783742737223?domain=https%3A%2F%2Ffosstodon.org&style=flat-square)](https://fosstodon.org/@davx5app)
 [![Development tests](https://github.com/bitfireAT/davx5-ose/actions/workflows/test-dev.yml/badge.svg)](https://github.com/bitfireAT/davx5-ose/actions/workflows/test-dev.yml)
 
 ![DAVx⁵ logo](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
@@ -11,7 +12,7 @@ DAVx⁵
 ========
 
 Please see the [DAVx⁵ Web site](https://www.davx5.com) for
-comprehensive information about DAVx⁵.
+comprehensive information about DAVx⁵, including a list of services it has been tested with.
 
 DAVx⁵ is licensed under the [GPLv3 License](LICENSE).
 
@@ -41,3 +42,5 @@ The most important libraries which are used by DAVx⁵ (alphabetically):
 * [ez-vcard](https://github.com/mangstadt/ez-vcard) – [New BSD License](https://github.com/mangstadt/ez-vcard/blob/master/LICENSE)
 * [iCal4j](https://github.com/ical4j/ical4j) – [New BSD License](https://github.com/ical4j/ical4j/blob/develop/LICENSE.txt)
 * [okhttp](https://square.github.io/okhttp) – [Apache License, Version 2.0](https://square.github.io/okhttp/#license)
+
+See _About / Libraries_ in the app for all used libraries and their licenses.
