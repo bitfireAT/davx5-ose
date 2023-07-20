@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,8 +39,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -230,7 +234,8 @@ fun GoogleLogin(
             Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(8.dp)) {
                     Row {
-                        Image(Icons.Default.Warning, contentDescription = "", modifier = Modifier.padding(top = 8.dp, end = 8.dp, bottom = 8.dp))
+                        Image(Icons.Default.Warning, colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface), contentDescription = "",
+                            modifier = Modifier.padding(top = 8.dp, end = 8.dp, bottom = 8.dp))
                         Text(stringResource(R.string.login_google_see_tested_with))
                     }
                     Text(stringResource(R.string.login_google_unexpected_warnings), modifier = Modifier.padding(vertical = 8.dp))
@@ -278,18 +283,32 @@ fun GoogleLogin(
                     .padding(top = 8.dp)
             )
 
-            Button({
-                val validEmail = email.value.contains('@')
-                emailError.value = !validEmail
+            Button(
+                onClick = {
+                    val validEmail = email.value.contains('@')
+                    emailError.value = !validEmail
 
-                if (validEmail) {
-                    val clientId = StringUtils.trimToNull(userClientId.value.trim())
-                    onLogin(email.value, clientId)
-                }
-            }, modifier = Modifier
-                .padding(top = 8.dp)
-                .wrapContentSize()) {
-                Text(stringResource(R.string.login_login))
+                    if (validEmail) {
+                        val clientId = StringUtils.trimToNull(userClientId.value.trim())
+                        onLogin(email.value, clientId)
+                    }
+                },
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .wrapContentSize(),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colors.surface
+                )
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.google_g_logo),
+                    contentDescription = stringResource(R.string.login_google),
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(
+                    text = stringResource(R.string.login_google),
+                    modifier = Modifier.padding(start = 12.dp)
+                )
             }
 
             AndroidView({ context ->
@@ -316,7 +335,9 @@ fun GoogleLogin(
 }
 
 @Composable
-@Preview
+@Preview(
+    showBackground = true
+)
 fun PreviewGoogleLogin() {
     GoogleLogin(null) { _, _ -> }
 }
