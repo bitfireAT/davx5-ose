@@ -183,8 +183,6 @@
   <string name="app_settings_notification_settings">Axustes das notificacións</string>
   <string name="app_settings_notification_settings_summary">Xestiona as canles de notificación e os seus axustes</string>
   <string name="app_settings_theme_title">Elixe decorado</string>
-  <string name="app_settings_language_title">Elixe o idioma</string>
-  <string name="app_settings_language_system_default">Por defecto no sistema</string>
   <string-array name="app_settings_theme_names">
     <item>Por defecto no sistema</item>
     <item>Claro</item>
@@ -212,6 +210,7 @@
   <string name="account_no_webcals">Non tes subscricións a calendario (aínda).</string>
   <string name="account_swipe_down">Arrastra hacia abaixo para actualizar a lista desde o servidor.</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
+  <string name="account_synchronize_collections">Sincronizar coleccións</string>
   <string name="account_settings">Axustes da conta</string>
   <string name="account_rename">Renomear conta</string>
   <string name="account_rename_new_name">Os datos locais non gardados perderanse. A resincronización é precisa tras renomear. Novo nome da conta:</string>
@@ -245,7 +244,6 @@
   <string name="login_user_name">Nome de usuaria</string>
   <string name="login_user_name_required">Require nome de usuaria</string>
   <string name="login_base_url">URL base</string>
-  <string name="login_type_url_certificate">Conectar con URL e certificado cliente</string>
   <string name="login_select_certificate">Escoller certificado</string>
   <string name="login_login">Conectar</string>
   <string name="login_create_account">Crear conta</string>
@@ -262,8 +260,13 @@
   <string name="login_no_certificate_found">Non se atopa certificado</string>
   <string name="login_install_certificate">Instalar certificado</string>
   <string name="login_type_google">Contactos / Calendario de Google</string>
+  <string name="login_google_see_tested_with">Le a nosa páxina \"Probado con Google\" para ter información actualizada.</string>
+  <string name="login_google_unexpected_warnings">Pode que recibas algún aviso e/ou teñas que crear o teu propio ID de cliente.</string>
   <string name="login_google_account">Conta de Google</string>
-  <string name="login_google_disclaimer">%s non ten filiación, nin autorización, patrocinio ou calquera outra relación con Google LLC.</string>
+  <string name="login_google_client_id">ID Cliente (optativo)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfire os teus datos de Google Contacts e Calendar só para sincronizalos neste dispositivo. Le a nosa <a href="%2$s">política de Privacidade</a> para saber máis.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s cumpre coa <a href="%2$s">Google API Services User Data Policy</a>, incluíndo os requerimentos de Limited Use.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Non se puido obter o código de autorización</string>
   <string name="login_configuration_detection">Detección da configuración</string>
   <string name="login_querying_server">Agarda por favor, consultando o servidor…</string>
   <string name="login_no_caldav_carddav">Non se atopou servizo CalDAV ou CardDAV.</string>
@@ -296,8 +299,10 @@
   <string name="settings_sync_wifi_only_ssids_message">Nome das rede WiFi permitidas (SSIDs) separados por vírgulas (en branco para todas)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">A restrición WiFi SSID precisa máis axustes</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Xestionar</string>
-  <string name="settings_more_info_faq">Máis información (PMF)</string>
   <string name="settings_authentication">Autenticación</string>
+  <string name="settings_oauth">Volver a autenticar</string>
+  <string name="settings_oauth_summary">Intentar acceder con OAuth outra vez</string>
+  <string name="settings_username_key">identificador</string>
   <string name="settings_username">Nome de usuaria</string>
   <string name="settings_enter_username">Escribe o nome de usuaria:</string>
   <string name="settings_password">Contrasinal</string>
@@ -332,17 +337,14 @@
     <item>Grupos son vCards separados</item>
     <item>Grupos son categorías por contacto</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Cambiar método para agrupar</string>
   <!--collection management-->
   <string name="create_addressbook">Crear libreta de enderezos</string>
-  <string name="create_addressbook_display_name_hint">A miña libreta de enderezos</string>
   <string name="create_calendar">Crear calendario</string>
   <string name="create_calendar_time_zone">Fuso horario</string>
   <string name="create_calendar_type">Entradas posibles no calendario</string>
   <string name="create_calendar_type_vevent">Eventos</string>
   <string name="create_calendar_type_vtodo">Tarefas</string>
   <string name="create_calendar_type_vjournal">Notas / diario</string>
-  <string name="create_calendar_type_events_and_tasks">Combinado (eventos e tarefas)</string>
   <string name="create_collection_color">Cor</string>
   <string name="create_collection_creating">Creando colección</string>
   <string name="create_collection_display_name">Título</string>
@@ -356,13 +358,11 @@
   <string name="delete_collection_confirm_title">Quere eliminar?</string>
   <string name="delete_collection_confirm_warning">Esta colección (%s) e todos os seus datos eliminaranse definitivamente.</string>
   <string name="delete_collection_data_shall_be_deleted">Estos datos vanse eliminar do servidor.</string>
-  <string name="delete_collection_deleting_collection">Eliminando colección</string>
   <string name="collection_force_read_only">Forzar só lectura</string>
   <string name="collection_properties">Propiedades</string>
   <string name="collection_properties_sync_time">Última sincronización:</string>
   <string name="collection_properties_sync_time_never">Nunca</string>
   <string name="collection_properties_url">Enderezo (URL):</string>
-  <string name="collection_properties_copy_url">Copiar URL</string>
   <string name="collection_properties_owner">Propietaria:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Info depuración</string>
@@ -385,7 +385,6 @@
   <string name="debug_info_involved_subtitle">Relacionado co problema</string>
   <string name="debug_info_involved_remote">Recurso remoto:</string>
   <string name="debug_info_involved_local">Recurso local:</string>
-  <string name="debug_info_involved_view">Ver coa app</string>
   <string name="debug_info_logs_caption">Rexistros</string>
   <string name="debug_info_logs_subtitle">Están dispoñibles rexistros explicativos</string>
   <string name="debug_info_logs_view">Ver rexistros</string>
@@ -427,7 +426,6 @@
   <string name="sync_error_io">Fallo de Rede ou I/O – %s</string>
   <string name="sync_error_http_dav">Fallo servidor HTTP – %s</string>
   <string name="sync_error_local_storage">Fallo almacenamento local – %s</string>
-  <string name="sync_error_retry">Reintentar</string>
   <string name="sync_error_retry_limit_reached">Erro (acadouse o máx. de reintentos)</string>
   <string name="sync_error_view_item">Ver elemento</string>
   <string name="sync_invalid_contact">Recibido contacto non válido desde o servidor</string>

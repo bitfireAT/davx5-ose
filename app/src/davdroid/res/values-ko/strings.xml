@@ -171,7 +171,6 @@
   <string name="app_settings_notification_settings">알림 설정</string>
   <string name="app_settings_notification_settings_summary">알림 채널 및 해당 설정 관리</string>
   <string name="app_settings_theme_title">테마 선택</string>
-  <string name="app_settings_language_system_default">시스템 기본값</string>
   <string-array name="app_settings_theme_names">
     <item>시스템 디자인</item>
     <item>밝은 테마</item>
@@ -232,7 +231,6 @@
   <string name="login_user_name">사용자 이름</string>
   <string name="login_user_name_required">사용자 이름이 필요합니다.</string>
   <string name="login_base_url">기본 URL</string>
-  <string name="login_type_url_certificate">URL 및 클라이언트 인증서로 로그인</string>
   <string name="login_select_certificate">인증서 선택</string>
   <string name="login_login">로그인</string>
   <string name="login_create_account">계정 생성</string>
@@ -280,7 +278,6 @@
   <string name="settings_sync_wifi_only_ssids_message">쉼표로 구분된 허용되는 WIFI 네트워크의 이름(모두 빈칸으로 두세요)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 제한에 추가 설정이 필요함</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">관리</string>
-  <string name="settings_more_info_faq">추가 정보(FAQ)</string>
   <string name="settings_authentication">인증</string>
   <string name="settings_username">사용자 이름</string>
   <string name="settings_enter_username">사용자 이름 입력:</string>
@@ -314,17 +311,14 @@
     <item>별도의 전자 명함으로 분류</item>
     <item>연락처 별 항목으로 분류</item>
   </string-array>
-  <string name="settings_contact_group_method_change">분류 방식 변경</string>
   <!--collection management-->
   <string name="create_addressbook">주소록 생성</string>
-  <string name="create_addressbook_display_name_hint">내 주소록</string>
   <string name="create_calendar">캘린더 생성</string>
   <string name="create_calendar_time_zone">시간대 </string>
   <string name="create_calendar_type">가능한 캘린더 항목</string>
   <string name="create_calendar_type_vevent">이벤트</string>
   <string name="create_calendar_type_vtodo">할일 목록</string>
   <string name="create_calendar_type_vjournal">메모 및 저널</string>
-  <string name="create_calendar_type_events_and_tasks">통합 (이벤트 및 작업)</string>
   <string name="create_collection_color">색상</string>
   <string name="create_collection_creating">collection을 만드는 중</string>
   <string name="create_collection_display_name">제목</string>
@@ -338,11 +332,9 @@
   <string name="delete_collection_confirm_title">확실합니까?</string>
   <string name="delete_collection_confirm_warning">이 collection(%s) 및 모든 데이터가 영구적으로 제거됩니다.</string>
   <string name="delete_collection_data_shall_be_deleted">이러한 데이터는 서버에서 삭제되어야 한다.</string>
-  <string name="delete_collection_deleting_collection">collection 삭제중</string>
   <string name="collection_force_read_only">읽기-전용으로 만들기</string>
   <string name="collection_properties">Properties</string>
   <string name="collection_properties_url">주소 (URL):</string>
-  <string name="collection_properties_copy_url">URL 복사</string>
   <string name="collection_properties_owner">소유자:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug info</string>
@@ -365,7 +357,6 @@
   <string name="debug_info_involved_subtitle">관련된 문제</string>
   <string name="debug_info_involved_remote">원격 리소스:</string>
   <string name="debug_info_involved_local">로컬 리소스: </string>
-  <string name="debug_info_involved_view">앱으로 보기</string>
   <string name="debug_info_logs_caption">Logs</string>
   <string name="debug_info_logs_subtitle">상세 logs를 사용할 수 있습니다.</string>
   <string name="debug_info_logs_view">logs 보기</string>
@@ -405,7 +396,6 @@
   <string name="sync_error_io">네트워크 혹은 I/O 에러  – %s</string>
   <string name="sync_error_http_dav">HTTP 서버 오류 – %s</string>
   <string name="sync_error_local_storage">Local storage 오류 – %s</string>
-  <string name="sync_error_retry">다시하기</string>
   <string name="sync_error_view_item">항목 보기</string>
   <string name="sync_invalid_contact">서버로부터 잘못된 연락처를 받았습니다.</string>
   <string name="sync_invalid_event">서버에서 잘못된 이벤트를 수신했습니다.</string>

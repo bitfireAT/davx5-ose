@@ -183,8 +183,6 @@
   <string name="app_settings_notification_settings">Configuració de les notificacions</string>
   <string name="app_settings_notification_settings_summary">Gestiona els canals de notificació i la seva configuració</string>
   <string name="app_settings_theme_title">Selecció del tema</string>
-  <string name="app_settings_language_title">Seleccioneu l\'idioma</string>
-  <string name="app_settings_language_system_default">Predeterminat del sistema</string>
   <string-array name="app_settings_theme_names">
     <item>Predeterminat del sistema</item>
     <item>Clar</item>
@@ -245,7 +243,6 @@
   <string name="login_user_name">Nom d\'usuari/a</string>
   <string name="login_user_name_required">Es requereix nom d\'usuari/a</string>
   <string name="login_base_url">URL base</string>
-  <string name="login_type_url_certificate">Inici de sessió amb un URL i un certificat de client</string>
   <string name="login_select_certificate">Selecciona el certificat</string>
   <string name="login_login">Inici de sessió</string>
   <string name="login_create_account">Crea un compte</string>
@@ -261,6 +258,14 @@
   <string name="login_use_client_certificate">Utilitza un certificat de client</string>
   <string name="login_no_certificate_found">No s\'ha trobat cap certificat</string>
   <string name="login_install_certificate">Instal·la un certificat</string>
+  <string name="login_type_google">Contactes / Calendari de Google</string>
+  <string name="login_google_see_tested_with">Per favor, llig la nostra guia \"Tested with Google\" per a obtenir informació actualitzada</string>
+  <string name="login_google_unexpected_warnings">És possible que sorgisca alguna advertència o error, en eixe cas hauràs de crear el teu propi ID de client.</string>
+  <string name="login_google_account">Compte de Google</string>
+  <string name="login_google_client_id">ID de Client (opcional)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfereix els vostres Contactes i les dades del Calendar de Google només per a la sincronització amb aquest dispositiu. Vegeu la <a href="%2$s"> política de privadesa </a> per als detalls.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s compleix amb la <a href="%2$s">Política de dades d\'usuari dels servis de l\'API de Google</a>, incloent els requisits d\'ús limitat.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">No s\'ha pogut obtenir el codi d\'autorització</string>
   <string name="login_configuration_detection">Detecció de la configuració</string>
   <string name="login_querying_server">Espereu, s\'està consultant el servidor…</string>
   <string name="login_no_caldav_carddav">No s\'ha pogut trobar cap servei CalDAV o CardDAV.</string>
@@ -293,8 +298,10 @@
   <string name="settings_sync_wifi_only_ssids_message">Noms (SSID) separats per comes de les xarxes Wi-Fi permeses (deixeu-ho en blanc per a totes)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restricció per SSID de la Wi-Fi requereix una configuració addicional</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Gestió</string>
-  <string name="settings_more_info_faq">Més informació (PMF)</string>
   <string name="settings_authentication">Autentificació</string>
+  <string name="settings_oauth">Re-Autenticar</string>
+  <string name="settings_oauth_summary">Tornar a realitzar l\'inici de sessió amb OAuth</string>
+  <string name="settings_username_key">nom d\'usuari</string>
   <string name="settings_username">Nom d\'usuari/a</string>
   <string name="settings_enter_username">Escriu el nom d\'usuari/a:</string>
   <string name="settings_password">Contrasenya</string>
@@ -329,17 +336,14 @@
     <item>Els grups són vCards separades</item>
     <item>Els grups són categories per contacte</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Canvia el mètode dels grups</string>
   <!--collection management-->
   <string name="create_addressbook">Crea una llibreta d\'adreces</string>
-  <string name="create_addressbook_display_name_hint">La meva llibreta d\'adreces</string>
   <string name="create_calendar">Crea un calendari</string>
   <string name="create_calendar_time_zone">Fus horari</string>
   <string name="create_calendar_type">Possibles entrades de calendari</string>
   <string name="create_calendar_type_vevent">Esdeveniments</string>
   <string name="create_calendar_type_vtodo">Tasques</string>
   <string name="create_calendar_type_vjournal">Notes/diari</string>
-  <string name="create_calendar_type_events_and_tasks">Combinat (esdeveniments i tasques)</string>
   <string name="create_collection_color">Color</string>
   <string name="create_collection_creating">S\'està creant una col·lecció</string>
   <string name="create_collection_display_name">Títol</string>
@@ -353,13 +357,11 @@
   <string name="delete_collection_confirm_title">Estàs segur?</string>
   <string name="delete_collection_confirm_warning">Aquesta col·lecció (%s) i totes les seves dades s’eliminaran definitivament.</string>
   <string name="delete_collection_data_shall_be_deleted">Aquestes dades se suprimiran del servidor.</string>
-  <string name="delete_collection_deleting_collection">S\'està suprimint la col·lecció</string>
   <string name="collection_force_read_only">Força que sigui de només lectura</string>
   <string name="collection_properties">Propietats</string>
   <string name="collection_properties_sync_time">Darrera sincronització:</string>
   <string name="collection_properties_sync_time_never">No s\'ha sincronitzat mai</string>
   <string name="collection_properties_url">Adreça (URL):</string>
-  <string name="collection_properties_copy_url">Copia l\'URL</string>
   <string name="collection_properties_owner">Propietari:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informació de depuració</string>
@@ -382,7 +384,6 @@
   <string name="debug_info_involved_subtitle">Relacionats amb el problema</string>
   <string name="debug_info_involved_remote">Recurs remot:</string>
   <string name="debug_info_involved_local">Recurs local:</string>
-  <string name="debug_info_involved_view">Visualitza amb l\'aplicació</string>
   <string name="debug_info_logs_caption">Registres</string>
   <string name="debug_info_logs_subtitle">Hi ha registres detallats disponibles</string>
   <string name="debug_info_logs_view">Visualitza els registres</string>
@@ -424,7 +425,6 @@
   <string name="sync_error_io">Error de xarxa o d\'E/S: %s</string>
   <string name="sync_error_http_dav">Error del servidor HTTP: %s</string>
   <string name="sync_error_local_storage">Error d\'emmagatzematge local: %s</string>
-  <string name="sync_error_retry">Reintenta</string>
   <string name="sync_error_retry_limit_reached">Error de programari (s\'ha arribat al màxim de reintents)</string>
   <string name="sync_error_view_item">Veure element</string>
   <string name="sync_invalid_contact">S\'ha rebut un contacte no vàlid del servidor</string>

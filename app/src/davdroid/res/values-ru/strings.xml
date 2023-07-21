@@ -183,8 +183,6 @@
   <string name="app_settings_notification_settings">Настройки уведомлений</string>
   <string name="app_settings_notification_settings_summary">Управление каналами уведомлений и их настройками</string>
   <string name="app_settings_theme_title">Выбор темы</string>
-  <string name="app_settings_language_title">Выбрать язык</string>
-  <string name="app_settings_language_system_default">Определен системой</string>
   <string-array name="app_settings_theme_names">
     <item>Определена системой</item>
     <item>Светлая</item>
@@ -212,6 +210,7 @@
   <string name="account_no_webcals">Нет подписок на календарь (пока).</string>
   <string name="account_swipe_down">Потяните вниз, чтобы обновить список с сервера.</string>
   <string name="account_synchronize_now">Синхронизировать</string>
+  <string name="account_synchronize_collections">Синхронизировать коллекции</string>
   <string name="account_settings">Настройки аккаунта</string>
   <string name="account_rename">Переименовать аккаунт</string>
   <string name="account_rename_new_name">Несохраненные локальные данные могут быть потеряны. Необходима повторная синхронизация после переименования. Новое имя аккаунта:</string>
@@ -245,7 +244,6 @@
   <string name="login_user_name">Имя пользователя</string>
   <string name="login_user_name_required">Имя пользователя обязательно</string>
   <string name="login_base_url">Базовый URL</string>
-  <string name="login_type_url_certificate">Войти с URL и сертификатом клиента</string>
   <string name="login_select_certificate">Выберите сертификат</string>
   <string name="login_login">Войти</string>
   <string name="login_create_account">Создать аккаунт</string>
@@ -266,9 +264,8 @@
   <string name="login_google_unexpected_warnings">Вы можете столкнуться с неожиданными предупреждениями и/или вам придется создать свой собственный ID клиента.</string>
   <string name="login_google_account">Google аккаунт</string>
   <string name="login_google_client_id">ID клиента (необязательно)</string>
-  <string name="login_google_client_id_description">Вы можете использовать свой собственный ID клиента, если наш не работает.</string>
-  <string name="login_google_client_id_description_link">Покажите мне как!</string>
-  <string name="login_google_disclaimer">%s не является аффилированным лицом, не уполномочена, не спонсируется или иным образом не одобрена компанией Google LLC.</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s передает данные Контактов и Календаря Google исключительно для синхронизации с этим устройством. Для получения информации смотрите нашу <a href="%2$s">Политику конфиденциальности</a>.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s соблюдает <a href="%2$s">Политику в отношении пользовательских данных Google API Services</a>, включая требования Ограниченного использования.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Не удалось получить код авторизации</string>
   <string name="login_configuration_detection">Обнаружение конфигурации</string>
   <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>
@@ -302,7 +299,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Имена (SSID) разрешенных сетей WiFi, разделенные запятыми (оставьте пустым для всех)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ограничение WiFi SSID требует дополнительных настроек</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Управлять</string>
-  <string name="settings_more_info_faq">Дополнительная информация (FAQ)</string>
   <string name="settings_authentication">Аутентификация</string>
   <string name="settings_oauth">Повторная аутентификация</string>
   <string name="settings_oauth_summary">Выполните вход через OAuth повторно</string>
@@ -345,17 +341,14 @@
     <item>Группы являются отдельными vCards</item>
     <item>Группы являются категориями контактов</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Изменить метод группировки</string>
   <!--collection management-->
   <string name="create_addressbook">Создать адресную книгу</string>
-  <string name="create_addressbook_display_name_hint">Моя адресная книга</string>
   <string name="create_calendar">Создать календарь</string>
   <string name="create_calendar_time_zone">Часовой пояс</string>
   <string name="create_calendar_type">Возможные записи календаря</string>
   <string name="create_calendar_type_vevent">События</string>
   <string name="create_calendar_type_vtodo">Задачи</string>
   <string name="create_calendar_type_vjournal">Заметки / журнал</string>
-  <string name="create_calendar_type_events_and_tasks">Совмещенный (события и задачи)</string>
   <string name="create_collection_color">Цвет</string>
   <string name="create_collection_creating">Создание коллекции</string>
   <string name="create_collection_display_name">Название</string>
@@ -369,13 +362,11 @@
   <string name="delete_collection_confirm_title">Вы уверены?</string>
   <string name="delete_collection_confirm_warning">Эта коллекция (%s) и все ее данные будут удалены навсегда.</string>
   <string name="delete_collection_data_shall_be_deleted">Эти данные должны быть удалены с сервера.</string>
-  <string name="delete_collection_deleting_collection">Удаление коллекции</string>
   <string name="collection_force_read_only">Только для чтения</string>
   <string name="collection_properties">Свойства</string>
   <string name="collection_properties_sync_time">Последняя синхронизация:</string>
   <string name="collection_properties_sync_time_never">Никогда не синхронизировалось</string>
   <string name="collection_properties_url">Адрес (URL):</string>
-  <string name="collection_properties_copy_url">Скопировать URL</string>
   <string name="collection_properties_owner">Владелец:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
@@ -398,7 +389,6 @@
   <string name="debug_info_involved_subtitle">Связанная с этим проблема</string>
   <string name="debug_info_involved_remote">Удаленный ресурс:</string>
   <string name="debug_info_involved_local">Локальный ресурс:</string>
-  <string name="debug_info_involved_view">Просмотр с помощью приложения</string>
   <string name="debug_info_logs_caption">Логи</string>
   <string name="debug_info_logs_subtitle">Доступны подробные логи</string>
   <string name="debug_info_logs_view">Просмотр логов</string>
@@ -440,7 +430,6 @@
   <string name="sync_error_io">Ошибка сети или ввода/вывода – %s</string>
   <string name="sync_error_http_dav">Ошибка HTTP-сервера – %s</string>
   <string name="sync_error_local_storage">Ошибка локального хранилища – %s</string>
-  <string name="sync_error_retry">Повторить</string>
   <string name="sync_error_retry_limit_reached">Ошибка (достигнуто максимальное количество повторных попыток)</string>
   <string name="sync_error_view_item">Просмотр элемента</string>
   <string name="sync_invalid_contact">Получен неверный контакт с сервера</string>

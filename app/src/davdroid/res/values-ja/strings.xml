@@ -183,8 +183,6 @@
   <string name="app_settings_notification_settings">通知設定</string>
   <string name="app_settings_notification_settings_summary">通知チャネルとその設定を管理します</string>
   <string name="app_settings_theme_title">テーマを選択</string>
-  <string name="app_settings_language_title">言語を選択</string>
-  <string name="app_settings_language_system_default">システム標準</string>
   <string-array name="app_settings_theme_names">
     <item>システムのデフォルト</item>
     <item>ライト</item>
@@ -245,7 +243,6 @@
   <string name="login_user_name">ユーザー名</string>
   <string name="login_user_name_required">ユーザー名が必要です</string>
   <string name="login_base_url">ベース URL</string>
-  <string name="login_type_url_certificate">URL とクライアント証明書でログイン</string>
   <string name="login_select_certificate">証明書を選択</string>
   <string name="login_login">ログイン</string>
   <string name="login_create_account">アカウントを作成</string>
@@ -266,9 +263,8 @@
   <string name="login_google_unexpected_warnings">未知のエラーに遭遇したり、クライアント ID を作成するように求められたりする場合があります。</string>
   <string name="login_google_account">Google アカウント</string>
   <string name="login_google_client_id">クライアント ID (オプション)</string>
-  <string name="login_google_client_id_description">うまく機能しない場合、ユニークなクライアント ID が必要かもしれません。</string>
-  <string name="login_google_client_id_description_link">詳しく知りたい！</string>
-  <string name="login_google_disclaimer">%s は Google LLC によるアフィリエイト、認定、支援、承認のいずれも受けていません。</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s は、このデバイスとの同期のみを目的として、Google コンタクトとカレンダーのデータを転送を行います。詳細情報は、<a href="%2$s">プライバシーポリシー</a> をご確認ください。]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s は、追加要件を含む <a href="%2$s">Google API サービスのユーザーデータに関するポリシー</a> に準拠しています。]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">認証コードを取得できませんでした</string>
   <string name="login_configuration_detection">設定の検出</string>
   <string name="login_querying_server">しばらくお待ちください。サーバーに問い合わせ中…</string>
@@ -302,7 +298,6 @@
   <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 制限にはさらに設定が必要です</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
-  <string name="settings_more_info_faq">詳細情報 (FAQ)</string>
   <string name="settings_authentication">認証</string>
   <string name="settings_oauth">再認証</string>
   <string name="settings_oauth_summary">もう一度 OAuth ログインを実行</string>
@@ -339,17 +334,14 @@
     <item>グループを個別の vCard に分割</item>
     <item>グループを連絡先ごとのカテゴリーとして記録</item>
   </string-array>
-  <string name="settings_contact_group_method_change">グループ方法を変更</string>
   <!--collection management-->
   <string name="create_addressbook">アドレス帳を作成</string>
-  <string name="create_addressbook_display_name_hint">アドレス帳</string>
   <string name="create_calendar">カレンダーを作成</string>
   <string name="create_calendar_time_zone">タイムゾーン</string>
   <string name="create_calendar_type">可能なカレンダーエントリー</string>
   <string name="create_calendar_type_vevent">予定</string>
   <string name="create_calendar_type_vtodo">タスク</string>
   <string name="create_calendar_type_vjournal">メモ / ジャーナル</string>
-  <string name="create_calendar_type_events_and_tasks">組み合わせ (予定とタスク)</string>
   <string name="create_collection_color">色</string>
   <string name="create_collection_creating">コレクションの作成中</string>
   <string name="create_collection_display_name">タイトル</string>
@@ -363,13 +355,11 @@
   <string name="delete_collection_confirm_title">よろしいですか？</string>
   <string name="delete_collection_confirm_warning">このコレクション (%s) とそのすべてのデータが完全に削除されます。</string>
   <string name="delete_collection_data_shall_be_deleted">これらのデータがサーバーから削除されます。</string>
-  <string name="delete_collection_deleting_collection">コレクションの削除中</string>
   <string name="collection_force_read_only">読み取り専用にする</string>
   <string name="collection_properties">プロパティ</string>
   <string name="collection_properties_sync_time">最終同期:</string>
   <string name="collection_properties_sync_time_never">同期されていません</string>
   <string name="collection_properties_url">アドレス (URL):</string>
-  <string name="collection_properties_copy_url">URL をコピー</string>
   <string name="collection_properties_owner">所有者:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">デバッグ情報</string>
@@ -392,7 +382,6 @@
   <string name="debug_info_involved_subtitle">関係する問題</string>
   <string name="debug_info_involved_remote">リモートリソース:</string>
   <string name="debug_info_involved_local">ローカルリソース:</string>
-  <string name="debug_info_involved_view">アプリで表示</string>
   <string name="debug_info_logs_caption">ログ</string>
   <string name="debug_info_logs_subtitle">詳細なログが利用できます</string>
   <string name="debug_info_logs_view">ログを表示</string>
@@ -434,7 +423,6 @@
   <string name="sync_error_io">ネットワークまたは I/O エラー – %s</string>
   <string name="sync_error_http_dav">HTTP サーバーエラー – %s</string>
   <string name="sync_error_local_storage">内蔵ストレージエラー – %s</string>
-  <string name="sync_error_retry">再試行</string>
   <string name="sync_error_retry_limit_reached">ソフトエラー (再試行回数の上限に到達)</string>
   <string name="sync_error_view_item">アイテムを表示</string>
   <string name="sync_invalid_contact">サーバーから無効な連絡先を受信しました</string>

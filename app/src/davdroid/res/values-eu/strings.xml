@@ -183,8 +183,6 @@
   <string name="app_settings_notification_settings">Jakinarazpen-ezarpenak</string>
   <string name="app_settings_notification_settings_summary">Kudeatu jakinarazpen kanalak eta haien ezarpenak</string>
   <string name="app_settings_theme_title">Hautatu gaia</string>
-  <string name="app_settings_language_title">Hautatu hizkuntza</string>
-  <string name="app_settings_language_system_default">Sistemaren lehenetsia</string>
   <string-array name="app_settings_theme_names">
     <item>Sistemaren lehenetsia</item>
     <item>Argia</item>
@@ -245,7 +243,6 @@
   <string name="login_user_name">Erabiltzaile izena</string>
   <string name="login_user_name_required">Erabiltzaile izena beharrezkoa</string>
   <string name="login_base_url">Oinarri URL</string>
-  <string name="login_type_url_certificate">Saioa hasi URL eta bezero ziurtagiriarekin</string>
   <string name="login_select_certificate">Aukeratu ziurtagiria</string>
   <string name="login_login">Saioa hasi</string>
   <string name="login_create_account">Sortu kontua</string>
@@ -266,9 +263,6 @@
   <string name="login_google_unexpected_warnings">Oharrak jaso edo zure bezero ID sortzea beharrezkoa izatea gertatu daiteke.</string>
   <string name="login_google_account">Google kontua</string>
   <string name="login_google_client_id">Bezeroaren ID (aukerazkoa)</string>
-  <string name="login_google_client_id_description">Zure bezeroaren ID erabili dezakezu, gureak funtzionatzen ez badu.</string>
-  <string name="login_google_client_id_description_link">Erakutsi nola!</string>
-  <string name="login_google_disclaimer">%s ez dago afiliatuta, eta ez du Google LLCk baimendu, babestu edo onartu.</string>
   <string name="login_configuration_detection">Konfigurazio detekzioa</string>
   <string name="login_querying_server">Mesedez itxaron, zerbitzaria kontsultatzen...</string>
   <string name="login_no_caldav_carddav">Ezin izan da CalDAV edo CardDAV zerbitzua aurkitu.</string>
@@ -301,7 +295,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Komaz banatutako izenak (SSIDak) baimendutako WiFi sareentzako (utzi hutsik denentzako)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID murriztapenak ezarpen gehiago behar ditu</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Kudeatu</string>
-  <string name="settings_more_info_faq">Informazio gehiago (FAQ)</string>
   <string name="settings_authentication">Autentifikazioa</string>
   <string name="settings_username">Erabiltzaile izena</string>
   <string name="settings_enter_username">Sartu erabiltzaile izena:</string>
@@ -337,17 +330,14 @@
     <item>Taldeak vCard banatuak dira</item>
     <item>Taldeak kontaktu bakoitzeko kategoriak dira</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Aldatu taldekatze metodoa</string>
   <!--collection management-->
   <string name="create_addressbook">Sortu helbide liburua</string>
-  <string name="create_addressbook_display_name_hint">Nire Helbide Liburua</string>
   <string name="create_calendar">Sortu egutegia</string>
   <string name="create_calendar_time_zone">Ordu-zona</string>
   <string name="create_calendar_type">Egutegi sarrera posibleak</string>
   <string name="create_calendar_type_vevent">Gertaerak</string>
   <string name="create_calendar_type_vtodo">Zereginak</string>
   <string name="create_calendar_type_vjournal">Notak / egunkaria</string>
-  <string name="create_calendar_type_events_and_tasks">Elkartuta (gertaera eta zereginak)</string>
   <string name="create_collection_color">Kolorea</string>
   <string name="create_collection_creating">Kolekzioa sortzen</string>
   <string name="create_collection_display_name">Izenburua</string>
@@ -361,13 +351,11 @@
   <string name="delete_collection_confirm_title">Ziur zaude?</string>
   <string name="delete_collection_confirm_warning">Bilduma hau (%s) eta bere datu guztiak behin betiko ezabatuko dira.</string>
   <string name="delete_collection_data_shall_be_deleted">Datu hauek zerbitzaritik ezabatu beharko litzakete.</string>
-  <string name="delete_collection_deleting_collection">Kolekzioa ezabatzen</string>
   <string name="collection_force_read_only">Behartu irakurri-soilik</string>
   <string name="collection_properties">Propietateak</string>
   <string name="collection_properties_sync_time">Azkenengoz sinkronizatuta:</string>
   <string name="collection_properties_sync_time_never">Ez da inoiz sinkronizatu</string>
   <string name="collection_properties_url">Helbidea (URL):</string>
-  <string name="collection_properties_copy_url">Kopiatu URL</string>
   <string name="collection_properties_owner">Jabea:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Arazketa informazioa</string>
@@ -390,7 +378,6 @@
   <string name="debug_info_involved_subtitle">Arazoarekin erlazionatuta</string>
   <string name="debug_info_involved_remote">Kanpoko baliabidea:</string>
   <string name="debug_info_involved_local">Baliabide lokala:</string>
-  <string name="debug_info_involved_view">Ikusi aplikazioarekin</string>
   <string name="debug_info_logs_caption">Egunkariak</string>
   <string name="debug_info_logs_subtitle">Erregistro xehetuak eskuragarri daude</string>
   <string name="debug_info_logs_view">Ikusi egunkariak</string>
@@ -432,7 +419,6 @@
   <string name="sync_error_io">Sare edo S/I errorea – %s</string>
   <string name="sync_error_http_dav">HTTP zerbitzari-errorea – %s</string>
   <string name="sync_error_local_storage">Biltegiratze lokal errorea – %s</string>
-  <string name="sync_error_retry">Saiatu berriz</string>
   <string name="sync_error_retry_limit_reached">Errore leuna (saiakera maximora heldu da)</string>
   <string name="sync_error_view_item">Ikusi elementua</string>
   <string name="sync_invalid_contact">Kontaktu baliogabea jaso da zerbitzaritik</string>

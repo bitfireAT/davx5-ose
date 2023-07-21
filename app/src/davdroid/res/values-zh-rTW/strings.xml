@@ -141,7 +141,6 @@
   <string name="login_user_name">使用者帳號</string>
   <string name="login_user_name_required">必須填寫使用者帳號</string>
   <string name="login_base_url">根 URL</string>
-  <string name="login_type_url_certificate">用網址和客戶端鑒權登入</string>
   <string name="login_select_certificate">點選憑證</string>
   <string name="login_login">登入</string>
   <string name="login_create_account">新建帳號</string>
@@ -181,7 +180,6 @@
   <string name="settings_sync_wifi_only_ssids_off">所有 WiFi 連線都可以使用</string>
   <string name="settings_sync_wifi_only_ssids_message">使用逗號分割的名稱 (SSIDs) 表示的 WiFi 連線（留空則代表全部）</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
-  <string name="settings_more_info_faq">更多資訊（常見問題）</string>
   <string name="settings_authentication">認證</string>
   <string name="settings_username">使用者帳號</string>
   <string name="settings_enter_username">輸入帳號名稱:</string>
@@ -211,17 +209,14 @@
     <item>群組存成額外的 VCard 檔案</item>
     <item>群組存成每個聯絡人的分類屬性</item>
   </string-array>
-  <string name="settings_contact_group_method_change">改變聯絡人群組的儲存格式</string>
   <!--collection management-->
   <string name="create_addressbook">建立通訊錄</string>
-  <string name="create_addressbook_display_name_hint">我的通訊錄</string>
   <string name="create_calendar">建立行事曆</string>
   <string name="create_calendar_time_zone">時區</string>
   <string name="create_calendar_type">可使用的行事曆項目</string>
   <string name="create_calendar_type_vevent">活動</string>
   <string name="create_calendar_type_vtodo">事務</string>
   <string name="create_calendar_type_vjournal">筆記/日誌</string>
-  <string name="create_calendar_type_events_and_tasks">合併 (事件和任務)</string>
   <string name="create_collection_color">顔色</string>
   <string name="create_collection_creating">建立新行事曆或工作清單</string>
   <string name="create_collection_display_name">標題</string>
@@ -234,11 +229,9 @@
   <string name="delete_collection_confirm_title">您確定嗎? </string>
   <string name="delete_collection_confirm_warning">這個組合 (%s) 和它的所有資料將永久刪除。</string>
   <string name="delete_collection_data_shall_be_deleted">這些數據會從伺服器上永久刪除。</string>
-  <string name="delete_collection_deleting_collection">正在刪除</string>
   <string name="collection_force_read_only">强制只讀</string>
   <string name="collection_properties">權限</string>
   <string name="collection_properties_url">地址（URL）：</string>
-  <string name="collection_properties_copy_url">拷貝URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">除錯訊息</string>
   <!--ExceptionInfoFragment-->
@@ -257,7 +250,6 @@
   <string name="sync_error_io">網際網絡或者輸入輸出錯誤——%s</string>
   <string name="sync_error_http_dav">HTTP伺服器錯誤——%s</string>
   <string name="sync_error_local_storage">資料庫錯誤——%s</string>
-  <string name="sync_error_retry">再試一次</string>
   <string name="sync_error_view_item">查閲項目</string>
   <string name="sync_invalid_contact">收到了無效的聯絡人</string>
   <string name="sync_invalid_event">收到了無效的事件</string>

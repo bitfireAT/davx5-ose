@@ -206,7 +206,6 @@
   <string name="login_user_name">Όνομα χρήστη</string>
   <string name="login_user_name_required">Απαιτείται όνομα χρήστη</string>
   <string name="login_base_url">Βασική URL</string>
-  <string name="login_type_url_certificate">Σύνδεση με URL και πιστοποιητικό πελάτη</string>
   <string name="login_select_certificate">Επιλογή πιστοποιητικού</string>
   <string name="login_login">Είσοδος</string>
   <string name="login_create_account">Δημιουργία λογαριασμού</string>
@@ -253,7 +252,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Ονόματα που χωρίζονται με κόμμα (SSIDs) των επιτρεπόμενων δικτύων WiFi (αφήστε κενό για όλους)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ο περιορισμός WiFi SSID χρειάζεται επιπλέον ρυθμίσεις</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Διαχείριση</string>
-  <string name="settings_more_info_faq">Περισσότερες πληροφορίες (FAQ)</string>
   <string name="settings_authentication">Πιστοποίηση</string>
   <string name="settings_username">Όνομα χρήστη</string>
   <string name="settings_enter_username">Εισάγετε όνομα χρήστη:</string>
@@ -289,17 +287,14 @@
     <item>Οι ομάδες είναι ξεχωριστές vCards</item>
     <item>Οι ομάδες είναι κατηγορίες ανά επαφή</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Αλλαγή μεθόδου ομάδας</string>
   <!--collection management-->
   <string name="create_addressbook">Δημιουργία βιβλίου διευθύνσεων</string>
-  <string name="create_addressbook_display_name_hint">Το βιβλίο διευθύνσεών μου</string>
   <string name="create_calendar">Δημιουργία ημερολογίου</string>
   <string name="create_calendar_time_zone">Ζώνη ώρας</string>
   <string name="create_calendar_type">Πιθανές καταχωρήσεις ημερολογίου</string>
   <string name="create_calendar_type_vevent">Συμβάντα</string>
   <string name="create_calendar_type_vtodo">Εργασίες</string>
   <string name="create_calendar_type_vjournal">Σημειώσεις / ημερολόγιο</string>
-  <string name="create_calendar_type_events_and_tasks">Συνδυασμός (συμβάντα και εργασίες)</string>
   <string name="create_collection_color">Χρώμα</string>
   <string name="create_collection_creating">Δημιουργία συλλογής</string>
   <string name="create_collection_display_name">Τίτλος</string>
@@ -313,11 +308,9 @@
   <string name="delete_collection_confirm_title">Είστε σίγουρος;</string>
   <string name="delete_collection_confirm_warning">Αυτή η συλλογή (%s) και όλα τα δεδομένα της θα καταργηθούν μόνιμα.</string>
   <string name="delete_collection_data_shall_be_deleted">Αυτά τα δεδομένα θα διαγραφούν από τον διακομιστή.</string>
-  <string name="delete_collection_deleting_collection">Διαγραφή συλλογής</string>
   <string name="collection_force_read_only">Εξαναγκασμός μόνο για ανάγνωση</string>
   <string name="collection_properties">Ιδιότητες</string>
   <string name="collection_properties_url">Διεύθυνση (URL):</string>
-  <string name="collection_properties_copy_url">Αντιγραφή URL</string>
   <string name="collection_properties_owner">Ιδιοκτήτης</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Πληροφορίες αποσφαλμάτωσης</string>
@@ -330,7 +323,6 @@
   <string name="debug_info_io_error">Σφάλμα I/O</string>
   <string name="debug_info_view_details">Προβολή λεπτομερειών</string>
   <string name="debug_info_involved_subtitle">Σχετικά με το πρόβλημα</string>
-  <string name="debug_info_involved_view">Προβολή με την εφαρμογή</string>
   <string name="debug_info_logs_caption">Ιστορικό</string>
   <string name="debug_info_logs_view">Προβολή ιστορικού</string>
   <!--ExceptionInfoFragment-->
@@ -366,7 +358,6 @@
   <string name="sync_error_io">Σφάλμα δικτύου ή I/O – %s</string>
   <string name="sync_error_http_dav">Σφάλμα διακομιστής HTTP – %s</string>
   <string name="sync_error_local_storage">Σφάλμα τοπικού αποθηκευτικού χώρου – %s</string>
-  <string name="sync_error_retry">Επανάληψη</string>
   <string name="sync_error_view_item">Προβολή αντικειμένου</string>
   <string name="sync_invalid_contact">Ελήφθη μη έγκυρη επαφή από το διακομιστή</string>
   <string name="sync_invalid_event">Ελήφθη μη έγκυρο συμβάν από το διακομιστή</string>
