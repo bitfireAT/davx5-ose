@@ -2,11 +2,14 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-apply plugin: 'com.android.application'
-apply plugin: 'com.mikepenz.aboutlibraries.plugin'
-apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.application'
+    id 'com.google.devtools.ksp'
+    id 'com.mikepenz.aboutlibraries.plugin'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-android'
+    id 'kotlin-kapt'     // remove as soon as Hilt supports KSP [https://issuetracker.google.com/179057202]
+}
 
 // Android configuration
 android {
@@ -29,12 +32,6 @@ android {
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
         testInstrumentationRunner "at.bitfire.davdroid.CustomTestRunner"
-
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-            }
-        }
     }
 
     compileOptions {
@@ -107,6 +104,10 @@ android {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 configurations {
     all {
         // exclude modules which are in conflict with system libraries
@@ -124,7 +125,7 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
-    kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"
+    kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"     // replace by KSP when ready [https://issuetracker.google.com/179057202]
 
     // support libs
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -158,7 +159,7 @@ dependencies {
     implementation "androidx.room:room-runtime:${versions.room}"
     implementation "androidx.room:room-ktx:${versions.room}"
     implementation "androidx.room:room-paging:${versions.room}"
-    kapt "androidx.room:room-compiler:${versions.room}"
+    ksp "androidx.room:room-compiler:${versions.room}"
     androidTestImplementation "androidx.room:room-testing:${versions.room}"
 
     // own libraries
