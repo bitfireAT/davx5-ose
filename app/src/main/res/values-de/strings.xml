@@ -182,8 +182,6 @@
   <string name="app_settings_notification_settings">Benachrichtigungseinstellungen</string>
   <string name="app_settings_notification_settings_summary">Benachrichtigungskanäle und -einstellungen verwalten</string>
   <string name="app_settings_theme_title">Aussehen wählen</string>
-  <string name="app_settings_language_title">Sprache wählen</string>
-  <string name="app_settings_language_system_default">Systemvorgabe</string>
   <string-array name="app_settings_theme_names">
     <item>wie System</item>
     <item>heller Stil</item>
@@ -244,7 +242,6 @@
   <string name="login_user_name">Benutzername</string>
   <string name="login_user_name_required">Benutzername wird benötigt</string>
   <string name="login_base_url">Basis-URL</string>
-  <string name="login_type_url_certificate">Mit URL und Client-Zertifikat anmelden</string>
   <string name="login_select_certificate">Zertifikat auswählen</string>
   <string name="login_login">Anmelden</string>
   <string name="login_create_account">Konto anlegen</string>
@@ -294,7 +291,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Komma getrennt, leer lassen für alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WLAN-SSID-Einschränkung benötigt weitere Einstellungen</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Verwalten</string>
-  <string name="settings_more_info_faq">Mehr Infos (FAQ)</string>
   <string name="settings_authentication">Anmeldeinformationen</string>
   <string name="settings_username">Benutzername</string>
   <string name="settings_enter_username">Benutzername eingeben:</string>
@@ -330,17 +326,14 @@
     <item>Gruppen sind eigene vCards</item>
     <item>Gruppen sind Kategorien der Kontakte</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Gruppen-Methode ändern</string>
   <!--collection management-->
   <string name="create_addressbook">Adressbuch erstellen</string>
-  <string name="create_addressbook_display_name_hint">Meine Adressen</string>
   <string name="create_calendar">Kalender anlegen</string>
   <string name="create_calendar_time_zone">Zeitzone</string>
   <string name="create_calendar_type">Mögliche Kalendereinträge</string>
   <string name="create_calendar_type_vevent">Termine</string>
   <string name="create_calendar_type_vtodo">Aufgaben</string>
   <string name="create_calendar_type_vjournal">Notizen / Journal</string>
-  <string name="create_calendar_type_events_and_tasks">Kombiniert (Termine und Aufgaben)</string>
   <string name="create_collection_color">Farbe</string>
   <string name="create_collection_creating">Ordner wird angelegt</string>
   <string name="create_collection_display_name">Titel</string>
@@ -354,13 +347,11 @@
   <string name="delete_collection_confirm_title">Sind Sie sicher?</string>
   <string name="delete_collection_confirm_warning">Dieser Ordner (%s) und alle enthaltenen Daten werden dauerhaft gelöscht.</string>
   <string name="delete_collection_data_shall_be_deleted">Diese Daten sollen vom Server gelöscht werden.</string>
-  <string name="delete_collection_deleting_collection">Ordner wird gelöscht</string>
   <string name="collection_force_read_only">Schreibschutz erzwingen</string>
   <string name="collection_properties">Eigenschaften</string>
   <string name="collection_properties_sync_time">Zuletzt synchronisiert:</string>
   <string name="collection_properties_sync_time_never">Nie synchronisiert</string>
   <string name="collection_properties_url">Adresse (URL):</string>
-  <string name="collection_properties_copy_url">URL kopieren</string>
   <string name="collection_properties_owner">Besitzer:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
@@ -383,7 +374,6 @@
   <string name="debug_info_involved_subtitle">haben mit dem Problem zu tun</string>
   <string name="debug_info_involved_remote">Entfernte Ressource:</string>
   <string name="debug_info_involved_local">Lokale Ressource:</string>
-  <string name="debug_info_involved_view">In App öffnen</string>
   <string name="debug_info_logs_caption">Protokoll</string>
   <string name="debug_info_logs_subtitle">Ausführliches Protokoll verfügbar</string>
   <string name="debug_info_logs_view">Logs anzeigen</string>
@@ -425,7 +415,6 @@
   <string name="sync_error_io">Netzwerk- oder E/A-Fehler – %s</string>
   <string name="sync_error_http_dav">HTTP-Serverfehler – %s</string>
   <string name="sync_error_local_storage">Lokaler Speicherfehler – %s</string>
-  <string name="sync_error_retry">Wiederholen</string>
   <string name="sync_error_view_item">Untersuchen</string>
   <string name="sync_invalid_contact">Ungültigen Kontakt vom Server erhalten</string>
   <string name="sync_invalid_event">Ungültigen Termin vom Server erhalten</string>

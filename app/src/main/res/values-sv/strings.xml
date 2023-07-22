@@ -182,8 +182,6 @@
   <string name="app_settings_notification_settings">Aviseringsinställningar</string>
   <string name="app_settings_notification_settings_summary">Hantera aviseringskanaler och deras inställningar</string>
   <string name="app_settings_theme_title">Välj tema</string>
-  <string name="app_settings_language_title">Välj språk</string>
-  <string name="app_settings_language_system_default">Standardinställning för system</string>
   <string-array name="app_settings_theme_names">
     <item>Systemstandard</item>
     <item>Ljus</item>
@@ -244,7 +242,6 @@
   <string name="login_user_name">Användarnamn</string>
   <string name="login_user_name_required">Användarnamn krävs</string>
   <string name="login_base_url">Bas-URL</string>
-  <string name="login_type_url_certificate">Logga in med URL och klientcertifikat</string>
   <string name="login_select_certificate">Välj certifikat</string>
   <string name="login_login">Logga in</string>
   <string name="login_create_account">Skapa konto</string>
@@ -292,7 +289,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Kommaseparerade namn (SSID) för tillåtna WiFi-nätverk (lämna tomt för alla)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID-begränsning kräver ytterligare inställningar</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Hantera</string>
-  <string name="settings_more_info_faq">Mer information (FAQ)</string>
   <string name="settings_authentication">Autentisering</string>
   <string name="settings_username">Användarnamn</string>
   <string name="settings_enter_username">Skriv in användarnamn</string>
@@ -328,17 +324,14 @@
     <item>Grupper är separata vCards</item>
     <item>Grupper är per-kontaktkategorier</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Ändra gruppmetod</string>
   <!--collection management-->
   <string name="create_addressbook">Skapa adressbok</string>
-  <string name="create_addressbook_display_name_hint">Min adressbok </string>
   <string name="create_calendar">Skapa kalender</string>
   <string name="create_calendar_time_zone">Tidzon</string>
   <string name="create_calendar_type">Möjliga kalenderposter</string>
   <string name="create_calendar_type_vevent">Händelser</string>
   <string name="create_calendar_type_vtodo">Ärenden</string>
   <string name="create_calendar_type_vjournal">Anteckningar / journal</string>
-  <string name="create_calendar_type_events_and_tasks">Kombinerat (händelser och ärenden)</string>
   <string name="create_collection_color">Färg</string>
   <string name="create_collection_creating">Skapar samling</string>
   <string name="create_collection_display_name">Titel</string>
@@ -352,11 +345,9 @@
   <string name="delete_collection_confirm_title">Är du säker?</string>
   <string name="delete_collection_confirm_warning">Denna samling(%s) och all dess data tas bort permanent.</string>
   <string name="delete_collection_data_shall_be_deleted">Denna data blir borttagen från servern.</string>
-  <string name="delete_collection_deleting_collection">Tar bort samling</string>
   <string name="collection_force_read_only">Tvinga endast läsning</string>
   <string name="collection_properties">Egenskaper</string>
   <string name="collection_properties_url">Adress (URL):</string>
-  <string name="collection_properties_copy_url">Kopiera URL</string>
   <string name="collection_properties_owner">Ägare:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Felsöknings information</string>
@@ -379,7 +370,6 @@
   <string name="debug_info_involved_subtitle">Relaterat till problemet</string>
   <string name="debug_info_involved_remote">Fjärrresurs:</string>
   <string name="debug_info_involved_local">Lokal resurs:</string>
-  <string name="debug_info_involved_view">Visa med appen</string>
   <string name="debug_info_logs_caption">Loggar</string>
   <string name="debug_info_logs_subtitle">Utförliga loggar finns tillgängliga</string>
   <string name="debug_info_logs_view">Visa loggar</string>
@@ -421,7 +411,6 @@
   <string name="sync_error_io">Nätverks- eller I/O-fel - %s</string>
   <string name="sync_error_http_dav">HTTP server fel - %s</string>
   <string name="sync_error_local_storage">Lokalt lagringsfel - %s</string>
-  <string name="sync_error_retry">Försök igen</string>
   <string name="sync_error_view_item">Visa objekt</string>
   <string name="sync_invalid_contact">Fick ogiltig kontakt från servern</string>
   <string name="sync_invalid_event">Fick ogiltig händelse från servern</string>

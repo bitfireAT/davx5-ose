@@ -183,8 +183,6 @@
   <string name="app_settings_notification_settings">Értesítési beállíások</string>
   <string name="app_settings_notification_settings_summary">Az értesítési csatornák és azok beállításának kezelése</string>
   <string name="app_settings_theme_title">Stílus kiválasztása</string>
-  <string name="app_settings_language_title">Nyelv kiválasztása</string>
-  <string name="app_settings_language_system_default">Alapértelmezett</string>
   <string-array name="app_settings_theme_names">
     <item>Rendszerbeállítás szerinti</item>
     <item>Világos</item>
@@ -245,7 +243,6 @@
   <string name="login_user_name">Felhasználónév</string>
   <string name="login_user_name_required">A felhasználónév megadása feltétlenül szükséges</string>
   <string name="login_base_url">URL-törzs</string>
-  <string name="login_type_url_certificate">Bejelentkezés URL és tanúsítvány segítségével</string>
   <string name="login_select_certificate">Tanúsítvány kiválasztása</string>
   <string name="login_login">Bejelentkezés</string>
   <string name="login_create_account">Fiók létrehozása</string>
@@ -266,9 +263,6 @@
   <string name="login_google_unexpected_warnings">Nem zárhatók ki váratlan figyelmeztetések, és lehet, hogy szükség lesz saját Client ID létrehozására is.</string>
   <string name="login_google_account">Google fiók</string>
   <string name="login_google_client_id">Client ID (opcionális)</string>
-  <string name="login_google_client_id_description">Saját Client ID is használható, amennyiben az alapértelmezett nem működne.</string>
-  <string name="login_google_client_id_description_link">Mutasd, hogyan!</string>
-  <string name="login_google_disclaimer">%s  nem áll kapcsolatban a Google LLC-vel, és nem rendelkezik annak anyagi támogatásával vagy bármiféle különleges engedélyével vagy jóváhagyásával.</string>
   <string name="login_configuration_detection">A konfiguráció felderítése</string>
   <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése…</string>
   <string name="login_no_caldav_carddav">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
@@ -301,7 +295,6 @@
   <string name="settings_sync_wifi_only_ssids_message">A használható WiFi hálózatok nevei (SSID), vesszővel elválasztva (hagyja üresen, ha nem akar szűrést beállítani)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID  szűréshez további beállítások szükségesek</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Beálítások</string>
-  <string name="settings_more_info_faq">További információk (GYIK)</string>
   <string name="settings_authentication">Authentikáció</string>
   <string name="settings_username">Felhasználónév</string>
   <string name="settings_enter_username">Adja meg a felhasználónevet:</string>
@@ -337,17 +330,14 @@
     <item>A csoportok különálló vCard objektumok</item>
     <item>A csoportok névjegy-kategóriák</item>
   </string-array>
-  <string name="settings_contact_group_method_change">A csoportok kezelésének megváltoztatása</string>
   <!--collection management-->
   <string name="create_addressbook">Címjegyzék létrehozása</string>
-  <string name="create_addressbook_display_name_hint">Új címjegyzék</string>
   <string name="create_calendar">Naptár létrehozása</string>
   <string name="create_calendar_time_zone">Időzóna</string>
   <string name="create_calendar_type">Lehetséges naptárbejegyzések</string>
   <string name="create_calendar_type_vevent">Események</string>
   <string name="create_calendar_type_vtodo">Feladatok</string>
   <string name="create_calendar_type_vjournal">Jegyzetek/napló</string>
-  <string name="create_calendar_type_events_and_tasks">Kombinált (események és feladatok)</string>
   <string name="create_collection_color">Szín</string>
   <string name="create_collection_creating">Gyűjtemény létrehozása</string>
   <string name="create_collection_display_name">Cím</string>
@@ -361,13 +351,11 @@
   <string name="delete_collection_confirm_title">Biztos?</string>
   <string name="delete_collection_confirm_warning">A gyűjtemény (%s) és a hozzá tartozó adatok véglegesen törölve lesznek a szerverről.</string>
   <string name="delete_collection_data_shall_be_deleted">Az adatok törölve lesznek a szerverről.</string>
-  <string name="delete_collection_deleting_collection">Gyűjtemény törlése</string>
   <string name="collection_force_read_only">Csak olvashatóvá tétel</string>
   <string name="collection_properties">Tulajdonságok</string>
   <string name="collection_properties_sync_time">Utolsó szinkronizálás:</string>
   <string name="collection_properties_sync_time_never">Még soha</string>
   <string name="collection_properties_url">Cím (URL):</string>
-  <string name="collection_properties_copy_url">URL másolása</string>
   <string name="collection_properties_owner">Tulajdonos:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Hibakeresési információ</string>
@@ -390,7 +378,6 @@
   <string name="debug_info_involved_subtitle">A probléma kapcsán érintett erőforrások</string>
   <string name="debug_info_involved_remote">Távoli erőforrás:</string>
   <string name="debug_info_involved_local">Helyi erőforrás:</string>
-  <string name="debug_info_involved_view">Megtekintés alkalmazásban</string>
   <string name="debug_info_logs_caption">Naplóbejegyzések</string>
   <string name="debug_info_logs_subtitle">Rendelkezésre állnak részletes naplóbejegyzések </string>
   <string name="debug_info_logs_view">Naplóbejegyzések megtekintése</string>
@@ -432,7 +419,6 @@
   <string name="sync_error_io">Hálózati vagy I/O hiba – %s</string>
   <string name="sync_error_http_dav">HTTP kiszolgálóhiba - %s</string>
   <string name="sync_error_local_storage">Tárhelyhiba - %s</string>
-  <string name="sync_error_retry">Újbóli próbálkozás</string>
   <string name="sync_error_retry_limit_reached">Nem végzetes hiba (az újrapróbálkozások száma elérte a maximumot)</string>
   <string name="sync_error_view_item">Elem megtekintése</string>
   <string name="sync_invalid_contact">A szerver érvénytelen névjegyet küldött</string>

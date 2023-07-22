@@ -146,7 +146,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Vil bare synkronisere over %s (krever å ha lokasjonstjenester aktivert)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle Wi-Fi -tilkoblinger vil bli brukt</string>
   <string name="settings_sync_wifi_only_ssids_message">Kommainndelte navn (SSID-er) på tillatte Wi-Fi -nettverk (la stå tomt for alle)</string>
-  <string name="settings_more_info_faq">Mer informasjon (FAQ)</string>
   <string name="settings_authentication">Identitetsbekreftelse</string>
   <string name="settings_username">Brukernavn</string>
   <string name="settings_enter_username">Skriv inn brukernavn:</string>
@@ -165,16 +164,13 @@
   <string name="settings_event_colors">Støtte for fargelegging av hendelser</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Kontaktgruppemetode</string>
-  <string name="settings_contact_group_method_change">Endre gruppemetode</string>
   <!--collection management-->
   <string name="create_addressbook">Opprett adressebok</string>
-  <string name="create_addressbook_display_name_hint">Min adressebok</string>
   <string name="create_calendar">Opprett kalender</string>
   <string name="create_calendar_time_zone">Tidssone</string>
   <string name="create_calendar_type">Mulige kalenderhendelser</string>
   <string name="create_calendar_type_vevent">Hendelser</string>
   <string name="create_calendar_type_vtodo">Oppgaver</string>
-  <string name="create_calendar_type_events_and_tasks">Kombinert (hendelser og gjøremål)</string>
   <string name="create_collection_color">Farge</string>
   <string name="create_collection_creating">Oppretter samling</string>
   <string name="create_collection_display_name">Tittel</string>
@@ -187,11 +183,9 @@
   <string name="delete_collection_confirm_title">Er du sikker?</string>
   <string name="delete_collection_confirm_warning">Denne samlingen (%s) og all dens data vil bli permanent slettet.</string>
   <string name="delete_collection_data_shall_be_deleted">Disse datene blir slettet fra serveren.</string>
-  <string name="delete_collection_deleting_collection">Sletter samling</string>
   <string name="collection_force_read_only">Tving kun lesbar</string>
   <string name="collection_properties">Egenskaper</string>
   <string name="collection_properties_url">Adresse (URL):</string>
-  <string name="collection_properties_copy_url">Kopier nettadresse</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Feilrettingsinfo</string>
   <!--ExceptionInfoFragment-->
@@ -209,7 +203,6 @@
   <string name="sync_error_io">Nettverk- og I/O-feil - %s</string>
   <string name="sync_error_http_dav">HTTP-tjenerfeil - %s</string>
   <string name="sync_error_local_storage">Feil med lokallagring - %s</string>
-  <string name="sync_error_retry">Forsøk igjen</string>
   <string name="sync_invalid_contact">Fikk ugyldig kontakt fra server</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">DAVx⁵: Tilkoblingssikkerhet</string>

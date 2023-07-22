@@ -105,7 +105,6 @@
   <string name="login_user_name">اسم المستخدم</string>
   <string name="login_user_name_required">اسم المستخدم مطلوب</string>
   <string name="login_base_url">URL الأساس</string>
-  <string name="login_type_url_certificate">تسجيل الدخول بعنوان URL وشهادة عميل</string>
   <string name="login_select_certificate">اختيار الشهادة</string>
   <string name="login_login">تسجيل الدخول</string>
   <string name="login_create_account">إنشاء حساب</string>
@@ -144,7 +143,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">ستتم المزامنة عبر %sفقط (يتطلب تفعيل خدمات الموقع الجغرافي)</string>
   <string name="settings_sync_wifi_only_ssids_off">سيتم استخدام جميع اتصالات WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">أسماء (SSIDs) مفصولة بفواصل لشبكات WiFi المسموح الاتصال عبرها (اتركه فارغاً للسماح للكل)</string>
-  <string name="settings_more_info_faq">المزيد من المعلومات (الأسئلة الشائعة)</string>
   <string name="settings_authentication">المصادقة</string>
   <string name="settings_username">اسم المستخدم</string>
   <string name="settings_enter_username">أدخل اسم المستخدم:</string>
@@ -168,17 +166,14 @@
   <string name="settings_event_colors">دعم ألوان الأحداث</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">طريقة مجموعة عنوان الاتصال</string>
-  <string name="settings_contact_group_method_change">تغيير طريقة المجموعة</string>
   <!--collection management-->
   <string name="create_addressbook">إنشاء دفتر عناوين</string>
-  <string name="create_addressbook_display_name_hint">دفتر عناويني</string>
   <string name="create_calendar">إنشاء تقويم</string>
   <string name="create_calendar_time_zone">المنطقة الزمنية</string>
   <string name="create_calendar_type">المدخلات المحتملة للتقويم</string>
   <string name="create_calendar_type_vevent">أحداث</string>
   <string name="create_calendar_type_vtodo">مهام</string>
   <string name="create_calendar_type_vjournal">ملاحظات/يوميات</string>
-  <string name="create_calendar_type_events_and_tasks">مجمّعة (أحداث ومهام)</string>
   <string name="create_collection_color">اللون</string>
   <string name="create_collection_creating">إنشاء المجموعة جارٍ</string>
   <string name="create_collection_display_name">العنوان</string>
@@ -191,11 +186,9 @@
   <string name="delete_collection_confirm_title">هل أنت متأكد؟</string>
   <string name="delete_collection_confirm_warning">ستتم إزالة هذه المجموعة (%s) وكل بياناتها نهائياً.</string>
   <string name="delete_collection_data_shall_be_deleted">سيجري حذف هذه البيانات من الخادم.</string>
-  <string name="delete_collection_deleting_collection">حذف المجموعة جارٍ</string>
   <string name="collection_force_read_only">إجبار القراءة فقط</string>
   <string name="collection_properties">خصائص</string>
   <string name="collection_properties_url">العنوان (URL):</string>
-  <string name="collection_properties_copy_url">نسخ عنوان URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">معلومات تصحيح العلل</string>
   <!--ExceptionInfoFragment-->
@@ -214,7 +207,6 @@
   <string name="sync_error_io">خطأ شبكة أو الإدخال/الإخراج - %s</string>
   <string name="sync_error_http_dav">خطأ خادم HTTP - %s</string>
   <string name="sync_error_local_storage">خطأ تخزين محلي - %s</string>
-  <string name="sync_error_retry">إعادة المحاولة</string>
   <string name="sync_error_view_item">عرض العنصر</string>
   <string name="sync_invalid_contact">استلام جهة اتصال غير صالحة من الخادم</string>
   <string name="sync_invalid_event">استلام حدث غير صالح من الخادم</string>

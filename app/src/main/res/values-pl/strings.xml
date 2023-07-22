@@ -11,6 +11,7 @@
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Zadządzaj kontami</string>
   <string name="share">Udostępnij</string>
+  <string name="no_internet_sync_scheduled">Brak internetu, planowanie synchronizacji</string>
   <string name="database_destructive_migration_title">Uszkodzona baza danych</string>
   <string name="database_destructive_migration_text">Wszystkie konta zostały usunięte lokalnie.</string>
   <string name="notification_channel_debugging">Debugowanie</string>
@@ -182,8 +183,6 @@
   <string name="app_settings_notification_settings">Ustawienia powiadomień</string>
   <string name="app_settings_notification_settings_summary">Zarządzaj kanałami powiadomień i ich ustawieniami</string>
   <string name="app_settings_theme_title">Wybierz motyw</string>
-  <string name="app_settings_language_title">Wybierz język</string>
-  <string name="app_settings_language_system_default">Domyślne ustawienie systemowe</string>
   <string-array name="app_settings_theme_names">
     <item>Domyślne ustawienie systemowe</item>
     <item>Jasny</item>
@@ -211,6 +210,7 @@
   <string name="account_no_webcals">Nie ma (jeszcze) subskrypcji kalendarzy.</string>
   <string name="account_swipe_down">Przesuń palcem w dół, aby odświeżyć listę z serwera.</string>
   <string name="account_synchronize_now">Synchronizuj teraz</string>
+  <string name="account_synchronize_collections">Synchronizuj kolekcje</string>
   <string name="account_settings">Ustawienia konta</string>
   <string name="account_rename">Zmień nazwę konta</string>
   <string name="account_rename_new_name">Niezapisane dane lokalne mogą zostać usunięte. Po zmianie nazwy jest wymagana ponowna synchronizacja. Nowa nazwa konta:</string>
@@ -244,7 +244,6 @@
   <string name="login_user_name">Nazwa użytkownika</string>
   <string name="login_user_name_required">Wymagana nazwa użytkownika</string>
   <string name="login_base_url">Podstawowy adres URL</string>
-  <string name="login_type_url_certificate">Logowanie za pomocą adresu URL i certyfikatu klienta</string>
   <string name="login_select_certificate">Wybierz certyfikat</string>
   <string name="login_login">Zaloguj</string>
   <string name="login_create_account">Stwórz konto</string>
@@ -260,6 +259,14 @@
   <string name="login_use_client_certificate">Użyj certyfikatu klienta</string>
   <string name="login_no_certificate_found">Nie znaleziono certyfikatu</string>
   <string name="login_install_certificate">Zainstaluj certyfikat</string>
+  <string name="login_type_google">Kontakty Google / Kalendarz</string>
+  <string name="login_google_see_tested_with">Aktualne informacje można znaleźć na naszej stronie \"Testowano z Google\".</string>
+  <string name="login_google_unexpected_warnings">Mogą wystąpić nieoczekiwane ostrzeżenia i/lub konieczność utworzenia własnego identyfikatora klienta.</string>
+  <string name="login_google_account">Konto Google</string>
+  <string name="login_google_client_id">ID klienta (opcjonalnie)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$sprzesyła Twoje dane Kontaktów Google i Kalendarza wyłącznie w celu synchronizacji z tym urządzeniem. Więcej informacji znajdziesz w naszej <a href="%2$s">Polityce prywatności</a>.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$sjest zgodny z <a href="%2$s">Zasadami dotyczącymi danych użytkownika usług interfejsu API Google</a>, w tym wymaganiami dotyczącymi Ograniczonego użytkowania.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Nie udało się uzyskać kodu autoryzacyjnego</string>
   <string name="login_configuration_detection">Wykrywanie konfiguracji</string>
   <string name="login_querying_server">Proszę czekać, odpytywanie serwera…</string>
   <string name="login_no_caldav_carddav">Nie można znaleźć usługi CalDAV lub CardDAV.</string>
@@ -292,8 +299,10 @@
   <string name="settings_sync_wifi_only_ssids_message">Oddzielone przecinkami nazwy (SSID) dozwolonych sieci Wi‑Fi (pozostaw puste dla wszystkich)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ograniczenie WiFi SSID wymaga dalszych ustawień</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Zarządzaj</string>
-  <string name="settings_more_info_faq">Więcej informacji (Najczęściej zadawane pytania)</string>
   <string name="settings_authentication">Uwierzytelnianie</string>
+  <string name="settings_oauth">Uwierzytelnij ponownie</string>
+  <string name="settings_oauth_summary">Wykonaj ponownie logowanie OAuth</string>
+  <string name="settings_username_key">nazwa użytkownika</string>
   <string name="settings_username">Nazwa użytkownika</string>
   <string name="settings_enter_username">Wpisz nazwę użytkownika:</string>
   <string name="settings_password">Hasło</string>
@@ -332,17 +341,14 @@
     <item>Grupy są odrębnymi vCards</item>
     <item>Grupy są kategoriami dla pojedynczego kontaktu</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Zmień metodę grupowania</string>
   <!--collection management-->
   <string name="create_addressbook">Stwórz książkę adresową</string>
-  <string name="create_addressbook_display_name_hint">Moja książka adresowa</string>
   <string name="create_calendar">Utwórz kalendarz</string>
   <string name="create_calendar_time_zone">Strefa czasowa</string>
   <string name="create_calendar_type">Możliwe wpisy kalendarza</string>
   <string name="create_calendar_type_vevent">Wydarzenia</string>
   <string name="create_calendar_type_vtodo">Zadania</string>
   <string name="create_calendar_type_vjournal">Notatki/dziennik</string>
-  <string name="create_calendar_type_events_and_tasks">Połączone (wydarzenia i zadania)</string>
   <string name="create_collection_color">Kolor</string>
   <string name="create_collection_creating">Tworzenie kolekcji</string>
   <string name="create_collection_display_name">Tytuł</string>
@@ -356,11 +362,11 @@
   <string name="delete_collection_confirm_title">Czy jesteś pewien?</string>
   <string name="delete_collection_confirm_warning">Ta kolekcja (%s) i wszystkie jej dane zostaną trwale usunięte.</string>
   <string name="delete_collection_data_shall_be_deleted">Te dane zostaną usunięte z serwera.</string>
-  <string name="delete_collection_deleting_collection">Usuwanie kolekcji</string>
   <string name="collection_force_read_only">Wymuś tylko do odczytu</string>
   <string name="collection_properties">Właściwości</string>
+  <string name="collection_properties_sync_time">Ostatnia synchronizacja:</string>
+  <string name="collection_properties_sync_time_never">Nigdy nie synchronizowane</string>
   <string name="collection_properties_url">Adres (URL):</string>
-  <string name="collection_properties_copy_url">Kopiuj adres URL</string>
   <string name="collection_properties_owner">Właściciel:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacje debugowania</string>
@@ -383,7 +389,6 @@
   <string name="debug_info_involved_subtitle">Powiązane z problemem</string>
   <string name="debug_info_involved_remote">Zasób zdalny:</string>
   <string name="debug_info_involved_local">Zasób lokalny:</string>
-  <string name="debug_info_involved_view">Przeglądaj z aplikacjią</string>
   <string name="debug_info_logs_caption">Logi</string>
   <string name="debug_info_logs_subtitle">Szczegółowe logi są dostępne</string>
   <string name="debug_info_logs_view">Otwórz logi</string>
@@ -425,7 +430,7 @@
   <string name="sync_error_io">Błąd sieci lub we/wy – %s</string>
   <string name="sync_error_http_dav">Błąd serwera HTTP — %s</string>
   <string name="sync_error_local_storage">Błąd lokalnego storage’u — %s</string>
-  <string name="sync_error_retry">Ponów</string>
+  <string name="sync_error_retry_limit_reached">Błąd programowy (osiągnięto maksymalną liczbę ponownych prób)</string>
   <string name="sync_error_view_item">Zobacz element</string>
   <string name="sync_invalid_contact">Otrzymano błędny kontakt z serwera</string>
   <string name="sync_invalid_event">Otrzymano błędne wydarzenie z serwera</string>
