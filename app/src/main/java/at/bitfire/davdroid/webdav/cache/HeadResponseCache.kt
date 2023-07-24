@@ -8,6 +8,7 @@ import android.util.LruCache
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.webdav.DocumentState
 import at.bitfire.davdroid.webdav.HeadResponse
+import java.time.Instant
 import java.util.*
 
 class HeadResponseCache {
@@ -28,7 +29,7 @@ class HeadResponseCache {
     fun get(doc: WebDavDocument, generate: () -> HeadResponse): HeadResponse {
         var key: Key? = null
         if (doc.eTag != null || doc.lastModified != null) {
-            key = Key(doc.id, DocumentState(doc.eTag, doc.lastModified?.let { ts -> Date(ts) }))
+            key = Key(doc.id, DocumentState(doc.eTag, doc.lastModified?.let { ts -> Instant.ofEpochMilli(ts) }))
             cache.get(key)?.let { info ->
                 return info
             }

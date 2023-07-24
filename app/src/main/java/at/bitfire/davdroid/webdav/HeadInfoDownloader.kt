@@ -9,6 +9,7 @@ import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.property.GetETag
 import at.bitfire.davdroid.network.HttpClient
 import okhttp3.HttpUrl
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.Callable
 
@@ -20,7 +21,7 @@ class HeadInfoDownloader(
     override fun call(): HeadResponse {
         var size: Long? = null
         var eTag: String? = null
-        var lastModified: Date? = null
+        var lastModified: Instant? = null
         var supportsPartial: Boolean? = null
 
         DavResource(client.okHttpClient, url).head { response ->
@@ -30,7 +31,7 @@ class HeadInfoDownloader(
                     eTag = getETag.eTag
             }
             response.header("Last-Modified", null)?.let {
-                lastModified = HttpUtils.parseDate(it)
+                lastModified = HttpUtils.parseDate(it)?.toInstant()
             }
             response.headers["Content-Length"]?.let {
                 size = it.toLong()

@@ -18,12 +18,11 @@ import at.bitfire.dav4jvm.PropStat
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.Response.HrefRelation
 import at.bitfire.dav4jvm.property.GetETag
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -33,6 +32,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.*
 import org.junit.Assert.*
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -68,9 +68,6 @@ class SyncManagerTest {
     val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Inject
-    lateinit var settingsManager: SettingsManager
-
-    @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
     val server = MockWebServer()
@@ -92,14 +89,14 @@ class SyncManagerTest {
     }
 
 
-    private fun syncManager(collection: LocalTestCollection) =
+    private fun syncManager(collection: LocalTestCollection, syncResult: SyncResult = SyncResult()) =
             TestSyncManager(
                     context,
                     account,
                     arrayOf(),
                     "TestAuthority",
                     HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build(),
-                    SyncResult(),
+                    syncResult,
                     collection,
                     server
             )
@@ -135,6 +132,23 @@ class SyncManagerTest {
                 .setHeader("Content-Type", "text/xml")
                 .setBody(body.toString())
         return response
+    }
+
+    @Test
+    fun testPerformSync_503RetryAfter_DelaySeconds() {
+        server.enqueue(MockResponse()
+            .setResponseCode(503)
+            .setHeader("Retry-After", "60"))    // 60 seconds
+
+        val result = SyncResult()
+        val syncManager = syncManager(LocalTestCollection(), result)
+        syncManager.performSync()
+
+        val expected = Instant.now()
+            .plusSeconds(60)
+            .toEpochMilli()
+        // 5 sec tolerance for test
+        assertTrue(result.delayUntil > (expected - 5000) && result.delayUntil < (expected + 5000))
     }
 
     @Test

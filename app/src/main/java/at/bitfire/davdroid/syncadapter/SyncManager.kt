@@ -275,8 +275,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 is ServiceUnavailableException -> {
                     Logger.log.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
                     e.retryAfter?.let { retryAfter ->
-                        // how many seconds to wait? getTime() returns ms, so divide by 1000
-                        syncResult.delayUntil = (retryAfter.time - Date().time) / 1000
+                        syncResult.delayUntil = retryAfter.toEpochMilli()
                     }
                 }
 

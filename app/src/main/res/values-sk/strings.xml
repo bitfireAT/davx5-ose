@@ -113,7 +113,6 @@
   <string name="login_user_name">Používateľské meno</string>
   <string name="login_user_name_required">Vyžaduje sa používateľské meno</string>
   <string name="login_base_url">Základné URL</string>
-  <string name="login_type_url_certificate">Prihlásiť sa s použitím URL a klientského certifikátu</string>
   <string name="login_select_certificate">Zvoliť certifikát</string>
   <string name="login_login">Prihlásiť sa</string>
   <string name="login_create_account">Vytvoriť používateľský účet</string>
@@ -152,7 +151,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Synchronizuje sa iba cez %s (miestne lokalizačné služby musia byť aktívne)</string>
   <string name="settings_sync_wifi_only_ssids_off">Použije sa akékoľvek WiFi pripojenie</string>
   <string name="settings_sync_wifi_only_ssids_message">Čiarkou oddelený zoznam mien (SSID) povolených WiFi sietí (ponechať prázdne pre všetky)</string>
-  <string name="settings_more_info_faq">Viac informácií (FAQ)</string>
   <string name="settings_authentication">Overenie</string>
   <string name="settings_username">Meno používateľa</string>
   <string name="settings_enter_username">Zadajte meno používateľa:</string>
@@ -187,17 +185,14 @@
     <item>Skupiny sú osobitné vKarty</item>
     <item>Skupiny sú kategórie na kontakt</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Zmena spôsobu práce so skupinami</string>
   <!--collection management-->
   <string name="create_addressbook">Vytvoriť adresár</string>
-  <string name="create_addressbook_display_name_hint">Môj adresár</string>
   <string name="create_calendar">Vytvoriť kalendár</string>
   <string name="create_calendar_time_zone">Časová zóna</string>
   <string name="create_calendar_type">Možné kalendárové položky</string>
   <string name="create_calendar_type_vevent">Udalosti</string>
   <string name="create_calendar_type_vtodo">Úlohy</string>
   <string name="create_calendar_type_vjournal">Poznámky / denník</string>
-  <string name="create_calendar_type_events_and_tasks">Kombinované (udalosti a úlohy)</string>
   <string name="create_collection_color">Farba</string>
   <string name="create_collection_creating">Vytvára sa kolekcia</string>
   <string name="create_collection_display_name">Názov</string>
@@ -210,11 +205,9 @@
   <string name="delete_collection_confirm_title">Ste si istý?</string>
   <string name="delete_collection_confirm_warning">Kolekcia (%s) a všetky jej údaje budú natrvalo zmazané.</string>
   <string name="delete_collection_data_shall_be_deleted">Tieto data budú zmazané zo servera.</string>
-  <string name="delete_collection_deleting_collection">Maže sa kolekcia</string>
   <string name="collection_force_read_only">Vyžiadať len na čítanie</string>
   <string name="collection_properties">Vlastnosti</string>
   <string name="collection_properties_url">Adresa (URL):</string>
-  <string name="collection_properties_copy_url">Kopírovať URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Ladiace informácie</string>
   <!--ExceptionInfoFragment-->
@@ -233,7 +226,6 @@
   <string name="sync_error_io">Sieťová alebo V/V chyba – %s</string>
   <string name="sync_error_http_dav">Chyba HTTP servera – %s</string>
   <string name="sync_error_local_storage">Chyba miestneho úložiska – %s</string>
-  <string name="sync_error_retry">Opakovať</string>
   <string name="sync_error_view_item">Zobraziť položku</string>
   <string name="sync_invalid_contact">Kontakt prijatý zo servera je neplatný</string>
   <string name="sync_invalid_event">Udalosť prijatá zo servera nie je platná</string>

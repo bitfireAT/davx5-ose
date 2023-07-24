@@ -17,8 +17,8 @@ android {
         applicationId 'com.infomaniak.sync'
         resValue 'string', 'application_id', applicationId
 
-        versionCode 403050002
-        versionName '4.3.5'
+        versionCode 403050100
+        versionName '4.3.5.1'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
@@ -57,7 +57,7 @@ android {
     composeOptions {
         // Keep this in sync with Kotlin version:
         // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-        kotlinCompilerExtensionVersion = "1.4.7"
+        kotlinCompilerExtensionVersion = "1.4.8"
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)

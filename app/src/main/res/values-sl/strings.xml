@@ -145,7 +145,6 @@
   <string name="login_user_name">Uporabniško ime</string>
   <string name="login_user_name_required">Zahtevano je uporabniško ime</string>
   <string name="login_base_url">URL osnova</string>
-  <string name="login_type_url_certificate">Prijava z URL in certifikatom uporabnika</string>
   <string name="login_select_certificate">Izberi certifikat</string>
   <string name="login_login">Prijava</string>
   <string name="login_create_account">Ustvari račun</string>
@@ -184,7 +183,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Bo sinhroniziralo samo preko %s (potrebuje aktivirano določanje lokacije)</string>
   <string name="settings_sync_wifi_only_ssids_off">Vse WiFi povezave bodo uporabljene</string>
   <string name="settings_sync_wifi_only_ssids_message">Z vejico ločena imena (SSID) dovoljenih WiFi omrežij (pusti prazno za vse)</string>
-  <string name="settings_more_info_faq">Več informacij (pogosta vprašanja)</string>
   <string name="settings_authentication">Avtentikacija</string>
   <string name="settings_username">Uporabniško ime</string>
   <string name="settings_enter_username">Vnesi uporabniško ime:</string>
@@ -206,17 +204,14 @@
   <string name="settings_event_colors">Podpora barva dogodka</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Metoda skupine kontaktov</string>
-  <string name="settings_contact_group_method_change">Spremeni metodo skupine</string>
   <!--collection management-->
   <string name="create_addressbook">Ustvari imenik</string>
-  <string name="create_addressbook_display_name_hint">Moj imenik</string>
   <string name="create_calendar">Ustvari koledar</string>
   <string name="create_calendar_time_zone">Časovna zona</string>
   <string name="create_calendar_type">Mogoči koledarski vnosi</string>
   <string name="create_calendar_type_vevent">Dogodki</string>
   <string name="create_calendar_type_vtodo">Naloge</string>
   <string name="create_calendar_type_vjournal">Beležnice / dnevnik</string>
-  <string name="create_calendar_type_events_and_tasks">Združeno ( dogodki in naloge)</string>
   <string name="create_collection_color">Barva</string>
   <string name="create_collection_creating">Ustvarjenje zbirke</string>
   <string name="create_collection_display_name">Naslov</string>
@@ -229,11 +224,9 @@
   <string name="delete_collection_confirm_title">Si prepričan?</string>
   <string name="delete_collection_confirm_warning">Ta zbirka (%s) in njena vsebina bodo za stalno izbrisane.</string>
   <string name="delete_collection_data_shall_be_deleted">Ti podatki bodo izbrisani iz strežnika</string>
-  <string name="delete_collection_deleting_collection">Izbris zbirke</string>
   <string name="collection_force_read_only">Prisili samo za branje</string>
   <string name="collection_properties">Lastnosti</string>
   <string name="collection_properties_url">Naslov (URL):</string>
-  <string name="collection_properties_copy_url">Kopiraj URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacije razhroščevalnika</string>
   <!--ExceptionInfoFragment-->
@@ -252,7 +245,6 @@
   <string name="sync_error_io">Omrežna ali I/O napaka -- %s</string>
   <string name="sync_error_http_dav">HTTP strežniška napaka -- %s</string>
   <string name="sync_error_local_storage">Napaka lokalne shrambe -- %s</string>
-  <string name="sync_error_retry">Poskusi ponovno</string>
   <string name="sync_error_view_item">Prikaži predmet</string>
   <string name="sync_invalid_contact">S strežnika so bili prejeti neveljavni kontakti</string>
   <string name="sync_invalid_event">S strežnika so bili prejeti neveljavni dogodki</string>

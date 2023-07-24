@@ -5,11 +5,11 @@
 package at.bitfire.davdroid.webdav
 
 import at.bitfire.davdroid.webdav.cache.CacheUtils
-import java.util.*
+import java.time.Instant
 
 data class DocumentState(
     val eTag: String? = null,
-    val lastModified: Date? = null
+    val lastModified: Instant? = null
 ) {
 
     init {

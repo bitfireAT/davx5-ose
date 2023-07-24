@@ -132,7 +132,6 @@
   <string name="login_user_name">Miano używocza</string>
   <string name="login_user_name_required">Wymogane miano używocza</string>
   <string name="login_base_url">Bazowy URL</string>
-  <string name="login_type_url_certificate">Logowanie ze pōmocōm adresy URL i certyfikatu klijynta</string>
   <string name="login_select_certificate">Ôbier certyfikat</string>
   <string name="login_login">Wloguj</string>
   <string name="login_create_account">Stwōrz kōnto</string>
@@ -171,7 +170,6 @@
   <string name="settings_sync_wifi_only_ssids_on_location_services">Bydzie synchrōnizować ino bez %s (wymogo aktywnych serwisōw lokalizacyje)</string>
   <string name="settings_sync_wifi_only_ssids_off">Wszyjske połōnczynia WiFi bydōm używane</string>
   <string name="settings_sync_wifi_only_ssids_message">Ôddzielōne kōmami miana (SSID) przizwolōnych necōw WiFi (ôstow prōzne dlo wszyjskich)</string>
-  <string name="settings_more_info_faq">Wiyncyj informacyji (FAQ)</string>
   <string name="settings_authentication">Autoryzowanie</string>
   <string name="settings_username">Miano używocza</string>
   <string name="settings_enter_username">Wpisz miano używocza:</string>
@@ -204,17 +202,14 @@
     <item>Grupy to sōm ôddzielne VCards</item>
     <item>Grupy to sōm kategoryje co kōntakt</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Zmiyń spusōb grupowy</string>
   <!--collection management-->
   <string name="create_addressbook">Stwōrz ksiōnżka adresowo</string>
-  <string name="create_addressbook_display_name_hint">Moja ksiōnżka adresowo</string>
   <string name="create_calendar">Stwōrz kalyndorz</string>
   <string name="create_calendar_time_zone">Strefa czasowo</string>
   <string name="create_calendar_type">Możliwe wpisy kalyndorza</string>
   <string name="create_calendar_type_vevent">Zdarzynia</string>
   <string name="create_calendar_type_vtodo">Zadania</string>
   <string name="create_calendar_type_vjournal">Zopiski / dziynnik</string>
-  <string name="create_calendar_type_events_and_tasks">Połōnczōne (zdarzynia i zadania)</string>
   <string name="create_collection_color">Farba</string>
   <string name="create_collection_creating">Tworzynie kolekcyje</string>
   <string name="create_collection_display_name">Tytuł</string>
@@ -227,11 +222,9 @@
   <string name="delete_collection_confirm_title">Je żeś zicher?</string>
   <string name="delete_collection_confirm_warning">Ta kolekcyjo (%s) i wszyjske jeji dane bydōm doimyntnie skasowane.</string>
   <string name="delete_collection_data_shall_be_deleted">Te dane bydōm skasowane ze serwera.</string>
-  <string name="delete_collection_deleting_collection">Kasowanie kolekcyje</string>
   <string name="collection_force_read_only">Wymuś ino do ôdczytu</string>
   <string name="collection_properties">Włosności</string>
   <string name="collection_properties_url">Adresa (URL):</string>
-  <string name="collection_properties_copy_url">Skopiuj URL</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacyje debugowe</string>
   <!--ExceptionInfoFragment-->
@@ -250,7 +243,6 @@
   <string name="sync_error_io">Feler necu abo I/O – %s</string>
   <string name="sync_error_http_dav">Feler serwera HTTP – %s</string>
   <string name="sync_error_local_storage">Feler lokalnego przechowowanio – %s</string>
-  <string name="sync_error_retry">Sprōbuj zaś</string>
   <string name="sync_error_view_item">Pokoż elymynt</string>
   <string name="sync_invalid_contact">Dostany kōntakt ze serwera je niynoleżny</string>
   <string name="sync_invalid_event">Dostane zdarzynie ze serwera je niynoleżne</string>

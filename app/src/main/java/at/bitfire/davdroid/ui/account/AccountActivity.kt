@@ -17,9 +17,10 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.appcompat.widget.TooltipCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountBinding
 import at.bitfire.davdroid.db.AppDatabase
@@ -31,6 +32,7 @@ import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.AppWarningsManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayoutMediator
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -72,29 +74,37 @@ class AccountActivity: AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        model.accountExists.observe(this, Observer { accountExists ->
+        model.accountExists.observe(this) { accountExists ->
             if (!accountExists)
                 finish()
-        })
+        }
 
-        binding.tabLayout.setupWithViewPager(binding.viewPager)
-        val tabsAdapter = TabsAdapter(this)
-        binding.viewPager.adapter = tabsAdapter
-        model.cardDavService.observe(this, Observer {
-            tabsAdapter.cardDavSvcId = it
-        })
-        model.calDavService.observe(this, Observer {
-            tabsAdapter.calDavSvcId = it
-        })
+        model.services.observe(this) { services ->
+            val calDavServiceId = services.firstOrNull { it.type == Service.TYPE_CALDAV }?.id
+            val cardDavServiceId = services.firstOrNull { it.type == Service.TYPE_CARDDAV }?.id
 
-        // "Sync now" button
-        model.networkAvailable.observe(this, Observer { networkAvailable ->
+            val viewPager = binding.viewPager
+            val adapter = FragmentsAdapter(this, cardDavServiceId, calDavServiceId)
+            viewPager.adapter = adapter
+
+            // connect ViewPager with TabLayout (top bar with tabs)
+            TabLayoutMediator(binding.tabLayout, viewPager) { tab, position ->
+                tab.text = adapter.getHeading(position)
+            }.attach()
+        }
+
+        // "Sync now" fab
+        model.networkAvailable.observe(this) { networkAvailable ->
             binding.sync.setOnClickListener {
                 if (!networkAvailable)
-                    Snackbar.make(binding.sync, R.string.no_internet_sync_scheduled, Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(
+                        binding.sync,
+                        R.string.no_internet_sync_scheduled,
+                        Snackbar.LENGTH_LONG
+                    ).show()
                 SyncWorker.enqueueAllAuthorities(this, model.account)
             }
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -155,28 +165,48 @@ class AccountActivity: AppCompatActivity() {
     }
 
 
+    // public functions
+
+    /**
+     * Updates the click listener of the refresh collections list FAB, according to the given
+     * fragment. Should be called when the related fragment is resumed.
+     */
+    fun updateRefreshCollectionsListAction(fragment: CollectionsFragment) {
+        val label = when (fragment) {
+            is AddressBooksFragment ->
+                getString(R.string.account_refresh_address_book_list)
+
+            is CalendarsFragment,
+            is WebcalFragment ->
+                getString(R.string.account_refresh_calendar_list)
+
+            else -> null
+        }
+        if (label != null) {
+            binding.refresh.contentDescription = label
+            TooltipCompat.setTooltipText(binding.refresh, label)
+        }
+
+        binding.refresh.setOnClickListener {
+            fragment.onRefresh()
+        }
+    }
+
+
+
     // adapter
 
-    class TabsAdapter(
-            val activity: AppCompatActivity
-    ): FragmentStatePagerAdapter(activity.supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    class FragmentsAdapter(
+        val activity: FragmentActivity,
+        private val cardDavSvcId: Long?,
+        private val calDavSvcId: Long?
+    ): FragmentStateAdapter(activity) {
 
-        var cardDavSvcId: Long? = null
-            set(value) {
-                field = value
-                recalculate()
-            }
-        var calDavSvcId: Long? = null
-            set(value) {
-                field = value
-                recalculate()
-            }
+        private val idxCardDav: Int?
+        private val idxCalDav: Int?
+        private val idxWebcal: Int?
 
-        private var idxCardDav: Int? = null
-        private var idxCalDav: Int? = null
-        private var idxWebcal: Int? = null
-
-        private fun recalculate() {
+        init {
             var currentIndex = 0
 
             idxCardDav = if (cardDavSvcId != null)
@@ -191,48 +221,40 @@ class AccountActivity: AppCompatActivity() {
                 idxCalDav = null
                 idxWebcal = null
             }
-
-            // reflect changes in UI
-            notifyDataSetChanged()
         }
 
-        override fun getCount() =
-                (if (idxCardDav != null) 1 else 0) +
-                (if (idxCalDav != null) 1 else 0) +
-                (if (idxWebcal != null) 1 else 0)
+        override fun getItemCount() =
+            (if (idxCardDav != null) 1 else 0) +
+            (if (idxCalDav != null) 1 else 0) +
+            (if (idxWebcal != null) 1 else 0)
 
-        override fun getItem(position: Int): Fragment {
-            val args = Bundle(1)
+        override fun createFragment(position: Int) =
             when (position) {
-                idxCardDav -> {
-                    val frag = AddressBooksFragment()
-                    args.putLong(CollectionsFragment.EXTRA_SERVICE_ID, cardDavSvcId!!)
-                    args.putString(CollectionsFragment.EXTRA_COLLECTION_TYPE, Collection.TYPE_ADDRESSBOOK)
-                    frag.arguments = args
-                    return frag
-                }
-                idxCalDav -> {
-                    val frag = CalendarsFragment()
-                    args.putLong(CollectionsFragment.EXTRA_SERVICE_ID, calDavSvcId!!)
-                    args.putString(CollectionsFragment.EXTRA_COLLECTION_TYPE, Collection.TYPE_CALENDAR)
-                    frag.arguments = args
-                    return frag
-                }
-                idxWebcal -> {
-                    val frag = WebcalFragment()
-                    args.putLong(CollectionsFragment.EXTRA_SERVICE_ID, calDavSvcId!!)
-                    args.putString(CollectionsFragment.EXTRA_COLLECTION_TYPE, Collection.TYPE_WEBCAL)
-                    frag.arguments = args
-                    return frag
-                }
+                idxCardDav ->
+                    AddressBooksFragment().apply {
+                        arguments = Bundle(2).apply {
+                            putLong(CollectionsFragment.EXTRA_SERVICE_ID, cardDavSvcId!!)
+                            putString(CollectionsFragment.EXTRA_COLLECTION_TYPE, Collection.TYPE_ADDRESSBOOK)
+                        }
+                    }
+                idxCalDav ->
+                    CalendarsFragment().apply {
+                        arguments = Bundle(2).apply {
+                            putLong(CollectionsFragment.EXTRA_SERVICE_ID, calDavSvcId!!)
+                            putString(CollectionsFragment.EXTRA_COLLECTION_TYPE, Collection.TYPE_CALENDAR)
+                        }
+                    }
+                idxWebcal ->
+                    WebcalFragment().apply {
+                        arguments = Bundle(2).apply {
+                            putLong(CollectionsFragment.EXTRA_SERVICE_ID, calDavSvcId!!)
+                            putString(CollectionsFragment.EXTRA_COLLECTION_TYPE, Collection.TYPE_WEBCAL)
+                        }
+                    }
+                else -> throw IllegalArgumentException()
             }
-            throw IllegalArgumentException()
-        }
 
-        // required to reload all fragments
-        override fun getItemPosition(obj: Any) = POSITION_NONE
-
-        override fun getPageTitle(position: Int): String =
+        fun getHeading(position: Int) =
             when (position) {
                 idxCardDav -> activity.getString(R.string.account_carddav)
                 idxCalDav -> activity.getString(R.string.account_caldav)
@@ -261,8 +283,7 @@ class AccountActivity: AppCompatActivity() {
         val accountSettings by lazy { AccountSettings(application, account) }
 
         val accountExists = MutableLiveData<Boolean>()
-        val cardDavService = db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CARDDAV)
-        val calDavService = db.serviceDao().getIdByAccountAndType(account.name, Service.TYPE_CALDAV)
+        val services = db.serviceDao().getServiceTypeAndIdsByAccount(account.name)
 
         val showOnlyPersonal = MutableLiveData<Boolean>()
         val showOnlyPersonalWritable = MutableLiveData<Boolean>()

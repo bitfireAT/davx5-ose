@@ -108,14 +108,11 @@
   <string name="settings_manage_calendar_colors">Takvim renklerini yönet</string>
   <!--collection management-->
   <string name="create_addressbook">Rehber yarat</string>
-  <string name="create_addressbook_display_name_hint">Benim Rehberim</string>
-  <string name="create_calendar_type_events_and_tasks">Birleşik (olaylar ve işler)</string>
   <string name="create_collection_creating">Koleksiyon yaratılıyor</string>
   <string name="create_collection_display_name_required">Başlık zorunlu</string>
   <string name="create_collection_create">Yarat</string>
   <string name="delete_collection">Koleksiyonu sil</string>
   <string name="delete_collection_confirm_title">Emin misin?</string>
-  <string name="delete_collection_deleting_collection">Koleksiyon siliniyor</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Hata ayıklama bilgisi</string>
   <string name="debug_info_logs_view">Jurnallere bak</string>

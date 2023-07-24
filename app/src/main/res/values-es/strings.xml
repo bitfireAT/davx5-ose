@@ -232,7 +232,6 @@
   <string name="login_user_name">Nombre de usuario</string>
   <string name="login_user_name_required">Nombre de usuario requerido</string>
   <string name="login_base_url">URL base</string>
-  <string name="login_type_url_certificate">Iniciar sesión con URL y certificado del cliente</string>
   <string name="login_select_certificate">Seleccionar un certificado</string>
   <string name="login_login">Registrar</string>
   <string name="login_create_account">Crear cuenta</string>
@@ -280,7 +279,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Nombres separados por comas (SSIDs) de redes WiFi permitidas (deje vacío para todas)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restricción del SSID WiFi requiere más ajustes</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Administrar</string>
-  <string name="settings_more_info_faq">Más información (preguntas frecuentes)</string>
   <string name="settings_authentication">Autenticación</string>
   <string name="settings_username">Nombre de usuario</string>
   <string name="settings_enter_username">Introduce tu nombre de usuario:</string>
@@ -318,17 +316,14 @@
     <item>Los grupos son vCards separadas</item>
     <item>Los grupos son categorías de cada contacto</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Cambie método de grupo</string>
   <!--collection management-->
   <string name="create_addressbook">Crear nueva agenda</string>
-  <string name="create_addressbook_display_name_hint">Agendas</string>
   <string name="create_calendar">Crear calendario</string>
   <string name="create_calendar_time_zone">Huso horario</string>
   <string name="create_calendar_type">Posibles entradas de calendario</string>
   <string name="create_calendar_type_vevent">Eventos</string>
   <string name="create_calendar_type_vtodo">Tareas</string>
   <string name="create_calendar_type_vjournal">Notas / jornal</string>
-  <string name="create_calendar_type_events_and_tasks">Combinado (eventos y tareas)</string>
   <string name="create_collection_color">Color</string>
   <string name="create_collection_creating">Crear colección</string>
   <string name="create_collection_display_name">Título </string>
@@ -342,11 +337,9 @@
   <string name="delete_collection_confirm_title">¿Estás seguro/a?</string>
   <string name="delete_collection_confirm_warning">Esta colección (%s) y todos sus datos serán eliminados permanentemente. </string>
   <string name="delete_collection_data_shall_be_deleted">Estos datos se eliminarán del servidor.</string>
-  <string name="delete_collection_deleting_collection">Eliminando colección</string>
   <string name="collection_force_read_only">Forzar solo-lectura</string>
   <string name="collection_properties">Propiedades</string>
   <string name="collection_properties_url">Dirección (URL):</string>
-  <string name="collection_properties_copy_url">Copiar URL</string>
   <string name="collection_properties_owner">Propietario:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Información de depuración</string>
@@ -369,7 +362,6 @@
   <string name="debug_info_involved_subtitle">Relacionado con el problema</string>
   <string name="debug_info_involved_remote">Recurso remoto:</string>
   <string name="debug_info_involved_local">Recurso local:</string>
-  <string name="debug_info_involved_view">Ver con la aplicación</string>
   <string name="debug_info_logs_caption">Registros</string>
   <string name="debug_info_logs_subtitle">Los registros verbosos están disponibles</string>
   <string name="debug_info_logs_view">Ver registros</string>
@@ -411,7 +403,6 @@
   <string name="sync_error_io">Error de red o E/S – %s</string>
   <string name="sync_error_http_dav">Error de servidor – %s</string>
   <string name="sync_error_local_storage">Error de almacenamiento local – %s</string>
-  <string name="sync_error_retry">Reintentar</string>
   <string name="sync_error_view_item">Ver item</string>
   <string name="sync_invalid_contact">Contacto inválido recibido del servidor</string>
   <string name="sync_invalid_event">Evento inválido recibido del servidor</string>

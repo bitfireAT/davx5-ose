@@ -183,8 +183,6 @@
   <string name="app_settings_notification_settings">通知设置</string>
   <string name="app_settings_notification_settings_summary">管理通知渠道等设置</string>
   <string name="app_settings_theme_title">选择主题</string>
-  <string name="app_settings_language_title">选择语言</string>
-  <string name="app_settings_language_system_default">系统默认</string>
   <string-array name="app_settings_theme_names">
     <item>系统默认</item>
     <item>浅色</item>
@@ -212,6 +210,7 @@
   <string name="account_no_webcals">暂无日历订阅。</string>
   <string name="account_swipe_down">下拉可从服务器获取最新列表。</string>
   <string name="account_synchronize_now"> 立即同步</string>
+  <string name="account_synchronize_collections">同步收藏</string>
   <string name="account_settings">账户设置</string>
   <string name="account_rename">重命名账户</string>
   <string name="account_rename_new_name">重命名后，未上传的本地修改会被撤销，您需要重新执行同步。新账户名：</string>
@@ -245,7 +244,6 @@
   <string name="login_user_name">用户名</string>
   <string name="login_user_name_required">请输入用户名</string>
   <string name="login_base_url">根地址</string>
-  <string name="login_type_url_certificate">使用 URL 和客户端证书登录</string>
   <string name="login_select_certificate">选择证书</string>
   <string name="login_login">登录</string>
   <string name="login_create_account">创建账户</string>
@@ -266,9 +264,8 @@
   <string name="login_google_unexpected_warnings">你可能遇到意外的警告和/或者不得不创建自己的 client ID。</string>
   <string name="login_google_account">Google 账户</string>
   <string name="login_google_client_id">Client ID (可选)</string>
-  <string name="login_google_client_id_description">如果我们的 client ID 不起作用，你可以使用自己的 client ID</string>
-  <string name="login_google_client_id_description_link">现在就展示给我看！</string>
-  <string name="login_google_disclaimer">%s 与 Google LLC 之间没有隶属关系，也非由 Google LLC 所授权、赞助或批准。 </string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s传输你的  Google 联系人和日历数据的目的仅是为了与此设备同步。详情见我们的 <a href="%2$s">隐私政策</a> 。]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s遵守 <a href="%2$s">Google API 服务用户数据政策</a>，包括有限使用的要求。]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">无法获得身份验证码</string>
   <string name="login_configuration_detection">正在配置</string>
   <string name="login_querying_server">正在与服务器通信，请稍等…</string>
@@ -302,7 +299,6 @@
   <string name="settings_sync_wifi_only_ssids_message">请用半角逗号分隔允许同步的 WiFi 网络名（SSID），留空则允许任意网络</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 限制需要进一步设置</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
-  <string name="settings_more_info_faq">更多信息（常见问题）</string>
   <string name="settings_authentication">认证</string>
   <string name="settings_oauth">重新验证身份</string>
   <string name="settings_oauth_summary">再次进行 OAuth 登录</string>
@@ -339,17 +335,14 @@
     <item>按 VCard 文件分组</item>
     <item>按联系人分类分组</item>
   </string-array>
-  <string name="settings_contact_group_method_change">修改分组方式</string>
   <!--collection management-->
   <string name="create_addressbook">创建通讯录</string>
-  <string name="create_addressbook_display_name_hint">我的通讯录</string>
   <string name="create_calendar">创建日历</string>
   <string name="create_calendar_time_zone">时区</string>
   <string name="create_calendar_type">可能使用的日历类型</string>
   <string name="create_calendar_type_vevent">事件</string>
   <string name="create_calendar_type_vtodo">任务</string>
   <string name="create_calendar_type_vjournal">笔记 / 日志</string>
-  <string name="create_calendar_type_events_and_tasks">混合（日程和任务）</string>
   <string name="create_collection_color">颜色</string>
   <string name="create_collection_creating">正在创建集合</string>
   <string name="create_collection_display_name">标题</string>
@@ -363,13 +356,11 @@
   <string name="delete_collection_confirm_title">你确定吗？</string>
   <string name="delete_collection_confirm_warning">该集合 %s 及其所有数据将会被永久删除。</string>
   <string name="delete_collection_data_shall_be_deleted">这些数据将会被从远程服务器删除。</string>
-  <string name="delete_collection_deleting_collection">正在删除集合</string>
   <string name="collection_force_read_only">强制只读</string>
   <string name="collection_properties">属性</string>
   <string name="collection_properties_sync_time">上次同步：</string>
   <string name="collection_properties_sync_time_never">从未同步</string>
   <string name="collection_properties_url">地址 (URL):</string>
-  <string name="collection_properties_copy_url">复制 URL</string>
   <string name="collection_properties_owner">所有者：</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">调试信息</string>
@@ -392,7 +383,6 @@
   <string name="debug_info_involved_subtitle">与此问题有关</string>
   <string name="debug_info_involved_remote">远程资源:</string>
   <string name="debug_info_involved_local">本地资源:</string>
-  <string name="debug_info_involved_view">用其它应用查看</string>
   <string name="debug_info_logs_caption">日志</string>
   <string name="debug_info_logs_subtitle">详细日志可用</string>
   <string name="debug_info_logs_view">查看日志</string>
@@ -434,7 +424,6 @@
   <string name="sync_error_io">网络或 I/O 错误 – %s</string>
   <string name="sync_error_http_dav">HTTP 服务器错误 – %s</string>
   <string name="sync_error_local_storage">本地存储错误 – %s</string>
-  <string name="sync_error_retry">重试</string>
   <string name="sync_error_retry_limit_reached">软错误（达到最大重试次数）</string>
   <string name="sync_error_view_item">显示项目</string>
   <string name="sync_invalid_contact">从服务器收到无效的通讯录</string>

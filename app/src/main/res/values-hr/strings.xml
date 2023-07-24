@@ -194,7 +194,6 @@
   <string name="login_user_name">Korisničko ime</string>
   <string name="login_user_name_required">Korisničko ime je potrebno</string>
   <string name="login_base_url">Osnovni URL</string>
-  <string name="login_type_url_certificate">Prijava sa URL-om i klijentskim certifikatom</string>
   <string name="login_select_certificate">Odaberi certifikat</string>
   <string name="login_login">Prijava</string>
   <string name="login_create_account">Kreiraj račun</string>
@@ -241,7 +240,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Zarezom odijeljeni nazivi (SSIDa) dozvoljenih WiFi mreža (ostaviti prazno za sve mreže)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID ograničenje zahtijeva daljnje postavke</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Upravljaj</string>
-  <string name="settings_more_info_faq">Više informacija (FAQ)</string>
   <string name="settings_authentication">Autentifkacija</string>
   <string name="settings_username">Korisničko ime</string>
   <string name="settings_enter_username">Unesite korisničko ime:</string>
@@ -279,17 +277,14 @@
     <item>Grupe su odvojene vCards</item>
     <item>Grupe su kategorije po kontaktima</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Promijeni metodu grupe</string>
   <!--collection management-->
   <string name="create_addressbook">Kreiraj adresar</string>
-  <string name="create_addressbook_display_name_hint">Moj adresar</string>
   <string name="create_calendar">Kreiraj kalendar</string>
   <string name="create_calendar_time_zone">Vremenska zona</string>
   <string name="create_calendar_type">Mogući unosi u kalendar</string>
   <string name="create_calendar_type_vevent">Događaji</string>
   <string name="create_calendar_type_vtodo">Zadatci</string>
   <string name="create_calendar_type_vjournal">Bilješke / dnevnik</string>
-  <string name="create_calendar_type_events_and_tasks">Kombinirano (događaji i zadaci)</string>
   <string name="create_collection_color">Boja</string>
   <string name="create_collection_creating">Izrada zbirke</string>
   <string name="create_collection_display_name">Naslov</string>
@@ -302,11 +297,9 @@
   <string name="delete_collection_confirm_title">Jeste li sigurni?</string>
   <string name="delete_collection_confirm_warning">Ova zbirka (%s) i njeni podatci biti će trajno uklonjeni.</string>
   <string name="delete_collection_data_shall_be_deleted">Ovi podatci biti će obrisani sa poslužitelja.</string>
-  <string name="delete_collection_deleting_collection">Brisanje zbirke</string>
   <string name="collection_force_read_only">Prisilno samo za čitanje</string>
   <string name="collection_properties">Svojstva</string>
   <string name="collection_properties_url">Adresa (URL):</string>
-  <string name="collection_properties_copy_url">Kopiraj URL</string>
   <string name="collection_properties_owner">Vlasnik:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug info</string>
@@ -325,7 +318,6 @@
   <string name="debug_info_involved_subtitle">Povezano s problemom</string>
   <string name="debug_info_involved_remote">Udaljeni resurs:</string>
   <string name="debug_info_involved_local">Lokali resurs:</string>
-  <string name="debug_info_involved_view">Pregledaj u aplikaciji</string>
   <string name="debug_info_logs_caption">Logovi</string>
   <string name="debug_info_logs_subtitle">Opsežniji logovi su dostupni</string>
   <string name="debug_info_logs_view">Pregledaj logove</string>
@@ -347,7 +339,6 @@
   <string name="sync_error_io">Mrežna ili I/O greška – %s</string>
   <string name="sync_error_http_dav">HTTP poslužiteljska greška – %s</string>
   <string name="sync_error_local_storage">Greška lokalne pohrane – %s</string>
-  <string name="sync_error_retry">Pokušaj ponovno</string>
   <string name="sync_error_view_item">Pregledaj stavku</string>
   <string name="sync_invalid_contact">Primljen je nevažeći kontakt sa poslužitelja</string>
   <string name="sync_invalid_event">Primljen je nevažeći dogđaj sa poslužitelja</string>

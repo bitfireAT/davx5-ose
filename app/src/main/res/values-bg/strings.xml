@@ -182,8 +182,6 @@
   <string name="app_settings_notification_settings">Настройки за съобщенията</string>
   <string name="app_settings_notification_settings_summary">Управлявление на каналите за съобщения и техните настройки</string>
   <string name="app_settings_theme_title">Избиране на тема</string>
-  <string name="app_settings_language_title">Избор на език</string>
-  <string name="app_settings_language_system_default">Според системната</string>
   <string-array name="app_settings_theme_names">
     <item>Според системата</item>
     <item>Светла</item>
@@ -244,7 +242,6 @@
   <string name="login_user_name">Потребителско име</string>
   <string name="login_user_name_required">Нужно е потребителско име</string>
   <string name="login_base_url">Основен адрес</string>
-  <string name="login_type_url_certificate">Вход с адрес и сертификат</string>
   <string name="login_select_certificate">Избери сертификат</string>
   <string name="login_login">Напред</string>
   <string name="login_create_account">Създаване на регистрация</string>
@@ -292,7 +289,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Разделени със запетая имена (SSID) на разрешените мрежи по Wi-Fi (празно за всички мрежи)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ограниченията на Wi-Fi по SSID изискват допълнителни настройки</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Управление</string>
-  <string name="settings_more_info_faq">Повече информация (често задавани въпроси)</string>
   <string name="settings_authentication">Удостоверяване</string>
   <string name="settings_username">Потребителско име</string>
   <string name="settings_enter_username">Въведи потребитеско име:</string>
@@ -328,17 +324,14 @@
     <item>Групите са отделни vCards</item>
     <item>Групите са категории във всеки контакт</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Метод за групиране на контакти</string>
   <!--collection management-->
   <string name="create_addressbook">Създаване на адресник</string>
-  <string name="create_addressbook_display_name_hint">Моят адресник</string>
   <string name="create_calendar">Създаване на календар</string>
   <string name="create_calendar_time_zone">Часови пояс</string>
   <string name="create_calendar_type">Възможни компоненти в календара</string>
   <string name="create_calendar_type_vevent">Събития</string>
   <string name="create_calendar_type_vtodo">Задачи</string>
   <string name="create_calendar_type_vjournal">Бележки / журнал</string>
-  <string name="create_calendar_type_events_and_tasks">Комбинирано (събития и задачи)</string>
   <string name="create_collection_color">Цвят</string>
   <string name="create_collection_creating">Създаване на ресурс</string>
   <string name="create_collection_display_name">Заглавие</string>
@@ -352,11 +345,9 @@
   <string name="delete_collection_confirm_title">Сигурен ли си?</string>
   <string name="delete_collection_confirm_warning">Този ресурс (%s) и всичките данни в него ще бъдат изтрити.</string>
   <string name="delete_collection_data_shall_be_deleted">Тези данни ще бъдат премахнати от сървъра.</string>
-  <string name="delete_collection_deleting_collection">Изтриване на ресурс</string>
   <string name="collection_force_read_only">Само за четене</string>
   <string name="collection_properties">Свойства</string>
   <string name="collection_properties_url">Адрес:</string>
-  <string name="collection_properties_copy_url">Копиране на адреса</string>
   <string name="collection_properties_owner">Собственик</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Информация за отстраняване на дефекти</string>
@@ -379,7 +370,6 @@
   <string name="debug_info_involved_subtitle">Свързани с проблема</string>
   <string name="debug_info_involved_remote">Отдалечен ресурс:</string>
   <string name="debug_info_involved_local">Местен ресурс:</string>
-  <string name="debug_info_involved_view">Преглед с приложение</string>
   <string name="debug_info_logs_caption">Дневници</string>
   <string name="debug_info_logs_subtitle">Налични са подробни дневници</string>
   <string name="debug_info_logs_view">Преглед</string>
@@ -421,7 +411,6 @@
   <string name="sync_error_io">Грешка с входа/изхода или мрежата – %s</string>
   <string name="sync_error_http_dav">Грешка в сървъра на HTTP – %s</string>
   <string name="sync_error_local_storage">Грешка в местното хранилище – %s</string>
-  <string name="sync_error_retry">Повторен опит</string>
   <string name="sync_error_retry_limit_reached">Грешка (достигнат максимален брой опити)</string>
   <string name="sync_error_view_item">Преглед</string>
   <string name="sync_invalid_contact">Получен е недействителен контакт от сървъра</string>

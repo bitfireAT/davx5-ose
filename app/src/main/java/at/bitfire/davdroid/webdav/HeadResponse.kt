@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
-import java.util.*
+import java.time.Instant
 
 /**
  * Represents the information that was retrieved via a HEAD request before
@@ -13,7 +13,7 @@ import java.util.*
 data class HeadResponse(
     val size: Long? = null,
     val eTag: String? = null,
-    val lastModified: Date? = null,
+    val lastModified: Instant? = null,
 
     val supportsPartial: Boolean? = null
 ) {

@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.db
 
 import androidx.lifecycle.LiveData
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -18,6 +19,9 @@ interface ServiceDao {
 
     @Query("SELECT id FROM service WHERE accountName=:accountName AND type=:type")
     fun getIdByAccountAndType(accountName: String, type: String): LiveData<Long>
+
+    @Query("SELECT type, id FROM service WHERE accountName=:accountName")
+    fun getServiceTypeAndIdsByAccount(accountName: String): LiveData<List<ServiceTypeAndId>>
 
     @Query("SELECT * FROM service WHERE id=:id")
     fun get(id: Long): Service?
@@ -35,3 +39,8 @@ interface ServiceDao {
     fun renameAccount(oldName: String, newName: String)
 
 }
+
+data class ServiceTypeAndId(
+    @ColumnInfo(name = "type") val type: String,
+    @ColumnInfo(name = "id") val id: Long
+)

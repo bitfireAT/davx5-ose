@@ -179,7 +179,6 @@
   <string name="app_settings_notification_settings">Nastavení oznamování</string>
   <string name="app_settings_notification_settings_summary">Spravovat kanály oznamování a jejich nastavení</string>
   <string name="app_settings_theme_title">Vybrat vzhled</string>
-  <string name="app_settings_language_system_default">Systémová výchozí</string>
   <string-array name="app_settings_theme_names">
     <item>Výchozí systémový</item>
     <item>Světlý</item>
@@ -240,7 +239,6 @@
   <string name="login_user_name">Uživatelské jméno</string>
   <string name="login_user_name_required">Vyžadováno uživatelské jméno</string>
   <string name="login_base_url">Základ URL</string>
-  <string name="login_type_url_certificate">Přihlásit pomocí URL a klientského certifikátu</string>
   <string name="login_select_certificate">Vybrat certifikát</string>
   <string name="login_login">Přihlášení</string>
   <string name="login_create_account">Vytvořit účet</string>
@@ -288,7 +286,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Čárkou oddělovaný seznam názvů (SSID) WiFi sítí, přes které synchronizovat (pokud omezovat nechcete, nevyplňujte)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Omezení na názvy (SSID) WiFi sítí vyžaduje další nastavení</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Spravovat</string>
-  <string name="settings_more_info_faq">Další informace (často kladené dotazy)</string>
   <string name="settings_authentication">Ověření</string>
   <string name="settings_username">Uživatelské jméno</string>
   <string name="settings_enter_username">Zadejte uživatelské jméno:</string>
@@ -328,17 +325,14 @@
     <item>Skupiny jsou zvlášt vCards vizitky</item>
     <item>Skupiny jsou kategorie u jednotlivých kontaktů</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Změnit metodu seskupování</string>
   <!--collection management-->
   <string name="create_addressbook">Vytvořit adresář</string>
-  <string name="create_addressbook_display_name_hint">Můj adresář</string>
   <string name="create_calendar">Vytvořit kalendář</string>
   <string name="create_calendar_time_zone">Časová zóna</string>
   <string name="create_calendar_type">Možné položky kalendáře</string>
   <string name="create_calendar_type_vevent">Události</string>
   <string name="create_calendar_type_vtodo">Úkoly</string>
   <string name="create_calendar_type_vjournal">Poznámky / deník</string>
-  <string name="create_calendar_type_events_and_tasks">Kombinovaná (události a úkoly)</string>
   <string name="create_collection_color">Barva</string>
   <string name="create_collection_creating">Vytváření sady</string>
   <string name="create_collection_display_name">Nadpis</string>
@@ -352,11 +346,9 @@
   <string name="delete_collection_confirm_title">Opravdu to chcete?</string>
   <string name="delete_collection_confirm_warning">Tato sada (%s) a všechna její data budou nadobro odebrána.</string>
   <string name="delete_collection_data_shall_be_deleted">Tato data by měla být smazána ze serveru.</string>
-  <string name="delete_collection_deleting_collection">Mazání sbírky</string>
   <string name="collection_force_read_only">Vynutit pouze pro čtení</string>
   <string name="collection_properties">Vlastnosti</string>
   <string name="collection_properties_url">Adresa (URL):</string>
-  <string name="collection_properties_copy_url">Zkopírovat URL adresu</string>
   <string name="collection_properties_owner">Vlastník:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Ladící informace</string>
@@ -379,7 +371,6 @@
   <string name="debug_info_involved_subtitle">Související s problémem</string>
   <string name="debug_info_involved_remote">Prostředek na protějšku:</string>
   <string name="debug_info_involved_local">Místní prostředek:</string>
-  <string name="debug_info_involved_view">Zobrazit v aplikaci</string>
   <string name="debug_info_logs_caption">Záznamy událostí</string>
   <string name="debug_info_logs_subtitle">Jsou k dispozici podrobnější záznamy událostí</string>
   <string name="debug_info_logs_view">Zobrazit záznamy událostí</string>
@@ -421,7 +412,6 @@
   <string name="sync_error_io">Chyba sítě nebo vstupu/výstupu – %s</string>
   <string name="sync_error_http_dav">Chyba HTTP serveru – %s</string>
   <string name="sync_error_local_storage">Chyba místního úložiště – %s</string>
-  <string name="sync_error_retry">Opakovat</string>
   <string name="sync_error_view_item">Zobrazit položku</string>
   <string name="sync_invalid_contact">Ze serveru obdržen neplaný kontakt</string>
   <string name="sync_invalid_event">Ze serveru obdržena neplatná událost</string>

@@ -181,8 +181,6 @@
   <string name="app_settings_notification_settings">تنظیمات اعلان</string>
   <string name="app_settings_notification_settings_summary">کانال های اعلان و تنظیمات آنها را مدیریت کنید</string>
   <string name="app_settings_theme_title">انتخاب تم</string>
-  <string name="app_settings_language_title">انتخاب زبان</string>
-  <string name="app_settings_language_system_default">پیش فرض سیستم</string>
   <string-array name="app_settings_theme_names">
     <item>پیش فرض سیستم</item>
     <item>روشن</item>
@@ -243,7 +241,6 @@
   <string name="login_user_name">نام کاربری</string>
   <string name="login_user_name_required">نام کاربری مورد نیاز است</string>
   <string name="login_base_url">آدرس پایه</string>
-  <string name="login_type_url_certificate">با URL و گواهی مشتری وارد شوید</string>
   <string name="login_select_certificate">گواهی را انتخاب کنید</string>
   <string name="login_login">وارد شدن</string>
   <string name="login_create_account">ساخت حساب</string>
@@ -291,7 +288,6 @@
   <string name="settings_sync_wifi_only_ssids_message">نام های جدا شده با کاما (SSID) شبکه های WiFi مجاز (برای همه خالی بگذارید)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">محدودیت WiFi SSID به تنظیمات بیشتری نیاز دارد</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">مدیریت</string>
-  <string name="settings_more_info_faq">اطلاعات بیشتر (پرسش و پاسخ)</string>
   <string name="settings_authentication">احراز هویت</string>
   <string name="settings_username">نام کاربری</string>
   <string name="settings_enter_username">نام کاربری را وارد کنید</string>
@@ -327,17 +323,14 @@
     <item>گروه‌ها کارت‌های مجازی جداگانه هستند</item>
     <item>گروه ها دسته های هر مخاطب هستند</item>
   </string-array>
-  <string name="settings_contact_group_method_change">تغییر روش گروه</string>
   <!--collection management-->
   <string name="create_addressbook">ایجاد دفترچه آدرس</string>
-  <string name="create_addressbook_display_name_hint">کتاب آدرس من</string>
   <string name="create_calendar">تقویم ایجاد کنید</string>
   <string name="create_calendar_time_zone">منطقه زمانی</string>
   <string name="create_calendar_type">ورودی های احتمالی تقویم</string>
   <string name="create_calendar_type_vevent">رویدادها</string>
   <string name="create_calendar_type_vtodo">فعالیت ها</string>
   <string name="create_calendar_type_vjournal">یادداشت ها / ژورنال</string>
-  <string name="create_calendar_type_events_and_tasks">ترکیبی (رویدادها و فعالیت ها)</string>
   <string name="create_collection_color">رنگ</string>
   <string name="create_collection_creating">ایجاد مجموعه</string>
   <string name="create_collection_display_name">عنوان</string>
@@ -351,11 +344,9 @@
   <string name="delete_collection_confirm_title">آیا مطمئن هستید؟</string>
   <string name="delete_collection_confirm_warning">این مجموعه (%s) و تمام داده های آن برای همیشه حذف می شوند.</string>
   <string name="delete_collection_data_shall_be_deleted">این داده ها باید از سرور حذف شوند.</string>
-  <string name="delete_collection_deleting_collection">در حال حذف مجموعه</string>
   <string name="collection_force_read_only">اجبار به فقط خواندنی</string>
   <string name="collection_properties">خواص</string>
   <string name="collection_properties_url">آدرس(URL)</string>
-  <string name="collection_properties_copy_url">URL را کپی کنید</string>
   <string name="collection_properties_owner">مالک:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">اطلاعات اشکال زدایی</string>
@@ -378,7 +369,6 @@
   <string name="debug_info_involved_subtitle">مربوط به مشکل است</string>
   <string name="debug_info_involved_remote">منبع از راه دور:</string>
   <string name="debug_info_involved_local">منبع محلی:</string>
-  <string name="debug_info_involved_view">مشاهده با برنامه</string>
   <string name="debug_info_logs_caption">رویدادها</string>
   <string name="debug_info_logs_subtitle">رویدادهای مربوط به گفتار موجود است</string>
   <string name="debug_info_logs_view">دیدن رویدادها</string>
@@ -408,7 +398,6 @@
   <string name="sync_error_io">شبکه یا خطای ورودی / خروجی – %s</string>
   <string name="sync_error_http_dav">خطای سرور HTTP – %s</string>
   <string name="sync_error_local_storage">خطای ذخیره سازی محلی – %s</string>
-  <string name="sync_error_retry">سعی مجدد</string>
   <string name="sync_error_view_item">مشاهده مورد</string>
   <string name="sync_invalid_contact">مخاطب نامعتبر از سرور دریافت شد</string>
   <string name="sync_invalid_event">رویداد نامعتبر از سرور دریافت شد</string>

@@ -96,7 +96,7 @@
   <string name="about_license_info_no_warranty">Il programma è distribuito SENZA ALCUNA GARANZIA. È software libero e può essere redistribuito sotto alcune condizioni.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Grazie a: </i>%s]]></string>
   <!--global settings-->
-  <string name="logging_couldnt_create_file">Non riesco a creare il file di log</string>
+  <string name="logging_couldnt_create_file">Impossibile creare il file di log</string>
   <string name="logging_notification_text">Adesso l\'accesso all\' %s delle attività </string>
   <string name="logging_notification_view_share">Visualizza/condividi</string>
   <string name="logging_notification_disable">Disabilita</string>
@@ -123,7 +123,7 @@
   <string name="accounts_global_sync_enable">Attiva</string>
   <string name="accounts_sync_all">Sincronizzazione di tutti gli account</string>
   <!--RefreshCollectionsWorker-->
-  <string name="refresh_collections_worker_refresh_failed">Fallita l\'individuazione dei servizi</string>
+  <string name="refresh_collections_worker_refresh_failed">Impossibile trovare il servizio</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Impossibile aggiornare la lista delle raccolte</string>
   <!--Battery Optimization-->
   <!--ForegroundService-->
@@ -212,7 +212,6 @@
   <string name="login_user_name">Nome utente</string>
   <string name="login_user_name_required">Nome utente richiesto</string>
   <string name="login_base_url">Base URL</string>
-  <string name="login_type_url_certificate">Accedi con URL e certificato client</string>
   <string name="login_select_certificate">Seleziona certificato</string>
   <string name="login_login">Login</string>
   <string name="login_create_account">Crea account</string>
@@ -225,7 +224,7 @@
   <string name="login_account_not_created">L\'account non può essere creato</string>
   <string name="login_type_advanced">Login avanzato (utilizzo per casi speciali)</string>
   <string name="login_use_username_password">Utilizza il nome utente/password</string>
-  <string name="login_use_client_certificate">Usa il certificato cliente</string>
+  <string name="login_use_client_certificate">Usa il certificato del client</string>
   <string name="login_no_certificate_found">Nessun certificato trovato</string>
   <string name="login_install_certificate">Installa il certificato</string>
   <string name="login_configuration_detection">Rilevazione configurazione</string>
@@ -260,7 +259,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Nomi (SSID) delle reti WiFi autorizzate separati da virgola (lascia vuoto per autorizzarle tutte)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Le restrizioni del SSID WIFI richiedono ulteriori impostazioni</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Riuscire</string>
-  <string name="settings_more_info_faq">Maggiori informazioni (FAQ)</string>
   <string name="settings_authentication">Autenticazione</string>
   <string name="settings_username">Nome utente</string>
   <string name="settings_enter_username">Inserisci nome utente:</string>
@@ -299,17 +297,14 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
     <item>I gruppi sono vCards separate</item>
     <item>I gruppi sono categorie per ogni contatto</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Cambia il metodo del gruppo</string>
   <!--collection management-->
   <string name="create_addressbook">Crea rubrica</string>
-  <string name="create_addressbook_display_name_hint">La mia rubrica</string>
   <string name="create_calendar">Crea calendario</string>
   <string name="create_calendar_time_zone">Fuso orario</string>
   <string name="create_calendar_type">Possibili voci del calendario</string>
   <string name="create_calendar_type_vevent">Eventi</string>
   <string name="create_calendar_type_vtodo">Attività</string>
   <string name="create_calendar_type_vjournal">Note / diario</string>
-  <string name="create_calendar_type_events_and_tasks">Combinato (eventi e attività)</string>
   <string name="create_collection_color">Colore</string>
   <string name="create_collection_creating">Crea una raccolta</string>
   <string name="create_collection_display_name">Titolo</string>
@@ -323,11 +318,9 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="delete_collection_confirm_title">Sei sicuro?</string>
   <string name="delete_collection_confirm_warning">Questa raccolta (%s) e tutti i suoi dati saranno rimossi permanentemente.</string>
   <string name="delete_collection_data_shall_be_deleted">Questi dati saranno cancellati dal server.</string>
-  <string name="delete_collection_deleting_collection">Cancellazione della raccolta</string>
   <string name="collection_force_read_only">Forza sola lettura</string>
   <string name="collection_properties">Proprietà</string>
   <string name="collection_properties_url">Indirizzo (URL):</string>
-  <string name="collection_properties_copy_url">Copia URL</string>
   <string name="collection_properties_owner">Possessore:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informazioni di debug</string>
@@ -350,7 +343,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="debug_info_involved_subtitle">Collegate con il problema</string>
   <string name="debug_info_involved_remote">Fonti remote:</string>
   <string name="debug_info_involved_local">Fonti locali:</string>
-  <string name="debug_info_involved_view">Vedi con l\'applicazione</string>
   <string name="debug_info_logs_caption">Registri</string>
   <string name="debug_info_logs_subtitle">Sono disponibili registri verbali</string>
   <string name="debug_info_logs_view">Vedi i registri</string>
@@ -388,7 +380,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="sync_error_io">Errore di rete o di I/O – %s</string>
   <string name="sync_error_http_dav">Errore server HTTP – %s</string>
   <string name="sync_error_local_storage">Errore di archiviazione locale – %s</string>
-  <string name="sync_error_retry">Riprova</string>
   <string name="sync_error_view_item">Visualizza oggetto</string>
   <string name="sync_invalid_contact">Contatto non valido ricevuto dal server</string>
   <string name="sync_invalid_event">Evento non valido ricevuto dal server</string>

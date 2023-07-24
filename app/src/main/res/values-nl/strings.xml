@@ -183,8 +183,6 @@
   <string name="app_settings_notification_settings">App-meldingen</string>
   <string name="app_settings_notification_settings_summary">Meldingskanalen en hun instellingen beheren</string>
   <string name="app_settings_theme_title">Thema selecteren</string>
-  <string name="app_settings_language_title">Selecteer taal</string>
-  <string name="app_settings_language_system_default">Systeemstandaard</string>
   <string-array name="app_settings_theme_names">
     <item>Systeem standaard</item>
     <item>Licht</item>
@@ -245,7 +243,6 @@
   <string name="login_user_name">Gebruikersnaam</string>
   <string name="login_user_name_required">Gebruikersnaam vereist</string>
   <string name="login_base_url">Basis-URL</string>
-  <string name="login_type_url_certificate">Login met URL en client certificaat</string>
   <string name="login_select_certificate">Certificaat selecteren</string>
   <string name="login_login">Login</string>
   <string name="login_create_account">Account aanmaken</string>
@@ -263,7 +260,6 @@
   <string name="login_install_certificate">Certificaat installeren</string>
   <string name="login_type_google">Google Contacten / Kalender</string>
   <string name="login_google_account">Google account</string>
-  <string name="login_google_disclaimer">%s is niet gelieerd aan, en is ook niet geautoriseerd, gesponsord of anderszins goedgekeurd door Google LLC.</string>
   <string name="login_configuration_detection">Configuratie detecteren</string>
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_caldav_carddav">Geen CalDAV- of CardDAV-service gevonden.</string>
@@ -296,7 +292,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Door komma\'s gescheiden namen (SSID\'s) van toegestane WiFi-netwerken (laat leeg voor alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Beperking WiFi-SSID vereist verdere instellingen</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Beheren</string>
-  <string name="settings_more_info_faq">Meer informatie (FAQ)</string>
   <string name="settings_authentication">Verificatie</string>
   <string name="settings_username">Gebruikersnaam</string>
   <string name="settings_enter_username">Gebruikersnaam invoeren:</string>
@@ -332,17 +327,14 @@
     <item>Groepen zijn afzonderlijke vCards</item>
     <item>Groepen zijn categorieën per contact</item>
   </string-array>
-  <string name="settings_contact_group_method_change">Verander de methode voor contact-groepen</string>
   <!--collection management-->
   <string name="create_addressbook">Adresboek aanmaken</string>
-  <string name="create_addressbook_display_name_hint">Mijn adresboek</string>
   <string name="create_calendar">Kalender aanmaken</string>
   <string name="create_calendar_time_zone">Tijdzone</string>
   <string name="create_calendar_type">Mogelijke kalender-items</string>
   <string name="create_calendar_type_vevent">Gebeurtenissen</string>
   <string name="create_calendar_type_vtodo">Taken</string>
   <string name="create_calendar_type_vjournal">Notities / Dagboek</string>
-  <string name="create_calendar_type_events_and_tasks">Gecombineerd (afspraken en taken)</string>
   <string name="create_collection_color">Kleur</string>
   <string name="create_collection_creating">Maakt collectie aan</string>
   <string name="create_collection_display_name">Titel</string>
@@ -356,13 +348,11 @@
   <string name="delete_collection_confirm_title">Inderdaad verwijderen?</string>
   <string name="delete_collection_confirm_warning">Deze collectie (%s) wordt met alle gegevens blijvend verwijderd.</string>
   <string name="delete_collection_data_shall_be_deleted">Deze gegevens worden verwijderd van de server</string>
-  <string name="delete_collection_deleting_collection">Verwijdert collectie</string>
   <string name="collection_force_read_only">Forceer alleen-lezen</string>
   <string name="collection_properties">Eigenschappen</string>
   <string name="collection_properties_sync_time">Laatst gesynchroniseerd:</string>
   <string name="collection_properties_sync_time_never">Nooit gesynchroniseerd:</string>
   <string name="collection_properties_url">Adres (URL):</string>
-  <string name="collection_properties_copy_url">URL kopiëren</string>
   <string name="collection_properties_owner">Eigenaar:</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
@@ -385,7 +375,6 @@
   <string name="debug_info_involved_subtitle">Gerelateerd aan het probleem</string>
   <string name="debug_info_involved_remote">Externe bron:</string>
   <string name="debug_info_involved_local">Lokale bron:</string>
-  <string name="debug_info_involved_view">Met app bekijken</string>
   <string name="debug_info_logs_caption">Logboeken</string>
   <string name="debug_info_logs_subtitle">Uitgebreide logboeken zijn beschikbaar</string>
   <string name="debug_info_logs_view">Details bekijken</string>
@@ -427,7 +416,6 @@
   <string name="sync_error_io">Netwerk of I/O error - %s</string>
   <string name="sync_error_http_dav">HTTP-server fout - %s</string>
   <string name="sync_error_local_storage">Lokale opslag fout - %s</string>
-  <string name="sync_error_retry">Opnieuw</string>
   <string name="sync_error_retry_limit_reached">Soft error (max. aantal pogingen bereikt)</string>
   <string name="sync_error_view_item">Item bekijken</string>
   <string name="sync_invalid_contact">Ongeldig contact ontvangen van server</string>
