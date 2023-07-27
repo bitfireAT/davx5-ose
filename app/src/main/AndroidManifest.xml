@@ -294,6 +294,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/debug_paths" />
         </provider>
+
     </application>
 
     <!-- package visiblity – which apps do we need to see? -->
