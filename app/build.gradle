@@ -60,9 +60,10 @@ android {
     // Java namespace for our classes (not to be confused with Android package ID)
     namespace 'at.bitfire.davdroid'
 
-    flavorDimensions "distribution"
+    flavorDimensions = [ "distribution" ]
     productFlavors {
         ose {
+            dimension "distribution"
             versionNameSuffix "-ose"
         }
     }
