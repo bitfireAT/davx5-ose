@@ -9,5 +9,8 @@
     <color name="badge_life_buoy">#FF6A00</color>
     <color name="badge_medal">#FFC200</color>
     <color name="badge_sailboat">#083d77</color>
+    <color name="badge_mushroom">#D32F2F</color>
+    <color name="badge_lightning_bolt">#FDD835</color>
+    <color name="badge_ten_in_a_box">#43A047</color>
 
 </resources>

@@ -59,20 +59,29 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         private const val LOYAL_FOSS_BACKER = "loyal_foss_backer.2022"
         private const val PART_OF_THE_JOURNEY = "part_of_the_journey.2022"
         private const val NINTH_ANNIVERSARY = "9th_anniversary.2022"
+        private const val ONEUP_EXTRALIFE = "1up_extralife.2023"
+        private const val ENERGY_BOOSTER = "energy_booster.2023"
+        private const val DAVX5_DECADE = "davx5_decade"
 
         private val BADGES = mapOf(
             HELPING_HANDS to R.drawable.ic_badge_life_buoy,
             A_COFFEE_FOR_YOU to R.drawable.ic_badge_coffee,
             LOYAL_FOSS_BACKER to R.drawable.ic_badge_medal,
             PART_OF_THE_JOURNEY to R.drawable.ic_badge_sailboat,
-            NINTH_ANNIVERSARY to R.drawable.ic_badge_ninth_anniversary
+            NINTH_ANNIVERSARY to R.drawable.ic_badge_ninth_anniversary,
+            ONEUP_EXTRALIFE to R.drawable.ic_badge_1up_extralife,
+            ENERGY_BOOSTER to R.drawable.ic_badge_energy_booster,
+            DAVX5_DECADE to R.drawable.ic_badge_davx5_decade
         )
         private val BADGES_ANIMATIONS = mapOf(
             HELPING_HANDS to R.anim.spin,
             A_COFFEE_FOR_YOU to R.anim.lift,
             LOYAL_FOSS_BACKER to R.anim.pulsate,
             PART_OF_THE_JOURNEY to R.anim.rock,
-            NINTH_ANNIVERSARY to R.anim.drop_in
+            NINTH_ANNIVERSARY to R.anim.drop_in,
+            ONEUP_EXTRALIFE to R.anim.bounce,
+            ENERGY_BOOSTER to R.anim.drop_in,
+            DAVX5_DECADE to R.anim.pulsate
         )
         val PRODUCT_IDS = BADGES.keys.toList()
 
