@@ -9,14 +9,16 @@ import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Browser
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
+import androidx.compose.ui.text.intl.Locale
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -25,10 +27,10 @@ import androidx.lifecycle.MutableLiveData
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import com.google.android.material.snackbar.Snackbar
@@ -52,7 +54,6 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URI
 import javax.inject.Inject
-
 
 class NextcloudLoginFlowFragment: Fragment() {
 
@@ -96,6 +97,10 @@ class NextcloudLoginFlowFragment: Fragment() {
                     .setToolbarColor(resources.getColor(R.color.primaryColor))
                     .build()
                 browser.intent.data = loginUri
+                browser.intent.putExtra(
+                    Browser.EXTRA_HEADERS,
+                    bundleOf("Accept-Language" to Locale.current.toLanguageTag())
+                )
                 startActivityForResult(browser.intent, REQUEST_BROWSER, browser.startAnimationBundle)
 
             } else {
