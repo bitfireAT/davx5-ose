@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# SPDX-FileCopyrightText: 2023 DAVx⁵ contributors <https://github.com/bitfireAT/davx5-ose/graphs/contributors>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 TX_TOKEN=`awk '/token *=/ { print $3; }' <$HOME/.transifexrc`
 
 (cd .. && tx pull -a -f --use-git-timestamps)
