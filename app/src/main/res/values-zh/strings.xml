@@ -263,6 +263,7 @@
   <string name="login_google_see_tested_with">请参阅我们的“Tested with”页面的 Google 部分获得最新信息。</string>
   <string name="login_google_unexpected_warnings">你可能遇到意外的警告和/或者不得不创建自己的 client ID。</string>
   <string name="login_google_account">Google 账户</string>
+  <string name="login_google">使用 Google 账户登录</string>
   <string name="login_google_client_id">Client ID (可选)</string>
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s传输你的  Google 联系人和日历数据的目的仅是为了与此设备同步。详情见我们的 <a href="%2$s">隐私政策</a> 。]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s遵守 <a href="%2$s">Google API 服务用户数据政策</a>，包括有限使用的要求。]]></string>

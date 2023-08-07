@@ -263,6 +263,7 @@
   <string name="login_google_see_tested_with">Актуальную информацию смотрите на нашей странице \" Протестировано с Google\".</string>
   <string name="login_google_unexpected_warnings">Вы можете столкнуться с неожиданными предупреждениями и/или вам придется создать свой собственный ID клиента.</string>
   <string name="login_google_account">Google аккаунт</string>
+  <string name="login_google">Войти через Google</string>
   <string name="login_google_client_id">ID клиента (необязательно)</string>
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s передает данные Контактов и Календаря Google исключительно для синхронизации с этим устройством. Для получения информации смотрите нашу <a href="%2$s">Политику конфиденциальности</a>.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s соблюдает <a href="%2$s">Политику в отношении пользовательских данных Google API Services</a>, включая требования Ограниченного использования.]]></string>

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TX_TOKEN=`awk '/token *=/ { print $3; }' <$HOME/.transifexrc`
+export TX_TOKEN=`awk '/token *=/ { print $3; }' <$HOME/.transifexrc`
 
 (cd .. && tx pull -a -f --use-git-timestamps)
 if find ../app/src -type d -name 'values-*_*' -exec false '{}' +
