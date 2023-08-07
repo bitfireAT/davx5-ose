@@ -6,12 +6,7 @@ package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
 import android.app.Service
-import android.content.AbstractThreadedSyncAdapter
-import android.content.ContentProviderClient
-import android.content.ContentResolver
-import android.content.Context
-import android.content.Intent
-import android.content.SyncResult
+import android.content.*
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
@@ -19,8 +14,7 @@ import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import java.util.logging.Level
 
 abstract class SyncAdapterService: Service() {
@@ -45,6 +39,17 @@ abstract class SyncAdapterService: Service() {
         true    // isSyncable shouldn't be -1 because DAVx5 sets it to 0 or 1.
                            // However, if it is -1 by accident, set it to 1 to avoid endless sync loops.
     ) {
+
+        /**
+         * Completable [Boolean], which will be set to
+         *
+         * - `true` when the related sync worker has finished
+         * - `false` when the sync framework has requested cancellation.
+         *
+         * In any case, the sync framework shouldn't be blocked anymore as soon as a
+         * value is available.
+         */
+        val finished = CompletableDeferred<Boolean>()
 
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             // We seem to have to pass this old SyncFramework extra for an Android 7 workaround
@@ -76,35 +81,32 @@ abstract class SyncAdapterService: Service() {
             val workManager = WorkManager.getInstance(context)
             val status = workManager.getWorkInfosForUniqueWorkLiveData(workerName)
 
-            var finished = false
-            val lock = Object()
-
             val observer = Observer<List<WorkInfo>> { workInfoList ->
                 for (workInfo in workInfoList) {
-                    if (workInfo.state.isFinished) {
-                        synchronized(lock) {
-                            finished = true
-                            lock.notify()
+                    if (workInfo.state.isFinished)
+                        finished.complete(true)
+                }
+            }
+
+            try {
+                runBlocking(Dispatchers.Main) {     // observeForever not allowed in background thread
+                    status.observeForever(observer)
+                }
+
+                runBlocking {
+                    try {
+                        withTimeout(10 * 60 * 1000) {   // block max. 10 minutes
+                            finished.await()
                         }
+                    } catch (e: TimeoutCancellationException) {
+                        Logger.log.info("Sync job timed out, won't block sync framework anymore")
                     }
                 }
-            }
-
-            runBlocking(Dispatchers.Main) {     // observeForever not allowed in background thread
-                status.observeForever(observer)
-            }
-
-            synchronized(lock) {
-                try {
-                    if (!finished)
-                        lock.wait(10*60*1000)  // wait max 10 minutes
-                } catch (e: InterruptedException) {
-                    Logger.log.info("Interrupted while blocking sync framework. Sync may still be running")
+            } finally {
+                // remove observer in any case
+                runBlocking(Dispatchers.Main) {
+                    status.removeObserver(observer)
                 }
-            }
-
-            runBlocking(Dispatchers.Main) {
-                status.removeObserver(observer)
             }
 
             Logger.log.info("Returning to sync framework")
@@ -115,14 +117,13 @@ abstract class SyncAdapterService: Service() {
         }
 
         override fun onSyncCanceled() {
-            Logger.log.info("Ignoring sync adapter cancellation")
-            super.onSyncCanceled()
+            Logger.log.info("Sync adapter requested cancellation – won't cancel sync, but also won't block sync framework anymore")
+
+            // unblock sync framework
+            finished.complete(false)
         }
 
-        override fun onSyncCanceled(thread: Thread) {
-            Logger.log.info("Ignoring sync adapter cancellation")
-            super.onSyncCanceled(thread)
-        }
+        override fun onSyncCanceled(thread: Thread) = onSyncCanceled()
 
     }
 
