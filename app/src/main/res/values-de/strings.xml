@@ -11,6 +11,7 @@
   <string name="help">Hilfe</string>
   <string name="manage_accounts">Konten verwalten</string>
   <string name="share">Teilen</string>
+  <string name="no_internet_sync_scheduled">Kein Internet, Synchronisation wird geplant</string>
   <string name="database_destructive_migration_title">Datenbank beschädigt</string>
   <string name="database_destructive_migration_text">Alle Accounts wurden lokal entfernt.</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
@@ -209,6 +210,7 @@
   <string name="account_no_webcals">(Noch) keine Kalender-Abos vorhanden</string>
   <string name="account_swipe_down">Nach unten wischen, um neue Einträge am Server zu suchen.</string>
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
+  <string name="account_synchronize_collections">Synchronisiere die Kollektionen</string>
   <string name="account_settings">Konto-Einstellungen</string>
   <string name="account_rename">Konto umbenennen</string>
   <string name="account_rename_new_name">Ungespeicherte lokale Änderungen können verloren gehen. Nach dem Umbenennen muss neu synchronisiert werden. Neuer Kontoname:</string>
@@ -258,7 +260,14 @@
   <string name="login_no_certificate_found">Kein Zertifikat gefunden</string>
   <string name="login_install_certificate">Zertifikat installieren </string>
   <string name="login_type_google">Google-Kontakte / -Kalender</string>
+  <string name="login_google_see_tested_with">Siehe unsere \"Getestet mit Google\"-Seite für neuere Informationen.</string>
+  <string name="login_google_unexpected_warnings">Sie werden unerwartete Warnungen erhalten und/oder müssen eine eigene Client-ID erstellen.</string>
   <string name="login_google_account">Google-Konto</string>
+  <string name="login_google">Mit Google anmelden</string>
+  <string name="login_google_client_id">Client-ID (optional)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$süberträgt Ihre Google-Kontakte und -Kalenderdaten zur Synchronisierung mit diesem Gerät. Siehe auch unsere <a href="%2$s">Datenschutzrichtlinie</a>für mehr Informationen.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$srichtet sich nach der <a href="%2$s">Google API Services Nutzerdaten-Richtlinie</a>, inklusive der eingeschränkten Nutzungsbedingungen.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Authentifizierungscode konnte nicht abgerufen werden</string>
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
   <string name="login_no_caldav_carddav">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>
@@ -292,6 +301,9 @@
   <string name="settings_sync_wifi_only_ssids_permissions_required">WLAN-SSID-Einschränkung benötigt weitere Einstellungen</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Verwalten</string>
   <string name="settings_authentication">Anmeldeinformationen</string>
+  <string name="settings_oauth">Wieder anmelden</string>
+  <string name="settings_oauth_summary">Erneut mit OAuth anmelden</string>
+  <string name="settings_username_key">Benutzername</string>
   <string name="settings_username">Benutzername</string>
   <string name="settings_enter_username">Benutzername eingeben:</string>
   <string name="settings_password">Passwort</string>
@@ -415,6 +427,7 @@
   <string name="sync_error_io">Netzwerk- oder E/A-Fehler – %s</string>
   <string name="sync_error_http_dav">HTTP-Serverfehler – %s</string>
   <string name="sync_error_local_storage">Lokaler Speicherfehler – %s</string>
+  <string name="sync_error_retry_limit_reached">Weicher Fehler (maximale Anzahl an Wiederholungen erreicht)</string>
   <string name="sync_error_view_item">Untersuchen</string>
   <string name="sync_invalid_contact">Ungültigen Kontakt vom Server erhalten</string>
   <string name="sync_invalid_event">Ungültigen Termin vom Server erhalten</string>

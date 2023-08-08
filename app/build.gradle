@@ -2,11 +2,14 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-apply plugin: 'com.android.application'
-apply plugin: 'com.mikepenz.aboutlibraries.plugin'
-apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.application'
+    id 'com.google.devtools.ksp'
+    id 'com.mikepenz.aboutlibraries.plugin'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-android'
+    id 'kotlin-kapt'     // remove as soon as Hilt supports KSP [https://issuetracker.google.com/179057202]
+}
 
 // Android configuration
 android {
@@ -17,8 +20,8 @@ android {
         applicationId 'com.infomaniak.sync'
         resValue 'string', 'application_id', applicationId
 
-        versionCode 403050100
-        versionName '4.3.5.1'
+        versionCode 403050200
+        versionName '4.3.5.2'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
@@ -32,12 +35,6 @@ android {
         buildConfigField "String", "CLIENT_ID", '"CE011334-F75A-4263-9F9F-45FC5A142F59"'
 
         testInstrumentationRunner "at.bitfire.davdroid.CustomTestRunner"
-
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-            }
-        }
     }
 
     compileOptions {
@@ -63,9 +60,10 @@ android {
     // Java namespace for our classes (not to be confused with Android package ID)
     namespace 'at.bitfire.davdroid'
 
-    flavorDimensions "distribution"
+    flavorDimensions = [ "distribution" ]
     productFlavors {
         ose {
+            dimension "distribution"
 //            versionNameSuffix "-ose"
         }
     }
@@ -107,6 +105,14 @@ android {
             excludes += ['META-INF/*.md']
         }
     }
+
+    androidResources {
+        generateLocaleConfig true
+    }
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 configurations {
@@ -126,7 +132,7 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
-    kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"
+    kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"     // replace by KSP when ready [https://issuetracker.google.com/179057202]
 
     // support libs
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -160,7 +166,7 @@ dependencies {
     implementation "androidx.room:room-runtime:${versions.room}"
     implementation "androidx.room:room-ktx:${versions.room}"
     implementation "androidx.room:room-paging:${versions.room}"
-    kapt "androidx.room:room-compiler:${versions.room}"
+    ksp "androidx.room:room-compiler:${versions.room}"
     androidTestImplementation "androidx.room:room-testing:${versions.room}"
 
     // own libraries

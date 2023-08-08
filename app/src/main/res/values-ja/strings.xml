@@ -210,6 +210,7 @@
   <string name="account_no_webcals">カレンダーのサブスクリプションは (まだ) ありません。</string>
   <string name="account_swipe_down">下にスワイプすると、サーバーからリストを更新します。</string>
   <string name="account_synchronize_now">今すぐ同期</string>
+  <string name="account_synchronize_collections">コレクションを同期</string>
   <string name="account_settings">アカウント設定</string>
   <string name="account_rename">アカウントの名前を変更</string>
   <string name="account_rename_new_name">未保存のローカルデータが破棄されることがあります。名前の変更後に再同期が必要です。新しいアカウント名:</string>
@@ -262,6 +263,7 @@
   <string name="login_google_see_tested_with">最新情報は \"Tested with Google\" のページをご確認ください。</string>
   <string name="login_google_unexpected_warnings">未知のエラーに遭遇したり、クライアント ID を作成するように求められたりする場合があります。</string>
   <string name="login_google_account">Google アカウント</string>
+  <string name="login_google">Google でログイン</string>
   <string name="login_google_client_id">クライアント ID (オプション)</string>
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s は、このデバイスとの同期のみを目的として、Google コンタクトとカレンダーのデータを転送を行います。詳細情報は、<a href="%2$s">プライバシーポリシー</a> をご確認ください。]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s は、追加要件を含む <a href="%2$s">Google API サービスのユーザーデータに関するポリシー</a> に準拠しています。]]></string>

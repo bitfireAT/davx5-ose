@@ -263,6 +263,7 @@
   <string name="login_google_see_tested_with">Le a nosa páxina \"Probado con Google\" para ter información actualizada.</string>
   <string name="login_google_unexpected_warnings">Pode que recibas algún aviso e/ou teñas que crear o teu propio ID de cliente.</string>
   <string name="login_google_account">Conta de Google</string>
+  <string name="login_google">Inicia sesión con Google</string>
   <string name="login_google_client_id">ID Cliente (optativo)</string>
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfire os teus datos de Google Contacts e Calendar só para sincronizalos neste dispositivo. Le a nosa <a href="%2$s">política de Privacidade</a> para saber máis.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s cumpre coa <a href="%2$s">Google API Services User Data Policy</a>, incluíndo os requerimentos de Limited Use.]]></string>

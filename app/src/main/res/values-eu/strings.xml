@@ -210,6 +210,7 @@
   <string name="account_no_webcals">Ez dago egutegi harpidetzarik (oraindik).</string>
   <string name="account_swipe_down">Lerratu beherantz zerbitzariaren zerrenda freskatzeko.</string>
   <string name="account_synchronize_now">Sinkronizatu orain</string>
+  <string name="account_synchronize_collections">Sinkronizatu bildumak</string>
   <string name="account_settings">Kontuaren ezarpenak</string>
   <string name="account_rename">Berrizendatu kontua</string>
   <string name="account_rename_new_name">Gorde gabeko datu lokalak baztertu daitezke. Berriro sinkronizatu behar da izena aldatu ostean. Kontuaren izen berria:</string>
@@ -262,7 +263,11 @@
   <string name="login_google_see_tested_with">Mesedez, ikusi gure \"Google-ekin probatuta\" orria informazio eguneraturako.</string>
   <string name="login_google_unexpected_warnings">Oharrak jaso edo zure bezero ID sortzea beharrezkoa izatea gertatu daiteke.</string>
   <string name="login_google_account">Google kontua</string>
+  <string name="login_google">Hasi saioa Google-rekin</string>
   <string name="login_google_client_id">Bezeroaren ID (aukerazkoa)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s -k zure Google Kontaktuak eta Calendar datuak transferitzen ditu gailu honekin sinkronizatzeko soilik. ikusi gure <a href="%2$s">Pribatutasun politika</a> xehetasunetarako.]]></string>
+  <string name="login_google_client_limited_use">&lt;![CDATA[%1$s -k &lt;a href="%2$s"&gt;Google API Zerbitzuen Erabiltzaileen Datuen Gidalerroak&lt;/a&gt;, erabilera mugatuko eskakizunak barne.]].</string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Ezin izan da baimen-kodea lortu</string>
   <string name="login_configuration_detection">Konfigurazio detekzioa</string>
   <string name="login_querying_server">Mesedez itxaron, zerbitzaria kontsultatzen...</string>
   <string name="login_no_caldav_carddav">Ezin izan da CalDAV edo CardDAV zerbitzua aurkitu.</string>
@@ -296,6 +301,9 @@
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID murriztapenak ezarpen gehiago behar ditu</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Kudeatu</string>
   <string name="settings_authentication">Autentifikazioa</string>
+  <string name="settings_oauth">Berriro autentifikatu</string>
+  <string name="settings_oauth_summary">Egin OAuth saioa berriro</string>
+  <string name="settings_username_key">erabiltzaile-izena</string>
   <string name="settings_username">Erabiltzaile izena</string>
   <string name="settings_enter_username">Sartu erabiltzaile izena:</string>
   <string name="settings_password">Pasahitza</string>

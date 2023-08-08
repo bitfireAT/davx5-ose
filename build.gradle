@@ -8,7 +8,8 @@ buildscript {
         appIntro: '6.2.0',
         composeBom: '2023.06.01',
         hilt: '2.47',
-        kotlin: '1.8.22',       // keep in sync with app/build.gradle composeOptions.kotlinCompilerExtensionVersion
+        kotlin: '1.8.22',       // keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
+                                //                   * com.google.devtools.ksp at the end of this file
         okhttp: '4.11.0',
         room: '2.5.2',
         // latest Apache Commons versions that don't require Java 8 (Android 7)
@@ -31,11 +32,16 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.2'
+        classpath 'com.android.tools.build:gradle:8.1.0'
         classpath "com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}"
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${versions.aboutLibraries}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
     }
+}
+
+plugins {
+    // see https://github.com/google/ksp/releases for version numbers
+    id 'com.google.devtools.ksp' version '1.8.22-1.0.11' apply false
 }
 
 allprojects {
