@@ -52,6 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:layout_gravity="right|end|bottom"
+        android:contentDescription="@string/webdav_add_mount_add"
         app:srcCompat="@drawable/ic_add_white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
