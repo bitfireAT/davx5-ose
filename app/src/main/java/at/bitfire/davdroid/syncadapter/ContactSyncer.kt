@@ -13,6 +13,7 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.setAndVerifyUserData
 import java.util.logging.Level
 
 /**
@@ -50,7 +51,7 @@ class ContactSyncer(context: Context): Syncer(context) {
                     addressBook.syncState = null
                 }
             }
-            accountSettings.accountManager.setUserData(account, PREVIOUS_GROUP_METHOD, groupMethod)
+            accountSettings.accountManager.setAndVerifyUserData(account, PREVIOUS_GROUP_METHOD, groupMethod)
 
             Logger.log.info("Synchronizing address book: ${addressBook.url}")
             Logger.log.info("Taking settings from: ${addressBook.mainAccount}")

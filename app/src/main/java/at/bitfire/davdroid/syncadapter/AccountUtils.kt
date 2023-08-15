@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.util.setAndVerifyUserData
 
 object AccountUtils {
 
@@ -42,7 +43,7 @@ object AccountUtils {
         // https://forums.bitfire.at/post/11644
         if (!verifyUserData(context, account, userData))
             for (key in userData.keySet())
-                manager.setUserData(account, key, userData.getString(key))
+                manager.setAndVerifyUserData(account, key, userData.getString(key))
 
         if (!verifyUserData(context, account, userData))
             throw IllegalStateException("Android doesn't store user data in account")
