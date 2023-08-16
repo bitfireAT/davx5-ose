@@ -8,21 +8,12 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Application
 import android.app.usage.UsageStatsManager
-import android.content.ContentProviderClient
-import android.content.ContentResolver
-import android.content.ContentUris
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Environment
-import android.os.LocaleList
-import android.os.PowerManager
-import android.os.StatFs
+import android.os.*
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.View
@@ -35,11 +26,7 @@ import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.exception.DavException
@@ -56,9 +43,9 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
-import at.bitfire.ical4android.util.MiscUtils.ContentProviderClientHelper.closeCompat
 import at.techbee.jtx.JtxContract
 import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
@@ -74,18 +61,14 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
-import java.io.File
-import java.io.IOError
-import java.io.IOException
-import java.io.StringReader
-import java.io.Writer
+import java.io.*
 import java.util.Locale
 import java.util.TimeZone
 import java.util.logging.Level
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import javax.inject.Inject
-import at.bitfire.ical4android.util.MiscUtils.UriHelper.asSyncAdapter as asCalendarSyncAdapter
+import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
