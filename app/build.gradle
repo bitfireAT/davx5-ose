@@ -13,8 +13,7 @@ plugins {
 
 // Android configuration
 android {
-    compileSdkVersion 33
-    buildToolsVersion '33.0.2'
+    compileSdk 33
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
@@ -51,7 +50,7 @@ android {
     composeOptions {
         // Keep this in sync with Kotlin version:
         // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-        kotlinCompilerExtensionVersion = "1.4.8"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
@@ -113,7 +112,7 @@ ksp {
 }
 
 configurations {
-    all {
+    configureEach {
         // exclude modules which are in conflict with system libraries
         exclude module: "commons-logging"
         exclude group: "org.json", module: "json"
