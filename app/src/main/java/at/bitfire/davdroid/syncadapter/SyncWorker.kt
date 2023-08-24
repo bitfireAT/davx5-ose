@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
+import android.app.PendingIntent
 import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
@@ -42,6 +43,7 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
@@ -360,6 +362,8 @@ class SyncWorker @AssistedInject constructor(
                 .putString("syncResultStats", result.stats.toString())
                 .build()
 
+            val softErrorNotificationTag = account.type + "-" + account.name + "-" + authority
+
             // On soft errors the sync is retried a few times before considered failed
             if (result.hasSoftError()) {
                 Logger.log.warning("Soft error while syncing: result=$result, stats=${result.stats}")
@@ -371,6 +375,7 @@ class SyncWorker @AssistedInject constructor(
                 Logger.log.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
 
                 notificationManager.notifyIfPossible(
+                    softErrorNotificationTag,
                     NotificationUtils.NOTIFY_SYNC_ERROR,
                     NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_SYNC_IO_ERRORS)
                         .setSmallIcon(R.drawable.ic_sync_problem_notify)
@@ -378,13 +383,19 @@ class SyncWorker @AssistedInject constructor(
                         .setContentText(applicationContext.getString(R.string.sync_error_retry_limit_reached))
                         .setSubText(account.name)
                         .setOnlyAlertOnce(true)
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setPriority(NotificationCompat.PRIORITY_MIN)
                         .setCategory(NotificationCompat.CATEGORY_ERROR)
                         .build()
                 )
 
                 return Result.failure(syncResult)
             }
+
+            // If no soft error found, dismiss sync error notification
+            notificationManager.cancel(
+                softErrorNotificationTag,
+                NotificationUtils.NOTIFY_SYNC_ERROR
+            )
 
             // On a hard error - fail with an error message
             // Note: SyncManager should have notified the user
