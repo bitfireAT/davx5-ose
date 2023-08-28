@@ -5,7 +5,7 @@
 buildscript {
     ext.versions = [
         aboutLibraries: '10.8.3',
-        appIntro: '6.3.1',
+        appIntro: '7.0.0-beta02',
         composeBom: '2023.06.01',
         hilt: '2.47',
         kotlin: '1.9.0',       // keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
