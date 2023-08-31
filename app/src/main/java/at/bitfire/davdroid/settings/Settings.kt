@@ -22,7 +22,13 @@ object Settings {
     const val PROXY_PORT = "proxy_port"         // Integer
 
     /**
-     * Default sync interval (long), in seconds.
+     * Whether to ignore VPNs at internet connection detection, true by default because VPN connections
+     * seem to include "VALIDATED" by default even without actual internet connection
+     */
+    const val IGNORE_VPN_NETWORK_CAPABILITY = "ignore_vpns"         // Boolean
+
+    /**
+     * Default sync interval (Long), in seconds.
      * Used to initialize an account.
      */
     const val DEFAULT_SYNC_INTERVAL = "default_sync_interval"

@@ -345,6 +345,10 @@
     <string name="settings_sync_wifi_only_ssids_message">Comma-separated names (SSIDs) of allowed WiFi networks (leave blank for all)</string>
     <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID restriction requires further settings</string>
     <string name="settings_sync_wifi_only_ssids_permissions_action">Manage</string>
+    <string name="settings_ignore_vpns_key" translatable="false">ignore_vpns</string>
+    <string name="settings_ignore_vpns">VPN connectivity</string>
+    <string name="settings_ignore_vpns_on">Non-VPN connection required (recommended)</string>
+    <string name="settings_ignore_vpns_off">VPN counts as Internet connection</string>
     <string name="settings_authentication">Authentication</string>
     <string name="settings_oauth_key" translatable="false">oauth</string>
     <string name="settings_oauth">Re-authenticate</string>

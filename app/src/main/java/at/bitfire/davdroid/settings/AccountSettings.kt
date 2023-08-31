@@ -70,6 +70,7 @@ class AccountSettings(
 
         const val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
         const val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
+        const val KEY_IGNORE_VPNS = "ignore_vpns"           // ignore vpns at connection detection
 
         /** Time range limitation to the past [in days]. Values:
          *
@@ -318,10 +319,10 @@ class AccountSettings(
     }
 
     fun getSyncWifiOnly() =
-            if (settings.containsKey(KEY_WIFI_ONLY))
-                settings.getBoolean(KEY_WIFI_ONLY)
-            else
-                accountManager.getUserData(account, KEY_WIFI_ONLY) != null
+        if (settings.containsKey(KEY_WIFI_ONLY))
+            settings.getBoolean(KEY_WIFI_ONLY)
+        else
+            accountManager.getUserData(account, KEY_WIFI_ONLY) != null
 
     fun setSyncWiFiOnly(wiFiOnly: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
@@ -332,16 +333,26 @@ class AccountSettings(
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
-            if (getSyncWifiOnly()) {
-                val strSsids = if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
-                    settings.getString(KEY_WIFI_ONLY_SSIDS)
-                else
-                    accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS)
-                strSsids?.split(',')
-            } else
-                null
+        if (getSyncWifiOnly()) {
+            val strSsids = if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
+                settings.getString(KEY_WIFI_ONLY_SSIDS)
+            else
+                accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS)
+            strSsids?.split(',')
+        } else
+            null
     fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
-            accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
+        accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
+
+    fun getIgnoreVpns(): Boolean =
+        when (accountManager.getUserData(account, KEY_IGNORE_VPNS)) {
+            null -> settings.getBoolean(KEY_IGNORE_VPNS)
+            "0" -> false
+            else -> true
+        }
+
+    fun setIgnoreVpns(ignoreVpns: Boolean) =
+        accountManager.setAndVerifyUserData(account, KEY_IGNORE_VPNS, if (ignoreVpns) "1" else "0")
 
     /**
      * Updates the periodic sync worker of an authority according to

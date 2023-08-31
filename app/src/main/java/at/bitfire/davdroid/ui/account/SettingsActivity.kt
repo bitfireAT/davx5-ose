@@ -217,6 +217,18 @@ class SettingsActivity: AppCompatActivity() {
                 }
             }
 
+            findPreference<SwitchPreferenceCompat>(getString(R.string.settings_ignore_vpns_key))!!.let {
+                model.ignoreVpns.observe(viewLifecycleOwner) { ignoreVpns ->
+                    it.isEnabled = true
+                    it.isChecked = ignoreVpns
+                    it.isVisible = Build.VERSION.SDK_INT >= 23
+                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, prefValue ->
+                        model.updateIgnoreVpns(prefValue as Boolean)
+                        false
+                    }
+                }
+            }
+
             // preference group: authentication
             val prefUserName = findPreference<EditTextPreference>(getString(R.string.settings_username_key))!!
             val prefPassword = findPreference<EditTextPreference>(getString(R.string.settings_password_key))!!
@@ -443,6 +455,7 @@ class SettingsActivity: AppCompatActivity() {
 
         val syncWifiOnly = MutableLiveData<Boolean>()
         val syncWifiOnlySSIDs = MutableLiveData<List<String>>()
+        val ignoreVpns = MutableLiveData<Boolean>()
 
         val credentials = MutableLiveData<Credentials>()
 
@@ -481,6 +494,7 @@ class SettingsActivity: AppCompatActivity() {
 
             syncWifiOnly.postValue(accountSettings.getSyncWifiOnly())
             syncWifiOnlySSIDs.postValue(accountSettings.getSyncWifiOnlySSIDs())
+            ignoreVpns.postValue(accountSettings.getIgnoreVpns())
 
             credentials.postValue(accountSettings.credentials())
 
@@ -507,6 +521,11 @@ class SettingsActivity: AppCompatActivity() {
 
         fun updateSyncWifiOnlySSIDs(ssids: List<String>?) {
             accountSettings?.setSyncWifiOnlySSIDs(ssids)
+            reload()
+        }
+
+        fun updateIgnoreVpns(ignoreVpns: Boolean) {
+            accountSettings?.setIgnoreVpns(ignoreVpns)
             reload()
         }
 

@@ -20,7 +20,8 @@ class DefaultsProvider(
 
     override val booleanDefaults = mutableMapOf(
         Pair(Settings.DISTRUST_SYSTEM_CERTIFICATES, false),
-        Pair(Settings.FORCE_READ_ONLY_ADDRESSBOOKS, false)
+        Pair(Settings.FORCE_READ_ONLY_ADDRESSBOOKS, false),
+        Pair(Settings.IGNORE_VPN_NETWORK_CAPABILITY, true)
     )
 
     override val intDefaults = mapOf(
