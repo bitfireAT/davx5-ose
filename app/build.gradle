@@ -13,7 +13,7 @@ plugins {
 
 // Android configuration
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "at.bitfire.davdroid"
@@ -132,7 +132,7 @@ dependencies {
 
     // support libs
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.browser:browser:1.5.0'
+    implementation 'androidx.browser:browser:1.6.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.concurrent:concurrent-futures-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
@@ -146,7 +146,7 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.work:work-runtime-ktx:2.8.1'
+    implementation "androidx.work:work-runtime-ktx:${versions.workManager}"
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.9.0'
 
@@ -201,7 +201,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
-    androidTestImplementation 'androidx.work:work-testing:2.8.1'
+    androidTestImplementation "androidx.work:work-testing:${versions.workManager}"
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
     androidTestImplementation 'io.mockk:mockk-android:1.13.7'
     androidTestImplementation 'junit:junit:4.13.2'
