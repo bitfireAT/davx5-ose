@@ -210,7 +210,6 @@
   <string name="account_no_webcals">Nie ma (jeszcze) subskrypcji kalendarzy.</string>
   <string name="account_swipe_down">Przesuń palcem w dół, aby odświeżyć listę z serwera.</string>
   <string name="account_synchronize_now">Synchronizuj teraz</string>
-  <string name="account_synchronize_collections">Synchronizuj kolekcje</string>
   <string name="account_settings">Ustawienia konta</string>
   <string name="account_rename">Zmień nazwę konta</string>
   <string name="account_rename_new_name">Niezapisane dane lokalne mogą zostać usunięte. Po zmianie nazwy jest wymagana ponowna synchronizacja. Nowa nazwa konta:</string>

@@ -210,7 +210,6 @@
   <string name="account_no_webcals">暂无日历订阅。</string>
   <string name="account_swipe_down">下拉可从服务器获取最新列表。</string>
   <string name="account_synchronize_now"> 立即同步</string>
-  <string name="account_synchronize_collections">同步收藏</string>
   <string name="account_settings">账户设置</string>
   <string name="account_rename">重命名账户</string>
   <string name="account_rename_new_name">重命名后，未上传的本地修改会被撤销，您需要重新执行同步。新账户名：</string>

@@ -11,7 +11,8 @@
   <string name="help">Помощ</string>
   <string name="manage_accounts">Управление на регистрации</string>
   <string name="share">Споделяне</string>
-  <string name="database_destructive_migration_title">Повредена банка от данни</string>
+  <string name="no_internet_sync_scheduled">Няма връзка с интернет, насрочено е синхронизиране за по-късно</string>
+  <string name="database_destructive_migration_title">Повредено хранилище</string>
   <string name="database_destructive_migration_text">Всички местни профили са премахнати.</string>
   <string name="notification_channel_debugging">Отстраняване на дефекти</string>
   <string name="notification_channel_general">Други важни съобщения</string>
@@ -47,7 +48,7 @@
   <string name="intro_tasks_no_app_store">Няма достъпен магазин за приложения</string>
   <string name="intro_tasks_dont_show">Не се нуждая от поддръжка на задачи.*</string>
   <string name="intro_open_source_title">Приложение с отворен код</string>
-  <string name="intro_open_source_text">Радваме се, че използвате %s. Това е приложение с отворен код. Разработката, издръжката и поддръжката му са тежка работа. Моля да допринесете (има много начини) или да дарите. Вашият жест ще бъде високо оценен.</string>
+  <string name="intro_open_source_text">Радваме се, че използвате %s. Това е приложение с отворен код. Разработката, издръжката и поддръжката му са тежка работа. Молим да допринесете (има много начини) или да дарите. Вашият жест ще бъде високо оценен.</string>
   <string name="intro_open_source_details">Как да допринеса или даря</string>
   <string name="intro_open_source_dont_show">Без повторно показване в близко бъдеще</string>
   <!--PermissionsActivity-->
@@ -188,8 +189,8 @@
     <item>Тъмна</item>
   </string-array>
   <string name="app_settings_reset_hints">Нулиране на подсказки</string>
-  <string name="app_settings_reset_hints_summary">Всички подсказки, които са били разкарани, ще бъдат показани отново</string>
-  <string name="app_settings_reset_hints_success">Всички подсказки ще се покажат отново</string>
+  <string name="app_settings_reset_hints_summary">Всички затворени подсказки, ще бъдат показани отново</string>
+  <string name="app_settings_reset_hints_success">Всички подсказки ще бъдат показани отново</string>
   <string name="app_settings_integration">Интеграция</string>
   <string name="app_settings_tasks_provider">Приложението Tasks</string>
   <string name="app_settings_tasks_provider_synchronizing_with">Синхронизиране чрез %s</string>
@@ -234,13 +235,13 @@
   <string name="login_title">Нова регистрация</string>
   <string name="login_type_email">Вход с електронна поща</string>
   <string name="login_email_address">Електронна поща</string>
-  <string name="login_email_address_error">Нужен е действителен електронен адрес</string>
+  <string name="login_email_address_error">Необходим е действителен електронен адрес</string>
   <string name="login_password">Парола</string>
-  <string name="login_password_required">Трябва парола</string>
+  <string name="login_password_required">Необходима е парола</string>
   <string name="login_type_url">Вход с адрес и потребителско име</string>
   <string name="login_url_must_be_http_or_https">Адресът трябва да започва с http(s)://</string>
   <string name="login_user_name">Потребителско име</string>
-  <string name="login_user_name_required">Нужно е потребителско име</string>
+  <string name="login_user_name_required">Необходимо е потребителско име</string>
   <string name="login_base_url">Основен адрес</string>
   <string name="login_select_certificate">Избери сертификат</string>
   <string name="login_login">Напред</string>
@@ -257,6 +258,13 @@
   <string name="login_use_client_certificate">Със сертификат за удостоверяване</string>
   <string name="login_no_certificate_found">Не е намерен сертификат</string>
   <string name="login_install_certificate">Инсталиране на сертификат</string>
+  <string name="login_type_google">Google Contacts / Calendar</string>
+  <string name="login_google_see_tested_with">Погледнете страницата „Проверено с Гугъл“ за последната информация.</string>
+  <string name="login_google_unexpected_warnings">Може да получите неочаквани предупреждения и/или да се наложи да създадете собствен клиентски инентификатор.</string>
+  <string name="login_google_account">Профил в Гугъл</string>
+  <string name="login_google">Вход с Гугъл</string>
+  <string name="login_google_client_id">Идентификатор на клиент (по желание)</string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Не може да бъде получен код за упълномощаване</string>
   <string name="login_configuration_detection">Откриване на настройки</string>
   <string name="login_querying_server">Изчакайте, запитване на сървъра…</string>
   <string name="login_no_caldav_carddav">Не са открити услуги на CalDAV или CardDAV.</string>
@@ -281,7 +289,7 @@
   </string-array>
   <string name="settings_sync_wifi_only">Синхронизиране само през Wi-Fi</string>
   <string name="settings_sync_wifi_only_on">Синхронизацията е ограничена само при връзки през Wi-Fi</string>
-  <string name="settings_sync_wifi_only_off">Вида на връзката не е от значение</string>
+  <string name="settings_sync_wifi_only_off">Видът на връзката не е от значение</string>
   <string name="settings_sync_wifi_only_ssids">Ограничения на Wi-Fi по SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Ще синхронизира само през %s</string>
   <string name="settings_sync_wifi_only_ssids_on_location_services">Ще синхронизира само през %s (изисква услуга за местоположението)</string>
@@ -290,10 +298,13 @@
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ограниченията на Wi-Fi по SSID изискват допълнителни настройки</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Управление</string>
   <string name="settings_authentication">Удостоверяване</string>
+  <string name="settings_oauth">Повторно удостоверяване</string>
+  <string name="settings_oauth_summary">Изпълнява повторно влизане чрез OAuth</string>
+  <string name="settings_username_key">потребителско име</string>
   <string name="settings_username">Потребителско име</string>
-  <string name="settings_enter_username">Въведи потребитеско име:</string>
+  <string name="settings_enter_username">Въведете потребитеско име:</string>
   <string name="settings_password">Парола</string>
-  <string name="settings_password_summary">Промени паролата съгласно твоя сървър.</string>
+  <string name="settings_password_summary">Променете паролата съгласно сървъра.</string>
   <string name="settings_enter_password">Въведете парола:</string>
   <string name="settings_certificate_alias">Псевдоним на клиентския сертификат</string>
   <string name="settings_certificate_alias_empty">Няма избран сертификат</string>
@@ -331,22 +342,24 @@
   <string name="create_calendar_type">Възможни компоненти в календара</string>
   <string name="create_calendar_type_vevent">Събития</string>
   <string name="create_calendar_type_vtodo">Задачи</string>
-  <string name="create_calendar_type_vjournal">Бележки / журнал</string>
+  <string name="create_calendar_type_vjournal">Бележки / дневник</string>
   <string name="create_collection_color">Цвят</string>
   <string name="create_collection_creating">Създаване на ресурс</string>
   <string name="create_collection_display_name">Заглавие</string>
-  <string name="create_collection_display_name_required">Изисква се заглавие</string>
+  <string name="create_collection_display_name_required">Необходимо е заглавие</string>
   <string name="create_collection_description">Описание</string>
   <string name="create_collection_optional">по желание</string>
   <string name="create_collection_home_set">Местоположение на хранилището</string>
   <string name="create_collection_home_set_required">Местоположението на хранилището е задължително</string>
   <string name="create_collection_create">Създаване</string>
   <string name="delete_collection">Премахване</string>
-  <string name="delete_collection_confirm_title">Сигурен ли си?</string>
+  <string name="delete_collection_confirm_title">Сигурни ли сте?</string>
   <string name="delete_collection_confirm_warning">Този ресурс (%s) и всичките данни в него ще бъдат изтрити.</string>
   <string name="delete_collection_data_shall_be_deleted">Тези данни ще бъдат премахнати от сървъра.</string>
   <string name="collection_force_read_only">Само за четене</string>
   <string name="collection_properties">Свойства</string>
+  <string name="collection_properties_sync_time">Последно синхронизирано:</string>
+  <string name="collection_properties_sync_time_never">Никога</string>
   <string name="collection_properties_url">Адрес:</string>
   <string name="collection_properties_owner">Собственик</string>
   <!--debugging and DebugInfoActivity-->
