@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.app.PendingIntent
 import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
@@ -42,7 +41,6 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.ConnectionUtils.internetAvailable
 import at.bitfire.davdroid.network.ConnectionUtils.wifiAvailable
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
@@ -149,7 +147,7 @@ class SyncWorker @AssistedInject constructor(
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setBackoffCriteria(
                     BackoffPolicy.EXPONENTIAL,
-                    WorkRequest.MIN_BACKOFF_MILLIS,
+                    WorkRequest.DEFAULT_BACKOFF_DELAY_MILLIS,   // 30 sec
                     TimeUnit.MILLISECONDS
                 )
                 .setConstraints(constraints)
@@ -275,7 +273,6 @@ class SyncWorker @AssistedInject constructor(
     var syncThread: Thread? = null
 
     override fun doWork(): Result {
-
         // ensure we got the required arguments
         val account = Account(
             inputData.getString(ARG_ACCOUNT_NAME) ?: throw IllegalArgumentException("$ARG_ACCOUNT_NAME required"),
@@ -357,6 +354,14 @@ class SyncWorker @AssistedInject constructor(
             if (result.hasSoftError()) {
                 Logger.log.warning("Soft error while syncing: result=$result, stats=${result.stats}")
                 if (runAttemptCount < MAX_RUN_ATTEMPTS) {
+                    val blockDuration = result.delayUntil - System.currentTimeMillis()/1000
+                    Logger.log.warning("Waiting for $blockDuration seconds, before retrying ...")
+
+                    // We block the SyncWorker here so that it won't be started by the sync framework immediately again.
+                    // This should be replaced by proper work scheduling as soon as we don't depend on the sync framework anymore.
+                    if (blockDuration > 0)
+                        Thread.sleep(blockDuration*1000)
+
                     Logger.log.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
                     return Result.retry()
                 }

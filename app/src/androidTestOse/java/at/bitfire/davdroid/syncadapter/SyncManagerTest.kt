@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.Response.HrefRelation
 import at.bitfire.dav4jvm.property.GetETag
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
@@ -30,8 +31,15 @@ import okhttp3.Protocol
 import okhttp3.internal.http.StatusLine
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.*
-import org.junit.Assert.*
+import org.junit.After
+import org.junit.AfterClass
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Rule
+import org.junit.Test
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -112,6 +120,30 @@ class SyncManagerTest {
     }
 
 
+    @Test
+    fun testGetDelayUntil_defaultOnNull() {
+        val now = Instant.now()
+        val delayUntil = SyncManager.getDelayUntil(null).epochSecond
+        val default = now.plusSeconds(SyncManager.DELAY_UNTIL_DEFAULT).epochSecond
+        assertWithin(default, delayUntil, 5)
+    }
+
+    @Test
+    fun testGetDelayUntil_reducesToMax() {
+        val now = Instant.now()
+        val delayUntil = SyncManager.getDelayUntil(now.plusSeconds(10*24*60*60)).epochSecond
+        val max = now.plusSeconds(SyncManager.DELAY_UNTIL_MAX).epochSecond
+        assertWithin(max, delayUntil, 5)
+    }
+
+    @Test
+    fun testGetDelayUntil_increasesToMin() {
+        val delayUntil = SyncManager.getDelayUntil(Instant.EPOCH).epochSecond
+        val min = Instant.now().plusSeconds(SyncManager.DELAY_UNTIL_MIN).epochSecond
+        assertWithin(min, delayUntil, 5)
+    }
+
+
     private fun queryCapabilitiesResponse(cTag: String? = null): MockResponse {
         val body = StringBuilder()
         body.append("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
@@ -148,7 +180,7 @@ class SyncManagerTest {
             .plusSeconds(60)
             .toEpochMilli()
         // 5 sec tolerance for test
-        assertTrue(result.delayUntil > (expected - 5000) && result.delayUntil < (expected + 5000))
+        assertWithin(expected, result.delayUntil*1000, 5000)
     }
 
     @Test

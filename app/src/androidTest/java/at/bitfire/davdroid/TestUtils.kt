@@ -11,11 +11,20 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import org.jetbrains.annotations.TestOnly
+import org.junit.Assert.assertTrue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 object TestUtils {
+
+    fun assertWithin(expected: Long, actual: Long, tolerance: Long) {
+        val absDifference = Math.abs(expected - actual)
+        assertTrue(
+            "$actual not within ($expected ± $tolerance)",
+            absDifference <= tolerance
+        )
+    }
 
     @TestOnly
     fun workScheduledOrRunning(context: Context, workerName: String): Boolean =
