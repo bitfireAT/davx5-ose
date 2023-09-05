@@ -7,7 +7,7 @@ buildscript {
         aboutLibraries: '10.8.3',
         appIntro: '7.0.0-beta02',
         composeBom: '2023.08.00',
-        hilt: '2.47',
+        hilt: '2.48',
         kotlin: '1.9.0',       // keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
                                //                   * com.google.devtools.ksp at the end of this file
         okhttp: '4.11.0',
@@ -21,7 +21,7 @@ buildscript {
         cert4android: 'd6fd798',
         dav4jvm: 'da94a8b',
         ical4android: 'b682476',
-        vcard4android: '1665081'
+        vcard4android: 'b376d2e'
     ]
 
     repositories {
