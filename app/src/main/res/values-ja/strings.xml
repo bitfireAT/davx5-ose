@@ -210,7 +210,6 @@
   <string name="account_no_webcals">カレンダーのサブスクリプションは (まだ) ありません。</string>
   <string name="account_swipe_down">下にスワイプすると、サーバーからリストを更新します。</string>
   <string name="account_synchronize_now">今すぐ同期</string>
-  <string name="account_synchronize_collections">コレクションを同期</string>
   <string name="account_settings">アカウント設定</string>
   <string name="account_rename">アカウントの名前を変更</string>
   <string name="account_rename_new_name">未保存のローカルデータが破棄されることがあります。名前の変更後に再同期が必要です。新しいアカウント名:</string>
@@ -300,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 制限にはさらに設定が必要です</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
+  <string name="settings_ignore_vpns">VPN 接続</string>
+  <string name="settings_ignore_vpns_on">VPN でない接続を要求 (推奨)</string>
+  <string name="settings_ignore_vpns_off">VPN を一般のインターネット接続として扱う</string>
   <string name="settings_authentication">認証</string>
   <string name="settings_oauth">再認証</string>
   <string name="settings_oauth_summary">もう一度 OAuth ログインを実行</string>

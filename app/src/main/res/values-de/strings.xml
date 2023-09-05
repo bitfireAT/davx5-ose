@@ -210,7 +210,6 @@
   <string name="account_no_webcals">(Noch) keine Kalender-Abos vorhanden</string>
   <string name="account_swipe_down">Nach unten wischen, um neue Einträge am Server zu suchen.</string>
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
-  <string name="account_synchronize_collections">Synchronisiere die Kollektionen</string>
   <string name="account_settings">Konto-Einstellungen</string>
   <string name="account_rename">Konto umbenennen</string>
   <string name="account_rename_new_name">Ungespeicherte lokale Änderungen können verloren gehen. Nach dem Umbenennen muss neu synchronisiert werden. Neuer Kontoname:</string>

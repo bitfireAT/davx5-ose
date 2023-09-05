@@ -210,7 +210,6 @@
   <string name="account_no_webcals">Non tes subscricións a calendario (aínda).</string>
   <string name="account_swipe_down">Arrastra hacia abaixo para actualizar a lista desde o servidor.</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
-  <string name="account_synchronize_collections">Sincronizar coleccións</string>
   <string name="account_settings">Axustes da conta</string>
   <string name="account_rename">Renomear conta</string>
   <string name="account_rename_new_name">Os datos locais non gardados perderanse. A resincronización é precisa tras renomear. Novo nome da conta:</string>
