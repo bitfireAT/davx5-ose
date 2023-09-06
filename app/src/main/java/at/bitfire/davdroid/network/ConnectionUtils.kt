@@ -47,27 +47,32 @@ object ConnectionUtils {
     internal fun internetAvailable(context: Context, ignoreVpns: Boolean): Boolean {
         val connectivityManager = context.getSystemService<ConnectivityManager>()!!
         return connectivityManager.allNetworks.any { network ->
-            Logger.log.log(Level.FINE, "Looking for validated Internet", connectivityManager.getNetworkInfo(network))
+            val capabilities = connectivityManager.getNetworkCapabilities(network)
+            Logger.log.log(Level.FINE, "Looking for validated Internet over this connection.",
+                arrayOf(connectivityManager.getNetworkInfo(network), capabilities))
 
-            connectivityManager.getNetworkCapabilities(network)?.let { capabilities ->
+            if (capabilities != null) {
                 if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
                     Logger.log.fine("Missing network capability: INTERNET")
-                    return false
+                    return@any false
                 }
 
                 if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
                     Logger.log.fine("Missing network capability: VALIDATED")
-                    return false
+                    return@any false
                 }
 
                 if (ignoreVpns)
                     if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)) {
                         Logger.log.fine("Missing network capability: NOT_VPN")
-                        return false
+                        return@any false
                     }
 
-                /* return */ true
-            } ?: false
+                Logger.log.fine("This connection can be used.")
+                /* return@any */ true
+            } else
+                // no network capabilities available, we can't use this connection
+                /* return@any */ false
         }
     }
 
