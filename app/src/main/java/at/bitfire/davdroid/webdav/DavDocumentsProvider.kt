@@ -611,9 +611,11 @@ class DavDocumentsProvider: DocumentsProvider() {
                                     parent
                                 Response.HrefRelation.MEMBER ->     // it's about a member
                                     WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = response.hrefName())
-                                else ->
-                                    // we didn't request this; ignore it
+                                else -> {
+                                    // we didn't request this; log a warning and ignore it
+                                    Logger.log.warning("Ignoring unexpected $response $relation in $parentUrl")
                                     return@propfind
+                                }
                             }
 
                         response[ResourceType::class.java]?.types?.let { types ->
