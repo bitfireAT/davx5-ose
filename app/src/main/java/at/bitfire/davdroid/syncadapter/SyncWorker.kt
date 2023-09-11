@@ -10,6 +10,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
+import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.CalendarContract
@@ -254,7 +255,8 @@ class SyncWorker @AssistedInject constructor(
                 return true     // yes, continue
 
             // WiFi required, is it available?
-            if (!wifiAvailable(context)) {
+            val connectivityManager = context.getSystemService<ConnectivityManager>()!!
+            if (!wifiAvailable(connectivityManager)) {
                 Logger.log.info("Not on connected WiFi, stopping")
                 return false
             }
@@ -282,7 +284,8 @@ class SyncWorker @AssistedInject constructor(
 
         // Check internet connection
         val ignoreVpns = AccountSettings(applicationContext, account).getIgnoreVpns()
-        if (Build.VERSION.SDK_INT >= 23 && !internetAvailable(applicationContext, ignoreVpns)) {
+        val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
+        if (Build.VERSION.SDK_INT >= 23 && !internetAvailable(connectivityManager, ignoreVpns)) {
             Logger.log.info("WorkManager started SyncWorker without Internet connection. Aborting.")
             return Result.failure()
         }
