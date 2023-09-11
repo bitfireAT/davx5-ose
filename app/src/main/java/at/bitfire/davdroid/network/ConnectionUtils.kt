@@ -4,21 +4,18 @@
 
 package at.bitfire.davdroid.network
 
-import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.annotation.RequiresApi
-import androidx.core.content.getSystemService
 import at.bitfire.davdroid.log.Logger
 import java.util.logging.Level
 
 object ConnectionUtils {
 
     /**
-     * Checks whether we are connected to working WiFi
+     * Checks whether we are connected to validated WiFi
      */
-    internal fun wifiAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService<ConnectivityManager>()!!
+    internal fun wifiAvailable(connectivityManager: ConnectivityManager): Boolean {
         connectivityManager.allNetworks.forEach { network ->
             connectivityManager.getNetworkCapabilities(network)?.let { capabilities ->
                 if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
@@ -33,7 +30,7 @@ object ConnectionUtils {
      * Checks whether we are connected to the Internet.
      *
      * On API 26+ devices, if a VPN is used, WorkManager might start the SyncWorker without an
-     * internet connection (because NET_CAPABILITY_VALIDATED is always set for VPN connections).
+     * Internet connection (because [NetworkCapabilities.NET_CAPABILITY_VALIDATED] is always set for VPN connections).
      * To prevent the start without internet access, we don't check for VPN connections by default
      * (by using [NetworkCapabilities.NET_CAPABILITY_NOT_VPN]).
      *
@@ -44,8 +41,7 @@ object ConnectionUtils {
      * @return whether we are connected to the Internet
      */
     @RequiresApi(23)
-    internal fun internetAvailable(context: Context, ignoreVpns: Boolean): Boolean {
-        val connectivityManager = context.getSystemService<ConnectivityManager>()!!
+    internal fun internetAvailable(connectivityManager: ConnectivityManager, ignoreVpns: Boolean): Boolean {
         return connectivityManager.allNetworks.any { network ->
             val capabilities = connectivityManager.getNetworkCapabilities(network)
             Logger.log.log(Level.FINE, "Looking for validated Internet over this connection.",
