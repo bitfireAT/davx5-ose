@@ -51,6 +51,7 @@ import org.json.JSONObject
 import java.text.Collator
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.logging.Level
 import javax.inject.Inject
 import javax.inject.Qualifier
 
@@ -305,9 +306,7 @@ class AboutActivity: AppCompatActivity() {
 
                         postValue(result)
                     } catch (e: JSONException) {
-                        Logger.log.severe("Could not parse translators JSON: $e")
-                        // Show an empty list
-                        postValue(emptyList())
+                        Logger.log.log(Level.SEVERE, "Could not parse translators JSON", e)
                     }
                 }
             }
