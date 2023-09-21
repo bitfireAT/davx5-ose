@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 403060100
-        versionName '4.3.6.1'
+        versionCode 403070000
+        versionName '4.3.7-rc.1'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
@@ -136,13 +136,13 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.concurrent:concurrent-futures-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.fragment:fragment-ktx:1.6.1'
     implementation 'androidx.hilt:hilt-work:1.0.0'
     kapt 'androidx.hilt:hilt-compiler:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
-    implementation 'androidx.paging:paging-runtime-ktx:3.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.paging:paging-runtime-ktx:3.2.1'
     implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
