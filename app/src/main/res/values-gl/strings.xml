@@ -299,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Nome das rede WiFi permitidas (SSIDs) separados por vírgulas (en branco para todas)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">A restrición WiFi SSID precisa máis axustes</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Xestionar</string>
+  <string name="settings_ignore_vpns">Conectividade VPN</string>
+  <string name="settings_ignore_vpns_on">Requerida conexión non-VPN (recomendado)</string>
+  <string name="settings_ignore_vpns_off">VPN conta como conexión a internet</string>
   <string name="settings_authentication">Autenticación</string>
   <string name="settings_oauth">Volver a autenticar</string>
   <string name="settings_oauth_summary">Intentar acceder con OAuth outra vez</string>

@@ -299,6 +299,7 @@
   <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Komma getrennt, leer lassen für alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WLAN-SSID-Einschränkung benötigt weitere Einstellungen</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Verwalten</string>
+  <string name="settings_ignore_vpns_off">VPN zählt als Internetverbindung</string>
   <string name="settings_authentication">Anmeldeinformationen</string>
   <string name="settings_oauth">Wieder anmelden</string>
   <string name="settings_oauth_summary">Erneut mit OAuth anmelden</string>

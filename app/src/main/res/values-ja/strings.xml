@@ -25,7 +25,7 @@
   <string name="notification_channel_sync_io_errors">ネットワークおよび I/O エラー</string>
   <string name="notification_channel_sync_io_errors_desc">タイムアウト、接続の問題など (多くの場合、一時的なもの)</string>
   <!--IntroActivity-->
-  <string name="intro_slogan1">あなたのデータはあなたの手で</string>
+  <string name="intro_slogan1">あなたのデータはあなたの手に</string>
   <string name="intro_slogan2">コントロールを始める</string>
   <string name="intro_battery_title">一定の間隔で同期</string>
   <string name="intro_battery_not_whitelisted">無効 (非推奨)</string>

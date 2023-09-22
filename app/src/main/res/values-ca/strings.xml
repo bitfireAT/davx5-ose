@@ -299,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Noms (SSID) separats per comes de les xarxes Wi-Fi permeses (deixeu-ho en blanc per a totes)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restricció per SSID de la Wi-Fi requereix una configuració addicional</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Gestió</string>
+  <string name="settings_ignore_vpns">Connexió VPN</string>
+  <string name="settings_ignore_vpns_on">Requerir connexió sense VPN (recomanat)</string>
+  <string name="settings_ignore_vpns_off">Les VPN compten com a connexió a Internet</string>
   <string name="settings_authentication">Autentificació</string>
   <string name="settings_oauth">Re-Autenticar</string>
   <string name="settings_oauth_summary">Tornar a realitzar l\'inici de sessió amb OAuth</string>

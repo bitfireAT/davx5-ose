@@ -262,6 +262,7 @@
   <string name="login_google_see_tested_with">Aktualne informacje można znaleźć na naszej stronie \"Testowano z Google\".</string>
   <string name="login_google_unexpected_warnings">Mogą wystąpić nieoczekiwane ostrzeżenia i/lub konieczność utworzenia własnego identyfikatora klienta.</string>
   <string name="login_google_account">Konto Google</string>
+  <string name="login_google">Zaloguj się za pomocą Google</string>
   <string name="login_google_client_id">ID klienta (opcjonalnie)</string>
   <string name="login_google_client_privacy_policy"><![CDATA[%1$sprzesyła Twoje dane Kontaktów Google i Kalendarza wyłącznie w celu synchronizacji z tym urządzeniem. Więcej informacji znajdziesz w naszej <a href="%2$s">Polityce prywatności</a>.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$sjest zgodny z <a href="%2$s">Zasadami dotyczącymi danych użytkownika usług interfejsu API Google</a>, w tym wymaganiami dotyczącymi Ograniczonego użytkowania.]]></string>
@@ -298,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Oddzielone przecinkami nazwy (SSID) dozwolonych sieci Wi‑Fi (pozostaw puste dla wszystkich)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ograniczenie WiFi SSID wymaga dalszych ustawień</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Zarządzaj</string>
+  <string name="settings_ignore_vpns">Łączność VPN</string>
+  <string name="settings_ignore_vpns_on">Wymagane połączenie inne niż VPN (zalecane)</string>
+  <string name="settings_ignore_vpns_off">VPN zaliczyć jako połączenie internetowe</string>
   <string name="settings_authentication">Uwierzytelnianie</string>
   <string name="settings_oauth">Uwierzytelnij ponownie</string>
   <string name="settings_oauth_summary">Wykonaj ponownie logowanie OAuth</string>

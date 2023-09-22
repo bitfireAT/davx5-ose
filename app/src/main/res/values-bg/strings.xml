@@ -264,6 +264,8 @@
   <string name="login_google_account">Профил в Гугъл</string>
   <string name="login_google">Вход с Гугъл</string>
   <string name="login_google_client_id">Идентификатор на клиент (по желание)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s прехвърля данните за контактите и календарите ви към Google единствено за синхронизиране с това устройство.  За подробности вижте нашата <a href="%2$s">Политика за поверителност</a>.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s отговаря на <a href="%2$s">Политиката за потребителски данни на услугите на Google API</a>, включително на Изискванията за ограничена употреба.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Не може да бъде получен код за упълномощаване</string>
   <string name="login_configuration_detection">Откриване на настройки</string>
   <string name="login_querying_server">Изчакайте, запитване на сървъра…</string>
