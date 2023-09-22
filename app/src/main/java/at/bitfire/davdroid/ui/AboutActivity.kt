@@ -36,6 +36,7 @@ import at.bitfire.davdroid.databinding.AboutBinding
 import at.bitfire.davdroid.databinding.AboutLanguagesBinding
 import at.bitfire.davdroid.databinding.AboutTranslationBinding
 import at.bitfire.davdroid.databinding.ActivityAboutBinding
+import at.bitfire.davdroid.log.Logger
 import com.google.accompanist.themeadapter.material.MdcTheme
 import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 import dagger.BindsOptionalOf
@@ -46,10 +47,12 @@ import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.io.IOUtils
+import org.json.JSONException
 import org.json.JSONObject
 import java.text.Collator
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.logging.Level
 import javax.inject.Inject
 import javax.inject.Qualifier
 
@@ -285,27 +288,31 @@ class AboutActivity: AppCompatActivity() {
         val translations = object: MediatorLiveData<List<Translation>>() {
             init {
                 addSource(plainText) { rawJson ->
-                    // parse JSON
-                    val jsonTranslations = JSONObject(rawJson)
-                    val result = LinkedList<Translation>()
-                    for (langCode in jsonTranslations.keys()) {
-                        val jsonTranslators = jsonTranslations.getJSONArray(langCode)
-                        val translators = Array<String>(jsonTranslators.length()) {
-                            idx -> jsonTranslators.getString(idx)
+                    try {
+                        // parse JSON
+                        val jsonTranslations = JSONObject(rawJson)
+                        val result = LinkedList<Translation>()
+                        for (langCode in jsonTranslations.keys()) {
+                            val jsonTranslators = jsonTranslations.getJSONArray(langCode)
+                            val translators = Array<String>(jsonTranslators.length()) {
+                                    idx -> jsonTranslators.getString(idx)
+                            }
+
+                            val langTag = langCode.replace('_', '-')
+                            val language = Locale.forLanguageTag(langTag).displayName
+                            result += Translation(language, translators)
                         }
 
-                        val langTag = langCode.replace('_', '-')
-                        val language = Locale.forLanguageTag(langTag).displayName
-                        result += Translation(language, translators)
-                    }
+                        // sort translations by localized language name
+                        val collator = Collator.getInstance()
+                        result.sortWith { o1, o2 ->
+                            collator.compare(o1.language, o2.language)
+                        }
 
-                    // sort translations by localized language name
-                    val collator = Collator.getInstance()
-                    result.sortWith { o1, o2 ->
-                        collator.compare(o1.language, o2.language)
+                        postValue(result)
+                    } catch (e: JSONException) {
+                        Logger.log.log(Level.SEVERE, "Could not parse translators JSON", e)
                     }
-
-                    postValue(result)
                 }
             }
         }

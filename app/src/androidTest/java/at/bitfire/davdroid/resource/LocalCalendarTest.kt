@@ -15,8 +15,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.util.MiscUtils.ContentProviderClientHelper.closeCompat
-import at.bitfire.ical4android.util.MiscUtils.UriHelper.asSyncAdapter
+import at.bitfire.ical4android.util.MiscUtils.closeCompat
+import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId

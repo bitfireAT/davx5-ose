@@ -20,7 +20,7 @@ import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
 import at.bitfire.ical4android.BatchOperation
 import at.bitfire.ical4android.util.DateUtils
-import at.bitfire.ical4android.util.MiscUtils.UriHelper.asSyncAdapter
+import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import java.util.*
 import java.util.logging.Level
 

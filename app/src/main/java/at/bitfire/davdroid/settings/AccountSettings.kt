@@ -17,6 +17,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
+import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.EntryPoint
@@ -69,6 +70,7 @@ class AccountSettings(
 
         const val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
         const val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
+        const val KEY_IGNORE_VPNS = "ignore_vpns"           // ignore vpns at connection detection
 
         /** Time range limitation to the past [in days]. Values:
          *
@@ -194,14 +196,14 @@ class AccountSettings(
 
     fun credentials(credentials: Credentials) {
         // Basic/Digest auth
-        accountManager.setUserData(account, KEY_USERNAME, credentials.userName)
+        accountManager.setAndVerifyUserData(account, KEY_USERNAME, credentials.userName)
         accountManager.setPassword(account, credentials.password)
 
         // client certificate
-        accountManager.setUserData(account, KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
+        accountManager.setAndVerifyUserData(account, KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
 
         // OAuth
-        accountManager.setUserData(account, KEY_AUTH_STATE, credentials.authState?.jsonSerializeString())
+        accountManager.setAndVerifyUserData(account, KEY_AUTH_STATE, credentials.authState?.jsonSerializeString())
     }
 
 
@@ -261,7 +263,7 @@ class AccountSettings(
             else ->
                 throw IllegalArgumentException("Sync interval not applicable to authority $authority")
         }
-        accountManager.setUserData(account, key, seconds.toString())
+        accountManager.setAndVerifyUserData(account, key, seconds.toString())
 
         // update sync workers (needs already updated sync interval in AccountSettings)
         updatePeriodicSyncWorker(authority, seconds, getSyncWifiOnly())
@@ -317,13 +319,13 @@ class AccountSettings(
     }
 
     fun getSyncWifiOnly() =
-            if (settings.containsKey(KEY_WIFI_ONLY))
-                settings.getBoolean(KEY_WIFI_ONLY)
-            else
-                accountManager.getUserData(account, KEY_WIFI_ONLY) != null
+        if (settings.containsKey(KEY_WIFI_ONLY))
+            settings.getBoolean(KEY_WIFI_ONLY)
+        else
+            accountManager.getUserData(account, KEY_WIFI_ONLY) != null
 
     fun setSyncWiFiOnly(wiFiOnly: Boolean) {
-        accountManager.setUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
+        accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
 
         // update sync workers (needs already updated wifi-only flag in AccountSettings)
         for (authority in SyncUtils.syncAuthorities(context))
@@ -331,16 +333,26 @@ class AccountSettings(
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
-            if (getSyncWifiOnly()) {
-                val strSsids = if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
-                    settings.getString(KEY_WIFI_ONLY_SSIDS)
-                else
-                    accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS)
-                strSsids?.split(',')
-            } else
-                null
+        if (getSyncWifiOnly()) {
+            val strSsids = if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
+                settings.getString(KEY_WIFI_ONLY_SSIDS)
+            else
+                accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS)
+            strSsids?.split(',')
+        } else
+            null
     fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
-            accountManager.setUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
+        accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
+
+    fun getIgnoreVpns(): Boolean =
+        when (accountManager.getUserData(account, KEY_IGNORE_VPNS)) {
+            null -> settings.getBoolean(KEY_IGNORE_VPNS)
+            "0" -> false
+            else -> true
+        }
+
+    fun setIgnoreVpns(ignoreVpns: Boolean) =
+        accountManager.setAndVerifyUserData(account, KEY_IGNORE_VPNS, if (ignoreVpns) "1" else "0")
 
     /**
      * Updates the periodic sync worker of an authority according to
@@ -382,7 +394,7 @@ class AccountSettings(
     }
 
     fun setTimeRangePastDays(days: Int?) =
-            accountManager.setUserData(account, KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
+            accountManager.setAndVerifyUserData(account, KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
 
     /**
      * Takes the default alarm setting (in this order) from
@@ -407,7 +419,7 @@ class AccountSettings(
      * start of every non-full-day event without reminder. *null*: No default reminders shall be created.
      */
     fun setDefaultAlarm(minBefore: Int?) =
-            accountManager.setUserData(account, KEY_DEFAULT_ALARM,
+            accountManager.setAndVerifyUserData(account, KEY_DEFAULT_ALARM,
                     if (minBefore == settings.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 })
                         null
                     else
@@ -418,14 +430,14 @@ class AccountSettings(
     else
         accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS) == null
     fun setManageCalendarColors(manage: Boolean) =
-            accountManager.setUserData(account, KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
+            accountManager.setAndVerifyUserData(account, KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
 
     fun getEventColors() = if (settings.containsKey(KEY_EVENT_COLORS))
             settings.getBoolean(KEY_EVENT_COLORS)
                 else
             accountManager.getUserData(account, KEY_EVENT_COLORS) != null
     fun setEventColors(useColors: Boolean) =
-            accountManager.setUserData(account, KEY_EVENT_COLORS, if (useColors) "1" else null)
+            accountManager.setAndVerifyUserData(account, KEY_EVENT_COLORS, if (useColors) "1" else null)
 
     // CardDAV settings
 
@@ -442,7 +454,7 @@ class AccountSettings(
     }
 
     fun setGroupMethod(method: GroupMethod) {
-        accountManager.setUserData(account, KEY_CONTACT_GROUP_METHOD, method.name)
+        accountManager.setAndVerifyUserData(account, KEY_CONTACT_GROUP_METHOD, method.name)
     }
 
 
@@ -464,7 +476,7 @@ class AccountSettings(
             }
 
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
-        accountManager.setUserData(account, KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
+        accountManager.setAndVerifyUserData(account, KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
     }
 
 
@@ -487,7 +499,7 @@ class AccountSettings(
                 updateProc.invoke(migrations)
 
                 Logger.log.info("Account version update successful")
-                accountManager.setUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
+                accountManager.setAndVerifyUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't update account settings", e)
             }

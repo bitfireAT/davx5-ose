@@ -5,22 +5,23 @@
 buildscript {
     ext.versions = [
         aboutLibraries: '10.8.3',
-        appIntro: '6.2.0',
-        composeBom: '2023.06.01',
-        hilt: '2.47',
-        kotlin: '1.8.22',       // keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
-                                //                   * com.google.devtools.ksp at the end of this file
+        appIntro: '7.0.0-beta02',
+        composeBom: '2023.08.00',
+        hilt: '2.48',
+        kotlin: '1.9.0',       // keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
+                               //                   * com.google.devtools.ksp at the end of this file
         okhttp: '4.11.0',
         room: '2.5.2',
+        workManager: '2.8.1',
         // latest Apache Commons versions that don't require Java 8 (Android 7)
         commonsCollections: '4.2',
         commonsLang: '3.8.1',
         commonsText: '1.3',
         // own libraries
-        cert4android: 'f167e84',
+        cert4android: '32104f5',
         dav4jvm: 'da94a8b',
-        ical4android: 'a78e72f',
-        vcard4android: 'bd08206'
+        ical4android: 'b682476',
+        vcard4android: 'b376d2e'
     ]
 
     repositories {
@@ -32,7 +33,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.0'
+        classpath 'com.android.tools.build:gradle:8.1.1'
         classpath "com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}"
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${versions.aboutLibraries}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
@@ -41,7 +42,7 @@ buildscript {
 
 plugins {
     // see https://github.com/google/ksp/releases for version numbers
-    id 'com.google.devtools.ksp' version '1.8.22-1.0.11' apply false
+    id 'com.google.devtools.ksp' version '1.9.0-1.0.13' apply false
 }
 
 allprojects {

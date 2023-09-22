@@ -262,6 +262,7 @@
   <string name="login_google_see_tested_with">Per favor, llig la nostra guia \"Tested with Google\" per a obtenir informació actualitzada</string>
   <string name="login_google_unexpected_warnings">És possible que sorgisca alguna advertència o error, en eixe cas hauràs de crear el teu propi ID de client.</string>
   <string name="login_google_account">Compte de Google</string>
+  <string name="login_google">Inicia la sessió amb Google</string>
   <string name="login_google_client_id">ID de Client (opcional)</string>
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfereix els vostres Contactes i les dades del Calendar de Google només per a la sincronització amb aquest dispositiu. Vegeu la <a href="%2$s"> política de privadesa </a> per als detalls.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s compleix amb la <a href="%2$s">Política de dades d\'usuari dels servis de l\'API de Google</a>, incloent els requisits d\'ús limitat.]]></string>
@@ -298,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Noms (SSID) separats per comes de les xarxes Wi-Fi permeses (deixeu-ho en blanc per a totes)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restricció per SSID de la Wi-Fi requereix una configuració addicional</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Gestió</string>
+  <string name="settings_ignore_vpns">Connexió VPN</string>
+  <string name="settings_ignore_vpns_on">Requerir connexió sense VPN (recomanat)</string>
+  <string name="settings_ignore_vpns_off">Les VPN compten com a connexió a Internet</string>
   <string name="settings_authentication">Autentificació</string>
   <string name="settings_oauth">Re-Autenticar</string>
   <string name="settings_oauth_summary">Tornar a realitzar l\'inici de sessió amb OAuth</string>

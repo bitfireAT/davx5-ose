@@ -8,6 +8,7 @@ import android.content.Context
 import android.os.Build
 import android.security.KeyChain
 import at.bitfire.cert4android.CustomCertManager
+import at.bitfire.cert4android.CustomHostnameVerifier
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.BuildConfig
@@ -20,6 +21,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.MutableStateFlow
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import okhttp3.*
@@ -40,7 +42,6 @@ import javax.net.ssl.*
 
 class HttpClient private constructor(
     val okHttpClient: OkHttpClient,
-    private val certManager: CustomCertManager? = null,
     private var authService: AuthorizationService? = null
 ): AutoCloseable {
 
@@ -87,7 +88,6 @@ class HttpClient private constructor(
     override fun close() {
         authService?.dispose()
         okHttpClient.cache?.close()
-        certManager?.close()
     }
 
 
@@ -102,7 +102,8 @@ class HttpClient private constructor(
             fun certManager(): CustomCertManager
         }
 
-        private var appInForeground = false
+        private var appInForeground: MutableStateFlow<Boolean>? =
+                MutableStateFlow(false)
         private var authService: AuthorizationService? = null
         private var certManagerProducer: CertManagerProducer? = null
         private var certificateAlias: String? = null
@@ -151,7 +152,7 @@ class HttpClient private constructor(
             customCertManager {
                 // by default, use a CustomCertManager that respects the "distrust system certificates" setting
                 val trustSystemCerts = !settings.getBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES)
-                CustomCertManager(context, true /*BuildConfig.customCertsUI*/, trustSystemCerts)
+                CustomCertManager(context, trustSystemCerts, appInForeground)
             }
 
             // use account settings for authentication and cookies
@@ -205,7 +206,7 @@ class HttpClient private constructor(
             certManagerProducer = producer
         }
         fun setForeground(foreground: Boolean): Builder {
-            appInForeground = foreground
+            appInForeground?.value = foreground
             return this
         }
 
@@ -261,33 +262,32 @@ class HttpClient private constructor(
                 orig.protocols(listOf(Protocol.HTTP_1_1))
             }
 
-            val certManager =
-                if (certManagerProducer != null || keyManager != null) {
-                    val manager = certManagerProducer?.certManager()
-                    manager?.appInForeground = appInForeground
+            if (certManagerProducer != null || keyManager != null) {
+                val manager = certManagerProducer?.certManager()
 
-                    val trustManager = manager ?: {     // fall back to system default trust manager
-                        val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                val trustManager = manager ?: /* fall back to system default trust manager */
+                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                    .let { factory ->
                         factory.init(null as KeyStore?)
                         factory.trustManagers.first() as X509TrustManager
-                    }()
+                    }
 
-                    val hostnameVerifier = manager?.hostnameVerifier(OkHostnameVerifier)
-                        ?: OkHostnameVerifier
+                val hostnameVerifier =
+                    if (manager != null)
+                        CustomHostnameVerifier(context, OkHostnameVerifier)
+                    else
+                        OkHostnameVerifier
 
-                    val sslContext = SSLContext.getInstance("TLS")
-                    sslContext.init(
-                        if (keyManager != null) arrayOf(keyManager) else null,
-                        arrayOf(trustManager),
-                        null)
-                    orig.sslSocketFactory(sslContext.socketFactory, trustManager)
-                    orig.hostnameVerifier(hostnameVerifier)
+                val sslContext = SSLContext.getInstance("TLS")
+                sslContext.init(
+                    if (keyManager != null) arrayOf(keyManager) else null,
+                    arrayOf(trustManager),
+                    null)
+                orig.sslSocketFactory(sslContext.socketFactory, trustManager)
+                orig.hostnameVerifier(hostnameVerifier)
+            }
 
-                    manager
-                } else
-                    null
-
-            return HttpClient(orig.build(), certManager = certManager, authService = authService)
+            return HttpClient(orig.build(), authService = authService)
         }
 
     }

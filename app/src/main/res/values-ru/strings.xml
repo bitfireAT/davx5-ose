@@ -210,7 +210,6 @@
   <string name="account_no_webcals">Нет подписок на календарь (пока).</string>
   <string name="account_swipe_down">Потяните вниз, чтобы обновить список с сервера.</string>
   <string name="account_synchronize_now">Синхронизировать</string>
-  <string name="account_synchronize_collections">Синхронизировать коллекции</string>
   <string name="account_settings">Настройки аккаунта</string>
   <string name="account_rename">Переименовать аккаунт</string>
   <string name="account_rename_new_name">Несохраненные локальные данные могут быть потеряны. Необходима повторная синхронизация после переименования. Новое имя аккаунта:</string>
@@ -260,12 +259,12 @@
   <string name="login_no_certificate_found">Сертификат не найден</string>
   <string name="login_install_certificate">Установить сертификат</string>
   <string name="login_type_google">Google Контакты / Календарь</string>
-  <string name="login_google_see_tested_with">Актуальную информацию смотрите на нашей странице \" Протестировано с Google\".</string>
+  <string name="login_google_see_tested_with">Актуальную информацию смотрите на нашей странице \"Протестировано с Google\".</string>
   <string name="login_google_unexpected_warnings">Вы можете столкнуться с неожиданными предупреждениями и/или вам придется создать свой собственный ID клиента.</string>
   <string name="login_google_account">Google аккаунт</string>
   <string name="login_google">Войти через Google</string>
   <string name="login_google_client_id">ID клиента (необязательно)</string>
-  <string name="login_google_client_privacy_policy"><![CDATA[%1$s передает данные Контактов и Календаря Google исключительно для синхронизации с этим устройством. Для получения информации смотрите нашу <a href="%2$s">Политику конфиденциальности</a>.]]></string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s передает Google данные Контактов и Календаря исключительно для синхронизации с этим устройством. Для получения подробностей смотрите нашу <a href="%2$s">Политику конфиденциальности</a>.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s соблюдает <a href="%2$s">Политику в отношении пользовательских данных Google API Services</a>, включая требования Ограниченного использования.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Не удалось получить код авторизации</string>
   <string name="login_configuration_detection">Обнаружение конфигурации</string>
@@ -300,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Имена (SSID) разрешенных сетей WiFi, разделенные запятыми (оставьте пустым для всех)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ограничение WiFi SSID требует дополнительных настроек</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Управлять</string>
+  <string name="settings_ignore_vpns">VPN-подключение</string>
+  <string name="settings_ignore_vpns_on">Подключение без VPN (рекомендуется)</string>
+  <string name="settings_ignore_vpns_off">VPN считается подключением к интернету</string>
   <string name="settings_authentication">Аутентификация</string>
   <string name="settings_oauth">Повторная аутентификация</string>
   <string name="settings_oauth_summary">Выполните вход через OAuth повторно</string>

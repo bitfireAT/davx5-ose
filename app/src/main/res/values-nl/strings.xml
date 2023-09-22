@@ -259,7 +259,14 @@
   <string name="login_no_certificate_found">Geen certificaat gevonden</string>
   <string name="login_install_certificate">Certificaat installeren</string>
   <string name="login_type_google">Google Contacten / Kalender</string>
+  <string name="login_google_see_tested_with">Raadpleeg onze pagina \"Getest met Google\" voor actuele informatie.</string>
+  <string name="login_google_unexpected_warnings">Het kan zijn dat je onverwachte waarschuwingen krijgt en/of je eigen client-ID moet aanmaken.</string>
   <string name="login_google_account">Google account</string>
+  <string name="login_google">Inloggen met Google</string>
+  <string name="login_google_client_id">Client ID (optioneel)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s draagt uw Google Contacten en Agenda gegevens uitsluitend over voor synchronisatie met dit apparaat. Zie ons Privacybeleid voor meer informatie. Zie ons <a href="%2$s">Privacybeleid</a> voor meer informatie.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s voldoet aan het <a href="%2$s">beleid voor gebruikersgegevens van Google API Services</a>, met inbegrip van de vereisten voor beperkt gebruik.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Kon geen autorisatiecode verkrijgen</string>
   <string name="login_configuration_detection">Configuratie detecteren</string>
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_caldav_carddav">Geen CalDAV- of CardDAV-service gevonden.</string>
@@ -293,6 +300,9 @@
   <string name="settings_sync_wifi_only_ssids_permissions_required">Beperking WiFi-SSID vereist verdere instellingen</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Beheren</string>
   <string name="settings_authentication">Verificatie</string>
+  <string name="settings_oauth">Opnieuw authenticeren</string>
+  <string name="settings_oauth_summary">Voer OAuth-aanmelding opnieuw uit</string>
+  <string name="settings_username_key">Gebruikersnaam</string>
   <string name="settings_username">Gebruikersnaam</string>
   <string name="settings_enter_username">Gebruikersnaam invoeren:</string>
   <string name="settings_password">Wachtwoord</string>

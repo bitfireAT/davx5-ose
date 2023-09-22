@@ -33,13 +33,12 @@
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:tooltipText="@string/login_create_account"
+        android:contentDescription="@string/login_create_account"
         app:srcCompat="@drawable/ic_add_white"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

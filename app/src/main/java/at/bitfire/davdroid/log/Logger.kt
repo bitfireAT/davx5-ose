@@ -45,7 +45,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
         reinitialize()
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         if (key == LOG_TO_FILE) {
             log.info("Logging settings changed; re-initializing logger")
             reinitialize()

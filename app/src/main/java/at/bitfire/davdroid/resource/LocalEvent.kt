@@ -12,7 +12,7 @@ import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.ical4android.*
-import at.bitfire.ical4android.util.MiscUtils.UriHelper.asSyncAdapter
+import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import net.fortuna.ical4j.model.property.ProdId
 import org.apache.commons.lang3.StringUtils
 import java.util.*

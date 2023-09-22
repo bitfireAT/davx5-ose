@@ -13,15 +13,14 @@ plugins {
 
 // Android configuration
 android {
-    compileSdkVersion 33
-    buildToolsVersion '33.0.2'
+    compileSdk 34
 
     defaultConfig {
         applicationId 'com.infomaniak.sync'
         resValue 'string', 'application_id', applicationId
 
-        versionCode 403050200
-        versionName '4.3.5.2'
+        versionCode 403070001
+        versionName '4.3.7'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
@@ -54,7 +53,7 @@ android {
     composeOptions {
         // Keep this in sync with Kotlin version:
         // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-        kotlinCompilerExtensionVersion = "1.4.8"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
@@ -116,7 +115,7 @@ ksp {
 }
 
 configurations {
-    all {
+    configureEach {
         // exclude modules which are in conflict with system libraries
         exclude module: "commons-logging"
         exclude group: "org.json", module: "json"
@@ -128,7 +127,7 @@ configurations {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
@@ -136,21 +135,21 @@ dependencies {
 
     // support libs
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.browser:browser:1.5.0'
+    implementation 'androidx.browser:browser:1.6.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.concurrent:concurrent-futures-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'androidx.fragment:fragment-ktx:1.6.0'
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.fragment:fragment-ktx:1.6.1'
     implementation 'androidx.hilt:hilt-work:1.0.0'
     kapt 'androidx.hilt:hilt-compiler:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
-    implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
-    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.paging:paging-runtime-ktx:3.2.1'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.work:work-runtime-ktx:2.8.1'
+    implementation "androidx.work:work-runtime-ktx:${versions.workManager}"
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.google.android.material:material:1.9.0'
 
@@ -205,9 +204,9 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
-    androidTestImplementation 'androidx.work:work-testing:2.8.1'
+    androidTestImplementation "androidx.work:work-testing:${versions.workManager}"
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
-    androidTestImplementation 'io.mockk:mockk-android:1.13.4'
+    androidTestImplementation 'io.mockk:mockk-android:1.13.7'
     androidTestImplementation 'junit:junit:4.13.2'
 
     testImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"

@@ -210,7 +210,6 @@
   <string name="account_no_webcals">(Noch) keine Kalender-Abos vorhanden</string>
   <string name="account_swipe_down">Nach unten wischen, um neue Einträge am Server zu suchen.</string>
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
-  <string name="account_synchronize_collections">Synchronisiere die Kollektionen</string>
   <string name="account_settings">Konto-Einstellungen</string>
   <string name="account_rename">Konto umbenennen</string>
   <string name="account_rename_new_name">Ungespeicherte lokale Änderungen können verloren gehen. Nach dem Umbenennen muss neu synchronisiert werden. Neuer Kontoname:</string>
@@ -300,6 +299,7 @@
   <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Komma getrennt, leer lassen für alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WLAN-SSID-Einschränkung benötigt weitere Einstellungen</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Verwalten</string>
+  <string name="settings_ignore_vpns_off">VPN zählt als Internetverbindung</string>
   <string name="settings_authentication">Anmeldeinformationen</string>
   <string name="settings_oauth">Wieder anmelden</string>
   <string name="settings_oauth_summary">Erneut mit OAuth anmelden</string>

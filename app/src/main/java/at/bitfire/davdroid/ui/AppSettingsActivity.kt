@@ -15,9 +15,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import androidx.preference.*
-import at.bitfire.cert4android.CustomCertManager
+import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.ForegroundService
 import at.bitfire.davdroid.R
@@ -33,7 +32,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URI
 import java.net.URISyntaxException
-import java.util.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -291,8 +289,9 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         private fun resetCertificates() {
-            if (CustomCertManager.resetCertificates(requireActivity()))
-                Snackbar.make(requireView(), getString(R.string.app_settings_reset_certificates_success), Snackbar.LENGTH_LONG).show()
+            CustomCertStore.getInstance(requireActivity()).clearUserDecisions()
+
+            Snackbar.make(requireView(), getString(R.string.app_settings_reset_certificates_success), Snackbar.LENGTH_LONG).show()
         }
 
     }

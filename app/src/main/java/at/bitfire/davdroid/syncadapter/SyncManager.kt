@@ -54,6 +54,7 @@ import java.io.InterruptedIOException
 import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -87,7 +88,38 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     companion object {
         const val DEBUG_INFO_MAX_RESOURCE_DUMP_SIZE = 100*FileUtils.ONE_KB.toInt()
+
         const val MAX_MULTIGET_RESOURCES = 10
+
+        const val DELAY_UNTIL_DEFAULT = 15*60L      // 15 min
+        const val DELAY_UNTIL_MIN =      1*60L      // 1 min
+        const val DELAY_UNTIL_MAX =     2*60*60L    // 2 hours
+
+        /**
+         * Returns appropriate sync retry delay in seconds, considering the servers suggestion
+         * ([DELAY_UNTIL_DEFAULT] if no server suggestion).
+         *
+         * Takes current time into account to calculate intervals. Interval
+         * will be restricted to values between [DELAY_UNTIL_MIN] and [DELAY_UNTIL_MAX].
+         *
+         * @param retryAfter   optional server suggestion on how long to wait before retrying
+         * @return until when to wait before sync can be retried
+         */
+        fun getDelayUntil(retryAfter: Instant?): Instant {
+            val now = Instant.now()
+
+            if (retryAfter == null)
+                return now.plusSeconds(DELAY_UNTIL_DEFAULT)
+
+            // take server suggestion, but restricted to plausible min/max values
+            val min = now.plusSeconds(DELAY_UNTIL_MIN)
+            val max = now.plusSeconds(DELAY_UNTIL_MAX)
+            return when {
+                min > retryAfter -> min
+                max < retryAfter -> max
+                else -> retryAfter
+            }
+        }
 
         var _workDispatcher: WeakReference<CoroutineDispatcher>? = null
         /**
@@ -109,6 +141,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             ).asCoroutineDispatcher()
             return newDispatcher
         }
+
     }
 
     init {
@@ -274,9 +307,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 // specific HTTP errors
                 is ServiceUnavailableException -> {
                     Logger.log.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
-                    e.retryAfter?.let { retryAfter ->
-                        syncResult.delayUntil = retryAfter.toEpochMilli()
-                    }
+                    // determine when to retry
+                    syncResult.delayUntil = getDelayUntil(e.retryAfter).epochSecond
+                    syncResult.stats.numIoExceptions++ // Indicate a soft error occurred
                 }
 
                 // all others

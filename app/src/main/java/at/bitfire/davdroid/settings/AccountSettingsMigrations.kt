@@ -25,6 +25,7 @@ import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.util.closeCompat
+import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
 import at.bitfire.ical4android.TaskProvider
@@ -229,7 +230,7 @@ class AccountSettingsMigrations(
         TaskUtils.currentProvider(context)?.let { provider ->
             val interval = accountSettings.getSyncInterval(provider.authority)
             if (interval != null)
-                accountManager.setUserData(account,
+                accountManager.setAndVerifyUserData(account,
                     AccountSettings.KEY_SYNC_INTERVAL_TASKS, interval.toString())
         }
     }
@@ -318,8 +319,8 @@ class AccountSettingsMigrations(
 
         // update allowed WiFi settings key
         val onlySSID = accountManager.getUserData(account, "wifi_only_ssid")
-        accountManager.setUserData(account, AccountSettings.KEY_WIFI_ONLY_SSIDS, onlySSID)
-        accountManager.setUserData(account, "wifi_only_ssid", null)
+        accountManager.setAndVerifyUserData(account, AccountSettings.KEY_WIFI_ONLY_SSIDS, onlySSID)
+        accountManager.setAndVerifyUserData(account, "wifi_only_ssid", null)
     }
 
     @Suppress("unused")
@@ -381,7 +382,7 @@ class AccountSettingsMigrations(
         }
 
         // update version number so that further syncs don't repeat the migration
-        accountManager.setUserData(account, AccountSettings.KEY_SETTINGS_VERSION, "6")
+        accountManager.setAndVerifyUserData(account, AccountSettings.KEY_SETTINGS_VERSION, "6")
 
         // request sync of new address book account
         ContentResolver.setIsSyncable(account, context.getString(R.string.address_books_authority), 1)

@@ -210,7 +210,6 @@
   <string name="account_no_webcals">Ez dago egutegi harpidetzarik (oraindik).</string>
   <string name="account_swipe_down">Lerratu beherantz zerbitzariaren zerrenda freskatzeko.</string>
   <string name="account_synchronize_now">Sinkronizatu orain</string>
-  <string name="account_synchronize_collections">Sinkronizatu bildumak</string>
   <string name="account_settings">Kontuaren ezarpenak</string>
   <string name="account_rename">Berrizendatu kontua</string>
   <string name="account_rename_new_name">Gorde gabeko datu lokalak baztertu daitezke. Berriro sinkronizatu behar da izena aldatu ostean. Kontuaren izen berria:</string>
@@ -300,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Komaz banatutako izenak (SSIDak) baimendutako WiFi sareentzako (utzi hutsik denentzako)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID murriztapenak ezarpen gehiago behar ditu</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Kudeatu</string>
+  <string name="settings_ignore_vpns">VPN konexioa</string>
+  <string name="settings_ignore_vpns_on">VPN ez den konexioa behar da (gomendatua)</string>
+  <string name="settings_ignore_vpns_off">VPN Interneteko konexio gisa balio du</string>
   <string name="settings_authentication">Autentifikazioa</string>
   <string name="settings_oauth">Berriro autentifikatu</string>
   <string name="settings_oauth_summary">Egin OAuth saioa berriro</string>

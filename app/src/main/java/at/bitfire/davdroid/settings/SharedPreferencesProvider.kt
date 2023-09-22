@@ -52,7 +52,7 @@ class SharedPreferencesProvider(
 
     override fun canWrite() = true
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         settingsManager.onSettingsChanged()
     }
 

@@ -1,0 +1,443 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="app_name">DAVx⁵</string>
+  <string name="account_invalid">Contul nu (mai) există</string>
+  <string name="account_title_address_book">Agenda DAVx⁵</string>
+  <string name="address_books_authority_title">Agende cu adrese</string>
+  <string name="dialog_remove">Elimină</string>
+  <string name="dialog_deny">Anulează</string>
+  <string name="field_required">Acest câmp este obligatoriu</string>
+  <string name="help">Ajutor</string>
+  <string name="manage_accounts">Gestionează conturile</string>
+  <string name="share">Distribuie</string>
+  <string name="no_internet_sync_scheduled">Fără internet, programare sincronizare</string>
+  <string name="database_destructive_migration_title">Bază de date deteriorată</string>
+  <string name="database_destructive_migration_text">Toate conturile au fost eliminate local.</string>
+  <string name="notification_channel_debugging">Depanare</string>
+  <string name="notification_channel_general">Alte mesaje importante</string>
+  <string name="notification_channel_status">Mesaje de stare cu prioritate redusă</string>
+  <string name="notification_channel_sync">Sincronizare</string>
+  <string name="notification_channel_sync_errors">Erori de sincronizare</string>
+  <string name="notification_channel_sync_errors_desc">Erori importante care opresc sincronizarea, cum ar fi răspunsurile neașteptate ale serverului</string>
+  <string name="notification_channel_sync_warnings">Avertismente de sincronizare</string>
+  <string name="notification_channel_sync_warnings_desc">Probleme de sincronizare non-fatale, cum ar fi anumite fișiere nevalide</string>
+  <string name="notification_channel_sync_io_errors">Erori de rețea și I/O</string>
+  <string name="notification_channel_sync_io_errors_desc">Expirare, probleme de conexiune etc. (adesea temporare)</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">Datele tale. Alegerea ta.</string>
+  <string name="intro_slogan2">Preia controlul.</string>
+  <string name="intro_battery_title">Intervale regulate de sincronizare</string>
+  <string name="intro_battery_not_whitelisted">Dezactivat (nu este recomandat)</string>
+  <string name="intro_battery_whitelisted">Activat (recomandat)</string>
+  <string name="intro_battery_text">Pentru sincronizare la intervale regulate, %s trebuie să aibă voie să ruleze în fundal. În caz contrar, Android poate întrerupe sincronizarea în orice moment.</string>
+  <string name="intro_battery_dont_show">Nu am nevoie de intervale regulate de sincronizare.*</string>
+  <string name="intro_autostart_title">Compatibilitate %s </string>
+  <string name="intro_autostart_text">Acest dispozitiv probabil blochează sincronizarea. Dacă ești afectat, poți rezolva acest lucru numai manual.</string>
+  <string name="intro_autostart_dont_show">Am făcut setările necesare. Nu-mi mai aminti.*</string>
+  <string name="intro_leave_unchecked">* Lasă nebifat pentru a fi reamintit mai târziu. Poate fi resetat în setările aplicației / %s.</string>
+  <string name="intro_more_info">Mai multe informații</string>
+  <string name="intro_tasks_jtx">Placă de bază jtx</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Acceptă sincronizarea sarcinilor, jurnalelor și notelor.]]></string>
+  <string name="intro_tasks_title">Suport pentru sarcini</string>
+  <string name="intro_tasks_text1">Dacă sarcinile sunt acceptate de server, acestea pot fi sincronizate cu o aplicație de sarcini acceptată:</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">Nu pare a mai fi dezvoltat – nu este recomandat.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Unele caracteristici <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nu sunt acceptate</a> (încă).]]></string>
+  <string name="intro_tasks_no_app_store">Nu există un magazin de aplicații disponibil</string>
+  <string name="intro_tasks_dont_show">Nu am nevoie de suport pentru sarcini.*</string>
+  <string name="intro_open_source_title">Software cu sursă deschisă</string>
+  <string name="intro_open_source_text">Ne bucurăm că utilizezi %s, care este un software open-source. Dezvoltarea, întreținerea și suportul sunt o muncă grea. Ia în considerare contribuția (există mai multe moduri) sau o donație. Ar fi foarte apreciat!</string>
+  <string name="intro_open_source_details">Cum să contribui/donezi</string>
+  <string name="intro_open_source_dont_show">Nu afișa în viitorul apropiat</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">Permisiuni</string>
+  <string name="permissions_text">%s necesită permisiuni pentru a funcționa corect.</string>
+  <string name="permissions_all_title">Toate cele de mai jos</string>
+  <string name="permissions_all_status_off">Utilizează aceasta pentru a activa toate funcțiile (recomandat)</string>
+  <string name="permissions_all_status_on">Toate permisiunile sunt acordate</string>
+  <string name="permissions_contacts_title">Permisiuni Contacte</string>
+  <string name="permissions_contacts_status_off">Fără sincronizare de contacte (nu este recomandat)</string>
+  <string name="permissions_contacts_status_on">Este posibilă sincronizarea contactelor</string>
+  <string name="permissions_calendar_title">Permisiuni pentru calendar</string>
+  <string name="permissions_calendar_status_off">Fără sincronizare calendar (nu este recomandat)</string>
+  <string name="permissions_calendar_status_on">Sincronizarea calendarului este posibilă</string>
+  <string name="permissions_notification_title">Permisiune de notificare</string>
+  <string name="permissions_notification_status_off">Notificări dezactivate (nu este recomandat)</string>
+  <string name="permissions_notification_status_on">Notificări activate</string>
+  <string name="permissions_jtx_title">Permisiuni pentru jtx Board</string>
+  <string name="permissions_jtx_status_not_installed">Nicio sarcină, jurnale și note sincronizate (nu sunt instalate)</string>
+  <string name="permissions_jtx_status_off">Nicio sarcină, jurnale și note sincronizate</string>
+  <string name="permissions_jtx_status_on">Este posibilă sincronizarea sarcinilor, jurnalelor, notelor</string>
+  <string name="permissions_opentasks_title">Permisiuni OpenTasks</string>
+  <string name="permissions_tasksorg_title">Permisiuni pentru sarcini</string>
+  <string name="permissions_tasks_status_not_installed">Nicio sincronizare a sarcinilor (nu este instalat)</string>
+  <string name="permissions_tasks_status_off">Nicio sincronizare a sarcinilor</string>
+  <string name="permissions_tasks_status_on">Este posibilă sincronizarea sarcinilor</string>
+  <string name="permissions_autoreset_title">Păstrează permisiunile</string>
+  <string name="permissions_autoreset_status_off">Permisiunile pot fi resetate automat (nu este recomandat)</string>
+  <string name="permissions_autoreset_status_on">Permisiunile nu vor fi resetate automat</string>
+  <string name="permissions_autoreset_instruction">Clic pe Permisiuni &gt; debifează „Elimină permisiunile dacă aplicația nu este utilizată”</string>
+  <string name="permissions_app_settings_hint">Dacă un comutator nu funcționează, utilizează setările/permisiunile aplicației.</string>
+  <string name="permissions_app_settings">Setările aplicației</string>
+  <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">Permisiuni SSID WiFi</string>
+  <string name="wifi_permissions_intro">Pentru a putea accesa numele actual WiFi (SSID), trebuie îndeplinite următoarele condiții:</string>
+  <string name="wifi_permissions_location_permission">Permisiune de locație precisă</string>
+  <string name="wifi_permissions_location_permission_on">Permisiunea de locație acordată</string>
+  <string name="wifi_permissions_location_permission_off">Permisiunea de locație refuzată</string>
+  <string name="wifi_permissions_background_location_permission">Permisiunea de locație în fundal</string>
+  <string name="wifi_permissions_background_location_permission_label">Permite tot timpul</string>
+  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Permisiunea locației este setată pentru <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Permisiunea locației nu este setată pentru <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_disclaimer">%s folosește permisiunea Locație numai pentru a determina SSID-ul WiFi actual pentru conturile restricționate de SSID. Acest lucru se va întâmpla chiar și atunci când aplicația este în fundal. Nu sunt colectate, stocate, procesate sau trimise nicăieri date despre locație.</string>
+  <string name="wifi_permissions_location_enabled">Locația este întotdeauna activată</string>
+  <string name="wifi_permissions_location_enabled_on">Serviciul de localizare este activat</string>
+  <string name="wifi_permissions_location_enabled_off">Serviciul de localizare este dezactivat</string>
+  <!--AboutActivity-->
+  <string name="about_translations">Traduceri</string>
+  <string name="about_libraries">Biblioteci</string>
+  <string name="about_version">Versiune %1$s (%2$d)</string>
+  <string name="about_build_date">Compilată la %s</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (inginerie web bitfire GmbH) și contribuitori</string>
+  <string name="about_flavor_info">Această versiune este eligibilă pentru distribuție numai prin Google Play.</string>
+  <string name="about_license_info_no_warranty">Acest program vine cu ABSOLUT NICIO GARANȚIE. Este software gratuit și ești binevenit să îl redistribui în anumite condiții.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Mulțumiri: </i> %s]]></string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">Nu s-a putut crea fișierul jurnal</string>
+  <string name="logging_notification_text">Acum se înregistrează toate activitățile %s</string>
+  <string name="logging_notification_view_share">Vizualizare/distribuire</string>
+  <string name="logging_notification_disable">Dezactivează</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_open">Deschide sertarul de navigare</string>
+  <string name="navigation_drawer_close">Închide sertarul de navigare</string>
+  <string name="navigation_drawer_subtitle">Adaptor de sincronizare CalDAV/CardDAV</string>
+  <string name="navigation_drawer_about">Despre / Licență</string>
+  <string name="navigation_drawer_beta_feedback">Feedback beta</string>
+  <string name="install_email_client">Instalează un client de e-mail</string>
+  <string name="install_browser">Instalează un browser web</string>
+  <string name="navigation_drawer_settings">Setări</string>
+  <string name="navigation_drawer_news_updates">Știri și actualizări</string>
+  <string name="navigation_drawer_tools">Instrumente</string>
+  <string name="navigation_drawer_external_links">Link-uri externe</string>
+  <string name="navigation_drawer_website">Pagină web</string>
+  <string name="navigation_drawer_manual">Manual</string>
+  <string name="navigation_drawer_faq">Întrebări frecvente</string>
+  <string name="navigation_drawer_community">Comunitate</string>
+  <string name="navigation_drawer_donate">Donează</string>
+  <string name="navigation_drawer_privacy_policy">Politica de confidențialitate</string>
+  <string name="account_list_no_notification_permission">Notificări dezactivate. Nu vei fi notificat despre erorile de sincronizare.</string>
+  <string name="account_list_no_internet">Fără conexiune la internet. Android nu va rula sincronizarea.</string>
+  <string name="account_list_manage_connections">Gestionează conexiunile</string>
+  <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va rula sincronizarea.</string>
+  <string name="account_list_manage_storage">Gestionează stocarea</string>
+  <string name="account_list_datasaver_enabled">Economizorul de date este activat. Sincronizarea în fundal este restricționată.</string>
+  <string name="account_list_manage_datasaver">Gestionează economizorul de date</string>
+  <string name="account_list_empty">Bun venit la DAVx⁵!\n\nPoți adăuga acum un cont CalDAV/CardDAV.</string>
+  <string name="accounts_global_sync_disabled">Sincronizarea automată la nivel de sistem este dezactivată</string>
+  <string name="accounts_global_sync_enable">Activează</string>
+  <string name="accounts_sync_all">Sincronizează toate conturile</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">Detectarea serviciului a eșuat</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">Lista de colecții nu a putut fi actualizată</string>
+  <!--Battery Optimization-->
+  <string name="battery_optimization_notify_title">Nu poate rula în prim-plan</string>
+  <string name="battery_optimization_notify_text">Este necesară înscrierea în lista albă pentru optimizarea bateriei</string>
+  <!--ForegroundService-->
+  <string name="foreground_service_notify_title">Rulează în prim-plan</string>
+  <string name="foreground_service_notify_text">Pe unele dispozitive, acest lucru este necesar pentru sincronizarea automată.</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">Setări</string>
+  <string name="app_settings_debug">Depanare</string>
+  <string name="app_settings_show_debug_info">Afișează informațiile de depanare</string>
+  <string name="app_settings_show_debug_info_details">Vizualizează/partajează software-ul și detaliile de configurare</string>
+  <string name="app_settings_logging">Jurnalizare detaliată</string>
+  <string name="app_settings_logging_on">Înregistrarea este activă</string>
+  <string name="app_settings_logging_off">Înregistrarea este dezactivată</string>
+  <string name="app_settings_battery_optimization">Optimizarea bateriei</string>
+  <string name="app_settings_battery_optimization_whitelisted">Aplicația este inclusă în lista albă (recomandat)</string>
+  <string name="app_settings_battery_optimization_not_whitelisted">Aplicația nu este inclusă în lista albă (nu este recomandat)</string>
+  <string name="app_settings_foreground_service">Păstrează în prim-plan</string>
+  <string name="app_settings_foreground_service_details">Poate fi de ajutor dacă dispozitivul împiedică sincronizarea automată</string>
+  <string name="app_settings_connection">Conexiune</string>
+  <string name="app_settings_proxy">Tip proxy</string>
+  <string-array name="app_settings_proxy_types">
+    <item>Implicit</item>
+    <item>Fără proxy</item>
+    <item>HTTP</item>
+    <item>SOCKS (pentru Orbot)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">Nume gazdă proxy</string>
+  <string name="app_settings_proxy_port">Port proxy</string>
+  <string name="app_settings_security">Securitate</string>
+  <string name="app_settings_security_app_permissions">Permisiunile aplicației</string>
+  <string name="app_settings_security_app_permissions_summary">Examinează permisiunile necesare pentru sincronizare</string>
+  <string name="app_settings_distrust_system_certs">Nu avea încredere în certificatele de sistem</string>
+  <string name="app_settings_distrust_system_certs_on">CA de sistem și de utilizator nu vor fi de încredere</string>
+  <string name="app_settings_distrust_system_certs_off">CA de sistem și de utilizator vor fi de încredere (recomandat)</string>
+  <string name="app_settings_reset_certificates">Resetează certificatele de (ne)încredere</string>
+  <string name="app_settings_reset_certificates_summary">Resetează încrederea tuturor certificatelor personalizate</string>
+  <string name="app_settings_reset_certificates_success">Toate certificatele personalizate au fost șterse</string>
+  <string name="app_settings_user_interface">Interfață de utilizator</string>
+  <string name="app_settings_notification_settings">Setări de notificare</string>
+  <string name="app_settings_notification_settings_summary">Gestionează canalele de notificare și setările acestora</string>
+  <string name="app_settings_theme_title">Selectează tema</string>
+  <string-array name="app_settings_theme_names">
+    <item>Ca în sistem</item>
+    <item>Luminoasă</item>
+    <item>Întunecată</item>
+  </string-array>
+  <string name="app_settings_reset_hints">Resetează sugestiile</string>
+  <string name="app_settings_reset_hints_summary">Reactivează sugestiile care au fost respinse anterior</string>
+  <string name="app_settings_reset_hints_success">Toate sugestiile vor fi afișate din nou</string>
+  <string name="app_settings_integration">Integrare</string>
+  <string name="app_settings_tasks_provider">Aplicația de sarcini</string>
+  <string name="app_settings_tasks_provider_synchronizing_with">Sincronizare cu %s</string>
+  <string name="app_settings_tasks_provider_none">Nu a fost găsită nicio aplicație de sarcini compatibilă</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_carddav_missing_permissions">Fără sincronizare contacte (permisiuni lipsă)</string>
+  <string name="account_caldav_missing_calendar_permissions">Fără sincronizare calendar (permisiuni lipsă)</string>
+  <string name="account_caldav_missing_tasks_permissions">Fără sincronizare sarcini (permisiuni lipsă)</string>
+  <string name="account_caldav_missing_permissions">Fără sincronizare calendar și sarcini (permisiuni lipsă)</string>
+  <string name="account_webcal_missing_calendar_permissions">Nu se pot accesa calendarele (permisiuni lipsă)</string>
+  <string name="account_permissions_action">Permisiuni</string>
+  <string name="account_no_address_books">Nu există  (încă) agende de adrese.</string>
+  <string name="account_no_calendars">Nu există calendare (încă).</string>
+  <string name="account_no_webcals">Nu există abonamente la calendar (încă).</string>
+  <string name="account_swipe_down">Glisează în jos pentru a reîmprospăta lista de pe server.</string>
+  <string name="account_synchronize_now">Sincronizează acum</string>
+  <string name="account_settings">Setările contului</string>
+  <string name="account_rename">Redenumește contul</string>
+  <string name="account_rename_new_name">Datele locale nesalvate pot fi respinse. Resincronizarea este necesară după redenumire. Numele nou al contului:</string>
+  <string name="account_rename_rename">Redenumește</string>
+  <string name="account_rename_exists_already">Numele contului este deja luat</string>
+  <string name="account_rename_couldnt_rename">Nu s-a putut redenumi contul</string>
+  <string name="account_delete">Șterge contul</string>
+  <string name="account_delete_confirmation_title">Chiar ștergi contul?</string>
+  <string name="account_delete_confirmation_text">Toate copiile locale ale agendelor, calendarelor și listelor de sarcini vor fi șterse.</string>
+  <string name="account_synchronize_this_collection">sincronizează această colecție</string>
+  <string name="account_read_only">numai pentru citire</string>
+  <string name="account_calendar">calendar</string>
+  <string name="account_task_list">lista de sarcini</string>
+  <string name="account_journal">jurnal</string>
+  <string name="account_only_personal">Afișează numai personal</string>
+  <string name="account_refresh_address_book_list">Actualizează lista agendei de adrese</string>
+  <string name="account_create_new_address_book">Creează o nouă agendă de adrese</string>
+  <string name="account_refresh_calendar_list">Actualizează lista de calendare</string>
+  <string name="account_create_new_calendar">Creează un calendar nou</string>
+  <string name="account_no_webcal_handler_found">Nu a fost găsită nicio aplicație compatibilă cu Webcal</string>
+  <string name="account_install_icsx5">Instalează ICSx⁵</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Adaugă contul</string>
+  <string name="login_type_email">Conectează-te cu adresa de e-mail</string>
+  <string name="login_email_address">Adresa de e-mail</string>
+  <string name="login_email_address_error">Este necesară o adresă de e-mail validă</string>
+  <string name="login_password">Parolă</string>
+  <string name="login_password_required">Este necesară parola</string>
+  <string name="login_type_url">Conecteează-te cu adresa URL și numele de utilizator</string>
+  <string name="login_url_must_be_http_or_https">Adresa URL trebuie să înceapă cu http(s)://</string>
+  <string name="login_user_name">Nume de utilizator</string>
+  <string name="login_user_name_required">Numele de utilizator este necesar</string>
+  <string name="login_base_url">Adresa URL de bază</string>
+  <string name="login_select_certificate">Selectează certificatul</string>
+  <string name="login_login">Autentificare</string>
+  <string name="login_create_account">Creează cont</string>
+  <string name="login_account_name">Nume de cont</string>
+  <string name="login_account_avoid_apostrophe">S-a raportat că utilizarea apostrofelor (\') cauzează probleme pe unele dispozitive.</string>
+  <string name="login_account_name_info">Utilizează adresa de e-mail ca nume de cont, deoarece Android va folosi numele contului ca câmp ORGANIZATOR pentru evenimentele pe care le creezi. Nu poți avea două conturi cu același nume.</string>
+  <string name="login_account_contact_group_method">Metoda de grupare a contactelor:</string>
+  <string name="login_account_name_required">Numele contului este necesar</string>
+  <string name="login_account_name_already_taken">Numele contului este deja luat</string>
+  <string name="login_account_not_created">Contul nu a putut fi creat</string>
+  <string name="login_type_advanced">Conectare avansată (cazuri speciale de utilizare)</string>
+  <string name="login_use_username_password">Utilizează numele de utilizator/parola</string>
+  <string name="login_use_client_certificate">Utilizează certificatul clientului</string>
+  <string name="login_no_certificate_found">Nu a fost găsit niciun certificat</string>
+  <string name="login_install_certificate">Instalare certificat</string>
+  <string name="login_type_google">Contacte Google / Calendar</string>
+  <string name="login_google_see_tested_with">Consultă pagina noastră „Testat cu Google” pentru informații actualizate.</string>
+  <string name="login_google_unexpected_warnings">Este posibil să ai avertismente neașteptate și/sau să fii nevoit să creezi propriul ID de client.</string>
+  <string name="login_google_account">Cont Google</string>
+  <string name="login_google">Conectează-te cu Google</string>
+  <string name="login_google_client_id">ID client (opțional)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s transferă datele din Agendă Google și din Calendar numai pentru sincronizare cu acest dispozitiv. Vezi  <a href="%2$s">Politica de confidențialitate</a> pentru detalii.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s respectă <a href="%2$s">Politica privind datele utilizatorilor serviciilor API Google</a>, inclusiv cerințele de utilizare limitată.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Nu s-a putut obține codul de autorizare</string>
+  <string name="login_configuration_detection">Detectarea configurației</string>
+  <string name="login_querying_server">Se interoghează serverul…</string>
+  <string name="login_no_caldav_carddav">Nu s-a putut găsi serviciul CalDAV sau CardDAV.</string>
+  <string name="login_username_password_wrong">Nume de utilizator (adresă de e-mail)/parolă greșită?</string>
+  <string name="login_view_logs">Afișează detaliile</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_title">Setări: %s</string>
+  <string name="settings_sync">Sincronizare</string>
+  <string name="settings_sync_interval_contacts">Interval de sincronizare a contactelor</string>
+  <string name="settings_sync_summary_manually">Doar manual</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">La fiecare %d minute + imediat la modificări locale</string>
+  <string name="settings_sync_interval_calendars">Interval de sincronizare a calendarelor</string>
+  <string name="settings_sync_interval_tasks">Interval de sincronizare a sarcinilor</string>
+  <string-array name="settings_sync_interval_names">
+    <item>Doar manual</item>
+    <item>La fiecare 15 minute</item>
+    <item>La fiecare 30 de minute</item>
+    <item>La fiecare oră</item>
+    <item>La fiecare 2 ore</item>
+    <item>La fiecare 4 ore</item>
+    <item>O dată pe zi</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">Sincronizare numai prin WiFi</string>
+  <string name="settings_sync_wifi_only_on">Sincronizarea este limitată la conexiunile WiFi</string>
+  <string name="settings_sync_wifi_only_off">Tipul de conexiune nu este luat în considerare</string>
+  <string name="settings_sync_wifi_only_ssids">Restricție SSID WiFi</string>
+  <string name="settings_sync_wifi_only_ssids_on">Se va sincroniza numai prin %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Se va sincroniza numai prin %s (necesită servicii de localizare activate)</string>
+  <string name="settings_sync_wifi_only_ssids_off">Toate conexiunile WiFi vor fi utilizate</string>
+  <string name="settings_sync_wifi_only_ssids_message">Nume separate prin virgulă (SSID) ale rețelelor WiFi permise (lasă necompletat pentru toate)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">Restricția SSID WiFi necesită setări suplimentare</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">Gestionează</string>
+  <string name="settings_ignore_vpns">Conectivitate VPN</string>
+  <string name="settings_ignore_vpns_on">Este necesară o conexiune non-VPN (recomandat)</string>
+  <string name="settings_ignore_vpns_off">VPN contează ca conexiune la internet</string>
+  <string name="settings_authentication">Autentificare</string>
+  <string name="settings_oauth">Reautentificare</string>
+  <string name="settings_oauth_summary">Efectuează din nou autentificarea OAuth</string>
+  <string name="settings_username_key">nume de utilizator</string>
+  <string name="settings_username">Nume de utilizator</string>
+  <string name="settings_enter_username">Introdu numele de utilizator:</string>
+  <string name="settings_password">Parolă</string>
+  <string name="settings_password_summary">Actualizează parola în funcție de server.</string>
+  <string name="settings_enter_password">Introdu parola:</string>
+  <string name="settings_certificate_alias">Alias ​​certificat de client</string>
+  <string name="settings_certificate_alias_empty">Niciun certificat selectat</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">Limită de timp pentru evenimentele din trecut</string>
+  <string name="settings_sync_time_range_past_none">Toate evenimentele vor fi sincronizate</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">Evenimentele cu mai mult de o zi în trecut vor fi ignorate</item>
+    <item quantity="few">Evenimentele cu peste %d zile în trecut vor fi ignorate</item>
+    <item quantity="other">Evenimentele cu peste %d zile în trecut vor fi ignorate</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">Evenimentele care depășesc acest număr de zile în trecut vor fi ignorate (poate fi 0). Lasă necompletat pentru a sincroniza toate evenimentele.</string>
+  <string name="settings_default_alarm">Memento implicit</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">Memento implicit cu un minut înainte de eveniment</item>
+    <item quantity="few">Memento implicit cu %d minute înainte de eveniment</item>
+    <item quantity="other">Memento implicit cu %d minute înainte de eveniment</item>
+  </plurals>
+  <string name="settings_default_alarm_off">Nu sunt create mementouri implicite</string>
+  <string name="settings_default_alarm_message">Dacă vor fi create memento-uri implicite pentru evenimente fără memento: numărul dorit de minute înainte de eveniment. Lasă necompletat pentru a dezactiva memento-urile implicite.</string>
+  <string name="settings_manage_calendar_colors">Gestionează culorile calendarului</string>
+  <string name="settings_manage_calendar_colors_on">Culorile calendarului sunt resetate la fiecare sincronizare</string>
+  <string name="settings_manage_calendar_colors_off">Culorile calendarului pot fi setate de alte aplicații</string>
+  <string name="settings_event_colors">Suport pentru culoarea evenimentului</string>
+  <string name="settings_event_colors_on">Culorile evenimentelor sunt sincronizate</string>
+  <string name="settings_event_colors_off">Culorile evenimentelor nu sunt sincronizate</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">Metoda de grupare a contactelor</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>Grupurile sunt vCard-uri separate</item>
+    <item>Grupurile sunt categorii per-contact</item>
+  </string-array>
+  <!--collection management-->
+  <string name="create_addressbook">Creează agendă de adrese</string>
+  <string name="create_calendar">Creează un calendar</string>
+  <string name="create_calendar_time_zone">Fus orar</string>
+  <string name="create_calendar_type">Posibile intrări din calendar</string>
+  <string name="create_calendar_type_vevent">Evenimente</string>
+  <string name="create_calendar_type_vtodo">Sarcini</string>
+  <string name="create_calendar_type_vjournal">Note/jurnal</string>
+  <string name="create_collection_color">Culoare</string>
+  <string name="create_collection_creating">Creare colecție</string>
+  <string name="create_collection_display_name">Titlu</string>
+  <string name="create_collection_display_name_required">Titlul este obligatoriu</string>
+  <string name="create_collection_description">Descriere</string>
+  <string name="create_collection_optional">opțional</string>
+  <string name="create_collection_home_set">Locația de stocare</string>
+  <string name="create_collection_home_set_required">Este necesară locația de stocare</string>
+  <string name="create_collection_create">Crează</string>
+  <string name="delete_collection">Șterge colecția</string>
+  <string name="delete_collection_confirm_title">Ești sigur?</string>
+  <string name="delete_collection_confirm_warning">Această colecție (%s) și toate datele sale vor fi eliminate definitiv.</string>
+  <string name="delete_collection_data_shall_be_deleted">Aceste date vor fi șterse de pe server.</string>
+  <string name="collection_force_read_only">Forțează numai citire</string>
+  <string name="collection_properties">Proprietăți</string>
+  <string name="collection_properties_sync_time">Ultima sincronizare:</string>
+  <string name="collection_properties_sync_time_never">Nu s-a sincronizat niciodată</string>
+  <string name="collection_properties_url">Adresă (URL):</string>
+  <string name="collection_properties_owner">Proprietar:</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">Informații de depanare</string>
+  <string name="debug_info_archive_caption">Arhivă ZIP</string>
+  <string name="debug_info_archive_subtitle">Conține informații de depanare și jurnale</string>
+  <string name="debug_info_archive_text">Partajează arhiva pentru a o transfera pe un computer, pentru a o trimite prin e-mail sau pentru a o atașa la un bilet de asistență.</string>
+  <string name="debug_info_archive_share">Partajează arhiva</string>
+  <string name="debug_info_attached">Informații de depanare atașate la acest mesaj (necesită suport pentru atașamentele aplicației care primește).</string>
+  <string name="debug_info_http_error">Eroare HTTP</string>
+  <string name="debug_info_server_error">Eroare de server</string>
+  <string name="debug_info_webdav_error">Eroare WebDAV</string>
+  <string name="debug_info_io_error">Eroare I/O</string>
+  <string name="debug_info_http_403_description">Solicitarea a fost respinsă. Verifică resursele implicate și informațiile de depanare pentru detalii.</string>
+  <string name="debug_info_http_404_description">Resursa solicitată nu mai există (mai mult). Verifică resursele implicate și informațiile de depanare pentru detalii.</string>
+  <string name="debug_info_http_5xx_description">A apărut o problemă la nivelul serverului. Contactează asistența serverului.</string>
+  <string name="debug_info_unexpected_error">A apărut o eroare neașteptată. Vezi informațiile de depanare pentru detalii.</string>
+  <string name="debug_info_view_details">Vezi detaliile</string>
+  <string name="debug_info_subtitle">Au fost colectate informații de depanare</string>
+  <string name="debug_info_involved_caption">Resurse implicate</string>
+  <string name="debug_info_involved_subtitle">Legat de problema</string>
+  <string name="debug_info_involved_remote">Resursa de la distanță:</string>
+  <string name="debug_info_involved_local">Resursa locală:</string>
+  <string name="debug_info_logs_caption">Jurnale</string>
+  <string name="debug_info_logs_subtitle">Jurnalele detaliate sunt disponibile</string>
+  <string name="debug_info_logs_view">Vezi jurnalele</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">A avut loc o eroare.</string>
+  <string name="exception_httpexception">A apărut o eroare HTTP.</string>
+  <string name="exception_ioexception">A apărut o eroare I/O.</string>
+  <string name="exception_show_details">Afișează detaliile</string>
+  <!--StorageLowReceiver-->
+  <string name="storage_low_notify_title">Sincronizarea a fost întreruptă</string>
+  <string name="storage_low_notify_text">Aproape că nu a mai rămas spațiu liber</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">Montări WebDAV</string>
+  <string name="webdav_mounts_quota_used_available">Cotă utilizată: %1$s / disponibilă: %2$s</string>
+  <string name="webdav_mounts_share_content">Partajează conținutul</string>
+  <string name="webdav_mounts_unmount">Demontează</string>
+  <string name="webdav_add_mount_title">Adaugă o montare WebDAV</string>
+  <string name="webdav_mounts_empty">Accesează direct fișierele din cloud adăugând o montare WebDAV!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[Vezi manualul pentru a afla <a href="%1$s">cum funcționează montările WebDAV</a>.</string>]]></string>
+  <string name="webdav_add_mount_display_name">Numele afișat</string>
+  <string name="webdav_add_mount_url">URL WebDAV</string>
+  <string name="webdav_add_mount_url_invalid">URL greșit</string>
+  <string name="webdav_add_mount_username">Nume de utilizator</string>
+  <string name="webdav_add_mount_password">Parolă</string>
+  <string name="webdav_add_mount_add">Adaugă montare</string>
+  <string name="webdav_add_mount_no_support">Niciun serviciu WebDAV la această adresă URL</string>
+  <string name="webdav_remove_mount_title">Elimină punctul de montare</string>
+  <string name="webdav_remove_mount_text">Detaliile conexiunii se vor pierde, dar niciun fișier nu va fi șters.</string>
+  <string name="webdav_notification_access">Se accesează fișierul WebDAV</string>
+  <string name="webdav_notification_download">Se descarcă fișierul WebDAV</string>
+  <string name="webdav_notification_upload">Se actualizează fișierul WebDAV</string>
+  <string name="webdav_provider_root_title">Montare WebDAV</string>
+  <!--sync-->
+  <string name="sync_error_permissions">Permisiuni DAVx⁵</string>
+  <string name="sync_error_permissions_text">Sunt necesare permisiuni suplimentare</string>
+  <string name="sync_error_tasks_too_old">%s prea vechi</string>
+  <string name="sync_error_tasks_required_version">Versiunea minimă necesară: %1$s</string>
+  <string name="sync_error_authentication_failed">Autentificare eșuată (verifică datele de conectare)</string>
+  <string name="sync_error_io">Eroare de rețea sau I/O – %s</string>
+  <string name="sync_error_http_dav">Eroare de server HTTP – %s</string>
+  <string name="sync_error_local_storage">Eroare de stocare locală – %s</string>
+  <string name="sync_error_retry_limit_reached">Eroare soft (încercări maxime atinse)</string>
+  <string name="sync_error_view_item">Vezi elementul</string>
+  <string name="sync_invalid_contact">S-a primit contact nevalid de la server</string>
+  <string name="sync_invalid_event">S-a primit eveniment nevalid de la server</string>
+  <string name="sync_invalid_task">S-a primit sarcină nevalidă de la server</string>
+  <string name="sync_invalid_resources_ignoring">Ignorarea uneia sau mai multor resurse nevalide</string>
+  <!--cert4android-->
+  <string name="certificate_notification_connection_security">DAVx⁵: Securitatea conexiunii</string>
+  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ a întâlnit un certificat necunoscut. Vrei să ai încredere?</string>
+</resources>

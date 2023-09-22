@@ -18,6 +18,7 @@ import androidx.work.workDataOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils.workScheduledOrRunningOrSuccessful
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.network.ConnectionUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -96,8 +97,9 @@ class SyncWorkerTest {
         val accountSettings = AccountSettings(context, account)
         accountSettings.setSyncWiFiOnly(true)
 
+        mockkObject(ConnectionUtils)
+        every { ConnectionUtils.wifiAvailable(any()) } returns true
         mockkObject(SyncWorker.Companion)
-        every { SyncWorker.Companion.wifiAvailable(any()) } returns true
         every { SyncWorker.Companion.correctWifiSsid(any(), any()) } returns true
 
         assertTrue(SyncWorker.wifiConditionsMet(context, accountSettings))
@@ -108,8 +110,9 @@ class SyncWorkerTest {
         val accountSettings = AccountSettings(context, account)
         accountSettings.setSyncWiFiOnly(true)
 
+        mockkObject(ConnectionUtils)
+        every { ConnectionUtils.wifiAvailable(any()) } returns false
         mockkObject(SyncWorker.Companion)
-        every { SyncWorker.Companion.wifiAvailable(any()) } returns false
         every { SyncWorker.Companion.correctWifiSsid(any(), any()) } returns true
 
         assertFalse(SyncWorker.wifiConditionsMet(context, accountSettings))

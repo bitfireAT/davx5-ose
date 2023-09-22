@@ -94,6 +94,7 @@ class AccountActivity: AppCompatActivity() {
         }
 
         // "Sync now" fab
+        TooltipCompat.setTooltipText(binding.sync, binding.sync.contentDescription)
         model.networkAvailable.observe(this) { networkAvailable ->
             binding.sync.setOnClickListener {
                 if (!networkAvailable)

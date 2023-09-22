@@ -42,26 +42,25 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
         android:id="@+id/refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_margin="@dimen/fab_margin"
-        android:contentDescription="@string/account_synchronize_collections"
+        app:backgroundTint="@android:color/white"
+        app:tint="@color/grey900"
         app:srcCompat="@drawable/ic_folder_refresh_outline"
         app:layout_anchor="@id/sync"
-        app:layout_anchorGravity="top|center"/>
+        app:layout_anchorGravity="top|center"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
         android:id="@+id/sync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:contentDescription="@string/account_synchronize_now"
-        android:tooltipText="@string/account_synchronize_now"
         app:useCompatPadding="true"
         app:srcCompat="@drawable/ic_sync" />
 

@@ -210,7 +210,6 @@
   <string name="account_no_webcals">暂无日历订阅。</string>
   <string name="account_swipe_down">下拉可从服务器获取最新列表。</string>
   <string name="account_synchronize_now"> 立即同步</string>
-  <string name="account_synchronize_collections">同步收藏</string>
   <string name="account_settings">账户设置</string>
   <string name="account_rename">重命名账户</string>
   <string name="account_rename_new_name">重命名后，未上传的本地修改会被撤销，您需要重新执行同步。新账户名：</string>
@@ -300,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">请用半角逗号分隔允许同步的 WiFi 网络名（SSID），留空则允许任意网络</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 限制需要进一步设置</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
+  <string name="settings_ignore_vpns">VPN 连接性</string>
+  <string name="settings_ignore_vpns_on">必须使用非 VPN 连接（推荐）</string>
+  <string name="settings_ignore_vpns_off">将 VPN 算作互联网连接</string>
   <string name="settings_authentication">认证</string>
   <string name="settings_oauth">重新验证身份</string>
   <string name="settings_oauth_summary">再次进行 OAuth 登录</string>

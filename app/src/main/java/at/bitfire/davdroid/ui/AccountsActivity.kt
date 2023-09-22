@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.TooltipCompat
 import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.AndroidViewModel
@@ -85,6 +86,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         binding = ActivityAccountsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        TooltipCompat.setTooltipText(binding.content.fab, binding.content.fab.contentDescription)
         binding.content.fab.setOnClickListener {
 //            startActivity(Intent(this, LoginActivity::class.java))
             infomaniakLogin.startWebViewLogin(webViewLoginResultLauncher)

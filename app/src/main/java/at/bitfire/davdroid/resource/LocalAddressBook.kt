@@ -21,6 +21,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.vcard4android.*
 import java.io.ByteArrayOutputStream
 import java.util.*
@@ -170,8 +171,8 @@ open class LocalAddressBook(
         }
         set(newMainAccount) {
             AccountManager.get(context).let { accountManager ->
-                accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_NAME, newMainAccount.name)
-                accountManager.setUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE, newMainAccount.type)
+                accountManager.setAndVerifyUserData(account, USER_DATA_MAIN_ACCOUNT_NAME, newMainAccount.name)
+                accountManager.setAndVerifyUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE, newMainAccount.type)
             }
 
             _mainAccount = newMainAccount
@@ -180,11 +181,11 @@ open class LocalAddressBook(
     var url: String
         get() = AccountManager.get(context).getUserData(account, USER_DATA_URL)
                 ?: throw IllegalStateException("Address book has no URL")
-        set(url) = AccountManager.get(context).setUserData(account, USER_DATA_URL, url)
+        set(url) = AccountManager.get(context).setAndVerifyUserData(account, USER_DATA_URL, url)
 
     override var readOnly: Boolean
         get() = AccountManager.get(context).getUserData(account, USER_DATA_READ_ONLY) != null
-        set(readOnly) = AccountManager.get(context).setUserData(account, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
+        set(readOnly) = AccountManager.get(context).setAndVerifyUserData(account, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
 
     override var lastSyncState: SyncState?
         get() = syncState?.let { SyncState.fromString(String(it)) }
