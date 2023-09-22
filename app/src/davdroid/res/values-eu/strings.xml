@@ -299,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Komaz banatutako izenak (SSIDak) baimendutako WiFi sareentzako (utzi hutsik denentzako)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID murriztapenak ezarpen gehiago behar ditu</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Kudeatu</string>
+  <string name="settings_ignore_vpns">VPN konexioa</string>
+  <string name="settings_ignore_vpns_on">VPN ez den konexioa behar da (gomendatua)</string>
+  <string name="settings_ignore_vpns_off">VPN Interneteko konexio gisa balio du</string>
   <string name="settings_authentication">Autentifikazioa</string>
   <string name="settings_oauth">Berriro autentifikatu</string>
   <string name="settings_oauth_summary">Egin OAuth saioa berriro</string>

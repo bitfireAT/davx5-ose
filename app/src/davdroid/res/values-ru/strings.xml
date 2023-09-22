@@ -299,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Имена (SSID) разрешенных сетей WiFi, разделенные запятыми (оставьте пустым для всех)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ограничение WiFi SSID требует дополнительных настроек</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Управлять</string>
+  <string name="settings_ignore_vpns">VPN-подключение</string>
+  <string name="settings_ignore_vpns_on">Подключение без VPN (рекомендуется)</string>
+  <string name="settings_ignore_vpns_off">VPN считается подключением к интернету</string>
   <string name="settings_authentication">Аутентификация</string>
   <string name="settings_oauth">Повторная аутентификация</string>
   <string name="settings_oauth_summary">Выполните вход через OAuth повторно</string>
