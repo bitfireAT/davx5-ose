@@ -20,7 +20,7 @@ buildscript {
         // own libraries
         cert4android: '32104f5',
         dav4jvm: 'da94a8b',
-        ical4android: 'b682476',
+        ical4android: '916f222',
         vcard4android: 'b376d2e'
     ]
 
