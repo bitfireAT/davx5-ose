@@ -8,16 +8,25 @@ import android.app.Activity
 import android.content.Intent
 import android.view.MenuItem
 import at.bitfire.davdroid.R
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
+import com.google.android.play.core.review.ReviewManagerFactory
 import javax.inject.Inject
 
 class GplayAccountsDrawerHandler @Inject constructor() : StandardAccountsDrawerHandler() {
 
     override fun onNavigationItemSelected(activity: Activity, item: MenuItem) {
         when (item.itemId) {
+            R.id.nav_beta_feedback -> {
+                // use In-App Review API to submit private feedback
+                val manager = ReviewManagerFactory.create(activity)
+                manager.requestReviewFlow()
+                    .addOnSuccessListener { reviewInfo ->
+                        manager.launchReviewFlow(activity, reviewInfo)
+                    }.addOnFailureListener {
+                        // fall back to email in case of failure
+                        super.onNavigationItemSelected(activity, item)
+                    }
+            }
+
             R.id.nav_donate ->
                 activity.startActivity(Intent(activity, EarnBadgesActivity::class.java))
 
