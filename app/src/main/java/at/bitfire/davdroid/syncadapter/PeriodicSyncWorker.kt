@@ -19,10 +19,11 @@ import java.util.concurrent.TimeUnit
 /**
  * Handles scheduled sync requests.
  *
- * Enqueues immediate [SyncWorker] syncs at the appropriate moment. This will prevent the actual
- * sync code from running twice simultaneously (for manual and scheduled sync).
+ * Enqueues immediate [SyncWorker] syncs at the appropriate moment.
  *
- * For each account there will be multiple dedicated workers running for each authority.
+ * The different periodic sync workers each carry a unique work name composed of the account and
+ * authority which they are responsible for. For each account there will be multiple dedicated periodic
+ * sync workers for each authority. See [PeriodicSyncWorker.workerName] for more information.
  */
 @HiltWorker
 class PeriodicSyncWorker @AssistedInject constructor(
@@ -31,21 +32,22 @@ class PeriodicSyncWorker @AssistedInject constructor(
 ) : Worker(appContext, workerParams) {
 
     companion object {
-
-        private const val WORKER_TAG = "periodic-sync"
-
         // Worker input parameters
         internal const val ARG_ACCOUNT_NAME = "accountName"
         internal const val ARG_ACCOUNT_TYPE = "accountType"
         internal const val ARG_AUTHORITY = "authority"
 
         /**
-         * Name of this worker.
-         * Used to distinguish between other work processes. A worker names are unique. There can
-         * never be two running workers with the same name.
+         * Unique work name of this worker. Can also be used as tag.
+         *
+         * Mainly used to query [WorkManager] for work state (by unique work name or tag).
+         *
+         * @param account the account this worker is running for
+         * @param authority the authority this worker is running for
+         * @return Name of this worker composed as "sync $authority ${account.type}/${account.name}"
          */
         fun workerName(account: Account, authority: String): String =
-            "$WORKER_TAG $authority ${account.type}/${account.name}"
+            "periodic-sync $authority ${account.type}/${account.name}"
 
         /**
          * Activate scheduled synchronization of an account with a specific authority.
@@ -69,7 +71,6 @@ class PeriodicSyncWorker @AssistedInject constructor(
                         NetworkType.CONNECTED
                 ).build()
             val workRequest = PeriodicWorkRequestBuilder<PeriodicSyncWorker>(interval, TimeUnit.SECONDS)
-                .addTag(WORKER_TAG)
                 .setInputData(arguments)
                 .setConstraints(constraints)
                 .build()
@@ -104,7 +105,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
             WorkManager.getInstance(context)
                 .getWorkInfos(
                     WorkQuery.Builder
-                        .fromUniqueWorkNames(listOf(workerName(account, authority)))
+                        .fromTags(listOf(workerName(account, authority)))
                         .addStates(listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
                         .build()
                 ).get()

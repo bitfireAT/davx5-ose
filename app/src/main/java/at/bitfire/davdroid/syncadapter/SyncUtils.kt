@@ -15,6 +15,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -89,22 +90,26 @@ object SyncUtils {
     }
 
     /**
-     * Returns a list of all available sync authorities for main accounts (!= address book accounts):
+     * Returns a list of all available sync authorities:
      *
-     *   1. address books authority (not [ContactsContract.AUTHORITY], but the one which manages address book accounts)
      *   1. calendar authority
-     *   1. tasks authority (if available)
+     *   2. contacts authority (only if [withContacts] is *true* - mostly we don't want it included)
+     *   3. address books authority
+     *   4. tasks authority/ies (if available, when tasks managing app(s) installed)
      *
      * Checking the availability of authorities may be relatively expensive, so the
      * result should be cached for the current operation.
      *
+     * @param withContacts whether to add contacts authority
      * @return list of available sync authorities for main accounts
      */
-    fun syncAuthorities(context: Context): List<String> {
+    fun syncAuthorities(context: Context, withContacts: Boolean = false): List<String> {
         val result = mutableListOf(
-            context.getString(R.string.address_books_authority),
-            CalendarContract.AUTHORITY
+            CalendarContract.AUTHORITY,
+            context.getString(R.string.address_books_authority)
         )
+        if (withContacts)
+            result.add(ContactsContract.AUTHORITY)
         TaskUtils.currentProvider(context)?.let { taskProvider ->
             result += taskProvider.authority
         }

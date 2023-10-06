@@ -41,6 +41,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.ConnectionUtils.internetAvailable
 import at.bitfire.davdroid.network.ConnectionUtils.wifiAvailable
+import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
@@ -55,7 +56,21 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
 /**
- * Handles immediate sync requests, status queries and cancellation for one or multiple authorities
+ * Handles immediate sync requests and cancellations of accounts and respective content authorities,
+ * by creating appropriate workers.
+ *
+ * The different sync workers each carry a unique work name composed of the account and authority they
+ * are syncing. See [SyncWorker.workerName] for more information.
+ *
+ * By enqueuing this worker ([SyncWorker.enqueue]) a sync will be started immediately (as soon as
+ * possible). Currently, there are three scenarios starting a sync:
+ * 1) *manual sync*: User presses an in-app sync button and enqueues this worker directly.
+ * 2) *periodic sync*: User defines time interval to sync in app settings. The [PeriodicSyncWorker] runs
+ * in the background and enqueues this worker when due.
+ * 3) *content-triggered sync*: User changes a calendar event, task or contact, or presses a sync
+ * button in one of the responsible apps. The [SyncAdapterService] is notified of this and enqueues
+ * this worker.
+ *
  */
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
@@ -79,9 +94,6 @@ class SyncWorker @AssistedInject constructor(
         const val RESYNC = 1
         const val FULL_RESYNC = 2
 
-        // This SyncWorker's tag
-        const val TAG_SYNC = "sync"
-
         /**
          * How often this work will be retried to run after soft (network) errors.
          *
@@ -90,11 +102,20 @@ class SyncWorker @AssistedInject constructor(
         internal const val MAX_RUN_ATTEMPTS = 5
 
         /**
-         * Name of this worker.
-         * Used to distinguish between other work processes. There must only ever be one worker with the exact same name.
+         * Unique work name of this worker. Can also be used as tag.
+         *
+         * Mainly used to query [WorkManager] for work state (by unique work name or tag).
+         *
+         * *NOTE:* SyncWorkers for address book accounts bear the unique worker name of their parent
+         * account (main account) as tag. This makes it easier to query the overall sync status of a
+         * main account.
+         *
+         * @param account the account this worker is running for
+         * @param authority the authority this worker is running for
+         * @return Name of this worker composed as "sync $authority ${account.type}/${account.name}"
          */
         fun workerName(account: Account, authority: String) =
-            "$TAG_SYNC $authority ${account.type}/${account.name}"
+            "sync $authority ${account.type}/${account.name}"
 
         /**
          * Requests immediate synchronization of an account with all applicable
@@ -143,7 +164,6 @@ class SyncWorker @AssistedInject constructor(
                 .setRequiredNetworkType(NetworkType.CONNECTED)   // require a network connection
                 .build()
             val workRequest = OneTimeWorkRequestBuilder<SyncWorker>()
-                .addTag(TAG_SYNC)
                 .setInputData(argumentsBuilder.build())
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setBackoffCriteria(
@@ -152,11 +172,18 @@ class SyncWorker @AssistedInject constructor(
                     TimeUnit.MILLISECONDS
                 )
                 .setConstraints(constraints)
+                .apply {
+                    // If this is a sub sync worker (address book sync), add the main account tag as well
+                    if (account.type == context.getString(R.string.account_type_address_book)) {
+                        val mainAccount = LocalAddressBook.mainAccount(context, account)
+                        addTag(workerName(mainAccount, authority))
+                    }
+                }
                 .build()
 
             // enqueue and start syncing
             val name = workerName(account, authority)
-            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name")
+            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name, with tags: ${workRequest.tags}")
             WorkManager.getInstance(context).enqueueUniqueWork(
                 name,
                 ExistingWorkPolicy.KEEP,    // If sync is already running, just continue.
@@ -191,10 +218,9 @@ class SyncWorker @AssistedInject constructor(
             authorities: List<String>? = null
         ): LiveData<Boolean> {
             val workQuery = WorkQuery.Builder
-                .fromTags(listOf(TAG_SYNC))
-                .addStates(workStates)
+                .fromStates(workStates)
             if (account != null && authorities != null)
-                workQuery.addUniqueWorkNames(
+                workQuery.addTags(
                     authorities.map { authority -> workerName(account, authority) }
                 )
             return WorkManager.getInstance(context)
