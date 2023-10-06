@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId "at.bitfire.davdroid"
 
-        versionCode 403070001
-        versionName '4.3.7'
+        versionCode 403080000
+        versionName '4.3.8-alpha.1'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
@@ -148,7 +148,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation "androidx.work:work-runtime-ktx:${versions.workManager}"
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.10.0'
 
     // Jetpack Compose
     implementation platform("androidx.compose:compose-bom:${versions.composeBom}")
@@ -203,7 +203,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
     androidTestImplementation "androidx.work:work-testing:${versions.workManager}"
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
-    androidTestImplementation 'io.mockk:mockk-android:1.13.7'
+    androidTestImplementation 'io.mockk:mockk-android:1.13.8'
     androidTestImplementation 'junit:junit:4.13.2'
 
     testImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"

@@ -4,10 +4,10 @@
 
 buildscript {
     ext.versions = [
-        aboutLibraries: '10.8.3',
+        aboutLibraries: '10.9.1',
         appIntro: '7.0.0-beta02',
-        composeBom: '2023.08.00',
-        hilt: '2.48',
+        composeBom: '2023.10.00',
+        hilt: '2.48.1',
         kotlin: '1.9.0',       // keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
                                //                   * com.google.devtools.ksp at the end of this file
         okhttp: '4.11.0',
@@ -33,7 +33,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.1'
+        classpath 'com.android.tools.build:gradle:8.1.2'
         classpath "com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}"
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${versions.aboutLibraries}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
