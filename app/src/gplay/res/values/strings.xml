@@ -3,6 +3,9 @@
     <string name="navigation_drawer_support_project">Support the project</string>
     <string name="nav_earn_badges">Support us with badges</string>
     <string name="nav_rate_us">Review in Google Play</string>
+    <string name="nav_feedback_inapp_didnt_appear">In-app review didn\'t appear?</string>
+    <string name="nav_feedback_google_play">Send in Google Play</string>
+    <string name="nav_feedback_scroll_to_reviews">Scroll to review section to submit feedback</string>
     <plurals name="you_earned_badges">
         <item quantity="one">You\'ve earned a badge, thank you!</item>
         <item quantity="other">You have earned %d badges, thank you!</item>
