@@ -8,7 +8,6 @@ import android.content.Context
 import android.os.Build
 import android.security.KeyChain
 import at.bitfire.cert4android.CustomCertManager
-import at.bitfire.cert4android.CustomHostnameVerifier
 import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.BuildConfig
@@ -274,7 +273,7 @@ class HttpClient private constructor(
 
                 val hostnameVerifier =
                     if (manager != null)
-                        CustomHostnameVerifier(context, OkHostnameVerifier)
+                        manager.HostnameVerifier(OkHostnameVerifier)
                     else
                         OkHostnameVerifier
 

@@ -8,7 +8,7 @@ buildscript {
         appIntro: '7.0.0-beta02',
         composeBom: '2023.10.00',
         hilt: '2.48.1',
-        kotlin: '1.9.0',       // keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
+        kotlin: '1.9.10',      // keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
                                //                   * com.google.devtools.ksp at the end of this file
         okhttp: '4.11.0',
         room: '2.5.2',
@@ -18,7 +18,7 @@ buildscript {
         commonsLang: '3.8.1',
         commonsText: '1.3',
         // own libraries
-        cert4android: '32104f5',
+        cert4android: '2bb3898',
         dav4jvm: 'da94a8b',
         ical4android: '916f222',
         vcard4android: 'b376d2e'
@@ -42,7 +42,7 @@ buildscript {
 
 plugins {
     // see https://github.com/google/ksp/releases for version numbers
-    id 'com.google.devtools.ksp' version '1.9.0-1.0.13' apply false
+    id 'com.google.devtools.ksp' version '1.9.10-1.0.13' apply false
 }
 
 allprojects {
