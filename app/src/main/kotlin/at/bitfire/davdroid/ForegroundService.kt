@@ -24,6 +24,25 @@ import dagger.hilt.components.SingletonComponent
 
 class ForegroundService : Service() {
 
+    override fun onCreate() {
+        super.onCreate()
+
+        /* Call startForeground as soon as possible (must be within 5 seconds after the service has been created).
+        If the foreground service shouldn't remain active (because the setting has been disabled),
+        we'll immediately stop it with stopForeground() in onStartCommand(). */
+        val settingsIntent = Intent(this, AppSettingsActivity::class.java).apply {
+            putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, Settings.FOREGROUND_SERVICE)
+        }
+        val builder = NotificationCompat.Builder(this, NotificationUtils.CHANNEL_STATUS)
+            .setSmallIcon(R.drawable.ic_foreground_notify)
+            .setContentTitle(getString(R.string.foreground_service_notify_title))
+            .setContentText(getString(R.string.foreground_service_notify_text))
+            .setStyle(NotificationCompat.BigTextStyle())
+            .setContentIntent(PendingIntent.getActivity(this, 0, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+        startForeground(NotificationUtils.NOTIFY_FOREGROUND, builder.build())
+    }
+
     companion object {
 
         @EntryPoint
@@ -67,6 +86,7 @@ class ForegroundService : Service() {
                 if (batteryOptimizationWhitelisted(context)) {
                     val serviceIntent = Intent(ACTION_FOREGROUND, null, context, ForegroundService::class.java)
                     if (Build.VERSION.SDK_INT >= 26)
+                        // we now have 5 seconds to call Service.startForeground() [https://developer.android.com/about/versions/oreo/android-8.0-changes.html#back-all]
                         context.startForegroundService(serviceIntent)
                     else
                         context.startService(serviceIntent)
@@ -97,21 +117,14 @@ class ForegroundService : Service() {
     override fun onBind(intent: Intent?): Nothing? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (foregroundServiceActivated(this)) {
-            val settingsIntent = Intent(this, AppSettingsActivity::class.java).apply {
-                putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, Settings.FOREGROUND_SERVICE)
-            }
-            val builder = NotificationCompat.Builder(this, NotificationUtils.CHANNEL_STATUS)
-                    .setSmallIcon(R.drawable.ic_foreground_notify)
-                    .setContentTitle(getString(R.string.foreground_service_notify_title))
-                    .setContentText(getString(R.string.foreground_service_notify_text))
-                    .setStyle(NotificationCompat.BigTextStyle())
-                    .setContentIntent(PendingIntent.getActivity(this, 0, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-                    .setCategory(NotificationCompat.CATEGORY_STATUS)
-            startForeground(NotificationUtils.NOTIFY_FOREGROUND, builder.build())
+        // Command is always ACTION_FOREGROUND → re-evaluate foreground setting
+        if (foregroundServiceActivated(this))
+            // keep service open
             return START_STICKY
-        } else {
+        else {
+            // don't keep service active
             stopForeground(true)
+            stopSelf()      // Stop the service so that onCreate() will run again for the next command
             return START_NOT_STICKY
         }
     }
