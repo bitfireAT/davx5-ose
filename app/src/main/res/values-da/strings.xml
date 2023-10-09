@@ -128,9 +128,7 @@
   <string name="navigation_drawer_donate">Donation</string>
   <string name="navigation_drawer_privacy_policy">Privatlivs politik</string>
   <string name="account_list_no_notification_permission">Notifikationer slået fra. Du vil ikke blive gjort opmærksom på synkroniserings-fejl.</string>
-  <string name="account_list_no_internet">Ingen internetforbindelse. Android kører ikke synkronisering.</string>
   <string name="account_list_manage_connections">Aministrer forbindelser</string>
-  <string name="account_list_low_storage">Lagerplds lav. Android kører ikke synkronisering.</string>
   <string name="account_list_manage_storage">Administrer lagerplads</string>
   <string name="account_list_datasaver_enabled">Gemning af data slået til. Synkronisering i baggrunden er begrænset.</string>
   <string name="account_list_manage_datasaver">Administrer gemning af data</string>
@@ -381,9 +379,6 @@
   <string name="exception_httpexception">Der er opstået en HTTP-fejl.</string>
   <string name="exception_ioexception">Der er opstået en I/O-fejl.</string>
   <string name="exception_show_details">Vis detaljer</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Synkronisering i pause</string>
-  <string name="storage_low_notify_text">Næsten ingen plads tilbage</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV monteringspunkter</string>
   <string name="webdav_mounts_quota_used_available">Mængde brugt: %1$s / tilgængelig: %2$s</string>

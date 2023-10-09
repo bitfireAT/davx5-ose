@@ -128,9 +128,7 @@
   <string name="navigation_drawer_donate">Дарения</string>
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
   <string name="account_list_no_notification_permission">Известията са изключени. Няма да бъдете известявани за грешки при синхронизиране.</string>
-  <string name="account_list_no_internet">Няма връзка с интернет. Android няма да извършва синхронизация.</string>
   <string name="account_list_manage_connections">Управление на връзките</string>
-  <string name="account_list_low_storage">Няма достатъчно свободно място. Android няма да извършва синхронизация.</string>
   <string name="account_list_manage_storage">Управление на хранилището</string>
   <string name="account_list_datasaver_enabled">Включена е икономия на данни. Синхронизацията във фонов режим е ограничена.</string>
   <string name="account_list_manage_datasaver">Икономия на трафик</string>
@@ -299,9 +297,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Разделени със запетая имена (SSID) на разрешените мрежи по Wi-Fi (празно за всички мрежи)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ограниченията на Wi-Fi по SSID изискват допълнителни настройки</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Управление</string>
-  <string name="settings_ignore_vpns">Свързаност през ВЧМ</string>
-  <string name="settings_ignore_vpns_on">Необходима е свързаност извън ВЧМ (препоръчително)</string>
-  <string name="settings_ignore_vpns_off">ВЧМ се счита като интернет</string>
   <string name="settings_authentication">Удостоверяване</string>
   <string name="settings_oauth">Повторно удостоверяване</string>
   <string name="settings_oauth_summary">Изпълнява повторно влизане чрез OAuth</string>
@@ -396,9 +391,6 @@
   <string name="exception_httpexception">Възникна грешка на HTTP.</string>
   <string name="exception_ioexception">Възникна грешка с входа/изхода.</string>
   <string name="exception_show_details">Подробности</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Синхронизирането е спряно</string>
-  <string name="storage_low_notify_text">Почти няма свободно пространство</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Дялове на WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Използвана квота: %1$s / налична: %2$s</string>

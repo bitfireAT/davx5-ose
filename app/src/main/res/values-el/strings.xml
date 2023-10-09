@@ -106,8 +106,6 @@
   <string name="navigation_drawer_community">Κοινότητα</string>
   <string name="navigation_drawer_donate">Δωρεά</string>
   <string name="navigation_drawer_privacy_policy">Πολιτική απορρήτου</string>
-  <string name="account_list_no_internet">Δεν υπάρχει σύνδεση στο Διαδίκτυο. Το Android δεν θα πραγματοποιήσει συγχρονισμό.</string>
-  <string name="account_list_low_storage">Χαμηλός αποθηκευτικός χώρος. Το Android δεν θα εκτελέσει συγχρονισμό.</string>
   <string name="account_list_empty">Καλώς ήρθατε στο DAVx⁵!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Ο αυτόματος συγχρονισμός σε όλο το σύστημα είναι απενεργοποιημένος</string>
   <string name="accounts_global_sync_enable">Ενεργοποίηση</string>
@@ -330,7 +328,6 @@
   <string name="exception_httpexception">Παρουσιάστηκε σφάλμα HTTP.</string>
   <string name="exception_ioexception">Παρουσιάστηκε σφάλμα I/O.</string>
   <string name="exception_show_details">Εμφάνιση λεπτομερειών</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Βάσεις WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Χώρος αποθήκευσης: %1$s / διαθέσιμα: %2$s</string>

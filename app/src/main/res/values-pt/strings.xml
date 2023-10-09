@@ -95,7 +95,6 @@
   <string name="navigation_drawer_faq">Perguntas fequentes</string>
   <string name="navigation_drawer_donate">Doações</string>
   <string name="navigation_drawer_privacy_policy">Política de privacidade</string>
-  <string name="account_list_no_internet">Sem conexão com a Internet. O Android não executará a sincronização.</string>
   <string name="account_list_empty">Bem-vindo ao DAVx⁵!\n\nVocê pode adicionar uma conta CalDAV/CardDAV agora.</string>
   <string name="accounts_global_sync_disabled">A sincronização automática pelo sistema está desativada</string>
   <string name="accounts_global_sync_enable">Ativar</string>
@@ -299,7 +298,6 @@
   <string name="exception_httpexception">Ocorreu um erro de HTTP.</string>
   <string name="exception_ioexception">Ocorreu um erro de leitura/gravação.</string>
   <string name="exception_show_details">Mostrar detalhes</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_share_content">Partilhar conteúdo</string>
   <string name="webdav_add_mount_username">Nome do usuário</string>

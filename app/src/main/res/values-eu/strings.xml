@@ -128,9 +128,7 @@
   <string name="navigation_drawer_donate">Dohaintza egin</string>
   <string name="navigation_drawer_privacy_policy">Pribatutasun gidalerroak</string>
   <string name="account_list_no_notification_permission">Jakinarazpenak desgaituta. Ez zaitugu sinkronizazio-erroreei buruz jakinaraziko.</string>
-  <string name="account_list_no_internet">Ez dago internetik. Androidek ez du sinkronizaziorik egingo.</string>
   <string name="account_list_manage_connections">Kudeatu konexioak</string>
-  <string name="account_list_low_storage">Biltegiratze-lekua baxua da. Androidek ez du sinkronizatuko.</string>
   <string name="account_list_manage_storage">Kudeatu biltegia</string>
   <string name="account_list_datasaver_enabled">Datu-aurrezpena gaituta. Atzeko planoko sinkronizazioa murriztuko da.</string>
   <string name="account_list_manage_datasaver">Kudeatu datu-aurrezpena</string>
@@ -299,9 +297,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Komaz banatutako izenak (SSIDak) baimendutako WiFi sareentzako (utzi hutsik denentzako)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID murriztapenak ezarpen gehiago behar ditu</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Kudeatu</string>
-  <string name="settings_ignore_vpns">VPN konexioa</string>
-  <string name="settings_ignore_vpns_on">VPN ez den konexioa behar da (gomendatua)</string>
-  <string name="settings_ignore_vpns_off">VPN Interneteko konexio gisa balio du</string>
   <string name="settings_authentication">Autentifikazioa</string>
   <string name="settings_oauth">Berriro autentifikatu</string>
   <string name="settings_oauth_summary">Egin OAuth saioa berriro</string>
@@ -396,9 +391,6 @@
   <string name="exception_httpexception">HTTP errore bat gertatu da.</string>
   <string name="exception_ioexception">S/I errore bat gertatu da.</string>
   <string name="exception_show_details">Erakutsi xehetasunak</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Sinkronizazioa geldituta</string>
-  <string name="storage_low_notify_text">Ia ez dago leku librerik</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV muntaiak</string>
   <string name="webdav_mounts_quota_used_available">Erabilitako kuota: %1$s / eskuragarri: %2$s</string>

@@ -43,7 +43,6 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_donate">Darovať</string>
   <string name="navigation_drawer_privacy_policy">Zásady bezpečnosti</string>
-  <string name="account_list_no_internet">Žiadne pripojenie do internetu. Android nestpustí synchronizáciu.</string>
   <string name="account_list_empty">Vitajte v programe DAVx⁵!\n\nTeraz môžete pridať používateľský účet pre CalDAV/CardDAV .</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizácia platná pre celý systém je zakázaná</string>
   <string name="accounts_global_sync_enable">Povoliť</string>
@@ -215,7 +214,6 @@
   <string name="exception_httpexception">Vyskytla sa HTTP chyba.</string>
   <string name="exception_ioexception">Vyskytla sa V/V chyba.</string>
   <string name="exception_show_details">Zobraziť detaily</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Meno používateľa</string>
   <string name="webdav_add_mount_password">Heslo</string>

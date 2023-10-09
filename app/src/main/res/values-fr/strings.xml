@@ -127,9 +127,7 @@
   <string name="navigation_drawer_donate">Faire un don</string>
   <string name="navigation_drawer_privacy_policy">Politique de confidentialité</string>
   <string name="account_list_no_notification_permission">Notifications désactivées. Vous ne serez pas averti des erreurs de synchronisation.</string>
-  <string name="account_list_no_internet">Pas de connectivité Internet. Android ne pourra pas exécuter la synchronisation.</string>
   <string name="account_list_manage_connections">Gérer les connexions</string>
-  <string name="account_list_low_storage">L\'espace de stockage est presque plein. Android ne lancera pas la synchronisation.</string>
   <string name="account_list_manage_storage">Gérer le stockage</string>
   <string name="account_list_datasaver_enabled">L\'économiseur de données est activé. La synchronisation en arrière-plan est limitée.</string>
   <string name="account_list_manage_datasaver">Gérer l\'économiseur de données</string>
@@ -380,9 +378,6 @@
   <string name="exception_httpexception">Une erreur HTTP est survenue.</string>
   <string name="exception_ioexception">Une erreur I/O est survenue.</string>
   <string name="exception_show_details">Voir détails</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Synchronisation suspendue</string>
-  <string name="storage_low_notify_text">L\'espace de stockage est presque plein</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Points de montage WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Quota utitlisé : %1$s / disponible : %2$s</string>

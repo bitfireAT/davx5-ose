@@ -127,9 +127,7 @@
   <string name="navigation_drawer_donate">Donate</string>
   <string name="navigation_drawer_privacy_policy">Privacy policy</string>
   <string name="account_list_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
-  <string name="account_list_no_internet">No Internet connectivity. Android will not run synchronisation.</string>
   <string name="account_list_manage_connections">Manage connections</string>
-  <string name="account_list_low_storage">Storage space low. Android will not run synchronisation.</string>
   <string name="account_list_manage_storage">Manage storage</string>
   <string name="account_list_datasaver_enabled">Data saver enabled. Background synchronisation is restricted.</string>
   <string name="account_list_manage_datasaver">Manage data saver</string>
@@ -378,9 +376,6 @@
   <string name="exception_httpexception">An HTTP error has occurred.</string>
   <string name="exception_ioexception">An I/O error has occurred.</string>
   <string name="exception_show_details">Show details</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Synchronisation paused</string>
-  <string name="storage_low_notify_text">Almost no free space left</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV mounts</string>
   <string name="webdav_mounts_quota_used_available">Quota used: %1$s / available: %2$s</string>

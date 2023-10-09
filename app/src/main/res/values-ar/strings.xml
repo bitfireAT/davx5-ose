@@ -196,7 +196,6 @@
   <string name="exception_httpexception">حدث خطأ HTTP.</string>
   <string name="exception_ioexception">حدث خطأ في الإدخال/الإخراج.</string>
   <string name="exception_show_details">عرض التفاصيل</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">اسم المستخدم</string>
   <string name="webdav_add_mount_password">كلمة المرور</string>

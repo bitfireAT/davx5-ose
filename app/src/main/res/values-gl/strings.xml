@@ -128,9 +128,9 @@
   <string name="navigation_drawer_donate">Doar</string>
   <string name="navigation_drawer_privacy_policy">Política de Privacidade</string>
   <string name="account_list_no_notification_permission">Notificacións desactivadas. Non verás os avisos de erro na sincr.</string>
-  <string name="account_list_no_internet">Sen conexión a internet. Android non sincronizará.</string>
+  <string name="account_list_no_internet">Sen conexión a Internet verificada. A sincronización podería fallar.</string>
   <string name="account_list_manage_connections">Xestionar conexións</string>
-  <string name="account_list_low_storage">Queda pouco espazo, Android non executará a sincronización.</string>
+  <string name="account_list_low_storage">Queda pouco espazo de almacenaxe. Android non vai sincronizar os cambios locais inmediatamente, farao na próxima sincronización regular.</string>
   <string name="account_list_manage_storage">Xestionar almacenaxe</string>
   <string name="account_list_datasaver_enabled">O aforro de datos está activado. A sincronización en segundo plano está restrinxida.</string>
   <string name="account_list_manage_datasaver">Xestionar aforro de datos</string>
@@ -299,9 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Nome das rede WiFi permitidas (SSIDs) separados por vírgulas (en branco para todas)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">A restrición WiFi SSID precisa máis axustes</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Xestionar</string>
-  <string name="settings_ignore_vpns">Conectividade VPN</string>
-  <string name="settings_ignore_vpns_on">Requerida conexión non-VPN (recomendado)</string>
-  <string name="settings_ignore_vpns_off">VPN conta como conexión a internet</string>
+  <string name="settings_ignore_vpns">A VPN require acceso a Internet</string>
+  <string name="settings_ignore_vpns_on">VPN, sen ter a conexión a Internet verificada, non é suficiente para lanzar a sincronización (recomendado)</string>
+  <string name="settings_ignore_vpns_off">VPN, sen ter a conexión a Internet verificada, é suficiente para lanzar a sincronización</string>
   <string name="settings_authentication">Autenticación</string>
   <string name="settings_oauth">Volver a autenticar</string>
   <string name="settings_oauth_summary">Intentar acceder con OAuth outra vez</string>
@@ -396,9 +396,6 @@
   <string name="exception_httpexception">Houbo un fallo HTTP.</string>
   <string name="exception_ioexception">Houbo un fallo I/O.</string>
   <string name="exception_show_details">Mostrar detalles</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Sincronización en pausa</string>
-  <string name="storage_low_notify_text">Case non queda espazo libre</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Montaxes WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Cota utilizada: %1$s / dispoñible: %2$s</string>
