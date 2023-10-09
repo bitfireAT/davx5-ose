@@ -164,6 +164,7 @@ class SyncWorker @AssistedInject constructor(
                 .setRequiredNetworkType(NetworkType.CONNECTED)   // require a network connection
                 .build()
             val workRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+                .addTag(workerName(account, authority))
                 .setInputData(argumentsBuilder.build())
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setBackoffCriteria(
