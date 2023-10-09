@@ -127,9 +127,7 @@
   <string name="navigation_drawer_donate">Donera</string>
   <string name="navigation_drawer_privacy_policy">Integritetspolicy</string>
   <string name="account_list_no_notification_permission">Notifieringar avstängda. Du kommer inte bli informerad om synkroniseringsfel.</string>
-  <string name="account_list_no_internet">Ingen internetanslutning. Android kommer inte att köra synkronisering.</string>
   <string name="account_list_manage_connections">Hantera anslutningar</string>
-  <string name="account_list_low_storage">Lagringsutrymme lågt. Android kommer inte att köra synkronisering.</string>
   <string name="account_list_manage_storage">Hantera lagring</string>
   <string name="account_list_datasaver_enabled">Begränsad data-synkronisering aktiverad. Begränsad bakgrundssynkronisering.</string>
   <string name="account_list_manage_datasaver">Hantera begränsad data-synkronisering</string>
@@ -378,9 +376,6 @@
   <string name="exception_httpexception">Ett HTTP-fel har uppstått.</string>
   <string name="exception_ioexception">Ett I/O-fel har uppstått.</string>
   <string name="exception_show_details">Visa detaljer</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Synkronisering pausad</string>
-  <string name="storage_low_notify_text">Nästan inget ledigt utrymme kvar</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV-fästen</string>
   <string name="webdav_mounts_quota_used_available">Använd kvot: %1$s / tillgängligt: %2$s</string>

@@ -121,7 +121,6 @@
   <string name="exception_httpexception">Bir HTTP hatası oluştu.</string>
   <string name="exception_ioexception">Bir I/O hatası oluştu.</string>
   <string name="exception_show_details">Detayları göster</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Kullanıcı adı</string>
   <string name="webdav_add_mount_password">Parola</string>

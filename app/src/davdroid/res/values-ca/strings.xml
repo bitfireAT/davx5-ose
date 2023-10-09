@@ -128,9 +128,7 @@
   <string name="navigation_drawer_donate">Fer una donació</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
   <string name="account_list_no_notification_permission">Notificacions desactivades. No es notificaran els errors de sincronització.</string>
-  <string name="account_list_no_internet">Sense connexió a internet. Android no executarà la sincronització</string>
   <string name="account_list_manage_connections">Gestiona les connexions</string>
-  <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no executarà la sincronització.</string>
   <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
   <string name="account_list_datasaver_enabled">S\'ha activat l\'estalviador de dades. La sincronització en segon pla està restringida.</string>
   <string name="account_list_manage_datasaver">Gestió de l\'estalviador de dades</string>
@@ -299,9 +297,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Noms (SSID) separats per comes de les xarxes Wi-Fi permeses (deixeu-ho en blanc per a totes)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restricció per SSID de la Wi-Fi requereix una configuració addicional</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Gestió</string>
-  <string name="settings_ignore_vpns">Connexió VPN</string>
-  <string name="settings_ignore_vpns_on">Requerir connexió sense VPN (recomanat)</string>
-  <string name="settings_ignore_vpns_off">Les VPN compten com a connexió a Internet</string>
   <string name="settings_authentication">Autentificació</string>
   <string name="settings_oauth">Re-Autenticar</string>
   <string name="settings_oauth_summary">Tornar a realitzar l\'inici de sessió amb OAuth</string>
@@ -396,9 +391,6 @@
   <string name="exception_httpexception">S\'ha produït un error HTTP.</string>
   <string name="exception_ioexception">S\'ha produït un error d\'E/S.</string>
   <string name="exception_show_details">Mostra els detalls</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Sincronització en pausa</string>
-  <string name="storage_low_notify_text">Gairebé no queda espai lliure</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Muntatges WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Quota utilitzada: %1$s / disponible: %2$s</string>

@@ -234,7 +234,6 @@
   <string name="exception_httpexception">Zgodila se je HTTP napaka.</string>
   <string name="exception_ioexception">I/O napaka se je zgodila.</string>
   <string name="exception_show_details">Pokaži podrobnosti</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Uporabniško ime</string>
   <string name="webdav_add_mount_password">Geslo</string>

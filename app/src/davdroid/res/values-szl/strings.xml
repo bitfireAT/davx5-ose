@@ -62,7 +62,6 @@
   <string name="navigation_drawer_faq">Pytania i ôdpowiedzi</string>
   <string name="navigation_drawer_donate">Dowka</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
-  <string name="account_list_no_internet">Brak połōnczynio z internetym. Android niy bydzie synchrōnizować.</string>
   <string name="account_list_empty">Witōmy w DAVx⁵!\n\nMożesz teroz przidać kōnto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Autōmatyczno synchrōnizacyjo dlo cołkigo systymu je zastawiōno</string>
   <string name="accounts_global_sync_enable">Włōncz</string>
@@ -232,7 +231,6 @@
   <string name="exception_httpexception">Trefiōł sie błōnd HTTP.</string>
   <string name="exception_ioexception">Trefiōł sie błōnd I/O.</string>
   <string name="exception_show_details">Pokoż informacyje</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Miano używocza</string>
   <string name="webdav_add_mount_password">Hasło</string>

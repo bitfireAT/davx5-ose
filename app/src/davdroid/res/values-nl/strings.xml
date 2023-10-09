@@ -69,7 +69,7 @@
   <string name="permissions_jtx_title">jtx Board-rechten</string>
   <string name="permissions_jtx_status_not_installed">Geen taak-, kalender- en notitiesync (niet geïnstalleerd)</string>
   <string name="permissions_jtx_status_off">Geen taak-, kalender- en notitiesync</string>
-  <string name="permissions_jtx_status_on">Taak-, kalender- en notitiesync mogelijk</string>
+  <string name="permissions_jtx_status_on">Taak-, kalender- en notitie-sync mogelijk</string>
   <string name="permissions_opentasks_title">OpenTasks rechten</string>
   <string name="permissions_tasksorg_title">Rechten voor taken</string>
   <string name="permissions_tasks_status_not_installed">Geen taak-sync (niet geïnstalleerd)</string>
@@ -128,9 +128,9 @@
   <string name="navigation_drawer_donate">Doneren</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
   <string name="account_list_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
-  <string name="account_list_no_internet">Geen internetverbinding. Android synchroniseert niet.</string>
+  <string name="account_list_no_internet">Geen gevalideerde internetverbinding. Synchronisatie wordt mogelijk niet uitgevoerd.</string>
   <string name="account_list_manage_connections">Verbindingen beheren</string>
-  <string name="account_list_low_storage">Er is te weinig opslagruimte. Android zal niet synchroniseren.</string>
+  <string name="account_list_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
   <string name="account_list_manage_storage">Opslag beheren</string>
   <string name="account_list_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
   <string name="account_list_manage_datasaver">Beheer van gegevensbesparing</string>
@@ -299,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Door komma\'s gescheiden namen (SSID\'s) van toegestane WiFi-netwerken (laat leeg voor alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Beperking WiFi-SSID vereist verdere instellingen</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Beheren</string>
+  <string name="settings_ignore_vpns">VPN vereist onderliggend internet</string>
+  <string name="settings_ignore_vpns_on">VPN zonder onderliggende gevalideerde internetverbinding is niet voldoende om synchronisatie uit te voeren (aanbevolen)</string>
+  <string name="settings_ignore_vpns_off">VPN zonder onderliggende gevalideerde internetverbinding is voldoende om synchronisatie uit te voeren</string>
   <string name="settings_authentication">Verificatie</string>
   <string name="settings_oauth">Opnieuw authenticeren</string>
   <string name="settings_oauth_summary">Voer OAuth-aanmelding opnieuw uit</string>
@@ -393,9 +396,6 @@
   <string name="exception_httpexception">Een HTTP-fout is opgetreden.</string>
   <string name="exception_ioexception">Een I/O fout is opgetreden.</string>
   <string name="exception_show_details">Details weergeven</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Synchroniseren is onderbroken</string>
-  <string name="storage_low_notify_text">Bijna geen vrije ruimte meer</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV-koppelingen</string>
   <string name="webdav_mounts_quota_used_available">Quotum gebruikt: %1$s / Beschikbaar: %2$s</string>

@@ -128,9 +128,7 @@
   <string name="navigation_drawer_donate">Donează</string>
   <string name="navigation_drawer_privacy_policy">Politica de confidențialitate</string>
   <string name="account_list_no_notification_permission">Notificări dezactivate. Nu vei fi notificat despre erorile de sincronizare.</string>
-  <string name="account_list_no_internet">Fără conexiune la internet. Android nu va rula sincronizarea.</string>
   <string name="account_list_manage_connections">Gestionează conexiunile</string>
-  <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va rula sincronizarea.</string>
   <string name="account_list_manage_storage">Gestionează stocarea</string>
   <string name="account_list_datasaver_enabled">Economizorul de date este activat. Sincronizarea în fundal este restricționată.</string>
   <string name="account_list_manage_datasaver">Gestionează economizorul de date</string>
@@ -299,9 +297,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Nume separate prin virgulă (SSID) ale rețelelor WiFi permise (lasă necompletat pentru toate)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Restricția SSID WiFi necesită setări suplimentare</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Gestionează</string>
-  <string name="settings_ignore_vpns">Conectivitate VPN</string>
-  <string name="settings_ignore_vpns_on">Este necesară o conexiune non-VPN (recomandat)</string>
-  <string name="settings_ignore_vpns_off">VPN contează ca conexiune la internet</string>
   <string name="settings_authentication">Autentificare</string>
   <string name="settings_oauth">Reautentificare</string>
   <string name="settings_oauth_summary">Efectuează din nou autentificarea OAuth</string>
@@ -398,9 +393,6 @@
   <string name="exception_httpexception">A apărut o eroare HTTP.</string>
   <string name="exception_ioexception">A apărut o eroare I/O.</string>
   <string name="exception_show_details">Afișează detaliile</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Sincronizarea a fost întreruptă</string>
-  <string name="storage_low_notify_text">Aproape că nu a mai rămas spațiu liber</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Montări WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Cotă utilizată: %1$s / disponibilă: %2$s</string>

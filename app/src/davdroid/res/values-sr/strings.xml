@@ -120,8 +120,6 @@
   <string name="navigation_drawer_donate">Донирај</string>
   <string name="navigation_drawer_privacy_policy">Политика приватности</string>
   <string name="account_list_no_notification_permission">Обавештења су онемогућена. Нећете бити обавештени о проблемима са синхронизацијом.</string>
-  <string name="account_list_no_internet">Нема везе са интернетом. Андроид неће вршити синхронизацију.</string>
-  <string name="account_list_low_storage">Недовољно слободног простора. Андроид неће вршити синхронизацију.</string>
   <string name="account_list_manage_storage">Управљајте складиштем</string>
   <string name="account_list_empty">Добро дошли у ДАВдроид!\n\nМожете сада да додате КалДАВ/КардДАВ налог.</string>
   <string name="accounts_global_sync_disabled">Синхронизација је системски искључена</string>
@@ -329,7 +327,6 @@
   <string name="exception_httpexception">Десила се ХТТП грешка.</string>
   <string name="exception_ioexception">Десила се У/И грешка.</string>
   <string name="exception_show_details">Прикажи детаље</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_display_name">Име за приказ</string>
   <string name="webdav_add_mount_username">Корисничко име</string>
