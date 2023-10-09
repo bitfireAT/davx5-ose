@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="navigation_drawer_support_project">Susține proiectul</string>
-    </resources>
+    <string name="nav_earn_badges">Sprijină-ne cu insigne</string>
+    <string name="nav_rate_us">Recenzie în Google Play</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one">Ai câștigat o insignă, îți mulțumim!</item>
+        <item quantity="few">Ai câștigat %d insigne, îți mulțumim!</item>
+        <item quantity="other">Ai câștigat %d insigne, îți mulțumim!</item>
+    </plurals>
+    <string name="available_badges">Ecusoane disponibile</string>
+    <string name="available_badges_empty">Ne pare rău, nu s-au putut încărca insignele. Ești autentificat în Magazinul Play?</string>
+    <string name="what_are_badges">Ce sunt insignele?</string>
+    <string name="what_are_badges_title">Ce sunt insignele?</string>
+    <string name="what_are_badges_body">Insignele sunt plăți simple în aplicație, o singură dată. Vei câștiga o insignă drăguță și cu ea ne poți susține în timp.</string>
+    <string name="why_badges_title">De ce DAVx5 oferă insigne fără funcții?</string>
+    <string name="why_badges_body">DAVx5 a crescut cu adevărat de-a lungul anilor! Încă dezvoltăm în mod activ noi funcții, oferim asistență și actualizăm întotdeauna aplicația pentru versiunile viitoare de Android. Aceste insigne sunt plăți unice în care poți pur și simplu să-ți arăți sprijinul cumpărându-ne o cafea, două&#8230; sau 10 :-) Vrem să fim cât mai deschiși posibil, așa că nu vor fi niciodată lucruri noi blocate prin plată prin aplicație.</string>
+    <string name="button_buy_badge_free">GRATUIT</string>
+    <string name="button_buy_badge_bought">Mulțumesc!</string>
+    <string name="earn_badges">Câștigă insigne pentru a ne susține!</string>
+    <string name="billing_unavailable">API-ul de facturare nu este disponibil, Magazinul Play este actualizat și ești conectat la contul tău Google?</string>
+    <string name="network_problems">Au apărut probleme de rețea, încearcă din nou mai târziu.</string>
+</resources>
