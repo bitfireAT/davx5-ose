@@ -19,7 +19,7 @@ android {
         applicationId "at.bitfire.davdroid"
 
         versionCode 403080000
-        versionName '4.3.8-alpha.1'
+        versionName '4.3.8'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
