@@ -128,9 +128,9 @@
   <string name="navigation_drawer_donate">Пожертвовать</string>
   <string name="navigation_drawer_privacy_policy">Политика конфиденциальности</string>
   <string name="account_list_no_notification_permission">Уведомления отключены. Вы не будете получать уведомления об ошибках синхронизации.</string>
-  <string name="account_list_no_internet">Нет подключения к интернету. Android не будет выполнять синхронизацию.</string>
+  <string name="account_list_no_internet">Нет проверенного подключения к интернету. Синхронизация может не выполняться.</string>
   <string name="account_list_manage_connections">Управление подключениями</string>
-  <string name="account_list_low_storage">Место для хранения мало. Android не будет выполнять синхронизацию.</string>
+  <string name="account_list_low_storage">Недостаточно памяти для хранения данных. Android будет синхронизировать локальные изменения не сразу, а во время следующей регулярной синхронизации.</string>
   <string name="account_list_manage_storage">Управление хранилищем</string>
   <string name="account_list_datasaver_enabled">Экономия трафика включена. Фоновая синхронизация ограничена.</string>
   <string name="account_list_manage_datasaver">Экономия трафика</string>
@@ -299,9 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Имена (SSID) разрешенных сетей WiFi, разделенные запятыми (оставьте пустым для всех)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ограничение WiFi SSID требует дополнительных настроек</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Управлять</string>
-  <string name="settings_ignore_vpns">VPN-подключение</string>
-  <string name="settings_ignore_vpns_on">Подключение без VPN (рекомендуется)</string>
-  <string name="settings_ignore_vpns_off">VPN считается подключением к интернету</string>
+  <string name="settings_ignore_vpns">Для работы VPN требуется основной интернет</string>
+  <string name="settings_ignore_vpns_on">VPN без проверенного подключения к интернету недостаточно для синхронизации (рекомендуется)</string>
+  <string name="settings_ignore_vpns_off">Для синхронизации достаточно VPN без проверенного подключения к интернету.</string>
   <string name="settings_authentication">Аутентификация</string>
   <string name="settings_oauth">Повторная аутентификация</string>
   <string name="settings_oauth_summary">Выполните вход через OAuth повторно</string>
@@ -400,9 +400,6 @@
   <string name="exception_httpexception">Произошла ошибка HTTP</string>
   <string name="exception_ioexception">Произошла ошибка ввода/вывода.</string>
   <string name="exception_show_details">Показать детали</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Синхронизация приостановлена</string>
-  <string name="storage_low_notify_text">Почти не осталось свободного места</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Точки монтирования WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Использованная квота: %1$s / доступно: %2$s</string>

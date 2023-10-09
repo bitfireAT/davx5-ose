@@ -126,9 +126,7 @@
   <string name="navigation_drawer_donate">Obdarovat</string>
   <string name="navigation_drawer_privacy_policy">Ochrana soukromí</string>
   <string name="account_list_no_notification_permission">Upozornění vypnuta. Nebudete upozorněni na chyby při synchronizaci.</string>
-  <string name="account_list_no_internet">Bez připojení k Internetu. Systém Android synchronizaci nespustí.</string>
   <string name="account_list_manage_connections">Spravovat spojení</string>
-  <string name="account_list_low_storage">Zbývá málo místa na úložišti. Systém Android nespustí synchronizaci.</string>
   <string name="account_list_manage_storage">Spravovat úložiště</string>
   <string name="account_list_empty">Vítejte v aplikaci kSync!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizace v rámci celého systému je vypnutá</string>
@@ -379,9 +377,6 @@
   <string name="exception_httpexception">Došlo k HTTP chybě.</string>
   <string name="exception_ioexception">Došlo k chybě vstupu/výstupu.</string>
   <string name="exception_show_details">Zobrazit podrobnosti</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Synchronizace pozastavena</string>
-  <string name="storage_low_notify_text">Nezbývá téměř žádné volné místo</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV připojení</string>
   <string name="webdav_mounts_quota_used_available">Využitá kvóta: %1$s / k dispozici: %2$s</string>

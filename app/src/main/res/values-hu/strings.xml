@@ -128,9 +128,7 @@
   <string name="navigation_drawer_donate">Támogatás</string>
   <string name="navigation_drawer_privacy_policy">Adatvédelmi politika</string>
   <string name="account_list_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
-  <string name="account_list_no_internet">Nincs Internet-elérés.  Az Android rendszer nem fogja elvégezni a szinkronizálst</string>
   <string name="account_list_manage_connections">Kapcsolatok kezelése</string>
-  <string name="account_list_low_storage">Kevés a rendelkezésre álló tárhely.  A rendszer nem fog szinkronizálást végezni.</string>
   <string name="account_list_manage_storage">Tárhely kezelése</string>
   <string name="account_list_datasaver_enabled">Az adatcsökkentés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
   <string name="account_list_manage_datasaver">Adatcsökkentés kezelése</string>
@@ -386,9 +384,6 @@
   <string name="exception_httpexception">HTTP hiba történt.</string>
   <string name="exception_ioexception">I/O hiba történt.</string>
   <string name="exception_show_details">Részletek megjelenítése</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">A szinkronizáció felfüggesztve</string>
-  <string name="storage_low_notify_text">A tárhely majdnem teljesen betelt</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV kötetek</string>
   <string name="webdav_mounts_quota_used_available">Kvóta: felhasználva %1$s, keret %2$s</string>

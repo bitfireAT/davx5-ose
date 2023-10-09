@@ -126,9 +126,7 @@
   <string name="navigation_drawer_donate">کمک</string>
   <string name="navigation_drawer_privacy_policy">سیاست حفظ حریم خصوصی</string>
   <string name="account_list_no_notification_permission">اعلان ها غیر فعال اند. از همگام سازی با خبر نخواهید شد.</string>
-  <string name="account_list_no_internet">بدون اتصال به اینترنت. اندروید همگام سازی را اجرا نمی کند.</string>
   <string name="account_list_manage_connections">مدیریت ارتباطات</string>
-  <string name="account_list_low_storage">فضای خالی کم است. اندروید همگام سازی را اجرا نخواهد کرد.</string>
   <string name="account_list_manage_storage">مدیریت حافظه</string>
   <string name="account_list_datasaver_enabled">محافظ داده فعال است. همگام سازی در پس زمینه محدود می شود.</string>
   <string name="account_list_manage_datasaver">مدیریت محافظ داده</string>
@@ -377,8 +375,6 @@
   <string name="exception_httpexception">خطای HTTP رخ داده است.</string>
   <string name="exception_ioexception">خطای ورودی خروجی رخ داده است.</string>
   <string name="exception_show_details">نمایش جزئیات</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_text">تقریبا فضای خالی وجود ندارد.</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_share_content">اشتراک گذاری محتوا</string>
   <string name="webdav_add_mount_display_name">نام نمایشی</string>

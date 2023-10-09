@@ -19,8 +19,8 @@ android {
         applicationId 'com.infomaniak.sync'
         resValue 'string', 'application_id', applicationId
 
-        versionCode 403070001
-        versionName '4.3.7'
+        versionCode 403080000
+        versionName '4.3.8'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
@@ -53,7 +53,7 @@ android {
     composeOptions {
         // Keep this in sync with Kotlin version:
         // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
@@ -151,7 +151,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation "androidx.work:work-runtime-ktx:${versions.workManager}"
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.10.0'
 
     // Jetpack Compose
     implementation platform("androidx.compose:compose-bom:${versions.composeBom}")
@@ -206,7 +206,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
     androidTestImplementation "androidx.work:work-testing:${versions.workManager}"
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
-    androidTestImplementation 'io.mockk:mockk-android:1.13.7'
+    androidTestImplementation 'io.mockk:mockk-android:1.13.8'
     androidTestImplementation 'junit:junit:4.13.2'
 
     testImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"

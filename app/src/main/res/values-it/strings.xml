@@ -117,7 +117,6 @@
   <string name="navigation_drawer_faq">Domande Frequenti</string>
   <string name="navigation_drawer_donate">Donazione</string>
   <string name="navigation_drawer_privacy_policy">Politica sulla riservatezza</string>
-  <string name="account_list_no_internet">Nessuna connessione Internet. Android non eseguirà la sincronizzazione.</string>
   <string name="account_list_empty">Benvenuto a kSync!\n\nÈ ora possibile aggiungere account CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">La sincronizzazione automatica dell\'intero sistema è disabilitata</string>
   <string name="accounts_global_sync_enable">Attiva</string>
@@ -351,7 +350,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="exception_httpexception">Si è verificato un errore HTTP.</string>
   <string name="exception_ioexception">Si è verificato un errore di I/O.</string>
   <string name="exception_show_details">Mostra dettagli</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Installazioni WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Quantità utilizzata: %1$s / disponibile: %2$s</string>

@@ -128,9 +128,9 @@
   <string name="navigation_drawer_donate">寄付</string>
   <string name="navigation_drawer_privacy_policy">プライバシーポリシー</string>
   <string name="account_list_no_notification_permission">通知が無効です。同期エラーが発生しても通知されません。</string>
-  <string name="account_list_no_internet">インターネット接続がありません。 Android は同期を実行しません。</string>
+  <string name="account_list_no_internet">検証されたインターネット接続がありません。同期が実行されない場合があります。</string>
   <string name="account_list_manage_connections">接続を管理</string>
-  <string name="account_list_low_storage">残りのストレージ容量が少なくなっています。Android は同期を実行しません。</string>
+  <string name="account_list_low_storage">ストレージの容量が残りわずかです。Android はローカルの変更を即座に同期しませんが、次の通常サイクルで同期します。</string>
   <string name="account_list_manage_storage">ストレージを管理</string>
   <string name="account_list_datasaver_enabled">データサーバーが有効です。バックグラウンド同期が制限されています</string>
   <string name="account_list_manage_datasaver">データサーバーを管理</string>
@@ -299,9 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 制限にはさらに設定が必要です</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
-  <string name="settings_ignore_vpns">VPN 接続</string>
-  <string name="settings_ignore_vpns_on">VPN でない接続を要求 (推奨)</string>
-  <string name="settings_ignore_vpns_off">VPN を一般のインターネット接続として扱う</string>
+  <string name="settings_ignore_vpns">インターネット接続のない VPN</string>
+  <string name="settings_ignore_vpns_on">検証されたインターネット接続のない VPN では同期を実行しません (推奨)</string>
+  <string name="settings_ignore_vpns_off">検証されたインターネット接続のない VPN でも同期を実行します</string>
   <string name="settings_authentication">認証</string>
   <string name="settings_oauth">再認証</string>
   <string name="settings_oauth_summary">もう一度 OAuth ログインを実行</string>
@@ -394,9 +394,6 @@
   <string name="exception_httpexception">HTTP エラーが発生しました</string>
   <string name="exception_ioexception">I/O エラーが発生しました</string>
   <string name="exception_show_details">詳細を表示</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">同期が一時停止しました</string>
-  <string name="storage_low_notify_text">ほとんど空き容量が残っていません</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV マウント</string>
   <string name="webdav_mounts_quota_used_available">割り当て 使用中: %1$s / 利用可能: %2$s</string>
@@ -432,7 +429,7 @@
   <string name="sync_invalid_contact">サーバーから無効な連絡先を受信しました</string>
   <string name="sync_invalid_event">サーバーから無効な予定を受信しました</string>
   <string name="sync_invalid_task">サーバーから無効なタスクを受信しました</string>
-  <string name="sync_invalid_resources_ignoring">1 または複数の無効なリソースを無視します</string>
+  <string name="sync_invalid_resources_ignoring">1 件または複数の無効なリソースを無視します</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">kSync: 接続セキュリティ</string>
   <string name="trust_certificate_unknown_certificate_found">kSyncは、未知の証明書を検出しました。それを信頼しますか?</string>

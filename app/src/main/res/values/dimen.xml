@@ -8,9 +8,6 @@
 
     <dimen name="fab_margin">16dp</dimen>
 
-    <!-- space that lists should reserve for the FAB -->
-    <dimen name="fab_bottom_padding">64dp</dimen>
-
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
 
     <!--  kSync  -->

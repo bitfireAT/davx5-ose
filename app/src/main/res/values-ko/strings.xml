@@ -119,8 +119,6 @@
   <string name="navigation_drawer_community">커뮤니티</string>
   <string name="navigation_drawer_donate">기부</string>
   <string name="navigation_drawer_privacy_policy">개인 정보 보호 정책</string>
-  <string name="account_list_no_internet">인터넷에 연결할 수 없습니다. Android가 동기화를 실행하지 않습니다.</string>
-  <string name="account_list_low_storage">저장 공간이 부족합니다. Android가 동기화를 실행하지 않습니다.</string>
   <string name="account_list_empty">kSync에 오신 것을 환영 합니다!/n/n
 당신은  CalDAV/CardDAV 계정을 지금 추가 할 수 있습니다.</string>
   <string name="accounts_global_sync_disabled">시스템 전체 자동 동기화가 비활성화됩니다.</string>
@@ -365,9 +363,6 @@
   <string name="exception_httpexception">HTTP 에러가 발생 하였습니다.</string>
   <string name="exception_ioexception">I/O 에러가 발생 하였습니다.</string>
   <string name="exception_show_details">자세히</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">동기화가 일시 중지됨</string>
-  <string name="storage_low_notify_text">사용 가능한 공간이 거의 없음</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV mounts</string>
   <string name="webdav_mounts_quota_used_available">사용된 할당량: %1$s / 사용가능한 할당량: %2$s</string>

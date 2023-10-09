@@ -105,7 +105,6 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_donate">Doniraj</string>
   <string name="navigation_drawer_privacy_policy">Pravila o zaštiti privatnosti</string>
-  <string name="account_list_no_internet">Nema internet veze. Android neće pokrenuti sinkronizaciju.</string>
   <string name="account_list_empty">Dobrodošli u kSync!\n\nSada možete dodati CalDAV/CardDAV račun.</string>
   <string name="accounts_global_sync_disabled">Automatska sinkronizacija je onemogućena na razini sustava</string>
   <string name="accounts_global_sync_enable">Omogući</string>
@@ -326,7 +325,6 @@
   <string name="exception_httpexception">Dogodila se HTTP greška.</string>
   <string name="exception_ioexception">Dogodila se I/O greška.</string>
   <string name="exception_show_details">Prikaži detalje</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Korisničko ime</string>
   <string name="webdav_add_mount_password">Lozinka</string>

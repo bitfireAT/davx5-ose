@@ -75,7 +75,6 @@
   <string name="navigation_drawer_faq">Питання/Відповіді</string>
   <string name="navigation_drawer_donate">Підтримка</string>
   <string name="navigation_drawer_privacy_policy">Політика конфіденційності</string>
-  <string name="account_list_no_internet">Відсутнє підключення до інтернету. Android не може розпочати синхронізацію.</string>
   <string name="account_list_empty">Вітаємо у kSync!\n\nТепер можете додавати облікові записи CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Автоматичну синхронізацію вимкнено зі сторони системи</string>
   <string name="accounts_global_sync_enable">Увімкнути</string>
@@ -273,7 +272,6 @@
   <string name="exception_httpexception">Трапилась помилка HTTP.</string>
   <string name="exception_ioexception">Трапилась помилка I/O.</string>
   <string name="exception_show_details">Показати подробиці</string>
-  <!--StorageLowReceiver-->
   <!--WebDAV accounts-->
   <string name="webdav_add_mount_username">Ім\'я користувача</string>
   <string name="webdav_add_mount_password">Пароль</string>

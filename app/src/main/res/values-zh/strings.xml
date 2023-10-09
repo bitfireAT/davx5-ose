@@ -128,9 +128,9 @@
   <string name="navigation_drawer_donate">捐助</string>
   <string name="navigation_drawer_privacy_policy">隐私政策</string>
   <string name="account_list_no_notification_permission">已禁用通知。你将不会收到同步出错的通知</string>
-  <string name="account_list_no_internet">无网络连接。Android 将不会运行同步。</string>
+  <string name="account_list_no_internet">没有经验证的互联网连接。同步可能不会运行</string>
   <string name="account_list_manage_connections">管理连接</string>
-  <string name="account_list_low_storage">存储空间低。Android 将不会运行同步。</string>
+  <string name="account_list_low_storage">低存储空间。Android 不会立即同步本地更改，但会在下次定期同步时进行</string>
   <string name="account_list_manage_storage">管理存储</string>
   <string name="account_list_datasaver_enabled">启用了流量节省程序。后台同步受限</string>
   <string name="account_list_manage_datasaver">管理流量节省程序</string>
@@ -299,9 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">请用半角逗号分隔允许同步的 WiFi 网络名（SSID），留空则允许任意网络</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 限制需要进一步设置</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
-  <string name="settings_ignore_vpns">VPN 连接性</string>
-  <string name="settings_ignore_vpns_on">必须使用非 VPN 连接（推荐）</string>
-  <string name="settings_ignore_vpns_off">将 VPN 算作互联网连接</string>
+  <string name="settings_ignore_vpns">VPN 需要底层互联网</string>
+  <string name="settings_ignore_vpns_on">没有底层验证的互联网连接的 VPN 不足以运行同步（推荐选项）</string>
+  <string name="settings_ignore_vpns_off">没有底层验证的互联网连接的 VPN 足以运行同步了</string>
   <string name="settings_authentication">认证</string>
   <string name="settings_oauth">重新验证身份</string>
   <string name="settings_oauth_summary">再次进行 OAuth 登录</string>
@@ -394,9 +394,6 @@
   <string name="exception_httpexception">出现 HTTP 错误</string>
   <string name="exception_ioexception">出现 I/O 错误</string>
   <string name="exception_show_details">显示详情</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">同步已暂停</string>
-  <string name="storage_low_notify_text">几乎没有剩余的空间了</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">WebDAV 文件系统</string>
   <string name="webdav_mounts_quota_used_available">已用配额：%1$s/可用容量：%2$s</string>

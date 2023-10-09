@@ -128,9 +128,7 @@
   <string name="navigation_drawer_donate">Wesprzyj finansowo</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
   <string name="account_list_no_notification_permission">Powiadomienia wyłączone. Nie będziesz otrzymywać powiadomień o błędach synchronizacji.</string>
-  <string name="account_list_no_internet">Brak połączenia z Internetem. Android nie wykona synchronizacji.</string>
   <string name="account_list_manage_connections">Zarządzaj połączeniami</string>
-  <string name="account_list_low_storage">Za mało miejsca do przechowywania. Android nie uruchomi synchronizacji.</string>
   <string name="account_list_manage_storage">Zarządzaj pamięcią</string>
   <string name="account_list_datasaver_enabled">Włączono oszczędzanie danych. Synchronizacja w tle jest ograniczona.</string>
   <string name="account_list_manage_datasaver">Zarządzaj oszczędzaniem danych</string>
@@ -299,9 +297,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Oddzielone przecinkami nazwy (SSID) dozwolonych sieci Wi‑Fi (pozostaw puste dla wszystkich)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ograniczenie WiFi SSID wymaga dalszych ustawień</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Zarządzaj</string>
-  <string name="settings_ignore_vpns">Łączność VPN</string>
-  <string name="settings_ignore_vpns_on">Wymagane połączenie inne niż VPN (zalecane)</string>
-  <string name="settings_ignore_vpns_off">VPN zaliczyć jako połączenie internetowe</string>
   <string name="settings_authentication">Uwierzytelnianie</string>
   <string name="settings_oauth">Uwierzytelnij ponownie</string>
   <string name="settings_oauth_summary">Wykonaj ponownie logowanie OAuth</string>
@@ -400,9 +395,6 @@
   <string name="exception_httpexception">Wystąpił błąd HTTP.</string>
   <string name="exception_ioexception">Wystąpił błąd we/wy.</string>
   <string name="exception_show_details">Pokaż szczegóły</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Synchronizacja wstrzymana</string>
-  <string name="storage_low_notify_text">Prawie nie ma wolnego miejsca</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Punkty linkowania WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Limit użyty: %1$s / dostępny: %2$s</string>

@@ -36,9 +36,9 @@ abstract class BaseAccountsDrawerHandler: AccountsDrawerHandler {
         when (item.itemId) {
             R.id.nav_about ->
                 activity.startActivity(Intent(activity, AboutActivity::class.java))
-            R.id.nav_beta_feedback -> item.actionView?.let { view ->
+            R.id.nav_beta_feedback -> {
                 if (!UiUtils.launchUri(activity, Uri.parse(BETA_FEEDBACK_URI), Intent.ACTION_SENDTO, false))
-                    Snackbar.make(view, R.string.install_email_client, Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(activity.window.findViewById(android.R.id.content), R.string.install_email_client, Snackbar.LENGTH_LONG).show()
             }
             R.id.nav_app_settings ->
                 activity.startActivity(Intent(activity, AppSettingsActivity::class.java))

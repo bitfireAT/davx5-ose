@@ -121,8 +121,6 @@
   <string name="navigation_drawer_community">Cộng đồng</string>
   <string name="navigation_drawer_donate">Quyên góp</string>
   <string name="navigation_drawer_privacy_policy">Chính sách riêng tư</string>
-  <string name="account_list_no_internet">Không có kết nối internet. Android sẽ không chạy đồng bộ hoá.</string>
-  <string name="account_list_low_storage">Dung lượng bộ nhớ thấp. Android sẽ không thực hiện đồng bộ.</string>
   <string name="account_list_empty">Chào mừng đến kSync!\n\nBạn có thể thêm một tài khoản CalDAV/CardDAV ngay.</string>
   <string name="accounts_global_sync_disabled">Đồng bộ hoá tự động trên toàn hệ thống bị tắt</string>
   <string name="accounts_global_sync_enable">Bật</string>
@@ -366,9 +364,6 @@
   <string name="exception_httpexception">Đã xảy ra lỗi HTTP.</string>
   <string name="exception_ioexception">Đã xảy ra lỗi I/O.</string>
   <string name="exception_show_details">Hiện chi tiết</string>
-  <!--StorageLowReceiver-->
-  <string name="storage_low_notify_title">Đã tạm dừng đồng bộ</string>
-  <string name="storage_low_notify_text">Không còn dung lượng trống</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Nơi gắn WebDAV</string>
   <string name="webdav_mounts_quota_used_available">Hạn mức đã sử dụng: %1$s / có sẵn: %2$s</string>

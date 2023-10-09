@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.ui.account
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Application
 import android.content.*
 import android.os.Bundle
@@ -98,18 +100,26 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         binding.swipeRefresh.setOnRefreshListener(this)
 
         val updateProgress = Observer<Boolean> {
-            if (model.isSyncActive.value == true) {
-                binding.progress.isIndeterminate = true
-                binding.progress.alpha = 1.0f
-                binding.progress.visibility = View.VISIBLE
-            } else {
-                if (model.isSyncPending.value == true) {
-                    binding.progress.visibility = View.VISIBLE
-                    binding.progress.alpha = 0.2f
-                    binding.progress.isIndeterminate = false
-                    binding.progress.progress = 100
-                } else
-                    binding.progress.visibility = View.GONE // kSync
+            binding.progress.apply {
+                val isVisible = model.isSyncActive.value == true || model.isSyncPending.value == true
+
+                if (model.isSyncActive.value == true) {
+                    isIndeterminate = true
+                } else if (model.isSyncPending.value == true) {
+                    isIndeterminate = false
+                    progress = 100
+                }
+
+                animate()
+                    .alpha(if (isVisible) 1f else 0f)
+                    // go to VISIBLE instantly, take 500 ms for INVISIBLE
+                    .setDuration(if (isVisible) 0 else 500)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            super.onAnimationEnd(animation)
+                            visibility = if (isVisible) View.VISIBLE else View.GONE // kSync
+                        }
+                    })
             }
         }
         model.isSyncPending.observe(viewLifecycleOwner, updateProgress)
