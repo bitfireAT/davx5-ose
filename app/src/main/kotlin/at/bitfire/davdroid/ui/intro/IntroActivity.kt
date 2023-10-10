@@ -5,7 +5,10 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.R
@@ -77,6 +80,19 @@ class IntroActivity: AppIntro2() {
         super.onDonePressed(currentFragment)
         setResult(Activity.RESULT_OK)
         finish()
+    }
+
+
+    /**
+     * For launching the [IntroActivity]. Result is `true` when the user cancelled the intro.
+     */
+    object Contract: ActivityResultContract<Unit?, Boolean>() {
+        override fun createIntent(context: Context, input: Unit?): Intent =
+            Intent(context, IntroActivity::class.java)
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Boolean {
+            return resultCode == Activity.RESULT_CANCELED
+        }
     }
 
 }

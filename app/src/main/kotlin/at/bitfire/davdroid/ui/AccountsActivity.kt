@@ -37,14 +37,16 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    companion object {
-        const val REQUEST_INTRO = 0
-    }
-
     @Inject lateinit var accountsDrawerHandler: AccountsDrawerHandler
 
     private lateinit var binding: ActivityAccountsBinding
     val model by viewModels<Model>()
+
+    private val introActivityLauncher = registerForActivityResult(IntroActivity.Contract) { cancelled ->
+        if (cancelled) {
+            finish()
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,8 +56,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             CoroutineScope(Dispatchers.Default).launch {
                 // use a separate thread to check whether IntroActivity should be shown
                 if (IntroActivity.shouldShowIntroActivity(this@AccountsActivity)) {
-                    val intro = Intent(this@AccountsActivity, IntroActivity::class.java)
-                    startActivityForResult(intro, REQUEST_INTRO)
+                    introActivityLauncher.launch(null)
                 }
             }
         }
@@ -87,14 +88,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onResume() {
         super.onResume()
         accountsDrawerHandler.initMenu(this, binding.navView.menu)
-    }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_INTRO && resultCode == Activity.RESULT_CANCELED)
-            finish()
-        else
-            super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onBackPressed() {
