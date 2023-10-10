@@ -12,6 +12,7 @@ import android.content.pm.ShortcutManager
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -80,6 +81,14 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         binding.navView.setNavigationItemSelectedListener(this)
         binding.navView.itemIconTintList = null
 
+        onBackPressedDispatcher.addCallback(this) {
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+            } else {
+                finish()
+            }
+        }
+
         // handle "Sync all" intent from launcher shortcut
         if (savedInstanceState == null && intent.action == Intent.ACTION_SYNC)
             syncAllAccounts()
@@ -88,13 +97,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onResume() {
         super.onResume()
         accountsDrawerHandler.initMenu(this, binding.navView.menu)
-    }
-
-    override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START))
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        else
-            super.onBackPressed()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.addCallback
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.R
@@ -63,17 +64,20 @@ class IntroActivity: AppIntro2() {
 
         setBarColor(ResourcesCompat.getColor(resources, R.color.primaryDarkColor, null))
         isSkipButtonEnabled = false
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (currentSlide == 0) {
+                setResult(Activity.RESULT_CANCELED)
+                finish()
+            } else {
+                goToPreviousSlide()
+            }
+        }
     }
 
     override fun onPageSelected(position: Int) {
         super.onPageSelected(position)
         currentSlide = position
-    }
-
-    override fun onBackPressed() {
-        if (currentSlide == 0)
-            setResult(Activity.RESULT_CANCELED)
-        super.onBackPressed()
     }
 
     override fun onDonePressed(currentFragment: Fragment?) {
