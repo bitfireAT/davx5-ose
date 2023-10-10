@@ -47,7 +47,6 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
 import at.bitfire.davdroid.util.PermissionUtils
-import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.ical4android.TaskProvider
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.assisted.Assisted
@@ -312,7 +311,7 @@ class SyncWorker @AssistedInject constructor(
         // Check internet connection
         val ignoreVpns = AccountSettings(applicationContext, account).getIgnoreVpns()
         val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
-        if (Build.VERSION.SDK_INT >= 23 && !internetAvailable(connectivityManager, ignoreVpns)) {
+        if (!internetAvailable(connectivityManager, ignoreVpns)) {
             Logger.log.info("WorkManager started SyncWorker without Internet connection. Aborting.")
             return Result.failure()
         }
@@ -368,7 +367,7 @@ class SyncWorker @AssistedInject constructor(
         } catch (e: SecurityException) {
             Logger.log.log(Level.WARNING, "Security exception when opening content provider for $authority")
         } finally {
-            provider.closeCompat()
+            provider.close()
         }
 
         // Check for errors

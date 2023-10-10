@@ -22,13 +22,12 @@ import androidx.lifecycle.*
 import androidx.room.Transaction
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.util.PermissionUtils
 import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -204,7 +203,7 @@ class WebcalFragment: CollectionsFragment() {
             }
 
             fun disconnect() {
-                value?.closeCompat()
+                value?.close()
                 value = null
             }
         }

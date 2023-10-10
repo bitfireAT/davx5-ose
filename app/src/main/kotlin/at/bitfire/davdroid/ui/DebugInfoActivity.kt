@@ -43,7 +43,6 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
-import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import at.techbee.jtx.JtxContract
@@ -375,10 +374,7 @@ class DebugInfoActivity : AppCompatActivity() {
                 }
 
                 // system info
-                val locales: Any = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                    LocaleList.getAdjustedDefault()
-                else
-                    Locale.getDefault()
+                val locales: Any = LocaleList.getAdjustedDefault()
                 writer.append(
                     "\nSYSTEM INFORMATION\n\n" +
                             "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
@@ -397,7 +393,7 @@ class DebugInfoActivity : AppCompatActivity() {
                 // connectivity
                 context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
                     writer.append("\nCONNECTIVITY\n\n")
-                    val activeNetwork = if (Build.VERSION.SDK_INT >= 23) connectivityManager.activeNetwork else null
+                    val activeNetwork = connectivityManager.activeNetwork
                     connectivityManager.allNetworks.sortedByDescending { it == activeNetwork }.forEach { network ->
                         val properties = connectivityManager.getLinkProperties(network)
                         connectivityManager.getNetworkCapabilities(network)?.let { capabilities ->
@@ -417,19 +413,17 @@ class DebugInfoActivity : AppCompatActivity() {
                     }
                     writer.append('\n')
 
-                    if (Build.VERSION.SDK_INT >= 23)
-                        connectivityManager.defaultProxy?.let { proxy ->
-                            writer.append("System default proxy: ${proxy.host}:${proxy.port}\n")
+                    connectivityManager.defaultProxy?.let { proxy ->
+                        writer.append("System default proxy: ${proxy.host}:${proxy.port}\n")
+                    }
+                    writer.append("Data saver: ").append(
+                        when (connectivityManager.restrictBackgroundStatus) {
+                            ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED -> "enabled"
+                            ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED -> "whitelisted"
+                            ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED -> "disabled"
+                            else -> connectivityManager.restrictBackgroundStatus.toString()
                         }
-                    if (Build.VERSION.SDK_INT >= 24)
-                        writer.append("Data saver: ").append(
-                            when (connectivityManager.restrictBackgroundStatus) {
-                                ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED -> "enabled"
-                                ConnectivityManager.RESTRICT_BACKGROUND_STATUS_WHITELISTED -> "whitelisted"
-                                ConnectivityManager.RESTRICT_BACKGROUND_STATUS_DISABLED -> "disabled"
-                                else -> connectivityManager.restrictBackgroundStatus.toString()
-                            }
-                        ).append('\n')
+                    ).append('\n')
                     writer.append('\n')
                 }
 
@@ -443,12 +437,11 @@ class DebugInfoActivity : AppCompatActivity() {
                             writer.append(" (RESTRICTED!)")
                         writer.append('\n')
                     }
-                if (Build.VERSION.SDK_INT >= 23)
-                    context.getSystemService<PowerManager>()?.let { powerManager ->
-                        writer.append("Power saving disabled: ")
-                            .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")
-                            .append('\n')
-                    }
+                context.getSystemService<PowerManager>()?.let { powerManager ->
+                    writer.append("Power saving disabled: ")
+                        .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")
+                        .append('\n')
+                }
                 // system-wide sync
                 writer.append("System-wide synchronization: ")
                     .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
@@ -648,7 +641,7 @@ class DebugInfoActivity : AppCompatActivity() {
                     } catch (e: Exception) {
                         nrEntries = e.toString()
                     } finally {
-                        client?.closeCompat()
+                        client?.close()
                     }
                 val accountSettings = AccountSettings(context, account)
                 table.addLine(

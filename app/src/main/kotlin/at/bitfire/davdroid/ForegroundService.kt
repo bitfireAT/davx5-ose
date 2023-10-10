@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.getSystemService
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.AppSettingsActivity
@@ -62,12 +63,8 @@ class ForegroundService : Service() {
          * Whether the app is currently exempted from battery optimization.
          * @return true if battery optimization is not applied to the current app; false if battery optimization is applied
          */
-        fun batteryOptimizationWhitelisted(context: Context) =
-            if (Build.VERSION.SDK_INT >= 23) {  // battery optimization exists since Android 6 (SDK level 23)
-                val powerManager = context.getSystemService(PowerManager::class.java)
-                powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
-            } else
-                true
+        private fun batteryOptimizationWhitelisted(context: Context) =
+            context.getSystemService<PowerManager>()!!.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
 
         /**
          * Whether the foreground service is enabled (checked) in the app settings.

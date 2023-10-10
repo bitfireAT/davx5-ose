@@ -15,9 +15,16 @@ import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.vcard4android.*
+import at.bitfire.vcard4android.AndroidAddressBook
+import at.bitfire.vcard4android.AndroidContact
+import at.bitfire.vcard4android.AndroidGroup
+import at.bitfire.vcard4android.AndroidGroupFactory
+import at.bitfire.vcard4android.BatchOperation
+import at.bitfire.vcard4android.CachedGroupMembership
+import at.bitfire.vcard4android.Contact
 import org.apache.commons.lang3.StringUtils
-import java.util.*
+import java.util.LinkedList
+import java.util.UUID
 
 class LocalGroup: AndroidGroup, LocalAddress {
 
@@ -80,7 +87,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
                     changeContactIDs += missingMember.id!!
                 }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                     // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
                     changeContactIDs
                             .map { addressBook.findContactById(it) }

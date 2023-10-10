@@ -55,14 +55,14 @@ class BatteryOptimizationsFragment: Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.model = model
 
-        model.shouldBeWhitelisted.observe(viewLifecycleOwner, { shouldBeWhitelisted ->
+        model.shouldBeWhitelisted.observe(viewLifecycleOwner) { shouldBeWhitelisted ->
             @SuppressLint("BatteryLife")
-            if (shouldBeWhitelisted && !model.isWhitelisted.value!! && Build.VERSION.SDK_INT >= 23)
-               startActivityForResult(Intent(
-                       android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                       Uri.parse("package:" + BuildConfig.APPLICATION_ID)
-               ), REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-        })
+            if (shouldBeWhitelisted && !model.isWhitelisted.value!!)
+                startActivityForResult(Intent(
+                    android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                    Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                ), REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+        }
         binding.batteryText.text = getString(R.string.intro_battery_text, getString(R.string.app_name))
 
         binding.autostartHeading.text = getString(R.string.intro_autostart_title, WordUtils.capitalize(Build.MANUFACTURER))
@@ -135,11 +135,7 @@ class BatteryOptimizationsFragment: Fragment() {
                     (evilManufacturers.contains(Build.MANUFACTURER.lowercase(Locale.ROOT)) || BuildConfig.DEBUG)
 
             fun isWhitelisted(context: Context) =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        val powerManager = context.getSystemService<PowerManager>()!!
-                        powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
-                    } else
-                        true
+                context.getSystemService<PowerManager>()!!.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
         }
 
         val shouldBeWhitelisted = MutableLiveData<Boolean>()

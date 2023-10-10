@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.getSystemService
 import androidx.preference.*
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.BuildConfig
@@ -148,21 +149,18 @@ class AppSettingsActivity: AppCompatActivity() {
             // debug settings
             findPreference<SwitchPreferenceCompat>(Settings.BATTERY_OPTIMIZATION)!!.apply {
                 // battery optimization exists since Android 6 (API level 23)
-                if (Build.VERSION.SDK_INT >= 23) {
-                    val powerManager = requireActivity().getSystemService(PowerManager::class.java)
-                    val whitelisted = powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
-                    isChecked = whitelisted
-                    isEnabled = !whitelisted
-                    onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, nowChecked ->
-                        if (nowChecked as Boolean)
-                            onBatteryOptimizationResult.launch(Intent(
-                                android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                                Uri.parse("package:" + BuildConfig.APPLICATION_ID)
-                            ))
-                        false
-                    }
-                } else
-                    isVisible = false
+                val powerManager = requireActivity().getSystemService<PowerManager>()!!
+                val whitelisted = powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
+                isChecked = whitelisted
+                isEnabled = !whitelisted
+                onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, nowChecked ->
+                    if (nowChecked as Boolean)
+                        onBatteryOptimizationResult.launch(Intent(
+                            android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                            Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                        ))
+                    false
+                }
             }
 
             findPreference<SwitchPreferenceCompat>(Settings.FOREGROUND_SERVICE)!!.apply {

@@ -221,7 +221,6 @@ class SettingsActivity: AppCompatActivity() {
                 model.ignoreVpns.observe(viewLifecycleOwner) { ignoreVpns ->
                     it.isEnabled = true
                     it.isChecked = ignoreVpns
-                    it.isVisible = Build.VERSION.SDK_INT >= 23
                     it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, prefValue ->
                         model.updateIgnoreVpns(prefValue as Boolean)
                         false

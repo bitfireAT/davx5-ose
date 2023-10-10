@@ -15,7 +15,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -108,14 +107,12 @@ class AccountListFragment: Fragment() {
         }
 
         model.dataSaverOn.observe(viewLifecycleOwner) { datasaverOn ->
-            binding.datasaverOnInfo.visibility = if (Build.VERSION.SDK_INT >= 24 && datasaverOn) View.VISIBLE else View.GONE
+            binding.datasaverOnInfo.visibility = if (datasaverOn) View.VISIBLE else View.GONE
         }
         binding.manageDatasaver.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 24) {
-                val intent = Intent(Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS, Uri.parse("package:" + requireActivity().packageName))
-                if (intent.resolveActivity(requireActivity().packageManager) != null)
-                    startActivity(intent)
-            }
+            val intent = Intent(Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS, Uri.parse("package:" + requireActivity().packageName))
+            if (intent.resolveActivity(requireActivity().packageManager) != null)
+                startActivity(intent)
         }
 
         // Accounts adapter

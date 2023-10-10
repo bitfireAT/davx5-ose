@@ -19,7 +19,6 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.util.closeCompat
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -115,7 +114,7 @@ class AddressBookSyncer(context: Context): Syncer(context) {
                 LocalAddressBook.create(context, contactsProvider, account, info, forceAllReadOnly)
             }
         } finally {
-            contactsProvider?.closeCompat()
+            contactsProvider?.close()
         }
 
         return true

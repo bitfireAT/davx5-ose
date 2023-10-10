@@ -15,7 +15,7 @@ import android.system.ErrnoException
 import android.system.OsConstants
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.exception.DavException
@@ -63,7 +63,7 @@ class RandomAccessCallback private constructor(
 
             Logger.log.info("Creating memory cache")
 
-            val maxHeapSizeMB = ContextCompat.getSystemService(context, ActivityManager::class.java)!!.memoryClass
+            val maxHeapSizeMB = context.getSystemService<ActivityManager>()!!.memoryClass
             val cacheSize = maxHeapSizeMB * FileUtils.ONE_MB.toInt() / 2
             val newCache = MemorySegmentCache(cacheSize)
 

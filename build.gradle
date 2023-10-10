@@ -13,10 +13,10 @@ buildscript {
         okhttp: '4.11.0',
         room: '2.5.2',
         workManager: '2.8.1',
-        // latest Apache Commons versions that don't require Java 8 (Android 7)
-        commonsCollections: '4.2',
-        commonsLang: '3.8.1',
-        commonsText: '1.3',
+        // Apache Commons versions
+        commonsCollections: '4.4',
+        commonsLang: '3.13.0',
+        commonsText: '1.10.0',
         // own libraries
         cert4android: '2bb3898',
         dav4jvm: 'da94a8b',
