@@ -17,15 +17,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import at.bitfire.davdroid.BuildConfig.APPLICATION_ID
 import at.bitfire.davdroid.BuildConfig.CLIENT_ID
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.InfomaniakLoadingViewBinding
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.ui.setup.AccountDetailsFragment
-import at.bitfire.davdroid.ui.setup.DetectConfigurationFragment
+import at.bitfire.davdroid.ui.setup.DetectConfigurationFragment.DetectConfigurationModel
+import at.bitfire.davdroid.ui.setup.DetectConfigurationFragment.NothingDetectedFragment
 import at.bitfire.davdroid.ui.setup.LoginModel
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -43,187 +44,186 @@ import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.ResponseBody
 import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
 class InfomaniakDetectConfigurationFragment : Fragment() {
 
     private val loginModel by activityViewModels<LoginModel>()
-    private val detectConfigurationModel by viewModels<DetectConfigurationFragment.DetectConfigurationModel>()
+    private val detectConfigurationModel by viewModels<DetectConfigurationModel>()
     private lateinit var binding: InfomaniakLoadingViewBinding
 
-    lateinit var code: String
+    var externalArgumentCode: String? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return InfomaniakLoadingViewBinding.inflate(inflater, container, false).also { binding = it }.root
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch(Dispatchers.IO) {
-            loginModel.baseURI = URI(SYNC_INFOMANIAK)
-            loginModel.credentials = getCredential()
-
-            withContext(Dispatchers.Main) {
-                if (loginModel.credentials == null) {
-                    parentFragmentManager.beginTransaction()
-                        .add(DetectConfigurationFragment.NothingDetectedFragment(), null)
-                        .commit()
-                } else {
-                    detectConfigurationModel.detectConfiguration(loginModel.baseURI!!, loginModel.credentials!!).observe(
-                        this@InfomaniakDetectConfigurationFragment,
-                        Observer { result ->
-
-                            publishProgress(getString(R.string.infomaniak_login_finalising))
-
-                            // save result for next step
-                            loginModel.configuration = result
-
-                            // remove "Detecting configuration" fragment, it shouldn't come back
-                            parentFragmentManager.popBackStack()
-
-                            if (result.calDAV != null || result.cardDAV != null)
-                                parentFragmentManager.beginTransaction()
-                                    .replace(android.R.id.content, AccountDetailsFragment())
-                                    .addToBackStack(null)
-                                    .commit()
-                            else
-                                parentFragmentManager.beginTransaction()
-                                    .add(DetectConfigurationFragment.NothingDetectedFragment(), null)
-                                    .commit()
-                        })
-                }
-            }
+            setupLogin()
+            withContext(Dispatchers.Main) { detectConfiguration() }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = InfomaniakLoadingViewBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    private fun publishProgress(text: CharSequence) {
-        activity?.runOnUiThread {
-            binding.messageStatus.text = text
+    private suspend fun setupLogin() {
+        loginModel.apply {
+            baseURI = URI(SYNC_INFOMANIAK)
+            credentials = externalArgumentCode?.let { getCredentials(it) }
         }
     }
 
-    private suspend fun getCredential(): Credentials? {
+    private fun detectConfiguration() = with(loginModel) {
+        credentials?.let {
+            detectConfigurationModel
+                .detectConfiguration(baseURI!!, credentials = it)
+                .observe(this@InfomaniakDetectConfigurationFragment, ::navigateToAccountDetails)
+        } ?: run {
+            parentFragmentManager.beginTransaction()
+                .add(NothingDetectedFragment(), null)
+                .commit()
+        }
+    }
 
+    private fun navigateToAccountDetails(result: DavResourceFinder.Configuration) {
+
+        publishProgress(getString(R.string.infomaniak_login_finalising))
+
+        // Save result for next step
+        loginModel.configuration = result
+
+        // Remove "Detecting configuration" fragment, it shouldn't come back
+        parentFragmentManager.popBackStack()
+
+        if (result.calDAV != null || result.cardDAV != null) {
+            parentFragmentManager.beginTransaction()
+                .replace(android.R.id.content, AccountDetailsFragment())
+                .addToBackStack(null)
+                .commit()
+        } else {
+            parentFragmentManager.beginTransaction()
+                .add(NothingDetectedFragment(), null)
+                .commit()
+        }
+    }
+
+    private suspend fun getCredentials(code: String): Credentials? {
         try {
 
-            val okHttpClient = OkHttpClient.Builder()
-                .build()
-
+            val infomaniakLogin = requireContext().getInfomaniakLogin()
+            val okHttpClient = OkHttpClient.Builder().build()
             val gson = Gson()
 
-            val infomaniakLogin = requireContext().getInfomaniakLogin()
+            val apiToken = getApiToken(code, infomaniakLogin, okHttpClient, gson) ?: return null
+            val infomaniakUser = getInfomaniakUser(apiToken, okHttpClient, gson) ?: return null
+            val infomaniakPassword = getInfomaniakPassword(apiToken, okHttpClient, gson) ?: return null
 
-            var formBuilder: MultipartBody.Builder = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("grant_type", "authorization_code")
-                .addFormDataPart("client_id", CLIENT_ID)
-                .addFormDataPart("code", code)
-                .addFormDataPart("code_verifier", infomaniakLogin.getCodeVerifier())
-                .addFormDataPart("redirect_uri", infomaniakLogin.getRedirectURI())
+            publishProgress(getText(R.string.login_querying_server))
+            val credentials = Credentials(infomaniakUser.login, infomaniakPassword.password)
 
-            var request = Request.Builder()
-                .url(TOKEN_LOGIN_URL)
-                .post(formBuilder.build())
-                .build()
+            infomaniakLogin.deleteToken(
+                okHttpClient,
+                apiToken,
+                onError = { Log.e("deleteTokenError", "API response error: $it}") },
+            )
 
-            var response = okHttpClient.newCall(request).execute()
+            return credentials
 
-            var responseBody: ResponseBody = response.body ?: return null
-            var bodyResult = responseBody.string()
-
-            val apiToken: ApiToken
-            var jsonResult = JsonParser.parseString(bodyResult)
-            if (response.isSuccessful) {
-                apiToken = gson.fromJson(jsonResult.asJsonObject, ApiToken::class.java)
-            } else {
-                return null
-            }
-
-            request = Request.Builder()
-                .url(PROFILE_API_URL)
-                .header("Authorization", "Bearer " + apiToken.accessToken)
-                .get()
-                .build()
-
-            publishProgress(getString(R.string.infomaniak_login_retrieving_account_information))
-
-            response = okHttpClient.newCall(request).execute()
-
-            responseBody = response.body ?: return null
-
-            bodyResult = responseBody.string()
-
-            if (response.isSuccessful) {
-                jsonResult = JsonParser.parseString(bodyResult)
-                val infomaniakUser = gson.fromJson(
-                    jsonResult.asJsonObject.getAsJsonObject("data"),
-                    InfomaniakUser::class.java
-                )
-
-                val formater = SimpleDateFormat("EEEE MMM d yyyy HH:mm:ss", Locale.getDefault())
-
-                formBuilder = MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("name", "Infomaniak Sync - " + formater.format(Date()))
-
-                request = Request.Builder()
-                    .url(PASSWORD_API_URL)
-                    .header("Authorization", "Bearer " + apiToken.accessToken)
-                    .post(formBuilder.build())
-                    .build()
-
-                publishProgress(getString(R.string.infomaniak_login_generating_an_application_password))
-
-                response = okHttpClient.newCall(request).execute()
-
-                responseBody = response.body ?: return null
-
-                bodyResult = responseBody.string()
-                val credentials = if (response.isSuccessful) {
-                    jsonResult = JsonParser.parseString(bodyResult)
-                    val infomaniakPassword = gson.fromJson(
-                        jsonResult.asJsonObject.getAsJsonObject("data"),
-                        InfomaniakPassword::class.java
-                    )
-
-                    publishProgress(getText(R.string.login_querying_server))
-
-                    Credentials(infomaniakUser.login, infomaniakPassword.password, null)
-                } else null
-
-                infomaniakLogin.deleteToken(
-                    okHttpClient,
-                    apiToken,
-                    onError = {
-                        Log.e("deleteTokenError", "Api response error : $it}")
-                    }
-                )
-
-                return credentials
-            }
-            return null
         } catch (exception: Exception) {
             exception.printStackTrace()
             return null
         }
     }
 
+    private fun getApiToken(code: String, infomaniakLogin: InfomaniakLogin, okHttpClient: OkHttpClient, gson: Gson): ApiToken? {
+
+        val formBuilder: MultipartBody.Builder = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("grant_type", "authorization_code")
+            .addFormDataPart("client_id", CLIENT_ID)
+            .addFormDataPart("code", code)
+            .addFormDataPart("code_verifier", infomaniakLogin.getCodeVerifier())
+            .addFormDataPart("redirect_uri", infomaniakLogin.getRedirectURI())
+
+        val request = Request.Builder()
+            .url(TOKEN_LOGIN_URL)
+            .post(formBuilder.build())
+            .build()
+
+        val response = okHttpClient.newCall(request).execute()
+
+        return if (response.isSuccessful) {
+            val body = response.body?.string() ?: return null
+            val jsonObject = JsonParser.parseString(body).asJsonObject
+            gson.fromJson(jsonObject, ApiToken::class.java)
+        } else {
+            null
+        }
+    }
+
+    private fun getInfomaniakUser(apiToken: ApiToken, okHttpClient: OkHttpClient, gson: Gson): InfomaniakUser? {
+
+        publishProgress(getString(R.string.infomaniak_login_retrieving_account_information))
+
+        val request = Request.Builder()
+            .url(PROFILE_API_URL)
+            .header("Authorization", "Bearer ${apiToken.accessToken}")
+            .get()
+            .build()
+
+
+        val response = okHttpClient.newCall(request).execute()
+
+        return if (response.isSuccessful) {
+            val body = response.body?.string() ?: return null
+            val jsonObject = JsonParser.parseString(body).asJsonObject.getAsJsonObject("data")
+            gson.fromJson(jsonObject, InfomaniakUser::class.java)
+        } else {
+            null
+        }
+    }
+
+    private fun getInfomaniakPassword(apiToken: ApiToken, okHttpClient: OkHttpClient, gson: Gson): InfomaniakPassword? {
+
+        publishProgress(getString(R.string.infomaniak_login_generating_an_application_password))
+
+        val formatter = SimpleDateFormat("EEEE MMM d yyyy HH:mm:ss", Locale.getDefault())
+
+        val formBuilder = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("name", "Infomaniak Sync - ${formatter.format(Date())}")
+
+        val request = Request.Builder()
+            .url(PASSWORD_API_URL)
+            .header("Authorization", "Bearer ${apiToken.accessToken}")
+            .post(formBuilder.build())
+            .build()
+
+        val response = okHttpClient.newCall(request).execute()
+
+        return if (response.isSuccessful) {
+            val body = response.body?.string() ?: return null
+            val jsonObject = JsonParser.parseString(body).asJsonObject.getAsJsonObject("data")
+            gson.fromJson(jsonObject, InfomaniakPassword::class.java)
+        } else {
+            null
+        }
+    }
+
+    private fun publishProgress(text: CharSequence) {
+        activity?.runOnUiThread { binding.messageStatus.text = text }
+    }
+
     companion object {
-        fun newInstance(code: String) = InfomaniakDetectConfigurationFragment().apply {
-            this.code = code
+
+        fun newInstance(code: String? = null) = InfomaniakDetectConfigurationFragment().apply {
+            externalArgumentCode = code
         }
 
-        fun Context.getInfomaniakLogin() = InfomaniakLogin(this, appUID = APPLICATION_ID, clientID = CLIENT_ID)
+        fun Context.getInfomaniakLogin() = InfomaniakLogin(context = this, appUID = APPLICATION_ID, clientID = CLIENT_ID)
     }
 }
