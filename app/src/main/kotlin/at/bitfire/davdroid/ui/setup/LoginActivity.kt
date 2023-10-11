@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
 import com.infomaniak.sync.ui.InfomaniakDetectConfigurationFragment
@@ -66,8 +67,12 @@ class LoginActivity: AppCompatActivity() {
 
             if (intent != null) {
                 val code = intent.getStringExtra("code")
+                val login = intent.getStringExtra("infomaniakLogin")
+                val password = intent.getStringExtra("infomaniakPassword")
                 if (!code.isNullOrBlank()) {
                     fragment = InfomaniakDetectConfigurationFragment.newInstance(code)
+                } else if (!login.isNullOrBlank() && !password.isNullOrBlank()) {
+                    fragment = InfomaniakDetectConfigurationFragment.newInstance(credentials = Credentials(login, password))
                 }
             } else {
                 Toast.makeText(this, getString(RLogin.string.an_error_has_occurred), Toast.LENGTH_LONG).show()

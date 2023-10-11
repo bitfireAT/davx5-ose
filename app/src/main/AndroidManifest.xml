@@ -144,6 +144,9 @@
                 <data android:scheme="http" />
                 <data android:scheme="https" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="infomaniakSyncAutoConfig" />
+            </intent-filter>
         </activity>
 
         <activity

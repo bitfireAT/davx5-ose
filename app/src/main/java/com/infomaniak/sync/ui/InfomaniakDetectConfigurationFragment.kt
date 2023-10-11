@@ -56,6 +56,7 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
     private lateinit var binding: InfomaniakLoadingViewBinding
 
     var externalArgumentCode: String? = null
+    var externalArgumentCredentials: Credentials? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return InfomaniakLoadingViewBinding.inflate(inflater, container, false).also { binding = it }.root
@@ -73,7 +74,7 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
     private suspend fun setupLogin() {
         loginModel.apply {
             baseURI = URI(SYNC_INFOMANIAK)
-            credentials = externalArgumentCode?.let { getCredentials(it) }
+            credentials = externalArgumentCode?.let { getCredentials(it) } ?: externalArgumentCredentials
         }
     }
 
@@ -220,8 +221,9 @@ class InfomaniakDetectConfigurationFragment : Fragment() {
 
     companion object {
 
-        fun newInstance(code: String? = null) = InfomaniakDetectConfigurationFragment().apply {
+        fun newInstance(code: String? = null, credentials: Credentials? = null) = InfomaniakDetectConfigurationFragment().apply {
             externalArgumentCode = code
+            externalArgumentCredentials = credentials
         }
 
         fun Context.getInfomaniakLogin() = InfomaniakLogin(context = this, appUID = APPLICATION_ID, clientID = CLIENT_ID)
