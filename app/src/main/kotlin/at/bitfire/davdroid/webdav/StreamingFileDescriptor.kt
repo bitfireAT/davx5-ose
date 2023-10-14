@@ -28,6 +28,9 @@ import java.io.IOException
 import java.util.logging.Level
 import kotlin.concurrent.thread
 
+/**
+ * @param client    HTTP client– [StreamingFileDescriptor] is responsible to close it
+ */
 class StreamingFileDescriptor(
     val context: Context,
     val client: HttpClient,
@@ -73,6 +76,8 @@ class StreamingFileDescriptor(
             } catch (e: Exception) {
                 Logger.log.log(Level.INFO, "Couldn't serve file (not necessesarily an error)", e)
                 writeFd.closeWithError(e.message)
+            } finally {
+                client.close()
             }
 
             try {
