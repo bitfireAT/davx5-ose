@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -36,6 +37,7 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.util.context
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -140,12 +142,11 @@ class AccountDetailsFragment : Fragment() {
     }
 
 
-    @HiltViewModel
-    class Model @Inject constructor(
-        @ApplicationContext val context: Context,
+    class Model(
+        application: Application,
         val db: AppDatabase,
         val settingsManager: SettingsManager
-    ) : ViewModel() {
+    ) : AndroidViewModel(application) {
 
         val name = MutableLiveData<String>()
         val nameError = MutableLiveData<String>()

@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.Manifest
+import android.app.Application
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.Intent
@@ -28,6 +29,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.context
 import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -167,10 +169,10 @@ class WebcalFragment: CollectionsFragment() {
 
 
     class WebcalModel @AssistedInject constructor(
-        @ApplicationContext context: Context,
+        application: Application,
         val db: AppDatabase,
         @Assisted val serviceId: Long
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
 
         @AssistedFactory
         interface Factory {

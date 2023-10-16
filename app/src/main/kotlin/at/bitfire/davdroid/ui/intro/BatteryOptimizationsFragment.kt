@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -18,6 +19,7 @@ import androidx.core.content.getSystemService
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.App
@@ -28,6 +30,7 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
+import at.bitfire.davdroid.util.context
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -90,11 +93,10 @@ class BatteryOptimizationsFragment: Fragment() {
     }
 
 
-    @HiltViewModel
-    class Model @Inject constructor(
-        @ApplicationContext val context: Context,
+    class Model(
+        application: Application,
         val settings: SettingsManager
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
 
         companion object {
 

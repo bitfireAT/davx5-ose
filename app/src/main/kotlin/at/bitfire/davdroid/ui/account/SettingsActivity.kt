@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -36,6 +37,7 @@ import at.bitfire.davdroid.syncadapter.Syncer
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.setup.GoogleLoginFragment
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.context
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
@@ -425,10 +427,10 @@ class SettingsActivity: AppCompatActivity() {
 
 
     class Model @AssistedInject constructor(
-        val application: Application,
+        application: Application,
         val settings: SettingsManager,
         @Assisted val account: Account
-    ): ViewModel(), SettingsManager.OnChangeListener {
+    ): AndroidViewModel(application), SettingsManager.OnChangeListener {
 
         @AssistedFactory
         interface Factory {
@@ -487,7 +489,7 @@ class SettingsActivity: AppCompatActivity() {
         fun reload() {
             val accountSettings = accountSettings ?: return
 
-            syncIntervalContacts.postValue(accountSettings.getSyncInterval(application.getString(R.string.address_books_authority)))
+            syncIntervalContacts.postValue(accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)))
             syncIntervalCalendars.postValue(accountSettings.getSyncInterval(CalendarContract.AUTHORITY))
             syncIntervalTasks.postValue(tasksProvider?.let { accountSettings.getSyncInterval(it.authority) })
 
@@ -570,7 +572,7 @@ class SettingsActivity: AppCompatActivity() {
             accountSettings?.setGroupMethod(groupMethod)
             reload()
 
-            resync(application.getString(R.string.address_books_authority), fullResync = true)
+            resync(context.getString(R.string.address_books_authority), fullResync = true)
         }
 
         /**
@@ -597,7 +599,7 @@ class SettingsActivity: AppCompatActivity() {
          */
         private fun resync(authority: String, fullResync: Boolean) {
             val resync = if (fullResync) SyncWorker.FULL_RESYNC else SyncWorker.RESYNC
-            SyncWorker.enqueue(application, account, authority, resync)
+            SyncWorker.enqueue(context, account, authority, resync)
         }
 
     }

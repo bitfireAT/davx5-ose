@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.content.Context
+import android.app.Application
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,11 +24,11 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
+import at.bitfire.davdroid.util.context
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -117,12 +117,12 @@ class CreateCollectionFragment: DialogFragment() {
 
 
     class Model @AssistedInject constructor(
-        @ApplicationContext val context: Context,
+        application: Application,
         val db: AppDatabase,
         @Assisted val account: Account,
         @Assisted val serviceType: String,
         @Assisted val collection: Collection
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
         
         @AssistedFactory
         interface Factory {

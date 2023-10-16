@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.webdav
 
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
@@ -12,6 +13,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
@@ -26,6 +28,7 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
+import at.bitfire.davdroid.util.context
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
 import com.google.android.material.snackbar.Snackbar
@@ -141,11 +144,10 @@ class AddWebdavMountActivity: AppCompatActivity() {
     }
 
 
-    @HiltViewModel
     class Model @Inject constructor(
-        @ApplicationContext val context: Context,
+        application: Application,
         val db: AppDatabase
-    ) : ViewModel() {
+    ) : AndroidViewModel(application) {
 
         val displayName = MutableLiveData<String>()
         val displayNameError = MutableLiveData<String>()

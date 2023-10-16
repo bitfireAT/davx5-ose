@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
+import at.bitfire.davdroid.util.context
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -88,11 +90,11 @@ class DeleteCollectionFragment: DialogFragment() {
 
 
     class Model @AssistedInject constructor(
-        @ApplicationContext val context: Context,
+        application: Application,
         val db: AppDatabase,
         @Assisted var account: Account,
         @Assisted val collectionId: Long
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
 
         @AssistedFactory
         interface Factory {

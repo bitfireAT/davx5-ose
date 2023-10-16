@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.intro
 
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import android.view.ViewGroup
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
@@ -46,11 +48,7 @@ class OpenSourceFragment: Fragment() {
     }
 
 
-    @HiltViewModel
-    class Model @Inject constructor(
-        @ApplicationContext val context: Context,
-        val settings: SettingsManager
-    ): ViewModel() {
+    class Model(val settings: SettingsManager): ViewModel() {
 
         companion object {
             const val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"

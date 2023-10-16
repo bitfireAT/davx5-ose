@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,6 +17,7 @@ import androidx.annotation.AnyThread
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.BuildConfig
@@ -24,6 +26,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityTasksBinding
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.util.context
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -100,11 +103,10 @@ class TasksFragment: Fragment() {
     }
 
 
-    @HiltViewModel
-    class Model @Inject constructor(
-        @ApplicationContext val context: Context,
+    class Model constructor(
+        application: Application,
         val settings: SettingsManager
-    ) : ViewModel(), SettingsManager.OnChangeListener {
+    ) : AndroidViewModel(application), SettingsManager.OnChangeListener {
 
         companion object {
 
