@@ -462,6 +462,9 @@
     <string name="exception_ioexception">An I/O error has occurred.</string>
     <string name="exception_show_details">Show details</string>
 
+    <!-- Webcal subscriptions -->
+    <string name="webcal_subscriptions">Webcal subscriptions</string>
+
     <!-- WebDAV accounts -->
     <string name="webdav_authority" translatable="false">at.bitfire.davdroid.webdav</string>
     <string name="webdav_mounts_title">WebDAV mounts</string>

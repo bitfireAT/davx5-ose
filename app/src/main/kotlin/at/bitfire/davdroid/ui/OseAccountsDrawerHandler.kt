@@ -32,6 +32,8 @@ class OseAccountsDrawerHandler @Inject constructor(): BaseAccountsDrawerHandler(
                     Uri.parse("https://fosstodon.org/@davx5app")
                 )
 
+            R.id.nav_webcal_subscriptions ->
+                activity.startActivity(Intent(activity, WebcalSubscriptionsActivity::class.java))
             R.id.nav_webdav_mounts ->
                 activity.startActivity(Intent(activity, WebdavMountsActivity::class.java))
 

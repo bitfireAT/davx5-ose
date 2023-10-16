@@ -38,12 +38,14 @@ import javax.inject.Singleton
     Collection::class,
     Principal::class,
     SyncStats::class,
+    WebcalSubscription::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 12, autoMigrations = [
+], exportSchema = true, version = 13, autoMigrations = [
     AutoMigration(from = 9, to = 10),
     AutoMigration(from = 10, to = 11),
-    AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class)
+    AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class),
+    AutoMigration(from = 12, to = 13)
 ])
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {

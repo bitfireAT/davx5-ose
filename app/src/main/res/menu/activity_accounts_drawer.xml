@@ -31,6 +31,10 @@
     <item android:title="@string/navigation_drawer_tools">
         <menu>
             <item
+                android:id="@+id/nav_webcal_subscriptions"
+                android:icon="@drawable/ic_today"
+                android:title="@string/webcal_subscriptions" />
+            <item
                 android:id="@+id/nav_webdav_mounts"
                 android:icon="@drawable/ic_storage"
                 android:title="@string/webdav_mounts_title" />

@@ -164,6 +164,10 @@
             android:parentActivityName=".ui.account.SettingsActivity" />
 
         <activity
+            android:name=".ui.WebcalSubscriptionsActivity"
+            android:label="@string/webcal_subscriptions"
+            android:parentActivityName=".ui.AccountsActivity" />
+        <activity
             android:name=".ui.webdav.WebdavMountsActivity"
             android:label="@string/webdav_mounts_title"
             android:parentActivityName=".ui.AccountsActivity"
