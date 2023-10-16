@@ -133,7 +133,6 @@ class AccountActivity: AppCompatActivity() {
                         }
                     }
                 }
-
             }
         )
     }
