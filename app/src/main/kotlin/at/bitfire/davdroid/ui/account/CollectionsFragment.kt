@@ -68,11 +68,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     abstract val noCollectionsStringId: Int
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -148,41 +143,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         }
 
         binding.noCollections.setText(noCollectionsStringId)
-
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(
-            object : MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    // menu is inflated by sub-fragments
-                }
-
-                override fun onPrepareMenu(menu: Menu) {
-                    menu.findItem(R.id.showOnlyPersonal).let { showOnlyPersonal ->
-                        accountModel.showOnlyPersonal.value?.let { value ->
-                            showOnlyPersonal.isChecked = value
-                        }
-                        accountModel.showOnlyPersonalWritable.value?.let { writable ->
-                            showOnlyPersonal.isEnabled = writable
-                        }
-                    }
-                }
-
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                    return when (menuItem.itemId) {
-                        R.id.refresh -> {
-                            onRefresh()
-                            true
-                        }
-                        R.id.showOnlyPersonal -> {
-                            accountModel.toggleShowOnlyPersonal()
-                            true
-                        }
-                        else ->
-                            false
-                    }
-                }
-            }
-        )
     }
 
     override fun onRefresh() {
@@ -233,6 +193,38 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             }
         }
 
+    }
+
+    abstract inner class CollectionsMenuProvider : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            // menu is inflated by sub-fragments
+        }
+
+        override fun onPrepareMenu(menu: Menu) {
+            menu.findItem(R.id.showOnlyPersonal).let { showOnlyPersonal ->
+                accountModel.showOnlyPersonal.value?.let { value ->
+                    showOnlyPersonal.isChecked = value
+                }
+                accountModel.showOnlyPersonalWritable.value?.let { writable ->
+                    showOnlyPersonal.isEnabled = writable
+                }
+            }
+        }
+
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            return when (menuItem.itemId) {
+                R.id.refresh -> {
+                    onRefresh()
+                    true
+                }
+                R.id.showOnlyPersonal -> {
+                    accountModel.toggleShowOnlyPersonal()
+                    true
+                }
+                else ->
+                    false
+            }
+        }
     }
 
     class CollectionPopupListener(

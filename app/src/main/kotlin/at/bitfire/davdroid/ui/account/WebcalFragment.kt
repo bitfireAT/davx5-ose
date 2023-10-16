@@ -62,34 +62,52 @@ class WebcalFragment: CollectionsFragment() {
         }
     }
 
+    private val menuProvider = object : CollectionsMenuProvider() {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.caldav_actions, menu)
+        }
+
+        override fun onPrepareMenu(menu: Menu) {
+            super.onPrepareMenu(menu)
+            menu.findItem(R.id.create_calendar).isVisible = false
+        }
+
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            if (super.onMenuItemSelected(menuItem)) {
+                return true
+            }
+
+            if (menuItem.itemId == R.id.create_calendar) {
+                val intent = Intent(requireActivity(), CreateCalendarActivity::class.java)
+                intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, accountModel.account)
+                startActivity(intent)
+                return true
+            }
+
+            return false
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         webcalModel.subscribedUrls.observe(this, Observer { urls ->
             Logger.log.log(Level.FINE, "Got Android calendar list", urls.keys)
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(
-            object : MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.caldav_actions, menu)
-                }
+        menuHost.addMenuProvider(menuProvider)
+    }
 
-                override fun onPrepareMenu(menu: Menu) {
-                    super.onPrepareMenu(menu)
-                    menu.findItem(R.id.create_calendar).isVisible = false
-                }
+    override fun onPause() {
+        super.onPause()
 
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                    return when (menuItem.itemId) {
-                        else -> {
-                            false
-                        }
-                    }
-                }
-            }
-        )
+        val menuHost: MenuHost = requireActivity()
+        menuHost.removeMenuProvider(menuProvider)
     }
 
 
