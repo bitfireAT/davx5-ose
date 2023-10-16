@@ -14,6 +14,8 @@ import android.os.PowerManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.getSystemService
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
@@ -43,11 +45,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BatteryOptimizationsFragment: Fragment() {
 
-    companion object {
-        const val REQUEST_IGNORE_BATTERY_OPTIMIZATIONS = 0
-    }
-
     val model by viewModels<Model>()
+
+    private val ignoreBatteryOptimizationsResultLauncher = registerForActivityResult(
+        IgnoreBatteryOptimizationsContract
+    ) { model.checkWhitelisted() }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -58,10 +60,7 @@ class BatteryOptimizationsFragment: Fragment() {
         model.shouldBeWhitelisted.observe(viewLifecycleOwner) { shouldBeWhitelisted ->
             @SuppressLint("BatteryLife")
             if (shouldBeWhitelisted && !model.isWhitelisted.value!!)
-                startActivityForResult(Intent(
-                    android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                    Uri.parse("package:" + BuildConfig.APPLICATION_ID)
-                ), REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
         }
         binding.batteryText.text = getString(R.string.intro_battery_text, getString(R.string.app_name))
 
@@ -76,12 +75,6 @@ class BatteryOptimizationsFragment: Fragment() {
         binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
 
         return binding.root
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-            model.checkWhitelisted()
     }
 
     override fun onResume() {
@@ -200,6 +193,20 @@ class BatteryOptimizationsFragment: Fragment() {
                     IntroFragmentFactory.DONT_SHOW
 
         override fun create() = BatteryOptimizationsFragment()
+    }
+
+    @SuppressLint("BatteryLife")
+    object IgnoreBatteryOptimizationsContract: ActivityResultContract<String, Unit?>() {
+        override fun createIntent(context: Context, input: String): Intent {
+            return Intent(
+                android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                Uri.parse("package:$input")
+            )
+        }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Unit? {
+            return null
+        }
     }
 
 }
