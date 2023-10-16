@@ -464,6 +464,10 @@
 
     <!-- Webcal subscriptions -->
     <string name="webcal_subscriptions">Webcal subscriptions</string>
+    <string-array name="webcal_subscribe_directly_or_external">
+        <item>Subscribe directly</item>
+        <item>Subscribe with external app like ICSx⁵</item>
+    </string-array>
 
     <!-- WebDAV accounts -->
     <string name="webdav_authority" translatable="false">at.bitfire.davdroid.webdav</string>

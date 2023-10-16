@@ -259,6 +259,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun collectionDao(): CollectionDao
     abstract fun principalDao(): PrincipalDao
     abstract fun syncStatsDao(): SyncStatsDao
+    abstract fun webcalSubscriptionDao(): WebcalSubscriptionDao
     abstract fun webDavDocumentDao(): WebDavDocumentDao
     abstract fun webDavMountDao(): WebDavMountDao
 

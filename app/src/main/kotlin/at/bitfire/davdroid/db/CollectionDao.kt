@@ -66,6 +66,9 @@ interface CollectionDao {
     @Update
     fun update(collection: Collection)
 
+    @Query("UPDATE collection SET sync=:sync WHERE id=:collectionId")
+    fun updateSync(collectionId: Long, sync: Boolean)
+
     /**
      * Tries to insert new row, but updates existing row if already present.
      * This method preserves the primary key, as opposed to using "@Insert(onConflict = OnConflictStrategy.REPLACE)"

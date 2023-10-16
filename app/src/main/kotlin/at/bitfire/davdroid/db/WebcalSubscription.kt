@@ -4,6 +4,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl
 
 /**
@@ -32,10 +34,33 @@ data class WebcalSubscription(
 
     var url: HttpUrl,
     var displayName: String? = null,
-    var color: Long,
+    var color: Int,
 
     var eTag: String? = null,
     var lastModified: Long? = null,
     var lastSynchronized: Long? = null,
     var error: String? = null
-)
+) {
+
+    companion object {
+
+        /**
+         * Converts a CalDAV collection info that represents a Webcal subscription
+         * to a [WebcalSubscription] object.
+         *
+         * @param collection CalDAV collection (of type [Collection.TYPE_WEBCAL]])
+         * @return subscription data object
+         */
+        fun fromCollection(collection: Collection) =
+            WebcalSubscription(
+                id = 0,
+                collectionId = collection.id,
+                calendarId = null,
+                url = collection.url,
+                displayName = collection.displayName,
+                color = collection.color ?: Constants.DAVDROID_GREEN_RGBA
+            )
+
+    }
+
+}
