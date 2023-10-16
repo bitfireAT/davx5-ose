@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -15,13 +16,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.getSystemService
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
@@ -36,7 +36,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.multibindings.IntoSet
 import org.apache.commons.text.WordUtils
 import java.util.*
@@ -47,9 +46,10 @@ class BatteryOptimizationsFragment: Fragment() {
 
     val model by viewModels<Model>()
 
-    private val ignoreBatteryOptimizationsResultLauncher = registerForActivityResult(
-        IgnoreBatteryOptimizationsContract
-    ) { model.checkWhitelisted() }
+    private val ignoreBatteryOptimizationsResultLauncher =
+        registerForActivityResult(IgnoreBatteryOptimizationsContract) {
+            model.checkWhitelisted()
+        }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -85,9 +85,9 @@ class BatteryOptimizationsFragment: Fragment() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        @ApplicationContext val context: Context,
+        application: Application,
         val settings: SettingsManager
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
 
         companion object {
 
@@ -156,7 +156,7 @@ class BatteryOptimizationsFragment: Fragment() {
         }
 
         fun checkWhitelisted() {
-            val whitelisted = isWhitelisted(context)
+            val whitelisted = isWhitelisted(getApplication())
             isWhitelisted.value = whitelisted
             shouldBeWhitelisted.value = whitelisted
 
@@ -165,6 +165,21 @@ class BatteryOptimizationsFragment: Fragment() {
                 settings.remove(HINT_BATTERY_OPTIMIZATIONS)
         }
 
+    }
+
+
+    @SuppressLint("BatteryLife")
+    object IgnoreBatteryOptimizationsContract: ActivityResultContract<String, Unit?>() {
+        override fun createIntent(context: Context, input: String): Intent {
+            return Intent(
+                android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                Uri.parse("package:$input")
+            )
+        }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Unit? {
+            return null
+        }
     }
 
 
@@ -180,33 +195,19 @@ class BatteryOptimizationsFragment: Fragment() {
     ): IntroFragmentFactory {
 
         override fun getOrder(context: Context) =
-                // show fragment when:
-                // 1. DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked, and/or
-                // 2a. evil manufacturer AND
-                // 2b. "don't show anymore" has not been clicked
-                if (
-                        (!Model.isWhitelisted(context) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
-                        (Model.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
-                )
-                    100
-                else
-                    IntroFragmentFactory.DONT_SHOW
+            // show fragment when:
+            // 1. DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked, and/or
+            // 2a. evil manufacturer AND
+            // 2b. "don't show anymore" has not been clicked
+            if (
+                    (!Model.isWhitelisted(context) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
+                    (Model.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
+            )
+                100
+            else
+                IntroFragmentFactory.DONT_SHOW
 
         override fun create() = BatteryOptimizationsFragment()
-    }
-
-    @SuppressLint("BatteryLife")
-    object IgnoreBatteryOptimizationsContract: ActivityResultContract<String, Unit?>() {
-        override fun createIntent(context: Context, input: String): Intent {
-            return Intent(
-                android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                Uri.parse("package:$input")
-            )
-        }
-
-        override fun parseResult(resultCode: Int, intent: Intent?): Unit? {
-            return null
-        }
     }
 
 }
