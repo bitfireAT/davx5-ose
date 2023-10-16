@@ -60,6 +60,32 @@ class WebcalFragment: CollectionsFragment() {
         }
     }
 
+    private val menuProvider = object : CollectionsMenuProvider() {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.caldav_actions, menu)
+        }
+
+        override fun onPrepareMenu(menu: Menu) {
+            super.onPrepareMenu(menu)
+            menu.findItem(R.id.create_calendar).isVisible = false
+        }
+
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            if (super.onMenuItemSelected(menuItem)) {
+                return true
+            }
+
+            if (menuItem.itemId == R.id.create_calendar) {
+                val intent = Intent(requireActivity(), CreateCalendarActivity::class.java)
+                intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, accountModel.account)
+                startActivity(intent)
+                return true
+            }
+
+            return false
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -68,12 +94,14 @@ class WebcalFragment: CollectionsFragment() {
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
-            inflater.inflate(R.menu.caldav_actions, menu)
+    override fun onResume() {
+        super.onResume()
+        requireActivity().addMenuProvider(menuProvider)
+    }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.create_calendar).isVisible = false
+    override fun onPause() {
+        super.onPause()
+        requireActivity().removeMenuProvider(menuProvider)
     }
 
 

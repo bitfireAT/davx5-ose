@@ -109,7 +109,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     private fun allAccounts() =
             AccountManager.get(this).getAccountsByType(getString(R.string.account_type))
 
-    fun syncAllAccounts(item: MenuItem? = null) {
+    fun syncAllAccounts() {
         if (Build.VERSION.SDK_INT >= 25)
             getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
 

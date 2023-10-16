@@ -5,7 +5,10 @@
 package at.bitfire.davdroid.ui.account
 
 import android.content.Intent
+import android.os.Bundle
 import android.view.*
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.FragmentManager
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
@@ -22,26 +25,39 @@ class AddressBooksFragment: CollectionsFragment() {
 
     override val noCollectionsStringId = R.string.account_no_address_books
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
-            inflater.inflate(R.menu.carddav_actions, menu)
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.create_address_book).isVisible = model.hasWriteableCollections.value ?: false
-        super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (super.onOptionsItemSelected(item))
-            return true
-
-        if (item.itemId == R.id.create_address_book) {
-            val intent = Intent(requireActivity(), CreateAddressBookActivity::class.java)
-            intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, accountModel.account)
-            startActivity(intent)
-            return true
+    private val menuProvider = object : CollectionsMenuProvider() {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.carddav_actions, menu)
         }
 
-        return false
+        override fun onPrepareMenu(menu: Menu) {
+            super.onPrepareMenu(menu)
+            menu.findItem(R.id.create_address_book).isVisible = model.hasWriteableCollections.value ?: false
+        }
+
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            if (super.onMenuItemSelected(menuItem))
+                return true
+
+            if (menuItem.itemId == R.id.create_address_book) {
+                val intent = Intent(requireActivity(), CreateAddressBookActivity::class.java)
+                intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, accountModel.account)
+                startActivity(intent)
+                return true
+            }
+
+            return false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireActivity().addMenuProvider(menuProvider)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireActivity().removeMenuProvider(menuProvider)
     }
 
     override fun checkPermissions() {

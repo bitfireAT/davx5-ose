@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.text.HtmlCompat
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
@@ -81,14 +82,24 @@ class AboutActivity: AppCompatActivity() {
 
         binding.viewpager.adapter = TabsAdapter(supportFragmentManager)
         binding.tabs.setupWithViewPager(binding.viewpager, false)
+
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_about, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem) =
+                when (menuItem.itemId) {
+                    R.id.show_website -> {
+                        showWebsite()
+                        true
+                    }
+                    else -> false
+                }
+        })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_about, menu)
-        return true
-    }
-
-    fun showWebsite(item: MenuItem) {
+    fun showWebsite() {
         UiUtils.launchUri(this, App.homepageUrl(this))
     }
 
