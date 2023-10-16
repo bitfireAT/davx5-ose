@@ -103,7 +103,8 @@ class TasksFragment: Fragment() {
     }
 
 
-    class Model constructor(
+    @HiltViewModel
+    class Model @Inject constructor(
         application: Application,
         val settings: SettingsManager
     ) : AndroidViewModel(application), SettingsManager.OnChangeListener {
