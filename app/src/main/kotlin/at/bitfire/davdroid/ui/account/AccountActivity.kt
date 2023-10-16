@@ -108,33 +108,28 @@ class AccountActivity: AppCompatActivity() {
             }
         }
 
-        addMenuProvider(
-            object : MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.activity_account, menu)
-                }
-
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                    return when (menuItem.itemId) {
-                        R.id.settings -> {
-                            openAccountSettings()
-                            true
-                        }
-                        R.id.rename_account -> {
-                            renameAccount()
-                            true
-                        }
-                        R.id.delete_account -> {
-                            deleteAccountDialog()
-                            true
-                        }
-                        else -> {
-                            false
-                        }
-                    }
-                }
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_account, menu)
             }
-        )
+
+            override fun onMenuItemSelected(menuItem: MenuItem) =
+                when (menuItem.itemId) {
+                    R.id.settings -> {
+                        openAccountSettings()
+                        true
+                    }
+                    R.id.rename_account -> {
+                        renameAccount()
+                        true
+                    }
+                    R.id.delete_account -> {
+                        deleteAccountDialog()
+                        true
+                    }
+                    else -> false
+                }
+        })
     }
 
 

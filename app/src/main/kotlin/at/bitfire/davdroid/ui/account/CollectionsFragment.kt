@@ -13,6 +13,7 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.*
 import android.widget.PopupMenu
+import androidx.annotation.CallSuper
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -83,17 +84,17 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        model.isRefreshing.observe(viewLifecycleOwner, Observer { nowRefreshing ->
+        model.isRefreshing.observe(viewLifecycleOwner) { nowRefreshing ->
             binding.swipeRefresh.isRefreshing = nowRefreshing
-        })
-        model.hasWriteableCollections.observe(viewLifecycleOwner, Observer {
+        }
+        model.hasWriteableCollections.observe(viewLifecycleOwner) {
             requireActivity().invalidateOptionsMenu()
-        })
-        model.collectionColors.observe(viewLifecycleOwner, Observer { colors: List<Int?> ->
+        }
+        model.collectionColors.observe(viewLifecycleOwner) { colors: List<Int?> ->
             val realColors = colors.filterNotNull()
             if (realColors.isNotEmpty())
                 binding.swipeRefresh.setColorSchemeColors(*realColors.toIntArray())
-        })
+        }
         binding.swipeRefresh.setOnRefreshListener(this)
 
         val updateProgress = Observer<Boolean> {
@@ -125,11 +126,11 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         val adapter = createAdapter()
         binding.list.layoutManager = LinearLayoutManager(requireActivity())
         binding.list.adapter = adapter
-        model.collections.observe(viewLifecycleOwner, Observer { data ->
+        model.collections.observe(viewLifecycleOwner) { data ->
             lifecycleScope.launch {
                 adapter.submitData(data)
             }
-        })
+        }
         adapter.addLoadStateListener { loadStates ->
             if (loadStates.refresh is LoadState.NotLoading) {
                 if (adapter.itemCount > 0) {
@@ -196,10 +197,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     abstract inner class CollectionsMenuProvider : MenuProvider {
-        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-            // menu is inflated by sub-fragments
-        }
+        abstract override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater)
 
+        @CallSuper
         override fun onPrepareMenu(menu: Menu) {
             menu.findItem(R.id.showOnlyPersonal).let { showOnlyPersonal ->
                 accountModel.showOnlyPersonal.value?.let { value ->
@@ -211,6 +211,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             }
         }
 
+        @CallSuper
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
             return when (menuItem.itemId) {
                 R.id.refresh -> {

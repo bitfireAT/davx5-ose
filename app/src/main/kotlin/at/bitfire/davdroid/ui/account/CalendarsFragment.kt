@@ -49,16 +49,12 @@ class CalendarsFragment: CollectionsFragment() {
 
     override fun onResume() {
         super.onResume()
-
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(menuProvider)
+        requireActivity().addMenuProvider(menuProvider)
     }
 
     override fun onPause() {
         super.onPause()
-
-        val menuHost: MenuHost = requireActivity()
-        menuHost.removeMenuProvider(menuProvider)
+        requireActivity().removeMenuProvider(menuProvider)
     }
 
 

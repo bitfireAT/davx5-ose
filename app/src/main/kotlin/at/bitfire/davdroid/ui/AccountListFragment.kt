@@ -134,33 +134,27 @@ class AccountListFragment: Fragment() {
             requireActivity().invalidateOptionsMenu()
         }
 
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(
-            object : MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.activity_accounts, menu)
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_accounts, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem) =
+                when (menuItem.itemId) {
+                    R.id.syncAll -> {
+                        (activity as AccountsActivity).syncAllAccounts()
+                        true
+                    }
+                    else -> false
                 }
 
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                    return when (menuItem.itemId) {
-                        R.id.syncAll -> {
-                            (activity as AccountsActivity).syncAllAccounts()
-                            true
-                        }
-                        else -> {
-                            false
-                        }
-                    }
-                }
-
-                override fun onPrepareMenu(menu: Menu) {
-                    // Show "Sync all" only when there is at least one account
-                    model.accounts.value?.let { accounts ->
-                        menu.findItem(R.id.syncAll).setVisible(accounts.isNotEmpty())
-                    }
+            override fun onPrepareMenu(menu: Menu) {
+                // Show "Sync all" only when there is at least one account
+                model.accounts.value?.let { accounts ->
+                    menu.findItem(R.id.syncAll).setVisible(accounts.isNotEmpty())
                 }
             }
-        )
+        })
     }
 
     override fun onResume() {

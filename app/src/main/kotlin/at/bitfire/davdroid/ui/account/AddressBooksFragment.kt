@@ -36,9 +36,8 @@ class AddressBooksFragment: CollectionsFragment() {
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            if (super.onMenuItemSelected(menuItem)) {
+            if (super.onMenuItemSelected(menuItem))
                 return true
-            }
 
             if (menuItem.itemId == R.id.create_address_book) {
                 val intent = Intent(requireActivity(), CreateAddressBookActivity::class.java)
@@ -53,16 +52,12 @@ class AddressBooksFragment: CollectionsFragment() {
 
     override fun onResume() {
         super.onResume()
-
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(menuProvider)
+        requireActivity().addMenuProvider(menuProvider)
     }
 
     override fun onPause() {
         super.onPause()
-
-        val menuHost: MenuHost = requireActivity()
-        menuHost.removeMenuProvider(menuProvider)
+        requireActivity().removeMenuProvider(menuProvider)
     }
 
     override fun checkPermissions() {

@@ -20,13 +20,13 @@ import androidx.lifecycle.lifecycleScope
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.App
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAddWebdavMountBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
@@ -69,25 +69,21 @@ class AddWebdavMountActivity: AppCompatActivity() {
             validate()
         }
 
-        addMenuProvider(
-            object : MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.activity_add_webdav_mount, menu)
-                }
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_add_webdav_mount, menu)
+            }
 
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                    return when (menuItem.itemId) {
-                        R.id.help -> {
-                            onShowHelp()
-                            true
-                        }
-                        else -> {
-                            false
-                        }
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.help -> {
+                        onShowHelp()
+                        true
                     }
+                    else -> false
                 }
             }
-        )
+        })
     }
 
     fun onShowHelp() {

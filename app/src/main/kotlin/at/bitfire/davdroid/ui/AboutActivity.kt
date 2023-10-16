@@ -83,25 +83,20 @@ class AboutActivity: AppCompatActivity() {
         binding.viewpager.adapter = TabsAdapter(supportFragmentManager)
         binding.tabs.setupWithViewPager(binding.viewpager, false)
 
-        addMenuProvider(
-            object : MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.activity_about, menu)
-                }
-
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                    return when (menuItem.itemId) {
-                        R.id.show_website -> {
-                            showWebsite()
-                            true
-                        }
-                        else -> {
-                            false
-                        }
-                    }
-                }
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_about, menu)
             }
-        )
+
+            override fun onMenuItemSelected(menuItem: MenuItem) =
+                when (menuItem.itemId) {
+                    R.id.show_website -> {
+                        showWebsite()
+                        true
+                    }
+                    else -> false
+                }
+        })
     }
 
     fun showWebsite() {

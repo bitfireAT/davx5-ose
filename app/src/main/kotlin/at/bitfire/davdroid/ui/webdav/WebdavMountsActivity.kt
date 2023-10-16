@@ -90,25 +90,21 @@ class WebdavMountsActivity: AppCompatActivity() {
             startActivity(Intent(this, AddWebdavMountActivity::class.java))
         }
 
-        addMenuProvider(
-            object : MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.activity_webdav_mounts, menu)
-                }
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_webdav_mounts, menu)
+            }
 
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                    return when (menuItem.itemId) {
-                        R.id.help -> {
-                            onShowHelp()
-                            true
-                        }
-                        else -> {
-                            false
-                        }
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.help -> {
+                        onShowHelp()
+                        true
                     }
+                    else -> false
                 }
             }
-        )
+        })
     }
 
     fun onShowHelp() {

@@ -17,8 +17,6 @@ import android.provider.CalendarContract.Calendars
 import android.view.*
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.room.Transaction
@@ -98,16 +96,12 @@ class WebcalFragment: CollectionsFragment() {
 
     override fun onResume() {
         super.onResume()
-
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(menuProvider)
+        requireActivity().addMenuProvider(menuProvider)
     }
 
     override fun onPause() {
         super.onPause()
-
-        val menuHost: MenuHost = requireActivity()
-        menuHost.removeMenuProvider(menuProvider)
+        requireActivity().removeMenuProvider(menuProvider)
     }
 
 
