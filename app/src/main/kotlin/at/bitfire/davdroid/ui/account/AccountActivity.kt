@@ -138,11 +138,6 @@ class AccountActivity: AppCompatActivity() {
         )
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_account, menu)
-        return true
-    }
-
 
     // menu actions
 
