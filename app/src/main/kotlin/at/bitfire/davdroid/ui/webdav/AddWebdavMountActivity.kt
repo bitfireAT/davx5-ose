@@ -7,11 +7,13 @@ package at.bitfire.davdroid.ui.webdav
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuProvider
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
@@ -66,14 +68,29 @@ class AddWebdavMountActivity: AppCompatActivity() {
         binding.addMount.setOnClickListener {
             validate()
         }
+
+        addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.activity_add_webdav_mount, menu)
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.help -> {
+                            onShowHelp()
+                            true
+                        }
+                        else -> {
+                            false
+                        }
+                    }
+                }
+            }
+        )
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_add_webdav_mount, menu)
-        return true
-    }
-
-    fun onShowHelp(item: MenuItem) {
+    fun onShowHelp() {
         UiUtils.launchUri(this,
             App.homepageUrl(this).buildUpon().appendPath("tested-with").build())
     }

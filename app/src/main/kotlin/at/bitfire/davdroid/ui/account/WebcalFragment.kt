@@ -17,6 +17,8 @@ import android.provider.CalendarContract.Calendars
 import android.view.*
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.room.Transaction
@@ -66,14 +68,28 @@ class WebcalFragment: CollectionsFragment() {
         webcalModel.subscribedUrls.observe(this, Observer { urls ->
             Logger.log.log(Level.FINE, "Got Android calendar list", urls.keys)
         })
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
-            inflater.inflate(R.menu.caldav_actions, menu)
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.caldav_actions, menu)
+                }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.create_calendar).isVisible = false
+                override fun onPrepareMenu(menu: Menu) {
+                    super.onPrepareMenu(menu)
+                    menu.findItem(R.id.create_calendar).isVisible = false
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        else -> {
+                            false
+                        }
+                    }
+                }
+            }
+        )
     }
 
 

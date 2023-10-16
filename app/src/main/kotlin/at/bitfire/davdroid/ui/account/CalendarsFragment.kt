@@ -5,7 +5,10 @@
 package at.bitfire.davdroid.ui.account
 
 import android.content.Intent
+import android.os.Bundle
 import android.view.*
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.FragmentManager
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.util.PermissionUtils
@@ -18,26 +21,33 @@ class CalendarsFragment: CollectionsFragment() {
 
     override val noCollectionsStringId = R.string.account_no_calendars
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
-            inflater.inflate(R.menu.caldav_actions, menu)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.create_calendar).isVisible = model.hasWriteableCollections.value ?: false
-        super.onPrepareOptionsMenu(menu)
-    }
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.caldav_actions, menu)
+                }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (super.onOptionsItemSelected(item))
-            return true
+                override fun onPrepareMenu(menu: Menu) {
+                    menu.findItem(R.id.create_calendar).isVisible = model.hasWriteableCollections.value ?: false
+                    super.onPrepareMenu(menu)
+                }
 
-        if (item.itemId == R.id.create_calendar) {
-            val intent = Intent(requireActivity(), CreateCalendarActivity::class.java)
-            intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, accountModel.account)
-            startActivity(intent)
-            return true
-        }
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    if (menuItem.itemId == R.id.create_calendar) {
+                        val intent = Intent(requireActivity(), CreateCalendarActivity::class.java)
+                        intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, accountModel.account)
+                        startActivity(intent)
+                        return true
+                    }
 
-        return false
+                    return false
+                }
+            }
+        )
     }
 
 

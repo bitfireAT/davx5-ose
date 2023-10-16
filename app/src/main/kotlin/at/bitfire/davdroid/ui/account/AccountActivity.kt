@@ -13,10 +13,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.TooltipCompat
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -105,6 +107,35 @@ class AccountActivity: AppCompatActivity() {
                 SyncWorker.enqueueAllAuthorities(this, model.account)
             }
         }
+
+        addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.activity_account, menu)
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.settings -> {
+                            openAccountSettings()
+                            true
+                        }
+                        R.id.rename_account -> {
+                            renameAccount()
+                            true
+                        }
+                        R.id.delete_account -> {
+                            deleteAccountDialog()
+                            true
+                        }
+                        else -> {
+                            false
+                        }
+                    }
+                }
+
+            }
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -115,17 +146,17 @@ class AccountActivity: AppCompatActivity() {
 
     // menu actions
 
-    fun openAccountSettings(menuItem: MenuItem) {
+    fun openAccountSettings() {
         val intent = Intent(this, SettingsActivity::class.java)
         intent.putExtra(SettingsActivity.EXTRA_ACCOUNT, model.account)
         startActivity(intent, null)
     }
 
-    fun renameAccount(menuItem: MenuItem) {
+    fun renameAccount() {
         RenameAccountFragment.newInstance(model.account).show(supportFragmentManager, null)
     }
 
-    fun deleteAccount(menuItem: MenuItem) {
+    fun deleteAccountDialog() {
         MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle(R.string.account_delete_confirmation_title)

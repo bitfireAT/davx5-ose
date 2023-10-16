@@ -13,6 +13,8 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.view.*
 import android.widget.PopupMenu
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -146,32 +148,42 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         }
 
         binding.noCollections.setText(noCollectionsStringId)
-    }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.showOnlyPersonal).let { showOnlyPersonal ->
-            accountModel.showOnlyPersonal.value?.let { value ->
-                showOnlyPersonal.isChecked = value
-            }
-            accountModel.showOnlyPersonalWritable.value?.let { writable ->
-                showOnlyPersonal.isEnabled = writable
-            }
-        }
-    }
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    // menu is inflated by sub-fragments
+                }
 
-    override fun onOptionsItemSelected(item: MenuItem) =
-            when (item.itemId) {
-                R.id.refresh -> {
-                    onRefresh()
-                    true
+                override fun onPrepareMenu(menu: Menu) {
+                    menu.findItem(R.id.showOnlyPersonal).let { showOnlyPersonal ->
+                        accountModel.showOnlyPersonal.value?.let { value ->
+                            showOnlyPersonal.isChecked = value
+                        }
+                        accountModel.showOnlyPersonalWritable.value?.let { writable ->
+                            showOnlyPersonal.isEnabled = writable
+                        }
+                    }
                 }
-                R.id.showOnlyPersonal -> {
-                    accountModel.toggleShowOnlyPersonal()
-                    true
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.refresh -> {
+                            onRefresh()
+                            true
+                        }
+                        R.id.showOnlyPersonal -> {
+                            accountModel.toggleShowOnlyPersonal()
+                            true
+                        }
+                        else ->
+                            false
+                    }
                 }
-                else ->
-                    false
             }
+        )
+    }
 
     override fun onRefresh() {
         model.refresh()
