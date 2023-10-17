@@ -54,11 +54,10 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
+            // use a separate thread to check whether IntroActivity should be shown
             CoroutineScope(Dispatchers.Default).launch {
-                // use a separate thread to check whether IntroActivity should be shown
-                if (IntroActivity.shouldShowIntroActivity(this@AccountsActivity)) {
+                if (IntroActivity.shouldShowIntroActivity(this@AccountsActivity))
                     introActivityLauncher.launch(null)
-                }
             }
         }
 
