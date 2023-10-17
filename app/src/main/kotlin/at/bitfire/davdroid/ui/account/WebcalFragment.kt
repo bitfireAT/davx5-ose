@@ -50,7 +50,7 @@ class WebcalFragment: CollectionsFragment() {
     override val noCollectionsStringId = R.string.account_no_webcals
 
     @Inject lateinit var webcalModelFactory: WebcalModel.Factory
-    val webcalModel by viewModels<WebcalModel>() {
+    private val webcalModel by viewModels<WebcalModel> {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>) =
@@ -68,21 +68,6 @@ class WebcalFragment: CollectionsFragment() {
         override fun onPrepareMenu(menu: Menu) {
             super.onPrepareMenu(menu)
             menu.findItem(R.id.create_calendar).isVisible = false
-        }
-
-        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            if (super.onMenuItemSelected(menuItem)) {
-                return true
-            }
-
-            if (menuItem.itemId == R.id.create_calendar) {
-                val intent = Intent(requireActivity(), CreateCalendarActivity::class.java)
-                intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, accountModel.account)
-                startActivity(intent)
-                return true
-            }
-
-            return false
         }
     }
 
