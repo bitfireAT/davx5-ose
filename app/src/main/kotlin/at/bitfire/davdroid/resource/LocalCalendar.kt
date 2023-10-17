@@ -15,6 +15,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.db.WebcalSubscription
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
@@ -34,9 +35,7 @@ class LocalCalendar private constructor(
 
         private const val COLUMN_SYNC_STATE = Calendars.CAL_SYNC1
 
-        fun create(account: Account, provider: ContentProviderClient, info: Collection): Uri {
-            val values = valuesFromCollectionInfo(info, true)
-
+        fun create(account: Account, provider: ContentProviderClient, values: ContentValues): Uri {
             // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
             values.put(Calendars.ACCOUNT_NAME, account.name)
             values.put(Calendars.ACCOUNT_TYPE, account.type)
@@ -48,13 +47,17 @@ class LocalCalendar private constructor(
             // flag as visible & synchronizable at creation, might be changed by user at any time
             values.put(Calendars.VISIBLE, 1)
             values.put(Calendars.SYNC_EVENTS, 1)
-            return create(account, provider, values)
+            return AndroidCalendar.create(account, provider, values)
         }
+
+        fun create(account: Account, provider: ContentProviderClient, info: Collection) =
+            create(account, provider, valuesFromCollectionInfo(info, true))
 
         private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
             val values = ContentValues()
             values.put(Calendars.NAME, info.url.toString())
-            values.put(Calendars.CALENDAR_DISPLAY_NAME, if (info.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
+            values.put(Calendars.CALENDAR_DISPLAY_NAME,
+                if (info.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
 
             if (withColor)
                 values.put(Calendars.CALENDAR_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)
@@ -78,6 +81,22 @@ class LocalCalendar private constructor(
             }
 
             // add base values for Calendars
+            values.putAll(calendarBaseValues)
+
+            return values
+        }
+
+        fun create(account: Account, provider: ContentProviderClient, subscription: WebcalSubscription): Uri =
+            create(account, provider, valuesFromSubscription(subscription))
+
+        fun valuesFromSubscription(subscription: WebcalSubscription): ContentValues {
+            val values = ContentValues()
+            values.put(Calendars.NAME, subscription.url.toString())
+            values.put(Calendars.CALENDAR_DISPLAY_NAME,
+                if (subscription.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(subscription.url) else subscription.displayName)
+            values.put(Calendars.CALENDAR_COLOR, subscription.color)
+            values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_READ)
+
             values.putAll(calendarBaseValues)
 
             return values

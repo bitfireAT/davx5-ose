@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.account
 
+import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import android.view.*
@@ -16,6 +17,7 @@ import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.WebcalSubscription
+import at.bitfire.davdroid.syncadapter.WebcalSyncWorker
 import at.bitfire.davdroid.util.PermissionUtils
 import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
@@ -162,9 +164,10 @@ class WebcalFragment: CollectionsFragment() {
 
 
     class WebcalModel @AssistedInject constructor(
+        application: Application,
         val db: AppDatabase,
         @Assisted val serviceId: Long
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
 
         @AssistedFactory
         interface Factory {
@@ -176,6 +179,7 @@ class WebcalFragment: CollectionsFragment() {
         fun subscribe(item: Collection) = viewModelScope.launch(Dispatchers.IO) {
             val subscription = WebcalSubscription.fromCollection(item)
             dao.insertAndUpdateCollection(db.collectionDao(), subscription)
+            WebcalSyncWorker.updateWorker(getApplication(), db)
         }
 
         fun unsubscribe(item: Collection) = viewModelScope.launch(Dispatchers.IO) {
@@ -183,6 +187,7 @@ class WebcalFragment: CollectionsFragment() {
                 dao.delete(subscription)
                 db.collectionDao().updateSync(item.id, false)
             }
+            WebcalSyncWorker.updateWorker(getApplication(), db)
         }
 
     }

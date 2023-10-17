@@ -7,18 +7,28 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 
 @Dao
 interface WebcalSubscriptionDao {
 
+    @Query("SELECT * FROM webcal_subscription ORDER BY displayName, url")
+    suspend fun getAllAsync(): List<WebcalSubscription>
+
+    @Query("SELECT * FROM webcal_subscription ORDER BY displayName, url")
+    fun getAllLive(): LiveData<List<WebcalSubscription>>
+
+    @Query("SELECT COUNT(*) FROM webcal_subscription")
+    fun getCount(): Int
+
     @Query("SELECT * FROM webcal_subscription WHERE collectionId=:collectionId")
     fun getByCollectionId(collectionId: Long): WebcalSubscription?
 
-    @Query("SELECT * FROM webcal_subscription ORDER BY displayName, url")
-    fun getLive(): LiveData<List<WebcalSubscription>>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(subscription: WebcalSubscription): Long
+
+    @Update
+    fun update(subscription: WebcalSubscription)
 
     @Delete
     fun delete(subscription: WebcalSubscription)
