@@ -21,7 +21,6 @@ import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment.Model.Companion.SETTING_NEXT_DONATION_POPUP
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -48,7 +47,6 @@ class OpenSourceFragment: Fragment() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        @ApplicationContext val context: Context,
         val settings: SettingsManager
     ): ViewModel() {
 
@@ -76,7 +74,7 @@ class OpenSourceFragment: Fragment() {
 
         override fun getOrder(context: Context) =
             if (System.currentTimeMillis() > (settingsManager.getLongOrNull(SETTING_NEXT_DONATION_POPUP) ?: 0))
-                100
+                500
             else
                 0
 
