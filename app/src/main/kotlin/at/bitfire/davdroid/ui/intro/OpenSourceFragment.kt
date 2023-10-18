@@ -48,7 +48,10 @@ class OpenSourceFragment: Fragment() {
     }
 
 
-    class Model(val settings: SettingsManager): ViewModel() {
+    @HiltViewModel
+    class Model @Inject constructor(
+        val settings: SettingsManager
+    ): ViewModel() {
 
         companion object {
             const val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"
