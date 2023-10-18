@@ -19,7 +19,11 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.LoginAccountDetailsBinding
@@ -101,10 +105,10 @@ class AccountDetailsFragment : Fragment() {
                 v.createAccount.visibility = View.GONE
 
                 model.createAccount(
-                        name,
-                        loginModel.credentials,
-                        config,
-                        GroupMethod.valueOf(groupMethodName)
+                    name,
+                    loginModel.credentials,
+                    config,
+                    GroupMethod.valueOf(groupMethodName)
                 ).observe(viewLifecycleOwner, Observer { success ->
                     if (success) {
                         // close Create account activity
@@ -126,6 +130,7 @@ class AccountDetailsFragment : Fragment() {
 
         val forcedGroupMethod = settings.getString(AccountSettings.KEY_CONTACT_GROUP_METHOD)?.let { GroupMethod.valueOf(it) }
         if (forcedGroupMethod != null) {
+            // contact group type forced by settings
             v.contactGroupMethod.isEnabled = false
             for ((i, method) in resources.getStringArray(R.array.settings_contact_group_method_values).withIndex()) {
                 if (method == forcedGroupMethod.name) {
@@ -133,8 +138,17 @@ class AccountDetailsFragment : Fragment() {
                     break
                 }
             }
-        } else
+        } else {
+            // contact group type selectable
             v.contactGroupMethod.isEnabled = true
+            for ((i, method) in resources.getStringArray(R.array.settings_contact_group_method_values).withIndex()) {
+                // take suggestion from detection process into account
+                if (method == loginModel.suggestedGroupMethod.name) {
+                    v.contactGroupMethod.setSelection(i)
+                    break
+                }
+            }
+        }
 
         return v.root
     }
