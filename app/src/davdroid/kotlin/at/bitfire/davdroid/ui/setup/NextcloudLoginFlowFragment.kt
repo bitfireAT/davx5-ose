@@ -55,6 +55,7 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
+import at.bitfire.vcard4android.GroupMethod
 import com.google.accompanist.themeadapter.material.MdcTheme
 import com.google.android.material.snackbar.Snackbar
 import dagger.Binds
@@ -161,6 +162,7 @@ class NextcloudLoginFlowFragment: Fragment() {
             // continue to next fragment
             loginModel.baseURI = baseUri
             loginModel.credentials = credentials
+            loginModel.suggestedGroupMethod = GroupMethod.CATEGORIES
             parentFragmentManager.beginTransaction()
                     .replace(android.R.id.content, DetectConfigurationFragment(), null)
                     .addToBackStack(null)
