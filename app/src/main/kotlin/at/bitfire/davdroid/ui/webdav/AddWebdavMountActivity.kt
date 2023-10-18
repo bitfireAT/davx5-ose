@@ -8,25 +8,27 @@ import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
+import androidx.core.view.MenuProvider
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.App
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAddWebdavMountBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.util.context
 import at.bitfire.davdroid.webdav.CredentialsStore
@@ -69,14 +71,25 @@ class AddWebdavMountActivity: AppCompatActivity() {
         binding.addMount.setOnClickListener {
             validate()
         }
+
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_add_webdav_mount, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.help -> {
+                        onShowHelp()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_add_webdav_mount, menu)
-        return true
-    }
-
-    fun onShowHelp(item: MenuItem) {
+    fun onShowHelp() {
         UiUtils.launchUri(this,
             App.homepageUrl(this).buildUpon().appendPath("tested-with").build())
     }

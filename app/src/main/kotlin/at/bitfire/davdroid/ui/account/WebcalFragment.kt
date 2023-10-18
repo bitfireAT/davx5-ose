@@ -52,13 +52,24 @@ class WebcalFragment: CollectionsFragment() {
     override val noCollectionsStringId = R.string.account_no_webcals
 
     @Inject lateinit var webcalModelFactory: WebcalModel.Factory
-    val webcalModel by viewModels<WebcalModel>() {
+    private val webcalModel by viewModels<WebcalModel> {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>) =
                 webcalModelFactory.create(
                     requireArguments().getLong(EXTRA_SERVICE_ID)
                 ) as T
+        }
+    }
+
+    private val menuProvider = object : CollectionsMenuProvider() {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.caldav_actions, menu)
+        }
+
+        override fun onPrepareMenu(menu: Menu) {
+            super.onPrepareMenu(menu)
+            menu.findItem(R.id.create_calendar).isVisible = false
         }
     }
 
@@ -70,12 +81,14 @@ class WebcalFragment: CollectionsFragment() {
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
-            inflater.inflate(R.menu.caldav_actions, menu)
+    override fun onResume() {
+        super.onResume()
+        requireActivity().addMenuProvider(menuProvider)
+    }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.create_calendar).isVisible = false
+    override fun onPause() {
+        super.onPause()
+        requireActivity().removeMenuProvider(menuProvider)
     }
 
 

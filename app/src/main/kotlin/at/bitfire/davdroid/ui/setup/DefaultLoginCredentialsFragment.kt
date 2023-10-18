@@ -71,10 +71,11 @@ class DefaultLoginCredentialsFragment : Fragment() {
         v.login.setOnClickListener { _ ->
             if (validate()) {
                 val nextFragment =
-                    if (model.loginGoogle.value == true)
-                        GoogleLoginFragment()
-                    else
-                        DetectConfigurationFragment()
+                    when {
+                        model.loginGoogle.value == true -> GoogleLoginFragment()
+                        model.loginNextcloud.value == true -> NextcloudLoginFlowFragment()
+                        else -> DetectConfigurationFragment()
+                    }
 
                 parentFragmentManager.beginTransaction()
                     .replace(android.R.id.content, nextFragment, null)
@@ -204,7 +205,8 @@ class DefaultLoginCredentialsFragment : Fragment() {
                     }
             }
 
-            model.loginGoogle.value == true -> {
+            // some login methods don't require further input → always valid
+            model.loginGoogle.value == true || model.loginNextcloud.value == true -> {
                 valid = true
             }
         }

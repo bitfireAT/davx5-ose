@@ -22,7 +22,7 @@ interface IntroFragmentFactory {
      * @return Order with which an instance of this fragment type shall be created and shown. Possible values:
      *
      *   * <0: only show the fragment when there is at least one other fragment with positive order (lower numbers are shown first)
-     *   * 0: don't show the fragment
+     *   * [DONT_SHOW] (0): don't show the fragment
      *   * ≥0: show the fragment (lower numbers are shown first)
      */
     fun getOrder(context: Context): Int

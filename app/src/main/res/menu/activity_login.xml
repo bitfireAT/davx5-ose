@@ -7,8 +7,6 @@
         android:id="@+id/help"
         android:title="@string/help"
         android:icon="@drawable/ic_help"
-        app:showAsAction="always"
-        android:onClick="showHelp">
-    </item>
-    
+        app:showAsAction="always" />
+
 </menu>

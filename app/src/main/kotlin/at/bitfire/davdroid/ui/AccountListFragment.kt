@@ -20,10 +20,13 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AnyThread
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
@@ -58,8 +61,6 @@ class AccountListFragment: Fragment() {
     private var syncStatusSnackbar: Snackbar? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        setHasOptionsMenu(true)
-
         _binding = AccountListBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -132,16 +133,28 @@ class AccountListFragment: Fragment() {
             accountAdapter.submitList(accounts)
             requireActivity().invalidateOptionsMenu()
         }
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
-        inflater.inflate(R.menu.activity_accounts, menu)
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_accounts, menu)
+            }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        // Show "Sync all" only when there is at least one account
-        model.accounts.value?.let { accounts ->
-            menu.findItem(R.id.syncAll).setVisible(accounts.isNotEmpty())
-        }
+            override fun onMenuItemSelected(menuItem: MenuItem) =
+                when (menuItem.itemId) {
+                    R.id.syncAll -> {
+                        (activity as AccountsActivity).syncAllAccounts()
+                        true
+                    }
+                    else -> false
+                }
+
+            override fun onPrepareMenu(menu: Menu) {
+                // Show "Sync all" only when there is at least one account
+                model.accounts.value?.let { accounts ->
+                    menu.findItem(R.id.syncAll).setVisible(accounts.isNotEmpty())
+                }
+            }
+        })
     }
 
     override fun onResume() {

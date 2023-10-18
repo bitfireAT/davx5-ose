@@ -54,11 +54,10 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
+            // use a separate thread to check whether IntroActivity should be shown
             CoroutineScope(Dispatchers.Default).launch {
-                // use a separate thread to check whether IntroActivity should be shown
-                if (IntroActivity.shouldShowIntroActivity(this@AccountsActivity)) {
+                if (IntroActivity.shouldShowIntroActivity(this@AccountsActivity))
                     introActivityLauncher.launch(null)
-                }
             }
         }
 
@@ -109,7 +108,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     private fun allAccounts() =
             AccountManager.get(this).getAccountsByType(getString(R.string.account_type))
 
-    fun syncAllAccounts(item: MenuItem? = null) {
+    fun syncAllAccounts() {
         if (Build.VERSION.SDK_INT >= 25)
             getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
 
