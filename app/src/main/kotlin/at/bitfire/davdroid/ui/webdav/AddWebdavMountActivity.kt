@@ -33,6 +33,7 @@ import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
@@ -153,6 +154,7 @@ class AddWebdavMountActivity: AppCompatActivity() {
     }
 
 
+    @HiltViewModel
     class Model @Inject constructor(
         application: Application,
         val db: AppDatabase
