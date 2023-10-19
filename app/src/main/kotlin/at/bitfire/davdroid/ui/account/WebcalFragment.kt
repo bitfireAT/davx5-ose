@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.Manifest
+import android.app.Application
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.Intent
@@ -33,7 +34,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
@@ -180,15 +180,17 @@ class WebcalFragment: CollectionsFragment() {
 
 
     class WebcalModel @AssistedInject constructor(
-        @ApplicationContext context: Context,
+        application: Application,
         val db: AppDatabase,
         @Assisted val serviceId: Long
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
 
         @AssistedFactory
         interface Factory {
             fun create(serviceId: Long): WebcalModel
         }
+
+        val context: Context get() = getApplication()
 
         private val resolver = context.contentResolver
 

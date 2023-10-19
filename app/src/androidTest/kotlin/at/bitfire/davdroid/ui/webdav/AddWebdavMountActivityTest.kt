@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.webdav
 
 import android.security.NetworkSecurityPolicy
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.core.app.ApplicationProvider
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -34,7 +34,7 @@ class AddWebdavMountActivityTest {
     fun setUp() {
         hiltRule.inject()
 
-        model = spyk(AddWebdavMountActivity.Model(InstrumentationRegistry.getInstrumentation().targetContext, db))
+        model = spyk(AddWebdavMountActivity.Model(ApplicationProvider.getApplicationContext(), db))
 
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }

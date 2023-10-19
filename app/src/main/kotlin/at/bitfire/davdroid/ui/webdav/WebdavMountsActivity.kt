@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.webdav
 
 import android.app.AlertDialog
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -195,9 +196,11 @@ class WebdavMountsActivity: AppCompatActivity() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        @ApplicationContext val context: Context,
+        application: Application,
         val db: AppDatabase
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
+
+        val context: Context get() = getApplication()
 
         val authority = context.getString(R.string.webdav_authority)
 
