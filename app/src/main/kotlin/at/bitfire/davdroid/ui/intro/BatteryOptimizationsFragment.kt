@@ -30,7 +30,6 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
-import at.bitfire.davdroid.util.context
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

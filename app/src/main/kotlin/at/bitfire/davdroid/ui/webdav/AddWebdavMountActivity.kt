@@ -14,10 +14,9 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.AndroidViewModel
 import androidx.core.view.MenuProvider
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.UrlUtils
@@ -30,13 +29,10 @@ import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.UiUtils
-import at.bitfire.davdroid.util.context
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
@@ -170,6 +166,8 @@ class AddWebdavMountActivity: AppCompatActivity() {
         val password = MutableLiveData<String>()
 
         val error = MutableLiveData<String>()
+
+        val context: Context get() = getApplication()
 
 
         @WorkerThread

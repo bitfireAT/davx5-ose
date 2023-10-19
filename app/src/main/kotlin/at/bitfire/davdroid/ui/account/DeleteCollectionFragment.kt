@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.app.Application
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,18 +14,16 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.databinding.DeleteCollectionBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
-import at.bitfire.davdroid.util.context
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -116,7 +113,7 @@ class DeleteCollectionFragment: DialogFragment() {
             viewModelScope.launch(Dispatchers.IO + NonCancellable) {
                 val collectionInfo = collectionInfo ?: return@launch
 
-                HttpClient.Builder(context, AccountSettings(context, account))
+                HttpClient.Builder(getApplication(), AccountSettings(getApplication(), account))
                         .setForeground(true)
                         .build().use { httpClient ->
                             try {

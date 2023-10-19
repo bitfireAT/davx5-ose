@@ -15,16 +15,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
-import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
-import at.bitfire.davdroid.util.context
+import at.bitfire.davdroid.util.DavUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -133,7 +132,7 @@ class CreateCollectionFragment: DialogFragment() {
 
         fun createCollection(): LiveData<Exception> {
             viewModelScope.launch(Dispatchers.IO + NonCancellable) {
-                HttpClient.Builder(context, AccountSettings(context, account))
+                HttpClient.Builder(getApplication(), AccountSettings(getApplication(), account))
                         .setForeground(true)
                         .build().use { httpClient ->
                     try {
@@ -148,7 +147,7 @@ class CreateCollectionFragment: DialogFragment() {
                             db.collectionDao().insert(collection)
 
                             // trigger service detection (because the collection may have other properties than the ones we have inserted)
-                            RefreshCollectionsWorker.refreshCollections(context, service.id)
+                            RefreshCollectionsWorker.refreshCollections(getApplication(), service.id)
                         }
 
                         // post success

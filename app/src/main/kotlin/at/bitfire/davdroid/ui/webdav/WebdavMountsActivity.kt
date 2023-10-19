@@ -31,7 +31,6 @@ import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
-import at.bitfire.davdroid.util.context
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -200,6 +199,8 @@ class WebdavMountsActivity: AppCompatActivity() {
         application: Application,
         val db: AppDatabase
     ): AndroidViewModel(application) {
+
+        val context: Context get() = getApplication()
 
         val authority = context.getString(R.string.webdav_authority)
 

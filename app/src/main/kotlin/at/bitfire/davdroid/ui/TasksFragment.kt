@@ -19,19 +19,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityTasksBinding
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.util.context
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -119,6 +116,8 @@ class TasksFragment: Fragment() {
             const val HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled"
 
         }
+
+        val context: Context get() = getApplication()
 
         val currentProvider = MutableLiveData<ProviderName>()
         val openTasksInstalled = MutableLiveData<Boolean>()

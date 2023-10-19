@@ -24,7 +24,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
@@ -42,12 +41,10 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.ui.account.AccountActivity
-import at.bitfire.davdroid.util.context
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -157,7 +154,8 @@ class AccountDetailsFragment : Fragment() {
     }
 
 
-    class Model(
+    @HiltViewModel
+    class Model @Inject constructor(
         application: Application,
         val db: AppDatabase,
         val settingsManager: SettingsManager
@@ -166,6 +164,8 @@ class AccountDetailsFragment : Fragment() {
         val name = MutableLiveData<String>()
         val nameError = MutableLiveData<String>()
         val showApostropheWarning = MutableLiveData<Boolean>(false)
+
+        val context: Context get() = getApplication()
 
         fun validateAccountName(s: Editable) {
             showApostropheWarning.value = s.toString().contains('\'')

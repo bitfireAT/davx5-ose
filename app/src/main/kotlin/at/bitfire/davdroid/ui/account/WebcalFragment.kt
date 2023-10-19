@@ -29,13 +29,11 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.PermissionUtils
-import at.bitfire.davdroid.util.context
 import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
@@ -191,6 +189,8 @@ class WebcalFragment: CollectionsFragment() {
         interface Factory {
             fun create(serviceId: Long): WebcalModel
         }
+
+        val context: Context get() = getApplication()
 
         private val resolver = context.contentResolver
 

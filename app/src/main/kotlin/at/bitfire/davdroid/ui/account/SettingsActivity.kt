@@ -37,7 +37,6 @@ import at.bitfire.davdroid.syncadapter.Syncer
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.setup.GoogleLoginFragment
 import at.bitfire.davdroid.util.PermissionUtils
-import at.bitfire.davdroid.util.context
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
@@ -489,7 +488,9 @@ class SettingsActivity: AppCompatActivity() {
         fun reload() {
             val accountSettings = accountSettings ?: return
 
-            syncIntervalContacts.postValue(accountSettings.getSyncInterval(context.getString(R.string.address_books_authority)))
+            syncIntervalContacts.postValue(
+                accountSettings.getSyncInterval(getApplication<Application>().getString(R.string.address_books_authority))
+            )
             syncIntervalCalendars.postValue(accountSettings.getSyncInterval(CalendarContract.AUTHORITY))
             syncIntervalTasks.postValue(tasksProvider?.let { accountSettings.getSyncInterval(it.authority) })
 
@@ -572,7 +573,10 @@ class SettingsActivity: AppCompatActivity() {
             accountSettings?.setGroupMethod(groupMethod)
             reload()
 
-            resync(context.getString(R.string.address_books_authority), fullResync = true)
+            resync(
+                authority = getApplication<Application>().getString(R.string.address_books_authority),
+                fullResync = true
+            )
         }
 
         /**
@@ -599,7 +603,7 @@ class SettingsActivity: AppCompatActivity() {
          */
         private fun resync(authority: String, fullResync: Boolean) {
             val resync = if (fullResync) SyncWorker.FULL_RESYNC else SyncWorker.RESYNC
-            SyncWorker.enqueue(context, account, authority, resync)
+            SyncWorker.enqueue(getApplication(), account, authority, resync)
         }
 
     }
