@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -238,7 +239,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     }
 
     override fun onStopped() {
-        Logger.log.info("Stopping refresh")
+        Logger.log.info("Stopping refresh (reason ${if (Build.VERSION.SDK_INT >= 31) stopReason else "n/a"})")
         refreshThread?.interrupt()
     }
 

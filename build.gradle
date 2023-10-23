@@ -12,7 +12,7 @@ buildscript {
                                //                   * com.google.devtools.ksp at the end of this file
         okhttp: '4.11.0',
         room: '2.5.2',
-        workManager: '2.8.1',
+        workManager: '2.9.0-rc01',
         // Apache Commons versions
         commonsCollections: '4.4',
         commonsLang: '3.13.0',

@@ -5,11 +5,7 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.content.ContentProviderClient
-import android.content.ContentResolver
-import android.content.Context
-import android.content.Intent
-import android.content.SyncResult
+import android.content.*
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -23,20 +19,7 @@ import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorker
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import androidx.work.BackoffPolicy
-import androidx.work.Constraints
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.ForegroundInfo
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import androidx.work.WorkQuery
-import androidx.work.WorkRequest
-import androidx.work.Worker
-import androidx.work.WorkerParameters
+import androidx.work.*
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.ConnectionUtils.internetAvailable
@@ -432,7 +415,7 @@ class SyncWorker @AssistedInject constructor(
     }
 
     override fun onStopped() {
-        Logger.log.info("Stopping sync thread")
+        Logger.log.info("Work stopped (reason ${if (Build.VERSION.SDK_INT >= 31) stopReason else "n/a"}), stopping sync thread")
         syncThread?.interrupt()
     }
 

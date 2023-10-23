@@ -61,7 +61,6 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
 import java.io.*
-import java.util.Locale
 import java.util.TimeZone
 import java.util.logging.Level
 import java.util.zip.ZipEntry
@@ -680,7 +679,7 @@ class DebugInfoActivity : AppCompatActivity() {
                         table.addLine(
                             workInfo.tags.map { StringUtils.removeStartIgnoreCase(it, SyncWorker::class.java.getPackage()!!.name + ".") },
                             authority,
-                            workInfo.state,
+                            "${workInfo.state} (${workInfo.stopReason})",
                             workInfo.runAttemptCount,
                             workInfo.generation,
                             workInfo.id
