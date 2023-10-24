@@ -16,6 +16,7 @@ import android.net.Uri
 import android.os.*
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import android.text.format.DateUtils
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -624,7 +625,7 @@ class DebugInfoActivity : AppCompatActivity() {
         }
 
         private fun dumpAccount(account: Account, infos: Iterable<AccountDumpInfo>): String {
-            val table = TextTable("Authority", "getIsSyncable", "getSyncAutomatically", "PeriodicSyncWorker", "Interval", "Entries")
+            val table = TextTable("Authority", "isSyncable", "syncAutomatically", "Interval", "Entries")
             for (info in infos) {
                 var nrEntries = "—"
                 var client: ContentProviderClient? = null
@@ -647,7 +648,6 @@ class DebugInfoActivity : AppCompatActivity() {
                     info.authority,
                     ContentResolver.getIsSyncable(account, info.authority),
                     ContentResolver.getSyncAutomatically(account, info.authority),  // content-triggered sync
-                    PeriodicSyncWorker.isEnabled(context, account, info.authority), // should always be false for address book accounts
                     accountSettings.getSyncInterval(info.authority)?.let {"${it/60} min"},
                     nrEntries
                 )
@@ -661,7 +661,7 @@ class DebugInfoActivity : AppCompatActivity() {
          * whether they exist one by one
          */
         private fun dumpSyncWorkersInfo(account: Account): String {
-            val table = TextTable("Tags", "Authority", "State", "Retries", "Generation", "ID")
+            val table = TextTable("Tags", "Authority", "State", "Next run", "Retries", "Generation", "Periodicity")
             listOf(
                 context.getString(R.string.address_books_authority),
                 CalendarContract.AUTHORITY,
@@ -677,12 +677,20 @@ class DebugInfoActivity : AppCompatActivity() {
                         WorkQuery.Builder.fromUniqueWorkNames(listOf(workerName)).build()
                     ).get().forEach { workInfo ->
                         table.addLine(
-                            workInfo.tags.map { StringUtils.removeStartIgnoreCase(it, SyncWorker::class.java.getPackage()!!.name + ".") },
+                            workInfo.tags.map { it.replace("\\bat\\.bitfire\\.davdroid\\.".toRegex(), ".") },
                             authority,
                             "${workInfo.state} (${workInfo.stopReason})",
+                            workInfo.nextScheduleTimeMillis.let { nextRun ->
+                                when (nextRun) {
+                                    Long.MAX_VALUE -> "—"
+                                    else -> DateUtils.getRelativeTimeSpanString(nextRun)
+                                }
+                            },
                             workInfo.runAttemptCount,
                             workInfo.generation,
-                            workInfo.id
+                            workInfo.periodicityInfo?.let { periodicity ->
+                                "every ${periodicity.repeatIntervalMillis/60000} min"
+                            } ?: "not periodic"
                         )
                     }
                 }
