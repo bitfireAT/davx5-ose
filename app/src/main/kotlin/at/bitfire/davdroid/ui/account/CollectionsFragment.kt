@@ -36,6 +36,7 @@ import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.PermissionsActivity
+import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -149,6 +150,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         // Disable swipe-down refresh spinner, as we use the progress bar instead
         binding.swipeRefresh.isRefreshing = false
         // Swipe-down gesture starts sync
+        Snackbar.make(binding.swipeRefresh, R.string.sync_requested, Snackbar.LENGTH_LONG).show()
         model.sync()
     }
 
