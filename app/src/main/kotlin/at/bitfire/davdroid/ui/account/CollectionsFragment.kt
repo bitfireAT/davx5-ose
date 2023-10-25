@@ -83,9 +83,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        model.isRefreshing.observe(viewLifecycleOwner) { nowRefreshing ->
-            binding.swipeRefresh.isRefreshing = nowRefreshing
-        }
         model.hasWriteableCollections.observe(viewLifecycleOwner) {
             requireActivity().invalidateOptionsMenu()
         }
@@ -146,6 +143,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     override fun onRefresh() {
+        // Disable swipe-down refresh spinner, as we use the progress bar instead
+        binding.swipeRefresh.isRefreshing = false
         // Swipe-down gesture starts sync
         model.sync()
     }
@@ -312,9 +311,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                     .liveData
                     .cachedIn(viewModelScope)
             }
-
-        // observe RefreshCollectionsWorker status
-        val isRefreshing = RefreshCollectionsWorker.isWorkerInState(getApplication(), RefreshCollectionsWorker.workerName(serviceId), WorkInfo.State.RUNNING)
 
         // observe SyncWorker state
         private val authorities =
