@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.AccountManager
-import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.content.pm.ShortcutManager
@@ -20,6 +19,7 @@ import androidx.appcompat.widget.TooltipCompat
 import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.AndroidViewModel
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountsBinding
 import at.bitfire.davdroid.settings.SettingsManager
@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
     @Inject lateinit var accountsDrawerHandler: AccountsDrawerHandler
 
@@ -88,6 +88,9 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             }
         }
 
+        // Swipe refresh gesture
+        binding.content.swipeRefresh.setOnRefreshListener(this)
+
         // handle "Sync all" intent from launcher shortcut
         if (savedInstanceState == null && intent.action == Intent.ACTION_SYNC)
             syncAllAccounts()
@@ -116,6 +119,8 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         model.networkAvailable.value?.let { networkAvailable ->
             if (!networkAvailable)
                 Snackbar.make(binding.drawerLayout, R.string.no_internet_sync_scheduled, Snackbar.LENGTH_LONG).show()
+            else
+                Snackbar.make(binding.drawerLayout, R.string.sync_requested, Snackbar.LENGTH_LONG).show()
         }
 
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
@@ -124,6 +129,11 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             SyncWorker.enqueueAllAuthorities(this, account)
     }
 
+    override fun onRefresh() {
+        // Disable swipe-down refresh spinner, as we use the progress bars instead
+        binding.content.swipeRefresh.isRefreshing = false
+        syncAllAccounts()
+    }
 
     @HiltViewModel
     class Model @Inject constructor(
