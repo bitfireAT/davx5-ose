@@ -46,7 +46,7 @@ import java.util.logging.Level
  *
  * By enqueuing this worker ([SyncWorker.enqueue]) a sync will be started immediately (as soon as
  * possible). Currently, there are three scenarios starting a sync:
- * 1) *manual sync*: User presses an in-app sync button and enqueues this worker directly.
+ * 1) *manual sync*: User presses sync button or performs swipe-down gesture and enqueues this worker directly.
  * 2) *periodic sync*: User defines time interval to sync in app settings. The [PeriodicSyncWorker] runs
  * in the background and enqueues this worker when due.
  * 3) *content-triggered sync*: User changes a calendar event, task or contact, or presses a sync

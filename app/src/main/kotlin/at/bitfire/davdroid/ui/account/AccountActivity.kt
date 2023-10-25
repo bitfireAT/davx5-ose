@@ -194,7 +194,7 @@ class AccountActivity: AppCompatActivity() {
         }
 
         binding.refresh.setOnClickListener {
-            fragment.onRefresh()
+            fragment.model.refresh()
         }
     }
 

@@ -14,7 +14,6 @@ import android.provider.ContactsContract
 import android.view.*
 import android.widget.PopupMenu
 import androidx.annotation.CallSuper
-import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -57,7 +56,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
     val accountModel by activityViewModels<AccountActivity.Model>()
     @Inject lateinit var modelFactory: Model.Factory
-    protected val model by viewModels<Model> {
+    val model by viewModels<Model> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T: ViewModel> create(modelClass: Class<T>): T =
@@ -147,7 +146,8 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     override fun onRefresh() {
-        model.refresh()
+        // Swipe-down gesture starts sync
+        model.sync()
     }
 
     override fun onResume() {
@@ -160,7 +160,6 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         super.onDestroyView()
         _binding = null
     }
-
 
     protected abstract fun checkPermissions()
     protected abstract fun createAdapter(): CollectionAdapter
@@ -215,7 +214,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
             return when (menuItem.itemId) {
                 R.id.refresh -> {
-                    onRefresh()
+                    model.refresh()
                     true
                 }
                 R.id.showOnlyPersonal -> {
@@ -334,9 +333,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
         // actions
 
-        fun refresh() {
-            RefreshCollectionsWorker.refreshCollections(getApplication(), serviceId)
-        }
+        fun sync() = SyncWorker.enqueueAllAuthorities(getApplication(), accountModel.account)
+
+        fun refresh() = RefreshCollectionsWorker.refreshCollections(getApplication(), serviceId)
 
     }
 
