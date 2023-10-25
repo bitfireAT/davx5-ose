@@ -194,6 +194,7 @@ class AccountActivity: AppCompatActivity() {
         }
 
         binding.refresh.setOnClickListener {
+            Snackbar.make(binding.refresh, R.string.refresh_requested, Snackbar.LENGTH_LONG).show()
             fragment.model.refresh()
         }
     }
