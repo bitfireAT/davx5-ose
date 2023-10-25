@@ -193,9 +193,14 @@ class AccountActivity: AppCompatActivity() {
             TooltipCompat.setTooltipText(binding.refresh, label)
         }
 
-        binding.refresh.setOnClickListener {
-            Snackbar.make(binding.refresh, R.string.refresh_requested, Snackbar.LENGTH_LONG).show()
-            fragment.model.refresh()
+        model.networkAvailable.observe(fragment.viewLifecycleOwner) { networkAvailable ->
+            binding.refresh.setOnClickListener {
+                if (networkAvailable) {
+                    Snackbar.make(binding.refresh, R.string.refresh_requested, Snackbar.LENGTH_LONG).show()
+                    fragment.model.refresh()
+                } else
+                    Snackbar.make(binding.refresh, R.string.no_internet, Snackbar.LENGTH_LONG).show()
+            }
         }
     }
 

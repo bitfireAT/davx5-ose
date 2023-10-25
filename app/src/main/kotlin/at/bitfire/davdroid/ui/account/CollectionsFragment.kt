@@ -149,6 +149,13 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
     override fun onRefresh() {
         // Disable swipe-down refresh spinner, as we use the progress bar instead
         binding.swipeRefresh.isRefreshing = false
+
+        // Connectivity check
+        if (accountModel.networkAvailable.value != true) {
+            Snackbar.make(binding.swipeRefresh, R.string.no_internet, Snackbar.LENGTH_LONG).show()
+            return
+        }
+
         // Swipe-down gesture starts sync
         Snackbar.make(binding.swipeRefresh, R.string.sync_requested, Snackbar.LENGTH_LONG).show()
         model.sync()

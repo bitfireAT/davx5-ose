@@ -16,6 +16,7 @@
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="share">Share</string>
+    <string name="no_internet">No internet</string>
     <string name="no_internet_sync_scheduled">No internet, scheduling sync</string>
     <string name="sync_requested">Sync requested</string>
     <string name="refresh_requested">Collection refresh requested</string>
