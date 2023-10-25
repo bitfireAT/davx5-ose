@@ -95,9 +95,11 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
 
         val updateProgress = Observer<Boolean> {
             binding.progress.apply {
-                val isVisible = model.isSyncActive.value == true || model.isSyncPending.value == true
+                val isVisible = model.isRefreshing.value == true
+                        || model.isSyncActive.value == true
+                        || model.isSyncPending.value == true
 
-                if (model.isSyncActive.value == true) {
+                if (model.isRefreshing.value == true || model.isSyncActive.value == true) {
                     isIndeterminate = true
                 } else if (model.isSyncPending.value == true) {
                     isIndeterminate = false
@@ -116,6 +118,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
                     })
             }
         }
+        model.isRefreshing.observe(viewLifecycleOwner, updateProgress)
         model.isSyncPending.observe(viewLifecycleOwner, updateProgress)
         model.isSyncActive.observe(viewLifecycleOwner, updateProgress)
 
@@ -326,6 +329,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             listOf(WorkInfo.State.ENQUEUED),
             accountModel.account,
             authorities)
+
+        // observe RefreshCollectionsWorker state
+        val isRefreshing = RefreshCollectionsWorker.isWorkerInState(getApplication(), RefreshCollectionsWorker.workerName(serviceId), WorkInfo.State.RUNNING)
 
         // actions
 
