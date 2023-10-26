@@ -1,3 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="navigation_drawer_support_project">Supporter le projet</string>
+    <string name="nav_earn_badges">Supportez-nous avec des badges</string>
+    <string name="nav_rate_us">Avis sur Google Play</string>
+    <string name="available_badges">Badges disponibles</string>
+    <string name="available_badges_empty">Désolé, impossible de charger les badges. Êtes-vous connecté au Play Store ?</string>
+    <string name="what_are_badges">Qu\'est-ce que sont les badges ?</string>
+    <string name="what_are_badges_title">Qu\'est-ce que sont les badges ?</string>
+    <string name="why_badges_title">Pourquoi est-ce que DAVx5 propose-t-il des badges sans fonctionnalité ?</string>
+    <string name="button_buy_badge_free">GRATUIT</string>
+    <string name="button_buy_badge_bought">Merci !</string>
     </resources>

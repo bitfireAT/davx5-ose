@@ -3,6 +3,11 @@
     <string name="navigation_drawer_support_project">Soutenir le projet</string>
     <string name="nav_earn_badges">Soutenez-nous avec un badge</string>
     <string name="nav_rate_us">Avis sur Google Play</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one">Vous avez acquis un badge, merci !</item>
+        <item quantity="many">Vous avez acquis %d badges, merci !</item>
+        <item quantity="other">Vous avez acquis %d badges, merci !</item>
+    </plurals>
     <string name="available_badges">Badges disponibles</string>
     <string name="available_badges_empty">Désolé, impossible de charger les badges. Êtes-vous connecté au Play Store ?</string>
     <string name="what_are_badges">Qu\'est-ce qu\'un badge ?</string>
@@ -11,4 +16,9 @@
     <string name="why_badges_title">Pourquoi DAVx5 propose-t-il des badges sans fonctionnalités ?</string>
     <string name="why_badges_body"> DAVx5 a vraiment grandi au fil des ans ! Nous continuons activement à développer de nouvelles fonctionnalités, à fournir du support et nous mettons toujours à jour l\'application pour les prochaines versions d\'Android. Ces badges sont des paiements uniques où vous pouvez simplement montrer votre soutien en nous offrant un café, ou deux &#8230; ou 10 :-) Nous voulons être aussi ouverts que possible, donc il n\'y aura jamais de nouvelles fonctionnalités liées à un paiement dans l\'application.
 </string>
-    </resources>
+    <string name="button_buy_badge_free">GRATUIT</string>
+    <string name="button_buy_badge_bought">Merci !</string>
+    <string name="earn_badges">Gagne des badges pour nous supporter !</string>
+    <string name="billing_unavailable">L\'API de facturation est indisponible, est-ce que le Play Store est à jour et êtes-vous connecté à votre compte Google ? </string>
+    <string name="network_problems">Problème de réseau, réessayez plus tard. </string>
+</resources>
