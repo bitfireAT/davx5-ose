@@ -143,13 +143,13 @@ class RefreshCollectionsWorkerTest {
     }
 
     @Test
-    fun testQueryHomesets() {
+    fun testDiscoverHomesets() {
         val service = createTestService(Service.TYPE_CARDDAV)!!
         val baseUrl = mockServer.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)
 
         // Query home sets
         RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
-            .queryHomeSets(baseUrl)
+            .discoverHomesets(baseUrl)
 
         // Check home sets have been saved to database
         assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET/"), db.homeSetDao().getByService(service.id).first().url)

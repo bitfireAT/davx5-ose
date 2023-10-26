@@ -8,8 +8,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
 import androidx.core.content.getSystemService
-import at.bitfire.davdroid.network.Android10Resolver
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.Android10Resolver
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -150,6 +150,30 @@ object DavUtils {
 
 
     // extension methods
+
+    /**
+     * Returns parent URL (parent folder). Always with trailing slash
+     */
+    fun HttpUrl.parent(): HttpUrl {
+        if (pathSegments.size == 1 && pathSegments[0] == "")
+            // already root URL
+            return this
+
+        val builder = newBuilder()
+
+        if (pathSegments[pathSegments.lastIndex] == "") {
+            // URL ends with a slash ("/some/thing/" -> ["some","thing",""]), remove two segments ("" at lastIndex and "thing" at lastIndex - 1)
+            builder.removePathSegment(pathSegments.lastIndex)
+            builder.removePathSegment(pathSegments.lastIndex - 1)
+        } else
+            // URL doesn't end with a slash ("/some/thing" -> ["some","thing"]), remove one segment ("thing" at lastIndex)
+            builder.removePathSegment(pathSegments.lastIndex)
+
+        // append trailing slash
+        builder.addPathSegment("")
+
+        return builder.build()
+    }
 
     /**
      * Compares MIME type and subtype of two MediaTypes. Does _not_ compare parameters
