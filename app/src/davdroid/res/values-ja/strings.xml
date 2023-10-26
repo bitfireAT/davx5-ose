@@ -267,6 +267,14 @@
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s は、このデバイスとの同期のみを目的として、Google コンタクトとカレンダーのデータを転送を行います。詳細情報は、<a href="%2$s">プライバシーポリシー</a> をご確認ください。]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s は、追加要件を含む <a href="%2$s">Google API サービスのユーザーデータに関するポリシー</a> に準拠しています。]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">認証コードを取得できませんでした</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Nextcloud でログイン</string>
+  <string name="login_nextcloud_login_flow">ログインフロー</string>
+  <string name="login_nextcloud_login_flow_text">ウェブブラウザーでのログインフローが開始されます。</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud サーバーアドレス</string>
+  <string name="login_nextcloud_login_flow_sign_in">サインイン</string>
+  <string name="login_nextcloud_login_flow_no_login_url">ログイン URL を入手できませんでした</string>
+  <string name="login_nextcloud_login_flow_no_login_data">ログイン情報を入手できませんでした</string>
   <string name="login_configuration_detection">設定の検出</string>
   <string name="login_querying_server">しばらくお待ちください。サーバーに問い合わせ中…</string>
   <string name="login_no_caldav_carddav">CalDAV または CardDAV サービスが見つかりませんでした。</string>

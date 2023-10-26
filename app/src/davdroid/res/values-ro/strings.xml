@@ -128,7 +128,9 @@
   <string name="navigation_drawer_donate">Donează</string>
   <string name="navigation_drawer_privacy_policy">Politica de confidențialitate</string>
   <string name="account_list_no_notification_permission">Notificări dezactivate. Nu vei fi notificat despre erorile de sincronizare.</string>
+  <string name="account_list_no_internet">Nicio conexiune la internet validată. Este posibil ca sincronizarea să nu ruleze.</string>
   <string name="account_list_manage_connections">Gestionează conexiunile</string>
+  <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va sincroniza modificările locale imediat, ci în timpul următoarei sincronizări obișnuite.</string>
   <string name="account_list_manage_storage">Gestionează stocarea</string>
   <string name="account_list_datasaver_enabled">Economizorul de date este activat. Sincronizarea în fundal este restricționată.</string>
   <string name="account_list_manage_datasaver">Gestionează economizorul de date</string>
@@ -297,6 +299,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Nume separate prin virgulă (SSID) ale rețelelor WiFi permise (lasă necompletat pentru toate)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Restricția SSID WiFi necesită setări suplimentare</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Gestionează</string>
+  <string name="settings_ignore_vpns">VPN necesită internetul de bază</string>
+  <string name="settings_ignore_vpns_on">VPN fără conexiune validată la Internet nu este suficient pentru a rula sincronizarea (recomandat)</string>
+  <string name="settings_ignore_vpns_off">VPN fără conexiune validată la Internet este suficient pentru a rula sincronizarea</string>
   <string name="settings_authentication">Autentificare</string>
   <string name="settings_oauth">Reautentificare</string>
   <string name="settings_oauth_summary">Efectuează din nou autentificarea OAuth</string>

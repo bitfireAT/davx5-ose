@@ -127,7 +127,9 @@
   <string name="navigation_drawer_donate">Faire un don</string>
   <string name="navigation_drawer_privacy_policy">Politique de confidentialité</string>
   <string name="account_list_no_notification_permission">Notifications désactivées. Vous ne serez pas averti des erreurs de synchronisation.</string>
+  <string name="account_list_no_internet">Pas de connexion Internet. La synchronisation risque de ne pas fonctionner.</string>
   <string name="account_list_manage_connections">Gérer les connexions</string>
+  <string name="account_list_low_storage">Espace de stockage faible. Android ne synchronisera pas les changements locaux immédiatement mais pendant la prochaine synchronisation.</string>
   <string name="account_list_manage_storage">Gérer le stockage</string>
   <string name="account_list_datasaver_enabled">L\'économiseur de données est activé. La synchronisation en arrière-plan est limitée.</string>
   <string name="account_list_manage_datasaver">Gérer l\'économiseur de données</string>
@@ -255,6 +257,12 @@
   <string name="login_use_client_certificate">Utiliser le certificat du client</string>
   <string name="login_no_certificate_found">Aucun certificat trouvé</string>
   <string name="login_install_certificate">Installer un certificat</string>
+  <string name="login_type_google">Google Contacts / Agenda</string>
+  <string name="login_google_see_tested_with">Merci de vous référer à la page \"Testé avec Google\" pour des informations à jour.</string>
+  <string name="login_google_unexpected_warnings">Vous risquez de rencontrer des avertissements inattendus et/ou vous devez créer votre propre ID client.</string>
+  <string name="login_google_account">Compte Google</string>
+  <string name="login_google">Se connecter avec Google</string>
+  <string name="login_oauth_couldnt_obtain_auth_code">N\'a pas pu obtenir le code d\'autorisation</string>
   <string name="login_configuration_detection">Détection de la configuration</string>
   <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur …</string>
   <string name="login_no_caldav_carddav">Aucun accès possible au service CalDAV ou CardDAV.</string>
@@ -288,6 +296,7 @@
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restriction du SSID WiFi nécessite des réglages supplémentaires</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Gérer</string>
   <string name="settings_authentication">Authentification</string>
+  <string name="settings_username_key">nom d\'utilisateur</string>
   <string name="settings_username">Nom d\'utilisateur</string>
   <string name="settings_enter_username">Saisissez votre nom d\'utilisateur :</string>
   <string name="settings_password">Mot de passe</string>
@@ -347,6 +356,8 @@
   <string name="delete_collection_data_shall_be_deleted">Ces données sont supprimées du serveur.</string>
   <string name="collection_force_read_only">Forcer la lecture seulement</string>
   <string name="collection_properties">Propriétés</string>
+  <string name="collection_properties_sync_time">Dernièrement synchronisé :</string>
+  <string name="collection_properties_sync_time_never">Jamais synchronisé</string>
   <string name="collection_properties_url">Adresse (URL) :</string>
   <string name="collection_properties_owner">Propriétaire :</string>
   <!--debugging and DebugInfoActivity-->
