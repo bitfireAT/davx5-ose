@@ -19,14 +19,14 @@ android {
         applicationId 'com.infomaniak.sync'
         resValue 'string', 'application_id', applicationId
 
-        versionCode 403080000
-        versionName '4.3.8'
+        versionCode 403090002
+        versionName '4.3.9'
 
         buildConfigField "long", "buildTime", System.currentTimeMillis() + "L"
 
         setProperty "archivesBaseName", "ksync-" + getVersionName()
 
-        minSdkVersion 21        // Android 5
+        minSdkVersion 24        // Android 7.0
         targetSdkVersion 33     // Android 13
 
         buildConfigField "String", "userAgent", "\"kSync\""
@@ -185,14 +185,11 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
     //noinspection GradleDependency - don't update until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/130]
     implementation 'commons-io:commons-io:2.8.0'
-    //noinspection GradleDependency - dnsjava 3+ needs Java 8/Android 7
-    implementation 'dnsjava:dnsjava:2.1.9'
+    implementation 'dnsjava:dnsjava:3.5.2'
+    implementation "io.github.nsk90:kstatemachine-jvm:0.22.1"
     implementation 'net.openid:appauth:0.11.1'
-    //noinspection GradleDependency
     implementation "org.apache.commons:commons-collections4:${versions.commonsCollections}"
-    //noinspection GradleDependency
     implementation "org.apache.commons:commons-lang3:${versions.commonsLang}"
-    //noinspection GradleDependency
     implementation "org.apache.commons:commons-text:${versions.commonsText}"
 
     // for tests

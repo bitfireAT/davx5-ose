@@ -6,9 +6,11 @@ package at.bitfire.davdroid.ui.setup
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
@@ -54,6 +56,22 @@ class LoginActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        addMenuProvider(object: MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_login, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                if (menuItem.itemId == R.id.help) {
+                    UiUtils.launchUri(this@LoginActivity,
+                        App.homepageUrl(this@LoginActivity).buildUpon().appendPath("tested-with").build())
+                    return true
+                }
+
+                return false
+            }
+        })
+
         if (savedInstanceState == null) {
             // first call, add first login fragment
 //            val factories = loginFragmentFactories      // get factories from hilt
@@ -86,16 +104,6 @@ class LoginActivity: AppCompatActivity() {
             } else
                 Logger.log.severe("Couldn't create LoginFragment")
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_login, menu)
-        return true
-    }
-
-    fun showHelp(item: MenuItem) {
-        UiUtils.launchUri(this,
-            App.homepageUrl(this).buildUpon().appendPath("tested-with").build())
     }
 
 }

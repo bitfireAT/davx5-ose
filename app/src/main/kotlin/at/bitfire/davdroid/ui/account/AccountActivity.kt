@@ -9,15 +9,16 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.app.Application
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.TooltipCompat
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -37,9 +38,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.logging.Level
 import javax.inject.Inject
 
@@ -106,27 +105,45 @@ class AccountActivity: AppCompatActivity() {
                 SyncWorker.enqueueAllAuthorities(this, model.account)
             }
         }
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_account, menu)
-        return true
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_account, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem) =
+                when (menuItem.itemId) {
+                    R.id.settings -> {
+                        openAccountSettings()
+                        true
+                    }
+                    R.id.rename_account -> {
+                        renameAccount()
+                        true
+                    }
+                    R.id.delete_account -> {
+                        deleteAccountDialog()
+                        true
+                    }
+                    else -> false
+                }
+        })
     }
 
 
     // menu actions
 
-    fun openAccountSettings(menuItem: MenuItem) {
+    fun openAccountSettings() {
         val intent = Intent(this, SettingsActivity::class.java)
         intent.putExtra(SettingsActivity.EXTRA_ACCOUNT, model.account)
         startActivity(intent, null)
     }
 
-    fun renameAccount(menuItem: MenuItem) {
+    fun renameAccount() {
         RenameAccountFragment.newInstance(model.account).show(supportFragmentManager, null)
     }
 
-    fun deleteAccount(menuItem: MenuItem) {
+    fun deleteAccountDialog() {
         MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle(R.string.account_delete_confirmation_title)
@@ -141,28 +158,16 @@ class AccountActivity: AppCompatActivity() {
     private fun deleteAccount() {
         val accountManager = AccountManager.get(this)
 
-        if (Build.VERSION.SDK_INT >= 22)
-            accountManager.removeAccount(model.account, this, { future ->
-                try {
-                    if (future.result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT))
-                        Handler(Looper.getMainLooper()).post {
-                            finish()
-                        }
-                } catch(e: Exception) {
-                    Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
-                }
-            }, null)
-        else
-            accountManager.removeAccount(model.account, { future ->
-                try {
-                    if (future.result)
-                        Handler(Looper.getMainLooper()).post {
-                            finish()
-                        }
-                } catch (e: Exception) {
-                    Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
-                }
-            }, null)
+        accountManager.removeAccount(model.account, this, { future ->
+            try {
+                if (future.result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT))
+                    Handler(Looper.getMainLooper()).post {
+                        finish()
+                    }
+            } catch(e: Exception) {
+                Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
+            }
+        }, null)
     }
 
 

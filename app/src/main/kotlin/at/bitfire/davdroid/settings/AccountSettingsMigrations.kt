@@ -24,7 +24,6 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.syncadapter.SyncUtils
-import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
@@ -216,7 +215,7 @@ class AccountSettingsMigrations(
                         }
                     }
                 } finally {
-                    provider.closeCompat()
+                    provider.close()
                 }
         }
     }
@@ -256,7 +255,7 @@ class AccountSettingsMigrations(
                 provider.update(
                     CalendarContract.Calendars.CONTENT_URI.asSyncAdapter(account),
                     AndroidCalendar.calendarBaseValues, null, null)
-                provider.closeCompat()
+                provider.close()
             }
     }
 
@@ -313,7 +312,7 @@ class AccountSettingsMigrations(
             try {
                 AndroidCalendar.insertColors(provider, account)
             } finally {
-                provider.closeCompat()
+                provider.close()
             }
         }
 
@@ -377,7 +376,7 @@ class AccountSettingsMigrations(
                 throw ContactsStorageException("Couldn't migrate contacts to new address book", e)
             } finally {
                 parcel.recycle()
-                provider.closeCompat()
+                provider.close()
             }
         }
 

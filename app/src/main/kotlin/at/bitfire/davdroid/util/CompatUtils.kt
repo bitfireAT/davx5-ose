@@ -6,8 +6,6 @@ package at.bitfire.davdroid.util
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentProviderClient
-import android.os.Build
 import at.bitfire.davdroid.log.Logger
 
 /**
@@ -26,12 +24,4 @@ fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: St
         Thread.sleep(100)
     }
     Logger.log.warning("AccountManager failed to set $account user data $key := $value")
-}
-
-@Suppress("DEPRECATION")
-fun ContentProviderClient.closeCompat() {
-    if (Build.VERSION.SDK_INT >= 24)
-        close()
-    else
-        release()
 }

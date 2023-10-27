@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.getSystemService
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.AppSettingsActivity
@@ -23,6 +24,25 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 
 class ForegroundService : Service() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        /* Call startForeground as soon as possible (must be within 5 seconds after the service has been created).
+        If the foreground service shouldn't remain active (because the setting has been disabled),
+        we'll immediately stop it with stopForeground() in onStartCommand(). */
+        val settingsIntent = Intent(this, AppSettingsActivity::class.java).apply {
+            putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, Settings.FOREGROUND_SERVICE)
+        }
+        val builder = NotificationCompat.Builder(this, NotificationUtils.CHANNEL_STATUS)
+            .setSmallIcon(R.drawable.ic_foreground_notify)
+            .setContentTitle(getString(R.string.foreground_service_notify_title))
+            .setContentText(getString(R.string.foreground_service_notify_text))
+            .setStyle(NotificationCompat.BigTextStyle())
+            .setContentIntent(PendingIntent.getActivity(this, 0, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+        startForeground(NotificationUtils.NOTIFY_FOREGROUND, builder.build())
+    }
 
     companion object {
 
@@ -43,12 +63,8 @@ class ForegroundService : Service() {
          * Whether the app is currently exempted from battery optimization.
          * @return true if battery optimization is not applied to the current app; false if battery optimization is applied
          */
-        fun batteryOptimizationWhitelisted(context: Context) =
-            if (Build.VERSION.SDK_INT >= 23) {  // battery optimization exists since Android 6 (SDK level 23)
-                val powerManager = context.getSystemService(PowerManager::class.java)
-                powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
-            } else
-                true
+        private fun batteryOptimizationWhitelisted(context: Context) =
+            context.getSystemService<PowerManager>()!!.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
 
         /**
          * Whether the foreground service is enabled (checked) in the app settings.
@@ -67,6 +83,7 @@ class ForegroundService : Service() {
                 if (batteryOptimizationWhitelisted(context)) {
                     val serviceIntent = Intent(ACTION_FOREGROUND, null, context, ForegroundService::class.java)
                     if (Build.VERSION.SDK_INT >= 26)
+                        // we now have 5 seconds to call Service.startForeground() [https://developer.android.com/about/versions/oreo/android-8.0-changes.html#back-all]
                         context.startForegroundService(serviceIntent)
                     else
                         context.startService(serviceIntent)
@@ -97,21 +114,14 @@ class ForegroundService : Service() {
     override fun onBind(intent: Intent?): Nothing? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (foregroundServiceActivated(this)) {
-            val settingsIntent = Intent(this, AppSettingsActivity::class.java).apply {
-                putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, Settings.FOREGROUND_SERVICE)
-            }
-            val builder = NotificationCompat.Builder(this, NotificationUtils.CHANNEL_STATUS)
-                    .setSmallIcon(R.drawable.ic_foreground_notify)
-                    .setContentTitle(getString(R.string.foreground_service_notify_title))
-                    .setContentText(getString(R.string.foreground_service_notify_text))
-                    .setStyle(NotificationCompat.BigTextStyle())
-                    .setContentIntent(PendingIntent.getActivity(this, 0, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-                    .setCategory(NotificationCompat.CATEGORY_STATUS)
-            startForeground(NotificationUtils.NOTIFY_FOREGROUND, builder.build())
+        // Command is always ACTION_FOREGROUND → re-evaluate foreground setting
+        if (foregroundServiceActivated(this))
+            // keep service open
             return START_STICKY
-        } else {
+        else {
+            // don't keep service active
             stopForeground(true)
+            stopSelf()      // Stop the service so that onCreate() will run again for the next command
             return START_NOT_STICKY
         }
     }

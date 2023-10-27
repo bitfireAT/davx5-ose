@@ -21,15 +21,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityWifiPermissionsBinding
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.util.PermissionUtils
 
 class WifiPermissionsActivity: AppCompatActivity() {
 
@@ -148,7 +148,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
 
             // Android 9+: location service
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                getSystemService(getApplication(), LocationManager::class.java)?.let { locationManager ->
+                getApplication<Application>().getSystemService<LocationManager>()?.let { locationManager ->
                     val locationEnabled = LocationManagerCompat.isLocationEnabled(locationManager)
                     isLocationEnabled.value = locationEnabled
                     needLocationEnabled.value = locationEnabled

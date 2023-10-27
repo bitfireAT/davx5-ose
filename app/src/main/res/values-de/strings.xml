@@ -128,7 +128,9 @@
   <string name="navigation_drawer_donate">Spenden</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
   <string name="account_list_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisation informiert.</string>
+  <string name="account_list_no_internet">Keine überprüfte Internetverbindung. Synchronisierung funktioniert eventuell nicht.</string>
   <string name="account_list_manage_connections">Verbindungen steuern</string>
+  <string name="account_list_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
   <string name="account_list_manage_storage">Speicherplatz verwalten</string>
   <string name="account_list_datasaver_enabled">Datensparen aktiviert. Die Hintergrundsynchronisierung ist eingeschränkt.</string>
   <string name="account_list_manage_datasaver">Datensparen verwalten</string>
@@ -265,6 +267,14 @@
   <string name="login_google_client_privacy_policy"><![CDATA[%1$süberträgt Ihre Google-Kontakte und -Kalenderdaten zur Synchronisierung mit diesem Gerät. Siehe auch unsere <a href="%2$s">Datenschutzrichtlinie</a>für mehr Informationen.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$srichtet sich nach der <a href="%2$s">Google API Services Nutzerdaten-Richtlinie</a>, inklusive der eingeschränkten Nutzungsbedingungen.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Authentifizierungscode konnte nicht abgerufen werden</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Mit Nextcloud anmelden</string>
+  <string name="login_nextcloud_login_flow">Anmeldevorgang</string>
+  <string name="login_nextcloud_login_flow_text">Dadurch wird der Nextcloud-Anmeldevorgang in einem Webbrowser gestartet.</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud-Serveradresse</string>
+  <string name="login_nextcloud_login_flow_sign_in">Anmeldung</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Login-URL konnte nicht abgerufen werden</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Anmeldedaten konnten nicht abgerufen werden</string>
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
   <string name="login_no_caldav_carddav">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>
@@ -297,8 +307,11 @@
   <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Komma getrennt, leer lassen für alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WLAN-SSID-Einschränkung benötigt weitere Einstellungen</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Verwalten</string>
+  <string name="settings_ignore_vpns">VPN erfordert zugrundeliegendes Internet</string>
+  <string name="settings_ignore_vpns_on">VPN ohne zugrundeliegende überprüfte Internetverbindung reicht für Synchronisierung nicht aus (empfohlen)</string>
+  <string name="settings_ignore_vpns_off">VPN ohne zugrundeliegende überprüfte Internetverbindung reicht für Synchronisierung aus</string>
   <string name="settings_authentication">Anmeldeinformationen</string>
-  <string name="settings_oauth">Wieder anmelden</string>
+  <string name="settings_oauth">Erneut anmelden</string>
   <string name="settings_oauth_summary">Erneut mit OAuth anmelden</string>
   <string name="settings_username_key">Benutzername</string>
   <string name="settings_username">Benutzername</string>

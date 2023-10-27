@@ -35,7 +35,6 @@ import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
-import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.ical4android.TaskProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -211,7 +210,7 @@ class RenameAccountFragment: DialogFragment() {
                                     addressBook.mainAccount = Account(newName, oldAccount.type)
                             }
                         } finally {
-                            provider.closeCompat()
+                            provider.close()
                         }
                     }
                 } catch (e: Exception) {

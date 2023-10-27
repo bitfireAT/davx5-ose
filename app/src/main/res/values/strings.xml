@@ -297,6 +297,14 @@
     <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfers your Google Contacts and Calendar data solely for synchronization with this device. See our <a href="%2$s">Privacy policy</a> for details.]]></string>
     <string name="login_google_client_limited_use"><![CDATA[%1$s complies with the <a href="%2$s">Google API Services User Data Policy</a>, including the Limited Use requirements.]]></string>
     <string name="login_oauth_couldnt_obtain_auth_code">Couldn\'t obtain authorization code</string>
+    <string name="login_type_nextcloud">Nextcloud</string>
+    <string name="login_nextcloud_login_with_nextcloud">Login with Nextcloud</string>
+    <string name="login_nextcloud_login_flow">Login Flow</string>
+    <string name="login_nextcloud_login_flow_text">This will start the Nextcloud Login Flow in a Web browser.</string>
+    <string name="login_nextcloud_login_flow_server_address">Nextcloud server address</string>
+    <string name="login_nextcloud_login_flow_sign_in">Sign in</string>
+    <string name="login_nextcloud_login_flow_no_login_url">Couldn\'t obtain login URL</string>
+    <string name="login_nextcloud_login_flow_no_login_data">Couldn\'t obtain login data</string>
 
     <string name="login_configuration_detection">Configuration detection</string>
     <string name="login_querying_server">Please wait, querying server…</string>

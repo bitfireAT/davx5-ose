@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.content.Context
+import android.app.Application
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,17 +14,16 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import at.bitfire.dav4jvm.DavResource
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.databinding.DeleteCollectionBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.ExceptionInfoFragment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -88,11 +87,11 @@ class DeleteCollectionFragment: DialogFragment() {
 
 
     class Model @AssistedInject constructor(
-        @ApplicationContext val context: Context,
+        application: Application,
         val db: AppDatabase,
         @Assisted var account: Account,
         @Assisted val collectionId: Long
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
 
         @AssistedFactory
         interface Factory {
@@ -114,7 +113,7 @@ class DeleteCollectionFragment: DialogFragment() {
             viewModelScope.launch(Dispatchers.IO + NonCancellable) {
                 val collectionInfo = collectionInfo ?: return@launch
 
-                HttpClient.Builder(context, AccountSettings(context, account))
+                HttpClient.Builder(getApplication(), AccountSettings(getApplication(), account))
                         .setForeground(true)
                         .build().use { httpClient ->
                             try {

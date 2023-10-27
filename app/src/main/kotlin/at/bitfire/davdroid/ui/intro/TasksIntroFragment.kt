@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,10 +29,6 @@ class TasksIntroFragment : Fragment() {
     ): IntroFragmentFactory {
 
         override fun getOrder(context: Context): Int {
-            // On Android <6, OpenTasks must be installed before DAVx5, so this fragment is not useful.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-                return IntroFragmentFactory.DONT_SHOW
-
             return if (!TaskUtils.isAvailable(context) && settingsManager.getBooleanOrNull(TasksFragment.Model.HINT_OPENTASKS_NOT_INSTALLED) != false)
                 10
             else

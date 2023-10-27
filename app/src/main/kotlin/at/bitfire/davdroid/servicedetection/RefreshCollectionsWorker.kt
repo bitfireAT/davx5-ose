@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -62,6 +63,7 @@ import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.SettingsActivity
+import at.bitfire.davdroid.util.DavUtils.parent
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -191,7 +193,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                     // refresh home set list (from principal url)
                     service.principal?.let { principalUrl ->
                         Logger.log.fine("Querying principal $principalUrl for home sets")
-                        refresher.queryHomeSets(principalUrl)
+                        refresher.discoverHomesets(principalUrl)
                     }
 
                     // refresh home sets and their member collections
@@ -238,7 +240,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     }
 
     override fun onStopped() {
-        Logger.log.info("Stopping refresh")
+        Logger.log.info("Stopping refresh (reason ${if (Build.VERSION.SDK_INT >= 31) stopReason else "n/a"})")
         refreshThread?.interrupt()
     }
 
@@ -279,28 +281,25 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         val httpClient: OkHttpClient
     ) {
 
+        val alreadyQueried = mutableSetOf<HttpUrl>()
+
         /**
-         * Checks if the given URL defines home sets and adds them to given home set list.
+         * Starting at current-user-principal URL, tries to recursively find and save all user relevant home sets.
          *
-         * @param principalUrl          Principal URL to query
-         * @param forPersonalHomeset    Whether this is the first call of this recursive method.
-         * Indicates that these found home sets are considered "personal", as they belong to the
-         * current-user-principal.
          *
-         * Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
-         * other principals and still be considered "personal" (belonging to the current-user-principal).
+         * @param principalUrl  URL of principal to query (user-provided principal or current-user-principal)
+         * @param level         Current recursion level (limited to 0, 1 or 2):
          *
-         * *true* = found home sets belong to the current-user-principal; recurse if
-         * calendar proxies or group memberships are found
-         *
-         * *false* = found home sets don't directly belong to the current-user-principal; don't recurse
+         * - 0: We assume found home sets belong to the current-user-principal
+         * - 1 or 2: We assume found home sets don't directly belong to the current-user-principal
          *
          * @throws java.io.IOException
          * @throws HttpException
          * @throws at.bitfire.dav4jvm.exception.DavException
          */
-        internal fun queryHomeSets(principalUrl: HttpUrl, forPersonalHomeset: Boolean = true) {
-            val related = mutableSetOf<HttpUrl>()
+        internal fun discoverHomesets(principalUrl: HttpUrl, level: Int = 0) {
+            Logger.log.fine("Discovering homesets of $principalUrl")
+            val relatedResources = mutableSetOf<HttpUrl>()
 
             // Define homeset class and properties to look for
             val homeSetClass: Class<out HrefListProperty>
@@ -308,48 +307,62 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             when (service.type) {
                 Service.TYPE_CARDDAV -> {
                     homeSetClass = AddressbookHomeSet::class.java
-                    properties = arrayOf(DisplayName.NAME, AddressbookHomeSet.NAME, GroupMembership.NAME)
+                    properties = arrayOf(DisplayName.NAME, AddressbookHomeSet.NAME, GroupMembership.NAME, ResourceType.NAME)
                 }
                 Service.TYPE_CALDAV -> {
                     homeSetClass = CalendarHomeSet::class.java
-                    properties = arrayOf(DisplayName.NAME, CalendarHomeSet.NAME, CalendarProxyReadFor.NAME, CalendarProxyWriteFor.NAME, GroupMembership.NAME)
+                    properties = arrayOf(DisplayName.NAME, CalendarHomeSet.NAME, CalendarProxyReadFor.NAME, CalendarProxyWriteFor.NAME, GroupMembership.NAME, ResourceType.NAME)
                 }
                 else -> throw IllegalArgumentException()
             }
 
-            val dav = DavResource(httpClient, principalUrl)
+            // Query the URL
+            val principal = DavResource(httpClient, principalUrl)
+            val personal = level == 0
             try {
-                // Query for the given service with properties
-                dav.propfind(0, *properties) { davResponse, _ ->
+                principal.propfind(0, *properties) { davResponse, _ ->
+                    alreadyQueried += davResponse.href
 
-                    // Check we got back the right service and save it
-                    davResponse[homeSetClass]?.let { homeSet ->
-                        for (href in homeSet.hrefs)
-                            dav.location.resolve(href)?.let {
-                                val foundUrl = UrlUtils.withTrailingSlash(it)
+                    // If response holds home sets, save them
+                    davResponse[homeSetClass]?.let { homeSets ->
+                        for (homeSetHref in homeSets.hrefs)
+                            principal.location.resolve(homeSetHref)?.let { homesetUrl ->
+                                val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
+                                // Homeset is considered personal if this is the outer recursion call,
+                                // This is because we assume the first call to query the current-user-principal
+                                // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
+                                // other principals and still be considered "personal" (belonging to the current-user-principal).
                                 db.homeSetDao().insertOrUpdateByUrl(
-                                    HomeSet(0, service.id, forPersonalHomeset, foundUrl)
+                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl)
                                 )
                             }
                     }
 
-                    // If personal (outer call of recursion), find/refresh related resources
-                    if (forPersonalHomeset) {
-                        val relatedResourcesTypes = mapOf(
-                            CalendarProxyReadFor::class.java to "read-only proxy for",      // calendar-proxy-read-for
-                            CalendarProxyWriteFor::class.java to "read/write proxy for ",   // calendar-proxy-read/write-for
-                            GroupMembership::class.java to "member of group")               // direct group memberships
-
-                        for ((type, logString) in relatedResourcesTypes) {
+                    // Add related principals to be queried afterwards
+                    if (personal) {
+                        val relatedResourcesTypes = listOf(
+                            // current resource is a read/write-proxy for other principals
+                            CalendarProxyReadFor::class.java,
+                            CalendarProxyWriteFor::class.java,
+                            // current resource is a member of a group (principal that can also have proxies)
+                            GroupMembership::class.java)
+                        for (type in relatedResourcesTypes)
                             davResponse[type]?.let {
-                                for (href in it.hrefs) {
-                                    Logger.log.fine("Principal is a $logString for $href, checking for home sets")
-                                    dav.location.resolve(href)?.let { url ->
-                                        related += url
+                                for (href in it.hrefs)
+                                    principal.location.resolve(href)?.let { url ->
+                                        relatedResources += url
                                     }
-                                }
                             }
-                        }
+                    }
+
+                    // If current resource is a calendar-proxy-read/write, it's likely that its parent is a principal, too.
+                    davResponse[ResourceType::class.java]?.let { resourceType ->
+                        val proxyProperties = arrayOf(
+                            ResourceType.CALENDAR_PROXY_READ,
+                            ResourceType.CALENDAR_PROXY_WRITE,
+                        )
+                        if (proxyProperties.any { resourceType.types.contains(it) })
+                            relatedResources += davResponse.href.parent()
                     }
                 }
             } catch (e: HttpException) {
@@ -359,9 +372,13 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                     throw e
             }
 
-            // query related homesets (those that do not belong to the current-user-principal)
-            for (resource in related)
-                queryHomeSets(resource, false)
+            // query related resources
+            if (level <= 1)
+                for (resource in relatedResources)
+                    if (alreadyQueried.contains(resource))
+                        Logger.log.warning("$resource already queried, skipping")
+                    else
+                        discoverHomesets(resource, level + 1)
         }
 
         /**

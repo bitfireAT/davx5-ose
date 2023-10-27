@@ -267,6 +267,14 @@
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s传输你的  Google 联系人和日历数据的目的仅是为了与此设备同步。详情见我们的 <a href="%2$s">隐私政策</a> 。]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s遵守 <a href="%2$s">Google API 服务用户数据政策</a>，包括有限使用的要求。]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">无法获得身份验证码</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">用 Nextcloud 登录</string>
+  <string name="login_nextcloud_login_flow">登录流程</string>
+  <string name="login_nextcloud_login_flow_text">这会在网页浏览器中开启 Nextcloud 登录流程</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud 服务器地址</string>
+  <string name="login_nextcloud_login_flow_sign_in">登录</string>
+  <string name="login_nextcloud_login_flow_no_login_url">无法获取登录 URL</string>
+  <string name="login_nextcloud_login_flow_no_login_data">无法获得登陆数据</string>
   <string name="login_configuration_detection">正在配置</string>
   <string name="login_querying_server">正在与服务器通信，请稍等…</string>
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服务。</string>

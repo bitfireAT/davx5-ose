@@ -8,7 +8,15 @@ import android.accounts.Account
 import android.content.Context
 import android.provider.CalendarContract
 import androidx.hilt.work.HiltWorker
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.Operation
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import dagger.assisted.Assisted
@@ -94,23 +102,6 @@ class PeriodicSyncWorker @AssistedInject constructor(
         fun disable(context: Context, account: Account, authority: String): Operation =
             WorkManager.getInstance(context)
                 .cancelUniqueWork(workerName(account, authority))
-
-        /**
-         * Finds out whether the [PeriodicSyncWorker] is currently enqueued or running
-         *
-         * @param account       account to check
-         * @param authority     authority to check (for instance: [CalendarContract.AUTHORITY]])
-         * @return boolean      whether the [PeriodicSyncWorker] is running or enqueued
-         */
-        fun isEnabled(context: Context, account: Account, authority: String): Boolean =
-            WorkManager.getInstance(context)
-                .getWorkInfos(
-                    WorkQuery.Builder
-                        .fromTags(listOf(workerName(account, authority)))
-                        .addStates(listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
-                        .build()
-                ).get()
-                .isNotEmpty()
 
     }
 

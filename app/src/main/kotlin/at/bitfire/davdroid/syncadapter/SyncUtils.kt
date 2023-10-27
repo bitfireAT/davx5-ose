@@ -13,7 +13,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.os.Build
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.WorkerThread
@@ -78,10 +77,7 @@ object SyncUtils {
         }
 
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
-
-        var flags = PendingIntent.FLAG_UPDATE_CURRENT
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            flags = flags or PendingIntent.FLAG_IMMUTABLE
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
 
         if (intent.resolveActivity(pm) != null)
             notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))

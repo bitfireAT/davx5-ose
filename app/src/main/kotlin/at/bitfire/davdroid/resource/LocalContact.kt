@@ -12,12 +12,21 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts.Data
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.contactrow.*
-import at.bitfire.vcard4android.*
+import at.bitfire.davdroid.resource.contactrow.CachedGroupMembershipHandler
+import at.bitfire.davdroid.resource.contactrow.GroupMembershipBuilder
+import at.bitfire.davdroid.resource.contactrow.GroupMembershipHandler
+import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesBuilder
+import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesHandler
+import at.bitfire.vcard4android.AndroidAddressBook
+import at.bitfire.vcard4android.AndroidContact
+import at.bitfire.vcard4android.AndroidContactFactory
+import at.bitfire.vcard4android.BatchOperation
+import at.bitfire.vcard4android.CachedGroupMembership
+import at.bitfire.vcard4android.Contact
 import ezvcard.Ezvcard
 import org.apache.commons.lang3.StringUtils
 import java.io.FileNotFoundException
-import java.util.*
+import java.util.UUID
 
 class LocalContact: AndroidContact, LocalAddress {
 
@@ -91,7 +100,7 @@ class LocalContact: AndroidContact, LocalAddress {
         values.put(COLUMN_ETAG, eTag)
         values.put(ContactsContract.RawContacts.DIRTY, 0)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
             val hashCode = dataHashCode()
             values.put(COLUMN_HASHCODE, hashCode)
@@ -132,7 +141,7 @@ class LocalContact: AndroidContact, LocalAddress {
      * @return hash code of contact data (including group memberships)
      */
     internal fun dataHashCode(): Int {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             throw IllegalStateException("dataHashCode() should not be called on Android != 7")
 
         // reset contact so that getContact() reads from database
@@ -146,7 +155,7 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
     fun updateHashCode(batch: BatchOperation?) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             throw IllegalStateException("updateHashCode() should not be called on Android != 7")
 
         val hashCode = dataHashCode()
@@ -163,7 +172,7 @@ class LocalContact: AndroidContact, LocalAddress {
     }
 
     fun getLastHashCode(): Int {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             throw IllegalStateException("getLastHashCode() should not be called on Android != 7")
 
         addressBook.provider!!.query(rawContactSyncURI(), arrayOf(COLUMN_HASHCODE), null, null, null)?.use { c ->

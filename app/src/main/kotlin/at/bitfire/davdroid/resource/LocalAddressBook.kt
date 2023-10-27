@@ -5,7 +5,11 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.*
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.ContentUris
+import android.content.ContentValues
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.RemoteException
@@ -22,9 +26,13 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.setAndVerifyUserData
-import at.bitfire.vcard4android.*
+import at.bitfire.vcard4android.AndroidAddressBook
+import at.bitfire.vcard4android.AndroidContact
+import at.bitfire.vcard4android.AndroidGroup
+import at.bitfire.vcard4android.Constants
+import at.bitfire.vcard4android.GroupMethod
 import java.io.ByteArrayOutputStream
-import java.util.*
+import java.util.LinkedList
 import java.util.logging.Level
 
 /**
@@ -266,11 +274,7 @@ open class LocalAddressBook(
 
     fun delete() {
         val accountManager = AccountManager.get(context)
-        @Suppress("DEPRECATION")
-        if (Build.VERSION.SDK_INT >= 22)
-            accountManager.removeAccount(account, null, null, null)
-        else
-            accountManager.removeAccount(account, null, null)
+        accountManager.removeAccount(account, null, null, null)
     }
 
 
@@ -375,8 +379,8 @@ open class LocalAddressBook(
      * @throws RemoteException on content provider errors
      */
     fun verifyDirty(): Int {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            throw IllegalStateException("verifyDirty() should not be called on Android != 7")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            throw IllegalStateException("verifyDirty() should not be called on Android != 7.0")
 
         var reallyDirty = 0
         for (contact in findDirtyContacts()) {

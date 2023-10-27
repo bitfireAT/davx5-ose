@@ -27,7 +27,10 @@ class PermissionsIntroFragment : Fragment() {
 
         override fun getOrder(context: Context): Int {
             // show PermissionsFragment as intro fragment when no permissions are granted
-            val permissions = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS + TaskProvider.PERMISSIONS_OPENTASKS
+            val permissions = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS +
+                    TaskProvider.PERMISSIONS_JTX +
+                    TaskProvider.PERMISSIONS_OPENTASKS +
+                    TaskProvider.PERMISSIONS_TASKS_ORG
             return if (PermissionUtils.haveAnyPermission(context, permissions))
                 IntroFragmentFactory.DONT_SHOW
             else

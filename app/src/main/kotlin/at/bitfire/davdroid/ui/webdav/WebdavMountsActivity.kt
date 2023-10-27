@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.webdav
 
 import android.app.AlertDialog
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -15,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
+import androidx.core.view.MenuProvider
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -88,14 +90,25 @@ class WebdavMountsActivity: AppCompatActivity() {
         binding.add.setOnClickListener {
             startActivity(Intent(this, AddWebdavMountActivity::class.java))
         }
+
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.activity_webdav_mounts, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.help -> {
+                        onShowHelp()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_webdav_mounts, menu)
-        return true
-    }
-
-    fun onShowHelp(item: MenuItem) {
+    fun onShowHelp() {
         UiUtils.launchUri(this, helpUrl())
     }
 
@@ -183,9 +196,11 @@ class WebdavMountsActivity: AppCompatActivity() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        @ApplicationContext val context: Context,
+        application: Application,
         val db: AppDatabase
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
+
+        val context: Context get() = getApplication()
 
         val authority = context.getString(R.string.webdav_authority)
 

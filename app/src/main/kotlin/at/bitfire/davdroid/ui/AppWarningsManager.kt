@@ -4,7 +4,12 @@
 
 package at.bitfire.davdroid.ui
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.SyncStatusObserver
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -62,17 +67,15 @@ class AppWarningsManager @Inject constructor(
         watchConnectivity()
 
         // Data saver
-        if (Build.VERSION.SDK_INT >= 24) {
-            val listener = object: BroadcastReceiver() {
-                override fun onReceive(context: Context, intent: Intent) {
-                    checkDataSaver()
-                }
+        val listener = object: BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                checkDataSaver()
             }
-
-            val dataSaverChangedFilter = IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED)
-            context.registerReceiver(listener, dataSaverChangedFilter)
-            dataSaverChangedListener = listener
         }
+
+        val dataSaverChangedFilter = IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED)
+        context.registerReceiver(listener, dataSaverChangedFilter)
+        dataSaverChangedListener = listener
         checkDataSaver()
     }
 
@@ -81,61 +84,39 @@ class AppWarningsManager @Inject constructor(
     }
 
     private fun watchConnectivity() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {    // API level <26
-            networkReceiver = object: BroadcastReceiver() {
-                init {
-                    update()
-                }
+        networkAvailable.postValue(false)
 
-                override fun onReceive(context: Context?, intent: Intent?) = update()
+        // check for working (e.g. WiFi after captive portal login) Internet connection
+        val networkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            .build()
+        val callback = object: ConnectivityManager.NetworkCallback() {
+            val availableNetworks = hashSetOf<Network>()
 
-                private fun update() {
-                    networkAvailable.postValue(connectivityManager.allNetworkInfo.any { it.isConnected })
-                }
+            override fun onAvailable(network: Network) {
+                availableNetworks += network
+                update()
             }
-            @Suppress("DEPRECATION")
-            context.registerReceiver(networkReceiver,
-                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-            )
 
-        } else {    // API level >= 26
-            networkAvailable.postValue(false)
-
-            // check for working (e.g. WiFi after captive portal login) Internet connection
-            val networkRequest = NetworkRequest.Builder()
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-                .build()
-            val callback = object: ConnectivityManager.NetworkCallback() {
-                val availableNetworks = hashSetOf<Network>()
-
-                override fun onAvailable(network: Network) {
-                    availableNetworks += network
-                    update()
-                }
-
-                override fun onLost(network: Network) {
-                    availableNetworks -= network
-                    update()
-                }
-
-                private fun update() {
-                    networkAvailable.postValue(availableNetworks.isNotEmpty())
-                }
+            override fun onLost(network: Network) {
+                availableNetworks -= network
+                update()
             }
-            connectivityManager.registerNetworkCallback(networkRequest, callback)
-            networkCallback = callback
+
+            private fun update() {
+                networkAvailable.postValue(availableNetworks.isNotEmpty())
+            }
         }
+        connectivityManager.registerNetworkCallback(networkRequest, callback)
+        networkCallback = callback
     }
 
     private fun checkDataSaver() {
         dataSaverEnabled.postValue(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
-                    connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED
-                }
-            else
-                false
+            context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
+                connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED
+            }
         )
     }
 

@@ -30,13 +30,14 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
+import at.bitfire.davdroid.webdav.DavDocumentsProvider.DavDocumentsActor
 import at.bitfire.davdroid.webdav.cache.HeadResponseCache
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -469,6 +470,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         }
         Logger.log.info("Received file info: $fileInfo")
 
+        // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
         return if (
             Build.VERSION.SDK_INT >= 26 &&      // openProxyFileDescriptor exists since Android 8.0
             readAccess &&                       // WebDAV doesn't support random write access natively
@@ -477,7 +479,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             fileInfo.supportsPartial != false   // WebDAV server must support random access
         ) {
             val accessor = RandomAccessCallback.Wrapper(ourContext, client, url, doc.mimeType, fileInfo, signal)
-            storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.callback!!.workerHandler)
+            storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
             val fd = StreamingFileDescriptor(ourContext, client, url, doc.mimeType, signal) { transferred ->
                 // called when transfer is finished

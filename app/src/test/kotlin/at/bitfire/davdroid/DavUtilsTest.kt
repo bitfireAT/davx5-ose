@@ -5,8 +5,11 @@
 package at.bitfire.davdroid
 
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.DavUtils.parent
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.xbill.DNS.DClass
 import org.xbill.DNS.Name
@@ -29,6 +32,21 @@ class DavUtilsTest {
         assertEquals("dir", DavUtils.lastSegmentOfUrl((exampleURL + "dir").toHttpUrl()))
         assertEquals("dir", DavUtils.lastSegmentOfUrl((exampleURL + "dir/").toHttpUrl()))
         assertEquals("file.html", DavUtils.lastSegmentOfUrl((exampleURL + "dir/file.html").toHttpUrl()))
+    }
+
+    @Test
+    fun testParent() {
+        // with trailing slash
+        assertEquals("http://example.com/1/2/".toHttpUrl(), "http://example.com/1/2/3/".toHttpUrl().parent())
+        assertEquals("http://example.com/1/".toHttpUrl(), "http://example.com/1/2/".toHttpUrl().parent())
+        assertEquals("http://example.com/".toHttpUrl(), "http://example.com/1/".toHttpUrl().parent())
+        assertEquals("http://example.com/".toHttpUrl(), "http://example.com/".toHttpUrl().parent())
+
+        // without trailing slash
+        assertEquals("http://example.com/1/2/".toHttpUrl(), "http://example.com/1/2/3".toHttpUrl().parent())
+        assertEquals("http://example.com/1/".toHttpUrl(), "http://example.com/1/2".toHttpUrl().parent())
+        assertEquals("http://example.com/".toHttpUrl(), "http://example.com/1".toHttpUrl().parent())
+        assertEquals("http://example.com/".toHttpUrl(), "http://example.com".toHttpUrl().parent())
     }
 
     @Test

@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,8 +17,8 @@ import androidx.annotation.AnyThread
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
@@ -28,7 +29,6 @@ import at.bitfire.ical4android.TaskProvider.ProviderName
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -114,9 +114,9 @@ class TasksFragment: Fragment() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        @ApplicationContext val context: Context,
+        application: Application,
         val settings: SettingsManager
-    ) : ViewModel(), SettingsManager.OnChangeListener {
+    ) : AndroidViewModel(application), SettingsManager.OnChangeListener {
 
         companion object {
 
@@ -128,6 +128,8 @@ class TasksFragment: Fragment() {
             const val HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled"
 
         }
+
+        val context: Context get() = getApplication()
 
         val showInstallTasks = MutableLiveData<Boolean>() // kSync
         val currentProvider = MutableLiveData<ProviderName>()

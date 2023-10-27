@@ -17,16 +17,26 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -34,6 +44,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,7 +69,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.openid.appauth.*
+import net.openid.appauth.AuthState
+import net.openid.appauth.AuthorizationException
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.AuthorizationResponse
+import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.ResponseTypeValues
+import net.openid.appauth.TokenResponse
 import org.apache.commons.lang3.StringUtils
 import java.net.URI
 import java.util.logging.Level
@@ -236,31 +254,52 @@ fun GoogleLogin(
             }
 
             val email = rememberSaveable { mutableStateOf(defaultEmail ?: "") }
-            val emailError = remember { mutableStateOf(false) }
+            val userClientId = rememberSaveable { mutableStateOf("") }
+
+            fun login() {
+                // append @gmail.com, if necessary
+                val loginEmail = email.value.let {
+                    if (it.contains('@'))
+                        it
+                    else
+                        it + "@gmail.com"
+                }
+
+                val clientId = StringUtils.trimToNull(userClientId.value.trim())
+                onLogin(loginEmail, clientId)
+            }
             OutlinedTextField(
                 email.value,
                 singleLine = true,
                 onValueChange = { email.value = it },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Go
+                ),
+                keyboardActions = KeyboardActions(
+                    onGo = { login() }
+                ),
                 label = { Text(stringResource(R.string.login_google_account)) },
-                isError = emailError.value,
                 placeholder = { Text("example@gmail.com") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             )
 
-            val userClientId = rememberSaveable { mutableStateOf("") }
-            val userClientIdError = remember { mutableStateOf(false) }
             OutlinedTextField(
                 userClientId.value,
                 singleLine = true,
                 onValueChange = { clientId ->
                     userClientId.value = clientId
                 },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Go
+                ),
+                keyboardActions = KeyboardActions(
+                    onGo = { login() }
+                ),
                 label = { Text(stringResource(R.string.login_google_client_id)) },
-                isError = userClientIdError.value,
                 placeholder = { Text("[...].apps.googleusercontent.com") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -268,15 +307,7 @@ fun GoogleLogin(
             )
 
             Button(
-                onClick = {
-                    val validEmail = email.value.contains('@')
-                    emailError.value = !validEmail
-
-                    if (validEmail) {
-                        val clientId = StringUtils.trimToNull(userClientId.value.trim())
-                        onLogin(email.value, clientId)
-                    }
-                },
+                onClick = { login() },
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .wrapContentSize(),

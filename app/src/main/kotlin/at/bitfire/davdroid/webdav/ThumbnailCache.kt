@@ -9,14 +9,15 @@ import android.graphics.Point
 import android.os.Build
 import android.os.storage.StorageManager
 import androidx.annotation.WorkerThread
-import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.webdav.cache.CacheUtils
 import at.bitfire.davdroid.webdav.cache.DiskCache
 import org.apache.commons.io.FileUtils
 import java.io.File
-import java.util.*
+import java.util.LinkedList
+import java.util.UUID
 
 @WorkerThread
 class ThumbnailCache(context: Context) {
@@ -24,7 +25,7 @@ class ThumbnailCache(context: Context) {
     val cache: DiskCache
 
     init {
-        val storageManager = ContextCompat.getSystemService(context, StorageManager::class.java)!!
+        val storageManager = context.getSystemService<StorageManager>()!!
         val cacheDir = File(context.cacheDir, "webdav/thumbnail")
         val maxBytes = if (Build.VERSION.SDK_INT >= 26)
             storageManager.getCacheQuotaBytes(storageManager.getUuidForPath(cacheDir)) / 2

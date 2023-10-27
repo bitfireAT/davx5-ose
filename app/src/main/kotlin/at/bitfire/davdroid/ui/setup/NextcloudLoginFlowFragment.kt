@@ -7,16 +7,38 @@ package at.bitfire.davdroid.ui.setup
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Browser
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -24,14 +46,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
+import at.bitfire.vcard4android.GroupMethod
+import com.google.accompanist.themeadapter.material.MdcTheme
 import com.google.android.material.snackbar.Snackbar
 import dagger.Binds
 import dagger.Module
@@ -39,11 +63,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -51,14 +75,15 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URI
+import java.util.logging.Level
 import javax.inject.Inject
 
 class NextcloudLoginFlowFragment: Fragment() {
 
     companion object {
 
-        const val LOGIN_FLOW_V1_PATH = "/index.php/login/flow"
-        const val LOGIN_FLOW_V2_PATH = "/index.php/login/v2"
+        const val LOGIN_FLOW_V1_PATH = "index.php/login/flow"
+        val LOGIN_FLOW_V2_PATH = "index.php/login/v2"
 
         /** Set this to 1 to indicate that Login Flow shall be used. */
         const val EXTRA_LOGIN_FLOW = "loginFlow"
@@ -66,31 +91,47 @@ class NextcloudLoginFlowFragment: Fragment() {
         /** Path to DAV endpoint (e.g. `/remote.php/dav`). Will be appended to the
          *  server URL returned by Login Flow without further processing. */
         const val EXTRA_DAV_PATH = "davPath"
-
-        const val REQUEST_BROWSER = 0
     }
 
     val loginModel by activityViewModels<LoginModel>()
-    val loginFlowModel by viewModels<LoginFlowModel>()
+    val model by viewModels<Model>()
+
+    val checkResultCallback = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH)
+        model.checkResult(davPath)
+    }
 
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = View(requireActivity())
+        val entryUrl = requireActivity().intent.data?.toString()?.toHttpUrlOrNull()
 
-        val entryUrl = requireActivity().intent.data ?: throw IllegalArgumentException("Intent data must be set to Login Flow URL")
-        Logger.log.info("Using Login Flow entry point: $entryUrl")
+        val view = ComposeView(requireActivity()).apply {
+            setContent {
+                MdcTheme {
+                    NextcloudLoginComposable(
+                        onStart = { url ->
+                            model.start(url)
+                        },
+                        entryUrl = entryUrl,
+                        inProgress = model.inProgress.observeAsState(false),
+                        error = model.error.observeAsState()
+                    )
+                }
+            }
+        }
 
-        loginFlowModel.loginUrl.observe(viewLifecycleOwner) { loginUrl ->
+        model.loginUrl.observe(viewLifecycleOwner) { loginUrl ->
             if (loginUrl == null)
                 return@observe
             val loginUri = loginUrl.toUri()
 
             // reset URL so that the browser isn't shown another time
-            loginFlowModel.loginUrl.value = null
+            model.loginUrl.value = null
 
             if (haveCustomTabs(requireActivity())) {
                 // Custom Tabs are available
+                @Suppress("DEPRECATION")
                 val browser = CustomTabsIntent.Builder()
                     .setToolbarColor(resources.getColor(R.color.primaryColor))
                     .build()
@@ -99,52 +140,40 @@ class NextcloudLoginFlowFragment: Fragment() {
                     Browser.EXTRA_HEADERS,
                     bundleOf("Accept-Language" to Locale.current.toLanguageTag())
                 )
-                startActivityForResult(browser.intent, REQUEST_BROWSER, browser.startAnimationBundle)
-
+                checkResultCallback.launch(browser.intent)
             } else {
                 // fallback: launch normal browser
                 val browser = Intent(Intent.ACTION_VIEW, loginUri)
                 browser.addCategory(Intent.CATEGORY_BROWSABLE)
                 if (browser.resolveActivity(requireActivity().packageManager) != null)
-                    startActivityForResult(browser, REQUEST_BROWSER)
+                    checkResultCallback.launch(browser)
                 else
                     Snackbar.make(view, getString(R.string.install_browser), Snackbar.LENGTH_INDEFINITE).show()
             }
         }
 
-        loginFlowModel.error.observe(viewLifecycleOwner) { exception ->
-            Snackbar.make(requireView(), exception.toString(), Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.exception_show_details) {
-                        val intent = DebugInfoActivity.IntentBuilder(requireActivity())
-                            .withCause(exception)
-                            .build()
-                        startActivity(intent)
-                    }
-                    .show()
-        }
+        model.loginData.observe(viewLifecycleOwner) { loginData ->
+            if (loginData == null)
+                return@observe
+            val (baseUri, credentials) = loginData
 
-        loginFlowModel.loginData.observe(viewLifecycleOwner) { (baseUri, credentials) ->
             // continue to next fragment
             loginModel.baseURI = baseUri
             loginModel.credentials = credentials
+            loginModel.suggestedGroupMethod = GroupMethod.CATEGORIES
             parentFragmentManager.beginTransaction()
                     .replace(android.R.id.content, DetectConfigurationFragment(), null)
                     .addToBackStack(null)
                     .commit()
+
+            // reset loginData so that we can go back
+            model.loginData.value = null
         }
 
-        // start Login Flow
-        loginFlowModel.setUrl(entryUrl)
+        if (savedInstanceState == null && entryUrl != null)
+            model.start(entryUrl)
 
         return view
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode != REQUEST_BROWSER)
-            return
-
-        val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH)
-        loginFlowModel.checkResult(davPath)
     }
 
 
@@ -153,16 +182,16 @@ class NextcloudLoginFlowFragment: Fragment() {
      *
      * @see https://docs.nextcloud.com/server/20/developer_manual/client_apis/LoginFlow/index.html#login-flow-v2
      */
-    class LoginFlowModel(app: Application): AndroidViewModel(app) {
-
-        val error = MutableLiveData<Exception>()
+    class Model(app: Application): AndroidViewModel(app) {
         val loginUrl = MutableLiveData<String>()
+        val error = MutableLiveData<String>()
 
         val httpClient by lazy {
             HttpClient.Builder(getApplication())
-                    .setForeground(true)
-                    .build()
+                .setForeground(true)
+                .build()
         }
+        val inProgress = MutableLiveData<Boolean>(false)
 
         var pollUrl: HttpUrl? = null
         var token: String? = null
@@ -174,20 +203,30 @@ class NextcloudLoginFlowFragment: Fragment() {
         }
 
 
+        /**
+         * Starts the Login Flow.
+         *
+         * @param entryUrl entryURL: either a Login Flow path (ending with [LOGIN_FLOW_V1_PATH] or [LOGIN_FLOW_V2_PATH]),
+         * or another URL which is treated as Nextcloud root URL. In this case, [LOGIN_FLOW_V2_PATH] is appended.
+         */
         @UiThread
-        fun setUrl(entryUri: Uri) {
-            val entryUrl = entryUri.toString()
-            val v2Url =
-                    if (entryUrl.endsWith(LOGIN_FLOW_V1_PATH))
-                        // got Login Flow v1 URL, rewrite to v2
-                        entryUrl.removeSuffix(LOGIN_FLOW_V1_PATH) + LOGIN_FLOW_V2_PATH
-                    else
-                        entryUrl
+        fun start(entryUrl: HttpUrl) {
+            inProgress.value = true
+            error.value = null
+
+            var entryUrlStr = entryUrl.toString()
+            if (entryUrlStr.endsWith(LOGIN_FLOW_V1_PATH))
+                // got Login Flow v1 URL, rewrite to v2
+                entryUrlStr = entryUrlStr.removeSuffix(LOGIN_FLOW_V1_PATH)
+
+            val v2Url = entryUrlStr.toHttpUrl().newBuilder()
+                .addPathSegments(LOGIN_FLOW_V2_PATH)
+                .build()
 
             // send POST request and process JSON reply
-            CoroutineScope(Dispatchers.IO).launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val json = postForJson(v2Url.toHttpUrl(), "".toRequestBody())
+                    val json = postForJson(v2Url, "".toRequestBody())
 
                     // login URL
                     loginUrl.postValue(json.getString("login"))
@@ -198,7 +237,10 @@ class NextcloudLoginFlowFragment: Fragment() {
                         token = poll.getString("token")
                     }
                 } catch (e: Exception) {
-                    error.postValue(e)
+                    Logger.log.log(Level.WARNING, "Couldn't obtain login URL", e)
+                    error.postValue(getApplication<Application>().getString(R.string.login_nextcloud_login_flow_no_login_url))
+                } finally {
+                    inProgress.postValue(false)
                 }
             }
         }
@@ -208,7 +250,7 @@ class NextcloudLoginFlowFragment: Fragment() {
             val pollUrl = pollUrl ?: return
             val token = token ?: return
 
-            CoroutineScope(Dispatchers.IO).launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 try {
                     val json = postForJson(pollUrl, "token=$token".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
                     val serverUrl = json.getString("server")
@@ -221,11 +263,12 @@ class NextcloudLoginFlowFragment: Fragment() {
                         URI.create(serverUrl)
 
                     loginData.postValue(Pair(
-                            baseUri,
-                            Credentials(loginName, appPassword)
+                        baseUri,
+                        Credentials(loginName, appPassword)
                     ))
                 } catch (e: Exception) {
-                    error.postValue(e)
+                    Logger.log.log(Level.WARNING, "Polling login URL failed", e)
+                    error.postValue(getApplication<Application>().getString(R.string.login_nextcloud_login_flow_no_login_data))
                 }
             }
         }
@@ -259,7 +302,7 @@ class NextcloudLoginFlowFragment: Fragment() {
     class Factory @Inject constructor(): LoginCredentialsFragmentFactory {
 
         override fun getFragment(intent: Intent) =
-            if (intent.hasExtra(EXTRA_LOGIN_FLOW))
+            if (intent.hasExtra(EXTRA_LOGIN_FLOW) && intent.data != null)
                 NextcloudLoginFlowFragment()
             else
                 null
@@ -275,4 +318,124 @@ class NextcloudLoginFlowFragment: Fragment() {
         abstract fun factory(impl: Factory): LoginCredentialsFragmentFactory
     }
 
+}
+
+
+@Composable
+fun NextcloudLoginComposable(
+    entryUrl: HttpUrl?,
+    inProgress: State<Boolean>,
+    error: State<String?>,
+    onStart: (HttpUrl) -> Unit
+) {
+    Column {
+        if (inProgress.value)
+            LinearProgressIndicator(
+                color = MaterialTheme.colors.secondary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            )
+
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(
+                stringResource(R.string.login_nextcloud_login_with_nextcloud),
+                style = MaterialTheme.typography.h5
+            )
+            NextcloudLoginFlowComposable(
+                providedEntryUrl = entryUrl,
+                inProgress = inProgress,
+                error = error,
+                onStart = onStart
+            )
+        }
+    }
+}
+
+
+@Composable
+fun NextcloudLoginFlowComposable(
+    providedEntryUrl: HttpUrl?,
+    inProgress: State<Boolean>,
+    error: State<String?>,
+    onStart: ((HttpUrl) -> Unit)
+) {
+    Column {
+        Text(
+            stringResource(R.string.login_nextcloud_login_flow),
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+        Text(
+            stringResource(R.string.login_nextcloud_login_flow_text),
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
+
+        val entryUrlStr = remember { mutableStateOf(providedEntryUrl?.toString() ?: "") }
+        val entryUrl = remember { mutableStateOf<HttpUrl?>(providedEntryUrl) }
+        OutlinedTextField(entryUrlStr.value,
+            onValueChange = { newUrlStr ->
+                entryUrlStr.value = newUrlStr
+
+                entryUrl.value = try {
+                    val withScheme =
+                        if (!newUrlStr.startsWith("http://", true) && !newUrlStr.startsWith("https://", true))
+                            "https://$newUrlStr"
+                        else
+                            newUrlStr
+                    withScheme.toHttpUrl()
+                } catch (e: IllegalArgumentException) {
+                    null
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            readOnly = inProgress.value,
+            label = {
+                Text(stringResource(R.string.login_nextcloud_login_flow_server_address))
+            },
+            placeholder = {
+                Text("cloud.example.com")
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Uri,
+                imeAction = ImeAction.Go
+            ),
+            keyboardActions = KeyboardActions(
+                onGo = {
+                    entryUrl.value?.let(onStart)
+                }
+            ),
+            singleLine = true
+        )
+
+        Button(
+            onClick = {
+                entryUrl.value?.let(onStart)
+            },
+            enabled = entryUrl.value != null && !inProgress.value
+        ) {
+            Text(stringResource(R.string.login_nextcloud_login_flow_sign_in))
+        }
+
+        error.value?.let { msg ->
+            Text(
+                msg,
+                color = MaterialTheme.colors.error,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+@Preview
+fun NextcloudLoginFlowComposable_PreviewWithError() {
+    NextcloudLoginFlowComposable(
+        providedEntryUrl = null,
+        inProgress = remember { mutableStateOf(true) },
+        error = remember { mutableStateOf("Something wrong happened") },
+        onStart = { }
+    )
 }

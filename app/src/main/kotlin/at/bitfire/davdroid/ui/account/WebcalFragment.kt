@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.Manifest
+import android.app.Application
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.Intent
@@ -22,19 +23,17 @@ import androidx.lifecycle.*
 import androidx.room.Transaction
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.util.closeCompat
 import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.util.PermissionUtils
 import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
@@ -51,13 +50,24 @@ class WebcalFragment: CollectionsFragment() {
     override val noCollectionsStringId = R.string.account_no_webcals
 
     @Inject lateinit var webcalModelFactory: WebcalModel.Factory
-    val webcalModel by viewModels<WebcalModel>() {
+    private val webcalModel by viewModels<WebcalModel> {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>) =
                 webcalModelFactory.create(
                     requireArguments().getLong(EXTRA_SERVICE_ID)
                 ) as T
+        }
+    }
+
+    private val menuProvider = object : CollectionsMenuProvider() {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.caldav_actions, menu)
+        }
+
+        override fun onPrepareMenu(menu: Menu) {
+            super.onPrepareMenu(menu)
+            menu.findItem(R.id.create_calendar).isVisible = false
         }
     }
 
@@ -69,12 +79,14 @@ class WebcalFragment: CollectionsFragment() {
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
-            inflater.inflate(R.menu.caldav_actions, menu)
+    override fun onResume() {
+        super.onResume()
+        requireActivity().addMenuProvider(menuProvider)
+    }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.create_calendar).isVisible = false
+    override fun onPause() {
+        super.onPause()
+        requireActivity().removeMenuProvider(menuProvider)
     }
 
 
@@ -168,15 +180,17 @@ class WebcalFragment: CollectionsFragment() {
 
 
     class WebcalModel @AssistedInject constructor(
-        @ApplicationContext context: Context,
+        application: Application,
         val db: AppDatabase,
         @Assisted val serviceId: Long
-    ): ViewModel() {
+    ): AndroidViewModel(application) {
 
         @AssistedFactory
         interface Factory {
             fun create(serviceId: Long): WebcalModel
         }
+
+        val context: Context get() = getApplication()
 
         private val resolver = context.contentResolver
 
@@ -204,7 +218,7 @@ class WebcalFragment: CollectionsFragment() {
             }
 
             fun disconnect() {
-                value?.closeCompat()
+                value?.close()
                 value = null
             }
         }

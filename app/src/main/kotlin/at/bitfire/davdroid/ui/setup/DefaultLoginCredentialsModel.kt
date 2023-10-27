@@ -29,6 +29,7 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
     val loginWithUrlAndUsername = MutableLiveData(false)
     val loginAdvanced = MutableLiveData(false)
     val loginGoogle = MutableLiveData(false)
+    val loginNextcloud = MutableLiveData(false)
 
     val baseUrl = MutableLiveData<String>()
     val baseUrlError = MutableLiveData<String>()
