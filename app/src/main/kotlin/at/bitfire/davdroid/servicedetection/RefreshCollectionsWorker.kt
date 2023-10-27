@@ -13,6 +13,7 @@ import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
@@ -21,6 +22,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.WorkQuery
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.DavResource
@@ -75,6 +77,9 @@ import kotlin.collections.*
 /**
  * Refreshes list of home sets and their respective collections of a service type (CardDAV or CalDAV).
  * Called from UI, when user wants to refresh all collections of a service ([at.bitfire.davdroid.ui.account.CollectionsFragment]).
+ *
+ * Note: Refresh workers work tag is not the same as their [workerName]. This is different from a
+ * SyncWorker, where the work tag is the same as the [workerName].
  *
  * Input data:
  *
@@ -142,6 +147,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .build()
             val workRequest = OneTimeWorkRequestBuilder<RefreshCollectionsWorker>()
                 .setInputData(arguments)
+                .addTag(REFRESH_COLLECTIONS_WORKER_TAG)
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
 
@@ -165,6 +171,44 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 workInfoList -> workInfoList.any { workInfo -> workInfo.state == workState }
             }
 
+        /**
+         * Will tell whether some refresh worker with given state exists
+         */
+        fun existsLive(
+            context: Context,
+            workStates: List<WorkInfo.State> = listOf(),
+            serviceIds: List<Long> = listOf()
+        ): LiveData<Boolean> {
+            val workQuery = WorkQuery.Builder
+                .fromTags(listOf(REFRESH_COLLECTIONS_WORKER_TAG))
+                .addStates(workStates)
+            for (id in serviceIds)
+                workQuery.addUniqueWorkNames(listOf(workerName(id)))
+            return WorkManager.getInstance(context)
+                .getWorkInfosLiveData(workQuery.build()).map { workInfoList ->
+                    workInfoList.isNotEmpty()
+                }
+        }
+
+        /**
+         * Will tell whether some refresh worker with given state exists
+         */
+        fun exists(
+            context: Context,
+            workStates: List<WorkInfo.State> = listOf(),
+            serviceIds: List<Long> = listOf()
+        ): Boolean {
+            val workQuery = WorkQuery.Builder
+                .fromTags(listOf(REFRESH_COLLECTIONS_WORKER_TAG))
+                .addStates(workStates)
+            for (id in serviceIds)
+                workQuery.addUniqueWorkNames(listOf(workerName(id)))
+            return WorkManager
+                .getInstance(context)
+                .getWorkInfos(workQuery.build())
+                .get()
+                .isNotEmpty()
+        }
     }
 
     val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)

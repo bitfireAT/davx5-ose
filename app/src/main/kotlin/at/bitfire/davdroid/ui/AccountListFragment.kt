@@ -25,13 +25,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AnyThread
 import androidx.core.content.ContextCompat
-import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
+import androidx.lifecycle.switchMap
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -42,6 +43,8 @@ import androidx.work.WorkQuery
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountListBinding
 import at.bitfire.davdroid.databinding.AccountListItemBinding
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils.syncAuthorities
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.account.AccountActivity
@@ -202,24 +205,21 @@ class AccountListFragment: Fragment() {
                 activity.startActivity(intent)
             }
 
-            when (accountInfo.status) {
-                SyncStatus.ACTIVE -> {
-                    holder.binding.progress.apply {
-                        alpha = 1.0f
-                        isIndeterminate = true
-                        visibility = View.VISIBLE
-                    }
+            if (accountInfo.refreshing || accountInfo.syncStatus == SyncStatus.ACTIVE)
+                holder.binding.progress.apply {
+                    alpha = 1.0f
+                    isIndeterminate = true
+                    visibility = View.VISIBLE
                 }
-                SyncStatus.PENDING -> {
-                    holder.binding.progress.apply {
-                        alpha = 0.4f
-                        isIndeterminate = false
-                        progress = 100
-                        visibility = View.VISIBLE
-                    }
+            else if (accountInfo.syncStatus == SyncStatus.PENDING)
+                holder.binding.progress.apply {
+                    alpha = 0.4f
+                    isIndeterminate = false
+                    progress = 100
+                    visibility = View.VISIBLE
                 }
-                else -> holder.binding.progress.visibility = View.INVISIBLE
-            }
+            else
+                holder.binding.progress.visibility = View.INVISIBLE
             holder.binding.accountName.text = accountInfo.account.name
         }
     }
@@ -228,12 +228,14 @@ class AccountListFragment: Fragment() {
     @HiltViewModel
     class Model @Inject constructor(
         application: Application,
-        private val warnings: AppWarningsManager
+        private val warnings: AppWarningsManager,
+        val db: AppDatabase,
     ): AndroidViewModel(application), OnAccountsUpdateListener {
 
         data class AccountInfo(
             val account: Account,
-            val status: SyncStatus
+            val syncStatus: SyncStatus,
+            val refreshing: Boolean
         )
 
         // Warnings
@@ -251,14 +253,33 @@ class AccountListFragment: Fragment() {
                 WorkInfo.State.ENQUEUED
             )
         )
+        private val refreshingAccounts = RefreshCollectionsWorker.existsLive(
+            application, listOf(WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED)
+        ).switchMap {
+            db.serviceDao().getLive().map { services ->
+                services.filter { service ->
+                    RefreshCollectionsWorker.exists(
+                        application,
+                        listOf(WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED),
+                        listOf(service.id)
+                    )
+                }.map { it.accountName }
+            }
+        }
 
         val accounts = object : MediatorLiveData<List<AccountInfo>>() {
+            var nullableRefreshingAccounts: List<String>? = null
             init {
                 addSource(accountsUpdated) { recalculate() }
                 addSource(syncWorkersActive) { recalculate() }
+                addSource(refreshingAccounts) {
+                    nullableRefreshingAccounts = it
+                    recalculate()
+                }
             }
 
             fun recalculate() {
+                val refreshingAccounts = nullableRefreshingAccounts ?: return
                 val context = getApplication<Application>()
                 val collator = Collator.getInstance()
 
@@ -270,7 +291,8 @@ class AccountListFragment: Fragment() {
                 val accountsWithInfo = sortedAccounts.map { account ->
                     AccountInfo(
                         account,
-                        SyncStatus.fromAccount(context, account)
+                        SyncStatus.fromAccount(context, account),
+                        account.name in refreshingAccounts
                     )
                 }
                 value = accountsWithInfo
