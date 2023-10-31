@@ -52,7 +52,7 @@ class JtxSyncer(context: Context): Syncer(context) {
             val accountSettings = AccountSettings(context, account)
 
             // sync list of collections
-            updateLocalCollections(account, provider)
+            updateLocalCollections(account, provider, accountSettings)
 
             // sync contents of collections
             val collections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
@@ -69,13 +69,15 @@ class JtxSyncer(context: Context): Syncer(context) {
         Logger.log.info("jtx sync complete")
     }
 
-    private fun updateLocalCollections(account: Account, client: ContentProviderClient) {
+    private fun updateLocalCollections(account: Account, client: ContentProviderClient, settings: AccountSettings) {
         val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
 
         val remoteCollections = mutableMapOf<HttpUrl, Collection>()
         if (service != null)
             for (collection in db.collectionDao().getSyncJtxCollections(service.id))
                 remoteCollections[collection.url] = collection
+
+        val updateColors = settings.getManageCalendarColors()
 
         for (jtxCollection in JtxCollection.find(account, client, context, LocalJtxCollection.Factory, null, null))
             jtxCollection.url?.let { strUrl ->
@@ -88,7 +90,7 @@ class JtxSyncer(context: Context): Syncer(context) {
                     // remote CollectionInfo found for this local collection, update data
                     Logger.log.log(Level.FINE, "Updating local collection $url", info)
                     val owner = info.ownerId?.let { db.principalDao().get(it) }
-                    jtxCollection.updateCollection(info, owner)
+                    jtxCollection.updateCollection(info, owner, updateColors)
                     // we already have a local task list for this remote collection, don't take into consideration anymore
                     remoteCollections -= url
                 }
