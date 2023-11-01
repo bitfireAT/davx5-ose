@@ -4,11 +4,7 @@
 
 package at.bitfire.davdroid.ui
 
-import android.accounts.AccountManager
-import android.app.Application
 import android.content.Intent
-import android.content.pm.ShortcutManager
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.addCallback
@@ -16,20 +12,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.TooltipCompat
-import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.AndroidViewModel
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountsBinding
-import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,12 +32,11 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     @Inject lateinit var accountsDrawerHandler: AccountsDrawerHandler
 
     private lateinit var binding: ActivityAccountsBinding
-    val model by viewModels<Model>()
+    val model by viewModels<AccountListModel>()
 
     private val introActivityLauncher = registerForActivityResult(IntroActivity.Contract) { cancelled ->
-        if (cancelled) {
+        if (cancelled)
             finish()
-        }
     }
 
 
@@ -81,19 +71,24 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         binding.navView.itemIconTintList = null
 
         onBackPressedDispatcher.addCallback(this) {
-            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START))
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
-            } else {
+            else
                 finish()
+        }
+
+        binding.content.swipeRefresh.setOnRefreshListener(this)
+
+        model.feedback.observe(this) { message ->
+            if (message != null) {
+                Snackbar.make(binding.drawerLayout, message, Snackbar.LENGTH_LONG).show()
+                model.feedback.value = null
             }
         }
 
-        // Swipe refresh gesture
-        binding.content.swipeRefresh.setOnRefreshListener(this)
-
         // handle "Sync all" intent from launcher shortcut
         if (savedInstanceState == null && intent.action == Intent.ACTION_SYNC)
-            syncAllAccounts()
+            model.syncAllAccounts(true)
     }
 
     override fun onResume() {
@@ -107,43 +102,11 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         return true
     }
 
-
-    private fun allAccounts() =
-            AccountManager.get(this).getAccountsByType(getString(R.string.account_type))
-
-    fun syncAllAccounts() {
-        if (Build.VERSION.SDK_INT >= 25)
-            getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
-
-        // Notify user that sync will get enqueued if we're not connected to the internet
-        model.networkAvailable.value?.let { networkAvailable ->
-            if (!networkAvailable)
-                Snackbar.make(binding.drawerLayout, R.string.no_internet_sync_scheduled, Snackbar.LENGTH_LONG).show()
-            else
-                Snackbar.make(binding.drawerLayout, R.string.sync_requested, Snackbar.LENGTH_LONG).show()
-        }
-
-        // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
-        val accounts = allAccounts()
-        for (account in accounts)
-            SyncWorker.enqueueAllAuthorities(this, account)
-    }
-
     override fun onRefresh() {
         // Disable swipe-down refresh spinner, as we use the progress bars instead
         binding.content.swipeRefresh.isRefreshing = false
-        syncAllAccounts()
-    }
 
-    @HiltViewModel
-    class Model @Inject constructor(
-        application: Application,
-        val settings: SettingsManager,
-        warnings: AppWarningsManager
-    ): AndroidViewModel(application) {
-
-        val networkAvailable = warnings.networkAvailable
-
+        model.syncAllAccounts()
     }
 
 }

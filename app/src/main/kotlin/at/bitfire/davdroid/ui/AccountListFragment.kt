@@ -5,13 +5,8 @@
 package at.bitfire.davdroid.ui
 
 import android.Manifest
-import android.accounts.Account
-import android.accounts.AccountManager
-import android.accounts.OnAccountsUpdateListener
 import android.app.Activity
-import android.app.Application
 import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -23,43 +18,27 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.AnyThread
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import androidx.work.WorkQuery
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountListBinding
 import at.bitfire.davdroid.databinding.AccountListItemBinding
-import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.syncadapter.SyncUtils.syncAuthorities
-import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.account.AccountActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-import java.text.Collator
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountListFragment: Fragment() {
 
     private var _binding: AccountListBinding? = null
     private val binding get() = _binding!!
-    val model by viewModels<Model>()
+    val model by viewModels<AccountListModel>()
 
     private var syncStatusSnackbar: Snackbar? = null
 
@@ -145,7 +124,7 @@ class AccountListFragment: Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem) =
                 when (menuItem.itemId) {
                     R.id.syncAll -> {
-                        (activity as AccountsActivity).syncAllAccounts()
+                        model.syncAllAccounts()
                         true
                     }
                     else -> false
@@ -170,7 +149,7 @@ class AccountListFragment: Fragment() {
         _binding = null
     }
 
-    fun checkPermissions() {
+    private fun checkPermissions() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)
             binding.noNotificationsInfo.visibility = View.GONE
         else
@@ -180,11 +159,11 @@ class AccountListFragment: Fragment() {
 
     class AccountAdapter(
             val activity: Activity
-    ): ListAdapter<Model.AccountInfo, AccountAdapter.ViewHolder>(
-            object: DiffUtil.ItemCallback<Model.AccountInfo>() {
-                override fun areItemsTheSame(oldItem: Model.AccountInfo, newItem: Model.AccountInfo) =
+    ): ListAdapter<AccountListModel.AccountInfo, AccountAdapter.ViewHolder>(
+            object: DiffUtil.ItemCallback<AccountListModel.AccountInfo>() {
+                override fun areItemsTheSame(oldItem: AccountListModel.AccountInfo, newItem: AccountListModel.AccountInfo) =
                         oldItem.account == newItem.account
-                override fun areContentsTheSame(oldItem: Model.AccountInfo, newItem: Model.AccountInfo) =
+                override fun areContentsTheSame(oldItem: AccountListModel.AccountInfo, newItem: AccountListModel.AccountInfo) =
                         oldItem == newItem
             }
     ) {
@@ -222,140 +201,6 @@ class AccountListFragment: Fragment() {
                 holder.binding.progress.visibility = View.INVISIBLE
             holder.binding.accountName.text = accountInfo.account.name
         }
-    }
-
-
-    @HiltViewModel
-    class Model @Inject constructor(
-        application: Application,
-        private val warnings: AppWarningsManager,
-        val db: AppDatabase,
-    ): AndroidViewModel(application), OnAccountsUpdateListener {
-
-        data class AccountInfo(
-            val account: Account,
-            val syncStatus: SyncStatus,
-            val refreshing: Boolean
-        )
-
-        // Warnings
-        val globalSyncDisabled = warnings.globalSyncDisabled
-        val dataSaverOn = warnings.dataSaverEnabled
-        val networkAvailable = warnings.networkAvailable
-        val storageLow = warnings.storageLow
-
-        // Accounts
-        private val accountsUpdated = MutableLiveData<Boolean>()
-        private val syncWorkersActive = SyncWorker.exists(
-            application,
-            listOf(
-                WorkInfo.State.RUNNING,
-                WorkInfo.State.ENQUEUED
-            )
-        )
-        private val refreshingAccounts = RefreshCollectionsWorker.existsLive(
-            application, listOf(WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED)
-        ).switchMap {
-            db.serviceDao().getLive().map { services ->
-                services.filter { service ->
-                    RefreshCollectionsWorker.exists(
-                        application,
-                        listOf(WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED),
-                        listOf(service.id)
-                    )
-                }.map { it.accountName }
-            }
-        }
-
-        val accounts = object : MediatorLiveData<List<AccountInfo>>() {
-            var nullableRefreshingAccounts: List<String>? = null
-            init {
-                addSource(accountsUpdated) { recalculate() }
-                addSource(syncWorkersActive) { recalculate() }
-                addSource(refreshingAccounts) {
-                    nullableRefreshingAccounts = it
-                    recalculate()
-                }
-            }
-
-            fun recalculate() {
-                val refreshingAccounts = nullableRefreshingAccounts ?: return
-                val context = getApplication<Application>()
-                val collator = Collator.getInstance()
-
-                val sortedAccounts = accountManager
-                    .getAccountsByType(context.getString(R.string.account_type))
-                    .sortedArrayWith { a, b ->
-                        collator.compare(a.name, b.name)
-                    }
-                val accountsWithInfo = sortedAccounts.map { account ->
-                    AccountInfo(
-                        account,
-                        SyncStatus.fromAccount(context, account),
-                        account.name in refreshingAccounts
-                    )
-                }
-                value = accountsWithInfo
-            }
-        }
-
-        private val accountManager = AccountManager.get(application)!!
-
-        init {
-            // watch accounts
-            accountManager.addOnAccountsUpdatedListener(this, null, true)
-        }
-
-        @AnyThread
-        override fun onAccountsUpdated(newAccounts: Array<out Account>) {
-            accountsUpdated.postValue(true)
-        }
-
-        override fun onCleared() {
-            accountManager.removeOnAccountsUpdatedListener(this)
-            warnings.close()
-        }
-
-    }
-
-    enum class SyncStatus {
-        ACTIVE, PENDING, IDLE;
-
-        companion object {
-            /**
-             * Returns the sync status of a given account. Checks the account itself and possible
-             * sub-accounts (address book accounts).
-             *
-             * @param account       account to check
-             *
-             * @return sync status of the given account
-             */
-            fun fromAccount(context: Context, account: Account): SyncStatus {
-                // Add contacts authority, so sync status of address-book-accounts is also checked
-                val workerNames = syncAuthorities(context, true).map { authority ->
-                    SyncWorker.workerName(account, authority)
-                }
-                val workQuery = WorkQuery.Builder
-                    .fromTags(workerNames)
-                    .addStates(listOf(WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED))
-                    .build()
-
-                val workInfos = WorkManager.getInstance(context).getWorkInfos(workQuery).get()
-
-                return when {
-                    workInfos.any { workInfo ->
-                        workInfo.state == WorkInfo.State.RUNNING
-                    } -> ACTIVE
-
-                    workInfos.any {workInfo ->
-                        workInfo.state == WorkInfo.State.ENQUEUED
-                    } -> PENDING
-
-                    else -> IDLE
-                }
-            }
-        }
-
     }
 
 }
