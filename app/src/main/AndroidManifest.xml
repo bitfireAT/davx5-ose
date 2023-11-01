@@ -1,112 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:installLocation="internalOnly">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:installLocation="internalOnly">
 
     <!-- normal permissions -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <!-- account management permissions not required for own accounts since API level 22 -->
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" android:maxSdkVersion="22"/>
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" android:maxSdkVersion="22"/>
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" android:maxSdkVersion="22"/>
+    <uses-permission
+        android:name="android.permission.AUTHENTICATE_ACCOUNTS"
+        android:maxSdkVersion="22" />
+    <uses-permission
+        android:name="android.permission.GET_ACCOUNTS"
+        android:maxSdkVersion="22" />
+    <uses-permission
+        android:name="android.permission.MANAGE_ACCOUNTS"
+        android:maxSdkVersion="22" />
 
     <!-- other permissions -->
     <!-- android.permission-group.CONTACTS -->
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <!-- android.permission-group.CALENDAR -->
-    <uses-permission android:name="android.permission.READ_CALENDAR"/>
-    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <!-- android.permission-group.LOCATION -->
     <!-- getting the WiFi name (for "sync in Wifi only") requires
       - coarse location (Android 8.1)
       - fine location (Android 10) -->
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- required since Android 10 to get the WiFi name while in background (= while syncing) -->
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <!-- ical4android declares task access permissions -->
 
     <!-- Disable GPS capability requirement, which is implicitly derived from ACCESS_FINE_LOCATION
     permission and makes app unusable on some devices without GPS. We need location permissions only
     to get the current WiFi SSID, and we don't need GPS for that. -->
-    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
 
     <application
         android:name=".App"
         android:allowBackup="false"
-        android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:resizeableActivity="true"
-        tools:ignore="UnusedAttribute"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="UnusedAttribute">
 
         <!-- required for Hilt/WorkManager integration -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
-            tools:node="remove">
-        </provider>
+            tools:node="remove" />
 
-        <service android:name=".ForegroundService"/>
+        <service android:name=".ForegroundService" />
 
         <!-- Remove the node added by AppAuth (remove only from net.openid.appauth library, not from our flavor manifest files) -->
-        <activity android:name="net.openid.appauth.RedirectUriReceiverActivity"
-            tools:node="remove" tools:selector="net.openid.appauth"/>
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            tools:node="remove"
+            tools:selector="net.openid.appauth" />
 
-        <activity android:name=".ui.intro.IntroActivity" android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.intro.IntroActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="com.infomaniak.lib.login.WebViewLoginActivity"
             android:theme="@style/WebViewTheme" />
 
         <activity
             android:name=".ui.AccountsActivity"
+            android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:exported="true">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
             android:name=".ui.AboutActivity"
             android:label="@string/navigation_drawer_about"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".ui.AccountsActivity"/>
+            android:parentActivityName=".ui.AccountsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".ui.AppSettingsActivity"
+            android:exported="true"
             android:label="@string/app_settings"
-            android:parentActivityName=".ui.AccountsActivity"
-            android:exported="true">
+            android:parentActivityName=".ui.AccountsActivity">
             <intent-filter>
-                <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.DebugInfoActivity"
-            android:parentActivityName=".ui.AppSettingsActivity"
             android:exported="true"
-            android:label="@string/debug_info_title">
+            android:label="@string/debug_info_title"
+            android:parentActivityName=".ui.AppSettingsActivity">
             <intent-filter>
-                <action android:name="android.intent.action.BUG_REPORT"/>
+                <action android:name="android.intent.action.BUG_REPORT" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -121,26 +132,29 @@
 
         <activity
             android:name=".ui.setup.LoginActivity"
+            android:exported="true"
             android:label="@string/login_title"
             android:parentActivityName=".ui.AccountsActivity"
-            android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="caldav"/>
-                <data android:scheme="caldavs"/>
-                <data android:scheme="carddav"/>
-                <data android:scheme="carddavs"/>
-                <data android:scheme="davx5"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="caldav" />
+                <data android:scheme="caldavs" />
+                <data android:scheme="carddav" />
+                <data android:scheme="carddavs" />
+                <data android:scheme="davx5" />
             </intent-filter>
             <intent-filter>
                 <action android:name="loginFlow" /> <!-- Ensures this filter matches, even if the sending app is not defining an action -->
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="http" />
                 <data android:scheme="https" />
             </intent-filter>
@@ -151,10 +165,9 @@
 
         <activity
             android:name=".ui.account.AccountActivity"
+            android:exported="true"
             android:parentActivityName=".ui.AccountsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:exported="true">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.account.CreateAddressBookActivity"
             android:label="@string/create_addressbook"
@@ -173,9 +186,9 @@
 
         <activity
             android:name=".ui.webdav.WebdavMountsActivity"
+            android:exported="true"
             android:label="@string/webdav_mounts_title"
-            android:parentActivityName=".ui.AccountsActivity"
-            android:exported="true" />
+            android:parentActivityName=".ui.AccountsActivity" />
         <activity
             android:name=".ui.webdav.AddWebdavMountActivity"
             android:label="@string/webdav_add_mount_title"
@@ -186,59 +199,60 @@
             android:name=".syncadapter.AccountAuthenticatorService"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
+                <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/account_authenticator"/>
+                android:resource="@xml/account_authenticator" />
         </service>
         <service
             android:name=".syncadapter.CalendarsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_calendars"/>
+                android:resource="@xml/sync_calendars" />
         </service>
         <service
             android:name=".syncadapter.JtxSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_notes"/>
+                android:resource="@xml/sync_notes" />
         </service>
         <service
             android:name=".syncadapter.OpenTasksSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_opentasks"/>
+                android:resource="@xml/sync_opentasks" />
         </service>
         <service
             android:name=".syncadapter.TasksOrgSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_tasks_org"/>
+                android:resource="@xml/sync_tasks_org" />
         </service>
+
         <provider
-            android:authorities="@string/webdav_authority"
             android:name=".webdav.DavDocumentsProvider"
+            android:authorities="@string/webdav_authority"
             android:exported="true"
             android:grantUriPermissions="true"
             android:permission="android.permission.MANAGE_DOCUMENTS">
@@ -252,56 +266,64 @@
             android:name=".syncadapter.AddressBookAuthenticatorService"
             android:exported="true">   <!-- Since Android 11, this must be true so that Google Contacts shows the address book accounts -->
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
+                <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
 
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/account_authenticator_address_book"/>
+                android:resource="@xml/account_authenticator_address_book" />
         </service>
         <provider
+            android:name=".syncadapter.AddressBookProvider"
             android:authorities="@string/address_books_authority"
             android:exported="false"
-            android:label="@string/address_books_authority_title"
-            android:name=".syncadapter.AddressBookProvider" />
+            android:label="@string/address_books_authority_title" />
+
         <service
             android:name=".syncadapter.AddressBooksSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
 
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_address_books"/>
+                android:resource="@xml/sync_address_books" />
         </service>
         <service
             android:name=".syncadapter.ContactsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
 
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_contacts"/>
+                android:resource="@xml/sync_contacts" />
             <meta-data
                 android:name="android.provider.CONTACTS_STRUCTURE"
-                android:resource="@xml/contacts"/>
+                android:resource="@xml/contacts" />
         </service>
 
         <!-- provider to share debug info/logs -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="@string/authority_debug_provider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/debug_paths" />
         </provider>
+
+        <!-- Provider to share kSync accounts -->
+        <provider
+            android:name=".syncadapter.AccountProvider"
+            android:authorities="@string/account_authority"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
 
     </application>
 
@@ -309,8 +331,8 @@
     <queries>
         <!-- system providers (listing them is technically not required, but some apps like the
         Huawei calendar take this as indication of whether these providers are accessed) -->
-        <provider android:authorities="com.android.calendar"/>
-        <provider android:authorities="com.android.contacts"/>
+        <provider android:authorities="com.android.calendar" />
+        <provider android:authorities="com.android.contacts" />
 
         <!-- task providers -->
         <package android:name="at.techbee.jtx" />
@@ -318,16 +340,20 @@
         <package android:name="org.tasks" />
 
         <!-- ICSx5 for Webcal feeds -->
-        <package android:name="at.bitfire.icsdroid"/>
+        <package android:name="at.bitfire.icsdroid" />
 
         <!-- apps that interact with contact, calendar, task data (for debug info) -->
         <intent>
             <action android:name="*" />
-            <data android:scheme="content" android:host="com.android.contacts" />
+            <data
+                android:host="com.android.contacts"
+                android:scheme="content" />
         </intent>
         <intent>
             <action android:name="*" />
-            <data android:scheme="content" android:host="com.android.calendar" />
+            <data
+                android:host="com.android.calendar"
+                android:scheme="content" />
         </intent>
 
         <!-- Open URLs in a browser or other app [https://developer.android.com/training/package-visibility/use-cases#open-urls-browser-or-other-app] -->
