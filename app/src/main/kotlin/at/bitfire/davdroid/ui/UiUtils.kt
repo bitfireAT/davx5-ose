@@ -9,13 +9,22 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
+import android.graphics.Typeface
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsClient
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.core.content.getSystemService
+import androidx.core.text.getSpans
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.Settings
@@ -86,6 +95,30 @@ object UiUtils {
                     Logger.log.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
                 }
             }
+    }
+
+
+    @Composable
+    fun Spanned.toAnnotatedString() = buildAnnotatedString {
+        val spanned = this@toAnnotatedString
+        append(spanned.toString())
+        for (span in getSpans<Any>(0, spanned.length)) {
+            val start = getSpanStart(span)
+            val end = getSpanEnd(span)
+            when (span) {
+                is StyleSpan ->
+                    when (span.style) {
+                        Typeface.BOLD -> addStyle(
+                            SpanStyle(fontWeight = FontWeight.Bold),
+                            start = start, end = end
+                        )
+                        Typeface.ITALIC -> addStyle(
+                            SpanStyle(fontStyle = FontStyle.Italic),
+                            start = start, end = end
+                        )
+                    }
+            }
+        }
     }
 
 }
