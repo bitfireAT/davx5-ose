@@ -9,6 +9,7 @@
     <string name="account_type_address_book" translatable="false">com.infomaniak.sync.address_book</string>
     <string name="account_title_address_book">kSync Address book</string>
     <string name="address_books_authority" translatable="false">com.infomaniak.sync.addressbooks</string>
+    <string name="account_authority" translatable="false">com.infomaniak.sync.accounts</string>
     <string name="address_books_authority_title">Address books</string>
     <string name="dialog_remove">Remove</string>
     <string name="dialog_deny">Cancel</string>
