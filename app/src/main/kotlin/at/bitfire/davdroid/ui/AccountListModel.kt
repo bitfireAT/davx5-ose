@@ -39,6 +39,8 @@ class AccountListModel @Inject constructor(
         val refreshing: Boolean
     )
 
+    val context = application
+
     // Snackbar feedback
     val feedback = MutableLiveData<String>()
 
@@ -49,21 +51,22 @@ class AccountListModel @Inject constructor(
     val storageLow = warnings.storageLow
 
     // Accounts
+    private val accountManager = AccountManager.get(context)!!
     private val accountsUpdated = MutableLiveData<Boolean>()
     private val syncWorkersActive = SyncWorker.exists(
-        application,
+        context,
         listOf(
             WorkInfo.State.RUNNING,
             WorkInfo.State.ENQUEUED
         )
     )
     private val refreshingAccounts = RefreshCollectionsWorker.existsLive(
-        application, listOf(WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED)
+        context, listOf(WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED)
     ).switchMap {
         db.serviceDao().getAllLive().map { services ->
             services.filter { service ->
                 RefreshCollectionsWorker.exists(
-                    application,
+                    context,
                     listOf(WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED),
                     listOf(service.id)
                 )
@@ -84,7 +87,6 @@ class AccountListModel @Inject constructor(
 
         fun recalculate() {
             val refreshingAccounts = nullableRefreshingAccounts ?: return
-            val context = getApplication<Application>()
             val collator = Collator.getInstance()
 
             val sortedAccounts = accountManager
@@ -103,8 +105,6 @@ class AccountListModel @Inject constructor(
         }
     }
 
-    private val accountManager = AccountManager.get(application)!!
-
     init {
         // watch accounts
         accountManager.addOnAccountsUpdatedListener(this, null, true)
@@ -120,11 +120,7 @@ class AccountListModel @Inject constructor(
         warnings.close()
     }
 
-
-    // TODO next two methods:
-
     fun syncAllAccounts(viaShortcut: Boolean = false) {
-        val context = getApplication<Application>()
         if (viaShortcut && Build.VERSION.SDK_INT >= 25)
             context.getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
 
@@ -139,15 +135,10 @@ class AccountListModel @Inject constructor(
         }
 
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
-        val accounts = allAccounts()
-        for (account in accounts)
-            SyncWorker.enqueueAllAuthorities(getApplication(), account)
+        val allAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type))
+        for (account in allAccounts)
+            SyncWorker.enqueueAllAuthorities(context, account)
     }
-
-    private fun allAccounts(): Array<Account> =
-        AccountManager.get(getApplication()).getAccountsByType(
-            getApplication<Application>().getString(R.string.account_type)
-        )
 
 }
 
