@@ -17,6 +17,7 @@ import android.graphics.Point
 import android.media.ThumbnailUtils
 import android.net.ConnectivityManager
 import android.os.Build
+import android.os.Bundle
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import android.os.storage.StorageManager
@@ -468,7 +469,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             }
             deferredFileInfo.get()
         }
-        Logger.log.info("Received file info: $fileInfo")
+        Logger.log.fine("Received file info: $fileInfo")
 
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
         return if (
@@ -476,11 +477,13 @@ class DavDocumentsProvider: DocumentsProvider() {
             readAccess &&                       // WebDAV doesn't support random write access natively
             fileInfo.size != null &&            // file descriptor must return a useful value on getFileSize()
             (fileInfo.eTag != null || fileInfo.lastModified != null) &&     // we need a method to determine whether the document has changed during access
-            fileInfo.supportsPartial != false   // WebDAV server must support random access
+            fileInfo.supportsPartial == true    // WebDAV server must support random access
         ) {
+            Logger.log.fine("Creating RandomAccessCallback for $url")
             val accessor = RandomAccessCallback.Wrapper(ourContext, client, url, doc.mimeType, fileInfo, signal)
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
+            Logger.log.fine("Creating StreamingFileDescriptor for $url")
             val fd = StreamingFileDescriptor(ourContext, client, url, doc.mimeType, signal) { transferred ->
                 // called when transfer is finished
 
