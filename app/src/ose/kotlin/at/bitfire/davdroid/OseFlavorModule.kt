@@ -22,22 +22,16 @@ interface OseFlavorModules {
 
     @Module
     @InstallIn(ActivityComponent::class)
-    interface AccountsDrawerHandlerModule {
+    interface ForActivities {
         @Binds
-        abstract fun accountsDrawerHandler(handler: OseAccountsDrawerHandler): AccountsDrawerHandler
-    }
+        abstract fun accountsDrawerHandler(impl: OseAccountsDrawerHandler): AccountsDrawerHandler
 
-    @Module
-    @InstallIn(ActivityComponent::class)
-    interface OpenSourceLicenseInfoProviderModule {
         @Binds
-        fun appLicenseInfoProviderModule(impl: OpenSourceLicenseInfoProvider): AboutActivity.AppLicenseInfoProvider
+        fun appLicenseInfoProvider(impl: OpenSourceLicenseInfoProvider): AboutActivity.AppLicenseInfoProvider
     }
 
 
     //// intro fragments ////
-
-    // WelcomeFragment and BatteryOptimizationsFragment modules are hardcoded there
 
     @Module
     @InstallIn(ActivityComponent::class)
