@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid
 
+import at.bitfire.davdroid.ui.AboutActivity
 import at.bitfire.davdroid.ui.AccountsDrawerHandler
 import at.bitfire.davdroid.ui.StandardAccountsDrawerHandler
 import at.bitfire.davdroid.ui.intro.IntroFragmentFactory
@@ -18,11 +19,9 @@ import dagger.multibindings.IntoSet
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class StandardFlavorModule {
-
-    //// navigation drawer handler ////
+interface StandardFlavorModule {
 
     @Binds
-    abstract fun accountsDrawerHandler(handler: StandardAccountsDrawerHandler): AccountsDrawerHandler
+    fun accountsDrawerHandler(handler: StandardAccountsDrawerHandler): AccountsDrawerHandler
 
 }
