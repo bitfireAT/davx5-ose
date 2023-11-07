@@ -4,7 +4,9 @@
 
 package at.bitfire.davdroid
 
+import at.bitfire.davdroid.ui.AboutActivity
 import at.bitfire.davdroid.ui.AccountsDrawerHandler
+import at.bitfire.davdroid.ui.OpenSourceLicenseInfoProvider
 import at.bitfire.davdroid.ui.OseAccountsDrawerHandler
 import at.bitfire.davdroid.ui.intro.IntroFragmentFactory
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment
@@ -14,17 +16,23 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class OseFlavorModule {
+interface OseFlavorModules {
 
-    //// navigation drawer handler ////
+    @Module
+    @InstallIn(ActivityComponent::class)
+    interface AccountsDrawerHandlerModule {
+        @Binds
+        abstract fun accountsDrawerHandler(handler: OseAccountsDrawerHandler): AccountsDrawerHandler
+    }
 
-    @Binds
-    abstract fun accountsDrawerHandler(handler: OseAccountsDrawerHandler): AccountsDrawerHandler
+    @Module
+    @InstallIn(ActivityComponent::class)
+    interface OpenSourceLicenseInfoProviderModule {
+        @Binds
+        fun appLicenseInfoProviderModule(impl: OpenSourceLicenseInfoProvider): AboutActivity.AppLicenseInfoProvider
+    }
 
 
     //// intro fragments ////
@@ -33,23 +41,23 @@ abstract class OseFlavorModule {
 
     @Module
     @InstallIn(ActivityComponent::class)
-    abstract class OpenSourceFragmentModule {
+    interface OpenSourceFragmentModule {
         @Binds @IntoSet
-        abstract fun getFactory(factory: OpenSourceFragment.Factory): IntroFragmentFactory
+        fun getFactory(factory: OpenSourceFragment.Factory): IntroFragmentFactory
     }
 
     @Module
     @InstallIn(ActivityComponent::class)
-    abstract class PermissionsIntroFragmentModule {
+    interface PermissionsIntroFragmentModule {
         @Binds @IntoSet
-        abstract fun getFactory(factory: PermissionsIntroFragment.Factory): IntroFragmentFactory
+        fun getFactory(factory: PermissionsIntroFragment.Factory): IntroFragmentFactory
     }
 
     @Module
     @InstallIn(ActivityComponent::class)
-    abstract class TasksIntroFragmentModule {
+    interface TasksIntroFragmentModule {
         @Binds @IntoSet
-        abstract fun getFactory(factory: TasksIntroFragment.Factory): IntroFragmentFactory
+        fun getFactory(factory: TasksIntroFragment.Factory): IntroFragmentFactory
     }
 
 }

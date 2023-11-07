@@ -10,20 +10,29 @@ import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.Typeface
+import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.text.Spanned
 import android.text.style.StyleSpan
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.content.getSystemService
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.getSpans
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -45,6 +54,19 @@ object UiUtils {
 
     const val SHORTCUT_SYNC_ALL = "syncAllAccounts"
     const val SNACKBAR_LENGTH_VERY_LONG = 5000          // 5s
+
+    @Composable
+    fun adaptiveIconPainterResource(@DrawableRes id: Int): Painter {
+        val context = LocalContext.current
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val adaptiveIcon = ResourcesCompat.getDrawable(context.resources, id, null) as? AdaptiveIconDrawable
+            if (adaptiveIcon != null)
+                BitmapPainter(adaptiveIcon.toBitmap().asImageBitmap())
+            else
+                painterResource(id)
+        } else
+            painterResource(id)
+    }
 
     fun haveCustomTabs(context: Context) = CustomTabsClient.getPackageName(context, null, false) != null
 

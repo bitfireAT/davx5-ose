@@ -131,6 +131,7 @@ dependencies {
     kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"     // replace by KSP when ready [https://issuetracker.google.com/179057202]
 
     // support libs
+    implementation 'androidx.activity:activity-compose:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.browser:browser:1.6.0'
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -141,6 +142,7 @@ dependencies {
     implementation 'androidx.hilt:hilt-work:1.0.0'
     kapt 'androidx.hilt:hilt-compiler:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
     implementation 'androidx.paging:paging-runtime-ktx:3.2.1'
     implementation 'androidx.preference:preference-ktx:1.2.1'
