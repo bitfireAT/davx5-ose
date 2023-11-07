@@ -16,7 +16,7 @@ import dagger.multibindings.IntoSet
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class StandardAndGplayFlavorModule {
+interface StandardAndGplayFlavorModule {
 
     //// intro fragments ////
 
@@ -24,16 +24,16 @@ abstract class StandardAndGplayFlavorModule {
 
     @Module
     @InstallIn(ActivityComponent::class)
-    abstract class PermissionsIntroFragmentModule {
+    interface PermissionsIntroFragmentModule {
         @Binds @IntoSet
-        abstract fun getFactory(factory: PermissionsIntroFragment.Factory): IntroFragmentFactory
+        fun getFactory(factory: PermissionsIntroFragment.Factory): IntroFragmentFactory
     }
 
     @Module
     @InstallIn(ActivityComponent::class)
-    abstract class TasksIntroFragmentModule {
+    interface TasksIntroFragmentModule {
         @Binds @IntoSet
-        abstract fun getFactory(factory: TasksIntroFragment.Factory): IntroFragmentFactory
+        fun getFactory(factory: TasksIntroFragment.Factory): IntroFragmentFactory
     }
 
 }
