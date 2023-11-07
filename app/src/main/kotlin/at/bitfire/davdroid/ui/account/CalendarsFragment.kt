@@ -5,17 +5,19 @@
 package at.bitfire.davdroid.ui.account
 
 import android.content.Intent
-import android.os.Bundle
-import android.view.*
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.util.PermissionUtils
 
 class CalendarsFragment: CollectionsFragment() {
 

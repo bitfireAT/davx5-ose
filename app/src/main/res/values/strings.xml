@@ -16,8 +16,9 @@
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="navigate_up">Navigate up</string>
+    <string name="no_internet_sync_scheduled">No Internet, scheduling sync</string>
     <string name="share">Share</string>
-    <string name="no_internet_sync_scheduled">No internet, scheduling sync</string>
+    <string name="sync_started">Synchronization started</string>
 
     <string name="database_destructive_migration_title">Database corrupted</string>
     <string name="database_destructive_migration_text">All accounts have been removed locally.</string>

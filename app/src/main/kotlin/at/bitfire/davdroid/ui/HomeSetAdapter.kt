@@ -13,9 +13,9 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.TextView
-import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
+import at.bitfire.davdroid.util.DavUtils
 
 class HomeSetAdapter(
         context: Context

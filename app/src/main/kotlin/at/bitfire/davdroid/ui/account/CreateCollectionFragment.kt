@@ -147,7 +147,7 @@ class CreateCollectionFragment: DialogFragment() {
                             db.collectionDao().insert(collection)
 
                             // trigger service detection (because the collection may have other properties than the ones we have inserted)
-                            RefreshCollectionsWorker.refreshCollections(getApplication(), service.id)
+                            RefreshCollectionsWorker.enqueue(getApplication(), service.id)
                         }
 
                         // post success

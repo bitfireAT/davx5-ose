@@ -8,8 +8,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.WorkerThread
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -21,7 +21,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class IntroActivity: AppIntro2() {

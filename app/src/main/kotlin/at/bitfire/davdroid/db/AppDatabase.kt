@@ -91,7 +91,7 @@ abstract class AppDatabase: RoomDatabase() {
             db.query("SELECT id FROM service", arrayOf()).use { cursor ->
                 while (cursor.moveToNext()) {
                     val serviceId = cursor.getLong(0)
-                    RefreshCollectionsWorker.refreshCollections(context, serviceId)
+                    RefreshCollectionsWorker.enqueue(context, serviceId)
                 }
             }
         }

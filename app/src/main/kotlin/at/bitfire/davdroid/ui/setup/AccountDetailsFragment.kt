@@ -212,7 +212,7 @@ class AccountDetailsFragment : Fragment() {
                         accountSettings.setGroupMethod(groupMethod)
 
                         // start CardDAV service detection (refresh collections)
-                        RefreshCollectionsWorker.refreshCollections(context, id)
+                        RefreshCollectionsWorker.enqueue(context, id)
 
                         // set default sync interval and enable sync regardless of permissions
                         ContentResolver.setIsSyncable(account, addrBookAuthority, 1)
@@ -226,7 +226,7 @@ class AccountDetailsFragment : Fragment() {
                         val id = insertService(name, Service.TYPE_CALDAV, config.calDAV)
 
                         // start CalDAV service detection (refresh collections)
-                        RefreshCollectionsWorker.refreshCollections(context, id)
+                        RefreshCollectionsWorker.enqueue(context, id)
 
                         // set default sync interval and enable sync regardless of permissions
                         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)

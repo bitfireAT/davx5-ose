@@ -158,7 +158,8 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'com.google.accompanist:accompanist-themeadapter-material:0.30.1'
+    implementation "com.google.accompanist:accompanist-permissions:${versions.accompanist}"
+    implementation "com.google.accompanist:accompanist-themeadapter-material:${versions.accompanist}"
 
     // Jetpack Room
     implementation "androidx.room:room-runtime:${versions.room}"

@@ -98,7 +98,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     companion object {
 
         const val ARG_SERVICE_ID = "serviceId"
-        const val REFRESH_COLLECTIONS_WORKER_TAG = "refreshCollectionsWorker"
+        const val WORKER_TAG = "refreshCollectionsWorker"
 
         // Collection properties to ask for in a propfind request to the Cal- or CardDAV server
         val DAV_COLLECTION_PROPERTIES = arrayOf(
@@ -122,7 +122,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          *
          * @param serviceId     what service (CalDAV/CardDAV) the worker is running for
          */
-        fun workerName(serviceId: Long): String = "$REFRESH_COLLECTIONS_WORKER_TAG-$serviceId"
+        fun workerName(serviceId: Long): String = "$WORKER_TAG-$serviceId"
 
         /**
          * Requests immediate refresh of a given service. If not running already. this will enqueue
@@ -133,24 +133,23 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          *
          * @throws IllegalArgumentException when there's no service with this ID
          */
-        fun refreshCollections(context: Context, serviceId: Long): String {
-            if (serviceId == -1L)
-                throw IllegalArgumentException("Service with ID \"$serviceId\" does not exist")
-
+        fun enqueue(context: Context, serviceId: Long): String {
+            val name = workerName(serviceId)
             val arguments = Data.Builder()
                 .putLong(ARG_SERVICE_ID, serviceId)
                 .build()
             val workRequest = OneTimeWorkRequestBuilder<RefreshCollectionsWorker>()
+                .addTag(name)
                 .setInputData(arguments)
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
 
             WorkManager.getInstance(context).enqueueUniqueWork(
-                workerName(serviceId),
+                name,
                 ExistingWorkPolicy.KEEP,    // if refresh is already running, just continue that one
                 workRequest
             )
-            return workerName(serviceId)
+            return name
         }
 
         /**
@@ -160,7 +159,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          * @param workState     state of worker to match
          * @return boolean      true if worker with matching state was found
          */
-        fun isWorkerInState(context: Context, workerName: String, workState: WorkInfo.State) =
+        fun exists(context: Context, workerName: String, workState: WorkInfo.State = WorkInfo.State.RUNNING) =
             WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName).map {
                 workInfoList -> workInfoList.any { workInfo -> workInfo.state == workState }
             }

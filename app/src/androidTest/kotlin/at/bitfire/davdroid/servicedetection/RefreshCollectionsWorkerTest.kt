@@ -128,14 +128,14 @@ class RefreshCollectionsWorkerTest {
     @Test
     fun testRefreshCollections_enqueuesWorker() {
         val service = createTestService(Service.TYPE_CALDAV)!!
-        val workerName = RefreshCollectionsWorker.refreshCollections(context, service.id)
+        val workerName = RefreshCollectionsWorker.enqueue(context, service.id)
         assertTrue(workScheduledOrRunning(context, workerName))
     }
 
     @Test
     fun testOnStopped_stopsRefreshThread() {
         val service = createTestService(Service.TYPE_CALDAV)!!
-        val workerName = RefreshCollectionsWorker.refreshCollections(context, service.id)
+        val workerName = RefreshCollectionsWorker.enqueue(context, service.id)
         WorkManager.getInstance(context).cancelUniqueWork(workerName)
         assertFalse(workScheduledOrRunning(context, workerName))
 

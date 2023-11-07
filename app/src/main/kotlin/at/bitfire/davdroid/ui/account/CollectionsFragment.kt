@@ -14,7 +14,6 @@ import android.provider.ContactsContract
 import android.view.*
 import android.widget.PopupMenu
 import androidx.annotation.CallSuper
-import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -315,7 +314,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             }
 
         // observe RefreshCollectionsWorker status
-        val isRefreshing = RefreshCollectionsWorker.isWorkerInState(getApplication(), RefreshCollectionsWorker.workerName(serviceId), WorkInfo.State.RUNNING)
+        val isRefreshing = RefreshCollectionsWorker.exists(getApplication(), RefreshCollectionsWorker.workerName(serviceId))
 
         // observe SyncWorker state
         private val authorities =
@@ -335,7 +334,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         // actions
 
         fun refresh() {
-            RefreshCollectionsWorker.refreshCollections(getApplication(), serviceId)
+            RefreshCollectionsWorker.enqueue(getApplication(), serviceId)
         }
 
     }
