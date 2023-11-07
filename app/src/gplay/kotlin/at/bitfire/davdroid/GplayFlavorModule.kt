@@ -11,7 +11,12 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class GplayFlavorModule {
+interface GplayFlavorModule {
+
     @Binds
-    abstract fun accountsDrawerHandler(impl: GplayAccountsDrawerHandler): AccountsDrawerHandler
+    fun accountsDrawerHandler(impl: GplayAccountsDrawerHandler): AccountsDrawerHandler
+
+    @Binds
+    fun appLicenseInfoProvider(impl: GplayLicenseInfoProvider): AboutActivity.AppLicenseInfoProvider
+
 }
