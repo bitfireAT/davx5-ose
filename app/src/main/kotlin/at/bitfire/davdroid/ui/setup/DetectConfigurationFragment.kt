@@ -8,25 +8,42 @@ import android.app.Application
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.ui.DebugInfoActivity
+import com.google.accompanist.themeadapter.material.MdcTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.lang.ref.WeakReference
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
+import kotlinx.coroutines.runInterruptible
 import java.net.URI
 import java.util.logging.Level
-import kotlin.concurrent.thread
 
 class DetectConfigurationFragment: Fragment() {
 
@@ -39,7 +56,7 @@ class DetectConfigurationFragment: Fragment() {
 
         val baseURI = loginModel.baseURI ?: return
 
-        model.detectConfiguration(baseURI, loginModel.credentials).observe(this) { result ->
+        model.result.observe(this) { result ->
             // save result for next step
             loginModel.configuration = result
 
@@ -56,50 +73,64 @@ class DetectConfigurationFragment: Fragment() {
                         .add(NothingDetectedFragment(), null)
                         .commit()
         }
+
+        model.start(baseURI, loginModel.credentials)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(R.layout.detect_configuration, container, false)!!
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        ComposeView(requireContext()).apply {
+            setContent {
+                MdcTheme {
+                    DetectConfigurationView()
+                }
+
+                // Cancel service detection only when back button is pressed
+                BackHandler {
+                    model.cancel()
+
+                    parentFragmentManager.popBackStack()
+                }
+            }
+        }
 
 
     class DetectConfigurationModel(application: Application): AndroidViewModel(application) {
 
-        private var detectionThread: WeakReference<Thread>? = null
-        private var result = MutableLiveData<DavResourceFinder.Configuration>()
+        val scope = MainScope() + CoroutineName("DetectConfigurationModel")
+        var result = MutableLiveData<DavResourceFinder.Configuration>()
 
-        fun detectConfiguration(baseURI: URI, credentials: Credentials?): LiveData<DavResourceFinder.Configuration> {
-            synchronized(result) {
-                if (detectionThread != null)
-                    // detection already running
-                    return result
-            }
-
-            thread {
-                synchronized(result) {
-                    detectionThread = WeakReference(Thread.currentThread())
-                }
-
-                try {
-                    DavResourceFinder(getApplication(), baseURI, credentials).use { finder ->
-                        result.postValue(finder.findInitialConfiguration())
+        /**
+         * Starts service detection in a global scope which is independent of the ViewModel scope so
+         * that service detection won't be cancelled when the user for instance switches to another app.
+         *
+         * The service detection result will be posted into [result].
+         */
+        fun start(baseURI: URI, credentials: Credentials?) {
+            scope.launch(Dispatchers.Default) {
+                runInterruptible {
+                    try {
+                        DavResourceFinder(getApplication(), baseURI, credentials).use { finder ->
+                            val configuration = finder.findInitialConfiguration()
+                            result.postValue(configuration)
+                        }
+                    } catch(e: Exception) {
+                        // This shouldn't happen; instead configuration should be empty
+                        at.bitfire.davdroid.log.Logger.log.log(Level.WARNING, "Uncaught exception during service detection, shouldn't happen", e)
                     }
-                } catch(e: Exception) {
-                    // exception, shouldn't happen
-                    Logger.log.log(Level.SEVERE, "Internal resource detection error", e)
                 }
             }
-            return result
         }
 
-        override fun onCleared() {
-            synchronized(result) {
-                detectionThread?.get()?.let { thread ->
-                    Logger.log.info("Aborting resource detection")
-                    thread.interrupt()
-                }
-                detectionThread = null
-            }
+        /**
+         * Cancels a potentially running service detection.
+         */
+        fun cancel() {
+            Logger.log.info("Aborting resource detection")
+            try {
+                scope.cancel()
+            } catch (ignored: IllegalStateException) { }
         }
+
     }
 
 
@@ -130,4 +161,32 @@ class DetectConfigurationFragment: Fragment() {
 
     }
 
+}
+
+
+@Composable
+fun DetectConfigurationView() {
+    Column(Modifier
+        .fillMaxWidth()
+        .padding(8.dp)) {
+        Text(
+            stringResource(R.string.login_configuration_detection),
+            style = MaterialTheme.typography.h5
+        )
+        LinearProgressIndicator(
+            color = MaterialTheme.colors.secondary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 16.dp))
+        Text(
+            stringResource(R.string.login_querying_server),
+            style = MaterialTheme.typography.body1
+        )
+    }
+}
+
+@Composable
+@Preview
+fun DetectConfigurationView_Preview() {
+    DetectConfigurationView()
 }

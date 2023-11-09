@@ -78,8 +78,13 @@ class DavResourceFinder(
 
 
     /**
-     * Finds the initial configuration, i.e. runs the auto-detection process. Must not throw an
-     * exception, but return an empty Configuration with error logs instead.
+     * Finds the initial configuration (= runs the service detection process).
+     *
+     * In case of an error, it returns an empty [Configuration] with error logs
+     * instead of throwing an [Exception].
+     *
+     * @return service information – if there's neither a CalDAV service nor a CardDAV service,
+     * service detection was not successful
      */
     fun findInitialConfiguration(): Configuration {
         var cardDavConfig: Configuration.ServiceInfo? = null
