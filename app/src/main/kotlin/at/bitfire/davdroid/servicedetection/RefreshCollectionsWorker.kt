@@ -8,12 +8,11 @@ import android.accounts.Account
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.lifecycle.map
+import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
@@ -21,7 +20,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.MultiResponseCallback
@@ -64,9 +62,9 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.SettingsActivity
 import at.bitfire.davdroid.util.DavUtils.parent
-import com.google.common.util.concurrent.ListenableFuture
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.util.logging.Level
@@ -93,7 +91,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     var db: AppDatabase,
     var settings: SettingsManager
-): Worker(appContext, workerParams) {
+): CoroutineWorker(appContext, workerParams) {
 
     companion object {
 
@@ -170,10 +168,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     val service = db.serviceDao().get(serviceId) ?: throw IllegalArgumentException("Service #$serviceId not found")
     val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
 
-    /** thread which runs the actual refresh code (can be interrupted to stop refreshing) */
-    var refreshThread: Thread? = null
-
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         try {
             Logger.log.info("Refreshing ${service.type} collections of service #$service")
 
@@ -182,28 +177,29 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .cancel(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS)
 
             // create authenticating OkHttpClient (credentials taken from account settings)
-            refreshThread = Thread.currentThread()
-            HttpClient.Builder(applicationContext, AccountSettings(applicationContext, account))
-                .setForeground(true)
-                .build().use { client ->
-                    val httpClient = client.okHttpClient
-                    val refresher = Refresher(db, service, settings, httpClient)
+            runInterruptible {
+                HttpClient.Builder(applicationContext, AccountSettings(applicationContext, account))
+                    .setForeground(true)
+                    .build().use { client ->
+                        val httpClient = client.okHttpClient
+                        val refresher = Refresher(db, service, settings, httpClient)
 
-                    // refresh home set list (from principal url)
-                    service.principal?.let { principalUrl ->
-                        Logger.log.fine("Querying principal $principalUrl for home sets")
-                        refresher.discoverHomesets(principalUrl)
+                        // refresh home set list (from principal url)
+                        service.principal?.let { principalUrl ->
+                            Logger.log.fine("Querying principal $principalUrl for home sets")
+                            refresher.discoverHomesets(principalUrl)
+                        }
+
+                        // refresh home sets and their member collections
+                        refresher.refreshHomesetsAndTheirCollections()
+
+                        // also refresh collections without a home set
+                        refresher.refreshHomelessCollections()
+
+                        // Lastly, refresh the principals (collection owners)
+                        refresher.refreshPrincipals()
                     }
-
-                    // refresh home sets and their member collections
-                    refresher.refreshHomesetsAndTheirCollections()
-
-                    // also refresh collections without a home set
-                    refresher.refreshHomelessCollections()
-
-                    // Lastly, refresh the principals (collection owners)
-                    refresher.refreshPrincipals()
-                }
+            }
 
         } catch(e: InvalidAccountException) {
             Logger.log.log(Level.SEVERE, "Invalid account", e)
@@ -232,30 +228,22 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             return Result.failure()
         }
 
-
-
         // Success
         return Result.success()
     }
 
-    override fun onStopped() {
-        Logger.log.info("Stopping refresh (reason ${if (Build.VERSION.SDK_INT >= 31) stopReason else "n/a"})")
-        refreshThread?.interrupt()
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
+            .setSmallIcon(R.drawable.ic_foreground_notify)
+            .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
+            .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
+            .setStyle(NotificationCompat.BigTextStyle())
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+        return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
     }
-
-    override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> =
-        CallbackToFutureAdapter.getFuture { completer ->
-            val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
-                .setSmallIcon(R.drawable.ic_foreground_notify)
-                .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
-                .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
-                .setStyle(NotificationCompat.BigTextStyle())
-                .setCategory(NotificationCompat.CATEGORY_STATUS)
-                .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
-            completer.set(ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification))
-        }
 
     private fun notifyRefreshError(contentText: String, contentIntent: Intent) {
         val notify = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_GENERAL)

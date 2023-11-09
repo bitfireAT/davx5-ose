@@ -51,14 +51,11 @@ import org.apache.commons.lang3.exception.ContextedException
 import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.io.InterruptedIOException
-import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
@@ -121,27 +118,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             }
         }
 
-        var _workDispatcher: WeakReference<CoroutineDispatcher>? = null
-        /**
-         * We use our own dispatcher to
-         *
-         *   - make sure that all threads have [Thread.getContextClassLoader] set, which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]),
-         *   - control the global number of sync worker threads.
-         *
-         * Threads created by a service automatically have a contextClassLoader.
-         */
-        fun getWorkDispatcher(): CoroutineDispatcher {
-            val cached = _workDispatcher?.get()
-            if (cached != null)
-                return cached
-
-            val newDispatcher = ThreadPoolExecutor(
-                0, Integer.min(Runtime.getRuntime().availableProcessors(), 4),
-                10, TimeUnit.SECONDS, LinkedBlockingQueue()
-            ).asCoroutineDispatcher()
-            return newDispatcher
-        }
-
     }
 
     init {
@@ -161,8 +137,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected lateinit var davCollection: RemoteType
 
     protected var hasCollectionSync = false
-
-    val workDispatcher = getWorkDispatcher()
 
 
     fun performSync() {
@@ -389,7 +363,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         var numUploaded = 0
 
         // upload dirty resources (parallelized)
-        runBlocking(workDispatcher) {
+        runBlocking {
             for (local in localCollection.findDirty())
                 launch {
                     localExceptionContext(local) {
@@ -578,7 +552,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 }
             }
 
-            withContext(workDispatcher) {    // structured concurrency: blocks until all inner coroutines are finished
+            coroutineScope {    // structured concurrency: blocks until all inner coroutines are finished
                 listRemote { response, relation ->
                     // ignore non-members
                     if (relation != Response.HrefRelation.MEMBER)
@@ -602,7 +576,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                                 } else {
                                     val localETag = local.eTag
                                     val remoteETag = response[GetETag::class.java]?.eTag
-                                            ?: throw DavException("Server didn't provide ETag")
+                                        ?: throw DavException("Server didn't provide ETag")
                                     if (localETag == remoteETag) {
                                         Logger.log.info("$name has not been changed on server (ETag still $remoteETag)")
                                         nSkipped.incrementAndGet()

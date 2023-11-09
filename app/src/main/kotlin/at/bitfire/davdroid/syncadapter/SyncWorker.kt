@@ -5,21 +5,36 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.content.*
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
+import android.content.SyncResult
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
-import android.os.Build
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.IntDef
-import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorker
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import androidx.work.*
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.WorkQuery
+import androidx.work.WorkRequest
+import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.ConnectionUtils.internetAvailable
@@ -31,9 +46,10 @@ import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
-import com.google.common.util.concurrent.ListenableFuture
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
@@ -58,7 +74,7 @@ import java.util.logging.Level
 class SyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters
-) : Worker(appContext, workerParams) {
+) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
 
@@ -278,12 +294,10 @@ class SyncWorker @AssistedInject constructor(
     }
 
 
+    private val dispatcher = SyncWorkDispatcher.getInstance(applicationContext)
     private val notificationManager = NotificationManagerCompat.from(applicationContext)
 
-    /** thread which runs the actual sync code (can be interrupted to stop synchronization)  */
-    var syncThread: Thread? = null
-
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result = withContext(dispatcher) {
         // ensure we got the required arguments
         val account = Account(
             inputData.getString(ARG_ACCOUNT_NAME) ?: throw IllegalArgumentException("$ARG_ACCOUNT_NAME required"),
@@ -296,7 +310,7 @@ class SyncWorker @AssistedInject constructor(
         val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
         if (!internetAvailable(connectivityManager, ignoreVpns)) {
             Logger.log.info("WorkManager started SyncWorker without Internet connection. Aborting.")
-            return Result.failure()
+            return@withContext Result.failure()
         }
 
         Logger.log.info("Running sync worker: account=$account, authority=$authority")
@@ -338,19 +352,16 @@ class SyncWorker @AssistedInject constructor(
             }
         if (provider == null) {
             Logger.log.warning("Couldn't acquire ContentProviderClient for $authority")
-            return Result.failure()
+            return@withContext Result.failure()
         }
 
-        // Start syncing. We still use the sync adapter framework's SyncResult to pass the sync results, but this
-        // is only for legacy reasons and can be replaced by an own result class in the future.
         val result = SyncResult()
-        try {
-            syncThread = Thread.currentThread()
-            syncer.onPerformSync(account, extras.toTypedArray(), authority, provider, result)
-        } catch (e: SecurityException) {
-            Logger.log.log(Level.WARNING, "Security exception when opening content provider for $authority")
-        } finally {
-            provider.close()
+        provider.use {
+            // Start syncing. We still use the sync adapter framework's SyncResult to pass the sync results, but this
+            // is only for legacy reasons and can be replaced by an own result class in the future.
+            runInterruptible {
+                syncer.onPerformSync(account, extras.toTypedArray(), authority, provider, result)
+            }
         }
 
         // Check for errors
@@ -375,7 +386,7 @@ class SyncWorker @AssistedInject constructor(
                         Thread.sleep(blockDuration*1000)
 
                     Logger.log.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
-                    return Result.retry()
+                    return@withContext Result.retry()
                 }
 
                 Logger.log.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
@@ -394,7 +405,7 @@ class SyncWorker @AssistedInject constructor(
                         .build()
                 )
 
-                return Result.failure(syncResult)
+                return@withContext Result.failure(syncResult)
             }
 
             // If no soft error found, dismiss sync error notification
@@ -407,30 +418,24 @@ class SyncWorker @AssistedInject constructor(
             // Note: SyncManager should have notified the user
             if (result.hasHardError()) {
                 Logger.log.warning("Hard error while syncing: result=$result, stats=${result.stats}")
-                return Result.failure(syncResult)
+                return@withContext Result.failure(syncResult)
             }
         }
 
-        return Result.success()
+        return@withContext Result.success()
     }
 
-    override fun onStopped() {
-        Logger.log.info("Work stopped (reason ${if (Build.VERSION.SDK_INT >= 31) stopReason else "n/a"}), stopping sync thread")
-        syncThread?.interrupt()
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
+            .setSmallIcon(R.drawable.ic_foreground_notify)
+            .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
+            .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
+            .setStyle(NotificationCompat.BigTextStyle())
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+        return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
     }
-
-    override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> =
-        CallbackToFutureAdapter.getFuture { completer ->
-            val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
-                .setSmallIcon(R.drawable.ic_foreground_notify)
-                .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
-                .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
-                .setStyle(NotificationCompat.BigTextStyle())
-                .setCategory(NotificationCompat.CATEGORY_STATUS)
-                .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
-            completer.set(ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification))
-        }
 
 }
