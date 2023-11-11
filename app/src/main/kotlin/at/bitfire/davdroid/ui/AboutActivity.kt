@@ -36,7 +36,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
@@ -150,10 +151,10 @@ class AboutActivity: AppCompatActivity() {
                         HorizontalPager(state, modifier = Modifier.padding(8.dp)) { index ->
                             when (index) {
                                 0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
-                                1 -> TranslatorsGallery(
-                                    translations = model.translations,
-                                    modifier = Modifier.fillMaxSize()
-                                )
+                                1 -> {
+                                    val translations = model.translations.observeAsState(emptyList())
+                                    TranslatorsGallery(translations.value)
+                                }
                                 2 -> LibrariesContainer(Modifier.fillMaxSize())
                             }
                         }
@@ -171,8 +172,7 @@ class AboutActivity: AppCompatActivity() {
             val translators: Set<String>
         )
 
-        private val _translations = mutableStateListOf<Translation>()
-        val translations: List<Translation> get() = _translations
+        val translations = MutableLiveData<List<Translation>>()
 
         init {
             viewModelScope.launch(Dispatchers.IO) {
@@ -203,7 +203,7 @@ class AboutActivity: AppCompatActivity() {
                         collator.compare(o1.language, o2.language)
                     }
 
-                    _translations.addAll(result)
+                    translations.postValue(result)
                 }
             } catch (e: Exception) {
                 Logger.log.log(Level.WARNING, "Couldn't load translators", e)
