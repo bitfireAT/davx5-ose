@@ -154,11 +154,7 @@ class AboutActivity: AppCompatActivity() {
                         HorizontalPager(state, modifier = Modifier.padding(8.dp)) { index ->
                             when (index) {
                                 0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
-                                1 -> {
-                                    val translations = model.translations.observeAsState(emptyList())
-                                    TranslatorsGallery(translations.value)
-                                }
-
+                                1 -> TranslatorsGallery(translations, modifier = Modifier.fillMaxSize())
                                 2 -> LibrariesContainer(Modifier.fillMaxSize())
                             }
                         }
