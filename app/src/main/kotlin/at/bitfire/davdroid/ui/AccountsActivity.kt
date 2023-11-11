@@ -144,6 +144,7 @@ class AccountsActivity: AppCompatActivity() {
                 ) { padding ->
                     Box(
                         Modifier
+                            .fillMaxSize()
                             .padding(padding)
                             .pullRefresh(pullRefreshState)
                             .verticalScroll(rememberScrollState())
@@ -153,7 +154,7 @@ class AccountsActivity: AppCompatActivity() {
                         Image(
                             painterResource(R.drawable.accounts_background),
                             contentDescription = null,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxWidth().align(Alignment.Center)
                         )
 
                         Column {
