@@ -36,6 +36,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -147,6 +148,8 @@ class AboutActivity: AppCompatActivity() {
                                 )
                             }
                         }
+
+                        val translations by model.translations.observeAsState(emptyList())
 
                         HorizontalPager(state, modifier = Modifier.padding(8.dp)) { index ->
                             when (index) {
