@@ -155,6 +155,7 @@ class AboutActivity: AppCompatActivity() {
                                     val translations = model.translations.observeAsState(emptyList())
                                     TranslatorsGallery(translations.value)
                                 }
+
                                 2 -> LibrariesContainer(Modifier.fillMaxSize())
                             }
                         }
