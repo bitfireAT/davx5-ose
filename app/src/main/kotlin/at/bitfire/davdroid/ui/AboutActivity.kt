@@ -153,7 +153,7 @@ class AboutActivity: AppCompatActivity() {
                                 0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
                                 1 -> {
                                     val translations = model.translations.observeAsState(emptyList())
-                                    TranslatorsGallery(translations.value)
+                                    TranslatorsGallery(translations.value, Modifier.fillMaxSize())
                                 }
 
                                 2 -> LibrariesContainer(Modifier.fillMaxSize())
