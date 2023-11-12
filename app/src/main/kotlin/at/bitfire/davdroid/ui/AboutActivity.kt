@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -148,7 +149,14 @@ class AboutActivity: AppCompatActivity() {
                             }
                         }
 
-                        HorizontalPager(state, modifier = Modifier.padding(8.dp)) { index ->
+                        HorizontalPager(
+                            state,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentPadding = PaddingValues(8.dp),
+                            verticalAlignment = Alignment.Top
+                        ) { index ->
                             when (index) {
                                 0 -> AboutApp(licenseInfoProvider = licenseInfoProvider.getOrNull())
                                 1 -> {
@@ -232,8 +240,7 @@ class AboutActivity: AppCompatActivity() {
 @Composable
 fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) {
     Column(
-        Modifier
-            .padding(8.dp)
+        modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())) {
         Image(
@@ -300,23 +307,23 @@ fun AboutApp_Preview() {
 
 @Composable
 fun TranslatorsGallery(
-    translations: List<AboutActivity.Model.Translation>,
-    modifier: Modifier = Modifier
+    translations: List<AboutActivity.Model.Translation>
 ) {
     val collator = Collator.getInstance()
-    LazyColumn (modifier) {
+    LazyColumn {
         items(translations) { translation ->
             Text(
                 translation.language,
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(vertical = 4.dp)
             )
             Text(
                 translation.translators
                     .sortedWith { a, b -> collator.compare(a, b) }
                     .joinToString(" · "),
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
-            Divider(Modifier.padding(vertical = 8.dp))
         }
     }
 }
