@@ -185,7 +185,8 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
     //noinspection GradleDependency - don't update until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/130]
     implementation 'commons-io:commons-io:2.8.0'
-    implementation 'dnsjava:dnsjava:3.5.3'
+    //noinspection GradleDependency - dnsjava 3.x requires Android 8 [https://github.com/bitfireAT/davx5/issues/453]
+    implementation 'dnsjava:dnsjava:2.1.9'
     implementation "io.github.nsk90:kstatemachine-jvm:0.22.1"
     implementation 'net.openid:appauth:0.11.1'
     implementation "org.apache.commons:commons-collections4:${versions.commonsCollections}"

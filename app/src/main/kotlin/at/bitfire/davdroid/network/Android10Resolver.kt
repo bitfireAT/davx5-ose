@@ -11,12 +11,11 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.runBlocking
-import org.xbill.DNS.EDNSOption
 import org.xbill.DNS.Message
 import org.xbill.DNS.Resolver
 import org.xbill.DNS.ResolverListener
 import org.xbill.DNS.TSIG
-import java.time.Duration
+import java.io.IOException
 
 /**
  * dnsjava Resolver that uses Android's [DnsResolver] API, which is available since Android 10.
@@ -37,14 +36,14 @@ object Android10Resolver: Resolver {
             }
 
             override fun onError(error: DnsResolver.DnsException) {
-                future.completeExceptionally(error)
+                // wrap into IOException as expected by dnsjava
+                future.completeExceptionally(IOException(error))
             }
         })
 
         future.await()
     }
 
-    @Deprecated("Deprecated in dnsjava")
     override fun sendAsync(query: Message, listener: ResolverListener) =
         // currently not used by dnsjava, so no need to implement it
         throw NotImplementedError()
@@ -66,12 +65,7 @@ object Android10Resolver: Resolver {
         // not applicable
     }
 
-    override fun setEDNS(
-        version: Int,
-        payloadSize: Int,
-        flags: Int,
-        options: MutableList<EDNSOption>?
-    ) {
+    override fun setEDNS(level: Int, payloadSize: Int, flags: Int, options: MutableList<Any?>?) {
         // not applicable
     }
 
@@ -79,18 +73,12 @@ object Android10Resolver: Resolver {
         // not applicable
     }
 
-    @Deprecated("Deprecated in dnsjava")
     override fun setTimeout(secs: Int, msecs: Int) {
         // not applicable
     }
 
-    @Deprecated("Deprecated in dnsjava")
     override fun setTimeout(secs: Int) {
         // not applicable
-    }
-
-    override fun setTimeout(timeout: Duration?) {
-       // not applicable
     }
 
 }
