@@ -50,7 +50,7 @@ android {
     composeOptions {
         // Keep this in sync with Kotlin version:
         // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
@@ -125,7 +125,7 @@ configurations {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"     // replace by KSP when ready [https://issuetracker.google.com/179057202]
@@ -138,9 +138,9 @@ dependencies {
     implementation 'androidx.concurrent:concurrent-futures-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.fragment:fragment-ktx:1.6.1'
-    implementation 'androidx.hilt:hilt-work:1.0.0'
-    kapt 'androidx.hilt:hilt-compiler:1.0.0'
+    implementation 'androidx.fragment:fragment-ktx:1.6.2'
+    implementation 'androidx.hilt:hilt-work:1.1.0'
+    kapt 'androidx.hilt:hilt-compiler:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
@@ -185,7 +185,7 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
     //noinspection GradleDependency - don't update until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/130]
     implementation 'commons-io:commons-io:2.8.0'
-    implementation 'dnsjava:dnsjava:3.5.2'
+    implementation 'dnsjava:dnsjava:3.5.3'
     implementation "io.github.nsk90:kstatemachine-jvm:0.22.1"
     implementation 'net.openid:appauth:0.11.1'
     implementation "org.apache.commons:commons-collections4:${versions.commonsCollections}"
