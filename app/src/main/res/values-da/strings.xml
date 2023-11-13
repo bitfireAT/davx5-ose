@@ -6,12 +6,11 @@
   <string name="account_title_address_book">DAVx⁵ adressebog</string>
   <string name="address_books_authority_title">Adressebøger</string>
   <string name="dialog_remove">Fjern</string>
-  <string name="dialog_deny">Annullere</string>
+  <string name="dialog_deny">Annullér</string>
   <string name="field_required">Feltet er påkrævet</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrer konti</string>
   <string name="share">Del</string>
-  <string name="no_internet_sync_scheduled">Ingen internet, planlægger synkronisering</string>
   <string name="database_destructive_migration_title">Database ødelagt</string>
   <string name="database_destructive_migration_text">Alle konti er fjernet lokalt.</string>
   <string name="notification_channel_debugging">Fejlsøgning</string>
@@ -20,7 +19,7 @@
   <string name="notification_channel_sync">Synkronisering</string>
   <string name="notification_channel_sync_errors">Synkroniserings-fejl</string>
   <string name="notification_channel_sync_errors_desc">Vigtige fejl, der stopper synkronisering, som ikke forventet server svar</string>
-  <string name="notification_channel_sync_warnings">Synkroniserings advarsler</string>
+  <string name="notification_channel_sync_warnings">Synkroniseringsadvarsler</string>
   <string name="notification_channel_sync_warnings_desc">Ikke kritisk synkroniserig problem som bestemte ugyldige filer</string>
   <string name="notification_channel_sync_io_errors">Netværks- og I/O-fejl</string>
   <string name="notification_channel_sync_io_errors_desc">Tidsudløb, forbindelse problemer m.m. (ofte midlertidig)</string>
@@ -44,13 +43,13 @@
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Ser ikke ud til at blive udviklet længere - ej anbefalet.</string>
   <string name="intro_tasks_tasks_org">Tasks.org</string>
-  <string name="intro_tasks_tasks_org_info"><![CDATA[Nogle egenskaber <a href="https://www.davx5.com/faq/tasks/advanced-task-features">er ikke understøttet</a>.]]></string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Nogle egenskaber <a href="https://www.davx5.com/faq/tasks/advanced-task-features">er ikke understøttet</a> (endnu).]]></string>
   <string name="intro_tasks_no_app_store">ingen program-butik tilgængelig</string>
-  <string name="intro_tasks_dont_show">Ingen opgaver understøttelse.*</string>
+  <string name="intro_tasks_dont_show">Jeg behøver ikke opgaveunderstøttelse.*</string>
   <string name="intro_open_source_title">Åben kilde program</string>
   <string name="intro_open_source_text">Vi er glade for at  %s bruges, som er åben kilde program. Udvikling, vedligehold og understøttelse er hårdt arbejde. Overvej at bidrage (der er flere måder) eller donere. Det vil blive meget værdsat!</string>
   <string name="intro_open_source_details">Hvordan man bidrager/donerer</string>
-  <string name="intro_open_source_dont_show">Hvis ikke i nærmeste fremtid</string>
+  <string name="intro_open_source_dont_show">Vis ikke dette i nærmeste fremtid</string>
   <!--PermissionsActivity-->
   <string name="permissions_title">Rettigheder</string>
   <string name="permissions_text">%s kræver rettigheder for at virke rigtig.</string>
@@ -128,7 +127,11 @@
   <string name="navigation_drawer_donate">Donation</string>
   <string name="navigation_drawer_privacy_policy">Privatlivs politik</string>
   <string name="account_list_no_notification_permission">Notifikationer slået fra. Du vil ikke blive gjort opmærksom på synkroniserings-fejl.</string>
+  <string name="account_list_no_internet">Ingen valideret internetforbindelse. 
+Synkronisering kører muligvis ikke.</string>
   <string name="account_list_manage_connections">Aministrer forbindelser</string>
+  <string name="account_list_low_storage">124
+Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, men under den næste almindelige synkronisering.</string>
   <string name="account_list_manage_storage">Administrer lagerplads</string>
   <string name="account_list_datasaver_enabled">Gemning af data slået til. Synkronisering i baggrunden er begrænset.</string>
   <string name="account_list_manage_datasaver">Administrer gemning af data</string>
@@ -256,6 +259,21 @@
   <string name="login_use_client_certificate">Brug klient certifikat</string>
   <string name="login_no_certificate_found">Intet certifikat fundet</string>
   <string name="login_install_certificate">Installere certifikat</string>
+  <string name="login_type_google">Google Kontakter / Kalender</string>
+  <string name="login_google_see_tested_with">Se venligst vores \"Tested med Google\" side for up-to-date information.</string>
+  <string name="login_google_unexpected_warnings">Du kan opleve uforudsete advarsler og/eller blive nød til at lave dit eget klient ID.</string>
+  <string name="login_google_account">Google konto</string>
+  <string name="login_google">Log ind med Google</string>
+  <string name="login_google_client_id">Klient ID (valgfrit)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s overfører dine Google-kontaktpersoner og kalenderdata udelukkende til synkronisering med denne enhed. Se vores  <a href="%2$s">Privacy policy</a> for detaljer.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s overholder <a href="%2$s">Google API Services User Data Policy</a>, herunder kravene til begrænset brug.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Kunne ikke hente autorisationskode</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Log ind med Nextcloud</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud serveradresse</string>
+  <string name="login_nextcloud_login_flow_sign_in">Log ind</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Kunne ikke hente login-URL</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Kunne ikke hente login-data</string>
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
   <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
@@ -288,7 +306,12 @@
   <string name="settings_sync_wifi_only_ssids_message">Kommaseparerede navne (SSID\'er) over tilladte WiFi-netværk (efterlad blank for at bruge alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Trådløs SSID begrænsning kræver yderligere opsætning</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Håndtere</string>
+  <string name="settings_ignore_vpns">VPN kræver underliggende internet</string>
+  <string name="settings_ignore_vpns_on">VPN uden underliggende valideret internetforbindelse er ikke nok til at køre synkronisering (anbefales)</string>
+  <string name="settings_ignore_vpns_off">VPN uden underliggende valideret internetforbindelse er nok til at køre synkronisering</string>
   <string name="settings_authentication">Adgangsgodkendelse</string>
+  <string name="settings_oauth_summary">Udfør OAuth-login igen</string>
+  <string name="settings_username_key">brugernavn</string>
   <string name="settings_username">Brugernavn</string>
   <string name="settings_enter_username">Indtaste brugernavn:</string>
   <string name="settings_password">Adgangskode</string>

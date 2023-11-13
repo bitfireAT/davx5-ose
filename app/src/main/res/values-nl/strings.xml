@@ -11,7 +11,6 @@
   <string name="help">Hulp</string>
   <string name="manage_accounts">Accounts beheren</string>
   <string name="share">Delen</string>
-  <string name="no_internet_sync_scheduled">Geen internet, planning de sync</string>
   <string name="database_destructive_migration_title">Database beschadigd</string>
   <string name="database_destructive_migration_text">Alle accounts zijn lokaal verwijderd.</string>
   <string name="notification_channel_debugging">Debuggen</string>
@@ -267,6 +266,14 @@
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s draagt uw Google Contacten en Agenda gegevens uitsluitend over voor synchronisatie met dit apparaat. Zie ons Privacybeleid voor meer informatie. Zie ons <a href="%2$s">Privacybeleid</a> voor meer informatie.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s voldoet aan het <a href="%2$s">beleid voor gebruikersgegevens van Google API Services</a>, met inbegrip van de vereisten voor beperkt gebruik.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Kon geen autorisatiecode verkrijgen</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Inloggen met Nextcloud</string>
+  <string name="login_nextcloud_login_flow">Inloggen met Flow</string>
+  <string name="login_nextcloud_login_flow_text">Hiermee wordt de Nextcloud Flow-aanmelding in een webbrowser gestart.</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud serveradres</string>
+  <string name="login_nextcloud_login_flow_sign_in">Aanmelden</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Kan inlog-URL niet verkrijgen</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Kan inlog-URL niet verkrijgen</string>
   <string name="login_configuration_detection">Configuratie detecteren</string>
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_caldav_carddav">Geen CalDAV- of CardDAV-service gevonden.</string>

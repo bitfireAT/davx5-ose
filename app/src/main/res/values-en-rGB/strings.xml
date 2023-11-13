@@ -127,7 +127,9 @@
   <string name="navigation_drawer_donate">Donate</string>
   <string name="navigation_drawer_privacy_policy">Privacy policy</string>
   <string name="account_list_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
+  <string name="account_list_no_internet">No validated Internet connectivity. Synchronisation may not run.</string>
   <string name="account_list_manage_connections">Manage connections</string>
+  <string name="account_list_low_storage">Storage space low. Android will not sync local changes immediately, but during the next regular sync.</string>
   <string name="account_list_manage_storage">Manage storage</string>
   <string name="account_list_datasaver_enabled">Data saver enabled. Background synchronisation is restricted.</string>
   <string name="account_list_manage_datasaver">Manage data saver</string>
@@ -255,6 +257,23 @@
   <string name="login_use_client_certificate">Use client certificate</string>
   <string name="login_no_certificate_found">No certificate found</string>
   <string name="login_install_certificate">Install certificate</string>
+  <string name="login_type_google">Google Contacts / Calendar</string>
+  <string name="login_google_see_tested_with">Please see our \"Tested with Google\" page for up-to-date information.</string>
+  <string name="login_google_unexpected_warnings">You may experience unexpected warnings and/or have to create your own client ID.</string>
+  <string name="login_google_account">Google account</string>
+  <string name="login_google">Sign in with Google</string>
+  <string name="login_google_client_id">Client ID (optional)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfers your Google Contacts and Calendar data solely for synchronisation with this device. See our <a href="%2$s">Privacy policy</a> for details.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s complies with the <a href="%2$s">Google API Services User Data Policy</a>, including the Limited Use requirements.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Couldn\'t obtain authorisation code</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Login with Nextcloud</string>
+  <string name="login_nextcloud_login_flow">Login Flow</string>
+  <string name="login_nextcloud_login_flow_text">This will start the Nextcloud Login Flow in a Web browser.</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud server address</string>
+  <string name="login_nextcloud_login_flow_sign_in">Sign in</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Couldn\'t obtain login URL</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Couldn\'t obtain login data</string>
   <string name="login_configuration_detection">Configuration detection</string>
   <string name="login_querying_server">Please wait, querying server…</string>
   <string name="login_no_caldav_carddav">Couldn\'t find CalDAV or CardDAV service.</string>
@@ -287,7 +306,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Comma-separated names (SSIDs) of allowed WiFi networks (leave blank for all)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID restriction requires further settings</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Manage</string>
+  <string name="settings_ignore_vpns">VPN requires underlying Internet</string>
+  <string name="settings_ignore_vpns_on">VPN without underlying validated Internet connection is not enough to run synchronisation (recommended)</string>
+  <string name="settings_ignore_vpns_off">VPN without underlying validated Internet connection is enough to run synchronisation</string>
   <string name="settings_authentication">Authentication</string>
+  <string name="settings_oauth">Re-authenticate</string>
+  <string name="settings_oauth_summary">Perform OAuth login again</string>
+  <string name="settings_username_key">username</string>
   <string name="settings_username">User name</string>
   <string name="settings_enter_username">Enter user name:</string>
   <string name="settings_password">Password</string>
@@ -345,6 +370,8 @@
   <string name="delete_collection_data_shall_be_deleted">These data shall be deleted from the server.</string>
   <string name="collection_force_read_only">Force read-only</string>
   <string name="collection_properties">Properties</string>
+  <string name="collection_properties_sync_time">Last synced:</string>
+  <string name="collection_properties_sync_time_never">Never synced</string>
   <string name="collection_properties_url">Address (URL):</string>
   <string name="collection_properties_owner">Owner:</string>
   <!--debugging and DebugInfoActivity-->
@@ -406,6 +433,7 @@
   <string name="sync_error_io">Network or I/O error – %s</string>
   <string name="sync_error_http_dav">HTTP server error – %s</string>
   <string name="sync_error_local_storage">Local storage error – %s</string>
+  <string name="sync_error_retry_limit_reached">Soft error (max retries reached)</string>
   <string name="sync_error_view_item">View item</string>
   <string name="sync_invalid_contact">Received invalid contact from server</string>
   <string name="sync_invalid_event">Received invalid event from server</string>

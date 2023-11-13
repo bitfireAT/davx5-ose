@@ -1,6 +1,6 @@
 [main]
 host     = https://www.transifex.com
-lang_map = ar_SA: ar, en_GB: en-rGB, es_MX: es-rMX, fa_IR: fa-rIR, fi_FI: fi, fr_FR: fr-rFR, nb_NO: nb, pt_BR: pt-rBR, sk_SK: sk, sl_SI: sl, sv_SE: sv-rSE, tr_TR: tr, zh_CN: zh, zh_TW: zh-rTW
+lang_map = ar_SA: ar, en_GB: en-rGB, fa_IR: fa-rIR, fi_FI: fi, fr_FR: fr-rFR, nb_NO: nb, sk_SK: sk, sl_SI: sl, tr_TR: tr, zh_CN: zh, zh_TW: zh-rTW
 
 [o:bitfireAT:p:davx5:r:app]
 file_filter   = app/src/main/res/values-<lang>/strings.xml

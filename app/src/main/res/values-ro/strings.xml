@@ -11,7 +11,6 @@
   <string name="help">Ajutor</string>
   <string name="manage_accounts">Gestionează conturile</string>
   <string name="share">Distribuie</string>
-  <string name="no_internet_sync_scheduled">Fără internet, programare sincronizare</string>
   <string name="database_destructive_migration_title">Bază de date deteriorată</string>
   <string name="database_destructive_migration_text">Toate conturile au fost eliminate local.</string>
   <string name="notification_channel_debugging">Depanare</string>
@@ -267,6 +266,14 @@
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s transferă datele din Agendă Google și din Calendar numai pentru sincronizare cu acest dispozitiv. Vezi  <a href="%2$s">Politica de confidențialitate</a> pentru detalii.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s respectă <a href="%2$s">Politica privind datele utilizatorilor serviciilor API Google</a>, inclusiv cerințele de utilizare limitată.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Nu s-a putut obține codul de autorizare</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Conectare cu Nextcloud</string>
+  <string name="login_nextcloud_login_flow">Flux de conectare</string>
+  <string name="login_nextcloud_login_flow_text">Aceasta va porni fluxul de conectare Nextcloud într-un browser web.</string>
+  <string name="login_nextcloud_login_flow_server_address">Adresa serverului Nextcloud</string>
+  <string name="login_nextcloud_login_flow_sign_in">Conectare</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Nu s-a putut obține adresa URL de conectare</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Nu s-au putut obține datele de conectare</string>
   <string name="login_configuration_detection">Detectarea configurației</string>
   <string name="login_querying_server">Se interoghează serverul…</string>
   <string name="login_no_caldav_carddav">Nu s-a putut găsi serviciul CalDAV sau CardDAV.</string>

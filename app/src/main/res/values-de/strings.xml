@@ -10,8 +10,10 @@
   <string name="field_required">Feld wird benötigt</string>
   <string name="help">Hilfe</string>
   <string name="manage_accounts">Konten verwalten</string>
+  <string name="navigate_up">Aufwärts navigieren</string>
+  <string name="no_internet_sync_scheduled">Kein Internet, Synchronisierung wird geplant</string>
   <string name="share">Teilen</string>
-  <string name="no_internet_sync_scheduled">Kein Internet, Synchronisation wird geplant</string>
+  <string name="sync_started">Synchronisierung gestartet</string>
   <string name="database_destructive_migration_title">Datenbank beschädigt</string>
   <string name="database_destructive_migration_text">Alle Accounts wurden lokal entfernt.</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
@@ -264,8 +266,8 @@
   <string name="login_google_account">Google-Konto</string>
   <string name="login_google">Mit Google anmelden</string>
   <string name="login_google_client_id">Client-ID (optional)</string>
-  <string name="login_google_client_privacy_policy"><![CDATA[%1$süberträgt Ihre Google-Kontakte und -Kalenderdaten zur Synchronisierung mit diesem Gerät. Siehe auch unsere <a href="%2$s">Datenschutzrichtlinie</a>für mehr Informationen.]]></string>
-  <string name="login_google_client_limited_use"><![CDATA[%1$srichtet sich nach der <a href="%2$s">Google API Services Nutzerdaten-Richtlinie</a>, inklusive der eingeschränkten Nutzungsbedingungen.]]></string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s überträgt Ihre Google-Kontakte und -Kalenderdaten zur Synchronisierung mit diesem Gerät. Siehe auch unsere <a href="%2$s">Datenschutzrichtlinie</a> für mehr Informationen.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s richtet sich nach der <a href="%2$s">Google API Services Nutzerdaten-Richtlinie</a>, inklusive der eingeschränkten Nutzungsbedingungen.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Authentifizierungscode konnte nicht abgerufen werden</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Mit Nextcloud anmelden</string>
