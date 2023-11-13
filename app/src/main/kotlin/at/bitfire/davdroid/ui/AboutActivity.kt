@@ -154,7 +154,6 @@ class AboutActivity: AppCompatActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f),
-                            contentPadding = PaddingValues(8.dp),
                             verticalAlignment = Alignment.Top
                         ) { index ->
                             when (index) {
@@ -241,6 +240,7 @@ class AboutActivity: AppCompatActivity() {
 fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) {
     Column(
         modifier = Modifier
+            .padding(8.dp)
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())) {
         Image(
@@ -310,7 +310,7 @@ fun TranslatorsGallery(
     translations: List<AboutActivity.Model.Translation>
 ) {
     val collator = Collator.getInstance()
-    LazyColumn {
+    LazyColumn(Modifier.padding(8.dp)) {
         items(translations) { translation ->
             Text(
                 translation.language,
