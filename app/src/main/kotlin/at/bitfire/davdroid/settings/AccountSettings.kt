@@ -226,7 +226,7 @@ class AccountSettings(
                 KEY_SYNC_INTERVAL_CALENDARS
             TaskProvider.ProviderName.values().any { it.authority == authority } ->
                 KEY_SYNC_INTERVAL_TASKS
-            else -> throw IllegalArgumentException("Authority does not exist: $authority")
+            else -> return null
         }
         return accountManager.getUserData(account, key)?.toLong()
     }
@@ -241,16 +241,16 @@ class AccountSettings(
      * (sync disabled), so it should not be called from the UI thread.
      *
      * @param authority sync authority (like [CalendarContract.AUTHORITY])
-     * @param seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
-     * otherwise (≥ 15 min): automatic sync will be enabled and set to the given number of seconds
-     *
-     * @return whether the sync interval was successfully set
-     * @throws IllegalArgumentException when [seconds] is not [SYNC_INTERVAL_MANUALLY] but less than 15 min
+     * @param _seconds if [SYNC_INTERVAL_MANUALLY]: automatic sync will be disabled;
+     * otherwise (must be ≥ 15 min): automatic sync will be enabled and set to the given number of seconds
      */
     @WorkerThread
-    fun setSyncInterval(authority: String, seconds: Long): Boolean {
-        if (seconds != SYNC_INTERVAL_MANUALLY && seconds < 60*15)
-            throw IllegalArgumentException("<15 min is not supported by Android")
+    fun setSyncInterval(authority: String, _seconds: Long) {
+        val seconds =
+            if (_seconds != SYNC_INTERVAL_MANUALLY && _seconds < 60*15)
+                60*15
+            else
+                _seconds
 
         // Store (user defined) sync interval in account settings
         val key = when {
@@ -260,8 +260,10 @@ class AccountSettings(
                 KEY_SYNC_INTERVAL_CALENDARS
             TaskProvider.ProviderName.values().any { it.authority == authority } ->
                 KEY_SYNC_INTERVAL_TASKS
-            else ->
-                throw IllegalArgumentException("Sync interval not applicable to authority $authority")
+            else -> {
+                Logger.log.warning("Sync interval not applicable to authority $authority")
+                return
+            }
         }
         accountManager.setAndVerifyUserData(account, key, seconds.toString())
 
@@ -271,8 +273,6 @@ class AccountSettings(
         // Also enable/disable content change triggered syncs (SyncFramework automatic sync).
         // We could make this a separate user adjustable setting later on.
         setSyncOnContentChange(authority, seconds != SYNC_INTERVAL_MANUALLY)
-
-        return true
     }
 
     /**
