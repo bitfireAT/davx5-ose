@@ -62,7 +62,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -135,11 +134,13 @@ class AccountsActivity: AppCompatActivity() {
                 model.syncAllAccounts()
             })
 
+            val accounts by model.accountInfos.observeAsState()
+
             MdcTheme {
                 Scaffold(
                     scaffoldState = scaffoldState,
                     drawerContent = drawerContent(scope, scaffoldState),
-                    topBar = topBar(scope, scaffoldState),
+                    topBar = topBar(scope, scaffoldState, accounts?.isNotEmpty() == true),
                     floatingActionButton = floatingActionButton(),
                     snackbarHost = snackbarHost(snackbarHostState, scope)
                 ) { padding ->
@@ -147,7 +148,10 @@ class AccountsActivity: AppCompatActivity() {
                         Modifier
                             .fillMaxSize()
                             .padding(padding)
-                            .pullRefresh(pullRefreshState)
+                            .pullRefresh(
+                                state = pullRefreshState,
+                                enabled = accounts?.isNotEmpty() == true
+                            )
                             .verticalScroll(rememberScrollState())
                     ) {
 
@@ -198,9 +202,8 @@ class AccountsActivity: AppCompatActivity() {
                             )
 
                             // account list
-                            val accounts = model.accountInfos.observeAsState()
                             AccountList(
-                                accounts = accounts.value ?: emptyList(),
+                                accounts = accounts ?: emptyList(),
                                 onClickAccount = { account ->
                                     val activity = this@AccountsActivity
                                     val intent = Intent(activity, AccountActivity::class.java)
@@ -267,7 +270,8 @@ class AccountsActivity: AppCompatActivity() {
     @Composable
     private fun topBar(
         scope: CoroutineScope,
-        scaffoldState: ScaffoldState
+        scaffoldState: ScaffoldState,
+        accountsNotEmpty: Boolean
     ): @Composable (() -> Unit) = {
         TopAppBar(
             navigationIcon = {
@@ -289,11 +293,13 @@ class AccountsActivity: AppCompatActivity() {
                 Text(stringResource(R.string.app_name))
             },
             actions = {
-                IconButton(onClick = { model.syncAllAccounts() }) {
-                    Icon(
-                        painterResource(R.drawable.ic_sync),
-                        contentDescription = stringResource(R.string.accounts_sync_all)
-                    )
+                if (accountsNotEmpty) {
+                    IconButton(onClick = { model.syncAllAccounts() }) {
+                        Icon(
+                            painterResource(R.drawable.ic_sync),
+                            contentDescription = stringResource(R.string.accounts_sync_all)
+                        )
+                    }
                 }
             }
         )
