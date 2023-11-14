@@ -277,6 +277,15 @@ fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) 
         Text(
             stringResource(R.string.about_copyright),
             style = MaterialTheme.typography.body1,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        )
+
+        Text(
+            stringResource(R.string.about_license_info_no_warranty),
+            style = MaterialTheme.typography.body1,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
