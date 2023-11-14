@@ -11,7 +11,6 @@
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Zadządzaj kontami</string>
   <string name="share">Udostępnij</string>
-  <string name="no_internet_sync_scheduled">Brak internetu, planowanie synchronizacji</string>
   <string name="database_destructive_migration_title">Uszkodzona baza danych</string>
   <string name="database_destructive_migration_text">Wszystkie konta zostały usunięte lokalnie.</string>
   <string name="notification_channel_debugging">Debugowanie</string>

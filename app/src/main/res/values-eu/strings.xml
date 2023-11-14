@@ -11,7 +11,6 @@
   <string name="help">Laguntza</string>
   <string name="manage_accounts">Kudeatu kontuak</string>
   <string name="share">Partekatu</string>
-  <string name="no_internet_sync_scheduled">Ez dago internetik, sinkronizazioa programatuta</string>
   <string name="database_destructive_migration_title">Datu-basea hondatua</string>
   <string name="database_destructive_migration_text">Kontu lokal guztiak ezabatu dira.</string>
   <string name="notification_channel_debugging">Arazten</string>

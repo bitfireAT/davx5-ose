@@ -10,8 +10,10 @@
   <string name="field_required">Este campo é requerido</string>
   <string name="help">Axuda</string>
   <string name="manage_accounts">Xestionar contas</string>
+  <string name="navigate_up">Ir arriba</string>
+  <string name="no_internet_sync_scheduled">Non hai conexión, programando a sincr</string>
   <string name="share">Compartir</string>
-  <string name="no_internet_sync_scheduled">Sen internet, programando a sincr.</string>
+  <string name="sync_started">Comezou a sincronización</string>
   <string name="database_destructive_migration_title">Base de datos estragada</string>
   <string name="database_destructive_migration_text">Foron eliminadas tódalas contas locais</string>
   <string name="notification_channel_debugging">Depurando</string>

@@ -11,6 +11,7 @@
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
   <string name="share">Sdílet</string>
+  <string name="sync_started">Synchronizace spuštěna</string>
   <string name="database_destructive_migration_title">Databáze rozbitá</string>
   <string name="database_destructive_migration_text">Všechny účty byly lokálně odebrány.</string>
   <string name="notification_channel_debugging">Ladění</string>
@@ -128,6 +129,7 @@
   <string name="account_list_no_notification_permission">Upozornění vypnuta. Nebudete upozorněni na chyby při synchronizaci.</string>
   <string name="account_list_manage_connections">Spravovat spojení</string>
   <string name="account_list_manage_storage">Spravovat úložiště</string>
+  <string name="account_list_manage_datasaver">Spravovat spořič dat</string>
   <string name="account_list_empty">Vítejte v aplikaci DAVx⁵!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizace v rámci celého systému je vypnutá</string>
   <string name="accounts_global_sync_enable">Zapnout</string>
@@ -252,6 +254,15 @@
   <string name="login_use_client_certificate">Použít klientský certifikát</string>
   <string name="login_no_certificate_found">Nenalezen žádný certifikát</string>
   <string name="login_install_certificate">Instalovat certifikát</string>
+  <string name="login_type_google">Google kontakty/kalendář</string>
+  <string name="login_google_account">Google účet</string>
+  <string name="login_google">Přihlásit se Googlem</string>
+  <string name="login_google_client_id">Identif. klienta (volitelné)</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Přihlásit pomocí Nextcloud</string>
+  <string name="login_nextcloud_login_flow">Tok přihlášení</string>
+  <string name="login_nextcloud_login_flow_server_address">Adresa Nextcloud serveru</string>
+  <string name="login_nextcloud_login_flow_sign_in">Přihlásit se</string>
   <string name="login_configuration_detection">Zjišťování nastavení</string>
   <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru…</string>
   <string name="login_no_caldav_carddav">Nedaří se nalézt službu CalDAV nebo CardDAV.</string>
@@ -285,6 +296,7 @@
   <string name="settings_sync_wifi_only_ssids_permissions_required">Omezení na názvy (SSID) WiFi sítí vyžaduje další nastavení</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Spravovat</string>
   <string name="settings_authentication">Ověření</string>
+  <string name="settings_username_key">uživatelské jméno</string>
   <string name="settings_username">Uživatelské jméno</string>
   <string name="settings_enter_username">Zadejte uživatelské jméno:</string>
   <string name="settings_password">Heslo</string>
@@ -346,6 +358,8 @@
   <string name="delete_collection_data_shall_be_deleted">Tato data by měla být smazána ze serveru.</string>
   <string name="collection_force_read_only">Vynutit pouze pro čtení</string>
   <string name="collection_properties">Vlastnosti</string>
+  <string name="collection_properties_sync_time">Naposledy synchronizováno:</string>
+  <string name="collection_properties_sync_time_never">Nikdy nesynchronizováno</string>
   <string name="collection_properties_url">Adresa (URL):</string>
   <string name="collection_properties_owner">Vlastník:</string>
   <!--debugging and DebugInfoActivity-->

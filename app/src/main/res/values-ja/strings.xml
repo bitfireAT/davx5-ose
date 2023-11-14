@@ -10,8 +10,10 @@
   <string name="field_required">このフィールドは入力必須です</string>
   <string name="help">ヘルプ</string>
   <string name="manage_accounts">アカウントの管理</string>
-  <string name="share">共有</string>
+  <string name="navigate_up">上に移動</string>
   <string name="no_internet_sync_scheduled">インターネット接続がありません。同期を待機しています</string>
+  <string name="share">共有</string>
+  <string name="sync_started">同期を開始しました</string>
   <string name="database_destructive_migration_title">データベースが破損しています</string>
   <string name="database_destructive_migration_text">すべてのアカウントがローカルから削除されました</string>
   <string name="notification_channel_debugging">デバッグ中</string>

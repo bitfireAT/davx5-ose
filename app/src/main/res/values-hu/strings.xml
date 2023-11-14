@@ -11,7 +11,6 @@
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
   <string name="share">Megosztás</string>
-  <string name="no_internet_sync_scheduled">Nincs hálózati kapcsolat.  A szinkronizálás beütemezése</string>
   <string name="database_destructive_migration_title">Az adatbázis megsérült</string>
   <string name="database_destructive_migration_text">A fiókok törölve lettek az eszközön.</string>
   <string name="notification_channel_debugging">Hibakeresés</string>

@@ -10,8 +10,10 @@
   <string name="field_required">Это поле является обязательным</string>
   <string name="help">Помощь</string>
   <string name="manage_accounts">Управление аккаунтами</string>
-  <string name="share">Поделиться</string>
+  <string name="navigate_up">Перейти наверх</string>
   <string name="no_internet_sync_scheduled">Нет интернета, синхронизация по расписанию</string>
+  <string name="share">Поделиться</string>
+  <string name="sync_started">Синхронизация началась</string>
   <string name="database_destructive_migration_title">База данных повреждена</string>
   <string name="database_destructive_migration_text">Все учетные записи были удалены локально.</string>
   <string name="notification_channel_debugging">Отладка</string>

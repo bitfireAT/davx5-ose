@@ -11,7 +11,6 @@
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gestiona comptes</string>
   <string name="share">Comparteix</string>
-  <string name="no_internet_sync_scheduled">Sense Internet, es planifica la sincronització</string>
   <string name="database_destructive_migration_title">Base de dades malmesa</string>
   <string name="database_destructive_migration_text">S\'han eliminat localment tots els comptes.</string>
   <string name="notification_channel_debugging">Depurador</string>
@@ -128,7 +127,9 @@
   <string name="navigation_drawer_donate">Fer una donació</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
   <string name="account_list_no_notification_permission">Notificacions desactivades. No es notificaran els errors de sincronització.</string>
+  <string name="account_list_no_internet">No hi ha connectivitat a Internet validada. La sincronització no es pot executar.</string>
   <string name="account_list_manage_connections">Gestiona les connexions</string>
+  <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la propera sincronització normal.</string>
   <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
   <string name="account_list_datasaver_enabled">S\'ha activat l\'estalviador de dades. La sincronització en segon pla està restringida.</string>
   <string name="account_list_manage_datasaver">Gestió de l\'estalviador de dades</string>
@@ -265,6 +266,14 @@
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfereix els vostres Contactes i les dades del Calendar de Google només per a la sincronització amb aquest dispositiu. Vegeu la <a href="%2$s"> política de privadesa </a> per als detalls.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s compleix amb la <a href="%2$s">Política de dades d\'usuari dels servis de l\'API de Google</a>, incloent els requisits d\'ús limitat.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">No s\'ha pogut obtenir el codi d\'autorització</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Inici de sessió amb Nextcloud</string>
+  <string name="login_nextcloud_login_flow">Flux d\'inici de sessió</string>
+  <string name="login_nextcloud_login_flow_text">Això iniciarà el flux d\'inici de sessió del Nextcloud en un navegador web.</string>
+  <string name="login_nextcloud_login_flow_server_address">Adreça del servidor Nextcloud</string>
+  <string name="login_nextcloud_login_flow_sign_in">Inicia la sessió</string>
+  <string name="login_nextcloud_login_flow_no_login_url">No s\'ha pogut obtenir l\'URL d\'inici de sessió</string>
+  <string name="login_nextcloud_login_flow_no_login_data">No s\'han pogut obtenir les dades d\'inici de sessió</string>
   <string name="login_configuration_detection">Detecció de la configuració</string>
   <string name="login_querying_server">Espereu, s\'està consultant el servidor…</string>
   <string name="login_no_caldav_carddav">No s\'ha pogut trobar cap servei CalDAV o CardDAV.</string>
@@ -297,6 +306,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Noms (SSID) separats per comes de les xarxes Wi-Fi permeses (deixeu-ho en blanc per a totes)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restricció per SSID de la Wi-Fi requereix una configuració addicional</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Gestió</string>
+  <string name="settings_ignore_vpns">La VPN requereix una Internet subjacent</string>
+  <string name="settings_ignore_vpns_on">Una VPN sense connexió a Internet validada subjacent no és suficient per a executar la sincronització (recomanat)</string>
+  <string name="settings_ignore_vpns_off">Una VPN sense connexió a Internet validada subjacent és suficient per a executar la sincronització</string>
   <string name="settings_authentication">Autentificació</string>
   <string name="settings_oauth">Re-Autenticar</string>
   <string name="settings_oauth_summary">Tornar a realitzar l\'inici de sessió amb OAuth</string>
