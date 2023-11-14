@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">DAVx⁵</string>
   <string name="account_invalid">계정이 존재하지 않음 (anymore)</string>
   <string name="account_title_address_book">DAVx⁵ 주소록</string>
   <string name="address_books_authority_title">주소록</string>
