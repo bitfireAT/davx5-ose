@@ -43,6 +43,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
@@ -70,6 +71,40 @@ class TasksFragment: Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        model.openTasksRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
+            if (shallBeInstalled && model.openTasksInstalled.value == false) {
+                // uncheck switch for the moment (until the app is installed)
+                model.openTasksRequested.value = false
+                installApp(ProviderName.OpenTasks.packageName)
+            }
+        }
+        model.openTasksSelected.observe(viewLifecycleOwner) { selected ->
+            if (selected && model.currentProvider.value != ProviderName.OpenTasks)
+                model.selectPreferredProvider(ProviderName.OpenTasks)
+        }
+
+        model.tasksOrgRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
+            if (shallBeInstalled && model.tasksOrgInstalled.value == false) {
+                model.tasksOrgRequested.value = false
+                installApp(ProviderName.TasksOrg.packageName)
+            }
+        }
+        model.tasksOrgSelected.observe(viewLifecycleOwner) { selected ->
+            if (selected && model.currentProvider.value != ProviderName.TasksOrg)
+                model.selectPreferredProvider(ProviderName.TasksOrg)
+        }
+
+        model.jtxRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
+            if (shallBeInstalled && model.jtxInstalled.value == false) {
+                model.jtxRequested.value = false
+                installApp(ProviderName.JtxBoard.packageName)
+            }
+        }
+        model.jtxSelected.observe(viewLifecycleOwner) { selected ->
+            if (selected && model.currentProvider.value != ProviderName.JtxBoard)
+                model.selectPreferredProvider(ProviderName.JtxBoard)
+        }
+
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
