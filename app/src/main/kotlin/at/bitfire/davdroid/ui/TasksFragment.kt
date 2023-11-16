@@ -23,17 +23,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -46,6 +51,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
@@ -58,6 +64,8 @@ import at.bitfire.ical4android.TaskProvider.ProviderName
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -167,33 +175,27 @@ class TasksFragment: Fragment() {
             }
         }
 
-        val dontShow = object : MutableState<Boolean> {
-            private fun get() = settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
+        val dontShow = MutableLiveData(
+            settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
+        )
 
-            private fun update(value: Boolean) {
-                if (value)
-                    settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
-                else
-                    settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
-            }
-
-            override var value: Boolean
-                get() = get()
-                set(value) { update(value) }
-
-            override fun component1(): Boolean = get()
-
-            override fun component2(): (Boolean) -> Unit = ::update
+        private val dontShowObserver = Observer<Boolean> { value ->
+            if (value)
+                settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
+            else
+                settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
         }
 
         init {
             checkInstalled()
             settings.addOnChangeListener(this)
+            dontShow.observeForever(dontShowObserver)
         }
 
         override fun onCleared() {
             settings.removeOnChangeListener(this)
             tasksWatcher.close()
+            dontShow.removeObserver(dontShowObserver)
         }
 
         @AnyThread
@@ -254,7 +256,7 @@ fun TasksCard(
     val openTasksSelected by model.openTasksSelected.observeAsState(initial = false)
     val openTasksRequested by model.openTasksRequested.observeAsState(initial = false)
 
-    var dontShow by model.dontShow
+    val dontShow by model.dontShow.observeAsState(initial = false)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -269,7 +271,9 @@ fun TasksCard(
                 image = painterResource(R.drawable.intro_tasks),
                 title = stringResource(R.string.intro_tasks_title),
                 message = stringResource(R.string.intro_tasks_text1),
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp)
             ) {
                 RadioWithSwitch(
                     title = stringResource(R.string.intro_tasks_jtx),
@@ -279,7 +283,9 @@ fun TasksCard(
                     enabled = jtxInstalled,
                     onSelected = { model.jtxSelected.value = true },
                     onToggled = model.jtxRequested::setValue,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
                 )
 
                 RadioWithSwitch(
@@ -290,7 +296,9 @@ fun TasksCard(
                     enabled = tasksOrgInstalled,
                     onSelected = { model.tasksOrgSelected.value = true },
                     onToggled = model.tasksOrgRequested::setValue,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
                 )
 
                 RadioWithSwitch(
@@ -301,25 +309,40 @@ fun TasksCard(
                     enabled = openTasksInstalled,
                     onSelected = { model.openTasksSelected.value = true },
                     onToggled = model.openTasksRequested::setValue,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
                 )
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
                 ) {
                     Checkbox(
                         checked = dontShow,
-                        onCheckedChange = { dontShow = it }
+                        onCheckedChange = { model.dontShow.value = it }
                     )
                     Text(
                         text = stringResource(R.string.intro_tasks_dont_show),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { dontShow = !dontShow }
+                            .clickable { model.dontShow.value = !dontShow }
                     )
                 }
             }
+
+            Text(
+                text = stringResource(
+                    R.string.intro_leave_unchecked,
+                    stringResource(R.string.app_settings_reset_hints)
+                ),
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+            )
         }
     }
 }
