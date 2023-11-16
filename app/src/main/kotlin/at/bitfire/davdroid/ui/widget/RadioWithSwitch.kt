@@ -18,6 +18,18 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 /**
  * Provides a radio button with a text, a switch at the end, and an optional summary to be shown
  * under the main text.
+ *
+ * @param title The "proper" text of the Radio button. Shown in the middle of the row, between the
+ * radio button and the switch.
+ * @param summary If not `null`, shown below the title. Used to give more context or information.
+ * @param isSelected Whether the item is currently selected. Refers to the radio button.
+ * @param isToggled Whether the switch is toggled.
+ * @param modifier Any modifiers to apply to the row.
+ * @param enabled Whether the radio button should be enabled. The enabled state of the switch is
+ * reverse from this. So if it's `true`, the switch will be disabled.
+ * @param onSelected Gets called whenever the user requests this row to be enabled. Either by
+ * selecting the radio button or tapping the text.
+ * @param onToggled Gets called whenever the switch gets updated. Contains the checked status.
  */
 @Composable
 fun RadioWithSwitch(
@@ -69,14 +81,7 @@ private class PreviewProvider : PreviewParameterProvider<PreviewProvider.Preview
     )
 
     override val values: Sequence<PreviewData> = sequenceOf(
-        PreviewData("RadioWithSwitch Preview", "An example summary", true, isToggled = true),
-        PreviewData("RadioWithSwitch Preview", "An example summary", true, isToggled = false),
-        PreviewData("RadioWithSwitch Preview", "An example summary", false, isToggled = true),
-        PreviewData("RadioWithSwitch Preview", "An example summary", false, isToggled = false),
-        PreviewData("RadioWithSwitch Preview", null, true, isToggled = true),
-        PreviewData("RadioWithSwitch Preview", null, true, isToggled = false),
-        PreviewData("RadioWithSwitch Preview", null, false, isToggled = true),
-        PreviewData("RadioWithSwitch Preview", null, false, isToggled = false),
+        PreviewData("RadioWithSwitch Preview", "An example summary", true, isToggled = false)
     )
 }
 
