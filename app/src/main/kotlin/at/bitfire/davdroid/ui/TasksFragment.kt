@@ -246,6 +246,14 @@ fun TasksCard(
     val jtxSelected by model.jtxSelected.observeAsState(initial = false)
     val jtxRequested by model.jtxRequested.observeAsState(initial = false)
 
+    val tasksOrgInstalled by model.tasksOrgInstalled.observeAsState(initial = false)
+    val tasksOrgSelected by model.tasksOrgSelected.observeAsState(initial = false)
+    val tasksOrgRequested by model.tasksOrgRequested.observeAsState(initial = false)
+
+    val openTasksInstalled by model.openTasksInstalled.observeAsState(initial = false)
+    val openTasksSelected by model.openTasksSelected.observeAsState(initial = false)
+    val openTasksRequested by model.openTasksRequested.observeAsState(initial = false)
+
     var dontShow by model.dontShow
 
     Scaffold(
@@ -270,7 +278,30 @@ fun TasksCard(
                     isToggled = jtxRequested,
                     enabled = jtxInstalled,
                     onSelected = { model.jtxSelected.value = true },
-                    onToggled = model.jtxRequested::setValue
+                    onToggled = model.jtxRequested::setValue,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                )
+
+                RadioWithSwitch(
+                    title = stringResource(R.string.intro_tasks_tasks_org),
+                    summary = stringResource(R.string.intro_tasks_tasks_org_info),
+                    isSelected = tasksOrgSelected,
+                    isToggled = tasksOrgRequested,
+                    enabled = tasksOrgInstalled,
+                    onSelected = { model.tasksOrgSelected.value = true },
+                    onToggled = model.tasksOrgRequested::setValue,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                )
+
+                RadioWithSwitch(
+                    title = stringResource(R.string.intro_tasks_opentasks),
+                    summary = stringResource(R.string.intro_tasks_opentasks_info),
+                    isSelected = openTasksSelected,
+                    isToggled = openTasksRequested,
+                    enabled = openTasksInstalled,
+                    onSelected = { model.openTasksSelected.value = true },
+                    onToggled = model.openTasksRequested::setValue,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
                 )
             }
 
