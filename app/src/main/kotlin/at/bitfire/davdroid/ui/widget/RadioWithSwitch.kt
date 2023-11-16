@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Switch
@@ -52,12 +54,18 @@ fun RadioWithSwitch(
         ) {
             Text(
                 text = title,
+                color = LocalContentColor.current.copy(
+                    alpha = if (enabled) 1f else ContentAlpha.disabled
+                ),
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier.fillMaxWidth()
             )
             summary?.let { sum ->
                 Text(
                     text = sum,
+                    color = LocalContentColor.current.copy(
+                        alpha = if (enabled) 1f else ContentAlpha.disabled
+                    ),
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier.fillMaxWidth()
                 )
