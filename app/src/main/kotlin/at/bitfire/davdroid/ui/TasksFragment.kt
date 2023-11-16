@@ -14,9 +14,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AnyThread
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -31,6 +33,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -242,7 +246,7 @@ fun TasksCard(
     val jtxSelected by model.jtxSelected.observeAsState(initial = false)
     val jtxRequested by model.jtxRequested.observeAsState(initial = false)
 
-    val dontShow by model.dontShow
+    var dontShow by model.dontShow
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -257,7 +261,7 @@ fun TasksCard(
                 image = painterResource(R.drawable.intro_tasks),
                 title = stringResource(R.string.intro_tasks_title),
                 message = stringResource(R.string.intro_tasks_text1),
-                modifier = Modifier.padding(vertical = 12.dp)
+                modifier = Modifier.padding(16.dp)
             ) {
                 RadioWithSwitch(
                     title = stringResource(R.string.intro_tasks_jtx),
@@ -270,13 +274,16 @@ fun TasksCard(
                 )
             }
 
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = dontShow,
-                    onCheckedChange = {  }
+                    onCheckedChange = { dontShow = it }
                 )
                 Text(
-                    text = stringResource(R.string.intro_tasks_dont_show)
+                    text = stringResource(R.string.intro_tasks_dont_show),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { dontShow = !dontShow }
                 )
             }
         }
