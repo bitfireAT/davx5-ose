@@ -303,19 +303,22 @@ fun TasksCard(
                     onToggled = model.openTasksRequested::setValue,
                     modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
                 )
-            }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = dontShow,
-                    onCheckedChange = { dontShow = it }
-                )
-                Text(
-                    text = stringResource(R.string.intro_tasks_dont_show),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { dontShow = !dontShow }
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                ) {
+                    Checkbox(
+                        checked = dontShow,
+                        onCheckedChange = { dontShow = it }
+                    )
+                    Text(
+                        text = stringResource(R.string.intro_tasks_dont_show),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { dontShow = !dontShow }
+                    )
+                }
             }
         }
     }
