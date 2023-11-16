@@ -14,79 +14,72 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AnyThread
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Checkbox
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityTasksBinding
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.widget.CardWithImage
+import at.bitfire.davdroid.ui.widget.RadioWithSwitch
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class TasksFragment: Fragment() {
 
-    private var _binding: ActivityTasksBinding? = null
-    private val binding get() = _binding!!
     val model by viewModels<Model>()
+
+    private lateinit var uiCoroutineScope: CoroutineScope
+    private lateinit var snackbarHostState: SnackbarHostState
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = ActivityTasksBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.model = model
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val snackbarHostState = remember {
+                    SnackbarHostState().also { this@TasksFragment.snackbarHostState = it }
+                }
 
-        model.openTasksRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
-            if (shallBeInstalled && model.openTasksInstalled.value == false) {
-                // uncheck switch for the moment (until the app is installed)
-                model.openTasksRequested.value = false
-                installApp(ProviderName.OpenTasks.packageName)
+                TasksCard(model, snackbarHostState)
             }
         }
-        model.openTasksSelected.observe(viewLifecycleOwner) { selected ->
-            if (selected && model.currentProvider.value != ProviderName.OpenTasks)
-                model.selectPreferredProvider(ProviderName.OpenTasks)
-        }
-
-        model.tasksOrgRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
-            if (shallBeInstalled && model.tasksOrgInstalled.value == false) {
-                model.tasksOrgRequested.value = false
-                installApp(ProviderName.TasksOrg.packageName)
-            }
-        }
-        model.tasksOrgSelected.observe(viewLifecycleOwner) { selected ->
-            if (selected && model.currentProvider.value != ProviderName.TasksOrg)
-                model.selectPreferredProvider(ProviderName.TasksOrg)
-        }
-
-
-        model.jtxRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
-            if (shallBeInstalled && model.jtxInstalled.value == false) {
-                model.jtxRequested.value = false
-                installApp(ProviderName.JtxBoard.packageName)
-            }
-        }
-        model.jtxSelected.observe(viewLifecycleOwner) { selected ->
-            if (selected && model.currentProvider.value != ProviderName.JtxBoard)
-                model.selectPreferredProvider(ProviderName.JtxBoard)
-        }
-
-        binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
-
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun installApp(packageName: String) {
@@ -95,8 +88,12 @@ class TasksFragment: Fragment() {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         if (intent.resolveActivity(requireActivity().packageManager) != null)
             startActivity(intent)
-        else
-            Snackbar.make(binding.frame, R.string.intro_tasks_no_app_store, Snackbar.LENGTH_LONG).show()
+        else uiCoroutineScope.launch {
+            snackbarHostState.showSnackbar(
+                message = getString(R.string.intro_tasks_no_app_store),
+                duration = SnackbarDuration.Long
+            )
+        }
     }
 
 
@@ -135,15 +132,23 @@ class TasksFragment: Fragment() {
             }
         }
 
-        val dontShow = object: ObservableBoolean() {
-            override fun get() = settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
-            override fun set(dontShowAgain: Boolean) {
-                if (dontShowAgain)
+        val dontShow = object : MutableState<Boolean> {
+            private fun getValue() = settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
+
+            private fun setValue(value: Boolean) {
+                if (value)
                     settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
                 else
                     settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
-                notifyChange()
             }
+
+            override var value: Boolean
+                get() = getValue()
+                set(value) { setValue(value) }
+
+            override fun component1(): Boolean = getValue()
+
+            override fun component2(): (Boolean) -> Unit = ::setValue
         }
 
         init {
@@ -195,5 +200,60 @@ class TasksFragment: Fragment() {
         }
 
     }
+}
 
+@Composable
+fun TasksCard(
+    model: TasksFragment.Model = viewModel(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+) {
+    val jtxInstalled by model.jtxInstalled.observeAsState(initial = false)
+    val jtxSelected by model.jtxSelected.observeAsState(initial = false)
+    val jtxRequested by model.jtxRequested.observeAsState(initial = false)
+
+    val dontShow by model.dontShow
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+        ) {
+            CardWithImage(
+                image = painterResource(R.drawable.intro_tasks),
+                title = stringResource(R.string.intro_tasks_title),
+                message = stringResource(R.string.intro_tasks_text1),
+                modifier = Modifier.padding(vertical = 12.dp)
+            ) {
+                RadioWithSwitch(
+                    title = stringResource(R.string.intro_tasks_jtx),
+                    summary = stringResource(R.string.intro_tasks_jtx_info),
+                    isSelected = jtxSelected,
+                    isToggled = jtxRequested,
+                    enabled = jtxInstalled,
+                    onSelected = { model.jtxSelected.value = true },
+                    onToggled = model.jtxRequested::setValue
+                )
+            }
+
+            Row {
+                Checkbox(
+                    checked = dontShow,
+                    onCheckedChange = {  }
+                )
+                Text(
+                    text = stringResource(R.string.intro_tasks_dont_show)
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun TasksCard_Preview() {
+    TasksCard()
 }
