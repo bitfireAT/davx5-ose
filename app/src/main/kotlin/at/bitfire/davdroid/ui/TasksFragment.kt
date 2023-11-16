@@ -38,23 +38,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.ActivityTasksBinding
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.davdroid.ui.widget.RadioWithSwitch
 import at.bitfire.ical4android.TaskProvider.ProviderName
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -168,9 +164,9 @@ class TasksFragment: Fragment() {
         }
 
         val dontShow = object : MutableState<Boolean> {
-            private fun getValue() = settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
+            private fun get() = settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
 
-            private fun setValue(value: Boolean) {
+            private fun update(value: Boolean) {
                 if (value)
                     settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
                 else
@@ -178,12 +174,12 @@ class TasksFragment: Fragment() {
             }
 
             override var value: Boolean
-                get() = getValue()
-                set(value) { setValue(value) }
+                get() = get()
+                set(value) { update(value) }
 
-            override fun component1(): Boolean = getValue()
+            override fun component1(): Boolean = get()
 
-            override fun component2(): (Boolean) -> Unit = ::setValue
+            override fun component2(): (Boolean) -> Unit = ::update
         }
 
         init {
