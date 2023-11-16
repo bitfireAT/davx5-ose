@@ -283,6 +283,7 @@ fun TasksCard(
                         .padding(vertical = 12.dp)
                 )
 
+                // TODO - format HTML correctly (with link)
                 RadioWithSwitch(
                     title = stringResource(R.string.intro_tasks_tasks_org),
                     summary = stringResource(R.string.intro_tasks_tasks_org_info),
