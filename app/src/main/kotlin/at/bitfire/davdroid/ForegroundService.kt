@@ -25,25 +25,6 @@ import dagger.hilt.components.SingletonComponent
 
 class ForegroundService : Service() {
 
-    override fun onCreate() {
-        super.onCreate()
-
-        /* Call startForeground as soon as possible (must be within 5 seconds after the service has been created).
-        If the foreground service shouldn't remain active (because the setting has been disabled),
-        we'll immediately stop it with stopForeground() in onStartCommand(). */
-        val settingsIntent = Intent(this, AppSettingsActivity::class.java).apply {
-            putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, Settings.FOREGROUND_SERVICE)
-        }
-        val builder = NotificationCompat.Builder(this, NotificationUtils.CHANNEL_STATUS)
-            .setSmallIcon(R.drawable.ic_foreground_notify)
-            .setContentTitle(getString(R.string.foreground_service_notify_title))
-            .setContentText(getString(R.string.foreground_service_notify_text))
-            .setStyle(NotificationCompat.BigTextStyle())
-            .setContentIntent(PendingIntent.getActivity(this, 0, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-            .setCategory(NotificationCompat.CATEGORY_STATUS)
-        startForeground(NotificationUtils.NOTIFY_FOREGROUND, builder.build())
-    }
-
     companion object {
 
         @EntryPoint
@@ -51,13 +32,6 @@ class ForegroundService : Service() {
         interface ForegroundServiceEntryPoint {
             fun settingsManager(): SettingsManager
         }
-
-        /**
-         * Starts/stops a foreground service, according to the app setting [Settings.FOREGROUND_SERVICE]
-         * if [Settings.BATTERY_OPTIMIZATION] is enabled - meaning DAVx5 is whitelisted from optimization.
-         */
-        const val ACTION_FOREGROUND = "foreground"
-
 
         /**
          * Whether the app is currently exempted from battery optimization.
@@ -68,28 +42,34 @@ class ForegroundService : Service() {
 
         /**
          * Whether the foreground service is enabled (checked) in the app settings.
+         *
          * @return true: foreground service enabled; false: foreground service not enabled
          */
-        fun foregroundServiceActivated(context: Context): Boolean {
+        private fun shouldBeActive(context: Context): Boolean {
             val settingsManager = EntryPointAccessors.fromApplication(context, ForegroundServiceEntryPoint::class.java).settingsManager()
             return settingsManager.getBooleanOrNull(Settings.FOREGROUND_SERVICE) == true
         }
 
         /**
          * Starts the foreground service when enabled in the app settings and applicable.
+         * Stops a potentially running foreground service when disabled in the app settings.
          */
-        fun startIfActive(context: Context) {
-            if (foregroundServiceActivated(context)) {
+        fun startOrStop(context: Context) {
+            val foregroundServiceIntent = Intent(Intent.ACTION_DEFAULT, null, context, ForegroundService::class.java)
+            if (shouldBeActive(context)) {
                 if (batteryOptimizationWhitelisted(context)) {
-                    val serviceIntent = Intent(ACTION_FOREGROUND, null, context, ForegroundService::class.java)
                     if (Build.VERSION.SDK_INT >= 26)
-                        // we now have 5 seconds to call Service.startForeground() [https://developer.android.com/about/versions/oreo/android-8.0-changes.html#back-all]
-                        context.startForegroundService(serviceIntent)
+                        // After the next call, we have 5 seconds to call startForeground()
+                        // [https://developer.android.com/about/versions/oreo/android-8.0-changes.html#back-all]
+                        context.startForegroundService(foregroundServiceIntent)
                     else
-                        context.startService(serviceIntent)
+                        context.startService(foregroundServiceIntent)
                 } else
                     notifyBatteryOptimization(context)
-            }
+            } else
+                try {
+                    context.stopService(foregroundServiceIntent)
+                } catch (ignored: Exception) { }
         }
 
         private fun notifyBatteryOptimization(context: Context) {
@@ -111,19 +91,24 @@ class ForegroundService : Service() {
     }
 
 
+    override fun onCreate() {
+        super.onCreate()
+
+        val settingsIntent = Intent(this, AppSettingsActivity::class.java).apply {
+            putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, Settings.FOREGROUND_SERVICE)
+        }
+        val builder = NotificationCompat.Builder(this, NotificationUtils.CHANNEL_STATUS)
+            .setSmallIcon(R.drawable.ic_foreground_notify)
+            .setContentTitle(getString(R.string.foreground_service_notify_title))
+            .setContentText(getString(R.string.foreground_service_notify_text))
+            .setStyle(NotificationCompat.BigTextStyle())
+            .setContentIntent(PendingIntent.getActivity(this, 0, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+        startForeground(NotificationUtils.NOTIFY_FOREGROUND, builder.build())
+    }
+
     override fun onBind(intent: Intent?): Nothing? = null
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Command is always ACTION_FOREGROUND → re-evaluate foreground setting
-        if (foregroundServiceActivated(this))
-            // keep service open
-            return START_STICKY
-        else {
-            // don't keep service active
-            stopForeground(true)
-            stopSelf()      // Stop the service so that onCreate() will run again for the next command
-            return START_NOT_STICKY
-        }
-    }
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int) = START_STICKY
 
 }

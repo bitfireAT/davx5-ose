@@ -16,7 +16,11 @@ import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.getSystemService
-import androidx.preference.*
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.ForegroundService
@@ -168,7 +172,7 @@ class AppSettingsActivity: AppCompatActivity() {
                 isEnabled = settings.getBooleanOrNull(Settings.BATTERY_OPTIMIZATION) == true
                 onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                     settings.putBoolean(Settings.FOREGROUND_SERVICE, newValue as Boolean)
-                    requireActivity().startService(Intent(ForegroundService.ACTION_FOREGROUND, null, requireActivity(), ForegroundService::class.java))
+                    ForegroundService.startOrStop(requireActivity())
                     false
                 }
             }
