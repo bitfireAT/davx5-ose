@@ -285,7 +285,7 @@ class AppSettingsActivity: AppCompatActivity() {
         private fun resetHints() {
             settings.remove(BatteryOptimizationsFragment.Model.HINT_BATTERY_OPTIMIZATIONS)
             settings.remove(BatteryOptimizationsFragment.Model.HINT_AUTOSTART_PERMISSION)
-            settings.remove(TasksFragment.Model.HINT_OPENTASKS_NOT_INSTALLED)
+            settings.remove(TasksModel.HINT_OPENTASKS_NOT_INSTALLED)
             settings.remove(OpenSourceFragment.Model.SETTING_NEXT_DONATION_POPUP)
             Snackbar.make(requireView(), R.string.app_settings_reset_hints_success, Snackbar.LENGTH_LONG).show()
         }
