@@ -76,14 +76,7 @@ class TasksFragment: Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    TasksCard(
-                        model,
-                        onProviderSelected = { provider ->
-                            if (model.currentProvider.value != provider) {
-                                model.selectPreferredProvider(provider)
-                            }
-                        }
-                    )
+                    TasksCard(model)
                 }
             }
         }
@@ -193,8 +186,7 @@ class TasksFragment: Fragment() {
 @OptIn(ExperimentalTextApi::class)
 @Composable
 fun TasksCard(
-    model: TasksFragment.Model = viewModel(),
-    onProviderSelected: (provider: ProviderName) -> Unit
+    model: TasksFragment.Model = viewModel()
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -226,6 +218,12 @@ fun TasksCard(
                 message = context.getString(R.string.intro_tasks_no_app_store),
                 duration = SnackbarDuration.Long
             )
+        }
+    }
+
+    fun onProviderSelected(provider: ProviderName) {
+        if (model.currentProvider.value != provider) {
+            model.selectPreferredProvider(provider)
         }
     }
 
@@ -327,7 +325,5 @@ fun TasksCard(
 @Preview
 @Composable
 fun TasksCard_Preview() {
-    TasksCard(
-        onProviderSelected = {}
-    )
+    TasksCard()
 }
