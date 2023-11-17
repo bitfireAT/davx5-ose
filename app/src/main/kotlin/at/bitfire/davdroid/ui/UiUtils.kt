@@ -21,12 +21,14 @@ import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsClient
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.UrlAnnotation
@@ -34,6 +36,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withAnnotation
+import androidx.compose.ui.text.withStyle
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -160,4 +164,76 @@ object UiUtils {
         }
     }
 
+    /**
+     * Converts the String into an [AnnotatedString] with little HTML support.
+     * Supported features:
+     * - **Links**:
+     *     - Must be well formatted (without extra spaces).
+     *
+     *       Valid: `<a href="{link}">{text}</a>`
+     *
+     *       Invalid: `<a  href="{link}">{text}</a >`
+     *     - Quotes (`"`) for the link may be excluded (removed by CDATA on string resources).
+     *
+     * @param linkStyle The style to be used with links.
+     */
+    @ExperimentalTextApi
+    @Composable
+    fun String.annotateHtml(
+        linkStyle: SpanStyle = SpanStyle(
+            color = MaterialTheme.colors.primary,
+            textDecoration = TextDecoration.Underline
+        )
+    ): AnnotatedString = buildAnnotatedString {
+        // Search all HTML link matches
+        val linkRegex = Regex("<a href=\"?https?://.*?\"?>.*?</a>")
+        val matches = linkRegex.findAll(this@annotateHtml)
+        if (matches.count() <= 0) {
+            // There isn't any link in the text, append all text as is
+            append(this@annotateHtml)
+        } else {
+            // There's at least one link, iterate them
+            var previousGroup: MatchResult? = null
+            for (group in matches) {
+                if (previousGroup == null) {
+                    // This is the first group found, append all the text before the match
+                    val middleText = substring(0, group.range.first)
+                    append(middleText)
+                } else if (
+                    // Make sure the previous and current groups do not intersect with each other
+                    previousGroup.range.last + 1 != group.range.first
+                ) {
+                    val middleText = substring(previousGroup.range.last + 1, group.range.first)
+                    append(middleText)
+                }
+                // Extract the tag's contents
+                val tag = substring(group.range)
+                val link = tag
+                    // Remove the href part
+                    .substring(tag.indexOf("href=") + 5, tag.indexOf('>'))
+                    // Remove quotes if any
+                    .substringAfter('"')
+                    // Also in the end
+                    .substringBeforeLast('"')
+                // Extract the text inside the tag
+                val text = tag.substring(tag.indexOf('>') + 1, tag.lastIndexOf('<'))
+                // Annotate with the link
+                withAnnotation(
+                    UrlAnnotation(link)
+                ) {
+                    // And stylize with the given SpanStyle
+                    withStyle(linkStyle) { append(text) }
+                }
+
+                // Copy the current group as the previous one, in case there's text between tags
+                previousGroup = group
+            }
+
+            // If there's some non-annotated text at the end, append it
+            val lastMatch = matches.last()
+            if (lastMatch.range.last + 1 < length) {
+                append(substring(lastMatch.range.last + 1))
+            }
+        }
+    }
 }
