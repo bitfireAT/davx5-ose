@@ -33,9 +33,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,7 +63,6 @@ import at.bitfire.ical4android.TaskProvider.ProviderName
 import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -70,20 +71,13 @@ class TasksFragment: Fragment() {
 
     val model by viewModels<Model>()
 
-    private lateinit var uiCoroutineScope: CoroutineScope
-
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val snackbarHostState = remember { SnackbarHostState() }
-
                 MdcTheme {
                     TasksCard(
                         model,
-                        snackbarHostState,
-                        onInstallAppRequested = { installApp(it, snackbarHostState) },
                         onProviderSelected = { provider ->
                             if (model.currentProvider.value != provider) {
                                 model.selectPreferredProvider(provider)
@@ -92,20 +86,6 @@ class TasksFragment: Fragment() {
                     )
                 }
             }
-        }
-    }
-
-    private fun installApp(packageName: String, snackbarHostState: SnackbarHostState) {
-        val uri = Uri.parse("market://details?id=$packageName&referrer=" +
-                Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID))
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        if (intent.resolveActivity(requireActivity().packageManager) != null)
-            startActivity(intent)
-        else uiCoroutineScope.launch {
-            snackbarHostState.showSnackbar(
-                message = getString(R.string.intro_tasks_no_app_store),
-                duration = SnackbarDuration.Long
-            )
         }
     }
 
@@ -214,10 +194,13 @@ class TasksFragment: Fragment() {
 @Composable
 fun TasksCard(
     model: TasksFragment.Model = viewModel(),
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    onInstallAppRequested: (packageName: String) -> Unit,
     onProviderSelected: (provider: ProviderName) -> Unit
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
     val jtxInstalled by model.jtxInstalled.observeAsState(initial = false)
     val jtxSelected by model.jtxSelected.observeAsState(initial = false)
     val jtxRequested by model.jtxRequested.observeAsState(initial = false)
@@ -231,6 +214,20 @@ fun TasksCard(
     val openTasksRequested by model.openTasksRequested.observeAsState(initial = false)
 
     val dontShow by model.dontShow.observeAsState(initial = false)
+
+    fun installApp(packageName: String) {
+        val uri = Uri.parse("market://details?id=$packageName&referrer=" +
+            Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID))
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        if (intent.resolveActivity(context.packageManager) != null)
+            context.startActivity(intent)
+        else coroutineScope.launch {
+            snackbarHostState.showSnackbar(
+                message = context.getString(R.string.intro_tasks_no_app_store),
+                duration = SnackbarDuration.Long
+            )
+        }
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -257,7 +254,7 @@ fun TasksCard(
                     enabled = jtxInstalled,
                     onSelected = { onProviderSelected(ProviderName.JtxBoard) },
                     onToggled = { toggled ->
-                        if (toggled) onInstallAppRequested(ProviderName.JtxBoard.packageName)
+                        if (toggled) installApp(ProviderName.JtxBoard.packageName)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -272,7 +269,7 @@ fun TasksCard(
                     enabled = tasksOrgInstalled,
                     onSelected = { onProviderSelected(ProviderName.TasksOrg) },
                     onToggled = { toggled ->
-                        if (toggled) onInstallAppRequested(ProviderName.TasksOrg.packageName)
+                        if (toggled) installApp(ProviderName.TasksOrg.packageName)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -287,7 +284,7 @@ fun TasksCard(
                     enabled = openTasksInstalled,
                     onSelected = { onProviderSelected(ProviderName.OpenTasks) },
                     onToggled = { toggled ->
-                        if (toggled) onInstallAppRequested(ProviderName.OpenTasks.packageName)
+                        if (toggled) installApp(ProviderName.OpenTasks.packageName)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -331,7 +328,6 @@ fun TasksCard(
 @Composable
 fun TasksCard_Preview() {
     TasksCard(
-        onInstallAppRequested = {},
         onProviderSelected = {}
     )
 }
