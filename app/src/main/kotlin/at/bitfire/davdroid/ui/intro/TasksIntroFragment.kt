@@ -9,19 +9,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import at.bitfire.davdroid.App
-import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.R
+import androidx.fragment.app.viewModels
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.TasksFragment
+import at.bitfire.davdroid.ui.TasksCard
+import at.bitfire.davdroid.ui.TasksModel
+import com.google.accompanist.themeadapter.material.MdcTheme
 import javax.inject.Inject
 
 class TasksIntroFragment : Fragment() {
+    val model: TasksModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.intro_tasks, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MdcTheme {
+                    TasksCard(model)
+                }
+            }
+        }
+    }
 
 
     class Factory @Inject constructor(
@@ -29,7 +40,7 @@ class TasksIntroFragment : Fragment() {
     ): IntroFragmentFactory {
 
         override fun getOrder(context: Context): Int {
-            return if (!TaskUtils.isAvailable(context) && settingsManager.getBooleanOrNull(TasksFragment.Model.HINT_OPENTASKS_NOT_INSTALLED) != false)
+            return if (!TaskUtils.isAvailable(context) && settingsManager.getBooleanOrNull(TasksModel.HINT_OPENTASKS_NOT_INSTALLED) != false)
                 10
             else
                 IntroFragmentFactory.DONT_SHOW

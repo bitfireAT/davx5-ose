@@ -9,10 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.AnyThread
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -36,15 +32,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -59,133 +51,113 @@ import at.bitfire.davdroid.ui.UiUtils.linkStyle
 import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.davdroid.ui.widget.RadioWithSwitch
 import at.bitfire.ical4android.TaskProvider.ProviderName
-import com.google.accompanist.themeadapter.material.MdcTheme
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@AndroidEntryPoint
-class TasksFragment: Fragment() {
+@HiltViewModel
+class TasksModel @Inject constructor(
+    application: Application,
+    val settings: SettingsManager
+) : AndroidViewModel(application), SettingsManager.OnChangeListener {
 
-    val model by viewModels<Model>()
+    companion object {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                MdcTheme {
-                    TasksCard(model)
-                }
-            }
+        /**
+         * Whether this fragment (which asks for OpenTasks installation) shall be shown.
+         * If this setting is true or null/not set, the notice shall be shown. Only if this
+         * setting is false, the notice shall not be shown.
+         */
+        const val HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled"
+
+    }
+
+    val context: Context get() = getApplication()
+
+    val currentProvider = MutableLiveData<ProviderName>()
+    val openTasksInstalled = MutableLiveData<Boolean>()
+    val openTasksRequested = MutableLiveData<Boolean>()
+    val openTasksSelected = MutableLiveData<Boolean>()
+    val tasksOrgInstalled = MutableLiveData<Boolean>()
+    val tasksOrgRequested = MutableLiveData<Boolean>()
+    val tasksOrgSelected = MutableLiveData<Boolean>()
+    val jtxInstalled = MutableLiveData<Boolean>()
+    val jtxRequested = MutableLiveData<Boolean>()
+    val jtxSelected = MutableLiveData<Boolean>()
+    private val tasksWatcher = object: PackageChangedReceiver(context) {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            checkInstalled()
         }
     }
 
+    val dontShow = MutableLiveData(
+        settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
+    )
 
-    @HiltViewModel
-    class Model @Inject constructor(
-        application: Application,
-        val settings: SettingsManager
-    ) : AndroidViewModel(application), SettingsManager.OnChangeListener {
-
-        companion object {
-
-            /**
-             * Whether this fragment (which asks for OpenTasks installation) shall be shown.
-             * If this setting is true or null/not set, the notice shall be shown. Only if this
-             * setting is false, the notice shall not be shown.
-             */
-            const val HINT_OPENTASKS_NOT_INSTALLED = "hint_OpenTasksNotInstalled"
-
-        }
-
-        val context: Context get() = getApplication()
-
-        val currentProvider = MutableLiveData<ProviderName>()
-        val openTasksInstalled = MutableLiveData<Boolean>()
-        val openTasksRequested = MutableLiveData<Boolean>()
-        val openTasksSelected = MutableLiveData<Boolean>()
-        val tasksOrgInstalled = MutableLiveData<Boolean>()
-        val tasksOrgRequested = MutableLiveData<Boolean>()
-        val tasksOrgSelected = MutableLiveData<Boolean>()
-        val jtxInstalled = MutableLiveData<Boolean>()
-        val jtxRequested = MutableLiveData<Boolean>()
-        val jtxSelected = MutableLiveData<Boolean>()
-        private val tasksWatcher = object: PackageChangedReceiver(context) {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                checkInstalled()
-            }
-        }
-
-        val dontShow = MutableLiveData(
-            settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
-        )
-
-        private val dontShowObserver = Observer<Boolean> { value ->
-            if (value)
-                settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
-            else
-                settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
-        }
-
-        init {
-            checkInstalled()
-            settings.addOnChangeListener(this)
-            dontShow.observeForever(dontShowObserver)
-        }
-
-        override fun onCleared() {
-            settings.removeOnChangeListener(this)
-            tasksWatcher.close()
-            dontShow.removeObserver(dontShowObserver)
-        }
-
-        @AnyThread
-        fun checkInstalled() {
-            val taskProvider = TaskUtils.currentProvider(context)
-            currentProvider.postValue(taskProvider)
-
-            val openTasks = isInstalled(ProviderName.OpenTasks.packageName)
-            openTasksInstalled.postValue(openTasks)
-            openTasksRequested.postValue(openTasks)
-            openTasksSelected.postValue(taskProvider == ProviderName.OpenTasks)
-
-            val tasksOrg = isInstalled(ProviderName.TasksOrg.packageName)
-            tasksOrgInstalled.postValue(tasksOrg)
-            tasksOrgRequested.postValue(tasksOrg)
-            tasksOrgSelected.postValue(taskProvider == ProviderName.TasksOrg)
-
-            val jtxBoard = isInstalled(ProviderName.JtxBoard.packageName)
-            jtxInstalled.postValue(jtxBoard)
-            jtxRequested.postValue(jtxBoard)
-            jtxSelected.postValue(taskProvider == ProviderName.JtxBoard)
-        }
-
-        private fun isInstalled(packageName: String): Boolean =
-                try {
-                    context.packageManager.getPackageInfo(packageName, 0)
-                    true
-                } catch (e: PackageManager.NameNotFoundException) {
-                    false
-                }
-
-        fun selectPreferredProvider(provider: ProviderName) {
-            TaskUtils.setPreferredProvider(context, provider)
-            checkInstalled()
-        }
-
-
-        override fun onSettingsChanged() {
-            checkInstalled()
-        }
-
+    private val dontShowObserver = Observer<Boolean> { value ->
+        if (value)
+            settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
+        else
+            settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
     }
+
+    init {
+        checkInstalled()
+        settings.addOnChangeListener(this)
+        dontShow.observeForever(dontShowObserver)
+    }
+
+    override fun onCleared() {
+        settings.removeOnChangeListener(this)
+        tasksWatcher.close()
+        dontShow.removeObserver(dontShowObserver)
+    }
+
+    @AnyThread
+    fun checkInstalled() {
+        val taskProvider = TaskUtils.currentProvider(context)
+        currentProvider.postValue(taskProvider)
+
+        val openTasks = isInstalled(ProviderName.OpenTasks.packageName)
+        openTasksInstalled.postValue(openTasks)
+        openTasksRequested.postValue(openTasks)
+        openTasksSelected.postValue(taskProvider == ProviderName.OpenTasks)
+
+        val tasksOrg = isInstalled(ProviderName.TasksOrg.packageName)
+        tasksOrgInstalled.postValue(tasksOrg)
+        tasksOrgRequested.postValue(tasksOrg)
+        tasksOrgSelected.postValue(taskProvider == ProviderName.TasksOrg)
+
+        val jtxBoard = isInstalled(ProviderName.JtxBoard.packageName)
+        jtxInstalled.postValue(jtxBoard)
+        jtxRequested.postValue(jtxBoard)
+        jtxSelected.postValue(taskProvider == ProviderName.JtxBoard)
+    }
+
+    private fun isInstalled(packageName: String): Boolean =
+            try {
+                context.packageManager.getPackageInfo(packageName, 0)
+                true
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
+            }
+
+    fun selectPreferredProvider(provider: ProviderName) {
+        TaskUtils.setPreferredProvider(context, provider)
+        checkInstalled()
+    }
+
+
+    override fun onSettingsChanged() {
+        checkInstalled()
+    }
+
 }
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
 fun TasksCard(
-    model: TasksFragment.Model = viewModel()
+    model: TasksModel = viewModel()
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
