@@ -170,7 +170,7 @@ object UiUtils {
     val linkStyle: SpanStyle
         @Composable
         get() = SpanStyle(
-            color = MaterialTheme.colors.primary,
+            color = MaterialTheme.colors.secondary,
             textDecoration = TextDecoration.Underline
         )
 
