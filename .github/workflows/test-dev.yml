@@ -16,6 +16,15 @@ jobs:
           java-version: 17
       - uses: gradle/gradle-build-action@v2
 
+      - name: Use app/build and gradle configuration cache
+        if: ${{ github.ref != 'refs/heads/dev-ose' }}
+        uses: actions/cache/restore@v3
+        with:
+          key: app_build-tests-without-emulator
+          path: |
+            .gradle/configuration-cache
+            app/build
+
       - name: Run lint and unit tests
         run: ./gradlew app:check
       - name: Archive results
@@ -25,6 +34,15 @@ jobs:
           path: |
             app/build/outputs/lint*
             app/build/reports
+
+      - name: Cache app/build and gradle configuration
+        if: ${{ github.ref == 'refs/heads/dev-ose' }}
+        uses: actions/cache/save@v3
+        with:
+          key: app_build-tests-without-emulator
+          path: |
+            .gradle/configuration-cache
+            app/build
 
   test_on_emulator:
     name: Tests with emulator
@@ -39,6 +57,15 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/gradle-build-action@v2
+
+      - name: Use app/build and gradle configuration cache
+        if: ${{ github.ref != 'refs/heads/dev-ose' }}
+        uses: actions/cache/restore@v3
+        with:
+          key: app_build-tests-with-emulator
+          path: |
+            .gradle/configuration-cache
+            app/build
 
       - name: Enable KVM group perms
         run: |
@@ -75,6 +102,15 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: ./gradlew app:connectedCheck
+
+      - name: Cache app/build and gradle configuration
+        if: ${{ github.ref == 'refs/heads/dev-ose' }}
+        uses: actions/cache/save@v3
+        with:
+          key: app_build-tests-with-emulator
+          path: |
+            .gradle/configuration-cache
+            app/build
 
       - name: Archive results
         if: always()

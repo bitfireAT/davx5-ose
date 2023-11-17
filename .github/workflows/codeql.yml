@@ -35,6 +35,14 @@ jobs:
         java-version: 17
     - uses: gradle/gradle-build-action@v2
 
+    - name: Use app/build and gradle configuration cache
+      uses: actions/cache/restore@v3
+      with:
+        key: app_build-tests-without-emulator
+        path: |
+          .gradle/configuration-cache
+          app/build
+
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
