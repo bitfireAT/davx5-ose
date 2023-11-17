@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -52,6 +53,8 @@ import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.UiUtils.annotateHtml
+import at.bitfire.davdroid.ui.UiUtils.linkStyle
 import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.davdroid.ui.widget.RadioWithSwitch
 import at.bitfire.ical4android.TaskProvider.ProviderName
@@ -72,34 +75,13 @@ class TasksFragment: Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        model.openTasksRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
-            if (shallBeInstalled && model.openTasksInstalled.value == false) {
-                // uncheck switch for the moment (until the app is installed)
-                model.openTasksRequested.value = false
-                installApp(ProviderName.OpenTasks.packageName)
-            }
-        }
         model.openTasksSelected.observe(viewLifecycleOwner) { selected ->
             if (selected && model.currentProvider.value != ProviderName.OpenTasks)
                 model.selectPreferredProvider(ProviderName.OpenTasks)
         }
-
-        model.tasksOrgRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
-            if (shallBeInstalled && model.tasksOrgInstalled.value == false) {
-                model.tasksOrgRequested.value = false
-                installApp(ProviderName.TasksOrg.packageName)
-            }
-        }
         model.tasksOrgSelected.observe(viewLifecycleOwner) { selected ->
             if (selected && model.currentProvider.value != ProviderName.TasksOrg)
                 model.selectPreferredProvider(ProviderName.TasksOrg)
-        }
-
-        model.jtxRequested.observe(viewLifecycleOwner) { shallBeInstalled ->
-            if (shallBeInstalled && model.jtxInstalled.value == false) {
-                model.jtxRequested.value = false
-                installApp(ProviderName.JtxBoard.packageName)
-            }
         }
         model.jtxSelected.observe(viewLifecycleOwner) { selected ->
             if (selected && model.currentProvider.value != ProviderName.JtxBoard)
@@ -114,7 +96,7 @@ class TasksFragment: Fragment() {
                 }
 
                 MdcTheme {
-                    TasksCard(model, snackbarHostState)
+                    TasksCard(model, snackbarHostState, ::installApp)
                 }
             }
         }
@@ -234,10 +216,12 @@ class TasksFragment: Fragment() {
     }
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun TasksCard(
     model: TasksFragment.Model = viewModel(),
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onInstallAppRequested: (packageName: String) -> Unit
 ) {
     val jtxInstalled by model.jtxInstalled.observeAsState(initial = false)
     val jtxSelected by model.jtxSelected.observeAsState(initial = false)
@@ -277,16 +261,19 @@ fun TasksCard(
                     isToggled = jtxRequested,
                     enabled = jtxInstalled,
                     onSelected = { model.jtxSelected.value = true },
-                    onToggled = model.jtxRequested::setValue,
+                    onToggled = { toggled ->
+                        if (toggled) {
+                            onInstallAppRequested(ProviderName.OpenTasks.packageName)
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp)
                 )
 
-                // TODO - format HTML correctly (with link)
                 RadioWithSwitch(
                     title = stringResource(R.string.intro_tasks_tasks_org),
-                    summary = stringResource(R.string.intro_tasks_tasks_org_info),
+                    summary = stringResource(R.string.intro_tasks_tasks_org_info).annotateHtml(linkStyle),
                     isSelected = tasksOrgSelected,
                     isToggled = tasksOrgRequested,
                     enabled = tasksOrgInstalled,
@@ -346,5 +333,5 @@ fun TasksCard(
 @Preview
 @Composable
 fun TasksCard_Preview() {
-    TasksCard()
+    TasksCard {}
 }
