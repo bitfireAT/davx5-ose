@@ -165,6 +165,16 @@ object UiUtils {
     }
 
     /**
+     * Provides a generalized [SpanStyle] for highlighting links. Usually used in [annotateHtml].
+     */
+    val linkStyle: SpanStyle
+        @Composable
+        get() = SpanStyle(
+            color = MaterialTheme.colors.primary,
+            textDecoration = TextDecoration.Underline
+        )
+
+    /**
      * Converts the String into an [AnnotatedString] with little HTML support.
      * Supported features:
      * - **Links**:
@@ -174,16 +184,13 @@ object UiUtils {
      *
      *       Invalid: `<a  href="{link}">{text}</a >`
      *     - Quotes (`"`) for the link may be excluded (removed by CDATA on string resources).
+     *     - Links must be http or https, no other protocols are supported.
      *
-     * @param linkStyle The style to be used with links.
+     * @param linkStyle The style to be used with links. Usually [UiUtils.linkStyle]
      */
     @ExperimentalTextApi
-    @Composable
     fun String.annotateHtml(
-        linkStyle: SpanStyle = SpanStyle(
-            color = MaterialTheme.colors.primary,
-            textDecoration = TextDecoration.Underline
-        )
+        linkStyle: SpanStyle
     ): AnnotatedString = buildAnnotatedString {
         // Search all HTML link matches
         val linkRegex = Regex("<a href=\"?https?://.*?\"?>.*?</a>")
@@ -231,7 +238,7 @@ object UiUtils {
 
             // If there's some non-annotated text at the end, append it
             val lastMatch = matches.last()
-            if (lastMatch.range.last + 1 < length) {
+            if (lastMatch.range.last + 1 < this@annotateHtml.length) {
                 append(substring(lastMatch.range.last + 1))
             }
         }
