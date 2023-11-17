@@ -71,38 +71,31 @@ class TasksFragment: Fragment() {
     val model by viewModels<Model>()
 
     private lateinit var uiCoroutineScope: CoroutineScope
-    private lateinit var snackbarHostState: SnackbarHostState
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        model.openTasksSelected.observe(viewLifecycleOwner) { selected ->
-            if (selected && model.currentProvider.value != ProviderName.OpenTasks)
-                model.selectPreferredProvider(ProviderName.OpenTasks)
-        }
-        model.tasksOrgSelected.observe(viewLifecycleOwner) { selected ->
-            if (selected && model.currentProvider.value != ProviderName.TasksOrg)
-                model.selectPreferredProvider(ProviderName.TasksOrg)
-        }
-        model.jtxSelected.observe(viewLifecycleOwner) { selected ->
-            if (selected && model.currentProvider.value != ProviderName.JtxBoard)
-                model.selectPreferredProvider(ProviderName.JtxBoard)
-        }
-
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val snackbarHostState = remember {
-                    SnackbarHostState().also { this@TasksFragment.snackbarHostState = it }
-                }
+                val snackbarHostState = remember { SnackbarHostState() }
 
                 MdcTheme {
-                    TasksCard(model, snackbarHostState, ::installApp)
+                    TasksCard(
+                        model,
+                        snackbarHostState,
+                        onInstallAppRequested = { installApp(it, snackbarHostState) },
+                        onProviderSelected = { provider ->
+                            if (model.currentProvider.value != provider) {
+                                model.selectPreferredProvider(provider)
+                            }
+                        }
+                    )
                 }
             }
         }
     }
 
-    private fun installApp(packageName: String) {
+    private fun installApp(packageName: String, snackbarHostState: SnackbarHostState) {
         val uri = Uri.parse("market://details?id=$packageName&referrer=" +
                 Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID))
         val intent = Intent(Intent.ACTION_VIEW, uri)
@@ -146,7 +139,7 @@ class TasksFragment: Fragment() {
         val jtxInstalled = MutableLiveData<Boolean>()
         val jtxRequested = MutableLiveData<Boolean>()
         val jtxSelected = MutableLiveData<Boolean>()
-        val tasksWatcher = object: PackageChangedReceiver(context) {
+        private val tasksWatcher = object: PackageChangedReceiver(context) {
             override fun onReceive(context: Context?, intent: Intent?) {
                 checkInstalled()
             }
@@ -206,6 +199,7 @@ class TasksFragment: Fragment() {
 
         fun selectPreferredProvider(provider: ProviderName) {
             TaskUtils.setPreferredProvider(context, provider)
+            checkInstalled()
         }
 
 
@@ -221,7 +215,8 @@ class TasksFragment: Fragment() {
 fun TasksCard(
     model: TasksFragment.Model = viewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-    onInstallAppRequested: (packageName: String) -> Unit
+    onInstallAppRequested: (packageName: String) -> Unit,
+    onProviderSelected: (provider: ProviderName) -> Unit
 ) {
     val jtxInstalled by model.jtxInstalled.observeAsState(initial = false)
     val jtxSelected by model.jtxSelected.observeAsState(initial = false)
@@ -260,11 +255,9 @@ fun TasksCard(
                     isSelected = jtxSelected,
                     isToggled = jtxRequested,
                     enabled = jtxInstalled,
-                    onSelected = { model.jtxSelected.value = true },
+                    onSelected = { onProviderSelected(ProviderName.JtxBoard) },
                     onToggled = { toggled ->
-                        if (toggled) {
-                            onInstallAppRequested(ProviderName.OpenTasks.packageName)
-                        }
+                        if (toggled) onInstallAppRequested(ProviderName.JtxBoard.packageName)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -277,8 +270,10 @@ fun TasksCard(
                     isSelected = tasksOrgSelected,
                     isToggled = tasksOrgRequested,
                     enabled = tasksOrgInstalled,
-                    onSelected = { model.tasksOrgSelected.value = true },
-                    onToggled = model.tasksOrgRequested::setValue,
+                    onSelected = { onProviderSelected(ProviderName.TasksOrg) },
+                    onToggled = { toggled ->
+                        if (toggled) onInstallAppRequested(ProviderName.TasksOrg.packageName)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp)
@@ -290,8 +285,10 @@ fun TasksCard(
                     isSelected = openTasksSelected,
                     isToggled = openTasksRequested,
                     enabled = openTasksInstalled,
-                    onSelected = { model.openTasksSelected.value = true },
-                    onToggled = model.openTasksRequested::setValue,
+                    onSelected = { onProviderSelected(ProviderName.OpenTasks) },
+                    onToggled = { toggled ->
+                        if (toggled) onInstallAppRequested(ProviderName.OpenTasks.packageName)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp)
@@ -333,5 +330,8 @@ fun TasksCard(
 @Preview
 @Composable
 fun TasksCard_Preview() {
-    TasksCard {}
+    TasksCard(
+        onInstallAppRequested = {},
+        onProviderSelected = {}
+    )
 }
