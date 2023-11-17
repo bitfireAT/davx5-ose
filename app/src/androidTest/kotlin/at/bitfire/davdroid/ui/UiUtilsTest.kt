@@ -71,5 +71,19 @@ class UiUtilsTest {
             assertEquals(1, annotations.size)
             assertEquals("https://example.com", annotations[0].item.url)
         }
+
+        // Test with multiple links
+        "Text with <a href=\"https://example1.com\">multiple</a> <a href=\"https://example2.com\">links</a>.".annotateHtml(SpanStyle()).let { src ->
+            assertEquals("Text with multiple links.", src.toString())
+
+            src.getUrlAnnotations(10, 10).let { annotations ->
+                assertEquals(1, annotations.size)
+                assertEquals("https://example1.com", annotations[0].item.url)
+            }
+            src.getUrlAnnotations(19, 19).let { annotations ->
+                assertEquals(1, annotations.size)
+                assertEquals("https://example2.com", annotations[0].item.url)
+            }
+        }
     }
 }
