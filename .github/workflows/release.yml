@@ -3,9 +3,14 @@ on:
   push:
     tags:
       - v*
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
+
 jobs:
   build:
     name: Create release
@@ -19,6 +24,14 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/gradle-build-action@v2
+
+      - name: Use app/build and gradle configuration cache
+        uses: actions/cache/restore@v3
+        with:
+          key: app_build-tests-without-emulator
+          path: |
+            .gradle/configuration-cache
+            app/build
 
       - name: Prepare keystore
         run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
@@ -35,6 +48,6 @@ jobs:
       - name: Create Github release
         uses: softprops/action-gh-release@v1
         with:
-          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
+          prerelease: ${{ env.prerelease }}
           files: app/build/outputs/apk/ose/release/*.apk
           fail_on_unmatched_files: true
