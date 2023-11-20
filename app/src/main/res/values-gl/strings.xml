@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">A conta non existe (definitivamente)</string>
-  <string name="account_title_address_book">DAVx⁵ libreta de enderezos</string>
+  <string name="account_title_address_book">Libreta de enderezos DAVx⁵</string>
   <string name="address_books_authority_title">Libretas de enderezos</string>
   <string name="dialog_remove">Eliminar</string>
   <string name="dialog_deny">Desbotar</string>
@@ -14,7 +14,7 @@
   <string name="share">Compartir</string>
   <string name="sync_started">Comezou a sincronización</string>
   <string name="database_destructive_migration_title">Base de datos estragada</string>
-  <string name="database_destructive_migration_text">Foron eliminadas tódalas contas locais</string>
+  <string name="database_destructive_migration_text">Elimináronse todas as contas de xeito local</string>
   <string name="notification_channel_debugging">Depurando</string>
   <string name="notification_channel_general">Outras mensaxes importantes</string>
   <string name="notification_channel_status">Mensaxes de estado de baixa prioridade</string>

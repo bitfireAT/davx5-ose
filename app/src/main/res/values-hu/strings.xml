@@ -9,7 +9,10 @@
   <string name="field_required">Ennek e mezőnek a megadása kötelező</string>
   <string name="help">Súgó</string>
   <string name="manage_accounts">Fiókok kezelése</string>
+  <string name="navigate_up">Navigáció felfelé</string>
+  <string name="no_internet_sync_scheduled">Nincs internet, a szinkronizáció beütemezve</string>
   <string name="share">Megosztás</string>
+  <string name="sync_started">A szinkronizáció elkezdődött</string>
   <string name="database_destructive_migration_title">Az adatbázis megsérült</string>
   <string name="database_destructive_migration_text">A fiókok törölve lettek az eszközön.</string>
   <string name="notification_channel_debugging">Hibakeresés</string>
@@ -124,9 +127,11 @@
   <string name="navigation_drawer_faq">GYIK</string>
   <string name="navigation_drawer_community">Közösség</string>
   <string name="navigation_drawer_donate">Támogatás</string>
-  <string name="navigation_drawer_privacy_policy">Adatvédelmi politika</string>
+  <string name="navigation_drawer_privacy_policy">Adatvédelmi irányelv</string>
   <string name="account_list_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
+  <string name="account_list_no_internet">Nincs ellenőrzött Internet kapcsolat.  A szinkronizáció nem biztos, hogy fog futni. </string>
   <string name="account_list_manage_connections">Kapcsolatok kezelése</string>
+  <string name="account_list_low_storage">A rendelkezésre álló tárhely kevés.  Az Android nem fogja a helyi erőforrásokat azonnal szinkronizálni, csak a következő rendes alkalommal.</string>
   <string name="account_list_manage_storage">Tárhely kezelése</string>
   <string name="account_list_datasaver_enabled">Az adatcsökkentés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
   <string name="account_list_manage_datasaver">Adatcsökkentés kezelése</string>
@@ -254,11 +259,23 @@
   <string name="login_use_client_certificate">Tanúsítvány használata</string>
   <string name="login_no_certificate_found">Nem található tanúsítvány</string>
   <string name="login_install_certificate">Tanúsítvány telepítése</string>
-  <string name="login_type_google">Google Naptár / Névjegyek</string>
+  <string name="login_type_google">Google Névjegyek / Naptár</string>
   <string name="login_google_see_tested_with">Kérjük, olvassa el a \"Google Tesztelve\" oldalunkat friss információkért.</string>
   <string name="login_google_unexpected_warnings">Nem zárhatók ki váratlan figyelmeztetések, és lehet, hogy szükség lesz saját Client ID létrehozására is.</string>
   <string name="login_google_account">Google fiók</string>
+  <string name="login_google">Bejelenetezés Google használatával</string>
   <string name="login_google_client_id">Client ID (opcionális)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s átviszi a Google Névjegyeket és Naptárt, de kizárólag az ezzel az eszközzel való szinkronizáció miatt. A részleteket az <a href="%2$s">Adatvédelmi irányelvelv</a> tartalmazza.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s megfelel a <a href="%2$s">Google API Szolgáltatás Felhasználói Adatok Irányelvének</a>, ide értve a Korlátozott Felhasználásra vonatkozó előírásokat is.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Az autentikációs kódot nem sikerült beszerezni</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Bejelentkezés Nextcloud használatával</string>
+  <string name="login_nextcloud_login_flow">Bejelentkezési folyamat</string>
+  <string name="login_nextcloud_login_flow_text">Ez el fogja indítani a bejelentkezési folyamatot egy web-böngészőben.</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud szerver címe</string>
+  <string name="login_nextcloud_login_flow_sign_in">Bejelentkezés</string>
+  <string name="login_nextcloud_login_flow_no_login_url">A bejelentkezési URL megkeresése nem sikerült</string>
+  <string name="login_nextcloud_login_flow_no_login_data">A bejelentkezési adatok megkeresése nem sikerült</string>
   <string name="login_configuration_detection">A konfiguráció felderítése</string>
   <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése…</string>
   <string name="login_no_caldav_carddav">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
@@ -291,7 +308,13 @@
   <string name="settings_sync_wifi_only_ssids_message">A használható WiFi hálózatok nevei (SSID), vesszővel elválasztva (hagyja üresen, ha nem akar szűrést beállítani)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID  szűréshez további beállítások szükségesek</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Beálítások</string>
+  <string name="settings_ignore_vpns">VPN alatti Internet-kapcsolat</string>
+  <string name="settings_ignore_vpns_on">A VPN ellenőrzött Internet-kapcsolat nélkül nem elég a szinkronizáláshoz (javasolt)</string>
+  <string name="settings_ignore_vpns_off">A VPN ellenőrzött Internet-kapcsolat nélkül is elég a szinkronizáláshoz</string>
   <string name="settings_authentication">Authentikáció</string>
+  <string name="settings_oauth">Autentikáció megismétlése</string>
+  <string name="settings_oauth_summary">Az OAuth bejelentkezés megismétlése</string>
+  <string name="settings_username_key">felhasználónév</string>
   <string name="settings_username">Felhasználónév</string>
   <string name="settings_enter_username">Adja meg a felhasználónevet:</string>
   <string name="settings_password">Jelszó</string>

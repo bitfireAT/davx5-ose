@@ -9,7 +9,10 @@
   <string name="field_required">Cal aquest camp</string>
   <string name="help">Ajuda</string>
   <string name="manage_accounts">Gestiona comptes</string>
+  <string name="navigate_up">Navega cap amunt</string>
+  <string name="no_internet_sync_scheduled">Sense Internet, es planifica la sincronització</string>
   <string name="share">Comparteix</string>
+  <string name="sync_started">S\'ha iniciat la sincronització</string>
   <string name="database_destructive_migration_title">Base de dades malmesa</string>
   <string name="database_destructive_migration_text">S\'han eliminat localment tots els comptes.</string>
   <string name="notification_channel_debugging">Depurador</string>
