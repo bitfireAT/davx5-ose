@@ -131,9 +131,9 @@ dependencies {
     kapt "com.google.dagger:hilt-android-compiler:${versions.hilt}"     // replace by KSP when ready [https://issuetracker.google.com/179057202]
 
     // support libs
-    implementation 'androidx.activity:activity-compose:1.8.0'
+    implementation 'androidx.activity:activity-compose:1.8.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.browser:browser:1.6.0'
+    implementation 'androidx.browser:browser:1.7.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.concurrent:concurrent-futures-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
