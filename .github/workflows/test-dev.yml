@@ -20,11 +20,20 @@ jobs:
           java-version: 17
       - uses: gradle/gradle-build-action@v2
 
+      - name: Create app/build and gradle configuration cache
+        if: ${{ github.ref == 'refs/heads/dev-ose' }}
+        uses: actions/cache@v3
+        with:
+          key: app_build-tests-without-emulator-${{ github.run_id }}
+          path: |
+            .gradle/configuration-cache
+            app/build
       - name: Use app/build and gradle configuration cache
         if: ${{ github.ref != 'refs/heads/dev-ose' }}
         uses: actions/cache/restore@v3
         with:
           key: app_build-tests-without-emulator
+          restore-keys: app_build-tests-without-emulator-   # restore cache from dev branch
           path: |
             .gradle/configuration-cache
             app/build
@@ -38,15 +47,6 @@ jobs:
           path: |
             app/build/outputs/lint*
             app/build/reports
-
-      - name: Cache app/build and gradle configuration
-        if: ${{ github.ref == 'refs/heads/dev-ose' }}
-        uses: actions/cache/save@v3
-        with:
-          key: app_build-tests-without-emulator
-          path: |
-            .gradle/configuration-cache
-            app/build
 
   test_on_emulator:
     name: Tests with emulator
@@ -62,11 +62,20 @@ jobs:
           java-version: 17
       - uses: gradle/gradle-build-action@v2
 
+      - name: Create app/build and gradle configuration cache
+        if: ${{ github.ref == 'refs/heads/dev-ose' }}
+        uses: actions/cache@v3
+        with:
+          key: app_build-tests-without-emulator-${{ github.run_id }}
+          path: |
+            .gradle/configuration-cache
+            app/build
       - name: Use app/build and gradle configuration cache
         if: ${{ github.ref != 'refs/heads/dev-ose' }}
         uses: actions/cache/restore@v3
         with:
-          key: app_build-tests-with-emulator
+          key: app_build-tests-without-emulator
+          restore-keys: app_build-tests-without-emulator-   # restore cache from dev branch
           path: |
             .gradle/configuration-cache
             app/build
@@ -106,15 +115,6 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: ./gradlew app:connectedCheck
-
-      - name: Cache app/build and gradle configuration
-        if: ${{ github.ref == 'refs/heads/dev-ose' }}
-        uses: actions/cache/save@v3
-        with:
-          key: app_build-tests-with-emulator
-          path: |
-            .gradle/configuration-cache
-            app/build
 
       - name: Archive results
         if: always()
