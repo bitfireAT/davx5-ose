@@ -26,6 +26,7 @@ import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.util.DateUtils
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
+import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
@@ -35,9 +36,7 @@ import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
 import java.time.Duration
-import java.time.Instant
 import java.time.ZonedDateTime
-import java.util.*
 import java.util.logging.Level
 
 /**
@@ -160,7 +159,11 @@ class CalendarSyncManager(
             // set default reminder for non-full-day events, if requested
             val defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
             if (defaultAlarmMinBefore != null && DateUtils.isDateTime(event.dtStart) && event.alarms.isEmpty()) {
-                val alarm = VAlarm(Duration.ofMinutes(-defaultAlarmMinBefore.toLong()))
+                val alarm = VAlarm(Duration.ofMinutes(-defaultAlarmMinBefore.toLong())).apply {
+                    // Sets METHOD_ALERT instead of METHOD_DEFAULT in the calendar provider.
+                    // Needed for calendars to actually show a notification.
+                    properties += Action.DISPLAY
+                }
                 Logger.log.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
                 event.alarms += alarm
             }
