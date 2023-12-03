@@ -1,0 +1,3 @@
+{"metadata":{"generated":"2023-12-03T12:08:52.214Z"},"libraries":[
+  {"uniqueId":"com.example:sample","funding":[],"developers":[{"name":"Sample Developer"}],"artifactVersion":"1.0","description":"This list has to be updated at release build time by explicitly writing to R.raw.aboutlibraries.","name":"Sample Dependency","licenses":["Sample-License"]}
+], "licenses":{}}

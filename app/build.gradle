@@ -11,6 +11,12 @@ plugins {
     id 'kotlin-kapt'     // remove as soon as Hilt supports KSP [https://issuetracker.google.com/179057202]
 }
 
+aboutLibraries {
+    // This means that we have to generate the dependencies explicitly:
+    // ./gradlew --no-configuration-cache --no-build-cache -PaboutLibraries.exportPath=src/main/res/raw/ app:exportLibraryDefinitions
+    registerAndroidTasks = false
+}
+
 // Android configuration
 android {
     compileSdk 34

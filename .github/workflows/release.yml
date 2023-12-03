@@ -35,10 +35,14 @@ jobs:
 
       - name: Prepare keystore
         run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
+
+      - name: Export library definitions
+        run: ./gradlew --no-build-cache --no-configuration-cache -PaboutLibraries.exportPath=src/main/res/raw/ app:exportLibraryDefinitions
+
       - name: Build signed package
         # --no-configuration-cache is only required for AboutLibraries (bitfireAT/davx5#263, mikepenz/AboutLibraries#857)
-        # Remove it as soon as AboutLibraries is compatbile with the gradle configuration cache.
-        run: ./gradlew --no-configuration-cache --no-daemon app:assembleRelease
+        # Remove it as soon as AboutLibraries is compatible with the gradle configuration cache.
+        run: ./gradlew app:assembleRelease
         env:
           ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
