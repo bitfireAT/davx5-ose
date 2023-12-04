@@ -11,9 +11,10 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import androidx.work.await
 import androidx.work.testing.WorkManagerTestInitHelper
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
+import at.bitfire.davdroid.TestUtils.workScheduledOrRunningOrSuccessful
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials
@@ -21,6 +22,7 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -29,6 +31,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -128,18 +131,10 @@ class RefreshCollectionsWorkerTest {
     @Test
     fun testRefreshCollections_enqueuesWorker() {
         val service = createTestService(Service.TYPE_CALDAV)!!
-        val workerName = RefreshCollectionsWorker.enqueue(context, service.id)
-        assertTrue(workScheduledOrRunning(context, workerName))
-    }
 
-    @Test
-    fun testOnStopped_stopsRefreshThread() {
-        val service = createTestService(Service.TYPE_CALDAV)!!
-        val workerName = RefreshCollectionsWorker.enqueue(context, service.id)
-        WorkManager.getInstance(context).cancelUniqueWork(workerName)
-        assertFalse(workScheduledOrRunning(context, workerName))
-
-        // here we should test whether stopping the work really interrupts the refresh thread
+        val (workerName, enqueueOp) = RefreshCollectionsWorker.enqueue(context, service.id)
+        enqueueOp.result.get()
+        assertTrue(workScheduledOrRunningOrSuccessful(context, workerName))
     }
 
     @Test

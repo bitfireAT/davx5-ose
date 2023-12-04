@@ -17,6 +17,7 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.Operation
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -127,11 +128,14 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          * a [RefreshCollectionsWorker].
          *
          * @param serviceId     serviceId which is to be refreshed
-         * @return workerName   name of the worker started
+         * @return Pair with
+         *
+         * 1. worker name,
+         * 2. operation of [WorkManager.enqueueUniqueWork] (can be used to wait for completion)
          *
          * @throws IllegalArgumentException when there's no service with this ID
          */
-        fun enqueue(context: Context, serviceId: Long): String {
+        fun enqueue(context: Context, serviceId: Long): Pair<String, Operation> {
             val name = workerName(serviceId)
             val arguments = Data.Builder()
                 .putLong(ARG_SERVICE_ID, serviceId)
@@ -142,12 +146,14 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
 
-            WorkManager.getInstance(context).enqueueUniqueWork(
+            return Pair(
                 name,
-                ExistingWorkPolicy.KEEP,    // if refresh is already running, just continue that one
-                workRequest
+                WorkManager.getInstance(context).enqueueUniqueWork(
+                    name,
+                    ExistingWorkPolicy.KEEP,    // if refresh is already running, just continue that one
+                    workRequest
+                )
             )
-            return name
         }
 
         /**
