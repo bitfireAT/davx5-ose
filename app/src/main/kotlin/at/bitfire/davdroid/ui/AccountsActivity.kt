@@ -351,7 +351,6 @@ class AccountsActivity: AppCompatActivity() {
 
         val accountManager = AccountManager.get(application)
         private val accountType = application.getString(R.string.account_type)
-        val showAddAccount = MutableLiveData<Boolean>(true)
 
         val workManager = WorkManager.getInstance(application)
         val runningWorkers = workManager.getWorkInfosLiveData(WorkQuery.fromStates(WorkInfo.State.RUNNING))
@@ -397,10 +396,11 @@ class AccountsActivity: AppCompatActivity() {
 
         val networkAvailable = warnings.networkAvailable
 
+        val showAddAccount = MutableLiveData(true)
+
         init {
             accountManager.addOnAccountsUpdatedListener(this, null, true)
         }
-
 
         // callbacks
 
