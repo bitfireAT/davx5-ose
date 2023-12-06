@@ -4,11 +4,11 @@
 
 buildscript {
     ext.versions = [
-        aboutLibraries: '10.9.1',
-        accompanist: '0.30.1',
+        aboutLibraries: '10.9.2',
+        accompanist: '0.32.0',
         appIntro: '7.0.0-beta02',
         composeBom: '2023.10.01',
-        hilt: '2.48.1',
+        hilt: '2.49',
         kotlin: '1.9.20', // keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
                           //                   * com.google.devtools.ksp at the end of this file
         okhttp: '4.12.0',

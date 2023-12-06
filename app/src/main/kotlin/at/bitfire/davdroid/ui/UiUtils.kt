@@ -16,6 +16,7 @@ import android.net.Uri
 import android.os.Build
 import android.text.Spanned
 import android.text.style.StyleSpan
+import android.text.style.URLSpan
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -26,10 +27,13 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -120,6 +124,7 @@ object UiUtils {
     }
 
 
+    @OptIn(ExperimentalTextApi::class)
     @Composable
     fun Spanned.toAnnotatedString() = buildAnnotatedString {
         val spanned = this@toAnnotatedString
@@ -139,6 +144,18 @@ object UiUtils {
                             start = start, end = end
                         )
                     }
+                is URLSpan -> {
+                    addUrlAnnotation(
+                        UrlAnnotation(span.url),
+                        start = start, end = end
+                    )
+                    addStyle(
+                        SpanStyle(textDecoration = TextDecoration.Underline),
+                        start = start, end = end
+                    )
+                }
+                else ->
+                    Logger.log.warning("Ignoring unknown span type ${span.javaClass.name}")
             }
         }
     }
