@@ -56,7 +56,7 @@ android {
     composeOptions {
         // Keep this in sync with Kotlin version:
         // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-        kotlinCompilerExtensionVersion = "1.5.5"
+        kotlinCompilerExtensionVersion = "1.5.6"
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
@@ -193,7 +193,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.8.0'
     //noinspection GradleDependency - dnsjava 3.x requires Android 8 [https://github.com/bitfireAT/davx5/issues/453]
     implementation 'dnsjava:dnsjava:2.1.9'
-    implementation 'io.github.nsk90:kstatemachine-jvm:0.23.0'
+    implementation 'io.github.nsk90:kstatemachine-jvm:0.24.0'
     implementation 'net.openid:appauth:0.11.1'
     implementation "org.apache.commons:commons-collections4:${versions.commonsCollections}"
     implementation "org.apache.commons:commons-lang3:${versions.commonsLang}"
