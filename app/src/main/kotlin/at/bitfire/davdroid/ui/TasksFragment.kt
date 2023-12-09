@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -46,8 +47,7 @@ import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.UiUtils.annotateHtml
-import at.bitfire.davdroid.ui.UiUtils.linkStyle
+import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.davdroid.ui.widget.RadioWithSwitch
 import at.bitfire.ical4android.TaskProvider.ProviderName
@@ -232,7 +232,7 @@ fun TasksCard(
 
                 RadioWithSwitch(
                     title = stringResource(R.string.intro_tasks_tasks_org),
-                    summary = stringResource(R.string.intro_tasks_tasks_org_info).annotateHtml(linkStyle),
+                    summary = HtmlCompat.fromHtml(stringResource(R.string.intro_tasks_tasks_org_info), HtmlCompat.FROM_HTML_MODE_COMPACT).toAnnotatedString(),
                     isSelected = tasksOrgSelected,
                     isToggled = tasksOrgRequested,
                     enabled = tasksOrgInstalled,
