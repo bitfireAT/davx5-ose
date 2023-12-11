@@ -167,7 +167,7 @@ class RandomAccessCallback private constructor(
 
         var result: ByteArray? = null
         dav.getRange(
-            mimeType?.toString() ?: DavUtils.MIME_TYPE_ACCEPT_ALL,
+            DavUtils.acceptAnything(preferred = mimeType),
             key.segment * PAGE_SIZE.toLong(),
             PAGE_SIZE,
             ifMatch

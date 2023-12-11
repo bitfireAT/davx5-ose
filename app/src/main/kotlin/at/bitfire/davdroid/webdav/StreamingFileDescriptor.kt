@@ -106,7 +106,7 @@ class StreamingFileDescriptor(
 
     @WorkerThread
     private suspend fun downloadNow(writeFd: ParcelFileDescriptor) = runInterruptible {
-        dav.get(mimeType?.toString() ?: DavUtils.MIME_TYPE_ACCEPT_ALL, null) { response ->
+        dav.get(DavUtils.acceptAnything(preferred = mimeType), null) { response ->
             response.body?.use { body ->
                 if (response.isSuccessful) {
                     val length = response.headersContentLength()

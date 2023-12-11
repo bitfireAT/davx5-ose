@@ -13,9 +13,16 @@ import at.bitfire.davdroid.network.Android10Resolver
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
-import org.xbill.DNS.*
+import org.xbill.DNS.ExtendedResolver
+import org.xbill.DNS.Lookup
+import org.xbill.DNS.Record
+import org.xbill.DNS.SRVRecord
+import org.xbill.DNS.SimpleResolver
+import org.xbill.DNS.TXTRecord
 import java.net.InetAddress
-import java.util.*
+import java.util.LinkedList
+import java.util.Locale
+import java.util.TreeMap
 
 /**
  * Some WebDAV and HTTP network utility methods.
@@ -30,6 +37,19 @@ object DavUtils {
     val MEDIA_TYPE_OCTET_STREAM = "application/octet-stream".toMediaType()
     val MEDIA_TYPE_VCARD = "text/vcard".toMediaType()
 
+    /**
+     * Builds an HTTP `Accept` header that accepts anything (&#42;/&#42;), but optionally
+     * specifies a preference.
+     *
+     * @param preferred  preferred MIME type (optional)
+     *
+     * @return `media-range` for `Accept` header that accepts anything, but prefers [preferred] (if it was specified)
+     */
+    fun acceptAnything(preferred: MediaType?): String =
+        if (preferred != null)
+            "$preferred, $MIME_TYPE_ACCEPT_ALL;q=0.8"
+        else
+            MIME_TYPE_ACCEPT_ALL
 
     @Suppress("FunctionName")
     fun ARGBtoCalDAVColor(colorWithAlpha: Int): String {
