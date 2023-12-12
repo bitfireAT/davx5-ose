@@ -72,7 +72,5 @@ fun CardWithImagePreview() {
         image = painterResource(R.drawable.intro_tasks),
         title = "Demo card",
         message = "This is the message to be displayed under the title, but before the content."
-    ) {
-
-    }
+    )
 }
