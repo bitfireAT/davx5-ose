@@ -26,7 +26,7 @@ fun CardWithImage(
     title: String,
     message: String,
     modifier: Modifier = Modifier,
-    contentDescription: String? = null,
+    imageContentDescription: String? = null,
     content: @Composable ColumnScope.() -> Unit = {}
 ) {
     Card(modifier) {
@@ -35,7 +35,7 @@ fun CardWithImage(
         ) {
             Image(
                 painter = image,
-                contentDescription = contentDescription,
+                contentDescription = imageContentDescription,
                 modifier = Modifier.fillMaxWidth()
             )
 
