@@ -12,12 +12,16 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.util.DavUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -26,7 +30,6 @@ import okio.BufferedSink
 import org.apache.commons.io.FileUtils
 import java.io.IOException
 import java.util.logging.Level
-import kotlin.concurrent.thread
 
 /**
  * @param client    HTTP client– [StreamingFileDescriptor] is responsible to close it
@@ -64,7 +67,7 @@ class StreamingFileDescriptor(
     private fun doStreaming(upload: Boolean): ParcelFileDescriptor {
         val (readFd, writeFd) = ParcelFileDescriptor.createReliablePipe()
 
-        val worker = thread {
+        val result = CoroutineScope(Dispatchers.IO).async {
             try {
                 if (upload)
                     uploadNow(readFd)
@@ -92,7 +95,7 @@ class StreamingFileDescriptor(
 
         cancellationSignal?.setOnCancelListener {
             Logger.log.fine("Cancelling transfer of $url")
-            worker.interrupt()
+            result.cancel()
         }
 
         return if (upload)
@@ -102,8 +105,8 @@ class StreamingFileDescriptor(
     }
 
     @WorkerThread
-    private fun downloadNow(writeFd: ParcelFileDescriptor) {
-        dav.get(mimeType?.toString() ?: DavUtils.MIME_TYPE_ACCEPT_ALL, null) { response ->
+    private suspend fun downloadNow(writeFd: ParcelFileDescriptor) = runInterruptible {
+        dav.get(DavUtils.acceptAnything(preferred = mimeType), null) { response ->
             response.body?.use { body ->
                 if (response.isSuccessful) {
                     val length = response.headersContentLength()
@@ -156,7 +159,7 @@ class StreamingFileDescriptor(
     }
 
     @WorkerThread
-    private fun uploadNow(readFd: ParcelFileDescriptor) {
+    private suspend fun uploadNow(readFd: ParcelFileDescriptor) = runInterruptible {
         val body = object: RequestBody() {
             override fun contentType(): MediaType? = mimeType
             override fun isOneShot() = true
