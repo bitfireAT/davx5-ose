@@ -217,7 +217,9 @@ fun TasksCard(
             ) {
                 RadioWithSwitch(
                     title = stringResource(R.string.intro_tasks_jtx),
-                    summary = stringResource(R.string.intro_tasks_jtx_info),
+                    summary = {
+                        Text(stringResource(R.string.intro_tasks_jtx_info))
+                              },
                     isSelected = jtxSelected,
                     isToggled = jtxRequested,
                     enabled = jtxInstalled,
@@ -232,7 +234,11 @@ fun TasksCard(
 
                 RadioWithSwitch(
                     title = stringResource(R.string.intro_tasks_tasks_org),
-                    summary = HtmlCompat.fromHtml(stringResource(R.string.intro_tasks_tasks_org_info), HtmlCompat.FROM_HTML_MODE_COMPACT).toAnnotatedString(),
+                    summary = {
+                        Text(
+                            HtmlCompat.fromHtml(stringResource(R.string.intro_tasks_tasks_org_info), HtmlCompat.FROM_HTML_MODE_COMPACT).toAnnotatedString()
+                        )
+                    },
                     isSelected = tasksOrgSelected,
                     isToggled = tasksOrgRequested,
                     enabled = tasksOrgInstalled,
@@ -247,7 +253,9 @@ fun TasksCard(
 
                 RadioWithSwitch(
                     title = stringResource(R.string.intro_tasks_opentasks),
-                    summary = stringResource(R.string.intro_tasks_opentasks_info),
+                    summary = {
+                        Text(stringResource(R.string.intro_tasks_opentasks_info))
+                    },
                     isSelected = openTasksSelected,
                     isToggled = openTasksRequested,
                     enabled = openTasksInstalled,
