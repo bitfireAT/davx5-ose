@@ -87,29 +87,14 @@ fun RadioWithSwitch(
     }
 }
 
-private class PreviewProvider : PreviewParameterProvider<PreviewProvider.PreviewData> {
-    data class PreviewData(
-        val title: String,
-        val summary: String?,
-        val isSelected: Boolean,
-        val isToggled: Boolean
-    )
-
-    override val values: Sequence<PreviewData> = sequenceOf(
-        PreviewData("RadioWithSwitch Preview", "An example summary", true, isToggled = false)
-    )
-}
-
 @Preview
 @Composable
-private fun RadioWithSwitch_Preview(
-    @PreviewParameter(PreviewProvider::class) data: PreviewProvider.PreviewData
-) {
+private fun RadioWithSwitch_Preview() {
     RadioWithSwitch(
-        title = data.title,
-        summary = if (data.summary != null) { { Text(data.summary) } } else null,
-        isSelected = data.isSelected,
-        isToggled = data.isToggled,
+        title = "RadioWithSwitch Preview",
+        summary = { Text("An example summary") },
+        isSelected = true,
+        isToggled = false,
         onSelected = { },
         onToggled = { }
     )
