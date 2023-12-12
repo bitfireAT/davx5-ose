@@ -18,8 +18,10 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.TasksCard
 import at.bitfire.davdroid.ui.TasksModel
 import com.google.accompanist.themeadapter.material.MdcTheme
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class TasksIntroFragment : Fragment() {
     val model: TasksModel by viewModels()
 
