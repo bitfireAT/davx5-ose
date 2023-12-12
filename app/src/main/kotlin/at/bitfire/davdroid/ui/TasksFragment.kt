@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui
 
 import android.app.Application
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
@@ -33,6 +35,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -45,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
@@ -160,6 +165,7 @@ fun TasksCard(
     model: TasksModel = viewModel()
 ) {
     val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
     val coroutineScope = rememberCoroutineScope()
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -235,8 +241,24 @@ fun TasksCard(
                 RadioWithSwitch(
                     title = stringResource(R.string.intro_tasks_tasks_org),
                     summary = {
-                        Text(
-                            HtmlCompat.fromHtml(stringResource(R.string.intro_tasks_tasks_org_info), HtmlCompat.FROM_HTML_MODE_COMPACT).toAnnotatedString()
+                        val summary = HtmlCompat.fromHtml(
+                            stringResource(R.string.intro_tasks_tasks_org_info),
+                            HtmlCompat.FROM_HTML_MODE_COMPACT
+                        ).toAnnotatedString()
+
+                        ClickableText(
+                            text = summary,
+                            onClick = { index ->
+                                // Get the tapped position, and check if there's any link
+                                val annotation = summary.getUrlAnnotations(index, index).firstOrNull()
+                                try {
+                                    // If there is, open it
+                                    annotation?.item?.url?.let(uriHandler::openUri)
+                                } catch (_: ActivityNotFoundException) {
+                                    // There isn't any application available to launch the link
+                                    Logger.log.severe("No app available to launch ${annotation?.item?.url}")
+                                }
+                            }
                         )
                     },
                     isSelected = tasksOrgSelected,
