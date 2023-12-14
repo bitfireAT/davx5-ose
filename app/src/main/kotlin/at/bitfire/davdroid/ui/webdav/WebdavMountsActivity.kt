@@ -11,13 +11,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.text.method.LinkMovementMethod
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ShareCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -31,11 +41,11 @@ import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.io.FileUtils
@@ -70,21 +80,16 @@ class WebdavMountsActivity: AppCompatActivity() {
         })
 
         val browser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            val uri = result.data?.data
-            if (uri != null) {
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = "*/*"
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-                contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                startActivity(Intent.createChooser(shareIntent, null))
+            result.data?.data?.let { uri ->
+                ShareCompat.IntentBuilder(this)
+                    .setType(DavUtils.MIME_TYPE_ACCEPT_ALL)
+                    .addStream(uri)
+                    .startChooser()
             }
         }
         model.browseIntent.observe(this, Observer { intent ->
-            if (intent != null) {
+            if (intent != null)
                 browser.launch(intent)
-            }
         })
 
         binding.add.setOnClickListener {
