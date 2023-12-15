@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui
 
 import android.app.Application
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -35,8 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -49,7 +46,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
@@ -77,8 +73,6 @@ class TasksModel @Inject constructor(
 
     }
 
-    val context: Context get() = getApplication()
-
     val currentProvider = MutableLiveData<ProviderName>()
     val openTasksInstalled = MutableLiveData<Boolean>()
     val openTasksRequested = MutableLiveData<Boolean>()
@@ -89,14 +83,15 @@ class TasksModel @Inject constructor(
     val jtxInstalled = MutableLiveData<Boolean>()
     val jtxRequested = MutableLiveData<Boolean>()
     val jtxSelected = MutableLiveData<Boolean>()
-    private val tasksWatcher = object: PackageChangedReceiver(context) {
+
+    private val tasksWatcher = object: PackageChangedReceiver(application) {
         override fun onReceive(context: Context?, intent: Intent?) {
             checkInstalled()
         }
     }
 
     val dontShow = MutableLiveData(
-        settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
+    settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
     )
 
     private val dontShowObserver = Observer<Boolean> { value ->
@@ -120,7 +115,7 @@ class TasksModel @Inject constructor(
 
     @AnyThread
     fun checkInstalled() {
-        val taskProvider = TaskUtils.currentProvider(context)
+        val taskProvider = TaskUtils.currentProvider(getApplication())
         currentProvider.postValue(taskProvider)
 
         val openTasks = isInstalled(ProviderName.OpenTasks.packageName)
@@ -140,16 +135,16 @@ class TasksModel @Inject constructor(
     }
 
     private fun isInstalled(packageName: String): Boolean =
-            try {
-                context.packageManager.getPackageInfo(packageName, 0)
-                true
-            } catch (e: PackageManager.NameNotFoundException) {
-                false
-            }
+        try {
+            getApplication<Application>().packageManager.getPackageInfo(packageName, 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
 
     fun selectPreferredProvider(provider: ProviderName) {
-        TaskUtils.setPreferredProvider(context, provider)
-        checkInstalled()
+        // Changes preferred task app setting, so onSettingsChanged() will be called
+        TaskUtils.setPreferredProvider(getApplication(), provider)
     }
 
 
@@ -165,7 +160,6 @@ fun TasksCard(
     model: TasksModel = viewModel()
 ) {
     val context = LocalContext.current
-    val uriHandler = LocalUriHandler.current
     val coroutineScope = rememberCoroutineScope()
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -190,18 +184,18 @@ fun TasksCard(
         val intent = Intent(Intent.ACTION_VIEW, uri)
         if (intent.resolveActivity(context.packageManager) != null)
             context.startActivity(intent)
-        else coroutineScope.launch {
-            snackbarHostState.showSnackbar(
-                message = context.getString(R.string.intro_tasks_no_app_store),
-                duration = SnackbarDuration.Long
-            )
-        }
+        else
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = context.getString(R.string.intro_tasks_no_app_store),
+                    duration = SnackbarDuration.Long
+                )
+            }
     }
 
     fun onProviderSelected(provider: ProviderName) {
-        if (model.currentProvider.value != provider) {
+        if (model.currentProvider.value != provider)
             model.selectPreferredProvider(provider)
-        }
     }
 
     Scaffold(
@@ -225,7 +219,7 @@ fun TasksCard(
                     title = stringResource(R.string.intro_tasks_jtx),
                     summary = {
                         Text(stringResource(R.string.intro_tasks_jtx_info))
-                              },
+                    },
                     isSelected = jtxSelected,
                     isToggled = jtxRequested,
                     enabled = jtxInstalled,
@@ -250,13 +244,8 @@ fun TasksCard(
                             text = summary,
                             onClick = { index ->
                                 // Get the tapped position, and check if there's any link
-                                val annotation = summary.getUrlAnnotations(index, index).firstOrNull()
-                                try {
-                                    // If there is, open it
-                                    annotation?.item?.url?.let(uriHandler::openUri)
-                                } catch (_: ActivityNotFoundException) {
-                                    // There isn't any application available to launch the link
-                                    Logger.log.severe("No app available to launch ${annotation?.item?.url}")
+                                summary.getUrlAnnotations(index, index).firstOrNull()?.item?.url?.let { url ->
+                                    UiUtils.launchUri(context, Uri.parse(url))
                                 }
                             }
                         )
