@@ -269,6 +269,8 @@
     <string name="login_email_address">Email address</string>
     <string name="login_email_address_error">Valid email address required</string>
     <string name="login_password">Password</string>
+    <string name="login_password_hide">Hide password</string>
+    <string name="login_password_show">Show password</string>
     <string name="login_password_required">Password required</string>
     <string name="login_type_url">Login with URL and user name</string>
     <string name="login_url_must_be_http_or_https">URL must begin with http(s)://</string>
