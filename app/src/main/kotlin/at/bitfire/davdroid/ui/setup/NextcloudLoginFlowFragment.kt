@@ -91,13 +91,14 @@ class NextcloudLoginFlowFragment: Fragment() {
         /** Path to DAV endpoint (e.g. `/remote.php/dav`). Will be appended to the
          *  server URL returned by Login Flow without further processing. */
         const val EXTRA_DAV_PATH = "davPath"
+        const val DAV_PATH_DEFAULT = "/remote.php/dav"
     }
 
     val loginModel by activityViewModels<LoginModel>()
     val model by viewModels<Model>()
 
     val checkResultCallback = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH)
+        val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH) ?: DAV_PATH_DEFAULT
         model.checkResult(davPath)
     }
 
