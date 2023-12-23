@@ -1,3 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="navigation_drawer_support_project">Bakke opp prosjekten</string>
+    <string name="nav_earn_badges">Bakke oss opp med emblemer</string>
+    <string name="available_badges_empty">Unnskyld, emblemer kan ikke lader. Er du anmeldet i Play Store?</string>
+    <string name="what_are_badges">Hva er emblemer?</string>
+    <string name="what_are_badges_title">Hva er emblemer?</string>
+    <string name="what_are_badges_body">Emblemer er simpel in-app engangsbetalinger. Di vil tjene en sött liten emblem og kan bakke oss opp med dem med tiden.</string>
+    <string name="why_badges_title">Hvorfor byr DAVx5 funksjon-fri emblemer?</string>
+    <string name="button_buy_badge_free">FRI</string>
+    <string name="button_buy_badge_bought">Tussen Takk!</string>
+    <string name="earn_badges">Tjene emblemer for å bakke oss opp!</string>
     </resources>

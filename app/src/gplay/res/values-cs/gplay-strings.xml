@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="navigation_drawer_support_project">Podpořte projekt</string>
-    <string name="nav_earn_badges">Podpořte nás ozdznáčky</string>
+    <string name="nav_earn_badges">Podpořte nás odznáčky</string>
     <string name="nav_rate_us">Napsat recenzi v Google Play</string>
+    <plurals name="you_earned_badges">
+        <item quantity="one">Získali jste odznáček, děkujeme!</item>
+        <item quantity="few">Získali jste %d odznáčky, děkujeme!</item>
+        <item quantity="many">Získali jste %d odznáčků, děkujeme!</item>
+        <item quantity="other">Získali jste %d odznáčků, děkujeme!</item>
+    </plurals>
     <string name="available_badges">Odznáčky k dispozici</string>
+    <string name="available_badges_empty">Omlouváme se, nelze načíst odznáčky. Jste přihlášeni do obchodu Google Play?</string>
     <string name="what_are_badges">Co jsou odznáčky?</string>
     <string name="what_are_badges_title">Co jsou odznáčky?</string>
     <string name="what_are_badges_body">Odznáčky jsou jednoduché jednorázové platby v aplikaci. Získáte hezký malý odznáček a pomocí něho nás v čase můžete podporovat.</string>
     <string name="why_badges_title">Proč DAVx5 nabízí odznáčky bez funkcí?</string>
+    <string name="why_badges_body">DAVx5 v průběhu let značně vyrostl! Stále aktivně vyvíjíme nové funkce, poskytujeme podporu a vždy aktualizujeme aplikaci pro nejnovější verze Androidu. Tyto odznáčky jsou jednorázové platby, kterými nás můžete podpořit koupením kávy, nebo dvou&#8230; nebo 10 :-) Chceme mít co nejotevřenější kód, takže nové funkce nikdy nebudou zamčeny za další platby.</string>
     <string name="button_buy_badge_free">ZDARMA</string>
     <string name="button_buy_badge_bought">Děkujeme!</string>
-    </resources>
+    <string name="earn_badges">Získejte odznáčky pro naši podporu!</string>
+    <string name="billing_unavailable">API plateb není dostupné, je obchod Play aktualizovaný a jste přihlášeni do vašeho Google účtu?</string>
+    <string name="network_problems">Byly problémy se sítí, prosíme, zkuste znovu později.</string>
+</resources>
