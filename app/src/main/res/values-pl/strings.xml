@@ -9,7 +9,10 @@
   <string name="field_required">To pole jest wymagane</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Zadządzaj kontami</string>
+  <string name="navigate_up">Nawiguj w górę</string>
+  <string name="no_internet_sync_scheduled">Brak Internetu, synchronizacja harmonogramu</string>
   <string name="share">Udostępnij</string>
+  <string name="sync_started">Rozpoczęcie synchronizacji</string>
   <string name="database_destructive_migration_title">Uszkodzona baza danych</string>
   <string name="database_destructive_migration_text">Wszystkie konta zostały usunięte lokalnie.</string>
   <string name="notification_channel_debugging">Debugowanie</string>
@@ -126,7 +129,9 @@
   <string name="navigation_drawer_donate">Wesprzyj finansowo</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
   <string name="account_list_no_notification_permission">Powiadomienia wyłączone. Nie będziesz otrzymywać powiadomień o błędach synchronizacji.</string>
+  <string name="account_list_no_internet">Brak sprawdzonego połączenia z Internetem. Synchronizacja nie może zostać uruchomiona.</string>
   <string name="account_list_manage_connections">Zarządzaj połączeniami</string>
+  <string name="account_list_low_storage">Mało miejsca do przechowywania. Android nie zsynchronizuje lokalnych zmian od razu, ale podczas następnej regularnej synchronizacji.</string>
   <string name="account_list_manage_storage">Zarządzaj pamięcią</string>
   <string name="account_list_datasaver_enabled">Włączono oszczędzanie danych. Synchronizacja w tle jest ograniczona.</string>
   <string name="account_list_manage_datasaver">Zarządzaj oszczędzaniem danych</string>
@@ -263,6 +268,14 @@
   <string name="login_google_client_privacy_policy"><![CDATA[%1$sprzesyła Twoje dane Kontaktów Google i Kalendarza wyłącznie w celu synchronizacji z tym urządzeniem. Więcej informacji znajdziesz w naszej <a href="%2$s">Polityce prywatności</a>.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$sjest zgodny z <a href="%2$s">Zasadami dotyczącymi danych użytkownika usług interfejsu API Google</a>, w tym wymaganiami dotyczącymi Ograniczonego użytkowania.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Nie udało się uzyskać kodu autoryzacyjnego</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Zaloguj się za pomocą Nextcloud</string>
+  <string name="login_nextcloud_login_flow">Proces logowania</string>
+  <string name="login_nextcloud_login_flow_text">Spowoduje to rozpoczęcie procesu logowania do Nextcloud w przeglądarce internetowej.</string>
+  <string name="login_nextcloud_login_flow_server_address">Adres serwera Nextcloud</string>
+  <string name="login_nextcloud_login_flow_sign_in">Zaloguj się</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Nie można uzyskać adresu URL logowania</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Nie udało się uzyskać danych logowania</string>
   <string name="login_configuration_detection">Wykrywanie konfiguracji</string>
   <string name="login_querying_server">Proszę czekać, odpytywanie serwera…</string>
   <string name="login_no_caldav_carddav">Nie można znaleźć usługi CalDAV lub CardDAV.</string>
@@ -295,6 +308,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Oddzielone przecinkami nazwy (SSID) dozwolonych sieci Wi‑Fi (pozostaw puste dla wszystkich)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ograniczenie WiFi SSID wymaga dalszych ustawień</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Zarządzaj</string>
+  <string name="settings_ignore_vpns">VPN wymaga podstawowego Internetu</string>
+  <string name="settings_ignore_vpns_on">VPN bez sprawdzonego połączenia internetowego nie wystarczy do przeprowadzenia synchronizacji (zalecane)</string>
+  <string name="settings_ignore_vpns_off">Do przeprowadzenia synchronizacji wystarczy VPN bez sprawdzonego połączenia internetowego</string>
   <string name="settings_authentication">Uwierzytelnianie</string>
   <string name="settings_oauth">Uwierzytelnij ponownie</string>
   <string name="settings_oauth_summary">Wykonaj ponownie logowanie OAuth</string>

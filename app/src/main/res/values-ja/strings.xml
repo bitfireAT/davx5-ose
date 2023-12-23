@@ -238,6 +238,8 @@
   <string name="login_email_address">メールアドレス</string>
   <string name="login_email_address_error">有効なメールアドレスが必要です</string>
   <string name="login_password">パスワード</string>
+  <string name="login_password_hide">パスワードを非表示</string>
+  <string name="login_password_show">パスワードを表示</string>
   <string name="login_password_required">パスワードが必要です</string>
   <string name="login_type_url">URL とユーザー名でログイン</string>
   <string name="login_url_must_be_http_or_https">URL は http(s):// で始まる必要があります</string>

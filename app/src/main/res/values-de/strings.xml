@@ -238,6 +238,8 @@
   <string name="login_email_address">E-Mail-Adresse</string>
   <string name="login_email_address_error">Gültige E-Mail-Adresse benötigt</string>
   <string name="login_password">Passwort</string>
+  <string name="login_password_hide">Passwort ausblenden</string>
+  <string name="login_password_show">Passwort anzeigen</string>
   <string name="login_password_required">Passwort wird benötigt</string>
   <string name="login_type_url">Mit URL und Benutzername anmelden</string>
   <string name="login_url_must_be_http_or_https">URL muss mit http(s):// beginnen</string>

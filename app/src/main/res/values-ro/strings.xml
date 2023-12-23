@@ -9,7 +9,10 @@
   <string name="field_required">Acest câmp este obligatoriu</string>
   <string name="help">Ajutor</string>
   <string name="manage_accounts">Gestionează conturile</string>
+  <string name="navigate_up">Navigare în sus</string>
+  <string name="no_internet_sync_scheduled">Fără internet, programare sincronizare</string>
   <string name="share">Distribuie</string>
+  <string name="sync_started">Sincronizarea a început</string>
   <string name="database_destructive_migration_title">Bază de date deteriorată</string>
   <string name="database_destructive_migration_text">Toate conturile au fost eliminate local.</string>
   <string name="notification_channel_debugging">Depanare</string>

@@ -9,7 +9,10 @@
   <string name="field_required">Eremu hau beharrezkoa da</string>
   <string name="help">Laguntza</string>
   <string name="manage_accounts">Kudeatu kontuak</string>
+  <string name="navigate_up">Nabigatu gora</string>
+  <string name="no_internet_sync_scheduled">Ez dago internetik, sinkronizazioa programatuta</string>
   <string name="share">Partekatu</string>
+  <string name="sync_started">Sinkronizazioa hasi da</string>
   <string name="database_destructive_migration_title">Datu-basea hondatua</string>
   <string name="database_destructive_migration_text">Kontu lokal guztiak ezabatu dira.</string>
   <string name="notification_channel_debugging">Arazten</string>
@@ -126,7 +129,9 @@
   <string name="navigation_drawer_donate">Dohaintza egin</string>
   <string name="navigation_drawer_privacy_policy">Pribatutasun gidalerroak</string>
   <string name="account_list_no_notification_permission">Jakinarazpenak desgaituta. Ez zaitugu sinkronizazio-erroreei buruz jakinaraziko.</string>
+  <string name="account_list_no_internet">Ez dago baliozkotutako Interneteko konexiorik. Baliteke sinkronizazioa ez exekutatzea.</string>
   <string name="account_list_manage_connections">Kudeatu konexioak</string>
+  <string name="account_list_low_storage">Biltegiratze lekua baxua. Android-ek ez ditu tokiko aldaketak berehala sinkronizatuko, hurrengo sinkronizazio arruntean baizik.</string>
   <string name="account_list_manage_storage">Kudeatu biltegia</string>
   <string name="account_list_datasaver_enabled">Datu-aurrezpena gaituta. Atzeko planoko sinkronizazioa murriztuko da.</string>
   <string name="account_list_manage_datasaver">Kudeatu datu-aurrezpena</string>
@@ -263,6 +268,14 @@
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s -k zure Google Kontaktuak eta Calendar datuak transferitzen ditu gailu honekin sinkronizatzeko soilik. ikusi gure <a href="%2$s">Pribatutasun politika</a> xehetasunetarako.]]></string>
   <string name="login_google_client_limited_use">&lt;![CDATA[%1$s -k &lt;a href="%2$s"&gt;Google API Zerbitzuen Erabiltzaileen Datuen Gidalerroak&lt;/a&gt;, erabilera mugatuko eskakizunak barne.]].</string>
   <string name="login_oauth_couldnt_obtain_auth_code">Ezin izan da baimen-kodea lortu</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Hasi saioa Nextcloud-ekin</string>
+  <string name="login_nextcloud_login_flow">Flow saio-hasiera</string>
+  <string name="login_nextcloud_login_flow_text">Honek Nextcloud Flow saio-hasiera abiaraziko du web-nabigatzaile batean.</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud zerbitzariaren helbidea</string>
+  <string name="login_nextcloud_login_flow_sign_in">Hasi saioa</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Ezin izan da saio-hasieraren URLa lortu</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Ezin izan dira saio-hasierako datuak lortu</string>
   <string name="login_configuration_detection">Konfigurazio detekzioa</string>
   <string name="login_querying_server">Mesedez itxaron, zerbitzaria kontsultatzen...</string>
   <string name="login_no_caldav_carddav">Ezin izan da CalDAV edo CardDAV zerbitzua aurkitu.</string>

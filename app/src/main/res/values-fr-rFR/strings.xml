@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="account_invalid">Le compte n\'existe pas (ou plus)</string>
+  <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
+  <string name="address_books_authority_title">Carnets d\'adresses</string>
+  <string name="dialog_remove">Enlever</string>
+  <string name="dialog_deny">Annuler</string>
+  <string name="field_required">Ce champ est requis</string>
+  <string name="help">Aide</string>
+  <string name="manage_accounts">Gestion des comptes</string>
+  <string name="navigate_up">Naviguez vers le haut</string>
+  <string name="no_internet_sync_scheduled">Pas d\'Internet, synchronisation de la planification</string>
+  <string name="share">Partager</string>
+  <string name="sync_started">La synchronisation a démarré</string>
+  <string name="database_destructive_migration_title">Base de données corrompue</string>
+  <string name="database_destructive_migration_text">Tous les comptes ont été supprimés localement.</string>
+  <string name="notification_channel_debugging">Déboguage</string>
+  <string name="notification_channel_general">Autres messages importants</string>
+  <string name="notification_channel_status">Messages d\'état de faible priorité</string>
+  <string name="notification_channel_sync">Synchronisation</string>
+  <string name="notification_channel_sync_errors">Erreurs de synchronisation</string>
+  <string name="notification_channel_sync_errors_desc">Des erreurs importantes qui arrêtent la synchronisation comme des réponses inattendues du serveur.</string>
+  <string name="notification_channel_sync_warnings">Alertes de synchronisation</string>
+  <string name="notification_channel_sync_warnings_desc">Problèmes de synchronisation non fatals comme certains fichiers invalides</string>
+  <string name="notification_channel_sync_io_errors">Erreurs de réseau et d\'E/S</string>
+  <string name="notification_channel_sync_io_errors_desc">Délais d\'attente, problèmes de connexion, etc. (souvent temporaires)</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">Vos données. Votre choix.</string>
+  <string name="intro_slogan2">Prenez le contrôle.</string>
+  <string name="intro_battery_title">Intervalles de synchronisation réguliers</string>
+  <string name="intro_battery_not_whitelisted">Désactivé (non recommandé)</string>
+  <string name="intro_battery_whitelisted">Activé (recommandé)</string>
+  <string name="intro_battery_text">Pour la synchronisation à intervalles réguliers, %s doit être autorisé à fonctionner en arrière-plan. Sinon, Android peut interrompre la synchronisation à tout moment.</string>
+  <string name="intro_battery_dont_show">Je n\'ai pas besoin d\'intervalles de synchronisation réguliers.*</string>
+  <string name="intro_autostart_title">%s compatibilité</string>
+  <string name="intro_autostart_text">Cet appareil bloque probablement la synchronisation. Si vous êtes affecté, vous ne pouvez résoudre ce problème que manuellement.</string>
+  <string name="intro_autostart_dont_show">J\'ai fait les réglages nécessaires. Ne me le rappelez plus.*</string>
+  <string name="intro_leave_unchecked">* Laisser non coché pour un rappel ultérieur. Peut être réinitialisé dans les paramètres de l\'application / %s.</string>
+  <string name="intro_more_info">Plus d\'informations</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Prends en charge la synchro des Tâches, Journaux et Notes.]]></string>
+  <string name="intro_tasks_title">Gestion des taches</string>
+  <string name="intro_tasks_text1">Si les tâches sont prises en charge par votre serveur, elles peuvent être synchronisées avec une application de tâches externe :</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">Ne semble plus développé - non recommandé</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Certaines fonctionnalités <a href="https://www.davx5.com/faq/tasks/advanced-task-features">ne sont pas (encore) prises en charge</a>.]]></string>
+  <string name="intro_tasks_no_app_store">Pas de magasin d\'application disponible</string>
+  <string name="intro_tasks_dont_show">Je n\'ai pas besoin de support des tâches.*</string>
+  <string name="intro_open_source_title">Logiciels open-source</string>
+  <string name="intro_open_source_text">Nous sommes heureux que vous utilisiez %s, qui est un logiciel open-source. Le développement, la maintenance et l\'assistance sont des travaux conséquents. N\'hésitez pas à contribuer (il y a plusieurs façons de le faire) ou à faire un don. Nous vous remercions chaleureusement !</string>
+  <string name="intro_open_source_details">Comment contribuer/donner</string>
+  <string name="intro_open_source_dont_show">Ne plus afficher dans le futur</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">Autorisations</string>
+  <string name="permissions_text">%s nécessite des autorisations pour fonctionner correctement.</string>
+  <string name="permissions_all_title">Tout autoriser</string>
+  <string name="permissions_all_status_off">À utiliser pour activer toutes les fonctionnalités (recommandé)</string>
+  <string name="permissions_all_status_on">Toutes les autorisations accordées</string>
+  <string name="permissions_contacts_title">Autorisations d\'accès aux contacts</string>
+  <string name="permissions_contacts_status_off">Pas de synchronisation du carnet d\'adresses (non recommandé)</string>
+  <string name="permissions_contacts_status_on">Synchronisation du carnet d\'adresses possible</string>
+  <string name="permissions_calendar_title">Autorisations du calendrier</string>
+  <string name="permissions_calendar_status_off">Pas de synchronisation du calendrier (non recommandé)</string>
+  <string name="permissions_calendar_status_on">Synchronisation du calendrier possible</string>
+  <string name="permissions_notification_title">Autorisation des notifications </string>
+  <string name="permissions_notification_status_off">Les notifications sont désactivées (non recommandé)</string>
+  <string name="permissions_notification_status_on">Notifications activées </string>
+  <string name="permissions_jtx_title">Autorisations jtx Board</string>
+  <string name="permissions_jtx_status_not_installed">Pas de synchronisation des tâches, journaux et notes (non installé)</string>
+  <string name="permissions_jtx_status_off">Pas de synchronisation des tâches, journaux et notes</string>
+  <string name="permissions_jtx_status_on">Synchronisation possible des tâches, des journaux et des notes</string>
+  <string name="permissions_opentasks_title">Autorisations d\'OpenTasks</string>
+  <string name="permissions_tasksorg_title">Autorisations de Tasks</string>
+  <string name="permissions_tasks_status_not_installed">Pas de synchronisation des tâches (non installé)</string>
+  <string name="permissions_tasks_status_off">Aucune tâche synchronisée</string>
+  <string name="permissions_tasks_status_on">Synchronisation des tâches possible</string>
+  <string name="permissions_autoreset_title">Conserver les autorisations</string>
+  <string name="permissions_app_settings">Paramètres de l\'application</string>
+  <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_background_location_permission_label">Autoriser tout le temps </string>
+  <!--AboutActivity-->
+  <!--global settings-->
+  <!--AccountsActivity-->
+  <!--RefreshCollectionsWorker-->
+  <!--Battery Optimization-->
+  <!--ForegroundService-->
+  <!--AppSettingsActivity-->
+  <string name="app_settings_debug">Déboguage</string>
+  <!--AccountActivity-->
+  <string name="account_permissions_action">Autorisations</string>
+  <string name="account_read_only">lecture seule</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">Ajouter un compte</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_sync">Synchronisation</string>
+  <!--collection management-->
+  <string name="create_calendar_type_vtodo">Taches</string>
+  <!--debugging and DebugInfoActivity-->
+  <!--ExceptionInfoFragment-->
+  <!--WebDAV accounts-->
+  <!--sync-->
+  <!--cert4android-->
+</resources>

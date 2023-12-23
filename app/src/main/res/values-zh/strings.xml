@@ -238,6 +238,8 @@
   <string name="login_email_address">Email 地址</string>
   <string name="login_email_address_error">请输入有效 Email 地址</string>
   <string name="login_password">密码</string>
+  <string name="login_password_hide">隐藏密码</string>
+  <string name="login_password_show">显示密码</string>
   <string name="login_password_required">请输入密码</string>
   <string name="login_type_url">使用 URL 和用户名登录</string>
   <string name="login_url_must_be_http_or_https">URL 需以 http(s):// 为开头</string>
