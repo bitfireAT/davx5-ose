@@ -58,6 +58,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -226,7 +227,8 @@ class DebugInfoActivity : AppCompatActivity() {
                         title = stringResource(R.string.debug_info_archive_caption),
                         subtitle = stringResource(R.string.debug_info_archive_subtitle),
                         message = stringResource(R.string.debug_info_archive_text),
-                        icon = Icons.Rounded.Share
+                        icon = Icons.Rounded.Share,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         TextButton(
                             onClick = model::generateZip,
@@ -259,7 +261,8 @@ class DebugInfoActivity : AppCompatActivity() {
                             else
                                 R.string.debug_info_unexpected_error
                         ),
-                        icon = Icons.Rounded.Info
+                        icon = Icons.Rounded.Info,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         TextButton(
                             enabled = debugInfo != null,
@@ -276,7 +279,8 @@ class DebugInfoActivity : AppCompatActivity() {
                         image = painterResource(R.drawable.undraw_server_down),
                         title = stringResource(R.string.debug_info_title),
                         subtitle = stringResource(R.string.debug_info_subtitle),
-                        icon = Icons.Rounded.BugReport
+                        icon = Icons.Rounded.BugReport,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         TextButton(
                             onClick = { shareFile(info) }
@@ -293,7 +297,8 @@ class DebugInfoActivity : AppCompatActivity() {
                         CardWithImage(
                             title = stringResource(R.string.debug_info_involved_caption),
                             subtitle = stringResource(R.string.debug_info_involved_subtitle),
-                            icon = Icons.Rounded.Adb
+                            icon = Icons.Rounded.Adb,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                         ) {
                             if (remote != null) {
                                 Text(
@@ -323,7 +328,8 @@ class DebugInfoActivity : AppCompatActivity() {
                     CardWithImage(
                         title = stringResource(R.string.debug_info_logs_caption),
                         subtitle = stringResource(R.string.debug_info_logs_subtitle),
-                        icon = Icons.Rounded.BugReport
+                        icon = Icons.Rounded.BugReport,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         TextButton(
                             onClick = { shareFile(logs) }
