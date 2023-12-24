@@ -56,7 +56,7 @@ android {
     composeOptions {
         // Keep this in sync with Kotlin version:
         // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-        kotlinCompilerExtensionVersion = "1.5.6"
+        kotlinCompilerExtensionVersion = "1.5.7"
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
