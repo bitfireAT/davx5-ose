@@ -7,14 +7,19 @@ package at.bitfire.davdroid.ui.widget
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,42 +27,71 @@ import at.bitfire.davdroid.R
 
 @Composable
 fun CardWithImage(
-    image: Painter,
     title: String,
-    message: String,
     modifier: Modifier = Modifier,
+    image: Painter? = null,
     imageContentDescription: String? = null,
+    message: String? = null,
+    subtitle: String? = null,
+    icon: ImageVector? = null,
+    iconContentDescription: String? = null,
     content: @Composable ColumnScope.() -> Unit = {}
 ) {
     Card(modifier) {
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Image(
-                painter = image,
-                contentDescription = imageContentDescription,
-                modifier = Modifier.fillMaxWidth()
-            )
+            image?.let {
+                Image(
+                    painter = it,
+                    contentDescription = imageContentDescription,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                Text(
-                    text = title,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp),
-                    style = MaterialTheme.typography.h6
-                )
-                Text(
-                    text = message,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    style = MaterialTheme.typography.body1
-                )
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    icon?.let {
+                        Icon(
+                            imageVector = it,
+                            contentDescription = iconContentDescription,
+                            modifier = Modifier.size(44.dp).padding(end = 12.dp)
+                        )
+                    }
+
+                    Column(Modifier.fillMaxWidth()) {
+                        Text(
+                            text = title,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.h6
+                        )
+                        subtitle?.let {
+                            Text(
+                                text = it,
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.subtitle1
+                            )
+                        }
+                    }
+                }
+                message?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        style = MaterialTheme.typography.body1
+                    )
+                }
 
                 content()
             }
