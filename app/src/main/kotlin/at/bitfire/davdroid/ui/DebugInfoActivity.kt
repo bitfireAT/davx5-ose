@@ -60,6 +60,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
@@ -164,6 +165,29 @@ class DebugInfoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        model.zipFile.observe(this) { zipFile ->
+            if (zipFile == null) return@observe
+
+            // ZIP file is ready
+            val builder = ShareCompat.IntentBuilder(this)
+                .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
+                .setText(getString(R.string.debug_info_attached))
+                .setType("*/*")     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
+                .setStream(
+                    FileProvider.getUriForFile(
+                        this,
+                        getString(R.string.authority_debug_provider),
+                        zipFile
+                    )
+                )
+            builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+            builder.startChooser()
+
+            // Not beautiful, because it changes model data from the view.
+            // See https://github.com/android/architecture-components-samples/issues/63
+            model.zipFile.value = null
+        }
 
         setContent { 
             MdcTheme {
