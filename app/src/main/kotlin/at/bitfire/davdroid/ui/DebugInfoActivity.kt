@@ -3,31 +3,71 @@
  **************************************************************************************************/
 
 package at.bitfire.davdroid.ui
-
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Application
 import android.app.usage.UsageStatsManager
-import android.content.*
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.ContentUris
+import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
+import android.os.LocaleList
+import android.os.PowerManager
+import android.os.StatFs
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.text.format.DateUtils
-import android.view.View
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.DrawerState
+import androidx.compose.material.DrawerValue
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Adb
+import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.PackageInfoCompat
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.exception.DavException
@@ -36,7 +76,6 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
-import at.bitfire.davdroid.databinding.ActivityDebugInfoBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -44,10 +83,11 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import at.techbee.jtx.JtxContract
-import com.google.android.material.snackbar.Snackbar
+import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -61,7 +101,11 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
-import java.io.*
+import java.io.File
+import java.io.IOError
+import java.io.IOException
+import java.io.StringReader
+import java.io.Writer
 import java.util.TimeZone
 import java.util.logging.Level
 import java.util.zip.ZipEntry
@@ -120,101 +164,188 @@ class DebugInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = DataBindingUtil.setContentView<ActivityDebugInfoBinding>(this, R.layout.activity_debug_info)
-        binding.model = model
-        binding.lifecycleOwner = this
+        setContent { 
+            MdcTheme {
+                val debugInfo by model.debugInfo.observeAsState()
+                val zipProgress by model.zipProgress.observeAsState(false)
 
-        model.cause.observe(this) { cause ->
-            if (cause == null)
-                return@observe
+                val snackbarHostState = remember { SnackbarHostState() }
 
-            binding.causeCaption.text = when (cause) {
-                is HttpException -> getString(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
-                is DavException -> getString(R.string.debug_info_webdav_error)
-                is IOException, is IOError -> getString(R.string.debug_info_io_error)
-                else -> cause::class.java.simpleName
-            }
-
-            binding.causeText.text = getString(
-                if (cause is HttpException)
-                    when {
-                        cause.code == 403 -> R.string.debug_info_http_403_description
-                        cause.code == 404 -> R.string.debug_info_http_404_description
-                        cause.code / 100 == 5 -> R.string.debug_info_http_5xx_description
-                        else -> R.string.debug_info_unexpected_error
-                    }
-                else
-                    R.string.debug_info_unexpected_error
-            )
-        }
-
-        model.debugInfo.observe(this) { debugInfo ->
-            val showDebugInfo = View.OnClickListener {
-                val uri = FileProvider.getUriForFile(
-                    this,
-                    getString(R.string.authority_debug_provider),
-                    debugInfo
-                )
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(uri, "text/plain")
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                startActivity(Intent.createChooser(intent, null))
-            }
-            binding.causeView.setOnClickListener(showDebugInfo)
-            binding.debugInfoView.setOnClickListener(showDebugInfo)
-
-            binding.fab.apply {
-                setOnClickListener { shareArchive() }
-                isEnabled = true
-            }
-            binding.zipShare.setOnClickListener { shareArchive() }
-        }
-
-        model.logFile.observe(this) { logs ->
-            binding.logsView.setOnClickListener {
-                val uri = FileProvider.getUriForFile(this, getString(R.string.authority_debug_provider), logs)
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(uri, "text/plain")
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                startActivity(Intent.createChooser(intent, null))
-            }
-        }
-
-        model.zipFile.observe(this) { zipFile ->
-            if (zipFile != null) {
-                // ZIP file is ready
-                val builder = ShareCompat.IntentBuilder(this)
-                    .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
-                    .setText(getString(R.string.debug_info_attached))
-                    .setType("*/*")     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
-                    .setStream(
-                        FileProvider.getUriForFile(
-                            this,
-                            getString(R.string.authority_debug_provider),
-                            zipFile
-                        )
+                Scaffold(
+                    floatingActionButton = {
+                        if (debugInfo != null && !zipProgress) {
+                            FloatingActionButton(
+                                onClick = model::generateZip
+                            ) {
+                                Icon(Icons.Rounded.Share, stringResource(R.string.share))
+                            }
+                        }
+                    },
+                    scaffoldState = ScaffoldState(
+                        drawerState = remember { DrawerState(DrawerValue.Closed) },
+                        snackbarHostState = snackbarHostState
                     )
-                builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
-                builder.startChooser()
+                ) { paddingValues ->
+                    val error by model.error.observeAsState()
+                    LaunchedEffect(error) {
+                        error?.let {
+                            snackbarHostState.showSnackbar(
+                                message = it,
+                                duration = SnackbarDuration.Long
+                            )
 
-                // Not beautiful, because it changes model data from the view.
-                // See https://github.com/android/architecture-components-samples/issues/63
-                model.zipFile.value = null
-            }
-        }
+                            model.error.value = null
+                        }
+                    }
 
-        model.error.observe(this) { message ->
-            if (message != null) {
-                Snackbar.make(binding.fab, message, Snackbar.LENGTH_LONG).show()
-
-                // Reset error message so that it won't be shown when activity is re-created
-                model.error.value = null
+                    Content(paddingValues)
+                }
             }
         }
     }
 
-    fun shareArchive() {
-        model.generateZip()
+    @Composable
+    fun Content(paddingValues: PaddingValues) {
+        val debugInfo by model.debugInfo.observeAsState()
+        val zipProgress by model.zipProgress.observeAsState(false)
+        val modelCause by model.cause.observeAsState()
+        val localResource by model.localResource.observeAsState()
+        val remoteResource by model.remoteResource.observeAsState()
+        val logFile by model.logFile.observeAsState()
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            if (debugInfo == null) item { LinearProgressIndicator() }
+            if (debugInfo != null) {
+                if (zipProgress) item { LinearProgressIndicator() }
+                item {
+                    CardWithImage(
+                        title = stringResource(R.string.debug_info_archive_caption),
+                        subtitle = stringResource(R.string.debug_info_archive_subtitle),
+                        message = stringResource(R.string.debug_info_archive_text),
+                        icon = Icons.Rounded.Share
+                    ) {
+                        TextButton(
+                            onClick = model::generateZip,
+                            enabled = !zipProgress
+                        ) {
+                            Text(stringResource(R.string.debug_info_archive_share))
+                        }
+                    }
+                }
+            }
+            modelCause?.let { cause ->
+                item {
+                    CardWithImage(
+                        image = painterResource(R.drawable.undraw_server_down),
+                        title = when (cause) {
+                            is HttpException -> stringResource(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
+                            is DavException -> stringResource(R.string.debug_info_webdav_error)
+                            is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
+                            else -> cause::class.java.simpleName
+                        },
+                        subtitle = cause.localizedMessage,
+                        message = stringResource(
+                            if (cause is HttpException)
+                                when {
+                                    cause.code == 403 -> R.string.debug_info_http_403_description
+                                    cause.code == 404 -> R.string.debug_info_http_404_description
+                                    cause.code / 100 == 5 -> R.string.debug_info_http_5xx_description
+                                    else -> R.string.debug_info_unexpected_error
+                                }
+                            else
+                                R.string.debug_info_unexpected_error
+                        ),
+                        icon = Icons.Rounded.Info
+                    ) {
+                        TextButton(
+                            enabled = debugInfo != null,
+                            onClick = { shareFile(debugInfo!!) }
+                        ) {
+                            Text(stringResource(R.string.debug_info_view_details))
+                        }
+                    }
+                }
+            }
+            debugInfo?.let { info ->
+                item {
+                    CardWithImage(
+                        image = painterResource(R.drawable.undraw_server_down),
+                        title = stringResource(R.string.debug_info_title),
+                        subtitle = stringResource(R.string.debug_info_subtitle),
+                        icon = Icons.Rounded.BugReport
+                    ) {
+                        TextButton(
+                            onClick = { shareFile(info) }
+                        ) {
+                            Text(stringResource(R.string.debug_info_view_details))
+                        }
+                    }
+                }
+            }
+            (localResource to remoteResource)
+                .takeIf { (l, r) -> l != null || r != null }
+                ?.let { (local, remote) ->
+                    item {
+                        CardWithImage(
+                            title = stringResource(R.string.debug_info_involved_caption),
+                            subtitle = stringResource(R.string.debug_info_involved_subtitle),
+                            icon = Icons.Rounded.Adb
+                        ) {
+                            if (remote != null) {
+                                Text(
+                                    text = stringResource(R.string.debug_info_involved_remote),
+                                    style = MaterialTheme.typography.body1
+                                )
+                                Text(
+                                    text = remote,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                            }
+                            if (local != null) {
+                                Text(
+                                    text = stringResource(R.string.debug_info_involved_local),
+                                    style = MaterialTheme.typography.body1
+                                )
+                                Text(
+                                    text = local,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                            }
+                        }
+                    }
+                }
+            logFile?.let { logs ->
+                item {
+                    CardWithImage(
+                        title = stringResource(R.string.debug_info_logs_caption),
+                        subtitle = stringResource(R.string.debug_info_logs_subtitle),
+                        icon = Icons.Rounded.BugReport
+                    ) {
+                        TextButton(
+                            onClick = { shareFile(logs) }
+                        ) {
+                            Text(stringResource(R.string.debug_info_logs_view))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun shareFile(file: File) {
+        val uri = FileProvider.getUriForFile(
+            this,
+            getString(R.string.authority_debug_provider),
+            file
+        )
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(uri, "text/plain")
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(Intent.createChooser(intent, null))
     }
 
 
