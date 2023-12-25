@@ -25,14 +25,6 @@ jobs:
           java-version: 17
       - uses: gradle/gradle-build-action@v2
 
-      - name: Use app/build and gradle configuration cache
-        uses: actions/cache/restore@v3
-        with:
-          key: app_build-tests-without-emulator
-          path: |
-            .gradle/configuration-cache
-            app/build
-
       - name: Prepare keystore
         run: echo ${{ secrets.android_keystore_base64 }} | base64 -d >$GITHUB_WORKSPACE/keystore.jks
 
@@ -42,7 +34,8 @@ jobs:
         run: ./gradlew --no-build-cache --no-configuration-cache -PaboutLibraries.exportPath=src/main/res/raw/ app:exportLibraryDefinitions
 
       - name: Build signed package
-        run: ./gradlew app:assembleRelease
+        # Make sure that caches are disabled to generate reproducible release builds
+        run: ./gradlew --no-build-cache --no-configuration-cache app:assembleRelease
         env:
           ANDROID_KEYSTORE: ${{ github.workspace }}/keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
