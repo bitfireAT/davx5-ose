@@ -320,39 +320,35 @@ class DebugInfoActivity : AppCompatActivity() {
                     }
                 }
             }
-            (localResource to remoteResource)
-                .takeIf { (l, r) -> l != null || r != null }
-                ?.let { (local, remote) ->
-                    item {
-                        CardWithImage(
-                            title = stringResource(R.string.debug_info_involved_caption),
-                            subtitle = stringResource(R.string.debug_info_involved_subtitle),
-                            icon = Icons.Rounded.Adb,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                        ) {
-                            if (remote != null) {
-                                Text(
-                                    text = stringResource(R.string.debug_info_involved_remote),
-                                    style = MaterialTheme.typography.body1
-                                )
-                                Text(
-                                    text = remote,
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-                            if (local != null) {
-                                Text(
-                                    text = stringResource(R.string.debug_info_involved_local),
-                                    style = MaterialTheme.typography.body1
-                                )
-                                Text(
-                                    text = local,
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-                        }
+            if (localResource != null || remoteResource != null) item {
+                CardWithImage(
+                    title = stringResource(R.string.debug_info_involved_caption),
+                    subtitle = stringResource(R.string.debug_info_involved_subtitle),
+                    icon = Icons.Rounded.Adb,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                ) {
+                    remoteResource?.let {
+                        Text(
+                            text = stringResource(R.string.debug_info_involved_remote),
+                            style = MaterialTheme.typography.body1
+                        )
+                        Text(
+                            text = it,
+                            fontFamily = FontFamily.Monospace
+                        )
+                    }
+                    localResource?.let {
+                        Text(
+                            text = stringResource(R.string.debug_info_involved_local),
+                            style = MaterialTheme.typography.body1
+                        )
+                        Text(
+                            text = it,
+                            fontFamily = FontFamily.Monospace
+                        )
                     }
                 }
+            }
             logFile?.let { logs ->
                 item {
                     CardWithImage(
