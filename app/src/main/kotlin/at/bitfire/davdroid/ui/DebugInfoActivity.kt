@@ -171,19 +171,12 @@ class DebugInfoActivity : AppCompatActivity() {
             if (zipFile == null) return@observe
 
             // ZIP file is ready
-            val builder = ShareCompat.IntentBuilder(this)
-                .setSubject("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info")
-                .setText(getString(R.string.debug_info_attached))
-                .setType("*/*")     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
-                .setStream(
-                    FileProvider.getUriForFile(
-                        this,
-                        getString(R.string.authority_debug_provider),
-                        zipFile
-                    )
-                )
-            builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
-            builder.startChooser()
+            shareFile(
+                zipFile,
+                subject = "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info",
+                text = getString(R.string.debug_info_attached),
+                type = "*/*",    // application/zip won't show all apps that can manage binary files, like ShareViaHttp
+            )
 
             // Not beautiful, because it changes model data from the view.
             // See https://github.com/android/architecture-components-samples/issues/63
@@ -370,16 +363,24 @@ class DebugInfoActivity : AppCompatActivity() {
         }
     }
 
-    private fun shareFile(file: File) {
+    private fun shareFile(
+        file: File,
+        subject: String? = null,
+        text: String? = null    ,
+        type: String = "text/plain"
+    ) {
         val uri = FileProvider.getUriForFile(
             this,
             getString(R.string.authority_debug_provider),
             file
         )
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(uri, "text/plain")
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(Intent.createChooser(intent, null))
+        val builder = ShareCompat.IntentBuilder(this)
+            .setSubject(subject)
+            .setText(text)
+            .setType(type)     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
+            .setStream(uri)
+        builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+        builder.startChooser()
     }
 
 
