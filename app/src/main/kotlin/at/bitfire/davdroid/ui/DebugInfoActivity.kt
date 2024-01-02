@@ -258,7 +258,9 @@ class DebugInfoActivity : AppCompatActivity() {
                             onClick = model::generateZip,
                             enabled = !zipProgress
                         ) {
-                            Text(stringResource(R.string.debug_info_archive_share))
+                            Text(
+                                stringResource(R.string.debug_info_archive_share).uppercase()
+                            )
                         }
                     }
                 }
@@ -292,7 +294,9 @@ class DebugInfoActivity : AppCompatActivity() {
                             enabled = debugInfo != null,
                             onClick = { shareFile(debugInfo!!) }
                         ) {
-                            Text(stringResource(R.string.debug_info_view_details))
+                            Text(
+                                stringResource(R.string.debug_info_view_details).uppercase()
+                            )
                         }
                     }
                 }
@@ -309,7 +313,9 @@ class DebugInfoActivity : AppCompatActivity() {
                         TextButton(
                             onClick = { shareFile(info) }
                         ) {
-                            Text(stringResource(R.string.debug_info_view_details))
+                            Text(
+                                stringResource(R.string.debug_info_view_details).uppercase()
+                            )
                         }
                     }
                 }
@@ -358,7 +364,9 @@ class DebugInfoActivity : AppCompatActivity() {
                         TextButton(
                             onClick = { shareFile(logs) }
                         ) {
-                            Text(stringResource(R.string.debug_info_logs_view))
+                            Text(
+                                stringResource(R.string.debug_info_logs_view).uppercase()
+                            )
                         }
                     }
                 }
