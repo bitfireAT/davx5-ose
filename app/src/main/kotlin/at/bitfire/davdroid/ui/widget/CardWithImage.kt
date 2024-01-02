@@ -15,6 +15,8 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.TabletAndroid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -101,10 +103,23 @@ fun CardWithImage(
 
 @Preview
 @Composable
-fun CardWithImagePreview() {
+fun CardWithImage_Preview() {
     CardWithImage(
         image = painterResource(R.drawable.intro_tasks),
         title = "Demo card",
         message = "This is the message to be displayed under the title, but before the content."
     )
+}
+
+@Preview
+@Composable
+fun CardWithImage_Preview_WithIconAndSubtitleAndContent() {
+    CardWithImage(
+        title = "Demo card",
+        icon = Icons.Default.TabletAndroid,
+        subtitle = "Subtitle",
+        message = "This is the message to be displayed under the title, but before the content."
+    ) {
+        Text("Content")
+    }
 }
