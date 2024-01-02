@@ -90,7 +90,7 @@ fun CardWithImage(
                         text = it,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 12.dp),
+                            .padding(top = 12.dp),
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -119,6 +119,17 @@ fun CardWithImage_Preview_WithIconAndSubtitleAndContent() {
         icon = Icons.Default.TabletAndroid,
         subtitle = "Subtitle",
         message = "This is the message to be displayed under the title, but before the content."
+    ) {
+        Text("Content")
+    }
+}
+
+@Preview
+@Composable
+fun CardWithImage_Preview_WithIconAndContentNoMessage() {
+    CardWithImage(
+        title = "Demo card",
+        icon = Icons.Default.TabletAndroid
     ) {
         Text("Content")
     }
