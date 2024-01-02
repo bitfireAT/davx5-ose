@@ -41,6 +41,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -206,10 +207,9 @@ class DebugInfoActivity : AppCompatActivity() {
                             }
                         }
                     },
-                    scaffoldState = ScaffoldState(
-                        drawerState = remember { DrawerState(DrawerValue.Closed) },
-                        snackbarHostState = snackbarHostState
-                    )
+                    snackbarHost = {
+                        SnackbarHost(hostState = snackbarHostState)
+                    }
                 ) { paddingValues ->
                     val error by model.error.observeAsState()
                     LaunchedEffect(error) {
