@@ -2,6 +2,7 @@
 # R8 usage for DAVx⁵:
 #    shrinking        yes (only in release builds)
 #    optimization     yes (on by R8 defaults)
+#      full-mode      no (see gradle.properties)
 #    obfuscation      no (open-source)
 
 -dontobfuscate
