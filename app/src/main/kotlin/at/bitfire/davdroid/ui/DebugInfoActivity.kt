@@ -32,14 +32,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.DrawerState
-import androidx.compose.material.DrawerValue
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -178,8 +175,7 @@ class DebugInfoActivity : AppCompatActivity() {
                 type = "*/*",    // application/zip won't show all apps that can manage binary files, like ShareViaHttp
             )
 
-            // Not beautiful, because it changes model data from the view.
-            // See https://github.com/android/architecture-components-samples/issues/63
+            // only share ZIP file once
             model.zipFile.value = null
         }
 
@@ -366,7 +362,7 @@ class DebugInfoActivity : AppCompatActivity() {
     private fun shareFile(
         file: File,
         subject: String? = null,
-        text: String? = null    ,
+        text: String? = null,
         type: String = "text/plain"
     ) {
         val uri = FileProvider.getUriForFile(
@@ -374,13 +370,12 @@ class DebugInfoActivity : AppCompatActivity() {
             getString(R.string.authority_debug_provider),
             file
         )
-        val builder = ShareCompat.IntentBuilder(this)
+        ShareCompat.IntentBuilder(this)
             .setSubject(subject)
             .setText(text)
-            .setType(type)     // application/zip won't show all apps that can manage binary files, like ShareViaHttp
+            .setType(type)
             .setStream(uri)
-        builder.intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
-        builder.startChooser()
+            .startChooser()
     }
 
 
