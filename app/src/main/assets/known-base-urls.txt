@@ -26,6 +26,7 @@ mailfence.com
 caldav.mailo.com
 carddav.mailo.com
 posteo.de:8443
+purelymail.com
 dav.runbox.com
 live.teambox.eu
 spica.t-online.de
