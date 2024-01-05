@@ -164,7 +164,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             var remoteSyncState = queryCapabilities()
 
             Logger.log.info("Processing local deletes/updates")
-            val modificationsPresent = processLocallyDeleted() || uploadDirty()
+            val modificationsPresent = processLocallyDeleted() or uploadDirty()     // bitwise OR guarantees that both expressions are evaluated
 
             if (extras.contains(Syncer.SYNC_EXTRAS_FULL_RESYNC)) {
                 Logger.log.info("Forcing re-synchronization of all entries")
