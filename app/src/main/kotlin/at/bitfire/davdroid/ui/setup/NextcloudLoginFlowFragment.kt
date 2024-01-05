@@ -313,7 +313,7 @@ class NextcloudLoginFlowFragment: Fragment() {
     }
 
 
-    class Factory @Inject constructor(): LoginCredentialsFragmentFactory {
+    class Factory @Inject constructor(): LoginFragmentFactory {
 
         override fun getFragment(intent: Intent) =
             if (intent.hasExtra(EXTRA_LOGIN_FLOW) && intent.data != null)
@@ -329,7 +329,7 @@ class NextcloudLoginFlowFragment: Fragment() {
         @Binds
         @IntoMap
         @IntKey(/* priority */ 20)
-        abstract fun factory(impl: Factory): LoginCredentialsFragmentFactory
+        abstract fun factory(impl: Factory): LoginFragmentFactory
     }
 
 }
