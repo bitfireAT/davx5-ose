@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.webdav
 
 import android.annotation.TargetApi
-import android.app.ActivityManager
 import android.content.Context
 import android.os.CancellationSignal
 import android.os.Handler
@@ -15,7 +14,6 @@ import android.system.ErrnoException
 import android.system.OsConstants
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.exception.DavException
@@ -27,8 +25,7 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.webdav.RandomAccessCallback.Wrapper.Companion.TIMEOUT_INTERVAL
-import at.bitfire.davdroid.webdav.cache.MemoryCache
-import at.bitfire.davdroid.webdav.cache.SegmentedCache
+import at.bitfire.davdroid.webdav.cache.PageCacheBuilder
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.MediaType
@@ -46,14 +43,11 @@ import ru.nsk.kstatemachine.processEventBlocking
 import ru.nsk.kstatemachine.state
 import ru.nsk.kstatemachine.transitionOn
 import java.io.InterruptedIOException
-import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.util.Timer
 import java.util.TimerTask
 import java.util.logging.Level
 import kotlin.concurrent.schedule
-
-typealias MemorySegmentCache = MemoryCache<SegmentedCache.SegmentKey<RandomAccessCallback.DocumentKey>>
 
 @TargetApi(26)
 class RandomAccessCallback private constructor(
@@ -61,32 +55,9 @@ class RandomAccessCallback private constructor(
     val httpClient: HttpClient,
     val url: HttpUrl,
     val mimeType: MediaType?,
-    val headResponse: HeadResponse,
-    val cancellationSignal: CancellationSignal?
-): ProxyFileDescriptorCallback(), SegmentedCache.PageLoader<RandomAccessCallback.DocumentKey> {
-
-    companion object {
-        /** one GET request per 2 MB */
-        const val PAGE_SIZE: Int = (2*FileUtils.ONE_MB).toInt()
-
-        private var _memoryCache: WeakReference<MemorySegmentCache>? = null
-
-        @Synchronized
-        fun getMemoryCache(context: Context): MemorySegmentCache {
-            val cache = _memoryCache?.get()
-            if (cache != null)
-                return cache
-
-            Logger.log.fine("Creating memory cache")
-            val maxHeapSizeMB = context.getSystemService<ActivityManager>()!!.memoryClass
-            val cacheSize = maxHeapSizeMB * FileUtils.ONE_MB.toInt() / 2
-            val newCache = MemorySegmentCache(cacheSize)
-
-            _memoryCache = WeakReference(newCache)
-            return newCache
-        }
-
-    }
+    headResponse: HeadResponse,
+    private val cancellationSignal: CancellationSignal?
+): ProxyFileDescriptorCallback(), PagingReader.PageLoader {
 
     private val dav = DavResource(httpClient.okHttpClient, url)
 
@@ -102,11 +73,10 @@ class RandomAccessCallback private constructor(
         .setSubText(FileUtils.byteCountToDisplaySize(fileSize))
         .setSmallIcon(R.drawable.ic_storage_notify)
         .setOngoing(true)
-    val notificationTag = url.toString()
+    private val notificationTag = url.toString()
 
-    val memoryCache = getMemoryCache(context)
-    val cache = SegmentedCache(PAGE_SIZE, this, memoryCache)
-
+    private val pagingReader = PagingReader(fileSize, PageCacheBuilder.MAX_PAGE_SIZE, this)
+    private val pageCache = PageCacheBuilder.getInstance()
 
     override fun onFsync() { /* not used */ }
 
@@ -132,10 +102,9 @@ class RandomAccessCallback private constructor(
         )
 
         try {
-            val docKey = DocumentKey(url, documentState)
-            return cache.read(docKey, offset, size, data)
+            return pagingReader.read(offset, size, data)
         } catch (e: Exception) {
-            Logger.log.log(Level.WARNING, "Couldn't read remote file", e)
+            Logger.log.log(Level.WARNING, "Couldn't read from WebDAV resource", e)
             throw e.toErrNoException("onRead")
         }
     }
@@ -152,37 +121,34 @@ class RandomAccessCallback private constructor(
     }
 
 
-    override fun load(key: SegmentedCache.SegmentKey<DocumentKey>, segmentSize: Int): ByteArray {
-        if (key.documentKey.resource != url || key.documentKey.state != documentState)
-            throw IllegalArgumentException()
-        Logger.log.fine("Loading page $key")
+    override fun loadPage(offset: Long, size: Int): ByteArray {
+        Logger.log.fine("Loading page $url $offset/$size")
+        return pageCache.getOrPut(PageCacheBuilder.PageIdentifier(url, offset, size)) {
+            val ifMatch: Headers =
+                documentState.eTag?.let { eTag ->
+                    Headers.headersOf("If-Match", "\"$eTag\"")
+                } ?:
+                documentState.lastModified?.let { lastModified ->
+                    Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
+                } ?: throw IllegalStateException("ETag/Last-Modified required for random access")
 
-        val ifMatch: Headers =
-            documentState.eTag?.let { eTag ->
-                Headers.headersOf("If-Match", "\"$eTag\"")
-            } ?:
-            documentState.lastModified?.let { lastModified ->
-                Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
-            } ?: throw IllegalStateException("ETag/Last-Modified required for random access")
+            var result: ByteArray? = null
+            dav.getRange(
+                DavUtils.acceptAnything(preferred = mimeType),
+                offset,
+                size,
+                ifMatch
+            ) { response ->
+                if (response.code == 200)       // server doesn't support ranged requests
+                    throw PartialContentNotSupportedException()
+                else if (response.code != 206)
+                    throw HttpException(response)
 
-        var result: ByteArray? = null
-        dav.getRange(
-            DavUtils.acceptAnything(preferred = mimeType),
-            key.segment * PAGE_SIZE.toLong(),
-            PAGE_SIZE,
-            ifMatch
-        ) { response ->
-            if (response.code == 200)       // server doesn't support ranged requests
-                throw PartialContentNotSupportedException()
-            else if (response.code != 206)
-                throw HttpException(response)
-
-            result = response.body?.bytes()
+                result = response.body?.bytes()
+            }
+            return@getOrPut result ?: throw DavException("No response body")
         }
-
-        return result ?: throw DavException("No response body")
     }
-
 
     private fun throwIfCancelled(functionName: String) {
         if (cancellationSignal?.isCanceled == true) {
@@ -200,6 +166,7 @@ class RandomAccessCallback private constructor(
                         HttpURLConnection.HTTP_NOT_FOUND -> OsConstants.ENOENT
                         else -> OsConstants.EIO
                     }
+                is IndexOutOfBoundsException -> OsConstants.ENXIO   // no such [device or] address, see man lseek (2)
                 is InterruptedIOException -> OsConstants.EINTR
                 is PartialContentNotSupportedException -> OsConstants.EOPNOTSUPP
                 else -> OsConstants.EIO
