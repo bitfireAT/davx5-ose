@@ -18,7 +18,7 @@ typealias PageCache = ExtendedLruCache<PageCacheBuilder.PageIdentifier, ByteArra
 object PageCacheBuilder {
 
     const val MAX_PAGE_SIZE = 2 * FileUtils.ONE_MB.toInt()
-    private const val MAX_ENTRIES = 2   // cache up to 2 pages (4 MB in total) in memory
+    private const val MAX_ENTRIES = 3   // cache up to 3 pages (6 MB in total) in memory
 
     private var _cache: WeakReference<PageCache>? = null
 

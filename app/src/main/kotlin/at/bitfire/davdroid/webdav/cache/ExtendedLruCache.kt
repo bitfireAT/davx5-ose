@@ -5,12 +5,15 @@
 package at.bitfire.davdroid.webdav.cache
 
 import android.util.LruCache
+import java.lang.ref.SoftReference
 
 /**
  * Simple thread-safe cache class based on [LruCache] that provides atomic [getOrPut]
  * and [getOrPutIfNotNull] methods.
+ *
+ * Values are stored using [SoftReference] so that they can be removed if there's not enough memory.
  */
-class ExtendedLruCache<K, V>(maxSize: Int) : LruCache<K, V>(maxSize) {
+class ExtendedLruCache<K, V>(maxSize: Int) : LruCache<K, SoftReference<V>>(maxSize) {
 
     /**
      * Retrieves data from the cache, if available. Otherwise calls a callback to
@@ -24,13 +27,13 @@ class ExtendedLruCache<K, V>(maxSize: Int) : LruCache<K, V>(maxSize) {
     @Synchronized
     fun getOrPut(key: K, compute: () -> V): V {
         // use cached value, if possible
-        val data = get(key)
+        val data = get(key)?.get()
         if (data != null)
             return data
 
         // compute new value otherwise
         val newValue = compute()
-        put(key, newValue)
+        put(key, SoftReference(newValue))
         return newValue
     }
 
