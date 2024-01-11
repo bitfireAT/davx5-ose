@@ -4,11 +4,13 @@
 
 package at.bitfire.davdroid.ui.widget
 
+import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Card
@@ -22,8 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.R
 
@@ -39,15 +45,26 @@ fun CardWithImage(
     iconContentDescription: String? = null,
     content: @Composable ColumnScope.() -> Unit = {}
 ) {
+    val configuration = LocalConfiguration.current
+
     Card(modifier) {
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
             image?.let {
+                val maxHeight = if (configuration.orientation == ORIENTATION_PORTRAIT) {
+                    // Do not limit image height on portrait
+                    Dp.Unspecified
+                } else {
+                    // Limit image height to half the screen in landscape
+                    (configuration.screenHeightDp / 2).dp
+                }
                 Image(
                     painter = it,
                     contentDescription = imageContentDescription,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().heightIn(max = maxHeight),
+                    contentScale = ContentScale.FillWidth,
+                    alignment = Alignment.BottomCenter
                 )
             }
 
