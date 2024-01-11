@@ -60,6 +60,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
@@ -78,6 +79,7 @@ import java.net.URI
 import java.util.logging.Level
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class NextcloudLoginFlowFragment: Fragment() {
 
     companion object {
@@ -92,6 +94,16 @@ class NextcloudLoginFlowFragment: Fragment() {
          *  server URL returned by Login Flow without further processing. */
         const val EXTRA_DAV_PATH = "davPath"
         const val DAV_PATH_DEFAULT = "/remote.php/dav"
+
+        const val ARG_BASE_URL = "baseUrl"
+
+        fun newInstance(baseUrl: String? = null): NextcloudLoginFlowFragment =
+            NextcloudLoginFlowFragment().apply {
+                arguments = Bundle(1).apply {
+                    putString(ARG_BASE_URL, baseUrl)
+                }
+            }
+
     }
 
     val loginModel by activityViewModels<LoginModel>()
@@ -105,7 +117,8 @@ class NextcloudLoginFlowFragment: Fragment() {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val entryUrl = requireActivity().intent.data?.toString()?.toHttpUrlOrNull()
+        val baseUrl = arguments?.getString(ARG_BASE_URL)
+        val entryUrl = (requireActivity().intent.data?.toString() ?: baseUrl)?.toHttpUrlOrNull()
 
         val view = ComposeView(requireActivity()).apply {
             setContent {
@@ -300,7 +313,7 @@ class NextcloudLoginFlowFragment: Fragment() {
     }
 
 
-    class Factory @Inject constructor(): LoginCredentialsFragmentFactory {
+    class Factory @Inject constructor(): LoginFragmentFactory {
 
         override fun getFragment(intent: Intent) =
             if (intent.hasExtra(EXTRA_LOGIN_FLOW) && intent.data != null)
@@ -316,7 +329,7 @@ class NextcloudLoginFlowFragment: Fragment() {
         @Binds
         @IntoMap
         @IntKey(/* priority */ 20)
-        abstract fun factory(impl: Factory): LoginCredentialsFragmentFactory
+        abstract fun factory(impl: Factory): LoginFragmentFactory
     }
 
 }
@@ -374,7 +387,8 @@ fun NextcloudLoginFlowComposable(
 
         val entryUrlStr = remember { mutableStateOf(providedEntryUrl?.toString() ?: "") }
         val entryUrl = remember { mutableStateOf<HttpUrl?>(providedEntryUrl) }
-        OutlinedTextField(entryUrlStr.value,
+        OutlinedTextField(
+            value = entryUrlStr.value,
             onValueChange = { newUrlStr ->
                 entryUrlStr.value = newUrlStr
 

@@ -9,7 +9,6 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.util.logging.Level
-import kotlin.math.min
 
 /**
  * Disk-based cache that maps [String]s to [ByteArray]s.
@@ -37,61 +36,6 @@ class DiskCache(
                 throw IllegalArgumentException("Couldn't create cache in $cacheDir")
     }
 
-
-    /**
-     * Gets the cached value with the given key. If the key is not in the cache, the value is being generated from the
-     * callback, stored in the cache and returned.
-     *
-     * @param key      key of the cached entry
-     * @param offset   used if only a part of the value is required
-     * @param maxSize  used if only a part of the value is required
-     * @param generate callback that generates the whole value (not only the part given by [offset] and [maxSize]!)
-     *
-     * @return the value (either taken from the cache or from [generate]), limited [offset]/[maxSize]
-     */
-    fun get(key: String, offset: Long = 0, maxSize: Int = Int.MAX_VALUE, generate: () -> ByteArray?): ByteArray? {
-        synchronized(this) {
-            val file = File(cacheDir, key)
-            if (file.exists()) {
-                // cache hit
-                file.inputStream().use { input ->
-                    if (offset != 0L)
-                        if (input.skip(offset) != offset)
-                            throw IllegalStateException("Couldn't skip first $offset bytes of $file")
-
-                    val size = min(
-                        maxSize.toLong(),
-                        file.length() - offset
-                    ).toInt()
-                    val buffer = ByteArray(size)
-                    input.read(buffer)
-                    return buffer
-                }
-            } else {
-                // file does't exist yet; cache miss
-                val result = generate() ?: return null
-
-                file.outputStream().use { output ->
-                    try {
-                        output.write(result)
-                    } catch (e: IOException) {
-                        // write error; disk full?
-                        Logger.log.log(Level.WARNING, "Couldn't write cache entry $key", e)
-                        file.delete()
-                    }
-                }
-
-                if (writeCounter++.mod(CLEANUP_RATE) == 0)
-                    trim()
-
-                if (maxSize != -1)
-                    return result.copyOfRange(offset.toInt(), min(offset.toInt() + maxSize, result.size))
-                else
-                    return result
-            }
-        }
-    }
-
     /**
      * Gets the file that contains the given key. If the key is not in the cache, the value is being generated from the
      * callback, stored in the cache and the backing file is returned.
@@ -104,7 +48,7 @@ class DiskCache(
      *
      * @return the file that contains the value
      */
-    fun getFile(key: String, generate: () -> ByteArray?): File? {
+    fun getFileOrPut(key: String, generate: () -> ByteArray?): File? {
         synchronized(this) {
             val file = File(cacheDir, key)
             if (file.exists()) {

@@ -2,11 +2,13 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid.webdav.cache
+package at.bitfire.davdroid.ui.setup
 
-interface Cache<K> {
+import android.content.Intent
+import androidx.fragment.app.Fragment
 
-    fun get(key: K): ByteArray?
-    fun getOrPut(key: K, generate: () -> ByteArray): ByteArray
+interface LoginFragmentFactory {
+
+    fun getFragment(intent: Intent): Fragment?
 
 }

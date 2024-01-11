@@ -22,6 +22,9 @@
 # DAVx⁵ + libs
 -keep class at.bitfire.** { *; }       # all DAVx⁵ code is required
 
+# AGP 8.2 and 8.3 seem to remove this class, but ezvcard.io uses it. See https://github.com/bitfireAT/davx5/issues/499
+-keep class javax.xml.namespace.QName { *; }
+
 # we use enum classes (https://www.guardsquare.com/en/products/proguard/manual/examples#enumerations)
 -keepclassmembers,allowoptimization enum * {
     public static **[] values();

@@ -47,7 +47,7 @@ class LoginActivity: AppCompatActivity() {
     }
 
     @Inject
-    lateinit var loginFragmentFactories: Map<Int, @JvmSuppressWildcards LoginCredentialsFragmentFactory>
+    lateinit var loginFragmentFactories: Map<Int, @JvmSuppressWildcards LoginFragmentFactory>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
