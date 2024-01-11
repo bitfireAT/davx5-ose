@@ -281,7 +281,7 @@ class DebugInfoActivity : AppCompatActivity() {
                     ) {
                         TextButton(
                             enabled = debugInfo != null,
-                            onClick = { shareFile(debugInfo!!) }
+                            onClick = { viewFile(debugInfo!!) }
                         ) {
                             Text(
                                 stringResource(R.string.debug_info_view_details).uppercase()
@@ -300,7 +300,7 @@ class DebugInfoActivity : AppCompatActivity() {
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         TextButton(
-                            onClick = { shareFile(info) }
+                            onClick = { viewFile(info) }
                         ) {
                             Text(
                                 stringResource(R.string.debug_info_view_details).uppercase()
@@ -376,6 +376,22 @@ class DebugInfoActivity : AppCompatActivity() {
             .setType(type)
             .setStream(uri)
             .startChooser()
+    }
+
+    private fun viewFile(
+        file: File,
+        title: String? = null
+    ) {
+        val uri = FileProvider.getUriForFile(
+            this,
+            getString(R.string.authority_debug_provider),
+            file
+        )
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "text/plain")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(Intent.createChooser(intent, title))
     }
 
 
