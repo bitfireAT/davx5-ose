@@ -238,6 +238,8 @@ class DebugInfoActivity : AppCompatActivity() {
                 if (zipProgress) item { LinearProgressIndicator() }
                 item {
                     CardWithImage(
+                        image = painterResource(R.drawable.undraw_server_down),
+                        imageAlignment = BiasAlignment(0f, .7f),
                         title = stringResource(R.string.debug_info_archive_caption),
                         subtitle = stringResource(R.string.debug_info_archive_subtitle),
                         message = stringResource(R.string.debug_info_archive_text),
@@ -258,8 +260,6 @@ class DebugInfoActivity : AppCompatActivity() {
             modelCause?.let { cause ->
                 item {
                     CardWithImage(
-                        image = painterResource(R.drawable.undraw_server_down),
-                        imageAlignment = BiasAlignment(0f, .7f),
                         title = when (cause) {
                             is HttpException -> stringResource(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
                             is DavException -> stringResource(R.string.debug_info_webdav_error)
@@ -295,8 +295,6 @@ class DebugInfoActivity : AppCompatActivity() {
             debugInfo?.let { info ->
                 item {
                     CardWithImage(
-                        image = painterResource(R.drawable.undraw_server_down),
-                        imageAlignment = BiasAlignment(0f, .7f),
                         title = stringResource(R.string.debug_info_title),
                         subtitle = stringResource(R.string.debug_info_subtitle),
                         icon = Icons.Rounded.BugReport,
@@ -326,7 +324,8 @@ class DebugInfoActivity : AppCompatActivity() {
                         )
                         Text(
                             text = it,
-                            fontFamily = FontFamily.Monospace
+                            fontFamily = FontFamily.Monospace,
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
                     localResource?.let {
@@ -336,7 +335,8 @@ class DebugInfoActivity : AppCompatActivity() {
                         )
                         Text(
                             text = it,
-                            fontFamily = FontFamily.Monospace
+                            fontFamily = FontFamily.Monospace,
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
                 }
