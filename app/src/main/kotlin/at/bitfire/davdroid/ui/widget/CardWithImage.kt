@@ -21,12 +21,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.TabletAndroid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -39,6 +41,7 @@ fun CardWithImage(
     modifier: Modifier = Modifier,
     image: Painter? = null,
     imageContentDescription: String? = null,
+    imageAlignment: Alignment = Alignment.Center,
     message: String? = null,
     subtitle: String? = null,
     icon: ImageVector? = null,
@@ -52,19 +55,14 @@ fun CardWithImage(
             modifier = Modifier.fillMaxWidth()
         ) {
             image?.let {
-                val maxHeight = if (configuration.orientation == ORIENTATION_PORTRAIT) {
-                    // Do not limit image height on portrait
-                    Dp.Unspecified
-                } else {
-                    // Limit image height to half the screen in landscape
-                    (configuration.screenHeightDp / 2).dp
-                }
                 Image(
                     painter = it,
                     contentDescription = imageContentDescription,
-                    modifier = Modifier.fillMaxWidth().heightIn(max = maxHeight),
-                    contentScale = ContentScale.FillWidth,
-                    alignment = Alignment.BottomCenter
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = dimensionResource(R.dimen.card_theme_max_height)),
+                    contentScale = ContentScale.Crop,
+                    alignment = imageAlignment
                 )
             }
 
@@ -83,7 +81,9 @@ fun CardWithImage(
                         Icon(
                             imageVector = it,
                             contentDescription = iconContentDescription,
-                            modifier = Modifier.size(44.dp).padding(end = 12.dp)
+                            modifier = Modifier
+                                .size(44.dp)
+                                .padding(end = 12.dp)
                         )
                     }
 

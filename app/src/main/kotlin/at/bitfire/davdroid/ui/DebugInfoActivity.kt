@@ -52,6 +52,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -258,6 +259,7 @@ class DebugInfoActivity : AppCompatActivity() {
                 item {
                     CardWithImage(
                         image = painterResource(R.drawable.undraw_server_down),
+                        imageAlignment = BiasAlignment(0f, .7f),
                         title = when (cause) {
                             is HttpException -> stringResource(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
                             is DavException -> stringResource(R.string.debug_info_webdav_error)
@@ -294,6 +296,7 @@ class DebugInfoActivity : AppCompatActivity() {
                 item {
                     CardWithImage(
                         image = painterResource(R.drawable.undraw_server_down),
+                        imageAlignment = BiasAlignment(0f, .7f),
                         title = stringResource(R.string.debug_info_title),
                         subtitle = stringResource(R.string.debug_info_subtitle),
                         icon = Icons.Rounded.BugReport,

@@ -32,6 +32,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -209,6 +210,7 @@ fun TasksCard(
         ) {
             CardWithImage(
                 image = painterResource(R.drawable.intro_tasks),
+                imageAlignment = BiasAlignment(0f, .1f),
                 title = stringResource(R.string.intro_tasks_title),
                 message = stringResource(R.string.intro_tasks_text1),
                 modifier = Modifier
