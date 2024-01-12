@@ -9,14 +9,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.dimensionResource
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.TasksCard
 import at.bitfire.davdroid.ui.TasksModel
+import com.github.appintro.R
 import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,7 +34,11 @@ class TasksIntroFragment : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    TasksCard(model)
+                    TasksCard(
+                        modifier = Modifier
+                            .padding(bottom = dimensionResource(R.dimen.appintro2_bottombar_height)),
+                        model = model
+                    )
                 }
             }
         }
