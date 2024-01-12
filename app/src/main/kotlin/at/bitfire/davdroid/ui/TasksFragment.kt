@@ -158,6 +158,7 @@ class TasksModel @Inject constructor(
 @OptIn(ExperimentalTextApi::class)
 @Composable
 fun TasksCard(
+    modifier: Modifier = Modifier,
     model: TasksModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -200,6 +201,7 @@ fun TasksCard(
     }
 
     Scaffold(
+        modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Column(
