@@ -12,77 +12,77 @@
       android:strokeAlpha="0.3"
       android:strokeWidth="4"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.3"/>
   <path
       android:pathData="m655.621,78.149c95.864,58.333 159.891,163.781 159.891,284.182a332.939,332.939 135,0 1,-10.428 82.915"
       android:strokeAlpha="0.3"
       android:strokeWidth="4"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.3"/>
   <path
       android:pathData="m803.724,450.442q-0.716,2.621 -1.478,5.232"
       android:strokeAlpha="0.3"
       android:strokeWidth="4"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.3"/>
   <path
       android:pathData="m150.85,362.33c0,-144.43 92.137,-267.34 220.84,-313.2"
       android:strokeAlpha="0.21"
       android:strokeWidth="3.6271"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.21"/>
   <path
       android:pathData="m641.6,654.56a330.85,330.85 0,0 1,-158.41 40.107c-108.39,0 -204.66,-51.886 -265.32,-132.18"
       android:strokeAlpha="0.5"
       android:strokeWidth="3.6271"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.5"/>
   <path
       android:pathData="m698.266,425.007q-0.762,2.611 -1.587,5.205"
       android:strokeAlpha="0.21"
       android:strokeWidth="4"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.21"/>
   <path
       android:pathData="m693.152,440.458c-31.737,85.173 -113.754,145.845 -209.972,145.845 -123.692,0 -223.972,-100.28 -223.972,-223.972s100.28,-223.972 223.972,-223.972a222.993,222.993 135,0 1,135.816 45.883"
       android:strokeAlpha="0.21"
       android:strokeWidth="4"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.21"/>
   <path
       android:pathData="m623.276,187.56q2.122,1.705 4.198,3.455"
       android:strokeAlpha="0.21"
       android:strokeWidth="4"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.21"/>
   <path
       android:pathData="m464.156,236.834q2.72,-0.399 5.441,-0.689"
       android:strokeAlpha="0.5"
       android:strokeWidth="4"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.5"/>
   <path
       android:pathData="m480.007,235.429q1.587,0 3.174,0a126.948,126.948 119.628,0 1,110.862 188.799"
       android:strokeAlpha="0.5"
       android:strokeWidth="4"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.5"/>
   <path
       android:pathData="m591.394,428.743q-1.424,2.321 -2.947,4.534"
       android:strokeAlpha="0.5"
       android:strokeWidth="4"
       android:fillColor="#00000000"
-      android:strokeColor="#2196f3"
+      android:strokeColor="@color/accounts_background_blue"
       android:fillAlpha="0.5"/>
   <path
       android:pathData="m796.77,529.54 l-91.385,-48.249 47.669,-78.064a2.829,2.829 0,0 1,3.736 -1.025l76.296,40.288a2.829,2.829 0,0 1,1.26 3.627z"
@@ -91,7 +91,7 @@
   <path
       android:pathData="m795.26,525.34 l-85.545,-45.166 44.541,-72.941a2.829,2.829 0,0 1,3.736 -1.025l71.127,37.559a2.829,2.829 0,0 1,1.26 3.627z"
       android:strokeWidth=".90677"
-      android:fillColor="#f2f2f2"/>
+      android:fillColor="@color/accounts_background_light"/>
   <path
       android:pathData="m736.43,643.8 l-91.394,-48.24 -37.577,83.423a2.829,2.829 0,0 0,1.26 3.627l76.314,40.252a2.829,2.829 0,0 0,3.736 -1.025z"
       android:strokeWidth=".90677">
@@ -99,7 +99,7 @@
   <path
       android:pathData="m732.09,644.88 l-85.545,-45.166 -35.056,77.946a2.829,2.829 0,0 0,1.26 3.627l71.127,37.549a2.829,2.829 0,0 0,3.736 -1.025z"
       android:strokeWidth=".90677"
-      android:fillColor="#f2f2f2"/>
+      android:fillColor="@color/accounts_background_light"/>
   <path
       android:pathData="M623.585,591.413L689.871,465.851A2.113,2.113 72.83,0 1,692.725 464.968L818.287,531.254A2.113,2.113 72.83,0 1,819.169 534.109L752.884,659.671A2.113,2.113 72.83,0 1,750.029 660.553L624.467,594.267A2.113,2.113 72.83,0 1,623.585 591.413z"
       android:strokeWidth=".90677">
@@ -107,22 +107,22 @@
   <path
       android:pathData="M693.712,467.962L815.383,532.193A2.113,2.113 72.83,0 1,816.265 535.048L752.034,656.719A2.113,2.113 72.83,0 1,749.179 657.601L627.508,593.37A2.113,2.113 72.83,0 1,626.626 590.515L690.857,468.844A2.113,2.113 72.83,0 1,693.712 467.962z"
       android:strokeWidth=".90677"
-      android:fillColor="#f2f2f2"/>
+      android:fillColor="@color/accounts_background_light"/>
   <path
       android:pathData="M801.75,556.074L807.123,558.911A1.36,1.36 72.83,0 1,807.691 560.748L798.695,577.788A1.36,1.36 72.83,0 1,796.857 578.356L791.485,575.52A1.36,1.36 72.83,0 1,790.917 573.682L799.912,556.642A1.36,1.36 72.83,0 1,801.75 556.074z"
       android:strokeWidth=".90677"
-      android:fillColor="#f2f2f2"/>
+      android:fillColor="@color/accounts_background_light"/>
   <path
       android:pathData="M696.471,476.873L806.477,534.946A2.113,2.113 72.83,0 1,807.359 537.801L749.286,647.808A2.113,2.113 72.83,0 1,746.431 648.69L636.425,590.616A2.113,2.113 72.83,0 1,635.543 587.762L693.616,477.755A2.113,2.113 72.83,0 1,696.471 476.873z"
       android:strokeWidth=".90677"
       android:fillAlpha="0.5"
-      android:fillColor="@color/grey500"/>
+      android:fillColor="@color/accounts_background_grey"/>
   <path
       android:pathData="M754.885,550.395l-38.601,17.084l-7.336,-16.195l-13.012,5.776l10.791,23.367l0,0l2.584,5.976l51.178,-23.449z">
   </path>
   <path
       android:pathData="M754.722,551.166l-38.801,17.836l-7.599,-16.521l-11.235,5.16l10.192,22.125l0,0l2.648,5.595l49.954,-22.959z"
-      android:fillColor="#fff"/>
+      android:fillColor="@color/accounts_background_white"/>
   <path
       android:pathData="M75.941,141.597L324.702,36.26A11.108,11.108 112.05,0 1,339.262 42.157L536.368,507.639A11.108,11.108 112.05,0 1,530.47 522.199L281.71,627.536A11.108,11.108 112.05,0 1,267.149 621.639L70.043,156.157A11.108,11.108 112.05,0 1,75.941 141.597z"
       android:strokeWidth=".90677">
@@ -130,60 +130,60 @@
   <path
       android:pathData="M83.517,146.142L322.674,44.872A12.368,12.368 112.05,0 1,338.886 51.439L529.449,501.469A12.368,12.368 112.05,0 1,522.882 517.68L283.726,618.95A12.368,12.368 112.05,0 1,267.514 612.384L76.951,162.354A12.368,12.368 112.05,0 1,83.517 146.142z"
       android:strokeWidth=".90677"
-      android:fillColor="#fff"/>
+      android:fillColor="@color/accounts_background_white"/>
   <path
       android:pathData="m273.92,79.465a23.059,23.059 0,0 1,-13.284 26.922l-90.469,38.32a23.059,23.059 0,0 1,-28.582 -9.195l-47.923,20.294a10.8,10.8 0,0 0,-5.74 14.164l181.77,429.18a10.8,10.8 0,0 0,14.164 5.74l228.9,-96.934a10.8,10.8 0,0 0,5.74 -14.164l-181.75,-429.2a10.8,10.8 0,0 0,-14.164 -5.74z"
       android:strokeWidth=".90677"
       android:fillAlpha="0.5"
-      android:fillColor="@color/grey500"/>
+      android:fillColor="@color/accounts_background_grey"/>
   <path
       android:pathData="M183.366,124.506L238.401,101.201A1.814,1.814 112.05,0 1,240.778 102.164L240.909,102.473A1.814,1.814 112.05,0 1,239.946 104.85L184.911,128.155A1.814,1.814 112.05,0 1,182.534 127.192L182.403,126.883A1.814,1.814 112.05,0 1,183.366 124.506z"
       android:strokeWidth=".90677"
       android:fillAlpha="0.5"
-      android:fillColor="@color/grey500"/>
+      android:fillColor="@color/accounts_background_grey"/>
   <path
       android:pathData="M253.079,96.702m-2.188,0.926a2.376,2.376 112.05,1 1,4.375 -1.853a2.376,2.376 112.05,1 1,-4.375 1.853"
       android:strokeWidth=".90677"
       android:fillAlpha="0.5"
-      android:fillColor="@color/grey500"/>
+      android:fillColor="@color/accounts_background_grey"/>
   <path
       android:pathData="M317.804,271.781l-15.225,74.11l-31.274,-6.139l-5.087,25l45.329,8.56l0,0l11.398,2.439l19.015,-99.074z">
   </path>
   <path
       android:pathData="M318.765,272.833l-14.336,75.18l-32.018,-6.103l-4.153,21.762l42.881,8.143l0,0l10.936,1.959l18.453,-96.798z"
-      android:fillColor="#fff"/>
+      android:fillColor="@color/accounts_background_white"/>
   <path
       android:pathData="M874.91,57.666m-12.695,0a12.695,12.695 0,1 1,25.39 0a12.695,12.695 0,1 1,-25.39 0"
       android:strokeAlpha="0.3"
       android:strokeWidth=".90677"
-      android:fillColor="#80deea"
+      android:fillColor="@color/accounts_background_teal"
       android:fillAlpha="0.3"/>
   <path
       android:pathData="M743.88,346.55m-12.695,0a12.695,12.695 0,1 1,25.39 0a12.695,12.695 0,1 1,-25.39 0"
       android:strokeAlpha="0.3"
       android:strokeWidth=".90677"
-      android:fillColor="#80deea"
+      android:fillColor="@color/accounts_background_teal"
       android:fillAlpha="0.3"/>
   <path
       android:pathData="M56.092,109.35m-12.695,0a12.695,12.695 0,1 1,25.39 0a12.695,12.695 0,1 1,-25.39 0"
       android:strokeAlpha="0.5"
       android:strokeWidth=".90677"
-      android:fillColor="#80deea"
+      android:fillColor="@color/accounts_background_teal"
       android:fillAlpha="0.5"/>
   <path
       android:pathData="M68.787,70.361m-12.695,0a12.695,12.695 0,1 1,25.39 0a12.695,12.695 0,1 1,-25.39 0"
       android:strokeAlpha="0.3"
       android:strokeWidth=".90677"
-      android:fillColor="#80deea"
+      android:fillColor="@color/accounts_background_teal"
       android:fillAlpha="0.3"/>
   <path
       android:pathData="m186.485,151.054 l90.478,-38.311a23.059,23.059 0,0 0,13.284 -26.922l46.245,-19.595 -0.689,-1.623a10.8,10.8 0,0 0,-14.164 -5.74l-48.648,20.602a23.059,23.059 0,0 1,-13.284 26.922l-90.45,38.32a22.742,22.742 0,0 1,-7.626 1.759,23.05 23.05,0 0,0 24.855,4.588z"
       android:strokeAlpha="0.2"
-      android:fillColor="#fff"
+      android:fillColor="@color/accounts_background_white"
       android:fillAlpha="0.2"/>
   <path
       android:pathData="m104.25,176.307a10.8,10.8 0,0 1,5.74 -14.164l41.303,-17.492a22.959,22.959 0,0 1,-10.618 -9.149l-47.923,20.294a10.8,10.8 0,0 0,-5.74 14.164l181.771,429.192a10.8,10.8 0,0 0,14.164 5.74l2.385,-1.007z"
       android:strokeAlpha="0.2"
-      android:fillColor="#fff"
+      android:fillColor="@color/accounts_background_white"
       android:fillAlpha="0.2"/>
 </vector>
