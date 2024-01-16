@@ -20,7 +20,7 @@ class TasksActivity: AppCompatActivity() {
 
         setContent {
             MdcTheme {
-                TasksCard(model)
+                TasksCard(model = model)
             }
         }
     }
