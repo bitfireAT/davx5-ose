@@ -4,11 +4,14 @@
 
 package at.bitfire.davdroid.ui.webdav
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.provider.DocumentsContract
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -23,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -48,6 +52,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.apache.commons.io.FileUtils
 import java.util.logging.Level
 import javax.inject.Inject
@@ -143,6 +149,8 @@ class WebdavMountsActivity: AppCompatActivity() {
 
         val authority = context.getString(R.string.webdav_authority)
 
+        private val credentialsStore = CredentialsStore(context)
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = WebdavMountsItemBinding.inflate(inflater, parent, false)
@@ -194,6 +202,15 @@ class WebdavMountsActivity: AppCompatActivity() {
                     }
                     .setNegativeButton(R.string.dialog_deny, null)
                     .show()
+            }
+
+            binding.changePassword.isVisible = credentialsStore.getCredentials(info.mount.id) != null
+            binding.changePassword.setOnClickListener {
+                ChangeWebdavMountPasswordDialog.build(info.mount.id)
+                    .show(
+                        (context as AppCompatActivity).supportFragmentManager,
+                        "change-webdav-password"
+                    )
             }
         }
     }

@@ -69,6 +69,20 @@
                 android:text="@string/webdav_mounts_share_content" />
 
             <ImageButton
+                android:id="@+id/change_password"
+                app:layout_constraintTop_toTopOf="@id/browse"
+                app:layout_constraintBottom_toBottomOf="@id/browse"
+                app:layout_constraintEnd_toStartOf="@id/remove_mountpoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_password"
+                app:tint="?android:attr/colorControlNormal"
+                android:backgroundTint="@color/colorOnSecondary"
+                android:tooltipText="@string/webdav_mounts_change_password"
+                android:contentDescription="@string/webdav_mounts_change_password"
+                tools:ignore="UnusedAttribute" />
+
+            <ImageButton
                 android:id="@+id/remove_mountpoint"
                 app:layout_constraintTop_toTopOf="@id/browse"
                 app:layout_constraintBottom_toBottomOf="@id/browse"

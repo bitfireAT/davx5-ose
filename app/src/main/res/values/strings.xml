@@ -480,6 +480,7 @@
     <string name="webdav_mounts_quota_used_available">Quota used: %1$s / available: %2$s</string>
     <string name="webdav_mounts_share_content">Share content</string>
     <string name="webdav_mounts_unmount">Unmount</string>
+    <string name="webdav_mounts_change_password">Change Password</string>
     <string name="webdav_add_mount_title">Add WebDAV mount</string>
     <string name="webdav_mounts_empty">Directly access your cloud files by adding a WebDAV mount!</string>
     <string name="webdav_add_mount_empty_more_info"><![CDATA[See the manual for <a href="%1$s">how WebDAV mounts work</a>.</string>]]></string>
@@ -496,6 +497,12 @@
     <string name="webdav_notification_download">Downloading WebDAV file</string>
     <string name="webdav_notification_upload">Uploading WebDAV file</string>
     <string name="webdav_provider_root_title">WebDAV mount</string>
+    <string name="webdav_change_password_title">Change Mount Password</string>
+    <string name="webdav_change_password_message">If you have changed the password used to access the mount, introduce a new one here, and we will store it for you.</string>
+    <string name="webdav_change_password_hint">New Password</string>
+    <string name="webdav_change_password_supporting">Please, make sure to introduce the password correctly, no validation will be performed now.</string>
+    <string name="webdav_change_password_dismiss">Cancel</string>
+    <string name="webdav_change_password_save">Save</string>
 
     <!-- sync -->
     <string name="sync_error_permissions">DAVx⁵ permissions</string>
