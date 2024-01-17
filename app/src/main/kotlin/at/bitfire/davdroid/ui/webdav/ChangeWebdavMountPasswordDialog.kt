@@ -7,6 +7,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +34,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -97,6 +102,8 @@ class ChangeWebdavMountPasswordDialog : DialogFragment() {
     fun DialogView(
         model: Model = viewModel(factory = Model.Factory(mountId!!))
     ) {
+        val context = LocalContext.current
+
         val isLoading by model.isLoading.observeAsState(false)
         val error by model.error.observeAsState(null)
         val password by model.password.observeAsState()
@@ -111,9 +118,14 @@ class ChangeWebdavMountPasswordDialog : DialogFragment() {
             isLoading = isLoading,
             onSave = {
                 model.save().invokeOnCompletion {
-                    if (error == null) dismiss()
+                    if (error == null) {
+                        Toast.makeText(context, R.string.webdav_change_password_toast, Toast.LENGTH_SHORT)
+                            .show()
+                        dismiss()
+                    }
                 }
             },
+            error = error,
             onDismiss = ::dismiss
         )
     }
@@ -123,6 +135,7 @@ class ChangeWebdavMountPasswordDialog : DialogFragment() {
         password: String?,
         onPasswordChanged: (String) -> Unit,
         isLoading: Boolean,
+        error: Throwable?,
         onSave: () -> Unit,
         onDismiss: () -> Unit
     ) {
@@ -179,6 +192,19 @@ class ChangeWebdavMountPasswordDialog : DialogFragment() {
                 text = stringResource(R.string.webdav_change_password_supporting),
                 style = MaterialTheme.typography.caption
             )
+            AnimatedContent(
+                targetState = error,
+                label = "error animation"
+            ) { throwable ->
+                throwable?.message?.let { message ->
+                    Text(
+                        text = message,
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        color = Color.Red,
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -207,6 +233,7 @@ class ChangeWebdavMountPasswordDialog : DialogFragment() {
             password = "sample-password",
             onPasswordChanged = {},
             isLoading = false,
+            error = Exception("If any error occurs, it will show here"),
             onSave = {},
             onDismiss = {}
         )

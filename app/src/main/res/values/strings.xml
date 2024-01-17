@@ -503,6 +503,7 @@
     <string name="webdav_change_password_supporting">Please, make sure to introduce the password correctly, no validation will be performed now.</string>
     <string name="webdav_change_password_dismiss">Cancel</string>
     <string name="webdav_change_password_save">Save</string>
+    <string name="webdav_change_password_toast">Password updated!</string>
 
     <!-- sync -->
     <string name="sync_error_permissions">DAVx⁵ permissions</string>
