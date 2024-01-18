@@ -290,7 +290,7 @@ fun GoogleLogin(
                 keyboardActions = KeyboardActions(
                     onGo = { login() }
                 ),
-                label = { emailError?.let { Text(it) } ?: Text(stringResource(R.string.login_google_account)) },
+                label = { Text(emailError ?: stringResource(R.string.login_google_account)) },
                 placeholder = { Text("example@gmail.com") },
                 modifier = Modifier
                     .fillMaxWidth()
