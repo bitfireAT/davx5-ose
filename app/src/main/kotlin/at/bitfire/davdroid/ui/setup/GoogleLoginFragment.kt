@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,8 +36,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.ComposeView
@@ -257,23 +260,29 @@ fun GoogleLogin(
 
             val email = rememberSaveable { mutableStateOf(defaultEmail ?: "") }
             val userClientId = rememberSaveable { mutableStateOf("") }
-
+            var emailError: String? by rememberSaveable { mutableStateOf(null) }
             fun login() {
-                // append @gmail.com, if necessary
-                val loginEmail = email.value.let {
-                    if (it.contains('@'))
-                        it
-                    else
-                        it + "@gmail.com"
+                val userEmail: String? = StringUtils.trimToNull(email.value.trim())
+                val clientId: String? = StringUtils.trimToNull(userClientId.value.trim())
+                if (userEmail.isNullOrBlank()) {
+                    emailError = context.getString(R.string.login_email_address_error)
+                    return
                 }
 
-                val clientId = StringUtils.trimToNull(userClientId.value.trim())
+                // append @gmail.com, if necessary
+                val loginEmail =
+                    if (userEmail.contains('@'))
+                        userEmail
+                    else
+                        "$userEmail@gmail.com"
+
                 onLogin(loginEmail, clientId)
             }
             OutlinedTextField(
                 email.value,
                 singleLine = true,
-                onValueChange = { email.value = it },
+                onValueChange = { emailError = null; email.value = it },
+                isError = emailError != null,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Go
@@ -281,7 +290,7 @@ fun GoogleLogin(
                 keyboardActions = KeyboardActions(
                     onGo = { login() }
                 ),
-                label = { Text(stringResource(R.string.login_google_account)) },
+                label = { Text(emailError ?: stringResource(R.string.login_google_account)) },
                 placeholder = { Text("example@gmail.com") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -328,6 +337,8 @@ fun GoogleLogin(
                 )
             }
 
+            Spacer(Modifier.padding(8.dp))
+
             val privacyPolicyNote = HtmlCompat.fromHtml(
                 stringResource(R.string.login_google_client_privacy_policy, context.getString(R.string.app_name), App.homepageUrl(context, App.HOMEPAGE_PRIVACY)), 0).toAnnotatedString()
             ClickableText(
@@ -357,9 +368,13 @@ fun GoogleLogin(
 }
 
 @Composable
-@Preview(
-    showBackground = true
-)
-fun PreviewGoogleLogin() {
-    GoogleLogin(null) { _, _ -> }
+@Preview(showBackground = true)
+fun PreviewGoogleLogin_withDefaultEmail() {
+    GoogleLogin("example@example.example") { _, _ -> }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun PreviewGoogleLogin_empty() {
+    GoogleLogin("") { _, _ -> }
 }
