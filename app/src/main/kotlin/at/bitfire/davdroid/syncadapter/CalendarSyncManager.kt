@@ -11,16 +11,22 @@ import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.dav4jvm.property.caldav.CalendarData
+import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
+import at.bitfire.dav4jvm.property.caldav.ScheduleTag
+import at.bitfire.dav4jvm.property.webdav.GetETag
+import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
+import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.util.DateUtils
@@ -69,9 +75,9 @@ class CalendarSyncManager(
     override fun queryCapabilities(): SyncState? =
             remoteExceptionContext {
                 var syncState: SyncState? = null
-                it.propfind(0, MaxICalendarSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                it.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                     if (relation == Response.HrefRelation.SELF) {
-                        response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
+                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                             Logger.log.info("Calendar accepts events up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
                         }
 

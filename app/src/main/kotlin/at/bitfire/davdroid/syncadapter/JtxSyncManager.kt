@@ -11,16 +11,20 @@ import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.dav4jvm.property.caldav.CalendarData
+import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
+import at.bitfire.dav4jvm.property.webdav.GetETag
+import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.JtxICalObject
 import okhttp3.HttpUrl
@@ -54,9 +58,9 @@ class JtxSyncManager(
     override fun queryCapabilities() =
         remoteExceptionContext {
             var syncState: SyncState? = null
-            it.propfind(0, GetCTag.NAME, MaxICalendarSize.NAME, SyncToken.NAME) { response, relation ->
+            it.propfind(0, GetCTag.NAME, MaxResourceSize.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
-                    response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
+                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                         Logger.log.info("Collection accepts resources up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
                     }
 

@@ -30,6 +30,15 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.*
+import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
+import at.bitfire.dav4jvm.property.webdav.DisplayName
+import at.bitfire.dav4jvm.property.webdav.GetContentLength
+import at.bitfire.dav4jvm.property.webdav.GetContentType
+import at.bitfire.dav4jvm.property.webdav.GetETag
+import at.bitfire.dav4jvm.property.webdav.GetLastModified
+import at.bitfire.dav4jvm.property.webdav.QuotaAvailableBytes
+import at.bitfire.dav4jvm.property.webdav.QuotaUsedBytes
+import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument

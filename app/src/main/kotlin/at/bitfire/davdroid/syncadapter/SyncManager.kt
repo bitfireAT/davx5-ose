@@ -16,19 +16,38 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import at.bitfire.dav4jvm.*
-import at.bitfire.dav4jvm.exception.*
-import at.bitfire.dav4jvm.property.GetCTag
-import at.bitfire.dav4jvm.property.GetETag
-import at.bitfire.dav4jvm.property.ScheduleTag
-import at.bitfire.dav4jvm.property.SyncToken
-import at.bitfire.davdroid.*
+import at.bitfire.dav4jvm.DavCollection
+import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.Error
+import at.bitfire.dav4jvm.MultiResponseCallback
+import at.bitfire.dav4jvm.Response
+import at.bitfire.dav4jvm.exception.ConflictException
+import at.bitfire.dav4jvm.exception.DavException
+import at.bitfire.dav4jvm.exception.ForbiddenException
+import at.bitfire.dav4jvm.exception.GoneException
+import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.exception.NotFoundException
+import at.bitfire.dav4jvm.exception.PreconditionFailedException
+import at.bitfire.dav4jvm.exception.ServiceUnavailableException
+import at.bitfire.dav4jvm.exception.UnauthorizedException
+import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.dav4jvm.property.caldav.ScheduleTag
+import at.bitfire.dav4jvm.property.webdav.GetETag
+import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.db.SyncStats
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.resource.*
+import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalCollection
+import at.bitfire.davdroid.resource.LocalContact
+import at.bitfire.davdroid.resource.LocalEvent
+import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -43,7 +62,9 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.*
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import org.apache.commons.io.FileUtils
@@ -54,7 +75,7 @@ import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.time.Instant
-import java.util.*
+import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
@@ -559,7 +580,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         return@listRemote
 
                     // ignore collections
-                    if (response[at.bitfire.dav4jvm.property.ResourceType::class.java]?.types?.contains(at.bitfire.dav4jvm.property.ResourceType.COLLECTION) == true)
+                    if (response[at.bitfire.dav4jvm.property.webdav.ResourceType::class.java]?.types?.contains(at.bitfire.dav4jvm.property.webdav.ResourceType.COLLECTION) == true)
                         return@listRemote
 
                     val name = response.hrefName()

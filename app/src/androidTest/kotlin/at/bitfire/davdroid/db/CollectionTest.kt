@@ -8,7 +8,7 @@ import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
-import at.bitfire.dav4jvm.property.ResourceType
+import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -17,7 +17,10 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule

@@ -17,7 +17,7 @@ import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.dav4jvm.PropStat
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.Response.HrefRelation
-import at.bitfire.dav4jvm.property.GetETag
+import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.db.Credentials

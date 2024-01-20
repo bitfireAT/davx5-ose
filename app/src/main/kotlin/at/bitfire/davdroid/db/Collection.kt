@@ -4,10 +4,21 @@
 
 package at.bitfire.davdroid.db
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
-import at.bitfire.dav4jvm.property.*
+import at.bitfire.dav4jvm.property.caldav.CalendarColor
+import at.bitfire.dav4jvm.property.caldav.CalendarDescription
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
+import at.bitfire.dav4jvm.property.caldav.Source
+import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
+import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
+import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
+import at.bitfire.dav4jvm.property.webdav.DisplayName
+import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull

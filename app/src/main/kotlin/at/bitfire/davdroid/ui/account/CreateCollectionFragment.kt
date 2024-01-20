@@ -12,9 +12,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
+import at.bitfire.dav4jvm.property.caldav.NS_APPLE_ICAL
+import at.bitfire.dav4jvm.property.caldav.NS_CALDAV
+import at.bitfire.dav4jvm.property.carddav.NS_CARDDAV
+import at.bitfire.dav4jvm.property.webdav.NS_WEBDAV
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -168,84 +178,84 @@ class CreateCollectionFragment: DialogFragment() {
                 with(serializer) {
                     setOutput(writer)
                     startDocument("UTF-8", null)
-                    setPrefix("", XmlUtils.NS_WEBDAV)
-                    setPrefix("CAL", XmlUtils.NS_CALDAV)
-                    setPrefix("CARD", XmlUtils.NS_CARDDAV)
+                    setPrefix("", NS_WEBDAV)
+                    setPrefix("CAL", NS_CALDAV)
+                    setPrefix("CARD", NS_CARDDAV)
 
-                    startTag(XmlUtils.NS_WEBDAV, "mkcol")
-                    startTag(XmlUtils.NS_WEBDAV, "set")
-                    startTag(XmlUtils.NS_WEBDAV, "prop")
-                    startTag(XmlUtils.NS_WEBDAV, "resourcetype")
-                    startTag(XmlUtils.NS_WEBDAV, "collection")
-                    endTag(XmlUtils.NS_WEBDAV, "collection")
+                    startTag(NS_WEBDAV, "mkcol")
+                    startTag(NS_WEBDAV, "set")
+                    startTag(NS_WEBDAV, "prop")
+                    startTag(NS_WEBDAV, "resourcetype")
+                    startTag(NS_WEBDAV, "collection")
+                    endTag(NS_WEBDAV, "collection")
                     if (collection.type == Collection.TYPE_ADDRESSBOOK) {
-                        startTag(XmlUtils.NS_CARDDAV, "addressbook")
-                        endTag(XmlUtils.NS_CARDDAV, "addressbook")
+                        startTag(NS_CARDDAV, "addressbook")
+                        endTag(NS_CARDDAV, "addressbook")
                     } else if (collection.type == Collection.TYPE_CALENDAR) {
-                        startTag(XmlUtils.NS_CALDAV, "calendar")
-                        endTag(XmlUtils.NS_CALDAV, "calendar")
+                        startTag(NS_CALDAV, "calendar")
+                        endTag(NS_CALDAV, "calendar")
                     }
-                    endTag(XmlUtils.NS_WEBDAV, "resourcetype")
+                    endTag(NS_WEBDAV, "resourcetype")
                     collection.displayName?.let {
-                        startTag(XmlUtils.NS_WEBDAV, "displayname")
+                        startTag(NS_WEBDAV, "displayname")
                         text(it)
-                        endTag(XmlUtils.NS_WEBDAV, "displayname")
+                        endTag(NS_WEBDAV, "displayname")
                     }
 
                     // addressbook-specific properties
                     if (collection.type == Collection.TYPE_ADDRESSBOOK) {
                         collection.description?.let {
-                            startTag(XmlUtils.NS_CARDDAV, "addressbook-description")
+                            startTag(NS_CARDDAV, "addressbook-description")
                             text(it)
-                            endTag(XmlUtils.NS_CARDDAV, "addressbook-description")
+                            endTag(NS_CARDDAV, "addressbook-description")
                         }
                     }
 
                     // calendar-specific properties
                     if (collection.type == Collection.TYPE_CALENDAR) {
                         collection.description?.let {
-                            startTag(XmlUtils.NS_CALDAV, "calendar-description")
+                            startTag(NS_CALDAV, "calendar-description")
                             text(it)
-                            endTag(XmlUtils.NS_CALDAV, "calendar-description")
+                            endTag(NS_CALDAV, "calendar-description")
                         }
 
                         collection.color?.let {
-                            startTag(XmlUtils.NS_APPLE_ICAL, "calendar-color")
+                            startTag(NS_APPLE_ICAL, "calendar-color")
                             text(DavUtils.ARGBtoCalDAVColor(it))
-                            endTag(XmlUtils.NS_APPLE_ICAL, "calendar-color")
+                            endTag(NS_APPLE_ICAL, "calendar-color")
                         }
 
                         collection.timezone?.let {
-                            startTag(XmlUtils.NS_CALDAV, "calendar-timezone")
+                            startTag(NS_CALDAV, "calendar-timezone")
                             cdsect(it)
-                            endTag(XmlUtils.NS_CALDAV, "calendar-timezone")
+                            endTag(NS_CALDAV, "calendar-timezone")
                         }
 
                         if (collection.supportsVEVENT != null || collection.supportsVTODO != null || collection.supportsVJOURNAL != null) {
                             // only if there's at least one explicitly supported calendar component set, otherwise don't include the property
-                            startTag(XmlUtils.NS_CALDAV, "supported-calendar-component-set")
+                            startTag(NS_CALDAV, "supported-calendar-component-set")
                             if (collection.supportsVEVENT != false) {
-                                startTag(XmlUtils.NS_CALDAV, "comp")
+                                startTag(NS_CALDAV, "comp")
                                 attribute(null, "name", "VEVENT")
-                                endTag(XmlUtils.NS_CALDAV, "comp")
+                                endTag(NS_CALDAV, "comp")
                             }
                             if (collection.supportsVTODO != false) {
-                                startTag(XmlUtils.NS_CALDAV, "comp")
+                                startTag(NS_CALDAV, "comp")
                                 attribute(null, "name", "VTODO")
-                                endTag(XmlUtils.NS_CALDAV, "comp")
+                                endTag(NS_CALDAV, "comp")
                             }
                             if (collection.supportsVJOURNAL != false) {
-                                startTag(XmlUtils.NS_CALDAV, "comp")
+                                startTag(NS_CALDAV, "comp")
                                 attribute(null, "name", "VJOURNAL")
-                                endTag(XmlUtils.NS_CALDAV, "comp")
+                                endTag(NS_CALDAV, "comp")
                             }
-                            endTag(XmlUtils.NS_CALDAV, "supported-calendar-component-set")
+                            endTag(NS_CALDAV, "supported-calendar-component-set")
                         }
                     }
 
-                    endTag(XmlUtils.NS_WEBDAV, "prop")
-                    endTag(XmlUtils.NS_WEBDAV, "set")
-                    endTag(XmlUtils.NS_WEBDAV, "mkcol")
+                    endTag(NS_WEBDAV, "prop")
+                    endTag(NS_WEBDAV, "set")
+                    endTag(NS_WEBDAV, "mkcol")
                     endDocument()
                 }
             } catch(e: IOException) {

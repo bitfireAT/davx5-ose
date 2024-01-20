@@ -10,9 +10,9 @@ import android.content.SyncResult
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
-import at.bitfire.dav4jvm.property.GetCTag
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils

@@ -10,8 +10,8 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
-import at.bitfire.dav4jvm.property.DisplayName
-import at.bitfire.dav4jvm.property.ResourceType
+import at.bitfire.dav4jvm.property.webdav.DisplayName
+import at.bitfire.dav4jvm.property.webdav.ResourceType
 import okhttp3.HttpUrl
 import org.apache.commons.lang3.StringUtils
 
