@@ -9,6 +9,7 @@
   <string name="field_required">Tuto kolonku je třeba vyplnit</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
+  <string name="navigate_up">Navigovat nahoru</string>
   <string name="no_internet_sync_scheduled">Bez internetu, plánování synchronizace</string>
   <string name="share">Sdílet</string>
   <string name="sync_started">Synchronizace spuštěna</string>
@@ -237,6 +238,8 @@
   <string name="login_email_address">E-mailová adresa</string>
   <string name="login_email_address_error">Vyžadován platný e-mail</string>
   <string name="login_password">Heslo</string>
+  <string name="login_password_hide">Skrýt heslo</string>
+  <string name="login_password_show">Zobrazit heslo</string>
   <string name="login_password_required">Vyžadováno heslo</string>
   <string name="login_type_url">Přihlášení s URL a uživatelským jménem</string>
   <string name="login_url_must_be_http_or_https">Je třeba, aby URL začínalo na http(s)://</string>
@@ -264,6 +267,8 @@
   <string name="login_google_account">Google účet</string>
   <string name="login_google">Přihlásit se Googlem</string>
   <string name="login_google_client_id">Identif. klienta (volitelné)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s přesune vaše data Google kontaktů a kalendáře čistě pro účel synchronizace s tímto zařízením. Pro podrobnosti se podívejte na naše <a href="%2$s">Zásady ochrany osobních údajů</a>.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s vyhovuje <a href="%2$s">Zásadám dat služeb Google API</a>, zahrnují Požadavky omezeného použití.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Nelze získat autorizační kód</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Přihlásit pomocí Nextcloud</string>

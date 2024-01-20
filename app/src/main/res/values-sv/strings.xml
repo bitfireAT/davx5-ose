@@ -9,7 +9,10 @@
   <string name="field_required">Detta fÄlt Ã¤r obligatoriskt</string>
   <string name="help">Hjälp</string>
   <string name="manage_accounts">Hantera konton</string>
+  <string name="navigate_up">Navigera upp</string>
+  <string name="no_internet_sync_scheduled">Inget internet, schemalägger synk</string>
   <string name="share">Dela</string>
+  <string name="sync_started">Synkronisering startad</string>
   <string name="database_destructive_migration_title">Databasen är korrupt</string>
   <string name="database_destructive_migration_text">Alla konton har blivit borttagna lokalt.</string>
   <string name="notification_channel_debugging">Felsökning</string>
@@ -126,7 +129,9 @@
   <string name="navigation_drawer_donate">Donera</string>
   <string name="navigation_drawer_privacy_policy">Integritetspolicy</string>
   <string name="account_list_no_notification_permission">Notifieringar avstängda. Du kommer inte bli informerad om synkroniseringsfel.</string>
+  <string name="account_list_no_internet">Ingen bekräftad internetanslutning. Synkronisering kanske inte kan köras.</string>
   <string name="account_list_manage_connections">Hantera anslutningar</string>
+  <string name="account_list_low_storage">Lagringsutrymmet är lågt. Android kommer inte synka lokala ändringar direkt, utan vänta till nästa regelbundna synkronisering.</string>
   <string name="account_list_manage_storage">Hantera lagring</string>
   <string name="account_list_datasaver_enabled">Begränsad data-synkronisering aktiverad. Begränsad bakgrundssynkronisering.</string>
   <string name="account_list_manage_datasaver">Hantera begränsad data-synkronisering</string>
@@ -233,6 +238,8 @@
   <string name="login_email_address">E-postadress</string>
   <string name="login_email_address_error">Giltig e-postadress krävs</string>
   <string name="login_password">Lösenord</string>
+  <string name="login_password_hide">Dölj lösenord</string>
+  <string name="login_password_show">Visa lösenord</string>
   <string name="login_password_required">Lösenord krävs</string>
   <string name="login_type_url">Logga in med URL och användarnamn</string>
   <string name="login_url_must_be_http_or_https">URL måste börja med http(s)://</string>
@@ -243,7 +250,7 @@
   <string name="login_login">Logga in</string>
   <string name="login_create_account">Skapa konto</string>
   <string name="login_account_name">Kontonamn</string>
-  <string name="login_account_avoid_apostrophe">Användning av apostrof (\'), har rapporterats orsaka problem på vissa enheter.</string>
+  <string name="login_account_avoid_apostrophe">Användning av apostrof (\') har rapporterats orsaka problem på vissa enheter.</string>
   <string name="login_account_name_info">Använd din e-postadress som kontonamn eftersom Android kommer att använda kontonamnet som fält för ARRANGÖR för händelser du skapar. Du kan inte ha två konton med samma namn.</string>
   <string name="login_account_contact_group_method">Kontaktgruppsmetod:</string>
   <string name="login_account_name_required">Konto namn krävs</string>
@@ -254,6 +261,23 @@
   <string name="login_use_client_certificate">Använd klientcertifikat</string>
   <string name="login_no_certificate_found">Inget certifikat funnet</string>
   <string name="login_install_certificate">Installera certifikat</string>
+  <string name="login_type_google">Google Kontakter / Kalender</string>
+  <string name="login_google_see_tested_with">Se vår sida \"Testad med Google\" för uppdaterad information.</string>
+  <string name="login_google_unexpected_warnings">Du kan uppleva oväntade varningar och/eller behöva skapa ditt egna klient-ID.</string>
+  <string name="login_google_account">Google-konto</string>
+  <string name="login_google">Logga in med Google</string>
+  <string name="login_google_client_id">Klient-ID (valfritt)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s överför dina Google Kontakter och Kalender-data endast för synkronisering med denna enhet. Se vår <a href="%2$s">Integritetspolicy</a> för mer detaljer.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s uppfyller <a href="%2$s">Google API Services User Data Policy</a>, inklusive kraven för \"Limited Use\".]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">Kunde inte hämta autentiseringskod</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Logga in med Nextcloud</string>
+  <string name="login_nextcloud_login_flow">Login Flow</string>
+  <string name="login_nextcloud_login_flow_text">Detta påbörjar en Nextcloud-inloggning i din webbläsare.</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud serveradress</string>
+  <string name="login_nextcloud_login_flow_sign_in">Logga in</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Kunde inte hämta login-URL</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Kunde inte hämta login-data</string>
   <string name="login_configuration_detection">Konfigurationsdetektering</string>
   <string name="login_querying_server">Vänligen vänta, frågar efter server...</string>
   <string name="login_no_caldav_carddav">Det gick inte att hitta CalDAV eller CardDAV-tjänsten.</string>
@@ -286,7 +310,13 @@
   <string name="settings_sync_wifi_only_ssids_message">Kommaseparerade namn (SSID) för tillåtna WiFi-nätverk (lämna tomt för alla)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID-begränsning kräver ytterligare inställningar</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Hantera</string>
+  <string name="settings_ignore_vpns">VPN kräver bakomliggande internetanslutning.</string>
+  <string name="settings_ignore_vpns_on">VPN utan bakomliggande bekräftad internetanslutning är inte tillräckligt för att köra synkronisering (rekommenderat)</string>
+  <string name="settings_ignore_vpns_off">VPN utan bakomliggande bekräftad internetanslutning är tillräckligt för att köra synkronisering</string>
   <string name="settings_authentication">Autentisering</string>
+  <string name="settings_oauth">Autentisera på nytt</string>
+  <string name="settings_oauth_summary">Genomför OAuth-inloggning igen</string>
+  <string name="settings_username_key">användarnamn</string>
   <string name="settings_username">Användarnamn</string>
   <string name="settings_enter_username">Skriv in användarnamn</string>
   <string name="settings_password">Lösenord</string>
@@ -344,6 +374,8 @@
   <string name="delete_collection_data_shall_be_deleted">Denna data blir borttagen från servern.</string>
   <string name="collection_force_read_only">Tvinga endast läsning</string>
   <string name="collection_properties">Egenskaper</string>
+  <string name="collection_properties_sync_time">Senaste synkronisering:</string>
+  <string name="collection_properties_sync_time_never">Aldrig synkroniserad</string>
   <string name="collection_properties_url">Adress (URL):</string>
   <string name="collection_properties_owner">Ägare:</string>
   <!--debugging and DebugInfoActivity-->
@@ -360,7 +392,7 @@
   <string name="debug_info_http_403_description">Begäran har avslagits. Kontrollera involverade resurser och felsökningsinformation för detaljer.</string>
   <string name="debug_info_http_404_description">Den begärda resursen finns inte (längre). Kontrollera involverade resurser och felsökningsinformation för detaljer.</string>
   <string name="debug_info_http_5xx_description">Ett problem på serversidan uppstod. Kontakta din serversupport.</string>
-  <string name="debug_info_unexpected_error">An unexpected error has occured. View debug info for details. </string>
+  <string name="debug_info_unexpected_error">Ett oväntat fel har uppstått. Se felsökningsinformation för detaljer.</string>
   <string name="debug_info_view_details">Visa detaljer</string>
   <string name="debug_info_subtitle">Felsökningsinformation har samlats in</string>
   <string name="debug_info_involved_caption">Inblandade resurser</string>
@@ -405,6 +437,7 @@
   <string name="sync_error_io">Nätverks- eller I/O-fel - %s</string>
   <string name="sync_error_http_dav">HTTP server fel - %s</string>
   <string name="sync_error_local_storage">Lokalt lagringsfel - %s</string>
+  <string name="sync_error_retry_limit_reached">Mjukt fel (max antal återanslutningar nådda)</string>
   <string name="sync_error_view_item">Visa objekt</string>
   <string name="sync_invalid_contact">Fick ogiltig kontakt från servern</string>
   <string name="sync_invalid_event">Fick ogiltig händelse från servern</string>

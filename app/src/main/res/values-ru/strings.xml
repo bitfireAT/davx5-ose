@@ -238,6 +238,8 @@
   <string name="login_email_address">Адрес email</string>
   <string name="login_email_address_error">Требуется действительный адрес email</string>
   <string name="login_password">Пароль</string>
+  <string name="login_password_hide">Скрыть пароль</string>
+  <string name="login_password_show">Показать пароль</string>
   <string name="login_password_required">Требуется пароль</string>
   <string name="login_type_url">Войти с URL и именем пользователя</string>
   <string name="login_url_must_be_http_or_https">URL должен начинаться с http(s)://</string>

@@ -238,6 +238,8 @@
   <string name="login_email_address">Adresa de e-mail</string>
   <string name="login_email_address_error">Este necesară o adresă de e-mail validă</string>
   <string name="login_password">Parolă</string>
+  <string name="login_password_hide">Ascunde parola</string>
+  <string name="login_password_show">Afișează parola</string>
   <string name="login_password_required">Este necesară parola</string>
   <string name="login_type_url">Conecteează-te cu adresa URL și numele de utilizator</string>
   <string name="login_url_must_be_http_or_https">Adresa URL trebuie să înceapă cu http(s)://</string>

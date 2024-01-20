@@ -238,6 +238,8 @@
   <string name="login_email_address">Helbide elektornikoa</string>
   <string name="login_email_address_error">Baliozko eposta beharrezkoa da</string>
   <string name="login_password">Pasahitza</string>
+  <string name="login_password_hide">Ezkutatu pasahitza</string>
+  <string name="login_password_show">Erakutsi pasahitza</string>
   <string name="login_password_required">Pasahitza beharrezkoa</string>
   <string name="login_type_url">Saioa hasi URL eta erabiltzaile izenarekin</string>
   <string name="login_url_must_be_http_or_https">URLa http(s):// hasi behar da</string>
@@ -308,6 +310,9 @@
   <string name="settings_sync_wifi_only_ssids_message">Komaz banatutako izenak (SSIDak) baimendutako WiFi sareentzako (utzi hutsik denentzako)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID murriztapenak ezarpen gehiago behar ditu</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Kudeatu</string>
+  <string name="settings_ignore_vpns">VPN-k azpiko Internet behar du</string>
+  <string name="settings_ignore_vpns_on">Interneterako konexio balioztatu gabeko VPN ez da nahikoa sinkronizazioa exekutatzeko (gomendatua)</string>
+  <string name="settings_ignore_vpns_off">Interneterako konexio balioztatu gabeko VPN nahikoa da sinkronizazioa exekutatzeko</string>
   <string name="settings_authentication">Autentifikazioa</string>
   <string name="settings_oauth">Berriro autentifikatu</string>
   <string name="settings_oauth_summary">Egin OAuth saioa berriro</string>
