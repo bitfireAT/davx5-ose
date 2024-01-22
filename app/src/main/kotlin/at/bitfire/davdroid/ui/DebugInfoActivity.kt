@@ -600,7 +600,7 @@ class DebugInfoActivity : AppCompatActivity() {
                 // system-wide sync
                 writer.append("System-wide synchronization: ")
                     .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
-                    .append('\n')
+                    .append("\n\n")
 
                 // connectivity
                 context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->

@@ -88,6 +88,7 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.ui.account.AppWarningsModel
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import at.bitfire.davdroid.ui.widget.ActionCard
@@ -111,6 +112,7 @@ class AccountsActivity: AppCompatActivity() {
     @Inject lateinit var accountsDrawerHandler: AccountsDrawerHandler
 
     private val model by viewModels<Model>()
+    private val warnings by viewModels<AppWarningsModel>()
 
     private val introActivityLauncher = registerForActivityResult(IntroActivity.Contract) { cancelled ->
         if (cancelled)
@@ -171,8 +173,6 @@ class AccountsActivity: AppCompatActivity() {
                         )
 
                         Column {
-                            val warnings = model.warnings
-
                             val notificationsPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 rememberPermissionState(
                                     permission = Manifest.permission.POST_NOTIFICATIONS
@@ -355,8 +355,7 @@ class AccountsActivity: AppCompatActivity() {
     @HiltViewModel
     class Model @Inject constructor(
         application: Application,
-        val db: AppDatabase,
-        val warnings: AppWarningsManager
+        val db: AppDatabase
     ): AndroidViewModel(application), OnAccountsUpdateListener {
 
         val feedback = MutableLiveData<String>()
@@ -406,8 +405,6 @@ class AccountsActivity: AppCompatActivity() {
             }
         }
 
-        val networkAvailable = warnings.networkAvailable
-
         val showAddAccount = MutableLiveData(true)
 
         init {
@@ -428,12 +425,7 @@ class AccountsActivity: AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= 25)
                 context.getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
 
-            feedback.value = context.getString(
-                if (networkAvailable.value == false)
-                    R.string.no_internet_sync_scheduled
-                else
-                    R.string.sync_started
-            )
+            feedback.value = context.getString(R.string.sync_enqueued)
 
             // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
             for (account in allAccounts())

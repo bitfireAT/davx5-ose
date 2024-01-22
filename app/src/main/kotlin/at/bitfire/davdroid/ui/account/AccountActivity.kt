@@ -20,7 +20,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountBinding
@@ -30,7 +34,6 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.SyncWorker
-import at.bitfire.davdroid.ui.AppWarningsManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
@@ -38,7 +41,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.launch
 import java.util.logging.Level
 import javax.inject.Inject
 
@@ -59,6 +64,8 @@ class AccountActivity: AppCompatActivity() {
                 modelFactory.create(account) as T
         }
     }
+
+    private val warningsModel by viewModels<AppWarningsModel>()
 
     private lateinit var binding: ActivityAccountBinding
 
@@ -94,13 +101,12 @@ class AccountActivity: AppCompatActivity() {
 
         // "Sync now" fab
         TooltipCompat.setTooltipText(binding.sync, binding.sync.contentDescription)
-        model.networkAvailable.observe(this) { networkAvailable ->
+        warningsModel.networkAvailable.observe(this) { networkAvailable ->
             binding.sync.setOnClickListener {
-                if (!networkAvailable)
                     Snackbar.make(
                         binding.sync,
-                        R.string.no_internet_sync_scheduled,
-                        Snackbar.LENGTH_LONG
+                        R.string.sync_enqueued,
+                        Snackbar.LENGTH_SHORT
                     ).show()
                 SyncWorker.enqueueAllAuthorities(this, model.account)
             }
@@ -276,8 +282,7 @@ class AccountActivity: AppCompatActivity() {
     class Model @AssistedInject constructor(
         application: Application,
         val db: AppDatabase,
-        @Assisted val account: Account,
-        warnings: AppWarningsManager
+        @Assisted val account: Account
     ): AndroidViewModel(application), OnAccountsUpdateListener {
 
         @AssistedFactory
@@ -293,8 +298,6 @@ class AccountActivity: AppCompatActivity() {
 
         val showOnlyPersonal = MutableLiveData<Boolean>()
         val showOnlyPersonalWritable = MutableLiveData<Boolean>()
-
-        val networkAvailable = warnings.networkAvailable
 
 
         init {

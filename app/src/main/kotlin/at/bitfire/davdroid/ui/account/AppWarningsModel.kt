@@ -2,8 +2,9 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.account
 
+import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.ContentResolver
 import android.content.Context
@@ -16,10 +17,10 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.PowerManager
 import androidx.core.content.getSystemService
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.StorageLowReceiver
-import at.bitfire.davdroid.log.Logger
-import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 /**
@@ -34,32 +35,30 @@ import javax.inject.Inject
  *   - whether a network connection is available → [networkAvailable]
  *   - whether data saver is turned on -> [dataSaverEnabled]
  */
-class AppWarningsManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+@HiltViewModel
+class AppWarningsModel @Inject constructor(
+    context: Application,
     storageLowReceiver: StorageLowReceiver
-) : AutoCloseable, SyncStatusObserver {
-
-    // TODO convert to model
+): AndroidViewModel(context), SyncStatusObserver {
 
     /** whether storage is low (prevents sync framework from running synchronization) */
     val storageLow = storageLowReceiver.storageLow
 
     /** whether global sync is disabled (sync framework won't run automatic synchronization in this case) */
-    val globalSyncDisabled = MutableLiveData(false)
+    val globalSyncDisabled = MutableLiveData<Boolean>()
     private var syncStatusObserver: Any? = null
 
     /** whether a usable network connection is available (sync framework won't run synchronization otherwise) */
     val networkAvailable = MutableLiveData<Boolean>()
-    private var networkCallback: ConnectivityManager.NetworkCallback? = null
-    private var networkReceiver: BroadcastReceiver? = null
+    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val connectivityManager = context.getSystemService<ConnectivityManager>()!!
 
     val batterySaverActive = MutableLiveData<Boolean>()
-    lateinit var batterySaverListener: BroadcastReceiver
+    private val batterySaverListener: BroadcastReceiver
 
     /** whether data saver is restricting background synchronization ([ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED]) */
     val dataSaverEnabled = MutableLiveData<Boolean>()
-    var dataSaverChangedListener: BroadcastReceiver? = null
+    private val dataSaverChangedListener: BroadcastReceiver
 
     init {
         // Automatic Sync
@@ -80,16 +79,44 @@ class AppWarningsManager @Inject constructor(
         checkBatterySaver()
 
         // Data saver
-        val listener = object: BroadcastReceiver() {
+        dataSaverChangedListener = object: BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 checkDataSaver()
             }
         }
-
         val dataSaverChangedFilter = IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED)
-        context.registerReceiver(listener, dataSaverChangedFilter)
-        dataSaverChangedListener = listener
+        context.registerReceiver(dataSaverChangedListener, dataSaverChangedFilter)
         checkDataSaver()
+    }
+
+    private fun checkBatterySaver() {
+        batterySaverActive.postValue(
+            getApplication<Application>().getSystemService<PowerManager>()?.isPowerSaveMode
+        )
+    }
+
+    private fun checkDataSaver() {
+        dataSaverEnabled.postValue(
+            getApplication<Application>().getSystemService<ConnectivityManager>()?.let { connectivityManager ->
+                connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED
+            }
+        )
+    }
+
+    override fun onCleared() {
+        val context = getApplication<Application>()
+
+        // Automatic sync
+        ContentResolver.removeStatusChangeListener(syncStatusObserver)
+
+        // Network
+        connectivityManager.unregisterNetworkCallback(networkCallback)
+
+        // Battery saver
+        context.unregisterReceiver(batterySaverListener)
+
+        // Data Saver
+        context.unregisterReceiver(dataSaverChangedListener)
     }
 
     override fun onStatusChanged(which: Int) {
@@ -104,7 +131,7 @@ class AppWarningsManager @Inject constructor(
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
             .build()
-        val callback = object: ConnectivityManager.NetworkCallback() {
+        networkCallback = object: ConnectivityManager.NetworkCallback() {
             val availableNetworks = hashSetOf<Network>()
 
             override fun onAvailable(network: Network) {
@@ -121,46 +148,7 @@ class AppWarningsManager @Inject constructor(
                 networkAvailable.postValue(availableNetworks.isNotEmpty())
             }
         }
-        connectivityManager.registerNetworkCallback(networkRequest, callback)
-        networkCallback = callback
-    }
-
-    private fun checkBatterySaver() {
-        batterySaverActive.postValue(
-            context.getSystemService<PowerManager>()?.isPowerSaveMode
-        )
-    }
-
-    private fun checkDataSaver() {
-        dataSaverEnabled.postValue(
-            context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
-                connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED
-            }
-        )
-    }
-
-    override fun close() {
-        Logger.log.fine("Stopping watching for warning conditions")
-
-        // Automatic sync
-        ContentResolver.removeStatusChangeListener(syncStatusObserver)
-
-        // Network
-        networkReceiver?.let {
-            context.unregisterReceiver(it)
-        }
-        networkCallback?.let {
-            connectivityManager.unregisterNetworkCallback(it)
-        }
-
-        // Battery saver
-        context.unregisterReceiver(batterySaverListener)
-
-        // Data Saver
-        dataSaverChangedListener?.let { listener ->
-            context.unregisterReceiver(listener)
-            dataSaverChangedListener = null
-        }
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
 }
