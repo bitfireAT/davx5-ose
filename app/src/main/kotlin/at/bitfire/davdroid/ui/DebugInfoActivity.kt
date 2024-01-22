@@ -570,6 +570,38 @@ class DebugInfoActivity : AppCompatActivity() {
                     .append(FileUtils.byteCountToDisplaySize(statFs.totalBytes))
                     .append("\n\n")
 
+                // power saving
+                if (Build.VERSION.SDK_INT >= 28)
+                    context.getSystemService<UsageStatsManager>()?.let { statsManager ->
+                        val bucket = statsManager.appStandbyBucket
+                        writer
+                            .append("App standby bucket: ")
+                            .append(
+                                when {
+                                    bucket <= 5 -> "exempted"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_ACTIVE -> "active"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_WORKING_SET -> "frequent (job restrictions apply!)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_FREQUENT -> "frequent (job restrictions apply!)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_RARE -> "rare  (job and network restrictions apply!)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_RESTRICTED -> "restricted (job and network restrictions apply!)"
+                                    else -> "$bucket"
+                                }
+                            )
+                        writer.append('\n')
+                    }
+                context.getSystemService<PowerManager>()?.let { powerManager ->
+                    writer.append("App exempted from power saving: ")
+                        .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "NO")
+                        .append('\n')
+                        .append("System in power-save mode: ")
+                        .append(if (powerManager.isPowerSaveMode) "YES (restrictions apply!)" else "no")
+                        .append('\n')
+                }
+                // system-wide sync
+                writer.append("System-wide synchronization: ")
+                    .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
+                    .append('\n')
+
                 // connectivity
                 context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
                     writer.append("\nCONNECTIVITY\n\n")
@@ -608,24 +640,6 @@ class DebugInfoActivity : AppCompatActivity() {
                 }
 
                 writer.append("\nCONFIGURATION\n\n")
-                // power saving
-                if (Build.VERSION.SDK_INT >= 28)
-                    context.getSystemService<UsageStatsManager>()?.let { statsManager ->
-                        val bucket = statsManager.appStandbyBucket
-                        writer.append("App standby bucket: $bucket")
-                        if (bucket > UsageStatsManager.STANDBY_BUCKET_ACTIVE)
-                            writer.append(" (RESTRICTED!)")
-                        writer.append('\n')
-                    }
-                context.getSystemService<PowerManager>()?.let { powerManager ->
-                    writer.append("Power saving disabled: ")
-                        .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")
-                        .append('\n')
-                }
-                // system-wide sync
-                writer.append("System-wide synchronization: ")
-                    .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
-                    .append('\n')
                 // notifications
                 val nm = NotificationManagerCompat.from(context)
                 writer.append("\nNotifications")

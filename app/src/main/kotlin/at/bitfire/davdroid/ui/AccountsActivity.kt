@@ -14,6 +14,7 @@ import android.content.pm.ShortcutManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -49,7 +50,12 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BatterySaver
+import androidx.compose.material.icons.filled.DataSaverOn
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.NotificationsOff
+import androidx.compose.material.icons.filled.SignalCellularOff
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -183,19 +189,25 @@ class AccountsActivity: AppCompatActivity() {
                                 },
                                 internetWarning = warnings.networkAvailable.observeAsState().value == false,
                                 onManageConnections = {
-                                    val intent = Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS)
-                                    if (intent.resolveActivity(packageManager) != null)
-                                        startActivity(intent)
-                                },
-                                lowStorageWarning = warnings.storageLow.observeAsState().value == true,
-                                onManageStorage = {
-                                    val intent = Intent(android.provider.Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
+                                    val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
                                     if (intent.resolveActivity(packageManager) != null)
                                         startActivity(intent)
                                 },
                                 dataSaverActive = warnings.dataSaverEnabled.observeAsState().value == true,
                                 onManageDataSaver = {
                                     val intent = Intent(android.provider.Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS, Uri.parse("package:" + packageName))
+                                    if (intent.resolveActivity(packageManager) != null)
+                                        startActivity(intent)
+                                },
+                                batterySaverActive = warnings.batterySaverActive.observeAsState().value == true,
+                                onManageBatterySaver = {
+                                    val intent = Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS)
+                                    if (intent.resolveActivity(packageManager) != null)
+                                        startActivity(intent)
+                                },
+                                lowStorageWarning = warnings.storageLow.observeAsState().value == true,
+                                onManageStorage = {
+                                    val intent = Intent(android.provider.Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
                                     if (intent.resolveActivity(packageManager) != null)
                                         startActivity(intent)
                                 }
@@ -539,15 +551,17 @@ fun SyncWarnings(
     onClickPermissions: () -> Unit = {},
     internetWarning: Boolean,
     onManageConnections: () -> Unit = {},
-    lowStorageWarning: Boolean,
-    onManageStorage: () -> Unit = {},
+    batterySaverActive: Boolean,
+    onManageBatterySaver: () -> Unit = {},
     dataSaverActive: Boolean,
-    onManageDataSaver: () -> Unit = {}
+    onManageDataSaver: () -> Unit = {},
+    lowStorageWarning: Boolean,
+    onManageStorage: () -> Unit = {}
 ) {
     Column(Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
         if (notificationsWarning)
             ActionCard(
-                icon = painterResource(R.drawable.ic_notifications_off),
+                icon = Icons.Default.NotificationsOff,
                 actionText = stringResource(R.string.account_permissions_action),
                 onAction = onClickPermissions
             ) {
@@ -556,29 +570,38 @@ fun SyncWarnings(
 
         if (internetWarning)
             ActionCard(
-                icon = painterResource(R.drawable.ic_signal_cellular_off),
+                icon = Icons.Default.SignalCellularOff,
                 actionText = stringResource(R.string.account_list_manage_connections),
                 onAction = onManageConnections
             ) {
                 Text(stringResource(R.string.account_list_no_internet))
             }
 
-        if (lowStorageWarning)
+        if (batterySaverActive)
             ActionCard(
-                icon = painterResource(R.drawable.ic_storage),
-                actionText = stringResource(R.string.account_list_manage_storage),
-                onAction = onManageStorage
+                icon = Icons.Default.BatterySaver,
+                actionText = stringResource(R.string.account_list_manage_battery_saver),
+                onAction = onManageBatterySaver
             ) {
-                Text(stringResource(R.string.account_list_low_storage))
+                Text(stringResource(R.string.account_list_battery_saver_enabled))
             }
 
         if (dataSaverActive)
             ActionCard(
-                icon = painterResource(R.drawable.ic_datasaver_on),
+                icon = Icons.Default.DataSaverOn,
                 actionText = stringResource(R.string.account_list_manage_datasaver),
                 onAction = onManageDataSaver
             ) {
                 Text(stringResource(R.string.account_list_datasaver_enabled))
+            }
+
+        if (lowStorageWarning)
+            ActionCard(
+                icon = Icons.Default.Storage,
+                actionText = stringResource(R.string.account_list_manage_storage),
+                onAction = onManageStorage
+            ) {
+                Text(stringResource(R.string.account_list_low_storage))
             }
     }
 }
@@ -589,7 +612,8 @@ fun SyncWarnings_Preview() {
     SyncWarnings(
         notificationsWarning = true,
         internetWarning = true,
-        lowStorageWarning = true,
-        dataSaverActive = true
+        batterySaverActive = true,
+        dataSaverActive = true,
+        lowStorageWarning = true
     )
 }

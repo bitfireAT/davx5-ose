@@ -13,10 +13,12 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.NotificationAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,7 +26,7 @@ import at.bitfire.davdroid.R
 
 @Composable
 fun ActionCard(
-    icon: Painter? = null,
+    icon: ImageVector? = null,
     actionText: String? = null,
     onAction: () -> Unit = {},
     content: @Composable () -> Unit
@@ -59,7 +61,7 @@ fun ActionCard(
 @Preview
 fun ActionCard_Sample() {
     ActionCard(
-        icon = painterResource(R.drawable.ic_notifications_off),
+        icon = Icons.Default.NotificationAdd,
         actionText = "Some Action"
     ) {
         Text("Some Content")

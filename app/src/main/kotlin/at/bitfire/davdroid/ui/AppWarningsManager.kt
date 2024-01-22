@@ -14,7 +14,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Build
+import android.os.PowerManager
 import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.StorageLowReceiver
@@ -39,6 +39,8 @@ class AppWarningsManager @Inject constructor(
     storageLowReceiver: StorageLowReceiver
 ) : AutoCloseable, SyncStatusObserver {
 
+    // TODO convert to model
+
     /** whether storage is low (prevents sync framework from running synchronization) */
     val storageLow = storageLowReceiver.storageLow
 
@@ -52,19 +54,30 @@ class AppWarningsManager @Inject constructor(
     private var networkReceiver: BroadcastReceiver? = null
     private val connectivityManager = context.getSystemService<ConnectivityManager>()!!
 
+    val batterySaverActive = MutableLiveData<Boolean>()
+    lateinit var batterySaverListener: BroadcastReceiver
+
     /** whether data saver is restricting background synchronization ([ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED]) */
     val dataSaverEnabled = MutableLiveData<Boolean>()
     var dataSaverChangedListener: BroadcastReceiver? = null
 
     init {
-        Logger.log.fine("Watching for warning conditions")
-
         // Automatic Sync
         syncStatusObserver = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, this)
         onStatusChanged(ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS)
 
         // Network
         watchConnectivity()
+
+        // Battery saver
+        batterySaverListener = object: BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                checkBatterySaver()
+            }
+        }
+        val batterySaverListenerFilter = IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
+        context.registerReceiver(batterySaverListener, batterySaverListenerFilter)
+        checkBatterySaver()
 
         // Data saver
         val listener = object: BroadcastReceiver() {
@@ -112,6 +125,12 @@ class AppWarningsManager @Inject constructor(
         networkCallback = callback
     }
 
+    private fun checkBatterySaver() {
+        batterySaverActive.postValue(
+            context.getSystemService<PowerManager>()?.isPowerSaveMode
+        )
+    }
+
     private fun checkDataSaver() {
         dataSaverEnabled.postValue(
             context.getSystemService<ConnectivityManager>()?.let { connectivityManager ->
@@ -133,6 +152,9 @@ class AppWarningsManager @Inject constructor(
         networkCallback?.let {
             connectivityManager.unregisterNetworkCallback(it)
         }
+
+        // Battery saver
+        context.unregisterReceiver(batterySaverListener)
 
         // Data Saver
         dataSaverChangedListener?.let { listener ->
