@@ -160,8 +160,6 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
 
     override fun populateEvent(row: ContentValues, groupScheduled: Boolean) {
         val event = requireNotNull(event)
-
-        event.uid = row.getAsString(Events.UID_2445)
         event.sequence = row.getAsInteger(COLUMN_SEQUENCE)
 
         val isOrganizer = row.getAsInteger(Events.IS_ORGANIZER)
@@ -176,8 +174,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         val buildException = recurrence != null
         val eventToBuild = recurrence ?: event
 
-        builder .withValue(Events.UID_2445, event.uid)
-                .withValue(COLUMN_SEQUENCE, eventToBuild.sequence)
+        builder .withValue(COLUMN_SEQUENCE, eventToBuild.sequence)
                 .withValue(Events.DIRTY, 0)
                 .withValue(Events.DELETED, 0)
                 .withValue(COLUMN_FLAGS, flags)
