@@ -22,7 +22,7 @@ buildscript {
         cert4android: '2bb3898',
         dav4jvm: '93dddcd',
         // TODO: Replace with merged UID on master
-        ical4android: '749482895821e3c8bc904117749c68721e6ee79e',
+        ical4android: '18336310aedb1778288987247f504c13bae428f7',
         vcard4android: 'a7a1f42'
     ]
 
