@@ -127,6 +127,8 @@ class RandomAccessCallback private constructor(
 
 
     override fun loadPage(offset: Long, size: Int): ByteArray {
+        Logger.log.fine("Loading page $url $offset/$size")
+
         // update notification
         val progress =
             if (fileSize == 0L)     // avoid division by zero
@@ -138,8 +140,6 @@ class RandomAccessCallback private constructor(
             NotificationUtils.NOTIFY_WEBDAV_ACCESS,
             notification.setProgress(100, progress, false).build()
         )
-
-        Logger.log.fine("Loading page $url $offset/$size")
 
         // create async job that can be cancelled (and cancellation interrupts I/O)
         val job = CoroutineScope(Dispatchers.IO).async {
@@ -191,7 +191,8 @@ class RandomAccessCallback private constructor(
     }
 
     private fun Exception.toErrNoException(functionName: String) =
-        ErrnoException(functionName,
+        ErrnoException(
+            functionName,
             when (this) {
                 is HttpException ->
                     when (code) {
@@ -203,7 +204,8 @@ class RandomAccessCallback private constructor(
                 is InterruptedIOException -> OsConstants.EINTR
                 is PartialContentNotSupportedException -> OsConstants.EOPNOTSUPP
                 else -> OsConstants.EIO
-            }
+            },
+            this
         )
 
 
