@@ -557,10 +557,10 @@ class DebugInfoActivity : AppCompatActivity() {
                 val locales: Any = LocaleList.getAdjustedDefault()
                 writer.append(
                     "\nSYSTEM INFORMATION\n\n" +
-                            "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
-                            "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n" +
-                            "Locale(s): $locales\n" +
-                            "Time zone: ${TimeZone.getDefault().id}\n"
+                    "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
+                    "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n" +
+                    "Locale(s): $locales\n" +
+                    "Time zone: ${TimeZone.getDefault().id}\n"
                 )
                 val filesPath = Environment.getDataDirectory()
                 val statFs = StatFs(filesPath.path)
@@ -578,12 +578,12 @@ class DebugInfoActivity : AppCompatActivity() {
                             .append("App standby bucket: ")
                             .append(
                                 when {
-                                    bucket <= 5 -> "exempted"
-                                    bucket <= UsageStatsManager.STANDBY_BUCKET_ACTIVE -> "active"
-                                    bucket <= UsageStatsManager.STANDBY_BUCKET_WORKING_SET -> "frequent (job restrictions apply!)"
-                                    bucket <= UsageStatsManager.STANDBY_BUCKET_FREQUENT -> "frequent (job restrictions apply!)"
-                                    bucket <= UsageStatsManager.STANDBY_BUCKET_RARE -> "rare  (job and network restrictions apply!)"
-                                    bucket <= UsageStatsManager.STANDBY_BUCKET_RESTRICTED -> "restricted (job and network restrictions apply!)"
+                                    bucket <= 5 -> "exempted (very good)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_ACTIVE -> "active (good)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_WORKING_SET -> "working set (bad: job restrictions apply)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_FREQUENT -> "frequent (bad: job restrictions apply)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_RARE -> "rare (very bad: job and network restrictions apply)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_RESTRICTED -> "restricted (very bad: job and network restrictions apply)"
                                     else -> "$bucket"
                                 }
                             )
@@ -591,10 +591,10 @@ class DebugInfoActivity : AppCompatActivity() {
                     }
                 context.getSystemService<PowerManager>()?.let { powerManager ->
                     writer.append("App exempted from power saving: ")
-                        .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "NO")
+                        .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes (good)" else "no (bad)")
                         .append('\n')
                         .append("System in power-save mode: ")
-                        .append(if (powerManager.isPowerSaveMode) "YES (restrictions apply!)" else "no")
+                        .append(if (powerManager.isPowerSaveMode) "yes (restrictions apply!)" else "no")
                         .append('\n')
                 }
                 // system-wide sync
