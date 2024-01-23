@@ -256,12 +256,19 @@ class AccountsActivity: AppCompatActivity() {
         scope: CoroutineScope
     ): @Composable (SnackbarHostState) -> Unit = {
         SnackbarHost(snackbarHostState)
-        model.feedback.observeAsState().value?.let { msg ->
-            scope.launch {
-                snackbarHostState.showSnackbar(msg)
-            }
+        model.syncEnqueued.observeAsState().value?.let { enqueued ->
+            if (enqueued)
+                scope.launch {
+                    val msg = getString(
+                        if (warnings.networkAvailable.value == true)
+                            R.string.sync_started
+                        else
+                            R.string.no_internet_sync_scheduled
+                    )
+                    snackbarHostState.showSnackbar(msg)
+                }
             // reset feedback
-            model.feedback.value = null
+            model.syncEnqueued.value = null
         }
     }
 
@@ -358,7 +365,7 @@ class AccountsActivity: AppCompatActivity() {
         val db: AppDatabase
     ): AndroidViewModel(application), OnAccountsUpdateListener {
 
-        val feedback = MutableLiveData<String>()
+        val syncEnqueued = MutableLiveData<Boolean>()
 
         val accountManager = AccountManager.get(application)
         private val accountType = application.getString(R.string.account_type)
@@ -425,7 +432,7 @@ class AccountsActivity: AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= 25)
                 context.getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
 
-            feedback.value = context.getString(R.string.sync_enqueued)
+            syncEnqueued.value = true
 
             // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
             for (account in allAccounts())

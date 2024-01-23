@@ -103,11 +103,16 @@ class AccountActivity: AppCompatActivity() {
         TooltipCompat.setTooltipText(binding.sync, binding.sync.contentDescription)
         warningsModel.networkAvailable.observe(this) { networkAvailable ->
             binding.sync.setOnClickListener {
-                    Snackbar.make(
-                        binding.sync,
-                        R.string.sync_enqueued,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                val msgId =
+                    if (warningsModel.networkAvailable.value == true)
+                        R.string.sync_started
+                    else
+                        R.string.no_internet_sync_scheduled
+                Snackbar.make(
+                    binding.sync,
+                    msgId,
+                    Snackbar.LENGTH_SHORT
+                ).show()
                 SyncWorker.enqueueAllAuthorities(this, model.account)
             }
         }
