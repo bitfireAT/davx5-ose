@@ -117,7 +117,9 @@ class JtxSyncManager(
         }
     }
 
-    override fun postProcess() { /* nothing to do */  }
+    override fun postProcess() {
+        localCollection.updateLastSync()
+    }
 
     override fun notifyInvalidResourceTitle(): String =
         context.getString(R.string.sync_invalid_event)
