@@ -18,7 +18,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - uses: gradle/gradle-build-action@v2
+      - uses: gradle/actions/setup-gradle@v3
 
       - name: Create app/build and gradle configuration cache
         if: ${{ github.ref == 'refs/heads/dev-ose' }}
