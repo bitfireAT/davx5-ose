@@ -40,6 +40,9 @@ class PagingReader(
          * - a file seek + read or
          * - a ranged WebDAV request.
          *
+         * This function will not be called by multiple threads at the same time, so
+         * thread-safety is not required.
+         *
          * @param offset    position to start
          * @param size      number of bytes to load
          *
@@ -96,6 +99,9 @@ class PagingReader(
      *
      * This method will determine the page that contains [position] and read only
      * from this page.
+     *
+     * This method is synchronized so that no concurrent modifications of [currentPage]
+     * and no concurrent calls to [loader] will be made.
      *
      * @param position      starting position
      * @param size          number of bytes requested
