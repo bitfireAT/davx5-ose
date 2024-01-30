@@ -557,10 +557,10 @@ class DebugInfoActivity : AppCompatActivity() {
                 val locales: Any = LocaleList.getAdjustedDefault()
                 writer.append(
                     "\nSYSTEM INFORMATION\n\n" +
-                            "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
-                            "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n" +
-                            "Locale(s): $locales\n" +
-                            "Time zone: ${TimeZone.getDefault().id}\n"
+                    "Android version: ${Build.VERSION.RELEASE} (${Build.DISPLAY})\n" +
+                    "Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})\n\n" +
+                    "Locale(s): $locales\n" +
+                    "Time zone: ${TimeZone.getDefault().id}\n"
                 )
                 val filesPath = Environment.getDataDirectory()
                 val statFs = StatFs(filesPath.path)
@@ -568,6 +568,38 @@ class DebugInfoActivity : AppCompatActivity() {
                     .append(FileUtils.byteCountToDisplaySize(statFs.availableBytes))
                     .append(" free of ")
                     .append(FileUtils.byteCountToDisplaySize(statFs.totalBytes))
+                    .append("\n\n")
+
+                // power saving
+                if (Build.VERSION.SDK_INT >= 28)
+                    context.getSystemService<UsageStatsManager>()?.let { statsManager ->
+                        val bucket = statsManager.appStandbyBucket
+                        writer
+                            .append("App standby bucket: ")
+                            .append(
+                                when {
+                                    bucket <= 5 -> "exempted (very good)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_ACTIVE -> "active (good)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_WORKING_SET -> "working set (bad: job restrictions apply)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_FREQUENT -> "frequent (bad: job restrictions apply)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_RARE -> "rare (very bad: job and network restrictions apply)"
+                                    bucket <= UsageStatsManager.STANDBY_BUCKET_RESTRICTED -> "restricted (very bad: job and network restrictions apply)"
+                                    else -> "$bucket"
+                                }
+                            )
+                        writer.append('\n')
+                    }
+                context.getSystemService<PowerManager>()?.let { powerManager ->
+                    writer.append("App exempted from power saving: ")
+                        .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes (good)" else "no (bad)")
+                        .append('\n')
+                        .append("System in power-save mode: ")
+                        .append(if (powerManager.isPowerSaveMode) "yes (restrictions apply!)" else "no")
+                        .append('\n')
+                }
+                // system-wide sync
+                writer.append("System-wide synchronization: ")
+                    .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
                     .append("\n\n")
 
                 // connectivity
@@ -608,24 +640,6 @@ class DebugInfoActivity : AppCompatActivity() {
                 }
 
                 writer.append("\nCONFIGURATION\n\n")
-                // power saving
-                if (Build.VERSION.SDK_INT >= 28)
-                    context.getSystemService<UsageStatsManager>()?.let { statsManager ->
-                        val bucket = statsManager.appStandbyBucket
-                        writer.append("App standby bucket: $bucket")
-                        if (bucket > UsageStatsManager.STANDBY_BUCKET_ACTIVE)
-                            writer.append(" (RESTRICTED!)")
-                        writer.append('\n')
-                    }
-                context.getSystemService<PowerManager>()?.let { powerManager ->
-                    writer.append("Power saving disabled: ")
-                        .append(if (powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) "yes" else "no")
-                        .append('\n')
-                }
-                // system-wide sync
-                writer.append("System-wide synchronization: ")
-                    .append(if (ContentResolver.getMasterSyncAutomatically()) "automatically" else "manually")
-                    .append('\n')
                 // notifications
                 val nm = NotificationManagerCompat.from(context)
                 writer.append("\nNotifications")
