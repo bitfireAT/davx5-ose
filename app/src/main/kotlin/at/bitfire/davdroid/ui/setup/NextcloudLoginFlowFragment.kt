@@ -407,7 +407,7 @@ fun NextcloudLoginFlowComposable(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            readOnly = inProgress,
+            enabled = !inProgress,
             label = {
                 Text(stringResource(R.string.login_nextcloud_login_flow_server_address))
             },
