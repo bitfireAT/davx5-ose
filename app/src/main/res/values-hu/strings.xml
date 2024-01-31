@@ -131,10 +131,10 @@
   <string name="account_list_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
   <string name="account_list_no_internet">Nincs ellenőrzött Internet kapcsolat.  A szinkronizáció nem biztos, hogy fog futni. </string>
   <string name="account_list_manage_connections">Kapcsolatok kezelése</string>
-  <string name="account_list_low_storage">A rendelkezésre álló tárhely kevés.  Az Android nem fogja a helyi erőforrásokat azonnal szinkronizálni, csak a következő rendes alkalommal.</string>
-  <string name="account_list_manage_storage">Tárhely kezelése</string>
   <string name="account_list_datasaver_enabled">Az adatcsökkentés bekapcsolva.  A háttérben futó szinkronizálás korlátozva van.</string>
   <string name="account_list_manage_datasaver">Adatcsökkentés kezelése</string>
+  <string name="account_list_low_storage">A rendelkezésre álló tárhely kevés.  Az Android nem fogja a helyi erőforrásokat azonnal szinkronizálni, csak a következő rendes alkalommal.</string>
+  <string name="account_list_manage_storage">Tárhely kezelése</string>
   <string name="account_list_empty">Üdvözöljük a DAVx⁵ felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
   <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
   <string name="accounts_global_sync_enable">Bekapcsolás</string>

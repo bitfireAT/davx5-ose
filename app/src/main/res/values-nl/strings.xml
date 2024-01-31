@@ -131,10 +131,10 @@
   <string name="account_list_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
   <string name="account_list_no_internet">Geen gevalideerde internetverbinding. Synchronisatie wordt mogelijk niet uitgevoerd.</string>
   <string name="account_list_manage_connections">Verbindingen beheren</string>
-  <string name="account_list_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
-  <string name="account_list_manage_storage">Opslag beheren</string>
   <string name="account_list_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
   <string name="account_list_manage_datasaver">Beheer van gegevensbesparing</string>
+  <string name="account_list_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
+  <string name="account_list_manage_storage">Opslag beheren</string>
   <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAV account toevoegen.</string>
   <string name="accounts_global_sync_disabled">Automatisch synchroniseren is voor alle accounts uitgeschakeld</string>
   <string name="accounts_global_sync_enable">Inschakelen</string>
@@ -238,6 +238,8 @@
   <string name="login_email_address">E-mailadres</string>
   <string name="login_email_address_error">Geldig e-mailadres vereist</string>
   <string name="login_password">Wachtwoord</string>
+  <string name="login_password_hide">Verberg wachtwoord</string>
+  <string name="login_password_show">Wachtwoord tonen</string>
   <string name="login_password_required">Wachtwoord vereist</string>
   <string name="login_type_url">Inloggen met URL en gebruikersnaam</string>
   <string name="login_url_must_be_http_or_https">URL moet met http(s):// beginnen</string>

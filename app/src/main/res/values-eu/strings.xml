@@ -131,10 +131,10 @@
   <string name="account_list_no_notification_permission">Jakinarazpenak desgaituta. Ez zaitugu sinkronizazio-erroreei buruz jakinaraziko.</string>
   <string name="account_list_no_internet">Ez dago baliozkotutako Interneteko konexiorik. Baliteke sinkronizazioa ez exekutatzea.</string>
   <string name="account_list_manage_connections">Kudeatu konexioak</string>
-  <string name="account_list_low_storage">Biltegiratze lekua baxua. Android-ek ez ditu tokiko aldaketak berehala sinkronizatuko, hurrengo sinkronizazio arruntean baizik.</string>
-  <string name="account_list_manage_storage">Kudeatu biltegia</string>
   <string name="account_list_datasaver_enabled">Datu-aurrezpena gaituta. Atzeko planoko sinkronizazioa murriztuko da.</string>
   <string name="account_list_manage_datasaver">Kudeatu datu-aurrezpena</string>
+  <string name="account_list_low_storage">Biltegiratze lekua baxua. Android-ek ez ditu tokiko aldaketak berehala sinkronizatuko, hurrengo sinkronizazio arruntean baizik.</string>
+  <string name="account_list_manage_storage">Kudeatu biltegia</string>
   <string name="account_list_empty">Ongi etorri DAVx⁵ aplikaziora!\n\nCalDAV/CardDAV kontu bat gehitu dezakezu orain.</string>
   <string name="accounts_global_sync_disabled">Sistema osoko sinkronizazio automatikoa desgaituta dago</string>
   <string name="accounts_global_sync_enable">Gaitu</string>

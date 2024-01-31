@@ -131,10 +131,10 @@
   <string name="account_list_no_notification_permission">Notificări dezactivate. Nu vei fi notificat despre erorile de sincronizare.</string>
   <string name="account_list_no_internet">Nicio conexiune la internet validată. Este posibil ca sincronizarea să nu ruleze.</string>
   <string name="account_list_manage_connections">Gestionează conexiunile</string>
-  <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va sincroniza modificările locale imediat, ci în timpul următoarei sincronizări obișnuite.</string>
-  <string name="account_list_manage_storage">Gestionează stocarea</string>
   <string name="account_list_datasaver_enabled">Economizorul de date este activat. Sincronizarea în fundal este restricționată.</string>
   <string name="account_list_manage_datasaver">Gestionează economizorul de date</string>
+  <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va sincroniza modificările locale imediat, ci în timpul următoarei sincronizări obișnuite.</string>
+  <string name="account_list_manage_storage">Gestionează stocarea</string>
   <string name="account_list_empty">Bun venit la DAVx⁵!\n\nPoți adăuga acum un cont CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Sincronizarea automată la nivel de sistem este dezactivată</string>
   <string name="accounts_global_sync_enable">Activează</string>

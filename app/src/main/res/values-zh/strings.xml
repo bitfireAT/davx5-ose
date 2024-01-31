@@ -131,10 +131,12 @@
   <string name="account_list_no_notification_permission">已禁用通知。你将不会收到同步出错的通知</string>
   <string name="account_list_no_internet">没有经验证的互联网连接。同步可能不会运行</string>
   <string name="account_list_manage_connections">管理连接</string>
-  <string name="account_list_low_storage">低存储空间。Android 不会立即同步本地更改，但会在下次定期同步时进行</string>
-  <string name="account_list_manage_storage">管理存储</string>
   <string name="account_list_datasaver_enabled">启用了流量节省程序。后台同步受限</string>
   <string name="account_list_manage_datasaver">管理流量节省程序</string>
+  <string name="account_list_battery_saver_enabled">启用了节电程序。同步可能受限。</string>
+  <string name="account_list_manage_battery_saver">管理节电程序</string>
+  <string name="account_list_low_storage">低存储空间。Android 不会立即同步本地更改，但会在下次定期同步时进行</string>
+  <string name="account_list_manage_storage">管理存储</string>
   <string name="account_list_empty">欢迎使用 DAVx⁵！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
   <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
   <string name="accounts_global_sync_enable">启用</string>

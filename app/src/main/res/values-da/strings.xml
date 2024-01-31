@@ -129,11 +129,11 @@
   <string name="account_list_no_internet">Ingen valideret internetforbindelse. 
 Synkronisering kører muligvis ikke.</string>
   <string name="account_list_manage_connections">Aministrer forbindelser</string>
+  <string name="account_list_datasaver_enabled">Gemning af data slået til. Synkronisering i baggrunden er begrænset.</string>
+  <string name="account_list_manage_datasaver">Administrer gemning af data</string>
   <string name="account_list_low_storage">124
 Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, men under den næste almindelige synkronisering.</string>
   <string name="account_list_manage_storage">Administrer lagerplads</string>
-  <string name="account_list_datasaver_enabled">Gemning af data slået til. Synkronisering i baggrunden er begrænset.</string>
-  <string name="account_list_manage_datasaver">Administrer gemning af data</string>
   <string name="account_list_empty">Velkommen til DAVx⁵!\n\nDu kan nu tilføje en CalDAV/CardDAV konto.</string>
   <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
   <string name="accounts_global_sync_enable">Aktivere</string>

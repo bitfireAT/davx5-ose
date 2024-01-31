@@ -128,10 +128,10 @@
   <string name="account_list_no_notification_permission">Notifications désactivées. Vous ne serez pas averti des erreurs de synchronisation.</string>
   <string name="account_list_no_internet">Pas de connexion Internet. La synchronisation risque de ne pas fonctionner.</string>
   <string name="account_list_manage_connections">Gérer les connexions</string>
-  <string name="account_list_low_storage">Espace de stockage faible. Android ne synchronisera pas les changements locaux immédiatement mais pendant la prochaine synchronisation.</string>
-  <string name="account_list_manage_storage">Gérer le stockage</string>
   <string name="account_list_datasaver_enabled">L\'économiseur de données est activé. La synchronisation en arrière-plan est limitée.</string>
   <string name="account_list_manage_datasaver">Gérer l\'économiseur de données</string>
+  <string name="account_list_low_storage">Espace de stockage faible. Android ne synchronisera pas les changements locaux immédiatement mais pendant la prochaine synchronisation.</string>
+  <string name="account_list_manage_storage">Gérer le stockage</string>
   <string name="account_list_empty">Bienvenue sur DAVx⁵!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
   <string name="accounts_global_sync_disabled">La synchronisation automatique globale est désactivée</string>
   <string name="accounts_global_sync_enable">Activer</string>

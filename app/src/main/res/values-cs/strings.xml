@@ -131,10 +131,10 @@
   <string name="account_list_no_notification_permission">Upozornění vypnuta. Nebudete upozorněni na chyby při synchronizaci.</string>
   <string name="account_list_no_internet">Bez ověřeného připojení k internetu. Synchronizace nemusí běžet.</string>
   <string name="account_list_manage_connections">Spravovat spojení</string>
-  <string name="account_list_low_storage">Málo volného místa v úložišti. Android nebude synchronizovat místní změny okamžitě, ale při další běžné synchronizaci.</string>
-  <string name="account_list_manage_storage">Spravovat úložiště</string>
   <string name="account_list_datasaver_enabled">Spořič dat povolen. Synchronizace na pozadí je omezena.</string>
   <string name="account_list_manage_datasaver">Spravovat spořič dat</string>
+  <string name="account_list_low_storage">Málo volného místa v úložišti. Android nebude synchronizovat místní změny okamžitě, ale při další běžné synchronizaci.</string>
+  <string name="account_list_manage_storage">Spravovat úložiště</string>
   <string name="account_list_empty">Vítejte v aplikaci DAVx⁵!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
   <string name="accounts_global_sync_disabled">Automatická synchronizace v rámci celého systému je vypnutá</string>
   <string name="accounts_global_sync_enable">Zapnout</string>

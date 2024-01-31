@@ -131,10 +131,10 @@
   <string name="account_list_no_notification_permission">Notificacions desactivades. No es notificaran els errors de sincronització.</string>
   <string name="account_list_no_internet">No hi ha connectivitat a Internet validada. La sincronització no es pot executar.</string>
   <string name="account_list_manage_connections">Gestiona les connexions</string>
-  <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la propera sincronització normal.</string>
-  <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
   <string name="account_list_datasaver_enabled">S\'ha activat l\'estalviador de dades. La sincronització en segon pla està restringida.</string>
   <string name="account_list_manage_datasaver">Gestió de l\'estalviador de dades</string>
+  <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la propera sincronització normal.</string>
+  <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
   <string name="account_list_empty">Us donem la benvinguda a DAVx⁵! \n\nAra podeu afegir un compte CalDAV / CardDAV.</string>
   <string name="accounts_global_sync_disabled">La sincronització automàtica de tot el sistema està inhabilitada</string>
   <string name="accounts_global_sync_enable">Activa</string>
@@ -238,6 +238,8 @@
   <string name="login_email_address">Adreça de correu electrònic</string>
   <string name="login_email_address_error">Es requereix una adreça vàlida de correu electrònic</string>
   <string name="login_password">Contrasenya</string>
+  <string name="login_password_hide">Oculta la contrasenya</string>
+  <string name="login_password_show">Mostra la contrasenya</string>
   <string name="login_password_required">Es requereix una contrasenya</string>
   <string name="login_type_url">Inici de sessió amb un URL i un nom d\'usuari/a</string>
   <string name="login_url_must_be_http_or_https">L\'URL hauria de començar per http(s)://</string>

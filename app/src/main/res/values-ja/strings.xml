@@ -131,10 +131,12 @@
   <string name="account_list_no_notification_permission">通知が無効です。同期エラーが発生しても通知されません。</string>
   <string name="account_list_no_internet">検証されたインターネット接続がありません。同期が実行されない場合があります。</string>
   <string name="account_list_manage_connections">接続を管理</string>
-  <string name="account_list_low_storage">ストレージの容量が残りわずかです。Android はローカルの変更を即座に同期しませんが、次の通常サイクルで同期します。</string>
-  <string name="account_list_manage_storage">ストレージを管理</string>
   <string name="account_list_datasaver_enabled">データサーバーが有効です。バックグラウンド同期が制限されています</string>
   <string name="account_list_manage_datasaver">データサーバーを管理</string>
+  <string name="account_list_battery_saver_enabled">バッテリー最適化機能が有効です。同期が制限される可能性があります。</string>
+  <string name="account_list_manage_battery_saver">バッテリー最適化機能を管理</string>
+  <string name="account_list_low_storage">ストレージの容量が残りわずかです。Android はローカルの変更を即座に同期しませんが、次の通常サイクルで同期します。</string>
+  <string name="account_list_manage_storage">ストレージを管理</string>
   <string name="account_list_empty">DAVx⁵ にようこそ！\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
   <string name="accounts_global_sync_disabled">システム全体の自動同期が無効です</string>
   <string name="accounts_global_sync_enable">有効</string>

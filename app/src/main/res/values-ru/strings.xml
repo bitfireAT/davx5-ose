@@ -131,10 +131,10 @@
   <string name="account_list_no_notification_permission">Уведомления отключены. Вы не будете получать уведомления об ошибках синхронизации.</string>
   <string name="account_list_no_internet">Нет проверенного подключения к интернету. Синхронизация может не выполняться.</string>
   <string name="account_list_manage_connections">Управление подключениями</string>
-  <string name="account_list_low_storage">Недостаточно памяти для хранения данных. Android будет синхронизировать локальные изменения не сразу, а во время следующей регулярной синхронизации.</string>
-  <string name="account_list_manage_storage">Управление хранилищем</string>
   <string name="account_list_datasaver_enabled">Экономия трафика включена. Фоновая синхронизация ограничена.</string>
   <string name="account_list_manage_datasaver">Экономия трафика</string>
+  <string name="account_list_low_storage">Недостаточно памяти для хранения данных. Android будет синхронизировать локальные изменения не сразу, а во время следующей регулярной синхронизации.</string>
+  <string name="account_list_manage_storage">Управление хранилищем</string>
   <string name="account_list_empty">Добро пожаловать в DAVx⁵!\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Синхронизация отключена на уровне устройства</string>
   <string name="accounts_global_sync_enable">Включить</string>

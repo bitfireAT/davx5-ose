@@ -127,9 +127,9 @@
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
   <string name="account_list_no_notification_permission">Известията са изключени. Няма да бъдете известявани за грешки при синхронизиране.</string>
   <string name="account_list_manage_connections">Управление на връзките</string>
-  <string name="account_list_manage_storage">Управление на хранилището</string>
   <string name="account_list_datasaver_enabled">Включена е икономия на данни. Синхронизацията във фонов режим е ограничена.</string>
   <string name="account_list_manage_datasaver">Икономия на трафик</string>
+  <string name="account_list_manage_storage">Управление на хранилището</string>
   <string name="account_list_empty">Добре дошли при DAVx⁵!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Автоматичното синхронизиране е изключено на ниво система</string>
   <string name="accounts_global_sync_enable">Включване</string>
