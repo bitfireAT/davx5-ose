@@ -9,8 +9,8 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.provider.ContactsContract
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.setAndVerifyUserData

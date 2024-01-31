@@ -12,16 +12,16 @@ import android.net.Uri
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
 import at.bitfire.ical4android.BatchOperation
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
-import java.util.*
+import java.util.LinkedList
 import java.util.logging.Level
 
 class LocalCalendar private constructor(

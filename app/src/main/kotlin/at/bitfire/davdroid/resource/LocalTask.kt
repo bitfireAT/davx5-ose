@@ -5,9 +5,14 @@
 package at.bitfire.davdroid.resource
 
 import android.content.ContentValues
-import at.bitfire.ical4android.*
+import at.bitfire.ical4android.AndroidTask
+import at.bitfire.ical4android.AndroidTaskFactory
+import at.bitfire.ical4android.AndroidTaskList
+import at.bitfire.ical4android.BatchOperation
+import at.bitfire.ical4android.Ical4Android
+import at.bitfire.ical4android.Task
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.*
+import java.util.UUID
 
 class LocalTask: AndroidTask, LocalResource<Task> {
 

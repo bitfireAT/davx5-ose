@@ -11,7 +11,7 @@ import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.vcard4android.contactrow.DataRowBuilder
-import java.util.*
+import java.util.LinkedList
 
 class GroupMembershipBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, val addressBook: LocalAddressBook, readOnly: Boolean)
     : DataRowBuilder(Factory.MIME_TYPE, dataRowUri, rawContactId, contact, readOnly) {

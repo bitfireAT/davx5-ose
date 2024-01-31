@@ -10,7 +10,7 @@ import okhttp3.HttpUrl
 import org.apache.commons.collections4.keyvalue.MultiKey
 import org.apache.commons.collections4.map.HashedMap
 import org.apache.commons.collections4.map.MultiKeyMap
-import java.util.*
+import java.util.LinkedList
 
 /**
  * Primitive cookie store that stores cookies in a (volatile) hash map.

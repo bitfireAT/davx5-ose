@@ -6,7 +6,12 @@ package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
 import android.app.Service
-import android.content.*
+import android.content.AbstractThreadedSyncAdapter
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
+import android.content.SyncResult
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
@@ -14,7 +19,11 @@ import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
 
 abstract class SyncAdapterService: Service() {

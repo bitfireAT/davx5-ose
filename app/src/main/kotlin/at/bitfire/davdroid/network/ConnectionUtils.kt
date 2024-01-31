@@ -6,7 +6,6 @@ package at.bitfire.davdroid.network
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import androidx.annotation.RequiresApi
 import at.bitfire.davdroid.log.Logger
 import java.util.logging.Level
 
