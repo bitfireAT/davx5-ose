@@ -165,10 +165,8 @@ class CollectionInfoFragment: DialogFragment() {
          */
         private fun getAppNameFromAuthority(authority: String): String {
             val packageManager = getApplication<Application>().packageManager
-            @Suppress("DEPRECATION")
             val packageName = packageManager.resolveContentProvider(authority, 0)?.packageName ?: authority
             return try {
-                @Suppress("DEPRECATION")
                 val appInfo = packageManager.getPackageInfo(packageName, 0).applicationInfo
                 packageManager.getApplicationLabel(appInfo).toString()
             } catch (e: PackageManager.NameNotFoundException) {

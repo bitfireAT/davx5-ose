@@ -74,7 +74,7 @@ class WebcalFragment: CollectionsFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        webcalModel.subscribedUrls.observe(this, Observer { urls ->
+        webcalModel.subscribedUrls.observe(this, { urls ->
             Logger.log.log(Level.FINE, "Got Android calendar list", urls.keys)
         })
     }

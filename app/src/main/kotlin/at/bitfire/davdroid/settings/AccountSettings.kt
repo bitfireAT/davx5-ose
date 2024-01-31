@@ -38,7 +38,6 @@ import java.util.logging.Level
  * @throws InvalidAccountException on construction when the account doesn't exist (anymore)
  * @throws IllegalArgumentException when the account type is not _DAVx5_ or _DAVx5 address book_
  */
-@Suppress("FunctionName")
 class AccountSettings(
     val context: Context,
     argAccount: Account
@@ -224,7 +223,7 @@ class AccountSettings(
                 KEY_SYNC_INTERVAL_ADDRESSBOOKS
             authority == CalendarContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_CALENDARS
-            TaskProvider.ProviderName.values().any { it.authority == authority } ->
+            TaskProvider.ProviderName.entries.any { it.authority == authority } ->
                 KEY_SYNC_INTERVAL_TASKS
             else -> return null
         }
@@ -258,7 +257,7 @@ class AccountSettings(
                 KEY_SYNC_INTERVAL_ADDRESSBOOKS
             authority == CalendarContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_CALENDARS
-            TaskProvider.ProviderName.values().any { it.authority == authority } ->
+            TaskProvider.ProviderName.entries.any { it.authority == authority } ->
                 KEY_SYNC_INTERVAL_TASKS
             else -> {
                 Logger.log.warning("Sync interval not applicable to authority $authority")
@@ -448,7 +447,7 @@ class AccountSettings(
             try {
                 return GroupMethod.valueOf(name)
             }
-            catch (e: IllegalArgumentException) {
+            catch (_: IllegalArgumentException) {
             }
         return GroupMethod.GROUP_VCARDS
     }

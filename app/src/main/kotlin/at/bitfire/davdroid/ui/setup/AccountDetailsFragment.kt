@@ -109,7 +109,7 @@ class AccountDetailsFragment : Fragment() {
                     loginModel.credentials,
                     config,
                     GroupMethod.valueOf(groupMethodName)
-                ).observe(viewLifecycleOwner, Observer { success ->
+                ).observe(viewLifecycleOwner, { success ->
                     if (success) {
                         // close Create account activity
                         requireActivity().finish()
@@ -163,7 +163,7 @@ class AccountDetailsFragment : Fragment() {
 
         val name = MutableLiveData<String>()
         val nameError = MutableLiveData<String>()
-        val showApostropheWarning = MutableLiveData<Boolean>(false)
+        val showApostropheWarning = MutableLiveData(false)
 
         val context: Context get() = getApplication()
 

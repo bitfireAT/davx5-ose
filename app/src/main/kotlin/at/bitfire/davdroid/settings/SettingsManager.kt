@@ -58,7 +58,7 @@ class SettingsManager internal constructor(
             providers.addAll(factory.getProviders(context, this))
         }
 
-        writeProvider = providers.firstOrNull() { it.canWrite() }
+        writeProvider = providers.firstOrNull { it.canWrite() }
         Logger.log.fine("Changed settings are handled by $writeProvider")
     }
 

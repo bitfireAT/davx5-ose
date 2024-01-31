@@ -33,7 +33,7 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -97,7 +97,7 @@ class AboutActivity: AppCompatActivity() {
                             navigationIcon = {
                                 IconButton(onClick = { onNavigateUp() }) {
                                     Icon(
-                                        Icons.Default.ArrowBack,
+                                        Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = stringResource(R.string.navigate_up)
                                     )
                                 }

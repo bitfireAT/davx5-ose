@@ -62,7 +62,7 @@ class WelcomeFragment: Fragment() {
     @InstallIn(ActivityComponent::class)
     abstract class WelcomeFragmentModule {
         @Binds @IntoSet
-        abstract fun getFactory(factory: WelcomeFragment.Factory): IntroFragmentFactory
+        abstract fun getFactory(factory: Factory): IntroFragmentFactory
     }
 
     class Factory @Inject constructor() : IntroFragmentFactory {

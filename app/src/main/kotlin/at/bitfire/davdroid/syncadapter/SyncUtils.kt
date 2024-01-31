@@ -129,7 +129,7 @@ object SyncUtils {
         val accountManager = AccountManager.get(context)
         for (account in accountManager.getAccountsByType(context.getString(R.string.account_type))) {
             val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
-            for (providerName in TaskProvider.ProviderName.values()) {
+            for (providerName in TaskProvider.ProviderName.entries) {
                 val isSyncable = ContentResolver.getIsSyncable(account, providerName.authority)     // may be -1 (unknown state)
                 val shallBeSyncable = hasCalDAV && providerName == currentProvider
                 if ((shallBeSyncable && isSyncable != 1) || (!shallBeSyncable && isSyncable != 0)) {

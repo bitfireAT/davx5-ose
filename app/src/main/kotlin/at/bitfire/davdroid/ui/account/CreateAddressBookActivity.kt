@@ -43,7 +43,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
     }
 
     @Inject lateinit var modelFactory: Model.Factory
-    val model by viewModels<Model>() {
+    val model by viewModels<Model> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {

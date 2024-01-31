@@ -321,7 +321,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             if (collectionType == Collection.TYPE_ADDRESSBOOK)
                 listOf(getApplication<Application>().getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
             else
-                listOf(CalendarContract.AUTHORITY, taskProvider?.authority).filterNotNull()
+                listOfNotNull(CalendarContract.AUTHORITY, taskProvider?.authority)
         val isSyncActive = SyncWorker.exists(getApplication(),
             listOf(WorkInfo.State.RUNNING),
             accountModel.account,

@@ -67,13 +67,6 @@
     </style>
 
 
-    <!-- AddAccountActivity -->
-
-    <style name="account_list_card">
-        <item name="android:layout_width">match_parent</item>
-    </style>
-
-
     <!-- stepper (wizard) -->
 
     <style name="stepper_nav_bar">

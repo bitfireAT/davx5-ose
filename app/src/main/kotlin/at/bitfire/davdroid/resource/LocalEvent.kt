@@ -205,7 +205,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         }
 
         // make sure that UID is set
-        val uid: String = dbUid ?: {
+        val uid: String = dbUid ?: run {
             // generate new UID
             val newUid = UUID.randomUUID().toString()
 
@@ -218,7 +218,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
             event?.uid = newUid
 
             newUid
-        }()
+        }
 
         val uidIsGoodFilename = uid.all { char ->
             // see RFC 2396 2.2

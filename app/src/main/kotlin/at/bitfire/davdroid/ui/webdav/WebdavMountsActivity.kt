@@ -71,7 +71,7 @@ class WebdavMountsActivity: AppCompatActivity() {
         val adapter = MountsAdapter(this, model)
         binding.list.adapter = adapter
         binding.list.layoutManager = LinearLayoutManager(this)
-        model.mountInfos.observe(this, Observer { mounts ->
+        model.mountInfos.observe(this, { mounts ->
             adapter.submitList(ArrayList(mounts))
 
             val hasMounts = mounts.isNotEmpty()
@@ -87,7 +87,7 @@ class WebdavMountsActivity: AppCompatActivity() {
                     .startChooser()
             }
         }
-        model.browseIntent.observe(this, Observer { intent ->
+        model.browseIntent.observe(this, { intent ->
             if (intent != null)
                 browser.launch(intent)
         })

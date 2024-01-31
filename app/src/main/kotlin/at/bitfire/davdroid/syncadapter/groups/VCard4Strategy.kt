@@ -35,7 +35,7 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
                             .newUpdate(addressBook.syncAdapterURI(ContentUris.withAppendedId(ContactsContract.Groups.CONTENT_URI, groupID)))
                             .withValue(ContactsContract.Groups.DIRTY, 1))
                 }
-            } catch(e: FileNotFoundException) {
+            } catch(_: FileNotFoundException) {
             }
         batch.commit()
     }

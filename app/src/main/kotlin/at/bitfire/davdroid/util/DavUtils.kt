@@ -140,7 +140,7 @@ object DavUtils {
                 the random number selected. The target host specified in the
                 selected SRV RR is the next one to be contacted by the client.
         */
-        val minPriority = srvRecords.map { it.priority }.minOrNull()
+        val minPriority = srvRecords.minOfOrNull { it.priority }
         val useableRecords = srvRecords.filter { it.priority == minPriority }.sortedBy { it.weight != 0 }
 
         val map = TreeMap<Int, SRVRecord>()

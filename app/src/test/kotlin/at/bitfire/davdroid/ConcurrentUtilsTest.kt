@@ -17,7 +17,7 @@ class ConcurrentUtilsTest {
 
     @Test
     fun testRunSingle_DifferentKeys_Sequentially() {
-        var nrCalled = AtomicInteger()
+        val nrCalled = AtomicInteger()
         for (i in 0 until 10)
             ConcurrentUtils.runSingle(i) { nrCalled.incrementAndGet() }
         assertEquals(10, nrCalled.get())
@@ -25,7 +25,7 @@ class ConcurrentUtilsTest {
 
     @Test
     fun testRunSingle_DifferentKeys_Parallel() {
-        var nrCalled = AtomicInteger()
+        val nrCalled = AtomicInteger()
         val threads = mutableListOf<Thread>()
         for (i in 0 until 10)
             threads += thread {
@@ -41,7 +41,7 @@ class ConcurrentUtilsTest {
     @Test
     fun testRunSingle_SameKey_Sequentially() {
         val key = "a"
-        var nrCalled = AtomicInteger()
+        val nrCalled = AtomicInteger()
         for (i in 0 until 10)
             ConcurrentUtils.runSingle(key) { nrCalled.incrementAndGet() }
         assertEquals(10, nrCalled.get())

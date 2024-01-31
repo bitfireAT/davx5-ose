@@ -85,7 +85,7 @@ class NextcloudLoginFlowFragment: Fragment() {
     companion object {
 
         const val LOGIN_FLOW_V1_PATH = "index.php/login/flow"
-        val LOGIN_FLOW_V2_PATH = "index.php/login/v2"
+        const val LOGIN_FLOW_V2_PATH = "index.php/login/v2"
 
         /** Set this to 1 to indicate that Login Flow shall be used. */
         const val EXTRA_LOGIN_FLOW = "loginFlow"
@@ -205,7 +205,7 @@ class NextcloudLoginFlowFragment: Fragment() {
                 .setForeground(true)
                 .build()
         }
-        val inProgress = MutableLiveData<Boolean>(false)
+        val inProgress = MutableLiveData(false)
 
         var pollUrl: HttpUrl? = null
         var token: String? = null
@@ -386,7 +386,7 @@ fun NextcloudLoginFlowComposable(
         )
 
         val entryUrlStr = remember { mutableStateOf(providedEntryUrl?.toString() ?: "") }
-        val entryUrl = remember { mutableStateOf<HttpUrl?>(providedEntryUrl) }
+        val entryUrl = remember { mutableStateOf(providedEntryUrl) }
         OutlinedTextField(
             value = entryUrlStr.value,
             onValueChange = { newUrlStr ->

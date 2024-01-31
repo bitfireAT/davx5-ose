@@ -47,7 +47,7 @@ class DeleteCollectionFragment: DialogFragment() {
     }
 
     @Inject lateinit var modelFactory: Model.Factory
-    val model by viewModels<Model>() {
+    val model by viewModels<Model> {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -69,7 +69,7 @@ class DeleteCollectionFragment: DialogFragment() {
             binding.progress.visibility = View.VISIBLE
             binding.controls.visibility = View.GONE
 
-            model.deleteCollection().observe(viewLifecycleOwner, Observer { exception ->
+            model.deleteCollection().observe(viewLifecycleOwner, { exception ->
                 if (exception != null)
                     parentFragmentManager.beginTransaction()
                             .add(ExceptionInfoFragment.newInstance(exception, model.account), null)
