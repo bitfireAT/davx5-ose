@@ -28,7 +28,7 @@ object TaskUtils {
     fun currentProvider(context: Context): ProviderName? {
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
         val preferredAuthority = settingsManager.getString(Settings.PREFERRED_TASKS_PROVIDER)
-        ProviderName.values()
+        ProviderName.entries.toTypedArray()
                 .sortedByDescending { it.authority == preferredAuthority }
                 .forEach { providerName ->
             if (context.packageManager.resolveContentProvider(providerName.authority, 0) != null)

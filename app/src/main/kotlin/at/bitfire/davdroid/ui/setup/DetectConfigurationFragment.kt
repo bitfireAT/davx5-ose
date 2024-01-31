@@ -115,7 +115,7 @@ class DetectConfigurationFragment: Fragment() {
                         }
                     } catch(e: Exception) {
                         // This shouldn't happen; instead configuration should be empty
-                        at.bitfire.davdroid.log.Logger.log.log(Level.WARNING, "Uncaught exception during service detection, shouldn't happen", e)
+                        Logger.log.log(Level.WARNING, "Uncaught exception during service detection, shouldn't happen", e)
                     }
                 }
             }

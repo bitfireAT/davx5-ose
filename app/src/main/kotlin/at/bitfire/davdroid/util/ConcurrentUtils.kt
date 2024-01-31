@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.util
 
-import java.util.*
+import java.util.Collections
 
 object ConcurrentUtils {
 

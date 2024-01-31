@@ -15,7 +15,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -68,7 +67,7 @@ class CreateCollectionFragment: DialogFragment() {
     }
 
     @Inject lateinit var modelFactory: Model.Factory
-    val model by viewModels<Model>() {
+    val model by viewModels<Model> {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -100,7 +99,7 @@ class CreateCollectionFragment: DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model.createCollection().observe(this, Observer { exception ->
+        model.createCollection().observe(this, { exception ->
             if (exception == null)
                 requireActivity().finish()
             else {

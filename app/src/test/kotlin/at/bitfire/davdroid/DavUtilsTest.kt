@@ -84,8 +84,8 @@ class DavUtilsTest {
                 else -> throw AssertionError()
             }
         }
-        assertTrue(result[0] > 200 && result[0] < 500)
-        assertTrue(result[1] > 500 && result[1] < 800)
+        assertTrue(result[0] in 201..499)
+        assertTrue(result[1] in 501..799)
     }
 
 }

@@ -8,7 +8,7 @@ import android.net.Uri
 import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.contactrow.DataRowBuilder
-import java.util.*
+import java.util.LinkedList
 
 class UnknownPropertiesBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, readOnly: Boolean)
     : DataRowBuilder(Factory.mimeType(), dataRowUri, rawContactId, contact, readOnly) {

@@ -236,7 +236,7 @@ class RandomAccessCallback private constructor(
     ): ProxyFileDescriptorCallback() {
 
         companion object {
-            val TIMEOUT_INTERVAL = 15000L
+            const val TIMEOUT_INTERVAL = 15000L
         }
 
         sealed class Events {

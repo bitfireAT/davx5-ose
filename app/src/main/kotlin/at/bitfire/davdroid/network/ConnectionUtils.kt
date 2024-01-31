@@ -6,7 +6,6 @@ package at.bitfire.davdroid.network
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import androidx.annotation.RequiresApi
 import at.bitfire.davdroid.log.Logger
 import java.util.logging.Level
 
@@ -40,7 +39,6 @@ object ConnectionUtils {
      * @param ignoreVpns *true* filters VPN connections in the Internet check; *false* allows them as valid connection
      * @return whether we are connected to the Internet
      */
-    @RequiresApi(23)
     internal fun internetAvailable(connectivityManager: ConnectivityManager, ignoreVpns: Boolean): Boolean {
         return connectivityManager.allNetworks.any { network ->
             val capabilities = connectivityManager.getNetworkCapabilities(network)

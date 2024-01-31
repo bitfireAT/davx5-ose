@@ -10,8 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import at.bitfire.davdroid.App
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.databinding.IntroWelcomeBinding
 import dagger.Binds
 import dagger.Module
@@ -62,7 +60,7 @@ class WelcomeFragment: Fragment() {
     @InstallIn(ActivityComponent::class)
     abstract class WelcomeFragmentModule {
         @Binds @IntoSet
-        abstract fun getFactory(factory: WelcomeFragment.Factory): IntroFragmentFactory
+        abstract fun getFactory(factory: Factory): IntroFragmentFactory
     }
 
     class Factory @Inject constructor() : IntroFragmentFactory {

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.di
 
-import at.bitfire.davdroid.log.Logger
 import dagger.hilt.DefineComponent
 import dagger.hilt.components.SingletonComponent
 import java.lang.ref.WeakReference

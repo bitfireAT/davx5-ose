@@ -74,7 +74,6 @@
         <activity android:name=".ui.intro.IntroActivity" android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.AccountsActivity"
-            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
             <intent-filter>
@@ -245,7 +244,8 @@
         <!-- account type "DAVx⁵ Address book" -->
         <service
             android:name=".syncadapter.AddressBookAuthenticatorService"
-            android:exported="true">   <!-- Since Android 11, this must be true so that Google Contacts shows the address book accounts -->
+            android:exported="true"
+            tools:ignore="ExportedService">   <!-- Since Android 11, this must be true so that Google Contacts shows the address book accounts -->
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>

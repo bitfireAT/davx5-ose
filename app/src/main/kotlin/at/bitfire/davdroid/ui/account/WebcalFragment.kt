@@ -15,11 +15,19 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Calendars
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.room.Transaction
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.Constants
@@ -74,7 +82,7 @@ class WebcalFragment: CollectionsFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        webcalModel.subscribedUrls.observe(this, Observer { urls ->
+        webcalModel.subscribedUrls.observe(this, { urls ->
             Logger.log.log(Level.FINE, "Got Android calendar list", urls.keys)
         })
     }

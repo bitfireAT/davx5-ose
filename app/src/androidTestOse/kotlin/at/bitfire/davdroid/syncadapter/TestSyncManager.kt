@@ -82,7 +82,7 @@ class TestSyncManager(
 
         for ((url, eTag) in assertDownloadRemote) {
             val fileName = DavUtils.lastSegmentOfUrl(url)
-            var localEntry = localCollection.entries.filter { it.fileName == fileName }.firstOrNull()
+            var localEntry = localCollection.entries.firstOrNull { it.fileName == fileName }
             if (localEntry == null) {
                 val newEntry = LocalTestResource().also {
                     it.fileName = fileName

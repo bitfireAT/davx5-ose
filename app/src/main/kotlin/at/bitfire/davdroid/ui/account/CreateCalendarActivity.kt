@@ -9,7 +9,11 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -41,7 +45,9 @@ import net.fortuna.ical4j.model.Calendar
 import org.apache.commons.lang3.StringUtils
 import java.time.ZoneId
 import java.time.format.TextStyle
-import java.util.*
+import java.util.Locale
+import java.util.TimeZone
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -52,7 +58,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
     }
 
     @Inject lateinit var modelFactory: Model.Factory
-    val model by viewModels<Model>() {
+    val model by viewModels<Model> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {

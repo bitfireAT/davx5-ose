@@ -7,8 +7,6 @@ package at.bitfire.davdroid.webdav.cache
 import at.bitfire.davdroid.log.Logger
 import org.apache.commons.io.FileUtils
 import java.io.File
-import java.io.IOException
-import java.util.logging.Level
 
 /**
  * Disk-based cache that maps [String]s to [ByteArray]s.

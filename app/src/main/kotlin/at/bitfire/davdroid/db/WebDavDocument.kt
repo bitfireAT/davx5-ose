@@ -17,8 +17,6 @@ import at.bitfire.davdroid.webdav.DocumentState
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.digester.Digester
 import java.io.FileNotFoundException
 import java.time.Instant
 

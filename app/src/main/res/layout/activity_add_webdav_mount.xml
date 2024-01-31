@@ -74,7 +74,7 @@
                         android:layout_height="wrap_content"
                         style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_marginBottom="8dp"
-                        android:text="Authentication (optional)" />
+                        android:text="@string/webdav_add_mount_authentication" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"

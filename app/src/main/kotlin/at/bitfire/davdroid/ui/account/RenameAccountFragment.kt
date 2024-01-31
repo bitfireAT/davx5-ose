@@ -202,15 +202,11 @@ class RenameAccountFragment: DialogFragment() {
             // update main account of address book accounts
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
                 try {
-                    context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { provider ->
-                        try {
-                            for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-                                val addressBook = LocalAddressBook(context, addrBookAccount, provider)
-                                if (oldAccount == addressBook.mainAccount)
-                                    addressBook.mainAccount = Account(newName, oldAccount.type)
-                            }
-                        } finally {
-                            provider.close()
+                    context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
+                        for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
+                            val addressBook = LocalAddressBook(context, addrBookAccount, provider)
+                            if (oldAccount == addressBook.mainAccount)
+                                addressBook.mainAccount = Account(newName, oldAccount.type)
                         }
                     }
                 } catch (e: Exception) {

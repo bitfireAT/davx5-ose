@@ -19,7 +19,7 @@ class LocalTestCollection: LocalCollection<LocalTestResource> {
     override fun findDeleted() = entries.filter { it.deleted }
     override fun findDirty() = entries.filter { it.dirty }
 
-    override fun findByName(name: String) = entries.filter { it.fileName == name }.firstOrNull()
+    override fun findByName(name: String) = entries.firstOrNull { it.fileName == name }
 
     override fun markNotDirty(flags: Int): Int {
         var updated = 0

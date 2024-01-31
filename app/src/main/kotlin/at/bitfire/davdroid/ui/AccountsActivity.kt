@@ -195,7 +195,7 @@ class AccountsActivity: AppCompatActivity() {
                                 },
                                 dataSaverActive = warnings.dataSaverEnabled.observeAsState().value == true,
                                 onManageDataSaver = {
-                                    val intent = Intent(android.provider.Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS, Uri.parse("package:" + packageName))
+                                    val intent = Intent(Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS, Uri.parse("package:$packageName"))
                                     if (intent.resolveActivity(packageManager) != null)
                                         startActivity(intent)
                                 },
@@ -207,7 +207,7 @@ class AccountsActivity: AppCompatActivity() {
                                 },
                                 lowStorageWarning = warnings.storageLow.observeAsState().value == true,
                                 onManageStorage = {
-                                    val intent = Intent(android.provider.Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
+                                    val intent = Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
                                     if (intent.resolveActivity(packageManager) != null)
                                         startActivity(intent)
                                 }

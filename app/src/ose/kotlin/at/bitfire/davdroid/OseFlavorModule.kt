@@ -24,7 +24,7 @@ interface OseFlavorModules {
     @InstallIn(ActivityComponent::class)
     interface ForActivities {
         @Binds
-        abstract fun accountsDrawerHandler(impl: OseAccountsDrawerHandler): AccountsDrawerHandler
+        fun accountsDrawerHandler(impl: OseAccountsDrawerHandler): AccountsDrawerHandler
 
         @Binds
         fun appLicenseInfoProvider(impl: OpenSourceLicenseInfoProvider): AboutActivity.AppLicenseInfoProvider

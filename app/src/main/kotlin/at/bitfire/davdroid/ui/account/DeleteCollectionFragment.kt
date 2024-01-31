@@ -12,7 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.databinding.DeleteCollectionBinding
 import at.bitfire.davdroid.db.AppDatabase
@@ -47,7 +52,7 @@ class DeleteCollectionFragment: DialogFragment() {
     }
 
     @Inject lateinit var modelFactory: Model.Factory
-    val model by viewModels<Model>() {
+    val model by viewModels<Model> {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -69,7 +74,7 @@ class DeleteCollectionFragment: DialogFragment() {
             binding.progress.visibility = View.VISIBLE
             binding.controls.visibility = View.GONE
 
-            model.deleteCollection().observe(viewLifecycleOwner, Observer { exception ->
+            model.deleteCollection().observe(viewLifecycleOwner, { exception ->
                 if (exception != null)
                     parentFragmentManager.beginTransaction()
                             .add(ExceptionInfoFragment.newInstance(exception, model.account), null)

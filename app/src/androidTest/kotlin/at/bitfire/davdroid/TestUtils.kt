@@ -15,11 +15,12 @@ import org.junit.Assert.assertTrue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import kotlin.math.abs
 
 object TestUtils {
 
     fun assertWithin(expected: Long, actual: Long, tolerance: Long) {
-        val absDifference = Math.abs(expected - actual)
+        val absDifference = abs(expected - actual)
         assertTrue(
             "$actual not within ($expected ± $tolerance)",
             absDifference <= tolerance

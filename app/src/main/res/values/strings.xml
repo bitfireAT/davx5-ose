@@ -125,8 +125,6 @@
     <string name="logging_notification_disable">Disable</string>
 
     <!-- AccountsActivity -->
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
     <string name="navigation_drawer_about">About / License</string>
     <string name="navigation_drawer_beta_feedback">Beta feedback</string>
@@ -488,6 +486,7 @@
     <string name="webdav_add_mount_display_name">Display name</string>
     <string name="webdav_add_mount_url">WebDAV URL</string>
     <string name="webdav_add_mount_url_invalid">Invalid URL</string>
+    <string name="webdav_add_mount_authentication">Authentication (optional)</string>
     <string name="webdav_add_mount_username">User name</string>
     <string name="webdav_add_mount_password">Password</string>
     <string name="webdav_add_mount_add">Add mount</string>
