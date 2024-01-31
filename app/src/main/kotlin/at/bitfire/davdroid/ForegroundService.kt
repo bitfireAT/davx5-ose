@@ -8,10 +8,12 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.os.Build
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.ServiceCompat
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -104,7 +106,7 @@ class ForegroundService : Service() {
             .setStyle(NotificationCompat.BigTextStyle())
             .setContentIntent(PendingIntent.getActivity(this, 0, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
             .setCategory(NotificationCompat.CATEGORY_STATUS)
-        startForeground(NotificationUtils.NOTIFY_FOREGROUND, builder.build())
+        ServiceCompat.startForeground(this, NotificationUtils.NOTIFY_FOREGROUND, builder.build(), FOREGROUND_SERVICE_TYPE_DATA_SYNC)
     }
 
     override fun onBind(intent: Intent?): Nothing? = null

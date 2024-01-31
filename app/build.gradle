@@ -32,7 +32,7 @@ android {
         setProperty "archivesBaseName", "davx5-ose-" + getVersionName()
 
         minSdkVersion 24        // Android 7.0
-        targetSdkVersion 33     // Android 13
+        targetSdkVersion 34     // Android 14
 
         buildConfigField "String", "userAgent", "\"DAVx5\""
 
