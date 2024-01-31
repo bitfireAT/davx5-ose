@@ -27,10 +27,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
@@ -85,7 +86,7 @@ class NextcloudLoginFlowFragment: Fragment() {
     companion object {
 
         const val LOGIN_FLOW_V1_PATH = "index.php/login/flow"
-        val LOGIN_FLOW_V2_PATH = "index.php/login/v2"
+        const val LOGIN_FLOW_V2_PATH = "index.php/login/v2"
 
         /** Set this to 1 to indicate that Login Flow shall be used. */
         const val EXTRA_LOGIN_FLOW = "loginFlow"
@@ -106,10 +107,10 @@ class NextcloudLoginFlowFragment: Fragment() {
 
     }
 
-    val loginModel by activityViewModels<LoginModel>()
-    val model by viewModels<Model>()
+    private val loginModel by activityViewModels<LoginModel>()
+    private val model by viewModels<Model>()
 
-    val checkResultCallback = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private val checkResultCallback = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH) ?: DAV_PATH_DEFAULT
         model.checkResult(davPath)
     }
@@ -128,8 +129,8 @@ class NextcloudLoginFlowFragment: Fragment() {
                             model.start(url)
                         },
                         entryUrl = entryUrl,
-                        inProgress = model.inProgress.observeAsState(false),
-                        error = model.error.observeAsState()
+                        inProgress = model.inProgress.observeAsState(false).value,
+                        error = model.error.observeAsState().value
                     )
                 }
             }
@@ -205,10 +206,10 @@ class NextcloudLoginFlowFragment: Fragment() {
                 .setForeground(true)
                 .build()
         }
-        val inProgress = MutableLiveData<Boolean>(false)
+        val inProgress = MutableLiveData(false)
 
-        var pollUrl: HttpUrl? = null
-        var token: String? = null
+        private var pollUrl: HttpUrl? = null
+        private var token: String? = null
 
         val loginData = MutableLiveData<Pair<URI, Credentials>>()
 
@@ -338,12 +339,12 @@ class NextcloudLoginFlowFragment: Fragment() {
 @Composable
 fun NextcloudLoginComposable(
     entryUrl: HttpUrl?,
-    inProgress: State<Boolean>,
-    error: State<String?>,
+    inProgress: Boolean,
+    error: String?,
     onStart: (HttpUrl) -> Unit
 ) {
     Column {
-        if (inProgress.value)
+        if (inProgress)
             LinearProgressIndicator(
                 color = MaterialTheme.colors.secondary,
                 modifier = Modifier
@@ -370,9 +371,9 @@ fun NextcloudLoginComposable(
 @Composable
 fun NextcloudLoginFlowComposable(
     providedEntryUrl: HttpUrl?,
-    inProgress: State<Boolean>,
-    error: State<String?>,
-    onStart: ((HttpUrl) -> Unit)
+    inProgress: Boolean,
+    error: String?,
+    onStart: (HttpUrl) -> Unit = {}
 ) {
     Column {
         Text(
@@ -385,14 +386,14 @@ fun NextcloudLoginFlowComposable(
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
-        val entryUrlStr = remember { mutableStateOf(providedEntryUrl?.toString() ?: "") }
-        val entryUrl = remember { mutableStateOf<HttpUrl?>(providedEntryUrl) }
+        var entryUrlStr by remember { mutableStateOf(providedEntryUrl?.toString() ?: "") }
+        var entryUrl by remember { mutableStateOf(providedEntryUrl) }
         OutlinedTextField(
-            value = entryUrlStr.value,
+            value = entryUrlStr,
             onValueChange = { newUrlStr ->
-                entryUrlStr.value = newUrlStr
+                entryUrlStr = newUrlStr
 
-                entryUrl.value = try {
+                entryUrl = try {
                     val withScheme =
                         if (!newUrlStr.startsWith("http://", true) && !newUrlStr.startsWith("https://", true))
                             "https://$newUrlStr"
@@ -406,7 +407,7 @@ fun NextcloudLoginFlowComposable(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            readOnly = inProgress.value,
+            readOnly = inProgress,
             label = {
                 Text(stringResource(R.string.login_nextcloud_login_flow_server_address))
             },
@@ -419,7 +420,7 @@ fun NextcloudLoginFlowComposable(
             ),
             keyboardActions = KeyboardActions(
                 onGo = {
-                    entryUrl.value?.let(onStart)
+                    entryUrl?.let(onStart)
                 }
             ),
             singleLine = true
@@ -427,20 +428,19 @@ fun NextcloudLoginFlowComposable(
 
         Button(
             onClick = {
-                entryUrl.value?.let(onStart)
+                entryUrl?.let(onStart)
             },
-            enabled = entryUrl.value != null && !inProgress.value
+            enabled = entryUrl != null && !inProgress
         ) {
             Text(stringResource(R.string.login_nextcloud_login_flow_sign_in))
         }
 
-        error.value?.let { msg ->
+        if (error != null)
             Text(
-                msg,
+                error,
                 color = MaterialTheme.colors.error,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-        }
     }
 }
 
@@ -449,8 +449,7 @@ fun NextcloudLoginFlowComposable(
 fun NextcloudLoginFlowComposable_PreviewWithError() {
     NextcloudLoginFlowComposable(
         providedEntryUrl = null,
-        inProgress = remember { mutableStateOf(true) },
-        error = remember { mutableStateOf("Something wrong happened") },
-        onStart = { }
+        inProgress = true,
+        error = "Something wrong happened"
     )
 }
