@@ -47,6 +47,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
@@ -197,7 +198,16 @@ class NextcloudLoginFlowFragment: Fragment() {
      *
      * @see https://docs.nextcloud.com/server/20/developer_manual/client_apis/LoginFlow/index.html#login-flow-v2
      */
-    class Model(app: Application): AndroidViewModel(app) {
+    class Model(
+        app: Application,
+        val state: SavedStateHandle
+    ): AndroidViewModel(app) {
+
+        companion object {
+            const val STATE_POLL_URL = "poll_url"
+            const val STATE_TOKEN = "token"
+        }
+
         val loginUrl = MutableLiveData<String>()
         val error = MutableLiveData<String>()
 
@@ -208,8 +218,16 @@ class NextcloudLoginFlowFragment: Fragment() {
         }
         val inProgress = MutableLiveData(false)
 
-        private var pollUrl: HttpUrl? = null
-        private var token: String? = null
+        private var pollUrl: HttpUrl?
+            get() = state.get<String>(STATE_POLL_URL)?.toHttpUrlOrNull()
+            set(value) {
+                state[STATE_POLL_URL] = value.toString()
+            }
+        private var token: String?
+            get() = state.get<String>(STATE_TOKEN)
+            set(value) {
+                state[STATE_TOKEN] = value
+            }
 
         val loginData = MutableLiveData<Pair<URI, Credentials>>()
 
@@ -260,6 +278,12 @@ class NextcloudLoginFlowFragment: Fragment() {
             }
         }
 
+        /**
+         * Called when the custom tab / browser activity is finished. If memory is low, our
+         * [NextcloudLoginFlowFragment] and its model have been cleared in the meanwhile. So if
+         * we need certain data from the model, we have to make sure that these data are retained when the
+         * model is cleared (saved state).
+         */
         @UiThread
         fun checkResult(davPath: String?) {
             val pollUrl = pollUrl ?: return
