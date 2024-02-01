@@ -180,14 +180,14 @@ class AccountSettingsMigrations(
                                     val property = UnknownProperty.fromJsonString(rawValue)
                                     if (property is Url) {  // rewrite to MIMETYPE_URL
                                         val newValues = ContentValues(2)
-                                        newValues.put(CalendarContract.ExtendedProperties.NAME, AndroidEvent.MIMETYPE_URL)
+                                        newValues.put(CalendarContract.ExtendedProperties.NAME, AndroidEvent.EXTNAME_URL)
                                         newValues.put(CalendarContract.ExtendedProperties.VALUE, property.value)
                                         provider.update(uri, newValues, null, null)
                                     }
                                 } catch (e: Exception) {
                                     Logger.log.log(
                                         Level.WARNING,
-                                        "Couldn't rewrite URL from unknown property to ${AndroidEvent.MIMETYPE_URL}",
+                                        "Couldn't rewrite URL from unknown property to ${AndroidEvent.EXTNAME_URL}",
                                         e
                                     )
                                 }
