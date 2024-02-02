@@ -13,8 +13,8 @@ jobs:
     name: Tests without emulator
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
@@ -22,7 +22,7 @@ jobs:
 
       - name: Create app/build and gradle configuration cache
         if: ${{ github.ref == 'refs/heads/dev-ose' }}
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: app_build-tests-without-emulator-${{ github.run_id }}
           path: |
@@ -30,7 +30,7 @@ jobs:
             app/build
       - name: Use app/build and gradle configuration cache
         if: ${{ github.ref != 'refs/heads/dev-ose' }}
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           key: app_build-tests-without-emulator
           restore-keys: app_build-tests-without-emulator-   # restore cache from dev branch
@@ -41,12 +41,13 @@ jobs:
       - name: Run lint and unit tests
         run: ./gradlew app:check
       - name: Archive results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: |
             app/build/outputs/lint*
             app/build/reports
+          overwrite: true
 
   test_on_emulator:
     name: Tests with emulator
@@ -55,8 +56,8 @@ jobs:
       matrix:
         api-level: [ 31 ]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
@@ -64,7 +65,7 @@ jobs:
 
       - name: Create app/build and gradle configuration cache
         if: ${{ github.ref == 'refs/heads/dev-ose' }}
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: app_build-tests-without-emulator-${{ github.run_id }}
           path: |
@@ -72,7 +73,7 @@ jobs:
             app/build
       - name: Use app/build and gradle configuration cache
         if: ${{ github.ref != 'refs/heads/dev-ose' }}
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           key: app_build-tests-without-emulator
           restore-keys: app_build-tests-without-emulator-   # restore cache from dev branch
@@ -87,7 +88,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Cache AVD and APKs
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: avd-cache
         with:
           path: |
@@ -118,8 +119,9 @@ jobs:
 
       - name: Archive results
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: |
             app/build/reports
+          overwrite: true
