@@ -20,7 +20,6 @@ import at.bitfire.ical4android.ICalendar
 import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import net.fortuna.ical4j.model.property.ProdId
-import org.apache.commons.lang3.StringUtils
 import java.util.UUID
 
 class LocalEvent: AndroidEvent, LocalResource<Event> {
@@ -203,15 +202,8 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
      * @return file name to use at upload
      */
     override fun prepareForUpload(): String {
-        // fetch UID_2445 from calendar provider
-        var dbUid: String? = null
-        calendar.provider.query(eventSyncURI(), arrayOf(Events.UID_2445), null, null, null)?.use { cursor ->
-            if (cursor.moveToNext())
-                dbUid = StringUtils.trimToNull(cursor.getString(0))
-        }
-
         // make sure that UID is set
-        val uid: String = dbUid ?: run {
+        val uid: String = event!!.uid ?: run {
             // generate new UID
             val newUid = UUID.randomUUID().toString()
 
@@ -220,7 +212,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
             values.put(Events.UID_2445, newUid)
             calendar.provider.update(eventSyncURI(), values, null, null)
 
-            // Update this event
+            // update this event
             event?.uid = newUid
 
             newUid
