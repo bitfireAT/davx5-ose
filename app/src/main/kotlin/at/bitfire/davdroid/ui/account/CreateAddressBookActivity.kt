@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -33,6 +34,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.TaskStackBuilder
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -85,19 +88,21 @@ class CreateAddressBookActivity: AppCompatActivity() {
                 val description by model.description.observeAsState()
                 val homeSet by model.homeSet.observeAsState()
                 val homeSets by model.homeSets.observeAsState()
+                val homeSetError by model.homeSetError.observeAsState()
 
                 Content(
+                    isCreateEnabled = displayName != null &&
+                        displayNameError == null &&
+                        homeSet != null,
                     displayName = displayName,
-                    onDisplayNameChange = {
-                        model.displayName.value = it
-                        model.displayNameError.value = null
-                    },
+                    onDisplayNameChange = model.displayName::setValue,
                     displayNameError = displayNameError,
                     description = description,
                     onDescriptionChange = model.description::setValue,
                     homeSet = homeSet,
-                    homeSets = homeSets ?: emptyList(),
-                    onHomeSetClicked = model.homeSet::setValue
+                    homeSets = homeSets,
+                    onHomeSetClicked = model.homeSet::setValue,
+                    homeSetError = homeSetError
                 )
             }
         }
@@ -116,17 +121,19 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
     @Composable
     private fun Content(
+        isCreateEnabled: Boolean = false,
         displayName: String? = null,
         onDisplayNameChange: (String) -> Unit = {},
         displayNameError: String? = null,
         description: String? = null,
         onDescriptionChange: (String) -> Unit = {},
         homeSet: HomeSet? = null,
-        homeSets: List<HomeSet> = emptyList(),
-        onHomeSetClicked: (HomeSet) -> Unit = {}
+        homeSets: List<HomeSet>? = null,
+        onHomeSetClicked: (HomeSet) -> Unit = {},
+        homeSetError: String? = null
     ) {
         Scaffold(
-            topBar = { TopBar() }
+            topBar = { TopBar(isCreateEnabled) }
         ) { paddingValues ->
             CreateAddressBookForm(
                 paddingValues,
@@ -137,7 +144,8 @@ class CreateAddressBookActivity: AppCompatActivity() {
                 onDescriptionChange,
                 homeSet,
                 homeSets,
-                onHomeSetClicked
+                onHomeSetClicked,
+                homeSetError
             )
         }
     }
@@ -151,8 +159,9 @@ class CreateAddressBookActivity: AppCompatActivity() {
         description: String?,
         onDescriptionChange: (String) -> Unit,
         homeSet: HomeSet?,
-        homeSets: List<HomeSet>,
-        onHomeSetClicked: (HomeSet) -> Unit
+        homeSets: List<HomeSet>?,
+        onHomeSetClicked: (HomeSet) -> Unit,
+        homeSetError: String? = null
     ) {
         Column(
             modifier = Modifier
@@ -192,15 +201,22 @@ class CreateAddressBookActivity: AppCompatActivity() {
             AutoCompleteTextView(
                 value = homeSet,
                 label = stringResource(R.string.create_collection_home_set),
-                items = homeSets,
+                items = homeSets ?: emptyList(),
                 toStringConverter = { it.displayName ?: it.url.toString() },
-                onItemClick = onHomeSetClicked
+                onItemClick = onHomeSetClicked,
+                isError = homeSetError != null,
+                modifier = Modifier.fillMaxWidth()
+            )
+            TextFieldSupportingText(
+                text = homeSetError,
+                modifier = Modifier.fillMaxWidth(),
+                isError = true
             )
         }
     }
 
     @Composable
-    private fun TopBar() {
+    private fun TopBar(isCreateEnabled: Boolean) {
         TopAppBar(
             title = { Text(stringResource(R.string.create_addressbook)) },
             navigationIcon = {
@@ -209,7 +225,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
                 }
             },
             actions = {
-                IconButton(onClick = ::onCreateCollection) {
+                IconButton(
+                    enabled = isCreateEnabled,
+                    onClick = ::onCreateCollection
+                ) {
                     Text(stringResource(R.string.create_collection_create).uppercase())
                 }
             }
@@ -259,9 +278,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
 
     class Model @AssistedInject constructor(
+        application: Application,
         val db: AppDatabase,
         @Assisted val account: Account
-    ) : ViewModel() {
+    ) : AndroidViewModel(application) {
 
         @AssistedFactory
         interface Factory {
@@ -269,7 +289,15 @@ class CreateAddressBookActivity: AppCompatActivity() {
         }
 
         val displayName = MutableLiveData<String?>(null)
-        val displayNameError = MutableLiveData<String?>(null)
+        val displayNameError = MediatorLiveData<String?>(null).apply {
+            addSource(displayName) {
+                // Display error if displayName has been modified, and it's blank
+                value = if (it != null && it.isBlank())
+                    application.getString(R.string.create_collection_display_name_required)
+                else
+                    null
+            }
+        }
 
         val description = MutableLiveData<String?>(null)
 
