@@ -151,7 +151,7 @@
         </activity>
         <activity
             android:name=".ui.account.CreateAddressBookActivity"
-            android:label="@string/create_addressbook"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".ui.account.AccountActivity" />
         <activity
             android:name=".ui.account.CreateCalendarActivity"
