@@ -9,25 +9,37 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
 import android.app.Application
-import android.app.Dialog
 import android.content.ContentResolver
-import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import android.widget.EditText
-import android.widget.LinearLayout
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.*
+import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -36,7 +48,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.ical4android.TaskProvider
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -65,18 +77,8 @@ class RenameAccountFragment: DialogFragment() {
     val model by viewModels<Model>()
 
 
-    @SuppressLint("Recycle")
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val oldAccount: Account = requireArguments().getParcelable(ARG_ACCOUNT)!!
-
-        val editText = EditText(requireActivity()).apply {
-            setText(oldAccount.name)
-            requestFocus()
-        }
-        val layout = LinearLayout(requireContext())
-        val density = requireActivity().resources.displayMetrics.density.toInt()
-        layout.setPadding(8*density, 8*density, 8*density, 8*density)
-        layout.addView(editText)
 
         model.errorMessage.observe(this) { msg ->
             // we use a Toast to show the error message because a Snackbar is not usable for the input dialog fragment
@@ -87,19 +89,39 @@ class RenameAccountFragment: DialogFragment() {
             requireActivity().finish()
         }
 
-        return MaterialAlertDialogBuilder(requireActivity())
-                .setTitle(R.string.account_rename)
-                .setMessage(R.string.account_rename_new_name)
-                .setView(layout)
-                .setPositiveButton(R.string.account_rename_rename, DialogInterface.OnClickListener { _, _ ->
-                    val newName = editText.text.toString()
-                    if (newName == oldAccount.name)
-                        return@OnClickListener
-
-                    model.renameAccount(oldAccount, newName)
-                })
-                .setNegativeButton(android.R.string.cancel) { _, _ -> }
-                .create()
+        return ComposeView(requireContext()).apply {
+            // Dispose of the Composition when the view's LifecycleOwner is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MdcTheme {
+                    var accountName by remember { mutableStateOf(oldAccount.name) }
+                    AlertDialog(
+                        onDismissRequest = { dismiss() },
+                        title = { Text(stringResource(R.string.account_rename)) },
+                        text = { Column {
+                            Text(stringResource(R.string.account_rename_new_name_description))
+                            TextField(
+                                value = accountName,
+                                onValueChange = { accountName = it },
+                                label = { Text(stringResource(R.string.account_rename_new_name)) },
+                            )
+                        }},
+                        confirmButton = {
+                            TextButton(onClick = {
+                                model.renameAccount(oldAccount, accountName)
+                            }) {
+                                Text(stringResource(R.string.account_rename_rename).uppercase())
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { dismiss() }) {
+                                Text(stringResource(android.R.string.cancel).uppercase())
+                            }
+                        },
+                    )
+                }
+            }
+        }
     }
 
 
