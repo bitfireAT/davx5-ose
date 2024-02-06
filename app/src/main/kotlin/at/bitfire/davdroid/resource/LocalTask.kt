@@ -59,21 +59,19 @@ class LocalTask: AndroidTask, LocalResource<Task> {
     /* custom queries */
 
     override fun prepareForUpload(): String {
-        var uid: String? = null
-        taskList.provider.client.query(taskSyncURI(), arrayOf(Tasks._UID), null, null, null)?.use { cursor ->
-            if (cursor.moveToNext())
-                uid = cursor.getString(0)
-        }
-
-        if (uid == null) {
+        val uid: String = task!!.uid ?: run {
             // generate new UID
-            uid = UUID.randomUUID().toString()
+            val newUid = UUID.randomUUID().toString()
 
+            // update in tasks provider
             val values = ContentValues(1)
-            values.put(Tasks._UID, uid)
+            values.put(Tasks._UID, newUid)
             taskList.provider.client.update(taskSyncURI(), values, null, null)
 
-            task!!.uid = uid
+            // update this task
+            task!!.uid = newUid
+
+            newUid
         }
 
         return "$uid.ics"

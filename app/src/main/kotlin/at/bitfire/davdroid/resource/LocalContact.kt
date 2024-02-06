@@ -70,21 +70,20 @@ class LocalContact: AndroidContact, LocalAddress {
 
 
     override fun prepareForUpload(): String {
-        var uid: String? = null
-        addressBook.provider!!.query(rawContactSyncURI(), arrayOf(COLUMN_UID), null, null, null)?.use { cursor ->
-            if (cursor.moveToNext())
-                uid = StringUtils.trimToNull(cursor.getString(0))
-        }
-
-        if (uid == null) {
+        val contact = getContact()
+        val uid: String = contact.uid ?: run {
             // generate new UID
-            uid = UUID.randomUUID().toString()
+            val newUid = UUID.randomUUID().toString()
 
+            // update in contacts provider
             val values = ContentValues(1)
-            values.put(COLUMN_UID, uid)
+            values.put(COLUMN_UID, newUid)
             addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
 
-            getContact().uid = uid
+            // update this event
+            contact.uid = newUid
+
+            newUid
         }
 
         return "$uid.vcf"
