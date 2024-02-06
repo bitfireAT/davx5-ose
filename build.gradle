@@ -22,7 +22,7 @@ buildscript {
         cert4android: '2bb3898',
         dav4jvm: '93dddcd',
         ical4android: '66dc34c',
-        vcard4android: 'a7a1f42'
+        vcard4android: '890ec70'
     ]
 
     repositories {
