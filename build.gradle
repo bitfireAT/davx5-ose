@@ -19,10 +19,10 @@ buildscript {
         commonsLang: '3.14.0',
         commonsText: '1.11.0',
         // own libraries
-        cert4android: '2bb3898',
-        dav4jvm: '93dddcd',
-        ical4android: '66dc34c',
-        vcard4android: '890ec70'
+        cert4android: 'f0964cb',
+        dav4jvm: '20f4a12',
+        ical4android: '821ab3f',
+        vcard4android: 'fcabcf2'
     ]
 
     repositories {
