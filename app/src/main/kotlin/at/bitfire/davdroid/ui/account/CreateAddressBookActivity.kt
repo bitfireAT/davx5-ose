@@ -49,7 +49,6 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.ui.widget.TextFieldSupportingText
 import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -92,7 +91,6 @@ class CreateAddressBookActivity: AppCompatActivity() {
                 val description by model.description.observeAsState()
                 val homeSet by model.homeSet.observeAsState()
                 val homeSets by model.homeSets.observeAsState()
-                val homeSetError by model.homeSetError.observeAsState()
 
                 Content(
                     isCreateEnabled = displayName != null &&
@@ -105,8 +103,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
                     onDescriptionChange = model.description::setValue,
                     homeSet = homeSet,
                     homeSets = homeSets,
-                    onHomeSetClicked = model.homeSet::setValue,
-                    homeSetError = homeSetError
+                    onHomeSetClicked = model.homeSet::setValue
                 )
             }
         }
@@ -142,8 +139,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         onDescriptionChange: (String) -> Unit = {},
         homeSet: HomeSet? = null,
         homeSets: List<HomeSet>? = null,
-        onHomeSetClicked: (HomeSet) -> Unit = {},
-        homeSetError: String? = null
+        onHomeSetClicked: (HomeSet) -> Unit = {}
     ) {
         Scaffold(
             topBar = { TopBar(isCreateEnabled) }
@@ -157,8 +153,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
                 onDescriptionChange,
                 homeSet,
                 homeSets,
-                onHomeSetClicked,
-                homeSetError
+                onHomeSetClicked
             )
         }
     }
@@ -173,8 +168,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         onDescriptionChange: (String) -> Unit,
         homeSet: HomeSet?,
         homeSets: List<HomeSet>?,
-        onHomeSetClicked: (HomeSet) -> Unit,
-        homeSetError: String? = null
+        onHomeSetClicked: (HomeSet) -> Unit
     ) {
         Column(
             modifier = Modifier
@@ -190,11 +184,6 @@ class CreateAddressBookActivity: AppCompatActivity() {
                 modifier = Modifier.fillMaxWidth(),
                 isError = displayNameError != null
             )
-            TextFieldSupportingText(
-                text = displayNameError,
-                modifier = Modifier.fillMaxWidth(),
-                isError = true
-            )
 
             OutlinedTextField(
                 value = description ?: "",
@@ -204,11 +193,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             )
-            TextFieldSupportingText(
+            Text(
                 text = stringResource(R.string.create_collection_optional),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp)
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
             )
 
             Text(
@@ -233,11 +221,6 @@ class CreateAddressBookActivity: AppCompatActivity() {
                     }
                 }
             }
-            TextFieldSupportingText(
-                text = homeSetError,
-                modifier = Modifier.fillMaxWidth(),
-                isError = true
-            )
         }
     }
 
@@ -270,13 +253,11 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
         val parent = model.homeSet.value
         if (parent != null) {
-            model.homeSetError.value = null
             args.putString(
                 CreateCollectionFragment.ARG_URL,
                 parent.url.resolve(UUID.randomUUID().toString() + "/").toString()
             )
         } else {
-            model.homeSetError.value = getString(R.string.create_collection_home_set_required)
             ok = false
         }
 
@@ -329,8 +310,6 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
         val homeSets = MutableLiveData<List<HomeSet>?>(null)
         var homeSet = MutableLiveData<HomeSet?>(null)
-
-        val homeSetError = MutableLiveData<String?>(null)
 
         init {
             viewModelScope.launch(Dispatchers.IO) {
