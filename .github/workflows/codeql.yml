@@ -28,15 +28,15 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
+      uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: 17
     - uses: gradle/actions/setup-gradle@v3
 
     - name: Use app/build and gradle configuration cache
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       with:
         key: app_build-tests-without-emulator
         path: |
@@ -58,6 +58,6 @@ jobs:
       run: ./gradlew --no-daemon app:assembleOseDebug
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
