@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,7 +21,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.RadioButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -29,6 +32,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,7 +49,6 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.ui.widget.AutoCompleteTextView
 import at.bitfire.davdroid.ui.widget.TextFieldSupportingText
 import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.assisted.Assisted
@@ -54,6 +57,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.apache.commons.lang3.StringUtils
 import java.util.UUID
 import javax.inject.Inject
@@ -117,7 +121,16 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
     @Composable
     @Preview(showBackground = true, showSystemUi = true)
-    private fun Content_Preview() { Content() }
+    private fun Content_Preview() {
+        Content(
+            displayName = "Display Name",
+            description = "Description",
+            homeSets = listOf(
+                HomeSet(1, 0, false, "http://example.com/".toHttpUrl()),
+                HomeSet(2, 0, false, "http://example.com/".toHttpUrl(), displayName = "Home Set 2"),
+            )
+        )
+    }
 
     @Composable
     private fun Content(
@@ -198,15 +211,28 @@ class CreateAddressBookActivity: AppCompatActivity() {
                     .padding(bottom = 4.dp)
             )
 
-            AutoCompleteTextView(
-                value = homeSet,
-                label = stringResource(R.string.create_collection_home_set),
-                items = homeSets ?: emptyList(),
-                toStringConverter = { it.displayName ?: it.url.toString() },
-                onItemClick = onHomeSetClicked,
-                isError = homeSetError != null,
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                text = stringResource(R.string.create_collection_home_set),
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             )
+            if (homeSets != null) {
+                for (item in homeSets) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = homeSet == item,
+                            onClick = { onHomeSetClicked(item) }
+                        )
+                        Text(
+                            text = item.displayName ?: item.url.toString(),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
             TextFieldSupportingText(
                 text = homeSetError,
                 modifier = Modifier.fillMaxWidth(),
