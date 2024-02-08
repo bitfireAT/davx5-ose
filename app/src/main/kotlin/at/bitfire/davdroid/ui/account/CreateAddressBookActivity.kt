@@ -295,8 +295,8 @@ class CreateAddressBookActivity: AppCompatActivity() {
             fun create(account: Account): Model
         }
 
-        val displayName = MutableLiveData<String?>(null)
-        val displayNameError = MediatorLiveData<String?>(null).apply {
+        val displayName = MutableLiveData<String>(null)
+        val displayNameError = MediatorLiveData<String>(null).apply {
             addSource(displayName) {
                 // Display error if displayName has been modified, and it's blank
                 value = if (it != null && it.isBlank())
@@ -306,10 +306,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
             }
         }
 
-        val description = MutableLiveData<String?>(null)
+        val description = MutableLiveData<String>(null)
 
-        val homeSets = MutableLiveData<List<HomeSet>?>(null)
-        var homeSet = MutableLiveData<HomeSet?>(null)
+        val homeSets = MutableLiveData<List<HomeSet>>(null)
+        var homeSet = MutableLiveData<HomeSet>(null)
 
         init {
             viewModelScope.launch(Dispatchers.IO) {
