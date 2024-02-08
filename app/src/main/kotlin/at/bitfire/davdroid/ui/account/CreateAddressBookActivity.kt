@@ -30,6 +30,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -170,6 +171,13 @@ class CreateAddressBookActivity: AppCompatActivity() {
         homeSets: List<HomeSet>?,
         onHomeSetClicked: (HomeSet) -> Unit
     ) {
+        LaunchedEffect(homeSet) {
+            // select first home set by default
+            if (homeSet == null && !homeSets.isNullOrEmpty()) {
+                homeSets.firstOrNull()?.let(onHomeSetClicked)
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -196,13 +204,17 @@ class CreateAddressBookActivity: AppCompatActivity() {
             Text(
                 text = stringResource(R.string.create_collection_optional),
                 style = MaterialTheme.typography.caption,
-                modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp)
             )
 
             Text(
                 text = stringResource(R.string.create_collection_home_set),
                 style = MaterialTheme.typography.caption,
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
             )
             if (homeSets != null) {
                 for (item in homeSets) {
