@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Veure/compartir</string>
   <string name="logging_notification_disable">Inhabilita</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Obre el calaix de navegació</string>
-  <string name="navigation_drawer_close">Tanca el calaix de navegació</string>
   <string name="navigation_drawer_subtitle">Adaptador de sincronització CalDAV / CardDAV</string>
   <string name="navigation_drawer_about">Quant a/llicència</string>
   <string name="navigation_drawer_beta_feedback">Retroacció de la Beta</string>

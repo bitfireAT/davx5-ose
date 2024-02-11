@@ -46,8 +46,6 @@
   <!--global settings-->
   <string name="logging_couldnt_create_file">Niy szło stworzić zbioru dziynnika</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Ôtwōrz myni nawigacyje</string>
-  <string name="navigation_drawer_close">Zawrzij myni nawigacyje</string>
   <string name="navigation_drawer_subtitle">Adapter synchrōnizacyje CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Ô DAVx⁵ / Licyncyjo</string>
   <string name="navigation_drawer_beta_feedback">Przekoż ôpinijo</string>

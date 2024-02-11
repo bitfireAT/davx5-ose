@@ -27,8 +27,6 @@
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nie je možné vytvoriť súbor protokolu</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Otvoriť navigačnú zásuvku</string>
-  <string name="navigation_drawer_close">Zatvoriť navigačnú zásuvku</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adaptér</string>
   <string name="navigation_drawer_about">O programe / Licencia</string>
   <string name="navigation_drawer_beta_feedback">Odozva na beta-verziu</string>

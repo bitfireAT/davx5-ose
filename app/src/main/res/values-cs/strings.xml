@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Zobrazit/sdílet</string>
   <string name="logging_notification_disable">Vypnout</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Otevřít panel navigace</string>
-  <string name="navigation_drawer_close">Zavřít panel navigace</string>
   <string name="navigation_drawer_subtitle">Adaptér synchronizace CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">O aplikaci / Licence</string>
   <string name="navigation_drawer_beta_feedback">Zpětná vazba k vývojové verzi</string>

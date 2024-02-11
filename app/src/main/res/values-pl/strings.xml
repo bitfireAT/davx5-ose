@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Zobacz/udostępnij</string>
   <string name="logging_notification_disable">Wyłącz</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Otwórz menu nawigacji</string>
-  <string name="navigation_drawer_close">Zamknij menu nawigacji</string>
   <string name="navigation_drawer_subtitle">Adapter synchronizacji CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Informacje/Licencja</string>
   <string name="navigation_drawer_beta_feedback">Przekaż opinię</string>

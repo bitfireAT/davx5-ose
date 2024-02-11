@@ -89,8 +89,6 @@
   <string name="logging_notification_view_share">Pregledaj/podijeli</string>
   <string name="logging_notification_disable">Onemogući</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Otvori navigacijski pretinac</string>
-  <string name="navigation_drawer_close">Zatvori navigacijski pretinac</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
   <string name="navigation_drawer_about">About / License</string>
   <string name="navigation_drawer_beta_feedback">Beta feedback</string>

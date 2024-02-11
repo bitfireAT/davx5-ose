@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Nézet/megosztás</string>
   <string name="logging_notification_disable">Kikapcsol</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Navigációs fiók megnyitása</string>
-  <string name="navigation_drawer_close">Navigációs fiók lezárása</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV szinkronizációs adapter</string>
   <string name="navigation_drawer_about">Névjegy / Licenc</string>
   <string name="navigation_drawer_beta_feedback">Tesztelői visszajelzés</string>

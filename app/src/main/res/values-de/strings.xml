@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Anzeigen/teilen</string>
   <string name="logging_notification_disable">Deaktivieren</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Hauptmenü anzeigen</string>
-  <string name="navigation_drawer_close">Hauptmenü schließen</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV-Sync-Adapter</string>
   <string name="navigation_drawer_about">Über / Lizenz</string>
   <string name="navigation_drawer_beta_feedback">Beta-Rückmeldung</string>
@@ -133,6 +131,8 @@
   <string name="account_list_manage_connections">Verbindungen steuern</string>
   <string name="account_list_datasaver_enabled">Datensparen aktiviert. Die Hintergrundsynchronisierung ist eingeschränkt.</string>
   <string name="account_list_manage_datasaver">Datensparen verwalten</string>
+  <string name="account_list_battery_saver_enabled">Akkusparen aktiviert. Die Synchronisierung kann eingeschränkt sein.</string>
+  <string name="account_list_manage_battery_saver">Akkusparen verwalten</string>
   <string name="account_list_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
   <string name="account_list_manage_storage">Speicherplatz verwalten</string>
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
@@ -418,6 +418,7 @@
   <string name="webdav_add_mount_display_name">Anzeigename</string>
   <string name="webdav_add_mount_url">WebDAV-Adresse</string>
   <string name="webdav_add_mount_url_invalid">Ungültige Adresse</string>
+  <string name="webdav_add_mount_authentication">Authentifizierung (optional)</string>
   <string name="webdav_add_mount_username">Anmeldename</string>
   <string name="webdav_add_mount_password">Passwort</string>
   <string name="webdav_add_mount_add">Einhängen</string>

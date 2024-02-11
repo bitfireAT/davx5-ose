@@ -28,8 +28,6 @@
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kan ikke opprette loggfil</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Åpne navigasjonsskuff</string>
-  <string name="navigation_drawer_close">Lukk navigasjonsskuff</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV -synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / Lisens</string>
   <string name="navigation_drawer_beta_feedback">Tilbakemelding om beta-en</string>

@@ -100,8 +100,6 @@
   <string name="logging_notification_view_share">Visualizza/condividi</string>
   <string name="logging_notification_disable">Disabilita</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Apri barra di navigazione</string>
-  <string name="navigation_drawer_close">Chiudi barra di navigazione</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV adattatore di sincronizzazione</string>
   <string name="navigation_drawer_about">Informazioni / Licenza</string>
   <string name="navigation_drawer_beta_feedback">Feedback sulla beta</string>

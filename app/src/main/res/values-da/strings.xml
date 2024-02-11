@@ -108,8 +108,6 @@
   <string name="logging_notification_view_share">Vis/del</string>
   <string name="logging_notification_disable">Deaktivere</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Åbne navigationsvindue</string>
-  <string name="navigation_drawer_close">Luk navigationsvindue</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / licens</string>
   <string name="navigation_drawer_beta_feedback">Beta tilbagemelding</string>

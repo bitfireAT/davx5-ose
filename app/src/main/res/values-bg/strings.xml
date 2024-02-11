@@ -108,8 +108,6 @@
   <string name="logging_notification_view_share">Преглед/споделяне</string>
   <string name="logging_notification_disable">Изключване</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Отваря менюто</string>
-  <string name="navigation_drawer_close">Затваря менюто</string>
   <string name="navigation_drawer_subtitle">Адаптор за синхронизиране на CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Относно / лиценз</string>
   <string name="navigation_drawer_beta_feedback">Обратна връзка към бета</string>

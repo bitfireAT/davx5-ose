@@ -107,8 +107,6 @@
   <string name="logging_notification_view_share">مشاهده / اشتراک گذاری</string>
   <string name="logging_notification_disable">غیر فعال</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">منوی ناوبری را باز کنید</string>
-  <string name="navigation_drawer_close">منوی ناوبری را ببندید</string>
   <string name="navigation_drawer_subtitle"> همگام سازی CalDAV / CardDAV</string>
   <string name="navigation_drawer_about">درباره / مجوز</string>
   <string name="navigation_drawer_beta_feedback">بازخورد بتا</string>
