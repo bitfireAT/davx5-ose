@@ -7,30 +7,53 @@ package at.bitfire.davdroid.ui.account
 import android.accounts.Account
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.view.Menu
-import android.view.MenuItem
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.RadioButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.app.TaskStackBuilder
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.ActivityCreateAddressBookBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.ui.HomeSetAdapter
+import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.apache.commons.lang3.StringUtils
 import java.util.UUID
 import javax.inject.Inject
@@ -53,36 +76,32 @@ class CreateAddressBookActivity: AppCompatActivity() {
         }
     }
 
-    lateinit var binding: ActivityCreateAddressBookBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_create_address_book)
-        binding.lifecycleOwner = this
-        binding.model = model
+        setContent {
+            MdcTheme {
+                val displayName by model.displayName.observeAsState()
+                val description by model.description.observeAsState()
+                val homeSet by model.homeSet.observeAsState()
+                val homeSets by model.homeSets.observeAsState()
 
-        val homeSetAdapter = HomeSetAdapter(this)
-        model.homeSets.observe(this) { homeSets ->
-            homeSetAdapter.clear()
-            if (homeSets.isNotEmpty()) {
-                homeSetAdapter.addAll(homeSets)
-                val firstHomeSet = homeSets.first()
-                binding.homeset.setText(firstHomeSet.url.toString(), false)
-                model.homeSet = firstHomeSet
+                Content(
+                    isCreateEnabled =
+                        displayName != null &&
+                        homeSet != null,
+                    displayName = displayName,
+                    onDisplayNameChange = model.displayName::setValue,
+                    description = description,
+                    onDescriptionChange = model.description::setValue,
+                    homeSet = homeSet,
+                    homeSets = homeSets,
+                    onHomeSetClicked = model.homeSet::setValue
+                )
             }
         }
-        binding.homeset.setAdapter(homeSetAdapter)
-        binding.homeset.setOnItemClickListener { parent, view, position, id ->
-            model.homeSet = parent.getItemAtPosition(position) as HomeSet?
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_create_collection, menu)
-        return true
     }
 
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
@@ -92,29 +111,150 @@ class CreateAddressBookActivity: AppCompatActivity() {
     }
 
 
-    fun onCreateCollection(item: MenuItem) {
+    @Composable
+    private fun Content(
+        isCreateEnabled: Boolean = false,
+        displayName: String? = null,
+        onDisplayNameChange: (String) -> Unit = {},
+        description: String? = null,
+        onDescriptionChange: (String) -> Unit = {},
+        homeSet: HomeSet? = null,
+        homeSets: List<HomeSet>? = null,
+        onHomeSetClicked: (HomeSet) -> Unit = {}
+    ) {
+        Scaffold(
+            topBar = { TopBar(isCreateEnabled) }
+        ) { paddingValues ->
+            CreateAddressBookForm(
+                paddingValues,
+                displayName,
+                onDisplayNameChange,
+                description,
+                onDescriptionChange,
+                homeSet,
+                homeSets,
+                onHomeSetClicked
+            )
+        }
+    }
+
+    @Composable
+    @Preview(showBackground = true, showSystemUi = true)
+    private fun Content_Preview() {
+        Content(
+            displayName = "Display Name",
+            description = "Description",
+            homeSets = listOf(
+                HomeSet(1, 0, false, "http://example.com/".toHttpUrl()),
+                HomeSet(2, 0, false, "http://example.com/".toHttpUrl(), displayName = "Home Set 2"),
+            )
+        )
+    }
+
+    @Composable
+    private fun CreateAddressBookForm(
+        paddingValues: PaddingValues,
+        displayName: String?,
+        onDisplayNameChange: (String) -> Unit,
+        description: String?,
+        onDescriptionChange: (String) -> Unit,
+        homeSet: HomeSet?,
+        homeSets: List<HomeSet>?,
+        onHomeSetClicked: (HomeSet) -> Unit
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .padding(8.dp)
+        ) {
+            OutlinedTextField(
+                value = displayName ?: "",
+                onValueChange = onDisplayNameChange,
+                label = { Text(stringResource(R.string.create_collection_display_name)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = description ?: "",
+                onValueChange = onDescriptionChange,
+                label = { Text(stringResource(R.string.create_collection_description_optional)) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            )
+
+            Text(
+                text = stringResource(R.string.create_collection_home_set),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            )
+            if (homeSets != null) {
+                for (item in homeSets) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = homeSet == item,
+                            onClick = { onHomeSetClicked(item) }
+                        )
+                        Text(
+                            text = item.displayName ?: item.url.encodedPath,
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun TopBar(isCreateEnabled: Boolean) {
+        TopAppBar(
+            title = { Text(stringResource(R.string.create_addressbook)) },
+            navigationIcon = {
+                IconButton(onClick = ::finish) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                }
+            },
+            actions = {
+                IconButton(
+                    enabled = isCreateEnabled,
+                    onClick = ::onCreateCollection
+                ) {
+                    Text(stringResource(R.string.create_collection_create).uppercase())
+                }
+            }
+        )
+    }
+
+
+    private fun onCreateCollection() {
         var ok = true
 
         val args = Bundle()
         args.putString(CreateCollectionFragment.ARG_SERVICE_TYPE, Service.TYPE_CARDDAV)
 
-        val parent = model.homeSet
+        val parent = model.homeSet.value
         if (parent != null) {
-            binding.homesetLayout.error = null
-            args.putString(CreateCollectionFragment.ARG_URL, parent.url.resolve(UUID.randomUUID().toString() + "/").toString())
+            args.putString(
+                CreateCollectionFragment.ARG_URL,
+                parent.url.resolve(UUID.randomUUID().toString() + "/").toString()
+            )
         } else {
-            binding.homesetLayout.error = getString(R.string.create_collection_home_set_required)
             ok = false
         }
 
         val displayName = model.displayName.value
-        if (displayName.isNullOrBlank()) {
-            model.displayNameError.value = getString(R.string.create_collection_display_name_required)
+        if (displayName.isNullOrBlank())
             ok = false
-        } else {
+        else
             args.putString(CreateCollectionFragment.ARG_DISPLAY_NAME, displayName)
-            model.displayNameError.value = null
-        }
 
         StringUtils.trimToNull(model.description.value)?.let {
             args.putString(CreateCollectionFragment.ARG_DESCRIPTION, it)
@@ -141,26 +281,22 @@ class CreateAddressBookActivity: AppCompatActivity() {
         }
 
         val displayName = MutableLiveData<String>()
-        val displayNameError = MutableLiveData<String>()
-
         val description = MutableLiveData<String>()
-
         val homeSets = MutableLiveData<List<HomeSet>>()
-        var homeSet: HomeSet? = null
+        var homeSet = MutableLiveData<HomeSet>()
 
         init {
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
-                    homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
+                    val homesets = db.homeSetDao().getBindableByService(service.id)
+                    homeSets.postValue(homesets)
+
+                    if (homeSet.value == null)
+                        homeSet.postValue(homesets.firstOrNull())
                 }
             }
         }
-
-        fun clearNameError(s: Editable) {
-            displayNameError.value = null
-        }
-
     }
 
 }
