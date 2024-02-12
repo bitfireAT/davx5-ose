@@ -28,9 +28,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -171,13 +170,6 @@ class CreateAddressBookActivity: AppCompatActivity() {
         homeSets: List<HomeSet>?,
         onHomeSetClicked: (HomeSet) -> Unit
     ) {
-        LaunchedEffect(homeSet) {
-            // select first home set by default
-            if (homeSet == null && !homeSets.isNullOrEmpty()) {
-                homeSets.firstOrNull()?.let(onHomeSetClicked)
-            }
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -188,7 +180,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
             OutlinedTextField(
                 value = displayName ?: "",
                 onValueChange = onDisplayNameChange,
-                label = { Text(stringResource(R.string.create_collection_display_name)) },
+                label = { Text(displayNameError ?: stringResource(R.string.create_collection_display_name)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = displayNameError != null
             )
@@ -196,25 +188,18 @@ class CreateAddressBookActivity: AppCompatActivity() {
             OutlinedTextField(
                 value = description ?: "",
                 onValueChange = onDescriptionChange,
-                label = { Text(stringResource(R.string.create_collection_description)) },
+                label = { Text(stringResource(R.string.create_collection_description_optional)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)
-            )
-            Text(
-                text = stringResource(R.string.create_collection_optional),
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 4.dp)
             )
 
             Text(
                 text = stringResource(R.string.create_collection_home_set),
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp)
+                    .padding(top = 16.dp)
             )
             if (homeSets != null) {
                 for (item in homeSets) {
@@ -227,7 +212,8 @@ class CreateAddressBookActivity: AppCompatActivity() {
                             onClick = { onHomeSetClicked(item) }
                         )
                         Text(
-                            text = item.displayName ?: item.url.toString(),
+                            text = item.displayName ?: item.url.encodedPath,
+                            style = MaterialTheme.typography.body2,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -242,7 +228,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
             title = { Text(stringResource(R.string.create_addressbook)) },
             navigationIcon = {
                 IconButton(onClick = ::finish) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, null)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
                 }
             },
             actions = {
@@ -307,8 +293,8 @@ class CreateAddressBookActivity: AppCompatActivity() {
             fun create(account: Account): Model
         }
 
-        val displayName = MutableLiveData<String>(null)
-        val displayNameError = MediatorLiveData<String>(null).apply {
+        val displayName = MutableLiveData<String>()
+        val displayNameError = MediatorLiveData<String>().apply {
             addSource(displayName) {
                 // Display error if displayName has been modified, and it's blank
                 value = if (it != null && it.isBlank())
@@ -318,16 +304,20 @@ class CreateAddressBookActivity: AppCompatActivity() {
             }
         }
 
-        val description = MutableLiveData<String>(null)
+        val description = MutableLiveData<String>()
 
-        val homeSets = MutableLiveData<List<HomeSet>>(null)
-        var homeSet = MutableLiveData<HomeSet>(null)
+        val homeSets = MutableLiveData<List<HomeSet>>()
+        var homeSet = MutableLiveData<HomeSet>()
 
         init {
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
-                    homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
+                    val homesets = db.homeSetDao().getBindableByService(service.id)
+                    homeSets.postValue(homesets)
+
+                    if (homeSet.value == null)
+                        homeSet.postValue(homesets.firstOrNull())
                 }
             }
         }
