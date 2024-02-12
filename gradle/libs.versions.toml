@@ -60,7 +60,7 @@ okhttp = "4.12.0"
 room = "2.6.1"
 
 [libraries]
-aboutLibs-compose = { module = "com.mikepenz.aboutlibraries:aboutlibraries-compose", version.ref = "aboutLibs" }
+aboutLibs-compose = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "aboutLibs" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch" }
@@ -87,16 +87,16 @@ androidx-work-base = { module = "androidx.work:work-runtime-ktx", version.ref = 
 androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
 appauth = { module = "net.openid:appauth", version.ref = "appauth" }
 appintro = { module = "com.github.AppIntro:AppIntro", version.ref = "appIntro" }
-bitfire-cert4android = { module = "com.bitfire.bitfireAT:cert4android", version.ref = "bitfire-cert4android" }
-bitfire-dav4jvm = { module = "com.bitfire.bitfireAT:dav4jvm", version.ref = "bitfire-dav4jvm" }
-bitfire-ical4android = { module = "com.bitfire.bitfireAT:ical4android", version.ref = "bitfire-ical4android" }
-bitfire-vcard4android = { module = "com.bitfire.bitfireAT:vcard4android", version.ref = "bitfire-vcard4android" }
+bitfire-cert4android = { module = "com.github.bitfireAT:cert4android", version.ref = "bitfire-cert4android" }
+bitfire-dav4jvm = { module = "com.github.bitfireAT:dav4jvm", version.ref = "bitfire-dav4jvm" }
+bitfire-ical4android = { module = "com.github.bitfireAT:ical4android", version.ref = "bitfire-ical4android" }
+bitfire-vcard4android = { module = "com.github.bitfireAT:vcard4android", version.ref = "bitfire-vcard4android" }
 commons-collections = { module = "org.apache.commons:commons-collections4", version.ref = "commons-collections" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
-compose-accompanist-themeAdapter = { module = "com.google.accompanist:accompanist-themeadapter", version.ref = "compose-accompanist" }
+compose-accompanist-themeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "compose-accompanist" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "compose-material" }
 compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose-material" }
 compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "compose-runtime" }
@@ -104,7 +104,7 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = 
 compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-ui" }
 desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugaring" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
-flexbox = { module = "com.google.android:flexbox", version.ref = "flexbox" }
+flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
@@ -117,7 +117,7 @@ kstatemachine = { module = "io.github.nsk90:kstatemachine-jvm", version.ref = "k
 material = { module = "com.google.android.material:material", version.ref = "material" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 okhttp-base = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-okhttp-brotli = { module = "com.brsanthu:okhttp-brotli", version.ref = "okhttp" }
+okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version.ref = "okhttp" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 room-base = { module = "androidx.room:room-ktx", version.ref = "room" }
