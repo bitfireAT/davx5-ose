@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">查看/分享</string>
   <string name="logging_notification_disable">禁用</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">打开导航抽屉</string>
-  <string name="navigation_drawer_close">关闭导航抽屉</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同步器</string>
   <string name="navigation_drawer_about">关于 / 许可</string>
   <string name="navigation_drawer_beta_feedback">测试版反馈</string>
@@ -418,6 +416,7 @@
   <string name="webdav_add_mount_display_name">展示名称</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">无效 URL</string>
+  <string name="webdav_add_mount_authentication">身份验证（可选）</string>
   <string name="webdav_add_mount_username">用户名</string>
   <string name="webdav_add_mount_password">密码</string>
   <string name="webdav_add_mount_add">添加 WebDAV 网址</string>

@@ -243,7 +243,8 @@
     <string name="account_synchronize_now">Synchronize now</string>
     <string name="account_settings">Account settings</string>
     <string name="account_rename">Rename account</string>
-    <string name="account_rename_new_name">Unsaved local data may be dismissed. Re-synchronization is required after renaming. New account name:</string>
+    <string name="account_rename_new_name_description">Unsaved local data may be dismissed. Re-synchronization is required after renaming.</string>
+    <string name="account_rename_new_name">New account name</string>
     <string name="account_rename_rename">Rename</string>
     <string name="account_rename_exists_already">Account name already taken</string>
     <string name="account_rename_couldnt_rename">Couldn\'t rename account</string>

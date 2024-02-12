@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Ver/compartir</string>
   <string name="logging_notification_disable">Desactivar</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Abrir cadro de navegación</string>
-  <string name="navigation_drawer_close">Pechar cadro de navegación</string>
   <string name="navigation_drawer_subtitle">Adaptador de sincr. CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Acerca de / Licenza</string>
   <string name="navigation_drawer_beta_feedback">Comenta sobre a Beta</string>
@@ -133,6 +131,8 @@
   <string name="account_list_manage_connections">Xestionar conexións</string>
   <string name="account_list_datasaver_enabled">O aforro de datos está activado. A sincronización en segundo plano está restrinxida.</string>
   <string name="account_list_manage_datasaver">Xestionar aforro de datos</string>
+  <string name="account_list_battery_saver_enabled">Activado o aforrador de batería. A sincronización podería estar limitada.</string>
+  <string name="account_list_manage_battery_saver">Xestionar aforro da batería</string>
   <string name="account_list_low_storage">Queda pouco espazo de almacenaxe. Android non vai sincronizar os cambios locais inmediatamente, farao na próxima sincronización regular.</string>
   <string name="account_list_manage_storage">Xestionar almacenaxe</string>
   <string name="account_list_empty">Benvida a DAVx⁵!\n\nXa podes engadir unha conta CalDAV/CardDAV</string>
@@ -418,6 +418,7 @@
   <string name="webdav_add_mount_display_name">Nome mostrado</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL inválido</string>
+  <string name="webdav_add_mount_authentication">Autenticación (optativo)</string>
   <string name="webdav_add_mount_username">Nome de usuaria</string>
   <string name="webdav_add_mount_password">Contrasinal</string>
   <string name="webdav_add_mount_add">Engadir montaxe</string>

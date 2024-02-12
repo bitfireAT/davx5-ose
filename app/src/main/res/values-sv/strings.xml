@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Visa/dela</string>
   <string name="logging_notification_disable">Inaktivera</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Öppna navigeringslådan</string>
-  <string name="navigation_drawer_close">Stäng navigeringslådan</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Synk Adapter</string>
   <string name="navigation_drawer_about">Om / Licens</string>
   <string name="navigation_drawer_beta_feedback">Betafeedback</string>

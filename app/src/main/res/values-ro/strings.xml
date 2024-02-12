@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Vizualizare/distribuire</string>
   <string name="logging_notification_disable">Dezactivează</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Deschide sertarul de navigare</string>
-  <string name="navigation_drawer_close">Închide sertarul de navigare</string>
   <string name="navigation_drawer_subtitle">Adaptor de sincronizare CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Despre / Licență</string>
   <string name="navigation_drawer_beta_feedback">Feedback beta</string>

@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Ikusi/partekatu</string>
   <string name="logging_notification_disable">Desgaitu</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Ireki nabigatzeko menu lerrakorra </string>
-  <string name="navigation_drawer_close">Itxi nabigatzeko menu lerrakorra</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV sinkronizazio moldagailua</string>
   <string name="navigation_drawer_about">Honi buruz / Lizentzia</string>
   <string name="navigation_drawer_beta_feedback">Beta iritzia</string>

@@ -88,8 +88,6 @@
   <string name="logging_notification_view_share">Προβολή/διαμοιρασμός</string>
   <string name="logging_notification_disable">Απενεργοποίηση</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Άνοιγμα συρταριού πλοήγησης</string>
-  <string name="navigation_drawer_close">Κλείσιμο συρταριού πλοήγησης</string>
   <string name="navigation_drawer_subtitle">Προσαρμογέας συγχρονισμού CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Περί / άδεια χρήσης</string>
   <string name="navigation_drawer_beta_feedback">Ανατροφοδότηση beta</string>

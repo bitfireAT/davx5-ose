@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Bekijken/delen</string>
   <string name="logging_notification_disable">Uitschakelen</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Navigatiemenu openen</string>
-  <string name="navigation_drawer_close">Navigatielmenu sluiten</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync adapter</string>
   <string name="navigation_drawer_about">Over / Licentie</string>
   <string name="navigation_drawer_beta_feedback">Beta terugkoppeling</string>
@@ -133,6 +131,8 @@
   <string name="account_list_manage_connections">Verbindingen beheren</string>
   <string name="account_list_datasaver_enabled">Gegevensbesparing ingeschakeld. Synchronisatie op de achtergrond is beperkt.</string>
   <string name="account_list_manage_datasaver">Beheer van gegevensbesparing</string>
+  <string name="account_list_battery_saver_enabled">Batterijbesparing ingeschakeld. Synchronisatie kan beperkt zijn.</string>
+  <string name="account_list_manage_battery_saver">Batterijbesparing beheren</string>
   <string name="account_list_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
   <string name="account_list_manage_storage">Opslag beheren</string>
   <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAV account toevoegen.</string>
@@ -418,6 +418,7 @@
   <string name="webdav_add_mount_display_name">Weergavenaam</string>
   <string name="webdav_add_mount_url">WebDAV-URL</string>
   <string name="webdav_add_mount_url_invalid">Ongeldige URL</string>
+  <string name="webdav_add_mount_authentication">Authenticatie (optioneel)</string>
   <string name="webdav_add_mount_username">Gebruikersnaam</string>
   <string name="webdav_add_mount_password">Wachtwoord</string>
   <string name="webdav_add_mount_add">Koppeling toevoegen</string>

@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">Просмотр/обмен</string>
   <string name="logging_notification_disable">Отключить</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Открыть панель навигации</string>
-  <string name="navigation_drawer_close">Закрыть панель навигации</string>
   <string name="navigation_drawer_subtitle">Адаптер синхронизации CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">О программе / Лицензия</string>
   <string name="navigation_drawer_beta_feedback">Отзыв о бета-тестировании</string>
@@ -133,6 +131,8 @@
   <string name="account_list_manage_connections">Управление подключениями</string>
   <string name="account_list_datasaver_enabled">Экономия трафика включена. Фоновая синхронизация ограничена.</string>
   <string name="account_list_manage_datasaver">Экономия трафика</string>
+  <string name="account_list_battery_saver_enabled">Включена экономия заряда батареи. Синхронизация может быть ограничена.</string>
+  <string name="account_list_manage_battery_saver">Управлять экономией заряда батареи</string>
   <string name="account_list_low_storage">Недостаточно памяти для хранения данных. Android будет синхронизировать локальные изменения не сразу, а во время следующей регулярной синхронизации.</string>
   <string name="account_list_manage_storage">Управление хранилищем</string>
   <string name="account_list_empty">Добро пожаловать в DAVx⁵!\n\nТеперь вы можете добавить аккаунт CalDAV/CardDAV.</string>
@@ -422,6 +422,7 @@
   <string name="webdav_add_mount_display_name">Отображаемое имя</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Некорректный URL</string>
+  <string name="webdav_add_mount_authentication">Аутентификация (необязательно)</string>
   <string name="webdav_add_mount_username">Имя пользователя</string>
   <string name="webdav_add_mount_password">Пароль</string>
   <string name="webdav_add_mount_add">Добавить точку монтирования</string>

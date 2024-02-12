@@ -101,8 +101,6 @@
   <string name="logging_notification_view_share">보기/공유</string>
   <string name="logging_notification_disable">사용 안함</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">탐색 창 열기</string>
-  <string name="navigation_drawer_close">탐색 창 닫기</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 동기화 어댑터</string>
   <string name="navigation_drawer_about">관련 / 라이센스</string>
   <string name="navigation_drawer_beta_feedback">베타 피드백</string>

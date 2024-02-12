@@ -100,8 +100,6 @@
   <string name="logging_notification_view_share">Прегледај/подели</string>
   <string name="logging_notification_disable">Онемогући</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Отвори навигациону фиоку</string>
-  <string name="navigation_drawer_close">Затвори навигациону фиоку</string>
   <string name="navigation_drawer_subtitle">КалДАВ/КардДАВ адаптер синхронизације</string>
   <string name="navigation_drawer_about">О програму/лиценца</string>
   <string name="navigation_drawer_beta_feedback">Повратне информације бета издања</string>

@@ -60,8 +60,6 @@
   <!--global settings-->
   <string name="logging_couldnt_create_file">Ni bilo mogoče ustvariti zapisnika</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">Odpri navigacijski predal</string>
-  <string name="navigation_drawer_close">Zapri navigacijski predal</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV sinhronizacijski adapter</string>
   <string name="navigation_drawer_about">O aplikaciji / licenca</string>
   <string name="navigation_drawer_beta_feedback">Beta povratne aplikacije</string>

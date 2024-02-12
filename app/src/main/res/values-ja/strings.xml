@@ -111,8 +111,6 @@
   <string name="logging_notification_view_share">表示/共有</string>
   <string name="logging_notification_disable">無効にする</string>
   <!--AccountsActivity-->
-  <string name="navigation_drawer_open">ナビゲーションドロワーを開く</string>
-  <string name="navigation_drawer_close">ナビゲーションドロワーを閉じる</string>
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同期アダプター</string>
   <string name="navigation_drawer_about">アプリについて / ライセンス</string>
   <string name="navigation_drawer_beta_feedback">ベータフィードバック</string>
