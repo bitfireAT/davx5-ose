@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -29,9 +30,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -99,7 +102,10 @@ class RenameAccountFragment: DialogFragment() {
                         onDismissRequest = { dismiss() },
                         title = { Text(stringResource(R.string.account_rename)) },
                         text = { Column {
-                            Text(stringResource(R.string.account_rename_new_name_description))
+                            Text(
+                                stringResource(R.string.account_rename_new_name_description),
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
                             TextField(
                                 value = accountName,
                                 onValueChange = { accountName = it },
@@ -107,9 +113,10 @@ class RenameAccountFragment: DialogFragment() {
                             )
                         }},
                         confirmButton = {
-                            TextButton(onClick = {
-                                model.renameAccount(oldAccount, accountName)
-                            }) {
+                            TextButton(
+                                onClick = { model.renameAccount(oldAccount, accountName) },
+                                enabled = oldAccount.name != accountName
+                            ) {
                                 Text(stringResource(R.string.account_rename_rename).uppercase())
                             }
                         },
