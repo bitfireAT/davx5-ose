@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -38,8 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.TaskStackBuilder
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -87,18 +84,16 @@ class CreateAddressBookActivity: AppCompatActivity() {
         setContent {
             MdcTheme {
                 val displayName by model.displayName.observeAsState()
-                val displayNameError by model.displayNameError.observeAsState()
                 val description by model.description.observeAsState()
                 val homeSet by model.homeSet.observeAsState()
                 val homeSets by model.homeSets.observeAsState()
 
                 Content(
-                    isCreateEnabled = displayName != null &&
-                        displayNameError == null &&
+                    isCreateEnabled =
+                        displayName != null &&
                         homeSet != null,
                     displayName = displayName,
                     onDisplayNameChange = model.displayName::setValue,
-                    displayNameError = displayNameError,
                     description = description,
                     onDescriptionChange = model.description::setValue,
                     homeSet = homeSet,
@@ -117,24 +112,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
 
     @Composable
-    @Preview(showBackground = true, showSystemUi = true)
-    private fun Content_Preview() {
-        Content(
-            displayName = "Display Name",
-            description = "Description",
-            homeSets = listOf(
-                HomeSet(1, 0, false, "http://example.com/".toHttpUrl()),
-                HomeSet(2, 0, false, "http://example.com/".toHttpUrl(), displayName = "Home Set 2"),
-            )
-        )
-    }
-
-    @Composable
     private fun Content(
         isCreateEnabled: Boolean = false,
         displayName: String? = null,
         onDisplayNameChange: (String) -> Unit = {},
-        displayNameError: String? = null,
         description: String? = null,
         onDescriptionChange: (String) -> Unit = {},
         homeSet: HomeSet? = null,
@@ -148,7 +129,6 @@ class CreateAddressBookActivity: AppCompatActivity() {
                 paddingValues,
                 displayName,
                 onDisplayNameChange,
-                displayNameError,
                 description,
                 onDescriptionChange,
                 homeSet,
@@ -159,11 +139,23 @@ class CreateAddressBookActivity: AppCompatActivity() {
     }
 
     @Composable
+    @Preview(showBackground = true, showSystemUi = true)
+    private fun Content_Preview() {
+        Content(
+            displayName = "Display Name",
+            description = "Description",
+            homeSets = listOf(
+                HomeSet(1, 0, false, "http://example.com/".toHttpUrl()),
+                HomeSet(2, 0, false, "http://example.com/".toHttpUrl(), displayName = "Home Set 2"),
+            )
+        )
+    }
+
+    @Composable
     private fun CreateAddressBookForm(
         paddingValues: PaddingValues,
         displayName: String?,
         onDisplayNameChange: (String) -> Unit,
-        displayNameError: String?,
         description: String?,
         onDescriptionChange: (String) -> Unit,
         homeSet: HomeSet?,
@@ -180,9 +172,8 @@ class CreateAddressBookActivity: AppCompatActivity() {
             OutlinedTextField(
                 value = displayName ?: "",
                 onValueChange = onDisplayNameChange,
-                label = { Text(displayNameError ?: stringResource(R.string.create_collection_display_name)) },
-                modifier = Modifier.fillMaxWidth(),
-                isError = displayNameError != null
+                label = { Text(stringResource(R.string.create_collection_display_name)) },
+                modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
@@ -260,13 +251,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
         }
 
         val displayName = model.displayName.value
-        if (displayName.isNullOrBlank()) {
-            model.displayNameError.value = getString(R.string.create_collection_display_name_required)
+        if (displayName.isNullOrBlank())
             ok = false
-        } else {
+        else
             args.putString(CreateCollectionFragment.ARG_DISPLAY_NAME, displayName)
-            model.displayNameError.value = null
-        }
 
         StringUtils.trimToNull(model.description.value)?.let {
             args.putString(CreateCollectionFragment.ARG_DESCRIPTION, it)
@@ -283,10 +271,9 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
 
     class Model @AssistedInject constructor(
-        application: Application,
         val db: AppDatabase,
         @Assisted val account: Account
-    ) : AndroidViewModel(application) {
+    ) : ViewModel() {
 
         @AssistedFactory
         interface Factory {
@@ -294,18 +281,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         }
 
         val displayName = MutableLiveData<String>()
-        val displayNameError = MediatorLiveData<String>().apply {
-            addSource(displayName) {
-                // Display error if displayName has been modified, and it's blank
-                value = if (it != null && it.isBlank())
-                    application.getString(R.string.create_collection_display_name_required)
-                else
-                    null
-            }
-        }
-
         val description = MutableLiveData<String>()
-
         val homeSets = MutableLiveData<List<HomeSet>>()
         var homeSet = MutableLiveData<HomeSet>()
 
