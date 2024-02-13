@@ -74,7 +74,10 @@ import java.util.logging.Level
  * this worker.
  *
  * Expedited: when run manually
- * Long-running: yes (sync make take long when a lot of data is transferred over a slow connection/server)
+ *
+ * Long-running: yes (sync make take long when a lot of data is transferred over a slow connection/server).
+ * Needs a foreground service, whose launch from background is restricted since Android 12. So this will only
+ * work when the app is in foreground or battery optimizations are turned off.
  */
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
@@ -134,7 +137,7 @@ class SyncWorker @AssistedInject constructor(
             upload: Boolean = false
         ) {
             for (authority in SyncUtils.syncAuthorities(context))
-                enqueue(context, account, authority, resync, upload)
+                enqueue(context, account, authority, expedited = true, resync = resync, upload = upload)
         }
 
         /**
@@ -151,6 +154,7 @@ class SyncWorker @AssistedInject constructor(
             context: Context,
             account: Account,
             authority: String,
+            expedited: Boolean,
             @ArgResync resync: Int = NO_RESYNC,
             upload: Boolean = false
         ): String {
@@ -170,7 +174,6 @@ class SyncWorker @AssistedInject constructor(
             val workRequest = OneTimeWorkRequestBuilder<SyncWorker>()
                 .addTag(workerName(account, authority))
                 .setInputData(argumentsBuilder.build())
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setBackoffCriteria(
                     BackoffPolicy.EXPONENTIAL,
                     WorkRequest.DEFAULT_BACKOFF_DELAY_MILLIS,   // 30 sec
@@ -184,17 +187,20 @@ class SyncWorker @AssistedInject constructor(
                         addTag(workerName(mainAccount, authority))
                     }
                 }
-                .build()
+
+            if (expedited)
+                workRequest.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
 
             // enqueue and start syncing
             val name = workerName(account, authority)
-            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name, with tags: ${workRequest.tags}")
+            val request = workRequest.build()
+            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name, with tags: ${request.tags}")
             WorkManager.getInstance(context).enqueueUniqueWork(
                 name,
                 ExistingWorkPolicy.KEEP,    // If sync is already running, just continue.
                                             // Existing retried work will not be replaced (for instance when
                                             // PeriodicSyncWorker enqueues another scheduled sync).
-                workRequest
+                request
             )
             return name
         }
@@ -312,7 +318,12 @@ class SyncWorker @AssistedInject constructor(
         val authority = inputData.getString(ARG_AUTHORITY) ?: throw IllegalArgumentException("$ARG_AUTHORITY required")
 
         // this is a long-running worker
-        setForeground(getForegroundInfo())
+        try {
+            setForeground(getForegroundInfo())
+        } catch (e: IllegalStateException) {
+            Logger.log.log(Level.WARNING, "Couldn't create foreground service for sync worker. This is not necessarily an error, " +
+                    "but battery optimizations should be disabled to avoid this.", e)
+        }
 
         // check internet connection
         val ignoreVpns = AccountSettings(applicationContext, account).getIgnoreVpns()
@@ -443,6 +454,7 @@ class SyncWorker @AssistedInject constructor(
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_DEFERRED)
             .build()
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)

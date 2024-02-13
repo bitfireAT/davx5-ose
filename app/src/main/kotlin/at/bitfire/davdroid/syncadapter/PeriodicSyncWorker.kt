@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit
  * sync workers for each authority. See [PeriodicSyncWorker.workerName] for more information.
  *
  * Deferrable: yes (PeriodicWorkRequest)
+ *
  * Long-running: no
  */
 @HiltWorker
@@ -124,7 +125,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
 
         // Just request immediate sync
         Logger.log.info("Requesting immediate sync")
-        SyncWorker.enqueue(applicationContext, account, authority)
+        SyncWorker.enqueue(applicationContext, account, authority, expedited = false)
         return Result.success()
     }
 }
