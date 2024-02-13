@@ -9,7 +9,9 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -32,7 +34,7 @@ class GplayAccountsDrawerHandler @Inject constructor() : StandardAccountsDrawerH
                         manager.launchReviewFlow(activity, task.result)
 
                         // provide alternative if in-app review flow didn't show up
-                        Snackbar.make(activity.requireViewById(android.R.id.content), R.string.nav_feedback_inapp_didnt_appear, Snackbar.LENGTH_SHORT)
+                        Snackbar.make(ActivityCompat.requireViewById<View>(activity, android.R.id.content), R.string.nav_feedback_inapp_didnt_appear, Snackbar.LENGTH_SHORT)
                             .setAction(R.string.nav_feedback_google_play) {
                                 fallbackToStore(activity, item)
                             }
