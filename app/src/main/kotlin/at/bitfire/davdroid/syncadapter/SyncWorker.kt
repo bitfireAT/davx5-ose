@@ -65,6 +65,7 @@ import java.util.logging.Level
  *
  * By enqueuing this worker ([SyncWorker.enqueue]) a sync will be started immediately (as soon as
  * possible). Currently, there are three scenarios starting a sync:
+ *
  * 1) *manual sync*: User presses an in-app sync button and enqueues this worker directly.
  * 2) *periodic sync*: User defines time interval to sync in app settings. The [PeriodicSyncWorker] runs
  * in the background and enqueues this worker when due.
@@ -72,6 +73,8 @@ import java.util.logging.Level
  * button in one of the responsible apps. The [SyncAdapterService] is notified of this and enqueues
  * this worker.
  *
+ * Expedited: when run manually
+ * Long-running: yes (sync make take long when a lot of data is transferred over a slow connection/server)
  */
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
@@ -308,7 +311,10 @@ class SyncWorker @AssistedInject constructor(
         )
         val authority = inputData.getString(ARG_AUTHORITY) ?: throw IllegalArgumentException("$ARG_AUTHORITY required")
 
-        // Check internet connection
+        // this is a long-running worker
+        setForeground(getForegroundInfo())
+
+        // check internet connection
         val ignoreVpns = AccountSettings(applicationContext, account).getIgnoreVpns()
         val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
         if (!internetAvailable(connectivityManager, ignoreVpns)) {
