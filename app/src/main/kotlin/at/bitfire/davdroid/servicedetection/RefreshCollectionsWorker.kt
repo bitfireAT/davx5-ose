@@ -8,8 +8,6 @@ import android.accounts.Account
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ServiceInfo
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
@@ -254,10 +252,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-        else
-            ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
+        return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
     }
 
     private fun notifyRefreshError(contentText: String, contentIntent: Intent) {
