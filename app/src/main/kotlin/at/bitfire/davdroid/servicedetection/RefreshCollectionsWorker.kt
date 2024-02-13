@@ -254,11 +254,10 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-        } else {
+        else
             ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
-        }
     }
 
     private fun notifyRefreshError(contentText: String, contentIntent: Intent) {

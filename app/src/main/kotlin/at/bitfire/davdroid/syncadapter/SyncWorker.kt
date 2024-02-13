@@ -92,6 +92,9 @@ class SyncWorker @AssistedInject constructor(
         internal const val ARG_ACCOUNT_TYPE = "accountType"
         internal const val ARG_AUTHORITY = "authority"
 
+        /** Boolean. Set to `true` when the job was requested as expedited job. */
+        private const val ARG_EXPEDITED = "expedited"
+
         private const val ARG_UPLOAD = "upload"
 
         private const val ARG_RESYNC = "resync"
@@ -163,6 +166,8 @@ class SyncWorker @AssistedInject constructor(
                 .putString(ARG_AUTHORITY, authority)
                 .putString(ARG_ACCOUNT_NAME, account.name)
                 .putString(ARG_ACCOUNT_TYPE, account.type)
+            if (expedited)
+                argumentsBuilder.putBoolean(ARG_EXPEDITED, true)
             if (resync != NO_RESYNC)
                 argumentsBuilder.putInt(ARG_RESYNC, resync)
             argumentsBuilder.putBoolean(ARG_UPLOAD, upload)
@@ -194,7 +199,7 @@ class SyncWorker @AssistedInject constructor(
             // enqueue and start syncing
             val name = workerName(account, authority)
             val request = workRequest.build()
-            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name, with tags: ${request.tags}")
+            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name, expedited = $expedited, tags = ${request.tags}")
             WorkManager.getInstance(context).enqueueUniqueWork(
                 name,
                 ExistingWorkPolicy.KEEP,    // If sync is already running, just continue.
@@ -316,6 +321,7 @@ class SyncWorker @AssistedInject constructor(
             inputData.getString(ARG_ACCOUNT_TYPE) ?: throw IllegalArgumentException("$ARG_ACCOUNT_TYPE required")
         )
         val authority = inputData.getString(ARG_AUTHORITY) ?: throw IllegalArgumentException("$ARG_AUTHORITY required")
+        val expedited = inputData.getBoolean(ARG_EXPEDITED, false)
 
         // this is a long-running worker
         try {
@@ -338,7 +344,7 @@ class SyncWorker @AssistedInject constructor(
         // What are we going to sync? Select syncer based on authority
         val syncer: Syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                AddressBookSyncer(applicationContext)
+                AddressBookSyncer(applicationContext, expedited)
             CalendarContract.AUTHORITY ->
                 CalendarSyncer(applicationContext)
             ContactsContract.AUTHORITY ->
@@ -456,11 +462,10 @@ class SyncWorker @AssistedInject constructor(
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_DEFERRED)
             .build()
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-        } else {
+        else
             ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
-        }
     }
 
 }
