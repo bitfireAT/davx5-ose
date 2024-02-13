@@ -66,6 +66,10 @@
         <service
             android:name=".ForegroundService"
             android:foregroundServiceType="dataSync" />
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
 
         <!-- Remove the node added by AppAuth (remove only from net.openid.appauth library, not from our flavor manifest files) -->
         <activity android:name="net.openid.appauth.RedirectUriReceiverActivity"
