@@ -24,13 +24,10 @@ object NotificationUtils {
     // notification IDs
     const val NOTIFY_VERBOSE_LOGGING = 1
     const val NOTIFY_REFRESH_COLLECTIONS = 2
-    const val NOTIFY_FOREGROUND = 3
     const val NOTIFY_DATABASE_CORRUPTED = 4
-    const val NOTIFY_BATTERY_OPTIMIZATION = 5
     const val NOTIFY_SYNC_ERROR = 10
     const val NOTIFY_INVALID_RESOURCE = 11
     const val NOTIFY_WEBDAV_ACCESS = 12
-    // const val NOTIFY_LOW_STORAGE = 13
     const val NOTIFY_SYNC_EXPEDITED = 14
     const val NOTIFY_TASKS_PROVIDER_TOO_OLD = 20
     const val NOTIFY_PERMISSIONS = 21
