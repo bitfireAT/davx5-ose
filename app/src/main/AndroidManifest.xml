@@ -6,8 +6,6 @@
     <!-- normal permissions -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
@@ -62,10 +60,6 @@
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove">
         </provider>
-
-        <service
-            android:name=".ForegroundService"
-            android:foregroundServiceType="dataSync" />
 
         <!-- Remove the node added by AppAuth (remove only from net.openid.appauth library, not from our flavor manifest files) -->
         <activity android:name="net.openid.appauth.RedirectUriReceiverActivity"
