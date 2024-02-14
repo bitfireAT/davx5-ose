@@ -61,10 +61,6 @@
             tools:node="remove">
         </provider>
 
-        <service
-            android:name=".ForegroundService"
-            android:foregroundServiceType="dataSync" />
-
         <!-- Remove the node added by AppAuth (remove only from net.openid.appauth library, not from our flavor manifest files) -->
         <activity android:name="net.openid.appauth.RedirectUriReceiverActivity"
             tools:node="remove" tools:selector="net.openid.appauth"/>

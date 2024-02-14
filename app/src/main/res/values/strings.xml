@@ -158,11 +158,7 @@
     <string name="refresh_collections_worker_refresh_failed">Service detection failed</string>
     <string name="refresh_collections_worker_refresh_couldnt_refresh">Couldn\'t refresh collection list</string>
 
-    <!-- Battery Optimization -->
-    <string name="battery_optimization_notify_title">Can not run in foreground</string>
-    <string name="battery_optimization_notify_text">Battery optimization whitelisting required</string>
-
-    <!-- ForegroundService -->
+    <!-- Foreground service used by WorkManager on Android <12 -->
     <string name="foreground_service_notify_title">Running in foreground</string>
     <string name="foreground_service_notify_text">On some devices, this is necessary for automatic synchronization.</string>
 
@@ -177,8 +173,6 @@
     <string name="app_settings_battery_optimization">Battery optimization</string>
     <string name="app_settings_battery_optimization_whitelisted">App is whitelisted (recommended)</string>
     <string name="app_settings_battery_optimization_not_whitelisted">App is not whitelisted (not recommended)</string>
-    <string name="app_settings_foreground_service">Keep in foreground</string>
-    <string name="app_settings_foreground_service_details">May help if your device prevents automatic synchronization</string>
     <string name="app_settings_connection">Connection</string>
     <string name="app_settings_proxy">Proxy type</string>
     <string-array name="app_settings_proxy_types">
