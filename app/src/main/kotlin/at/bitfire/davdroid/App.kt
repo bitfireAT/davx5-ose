@@ -97,9 +97,6 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
             // watch for account changes/deletions
             accountsUpdatedListener.listen()
 
-            // foreground service (possible workaround for devices which prevent DAVx5 from being started)
-            ForegroundService.startOrStop(this)
-
             // watch storage because low storage means synchronization is stopped
             storageLowReceiver.listen()
 

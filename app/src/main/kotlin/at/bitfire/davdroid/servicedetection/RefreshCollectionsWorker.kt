@@ -238,6 +238,9 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         return Result.success()
     }
 
+    /**
+     * Used by WorkManager to show a foreground service notification for expedited jobs on Android <12.
+     */
     override suspend fun getForegroundInfo(): ForegroundInfo {
         val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
             .setSmallIcon(R.drawable.ic_foreground_notify)
