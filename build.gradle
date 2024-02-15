@@ -2,56 +2,11 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-buildscript {
-    ext.versions = [
-        aboutLibraries: '10.10.0',
-        accompanist: '0.34.0',
-        appIntro: '7.0.0-beta02',
-        composeBom: '2024.01.00',
-        hilt: '2.50',
-        kotlin: '1.9.22', // keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
-                          //                   * com.google.devtools.ksp at the end of this file
-        okhttp: '4.12.0',
-        room: '2.6.1',
-        workManager: '2.9.0',
-        // Apache Commons versions
-        commonsCollections: '4.4',
-        commonsLang: '3.14.0',
-        commonsText: '1.11.0',
-        // own libraries
-        cert4android: 'f0964cb',
-        dav4jvm: '20f4a12',
-        ical4android: '821ab3f',
-        vcard4android: 'fcabcf2'
-    ]
-
-    repositories {
-        google()
-        mavenCentral()
-
-        // AboutLibraries
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.2'
-        classpath "com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}"
-        classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${versions.aboutLibraries}"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
-    }
-}
-
 plugins {
-    // see https://github.com/google/ksp/releases for version numbers
-    id 'com.google.devtools.ksp' version '1.9.22-1.0.17' apply false
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-
-        // AppIntro, dav4jvm
-        maven { url "https://jitpack.io" }
-    }
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.kapt) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.mikepenz.aboutLibraries) apply false
 }
