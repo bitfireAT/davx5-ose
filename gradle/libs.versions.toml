@@ -36,10 +36,8 @@ commons-lang = "3.14.0"
 commons-io = "2.8.0"
 commons-text = "1.11.0"
 compose-accompanist = "0.34.0"
+compose-bom = "2024.01.00"
 compose-compiler = "1.5.8"
-compose-material = "1.6.1"
-compose-runtime = "1.6.1"
-compose-ui = "1.6.1"
 # don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
 dnsjava = "2.1.9"
 hilt = "2.50"
@@ -95,11 +93,12 @@ commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "com
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
 compose-accompanist-themeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "compose-accompanist" }
-compose-material = { module = "androidx.compose.material:material", version.ref = "compose-material" }
-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose-material" }
-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "compose-runtime" }
-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-ui" }
-compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-ui" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+compose-material = { module = "androidx.compose.material:material" }
+compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
+compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
