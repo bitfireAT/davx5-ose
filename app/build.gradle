@@ -147,7 +147,6 @@ dependencies {
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)
-    implementation(libs.androidx.lifecycle.ext)
     implementation(libs.androidx.lifecycle.viewmodel.base)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.paging)
