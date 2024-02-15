@@ -26,11 +26,6 @@
             android:summaryOn="@string/app_settings_battery_optimization_whitelisted"
             android:summaryOff="@string/app_settings_battery_optimization_not_whitelisted"/>
 
-        <SwitchPreferenceCompat
-            android:key="foreground_service"
-            android:title="@string/app_settings_foreground_service"
-            android:summary="@string/app_settings_foreground_service_details"/>
-
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/app_settings_connection">
