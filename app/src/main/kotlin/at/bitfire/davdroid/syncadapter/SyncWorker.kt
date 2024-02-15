@@ -465,10 +465,7 @@ class SyncWorker @AssistedInject constructor(
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_DEFERRED)
             .build()
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-        else
-            ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
+        return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
     }
 
 }
