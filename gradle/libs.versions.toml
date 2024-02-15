@@ -1,5 +1,10 @@
+# Comments apply to next line
+
 [versions]
-aboutLibs = "10.10.0"
+android-agp = "8.2.2"
+android-desugaring = "2.0.4"
+android-flexbox = "3.0.0"
+android-material = "1.11.0"
 androidx-activityCompose = "1.8.2"
 androidx-appcompat = "1.6.1"
 androidx-arch = "2.2.0"
@@ -21,18 +26,14 @@ androidx-test-junit = "1.1.5"
 androidx-viewmodel-base = "2.7.0"
 androidx-viewmodel-compose = "2.7.0"
 androidx-work = "2.9.0"
-appauth = "0.11.1"
-agp = "8.2.2"
 appIntro = "7.0.0-beta02"
-# own libraries
 bitfire-cert4android = "f0964cb"
 bitfire-dav4jvm = "20f4a12"
 bitfire-ical4android = "821ab3f"
 bitfire-vcard4android = "fcabcf2"
-# Apache Commons versions
 commons-collections = "4.4"
 commons-lang = "3.14.0"
-#noinspection GradleDependency - don"t update until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/130]
+# don't update until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/130]
 commons-io = "2.8.0"
 commons-text = "1.11.0"
 compose-accompanist = "0.34.0"
@@ -40,9 +41,8 @@ compose-compiler = "1.5.8"
 compose-material = "1.6.1"
 compose-runtime = "1.6.1"
 compose-ui = "1.6.1"
-desugaring = "2.0.4"
+# don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
 dnsjava = "2.1.9"
-flexbox = "3.0.0"
 hilt = "2.50"
 jaredrummler-colorpicker = "1.1.0"
 #  keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
@@ -51,14 +51,17 @@ kotlin = "1.9.22"
 kotlinx-coroutines = "1.7.3"
 # see https://github.com/google/ksp/releases for version numbers
 ksp = "1.9.22-1.0.17"
-kstatemachine = "0.25.1"
-material = "1.11.0"
+mikepenz-aboutLibraries = "10.10.0"
+nsk90-kstatemachine = "0.25.1"
 mockk = "1.13.9"
 okhttp = "4.12.0"
+openid-appauth = "0.11.1"
 room = "2.6.1"
 
 [libraries]
-aboutLibs-compose = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "aboutLibs" }
+android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugaring" }
+android-flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "android-flexbox" }
+android-material = { module = "com.google.android.material:material", version.ref = "android-material" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch" }
@@ -82,7 +85,6 @@ androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-junit" }
 androidx-work-base = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
-appauth = { module = "net.openid:appauth", version.ref = "appauth" }
 appintro = { module = "com.github.AppIntro:AppIntro", version.ref = "appIntro" }
 bitfire-cert4android = { module = "com.github.bitfireAT:cert4android", version.ref = "bitfire-cert4android" }
 bitfire-dav4jvm = { module = "com.github.bitfireAT:dav4jvm", version.ref = "bitfire-dav4jvm" }
@@ -99,9 +101,7 @@ compose-materialIconsExtended = { module = "androidx.compose.material:material-i
 compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "compose-runtime" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-ui" }
 compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-ui" }
-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugaring" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
-flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
@@ -110,13 +110,14 @@ jaredrummler-colorpicker = { module = "com.jaredrummler:colorpicker", version.re
 junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-kstatemachine = { module = "io.github.nsk90:kstatemachine-jvm", version.ref = "kstatemachine" }
-material = { module = "com.google.android.material:material", version.ref = "material" }
+mikepenz-aboutLibraries = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "mikepenz-aboutLibraries" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+nsk90-kstatemachine = { module = "io.github.nsk90:kstatemachine-jvm", version.ref = "nsk90-kstatemachine" }
 okhttp-base = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version.ref = "okhttp" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
+openid-appauth = { module = "net.openid:appauth", version.ref = "openid-appauth" }
 room-base = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
@@ -124,10 +125,10 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 
 [plugins]
-aboutLibs = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibs" }
-android-application = { id = "com.android.application", version.ref = "agp" }
+android-application = { id = "com.android.application", version.ref = "android-agp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 # remove when ui.widget.BindingAdapters are not required anymore
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+mikepenz-aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "mikepenz-aboutLibraries" }
