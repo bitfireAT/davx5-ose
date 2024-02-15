@@ -3,12 +3,12 @@
  **************************************************************************************************/
 
 plugins {
-    id 'com.android.application'
-    id 'com.google.devtools.ksp'
-    id 'com.mikepenz.aboutlibraries.plugin'
-    id 'dagger.hilt.android.plugin'
-    id 'kotlin-android'
-    id 'kotlin-kapt'    // remove when ui.widget.BindingAdapters are not required anymore
+    alias(libs.plugins.mikepenz.aboutLibraries)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
 }
 
 aboutLibraries {
@@ -56,11 +56,11 @@ android {
     composeOptions {
         // Keep this in sync with Kotlin version:
         // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-        kotlinCompilerExtensionVersion = "1.5.8"
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
-    namespace 'at.bitfire.davdroid'
+    namespace "at.bitfire.davdroid"
 
     flavorDimensions = [ "distribution" ]
     productFlavors {
@@ -90,7 +90,7 @@ android {
         }
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules-release.pro'
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules-release.pro"
 
             shrinkResources true
 
@@ -99,12 +99,12 @@ android {
     }
 
     lint {
-        disable 'GoogleAppIndexingWarning', 'ImpliedQuantity', 'MissingQuantity', 'MissingTranslation', 'ExtraTranslation', 'RtlEnabled', 'RtlHardcoded', 'Typos', 'NullSafeMutableLiveData'
+        disable "GoogleAppIndexingWarning", "ImpliedQuantity", "MissingQuantity", "MissingTranslation", "ExtraTranslation", "RtlEnabled", "RtlHardcoded", "Typos", "NullSafeMutableLiveData"
     }
 
     packagingOptions {
         resources {
-            excludes += ['META-INF/*.md']
+            excludes += ["META-INF/*.md"]
         }
     }
 
@@ -124,96 +124,93 @@ configurations {
         exclude group: "org.json", module: "json"
 
         // Groovy requires SDK 26+, and it's not required, so exclude it
-        exclude group: 'org.codehaus.groovy'
+        exclude group: "org.codehaus.groovy"
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    // core
+    implementation libs.kotlin.stdlib
+    implementation libs.kotlinx.coroutines
+    coreLibraryDesugaring libs.android.desugaring
 
-    implementation "com.google.dagger:hilt-android:${versions.hilt}"
-    ksp "com.google.dagger:hilt-android-compiler:${versions.hilt}"
+    // Hilt
+    implementation libs.hilt.android.base
+    ksp libs.androidx.hilt.compiler
+    ksp libs.hilt.android.compiler
 
     // support libs
-    implementation 'androidx.activity:activity-compose:1.8.2'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.browser:browser:1.7.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.concurrent:concurrent-futures-ktx:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.fragment:fragment-ktx:1.6.2'
-    implementation 'androidx.hilt:hilt-work:1.1.0'
-    ksp 'androidx.hilt:hilt-compiler:1.1.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
-    implementation 'androidx.paging:paging-runtime-ktx:3.2.1'
-    implementation 'androidx.preference:preference-ktx:1.2.1'
-    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation "androidx.work:work-runtime-ktx:${versions.workManager}"
-    implementation 'com.google.android.flexbox:flexbox:3.0.0'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation libs.androidx.activityCompose
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.browser
+    implementation libs.androidx.cardView
+    implementation libs.androidx.concurrentFuture
+    implementation libs.androidx.constraintLayout
+    implementation libs.androidx.core
+    implementation libs.androidx.fragment
+    implementation libs.androidx.hilt.work
+    implementation libs.androidx.lifecycle.viewmodel.base
+    implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.androidx.paging
+    implementation libs.androidx.preference
+    implementation libs.androidx.security
+    implementation libs.androidx.swiperefreshlayout
+    implementation libs.androidx.work.base
+    implementation libs.android.flexbox
+    implementation libs.android.material
 
     // Jetpack Compose
-    implementation platform("androidx.compose:compose-bom:${versions.composeBom}")
-    implementation 'androidx.compose.material:material'
-    implementation 'androidx.compose.material:material-icons-extended'
-    implementation 'androidx.compose.runtime:runtime-livedata'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation "com.google.accompanist:accompanist-permissions:${versions.accompanist}"
-    implementation "com.google.accompanist:accompanist-themeadapter-material:${versions.accompanist}"
+    implementation libs.compose.accompanist.permissions
+    implementation libs.compose.accompanist.themeAdapter
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.material
+    implementation libs.compose.materialIconsExtended
+    implementation libs.compose.runtime.livedata
+    debugImplementation libs.compose.ui.tooling
+    implementation libs.compose.ui.toolingPreview
 
     // Jetpack Room
-    implementation "androidx.room:room-runtime:${versions.room}"
-    implementation "androidx.room:room-ktx:${versions.room}"
-    implementation "androidx.room:room-paging:${versions.room}"
-    ksp "androidx.room:room-compiler:${versions.room}"
-    androidTestImplementation "androidx.room:room-testing:${versions.room}"
+    implementation libs.room.runtime
+    implementation libs.room.base
+    implementation libs.room.paging
+    ksp libs.room.compiler
 
     // own libraries
-    implementation "com.github.bitfireAT:cert4android:${versions.cert4android}"
-    implementation "com.github.bitfireAT:ical4android:${versions.ical4android}"
-    implementation "com.github.bitfireAT:vcard4android:${versions.vcard4android}"
+    implementation libs.bitfire.cert4android
+    implementation(libs.bitfire.dav4jvm) {
+        exclude group: "junit"
+    }
+    implementation libs.bitfire.ical4android
+    implementation libs.bitfire.vcard4android
 
     // third-party libs
-    implementation 'com.jaredrummler:colorpicker:1.1.0'
-    implementation "com.github.AppIntro:AppIntro:${versions.appIntro}"
-    implementation("com.github.bitfireAT:dav4jvm:${versions.dav4jvm}") {
-        exclude group: 'junit'
-    }
-    implementation "com.mikepenz:aboutlibraries-compose:${versions.aboutLibraries}"
-    implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
-    implementation "com.squareup.okhttp3:okhttp-brotli:${versions.okhttp}"
-    implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
-    //noinspection GradleDependency - don't update until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/130]
-    implementation 'commons-io:commons-io:2.8.0'
-    //noinspection GradleDependency - dnsjava 3.x requires Android 8 [https://github.com/bitfireAT/davx5/issues/453]
-    implementation 'dnsjava:dnsjava:2.1.9'
-    implementation 'io.github.nsk90:kstatemachine-jvm:0.25.1'
-    implementation 'net.openid:appauth:0.11.1'
-    implementation "org.apache.commons:commons-collections4:${versions.commonsCollections}"
-    implementation "org.apache.commons:commons-lang3:${versions.commonsLang}"
-    implementation "org.apache.commons:commons-text:${versions.commonsText}"
+    implementation libs.openid.appauth
+    implementation libs.appintro
+    implementation libs.mikepenz.aboutLibraries
+    implementation libs.commons.collections
+    implementation libs.commons.io
+    implementation libs.commons.lang
+    implementation libs.commons.text
+    implementation libs.dnsjava
+    implementation libs.jaredrummler.colorpicker
+    implementation libs.nsk90.kstatemachine
+    implementation libs.okhttp.base
+    implementation libs.okhttp.brotli
+    implementation libs.okhttp.logging
 
     // for tests
-    androidTestImplementation "com.google.dagger:hilt-android-testing:${versions.hilt}"
-    kspAndroidTest "com.google.dagger:hilt-android-compiler:${versions.hilt}"
+    androidTestImplementation libs.androidx.arch.core.testing
+    androidTestImplementation libs.androidx.test.core
+    androidTestImplementation libs.androidx.test.junit
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.work.testing
+    androidTestImplementation libs.hilt.android.testing
+    androidTestImplementation libs.junit
+    androidTestImplementation libs.mockk.android
+    androidTestImplementation libs.okhttp.mockwebserver
+    androidTestImplementation libs.room.testing
 
-    androidTestImplementation "androidx.arch.core:core-testing:2.2.0"
-    androidTestImplementation 'androidx.test:core-ktx:1.5.0'
-    androidTestImplementation 'androidx.test:runner:1.5.2'
-    androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
-    androidTestImplementation "androidx.work:work-testing:${versions.workManager}"
-    androidTestImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
-    androidTestImplementation 'io.mockk:mockk-android:1.13.9'
-    androidTestImplementation 'junit:junit:4.13.2'
-
-    testImplementation "com.squareup.okhttp3:mockwebserver:${versions.okhttp}"
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation libs.junit
+    testImplementation libs.okhttp.mockwebserver
 }
