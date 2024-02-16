@@ -36,7 +36,7 @@ commons-lang = "3.14.0"
 commons-io = "2.8.0"
 commons-text = "1.11.0"
 compose-accompanist = "0.34.0"
-compose-bom = "2024.01.00"
+compose-bom = "2024.02.00"
 compose-compiler = "1.5.8"
 # don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
 dnsjava = "2.1.9"
@@ -49,7 +49,7 @@ kotlinx-coroutines = "1.7.3"
 # see https://github.com/google/ksp/releases for version numbers
 ksp = "1.9.22-1.0.17"
 mikepenz-aboutLibraries = "10.10.0"
-nsk90-kstatemachine = "0.25.1"
+nsk90-kstatemachine = "0.26.0"
 mockk = "1.13.9"
 okhttp = "4.12.0"
 openid-appauth = "0.11.1"
@@ -76,7 +76,7 @@ androidx-paging = { module = "androidx.paging:paging-runtime-ktx", version.ref =
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
 androidx-security = { module = "androidx.security:security-crypto", version.ref = "androidx-security" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "androidx-swiperefreshlayout" }
-androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test-core" }
+androidx-test-core = { module = "androidx.test:core-ktx", version.ref = "androidx-test-core" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test-rules" }
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-junit" }
