@@ -7,6 +7,12 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.util.NoSuchPropertyException
 import androidx.annotation.AnyThread
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import at.bitfire.davdroid.log.Logger
 import dagger.Module
 import dagger.Provides
@@ -177,6 +183,45 @@ class SettingsManager internal constructor(
             writer.write("${idx + 1}. ${provider::class.java.simpleName} canWrite=${provider.canWrite()}\n")
             provider.dump(writer)
         }
+    }
+
+
+    /*** COMPOSE ***/
+
+    /**
+     * A composable function that observes a boolean setting, and updates the state when the setting
+     * changes.
+     * @param key The key of the setting to observe.
+     * @param valueMapper A function to modify the value before setting it to the state and storing.
+     */
+    @Composable
+    fun observeBoolean(
+        key: String,
+        valueMapper: (Boolean?) -> Boolean = { it == true }
+    ): MutableState<Boolean> {
+        val state = remember {
+            mutableStateOf(
+                getBooleanOrNull(key).let(valueMapper)
+            )
+        }
+        DisposableEffect(Unit) {
+            val observer = object : OnChangeListener {
+                override fun onSettingsChanged() {
+                    state.value = getBooleanOrNull(key).let(valueMapper)
+                }
+            }
+            addOnChangeListener(observer)
+            onDispose {
+                removeOnChangeListener(observer)
+            }
+        }
+        LaunchedEffect(state) {
+            val value = getBooleanOrNull(key).let(valueMapper)
+            if (state.value != value) {
+                putBoolean(key, state.value.let(valueMapper))
+            }
+        }
+        return state
     }
 
 
