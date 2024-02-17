@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,14 +37,13 @@ fun CardWithImage(
     image: Painter? = null,
     imageContentDescription: String? = null,
     imageAlignment: Alignment = Alignment.Center,
+    imageContentScale: ContentScale = ContentScale.Crop,
     message: String? = null,
     subtitle: String? = null,
     icon: ImageVector? = null,
     iconContentDescription: String? = null,
     content: @Composable ColumnScope.() -> Unit = {}
 ) {
-    val configuration = LocalConfiguration.current
-
     Card(modifier) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -57,7 +55,7 @@ fun CardWithImage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = dimensionResource(R.dimen.card_theme_max_height)),
-                    contentScale = ContentScale.Crop,
+                    contentScale = imageContentScale,
                     alignment = imageAlignment
                 )
             }
