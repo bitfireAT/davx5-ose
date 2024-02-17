@@ -34,13 +34,10 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -329,11 +326,11 @@ class BatteryOptimizationsFragment: Fragment() {
         val isWhitelisted = MutableLiveData<Boolean>()
         val dontShowBattery: MutableState<Boolean>
             @Composable
-            get() = observePreference(key = HINT_BATTERY_OPTIMIZATIONS) { it == false }
+            get() = settings.observeBoolean(key = HINT_BATTERY_OPTIMIZATIONS) { it == false }
 
         val dontShowAutostart: MutableState<Boolean>
             @Composable
-            get() = observePreference(key = HINT_AUTOSTART_PERMISSION) { it == false }
+            get() = settings.observeBoolean(key = HINT_AUTOSTART_PERMISSION) { it == false }
 
         fun checkWhitelisted() {
             val whitelisted = isWhitelisted(getApplication())
@@ -344,37 +341,6 @@ class BatteryOptimizationsFragment: Fragment() {
             if (whitelisted)
                 settings.remove(HINT_BATTERY_OPTIMIZATIONS)
         }
-
-        @Composable
-        private fun observePreference(
-            key: String,
-            map: (Boolean?) -> Boolean = { it == true }
-        ): MutableState<Boolean> {
-            val state = remember {
-                mutableStateOf(
-                    settings.getBooleanOrNull(key).let(map)
-                )
-            }
-            DisposableEffect(Unit) {
-                val observer = object : SettingsManager.OnChangeListener {
-                    override fun onSettingsChanged() {
-                        state.value = settings.getBooleanOrNull(key).let(map)
-                    }
-                }
-                settings.addOnChangeListener(observer)
-                onDispose {
-                    settings.removeOnChangeListener(observer)
-                }
-            }
-            LaunchedEffect(state) {
-                val value = settings.getBooleanOrNull(key).let(map)
-                if (state.value != value) {
-                    settings.putBoolean(key, state.value.let(map))
-                }
-            }
-            return state
-        }
-
     }
 
 
