@@ -16,8 +16,40 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
+import androidx.compose.material.Checkbox
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
-import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
@@ -25,11 +57,11 @@ import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.IntroBatteryOptimizationsBinding
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
+import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -53,33 +85,195 @@ class BatteryOptimizationsFragment: Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = IntroBatteryOptimizationsBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.model = model
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MdcTheme {
+                    var dontShowBattery by model.dontShowBattery
+                    var dontShowAutostart by model.dontShowAutostart
+                    val shouldBeWhitelisted by model.shouldBeWhitelisted.observeAsState(false)
+                    val isWhitelisted by model.isWhitelisted.observeAsState(false)
 
-        model.shouldBeWhitelisted.observe(viewLifecycleOwner) { shouldBeWhitelisted ->
-            @SuppressLint("BatteryLife")
-            if (shouldBeWhitelisted && !model.isWhitelisted.value!!)
-                ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
+                    LaunchedEffect(shouldBeWhitelisted, isWhitelisted) {
+                        if (shouldBeWhitelisted && !isWhitelisted)
+                            ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
+                    }
+
+                    Content(
+                        dontShowBattery = dontShowBattery,
+                        onChangeDontShowBattery = { dontShowBattery = it },
+                        isWhitelisted = isWhitelisted,
+                        shouldBeWhitelisted = shouldBeWhitelisted,
+                        onChangeShouldBeWhitelisted = model.shouldBeWhitelisted::postValue,
+                        dontShowAutostart = dontShowAutostart,
+                        onChangeDontShowAutostart = { dontShowAutostart = it },
+                        manufacturerWarning = Model.manufacturerWarning
+                    )
+                }
+            }
         }
-        binding.batteryText.text = getString(R.string.intro_battery_text, getString(R.string.app_name))
-
-        binding.autostartHeading.text = getString(R.string.intro_autostart_title, WordUtils.capitalize(Build.MANUFACTURER))
-        binding.autostartText.setText(R.string.intro_autostart_text)
-        binding.autostartMoreInfo.setOnClickListener {
-            UiUtils.launchUri(requireActivity(), App.homepageUrl(requireActivity()).buildUpon()
-                    .appendPath("faq").appendPath("synchronization-is-not-run-as-expected")
-                    .appendQueryParameter("manufacturer", Build.MANUFACTURER.lowercase(Locale.ROOT)).build())
-        }
-
-        binding.infoLeaveUnchecked.text = getString(R.string.intro_leave_unchecked, getString(R.string.app_settings_reset_hints))
-
-        return binding.root
     }
 
     override fun onResume() {
         super.onResume()
         model.checkWhitelisted()
+    }
+
+
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun Content_Preview() {
+        MdcTheme {
+            Content(
+                dontShowBattery = true,
+                onChangeDontShowBattery = {},
+                isWhitelisted = false,
+                shouldBeWhitelisted = true,
+                onChangeShouldBeWhitelisted = {},
+                dontShowAutostart = false,
+                onChangeDontShowAutostart = {},
+                manufacturerWarning = true
+            )
+        }
+    }
+
+    @Composable
+    private fun Content(
+        dontShowBattery: Boolean,
+        onChangeDontShowBattery: (Boolean) -> Unit,
+        isWhitelisted: Boolean,
+        shouldBeWhitelisted: Boolean,
+        onChangeShouldBeWhitelisted: (Boolean) -> Unit,
+        dontShowAutostart: Boolean,
+        onChangeDontShowAutostart: (Boolean) -> Unit,
+        manufacturerWarning: Boolean
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(8.dp)
+        ) {
+            Card {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.intro_battery_title),
+                            style = MaterialTheme.typography.h6,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Switch(
+                            checked = shouldBeWhitelisted,
+                            onCheckedChange = {
+                                // Only accept click events if not whitelisted
+                                if (!isWhitelisted) {
+                                    onChangeShouldBeWhitelisted(it)
+                                }
+                            },
+                            enabled = !dontShowBattery
+                        )
+                    }
+                    Text(
+                        text = stringResource(
+                            R.string.intro_battery_text,
+                            getString(R.string.app_name)
+                        ),
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
+                    AnimatedVisibility(visible = !isWhitelisted) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = dontShowBattery,
+                                onCheckedChange = onChangeDontShowBattery,
+                                enabled = !isWhitelisted
+                            )
+                            Text(
+                                text = stringResource(R.string.intro_battery_dont_show),
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier
+                                    .clickable { onChangeDontShowBattery(!dontShowBattery) }
+                            )
+                        }
+                    }
+                }
+            }
+            AnimatedVisibility(visible = manufacturerWarning) {
+                Card(
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.intro_autostart_title,
+                                WordUtils.capitalize(Build.MANUFACTURER)
+                            ),
+                            style = MaterialTheme.typography.h6,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Text(
+                            text = stringResource(R.string.intro_autostart_text),
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier.padding(top = 12.dp)
+                        )
+                        OutlinedButton(
+                            onClick = {
+                                UiUtils.launchUri(
+                                    requireActivity(),
+                                    App.homepageUrl(requireActivity())
+                                        .buildUpon()
+                                        .appendPath("faq")
+                                        .appendPath("synchronization-is-not-run-as-expected")
+                                        .appendQueryParameter(
+                                            "manufacturer",
+                                            Build.MANUFACTURER.lowercase(Locale.ROOT)
+                                        )
+                                        .build()
+                                )
+                            }
+                        ) {
+                            Text(stringResource(R.string.intro_more_info))
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = dontShowAutostart,
+                                onCheckedChange = onChangeDontShowAutostart
+                            )
+                            Text(
+                                text = stringResource(R.string.intro_autostart_dont_show),
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier
+                                    .clickable { onChangeDontShowAutostart(!dontShowAutostart) }
+                            )
+                        }
+                    }
+                }
+            }
+            Text(
+                text = stringResource(
+                    R.string.intro_leave_unchecked,
+                    stringResource(R.string.app_settings_reset_hints)
+                ),
+                style = MaterialTheme.typography.body2,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            Spacer(modifier = Modifier.height(90.dp))
+        }
     }
 
 
@@ -133,27 +327,13 @@ class BatteryOptimizationsFragment: Fragment() {
 
         val shouldBeWhitelisted = MutableLiveData<Boolean>()
         val isWhitelisted = MutableLiveData<Boolean>()
-        val dontShowBattery = object: ObservableBoolean() {
-            override fun get() = settings.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) == false
-            override fun set(dontShowAgain: Boolean) {
-                if (dontShowAgain)
-                    settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
-                else
-                    settings.remove(HINT_BATTERY_OPTIMIZATIONS)
-                notifyChange()
-            }
-        }
+        val dontShowBattery: MutableState<Boolean>
+            @Composable
+            get() = observePreference(key = HINT_BATTERY_OPTIMIZATIONS) { it == false }
 
-        val dontShowAutostart = object: ObservableBoolean() {
-            override fun get() = settings.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) == false
-            override fun set(dontShowAgain: Boolean) {
-                if (dontShowAgain)
-                    settings.putBoolean(HINT_AUTOSTART_PERMISSION, false)
-                else
-                    settings.remove(HINT_AUTOSTART_PERMISSION)
-                notifyChange()
-            }
-        }
+        val dontShowAutostart: MutableState<Boolean>
+            @Composable
+            get() = observePreference(key = HINT_AUTOSTART_PERMISSION) { it == false }
 
         fun checkWhitelisted() {
             val whitelisted = isWhitelisted(getApplication())
@@ -163,6 +343,36 @@ class BatteryOptimizationsFragment: Fragment() {
             // if DAVx5 is whitelisted, always show a reminder as soon as it's not whitelisted anymore
             if (whitelisted)
                 settings.remove(HINT_BATTERY_OPTIMIZATIONS)
+        }
+
+        @Composable
+        private fun observePreference(
+            key: String,
+            map: (Boolean?) -> Boolean = { it == true }
+        ): MutableState<Boolean> {
+            val state = remember {
+                mutableStateOf(
+                    settings.getBooleanOrNull(key).let(map)
+                )
+            }
+            DisposableEffect(Unit) {
+                val observer = object : SettingsManager.OnChangeListener {
+                    override fun onSettingsChanged() {
+                        state.value = settings.getBooleanOrNull(key).let(map)
+                    }
+                }
+                settings.addOnChangeListener(observer)
+                onDispose {
+                    settings.removeOnChangeListener(observer)
+                }
+            }
+            LaunchedEffect(state) {
+                val value = settings.getBooleanOrNull(key).let(map)
+                if (state.value != value) {
+                    settings.putBoolean(key, state.value.let(map))
+                }
+            }
+            return state
         }
 
     }
