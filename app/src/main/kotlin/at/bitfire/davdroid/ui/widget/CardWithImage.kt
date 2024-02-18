@@ -68,7 +68,7 @@ fun CardWithImage(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 12.dp),
+                        .padding(top = 8.dp, bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     icon?.let {
@@ -101,7 +101,7 @@ fun CardWithImage(
                         text = it,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp),
+                            .padding(vertical = 4.dp),
                         style = MaterialTheme.typography.body1
                     )
                 }

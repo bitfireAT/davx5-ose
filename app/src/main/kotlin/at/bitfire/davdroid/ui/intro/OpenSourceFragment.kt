@@ -125,9 +125,8 @@ class OpenSourceFragment: Fragment() {
                     )
                     Text(
                         text = stringResource(R.string.intro_battery_dont_show),
-                        style = MaterialTheme.typography.caption,
-                        modifier = Modifier
-                            .clickable { onChangeDontShow(!dontShow) }
+                        style = MaterialTheme.typography.body2,
+                        modifier = Modifier.clickable { onChangeDontShow(!dontShow) }
                     )
                 }
             }
