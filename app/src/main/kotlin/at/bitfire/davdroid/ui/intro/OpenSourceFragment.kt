@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -105,13 +106,18 @@ class OpenSourceFragment: Fragment() {
             ) {
                 OutlinedButton(
                     onClick = {
-                        uriHandler.openUri(
-                            App.homepageUrl(requireActivity())
-                                .buildUpon()
-                                .appendPath("donate")
-                                .build()
-                                .toString()
-                        )
+                        try {
+                            uriHandler.openUri(
+                                App.homepageUrl(requireActivity())
+                                    .buildUpon()
+                                    .appendPath("donate")
+                                    .build()
+                                    .toString()
+                            )
+                        } catch (_: IllegalArgumentException) {
+                            // no browser available
+                            Toast.makeText(context, R.string.install_browser, Toast.LENGTH_LONG).show()
+                        }
                     }
                 ) {
                     Text(stringResource(R.string.intro_open_source_details))
