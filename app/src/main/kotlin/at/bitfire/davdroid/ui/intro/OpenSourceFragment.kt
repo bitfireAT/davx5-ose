@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +23,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
@@ -47,6 +48,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.OpenSourceFragment.Model.Companion.SETTING_NEXT_DONATION_POPUP
 import at.bitfire.davdroid.ui.widget.CardWithImage
+import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
 import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -65,13 +67,16 @@ class OpenSourceFragment: Fragment() {
                 MdcTheme {
                     var dontShow by remember { mutableStateOf(model.dontShow.get()) }
 
-                    FragmentContent(
-                        dontShow = dontShow,
-                        onChangeDontShow = {
-                            model.dontShow.set(it)
-                            dontShow = it
-                        }
-                    )
+                    val uriHandler = SafeAndroidUriHandler(LocalContext.current)
+                    CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+                        FragmentContent(
+                            dontShow = dontShow,
+                            onChangeDontShow = {
+                                model.dontShow.set(it)
+                                dontShow = it
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -106,18 +111,13 @@ class OpenSourceFragment: Fragment() {
             ) {
                 OutlinedButton(
                     onClick = {
-                        try {
-                            uriHandler.openUri(
-                                App.homepageUrl(requireActivity())
-                                    .buildUpon()
-                                    .appendPath("donate")
-                                    .build()
-                                    .toString()
-                            )
-                        } catch (_: IllegalArgumentException) {
-                            // no browser available
-                            Toast.makeText(context, R.string.install_browser, Toast.LENGTH_LONG).show()
-                        }
+                        uriHandler.openUri(
+                            App.homepageUrl(requireActivity())
+                                .buildUpon()
+                                .appendPath("donate")
+                                .build()
+                                .toString()
+                        )
                     }
                 ) {
                     Text(stringResource(R.string.intro_open_source_details))
