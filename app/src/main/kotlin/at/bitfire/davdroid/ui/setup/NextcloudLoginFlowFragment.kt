@@ -6,16 +6,22 @@ package at.bitfire.davdroid.ui.setup
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Browser
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
+import androidx.browser.customtabs.CustomTabsCallback
+import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsServiceConnection
+import androidx.browser.customtabs.CustomTabsSession
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -66,8 +72,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -80,6 +94,8 @@ import java.net.HttpURLConnection
 import java.net.URI
 import java.util.logging.Level
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @AndroidEntryPoint
 class NextcloudLoginFlowFragment: Fragment() {
@@ -91,6 +107,10 @@ class NextcloudLoginFlowFragment: Fragment() {
 
         /** Set this to 1 to indicate that Login Flow shall be used. */
         const val EXTRA_LOGIN_FLOW = "loginFlow"
+
+        const val EXTRA_URI = "uri"
+        const val EXTRA_USERNAME = "username"
+        const val EXTRA_PASSWORD = "password"
 
         /** Path to DAV endpoint (e.g. `/remote.php/dav`). Will be appended to the
          *  server URL returned by Login Flow without further processing. */
@@ -114,6 +134,59 @@ class NextcloudLoginFlowFragment: Fragment() {
     private val checkResultCallback = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         val davPath = requireActivity().intent.getStringExtra(EXTRA_DAV_PATH) ?: DAV_PATH_DEFAULT
         model.checkResult(davPath)
+    }
+
+    private lateinit var davPath: String
+
+    private var customTabsClient: CustomTabsClient? = null
+    private var customTabsSession: CustomTabsSession? = null
+
+    private val customTabsCallback = object : CustomTabsCallback() {
+        override fun onNavigationEvent(navigationEvent: Int, extras: Bundle?) {
+            if (navigationEvent == NAVIGATION_FINISHED) {
+                Log.i("NextcloudLoginFlowFragment", "Custom Tabs navigation finished")
+
+                // launch in a new thread, cannot be done from model since the activity is paused
+                CoroutineScope(Dispatchers.IO).launch {
+                    Log.i("NextcloudLoginFlowFragment", "Running check...")
+                    model.checkResultAsync(davPath)
+
+                    delay(10) // wait so that the LiveData is updated
+                    // Get the value, if it's not null, the login was successful
+                    val result = model.loginData.value
+                    if (result == null) {
+                        Log.e("NextcloudLoginFlowFragment", "Check result failed")
+                    } else {
+                        Log.i("NextcloudLoginFlowFragment", "Logged in correctly")
+                        val (uri, credentials) = result
+                        // FIXME: not working since the activity is paused, IllegalStateException is thrown
+                        withContext(Dispatchers.Main) {
+                            startActivity(
+                                Intent("loginFlow")
+                                    .putExtra(EXTRA_LOGIN_FLOW, 1)
+                                    .putExtra(EXTRA_URI, uri.toString())
+                                    .putExtra(EXTRA_USERNAME, credentials.userName)
+                                    .putExtra(EXTRA_PASSWORD, credentials.password)
+                                    .putExtra(EXTRA_DAV_PATH, davPath)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private val customTabsServiceConnection = object : CustomTabsServiceConnection() {
+        override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
+            customTabsClient = client
+            customTabsClient?.warmup(0)
+            customTabsSession = customTabsClient?.newSession(customTabsCallback)
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            customTabsSession = null
+            customTabsClient = null
+        }
     }
 
 
@@ -148,7 +221,7 @@ class NextcloudLoginFlowFragment: Fragment() {
             if (haveCustomTabs(requireActivity())) {
                 // Custom Tabs are available
                 @Suppress("DEPRECATION")
-                val browser = CustomTabsIntent.Builder()
+                val browser = CustomTabsIntent.Builder(customTabsSession)
                     .setToolbarColor(resources.getColor(R.color.primaryColor))
                     .build()
                 browser.intent.data = loginUri
@@ -156,6 +229,7 @@ class NextcloudLoginFlowFragment: Fragment() {
                     Browser.EXTRA_HEADERS,
                     bundleOf("Accept-Language" to Locale.current.toLanguageTag())
                 )
+                println("Launching url: $loginUri")
                 checkResultCallback.launch(browser.intent)
             } else {
                 // fallback: launch normal browser
@@ -190,6 +264,37 @@ class NextcloudLoginFlowFragment: Fragment() {
             model.start(entryUrl)
 
         return view
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val extras = requireActivity().intent.extras ?: bundleOf()
+
+        davPath = extras.getString(EXTRA_DAV_PATH, DAV_PATH_DEFAULT)
+
+        if (listOf(EXTRA_URI, EXTRA_USERNAME, EXTRA_PASSWORD).all { extras.containsKey(it) }) {
+            model.loginData.value = Pair(
+                URI.create(extras.getString(EXTRA_URI)!!),
+                Credentials(
+                    extras.getString(EXTRA_USERNAME)!!,
+                    extras.getString(EXTRA_PASSWORD)!!
+                )
+            )
+        }
+
+        bindCustomTabsService()
+    }
+
+
+    private fun bindCustomTabsService() {
+        if (customTabsClient != null) return
+
+        // Get the default browser package name, this will be null if
+        // the default browser does not provide a CustomTabsService
+        val packageName: String = CustomTabsClient.getPackageName(requireContext(), null)
+            ?: return // Do nothing as service connection is not supported
+        CustomTabsClient.bindCustomTabsService(requireContext(), packageName, customTabsServiceConnection)
     }
 
 
@@ -285,30 +390,42 @@ class NextcloudLoginFlowFragment: Fragment() {
          * model is cleared (saved state).
          */
         @UiThread
-        fun checkResult(davPath: String?) {
-            val pollUrl = pollUrl ?: return
-            val token = token ?: return
+        fun checkResult(davPath: String?): Job {
+            return viewModelScope.launch(Dispatchers.IO) {
+                checkResultAsync(davPath)
+            }
+        }
 
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    val json = postForJson(pollUrl, "token=$token".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
-                    val serverUrl = json.getString("server")
-                    val loginName = json.getString("loginName")
-                    val appPassword = json.getString("appPassword")
+        @WorkerThread
+        fun checkResultAsync(davPath: String?)  {
+            val pollUrl = pollUrl ?: run {
+                Log.e("Model", "Polling URL is null.")
+                return
+            }
+            val token = token ?: run {
+                Log.e("Model", "Token is null.")
+                return
+            }
 
-                    val baseUri = if (davPath != null)
-                        URI.create(serverUrl + davPath)
-                    else
-                        URI.create(serverUrl)
+            try {
+                Log.i("Model", "Polling login URL ($pollUrl) with token: $token")
+                val json = postForJson(pollUrl, "token=$token".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
+                val serverUrl = json.getString("server")
+                val loginName = json.getString("loginName")
+                val appPassword = json.getString("appPassword")
 
-                    loginData.postValue(Pair(
-                        baseUri,
-                        Credentials(loginName, appPassword)
-                    ))
-                } catch (e: Exception) {
-                    Logger.log.log(Level.WARNING, "Polling login URL failed", e)
-                    error.postValue(getApplication<Application>().getString(R.string.login_nextcloud_login_flow_no_login_data))
-                }
+                val baseUri = if (davPath != null)
+                    URI.create(serverUrl + davPath)
+                else
+                    URI.create(serverUrl)
+
+                loginData.postValue(Pair(
+                    baseUri,
+                    Credentials(loginName, appPassword)
+                ))
+            } catch (e: Exception) {
+                Logger.log.log(Level.WARNING, "Polling login URL failed", e)
+                error.postValue(getApplication<Application>().getString(R.string.login_nextcloud_login_flow_no_login_data))
             }
         }
 
