@@ -135,16 +135,6 @@ fun PermissionsFragmentContent(model: PermissionsFragment.Model = viewModel()) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PermissionSwitchRow_Preview() {
-    PermissionSwitchRow(
-        text = "All permissions",
-        allPermissionsGranted = false,
-        onLaunchRequest = {}
-    )
-}
-
 @Composable
 @OptIn(ExperimentalPermissionsApi::class)
 fun PermissionSwitchRow(
