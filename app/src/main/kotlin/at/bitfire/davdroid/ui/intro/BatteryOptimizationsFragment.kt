@@ -38,6 +38,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
+import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
@@ -86,8 +89,8 @@ class BatteryOptimizationsFragment: Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MdcTheme {
-                    var dontShowBattery by model.dontShowBattery
-                    var dontShowAutostart by model.dontShowAutostart
+                    var dontShowBattery by remember { mutableStateOf(model.dontShowBattery.get()) }
+                    var dontShowAutostart by remember { mutableStateOf(model.dontShowAutostart.get()) }
                     val shouldBeWhitelisted by model.shouldBeWhitelisted.observeAsState(false)
                     val isWhitelisted by model.isWhitelisted.observeAsState(false)
 
@@ -98,12 +101,18 @@ class BatteryOptimizationsFragment: Fragment() {
 
                     Content(
                         dontShowBattery = dontShowBattery,
-                        onChangeDontShowBattery = { dontShowBattery = it },
+                        onChangeDontShowBattery = {
+                            model.dontShowBattery.set(it)
+                            dontShowBattery = it
+                        },
                         isWhitelisted = isWhitelisted,
                         shouldBeWhitelisted = shouldBeWhitelisted,
                         onChangeShouldBeWhitelisted = model.shouldBeWhitelisted::postValue,
                         dontShowAutostart = dontShowAutostart,
-                        onChangeDontShowAutostart = { dontShowAutostart = it },
+                        onChangeDontShowAutostart = {
+                            model.dontShowAutostart.set(it)
+                            dontShowAutostart = it
+                        },
                         manufacturerWarning = Model.manufacturerWarning
                     )
                 }
@@ -324,13 +333,27 @@ class BatteryOptimizationsFragment: Fragment() {
 
         val shouldBeWhitelisted = MutableLiveData<Boolean>()
         val isWhitelisted = MutableLiveData<Boolean>()
-        val dontShowBattery: MutableState<Boolean>
-            @Composable
-            get() = settings.observeBoolean(key = HINT_BATTERY_OPTIMIZATIONS) { it == false }
+        val dontShowBattery = object: ObservableBoolean() {
+            override fun get() = settings.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) == false
+            override fun set(dontShowAgain: Boolean) {
+                if (dontShowAgain)
+                    settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, false)
+                else
+                    settings.remove(HINT_BATTERY_OPTIMIZATIONS)
+                notifyChange()
+            }
+        }
 
-        val dontShowAutostart: MutableState<Boolean>
-            @Composable
-            get() = settings.observeBoolean(key = HINT_AUTOSTART_PERMISSION) { it == false }
+        val dontShowAutostart = object: ObservableBoolean() {
+            override fun get() = settings.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) == false
+            override fun set(dontShowAgain: Boolean) {
+                if (dontShowAgain)
+                    settings.putBoolean(HINT_AUTOSTART_PERMISSION, false)
+                else
+                    settings.remove(HINT_AUTOSTART_PERMISSION)
+                notifyChange()
+            }
+        }
 
         fun checkWhitelisted() {
             val whitelisted = isWhitelisted(getApplication())
