@@ -54,8 +54,6 @@ android {
         dataBinding = true
     }
     composeOptions {
-        // Keep this in sync with Kotlin version:
-        // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
@@ -186,9 +184,11 @@ dependencies {
     implementation(libs.appintro)
     implementation(libs.mikepenz.aboutLibraries)
     implementation(libs.commons.collections)
+    @Suppress("RedundantSuppression")
     implementation(libs.commons.io)
     implementation(libs.commons.lang)
     implementation(libs.commons.text)
+    @Suppress("RedundantSuppression")
     implementation(libs.dnsjava)
     implementation(libs.jaredrummler.colorpicker)
     implementation(libs.nsk90.kstatemachine)
