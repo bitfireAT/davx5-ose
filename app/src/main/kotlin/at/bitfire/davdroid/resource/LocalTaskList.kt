@@ -68,6 +68,10 @@ class LocalTaskList private constructor(
 
     }
 
+    override var readOnly: Boolean
+        get() = TODO("Not yet implemented")
+        set(value) {}
+
     override val tag: String
         get() = "tasks-${account.name}-$id"
 

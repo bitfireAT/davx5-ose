@@ -18,6 +18,12 @@ interface LocalCollection<out T: LocalResource<*>> {
     var lastSyncState: SyncState?
 
     /**
+     * Whether the collection should be treated as read-only on sync.
+     * Stops uploading dirty events (Server side changes are still downloaded).
+     */
+    var readOnly: Boolean
+
+    /**
      * Finds local resources of this collection which have been marked as *deleted* by the user
      * or an app acting on their behalf.
      *

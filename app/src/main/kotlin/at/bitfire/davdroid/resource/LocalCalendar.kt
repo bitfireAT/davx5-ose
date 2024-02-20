@@ -11,6 +11,7 @@ import android.content.ContentValues
 import android.net.Uri
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
+import androidx.core.database.getIntOrNull
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -84,6 +85,10 @@ class LocalCalendar private constructor(
         }
 
     }
+
+    override var readOnly: Boolean
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     override val tag: String
         get() = "events-${account.name}-$id"
