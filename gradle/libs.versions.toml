@@ -42,7 +42,7 @@ compose-compiler = "1.5.8"
 dnsjava = "2.1.9"
 hilt = "2.50"
 jaredrummler-colorpicker = "1.1.0"
-#  keep in sync with * app/build.gradle composeOptions.kotlinCompilerExtensionVersion
+#  keep in sync with * app/build.gradle.kts composeOptions.kotlinCompilerExtensionVersion
 #                    * com.google.devtools.ksp at the end of this file
 kotlin = "1.9.22"
 kotlinx-coroutines = "1.7.3"
