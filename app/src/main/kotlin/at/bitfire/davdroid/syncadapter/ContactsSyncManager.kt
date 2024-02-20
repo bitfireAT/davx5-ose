@@ -105,8 +105,6 @@ class ContactsSyncManager(
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
     }
 
-    private val readOnly = localAddressBook.readOnly
-
     private var hasVCard4 = false
     private var hasJCard = false
     private val groupStrategy = when (accountSettings.getGroupMethod()) {
