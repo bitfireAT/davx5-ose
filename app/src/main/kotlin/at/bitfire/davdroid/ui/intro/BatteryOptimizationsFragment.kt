@@ -213,7 +213,7 @@ class BatteryOptimizationsFragment: Fragment() {
                     }
                 }
             }
-            AnimatedVisibility(visible = manufacturerWarning) {
+            if (manufacturerWarning) {
                 Card(
                     modifier = Modifier.padding(top = 8.dp)
                 ) {
