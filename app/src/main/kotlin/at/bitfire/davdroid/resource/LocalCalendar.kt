@@ -87,8 +87,20 @@ class LocalCalendar private constructor(
     }
 
     override var readOnly: Boolean
-        get() = TODO("Not yet implemented")
-        set(value) {}
+        get() = provider.query(calendarSyncURI(), arrayOf(Calendars.CALENDAR_ACCESS_LEVEL), null, null, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.getIntOrNull(0) == Calendars.CAL_ACCESS_READ
+            else
+                false
+        } == true
+        set(readOnly) {
+            val values = ContentValues(1)
+            values.put(
+                Calendars.CALENDAR_ACCESS_LEVEL,
+                if (readOnly) Calendars.CAL_ACCESS_READ else Calendars.CAL_ACCESS_OWNER
+            )
+            provider.update(calendarSyncURI(), values, null, null)
+        }
 
     override val tag: String
         get() = "events-${account.name}-$id"
