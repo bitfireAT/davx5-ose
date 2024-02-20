@@ -7,10 +7,13 @@ contributors = {}
 transifex = JSON.parse(STDIN.read, :symbolize_names => true)
 for t in transifex[:data]
   raise unless t[:type] == 'team_memberships'
-  next unless t[:attributes][:role] == 'translator'
+  #next unless t[:attributes][:role] == 'translator'
+
   rel = t[:relationships]
   lang = rel[:language][:data][:id].delete_prefix('l:')
   user = rel[:user][:data][:id].delete_prefix('u:')
+
+  next if user == 'bitfire'
 
   contributors[lang] = [] if contributors[lang].nil?
   contributors[lang] << user
