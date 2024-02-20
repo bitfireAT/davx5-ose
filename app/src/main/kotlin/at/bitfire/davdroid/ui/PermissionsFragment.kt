@@ -201,7 +201,6 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
         image = painterResource(R.drawable.intro_permissions),
         modifier = Modifier.padding(8.dp)
     ) {
-        // TODO: keep permissions switch
         if (keepPermissions != null) {
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_autoreset_title),
