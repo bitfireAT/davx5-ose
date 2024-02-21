@@ -85,6 +85,7 @@ object UiUtils {
      * @return true on success, false if the Intent could not be resolved (for instance, because
      * there is no user agent installed)
      */
+    @Deprecated("Use SafeAndroidUriHandler (Compose) instead")
     fun launchUri(context: Context, uri: Uri, action: String = Intent.ACTION_VIEW, toastInstallBrowser: Boolean = true): Boolean {
         val intent = Intent(action, uri)
         try {
