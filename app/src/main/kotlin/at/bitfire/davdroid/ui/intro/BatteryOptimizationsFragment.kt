@@ -125,164 +125,6 @@ class BatteryOptimizationsFragment: Fragment() {
     }
 
 
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun Content_Preview() {
-        MdcTheme {
-            Content(
-                dontShowBattery = true,
-                onChangeDontShowBattery = {},
-                isWhitelisted = false,
-                shouldBeWhitelisted = true,
-                onChangeShouldBeWhitelisted = {},
-                dontShowAutostart = false,
-                onChangeDontShowAutostart = {},
-                manufacturerWarning = true
-            )
-        }
-    }
-
-    @Composable
-    private fun Content(
-        dontShowBattery: Boolean,
-        onChangeDontShowBattery: (Boolean) -> Unit,
-        isWhitelisted: Boolean,
-        shouldBeWhitelisted: Boolean,
-        onChangeShouldBeWhitelisted: (Boolean) -> Unit,
-        dontShowAutostart: Boolean,
-        onChangeDontShowAutostart: (Boolean) -> Unit,
-        manufacturerWarning: Boolean
-    ) {
-        val uriHandler = LocalUriHandler.current
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(8.dp)
-        ) {
-            Card {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.intro_battery_title),
-                            style = MaterialTheme.typography.h6,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Switch(
-                            checked = shouldBeWhitelisted,
-                            onCheckedChange = {
-                                // Only accept click events if not whitelisted
-                                if (!isWhitelisted) {
-                                    onChangeShouldBeWhitelisted(it)
-                                }
-                            },
-                            enabled = !dontShowBattery
-                        )
-                    }
-                    Text(
-                        text = stringResource(
-                            R.string.intro_battery_text,
-                            getString(R.string.app_name)
-                        ),
-                        style = MaterialTheme.typography.body1,
-                        modifier = Modifier.padding(top = 12.dp)
-                    )
-                    AnimatedVisibility(visible = !isWhitelisted) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = dontShowBattery,
-                                onCheckedChange = onChangeDontShowBattery,
-                                enabled = !isWhitelisted
-                            )
-                            Text(
-                                text = stringResource(R.string.intro_battery_dont_show),
-                                style = MaterialTheme.typography.caption,
-                                modifier = Modifier
-                                    .clickable { onChangeDontShowBattery(!dontShowBattery) }
-                            )
-                        }
-                    }
-                }
-            }
-            if (manufacturerWarning) {
-                Card(
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = stringResource(
-                                R.string.intro_autostart_title,
-                                WordUtils.capitalize(Build.MANUFACTURER)
-                            ),
-                            style = MaterialTheme.typography.h6,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Text(
-                            text = stringResource(R.string.intro_autostart_text),
-                            style = MaterialTheme.typography.body1,
-                            modifier = Modifier.padding(top = 12.dp)
-                        )
-                        OutlinedButton(
-                            onClick = {
-                                uriHandler.openUri(
-                                    App.homepageUrl(requireActivity())
-                                        .buildUpon()
-                                        .appendPath("faq")
-                                        .appendPath("synchronization-is-not-run-as-expected")
-                                        .appendQueryParameter(
-                                            "manufacturer",
-                                            Build.MANUFACTURER.lowercase(Locale.ROOT)
-                                        )
-                                        .build().toString()
-                                )
-                            }
-                        ) {
-                            Text(stringResource(R.string.intro_more_info))
-                        }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = dontShowAutostart,
-                                onCheckedChange = onChangeDontShowAutostart
-                            )
-                            Text(
-                                text = stringResource(R.string.intro_autostart_dont_show),
-                                style = MaterialTheme.typography.caption,
-                                modifier = Modifier
-                                    .clickable { onChangeDontShowAutostart(!dontShowAutostart) }
-                            )
-                        }
-                    }
-                }
-            }
-            Text(
-                text = stringResource(
-                    R.string.intro_leave_unchecked,
-                    stringResource(R.string.app_settings_reset_hints)
-                ),
-                style = MaterialTheme.typography.body2,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            Spacer(modifier = Modifier.height(90.dp))
-        }
-    }
-
-
     @HiltViewModel
     class Model @Inject constructor(
         application: Application,
@@ -391,4 +233,162 @@ class BatteryOptimizationsFragment: Fragment() {
         override fun create() = BatteryOptimizationsFragment()
     }
 
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun Content_Preview() {
+    MdcTheme {
+        Content(
+            dontShowBattery = true,
+            onChangeDontShowBattery = {},
+            isWhitelisted = false,
+            shouldBeWhitelisted = true,
+            onChangeShouldBeWhitelisted = {},
+            dontShowAutostart = false,
+            onChangeDontShowAutostart = {},
+            manufacturerWarning = true
+        )
+    }
+}
+
+@Composable
+private fun Content(
+    dontShowBattery: Boolean,
+    onChangeDontShowBattery: (Boolean) -> Unit,
+    isWhitelisted: Boolean,
+    shouldBeWhitelisted: Boolean,
+    onChangeShouldBeWhitelisted: (Boolean) -> Unit,
+    dontShowAutostart: Boolean,
+    onChangeDontShowAutostart: (Boolean) -> Unit,
+    manufacturerWarning: Boolean
+) {
+    val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(8.dp)
+    ) {
+        Card {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.intro_battery_title),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(
+                        checked = shouldBeWhitelisted,
+                        onCheckedChange = {
+                            // Only accept click events if not whitelisted
+                            if (!isWhitelisted) {
+                                onChangeShouldBeWhitelisted(it)
+                            }
+                        },
+                        enabled = !dontShowBattery
+                    )
+                }
+                Text(
+                    text = stringResource(
+                        R.string.intro_battery_text,
+                        stringResource(R.string.app_name)
+                    ),
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(top = 12.dp)
+                )
+                AnimatedVisibility(visible = !isWhitelisted) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = dontShowBattery,
+                            onCheckedChange = onChangeDontShowBattery,
+                            enabled = !isWhitelisted
+                        )
+                        Text(
+                            text = stringResource(R.string.intro_battery_dont_show),
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier
+                                .clickable { onChangeDontShowBattery(!dontShowBattery) }
+                        )
+                    }
+                }
+            }
+        }
+        if (manufacturerWarning) {
+            Card(
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.intro_autostart_title,
+                            WordUtils.capitalize(Build.MANUFACTURER)
+                        ),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = stringResource(R.string.intro_autostart_text),
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
+                    OutlinedButton(
+                        onClick = {
+                            uriHandler.openUri(
+                                App.homepageUrl(context)
+                                    .buildUpon()
+                                    .appendPath("faq")
+                                    .appendPath("synchronization-is-not-run-as-expected")
+                                    .appendQueryParameter(
+                                        "manufacturer",
+                                        Build.MANUFACTURER.lowercase(Locale.ROOT)
+                                    )
+                                    .build().toString()
+                            )
+                        }
+                    ) {
+                        Text(stringResource(R.string.intro_more_info))
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = dontShowAutostart,
+                            onCheckedChange = onChangeDontShowAutostart
+                        )
+                        Text(
+                            text = stringResource(R.string.intro_autostart_dont_show),
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier
+                                .clickable { onChangeDontShowAutostart(!dontShowAutostart) }
+                        )
+                    }
+                }
+            }
+        }
+        Text(
+            text = stringResource(
+                R.string.intro_leave_unchecked,
+                stringResource(R.string.app_settings_reset_hints)
+            ),
+            style = MaterialTheme.typography.body2,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+        Spacer(modifier = Modifier.height(90.dp))
+    }
 }
