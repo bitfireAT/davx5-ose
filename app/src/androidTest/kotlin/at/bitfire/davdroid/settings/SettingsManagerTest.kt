@@ -4,13 +4,13 @@
 
 package at.bitfire.davdroid.settings
 
-import androidx.lifecycle.Observer
+import at.bitfire.davdroid.TestUtils.getOrAwaitValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -23,6 +23,12 @@ import javax.inject.Inject
 @HiltAndroidTest
 class SettingsManagerTest {
 
+    companion object {
+        /** Use this setting to test SettingsManager methods. Will be removed after every test run. */
+        const val SETTING_TEST = "test"
+    }
+
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
@@ -33,62 +39,58 @@ class SettingsManagerTest {
         hiltRule.inject()
     }
 
+    @After
+    fun removeTestSetting() {
+        settingsManager.remove(SETTING_TEST)
+    }
+
 
     @Test
-    fun testContainsKey_NotExisting() {
+    fun test_containsKey_NotExisting() {
         assertFalse(settingsManager.containsKey("notExisting"))
     }
 
     @Test
-    fun testContainsKey_Existing() {
+    fun test_containsKey_Existing() {
         // provided by DefaultsProvider
         assertEquals(Settings.PROXY_TYPE_SYSTEM, settingsManager.getInt(Settings.PROXY_TYPE))
     }
 
-    @Test
-    fun testObserver() {
-        var value = -1
-        val observer = SettingsManager.OnChangeListener {
-            value = settingsManager.getInt("test")
-        }
-        settingsManager.addOnChangeListener(observer)
-        settingsManager.putInt("test", 1)
-        // wait for observer to be called
-        runBlocking {
-            withTimeout(1000) {
-                while (value == -1) {
-                    delay(10)
-                }
-            }
-        }
-        // make sure the value was updated
-        assertEquals(1, value)
-        settingsManager.removeOnChangeListener(observer)
-    }
 
     @Test
-    fun test_getBooleanLive() = runBlocking(Dispatchers.Main) {
-        val live = settingsManager.getBooleanLive("test")
-
-        // it's required to add an observer, otherwise onActive is not called
-        val observer = Observer<Boolean?> { /* nothing required */ }
-        live.observeForever(observer)
-
+    fun test_getBooleanLive_getValue() = runBlocking(Dispatchers.Main) {    // observeForever can't be run in background thread
+        val live = settingsManager.getBooleanLive(SETTING_TEST)
         assertNull(live.value)
 
-        settingsManager.putBoolean("test", true)
-        runBlocking {
-            withTimeout(1000) {
-                while (live.value != true) {
-                    delay(10)
-                }
-            }
-        }
-        assertTrue(live.value ?: false)
-        assertTrue(settingsManager.getBoolean("test"))
+        // set value
+        settingsManager.putBoolean(SETTING_TEST, true)
+        assertTrue(live.getOrAwaitValue()!!)
 
+        // set another value
         live.value = false
-        assertFalse(live.value ?: true)
-        assertFalse(settingsManager.getBoolean("test"))
+        assertFalse(live.getOrAwaitValue()!!)
     }
+
+
+    @Test
+    fun test_ObserverCalledWhenValueChanges() {
+        val value = CompletableDeferred<Int>()
+        val observer = SettingsManager.OnChangeListener {
+            value.complete(settingsManager.getInt(SETTING_TEST))
+        }
+
+        try {
+            settingsManager.addOnChangeListener(observer)
+            settingsManager.putInt(SETTING_TEST, 123)
+
+            runBlocking {
+                // wait until observer is called
+                assertEquals(123, value.await())
+            }
+
+        } finally {
+            settingsManager.removeOnChangeListener(observer)
+        }
+    }
+
 }
