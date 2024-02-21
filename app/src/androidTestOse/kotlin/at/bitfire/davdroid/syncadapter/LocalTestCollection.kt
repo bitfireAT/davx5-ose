@@ -16,6 +16,10 @@ class LocalTestCollection: LocalCollection<LocalTestResource> {
 
     val entries = mutableListOf<LocalTestResource>()
 
+    override var readOnly: Boolean
+        get() = false // Not tests yet
+        set(value) {}
+
     override fun findDeleted() = entries.filter { it.deleted }
     override fun findDirty() = entries.filter { it.dirty }
 
