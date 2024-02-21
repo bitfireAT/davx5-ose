@@ -97,6 +97,30 @@ class CalendarSyncManager(
             else
                 SyncAlgorithm.COLLECTION_SYNC
 
+    override fun processLocallyDeleted(): Boolean {
+        if (readOnly) {
+            var modified = false
+            for (event in localCollection.findDeleted()) {
+                Logger.log.warning("Restoring locally deleted event (read-only calendar!)")
+                localExceptionContext(event) {
+                    LocalEvent.markAsNotDeleted(localCollection.provider, account, event.id!!)
+                }
+                modified = true
+            }
+
+            // TODO: Check if really true:
+            // This is unfortunately dirty: When an event has been inserted to a read-only calendar
+            // it's not enough to force synchronization (by returning true),
+            // but we also need to make sure all events are downloaded again.
+            if (modified)
+                localCollection.lastSyncState = null
+
+            return modified
+        }
+        // mirror deletions to remote collection (DELETE)
+        return super.processLocallyDeleted()
+    }
+
     override fun uploadDirty(): Boolean {
         var modified = false
         if (readOnly) {
