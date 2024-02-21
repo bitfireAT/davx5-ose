@@ -97,6 +97,27 @@ class CalendarSyncManager(
             else
                 SyncAlgorithm.COLLECTION_SYNC
 
+    override fun uploadDirty(): Boolean {
+        var modified = false
+        if (readOnly) {
+            for (event in localCollection.findDirty()) {
+                Logger.log.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
+                localExceptionContext(event) { it.clearDirty(null, null) }
+                modified = true
+            }
+
+            // see same position in processLocallyDeleted
+            if (modified)
+                localCollection.lastSyncState = null
+        }
+
+        // generate UID/file name for newly created events
+        val superModified = super.uploadDirty()
+
+        // return true when any operation returned true
+        return modified or superModified
+    }
+
     override fun generateUpload(resource: LocalEvent): RequestBody = localExceptionContext(resource) {
         val event = requireNotNull(resource.event)
         Logger.log.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)

@@ -21,7 +21,6 @@ import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import net.fortuna.ical4j.model.property.ProdId
 import java.util.UUID
-
 class LocalEvent: AndroidEvent, LocalResource<Event> {
 
     companion object {
@@ -47,6 +46,18 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
                 ContentValues(1).apply {
                     put(Events.DELETED, 1)
                 },
+                null,null
+            )
+        }
+
+        /**
+         * Marks the event as not deleted
+         * @param eventID
+         */
+        fun markAsNotDeleted(provider: ContentProviderClient, account: Account, eventID: Long) {
+            provider.update(
+                ContentUris.withAppendedId(Events.CONTENT_URI, eventID).asSyncAdapter(account),
+                ContentValues(1).apply { put(Events.DELETED, 0) },
                 null,null
             )
         }
@@ -256,10 +267,10 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         this.flags = flags
     }
 
-
     object Factory: AndroidEventFactory<LocalEvent> {
         override fun fromProvider(calendar: AndroidCalendar<*>, values: ContentValues) =
                 LocalEvent(calendar, values)
     }
 
 }
+
