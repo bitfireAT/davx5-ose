@@ -130,7 +130,7 @@ class OpenSourceFragment: Fragment() {
                         onCheckedChange = onChangeDontShow
                     )
                     Text(
-                        text = stringResource(R.string.intro_battery_dont_show),
+                        text = stringResource(R.string.intro_open_source_dont_show),
                         style = MaterialTheme.typography.body2,
                         modifier = Modifier.clickable { onChangeDontShow(!dontShow) }
                     )
