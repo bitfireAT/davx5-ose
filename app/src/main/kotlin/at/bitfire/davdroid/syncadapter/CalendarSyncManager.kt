@@ -73,29 +73,30 @@ class CalendarSyncManager(
     }
 
     override fun queryCapabilities(): SyncState? =
-            remoteExceptionContext {
-                var syncState: SyncState? = null
-                it.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                    if (relation == Response.HrefRelation.SELF) {
-                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                            Logger.log.info("Calendar accepts events up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
-                        }
-
-                        response[SupportedReportSet::class.java]?.let { supported ->
-                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
-                        }
-                        syncState = syncState(response)
+        remoteExceptionContext {
+            var syncState: SyncState? = null
+            it.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                if (relation == Response.HrefRelation.SELF) {
+                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                        Logger.log.info("Calendar accepts events up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
                     }
-                }
 
-                Logger.log.info("Calendar supports Collection Sync: $hasCollectionSync")
-                syncState
+                    response[SupportedReportSet::class.java]?.let { supported ->
+                        hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                    }
+                    syncState = syncState(response)
+                }
             }
 
-    override fun syncAlgorithm() = if (accountSettings.getTimeRangePastDays() != null || !hasCollectionSync)
-                SyncAlgorithm.PROPFIND_REPORT
-            else
-                SyncAlgorithm.COLLECTION_SYNC
+            Logger.log.info("Calendar supports Collection Sync: $hasCollectionSync")
+            syncState
+        }
+
+    override fun syncAlgorithm() =
+        if (accountSettings.getTimeRangePastDays() != null || !hasCollectionSync)
+            SyncAlgorithm.PROPFIND_REPORT
+        else
+            SyncAlgorithm.COLLECTION_SYNC
 
     override fun processLocallyDeleted(): Boolean {
         if (readOnly) {
@@ -189,8 +190,7 @@ class CalendarSyncManager(
         }
     }
 
-    override fun postProcess() {
-    }
+    override fun postProcess() {}
 
 
     // helpers
@@ -241,6 +241,6 @@ class CalendarSyncManager(
     }
 
     override fun notifyInvalidResourceTitle(): String =
-            context.getString(R.string.sync_invalid_event)
+        context.getString(R.string.sync_invalid_event)
 
 }
