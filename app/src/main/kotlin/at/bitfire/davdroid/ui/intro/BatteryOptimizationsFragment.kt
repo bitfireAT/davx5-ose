@@ -99,7 +99,7 @@ class BatteryOptimizationsFragment: Fragment() {
 
                     val uriHandler = SafeAndroidUriHandler(LocalContext.current)
                     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
-                        Content(
+                        BatteryOptimizationsContent(
                             dontShowBattery = hintBatteryOptimizations == false,
                             onChangeDontShowBattery = {
                                 model.hintBatteryOptimizations.value = !it
@@ -237,9 +237,9 @@ class BatteryOptimizationsFragment: Fragment() {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun Content_Preview() {
+private fun BatteryOptimizationsContent_Preview() {
     MdcTheme {
-        Content(
+        BatteryOptimizationsContent(
             dontShowBattery = true,
             onChangeDontShowBattery = {},
             isWhitelisted = false,
@@ -253,7 +253,7 @@ private fun Content_Preview() {
 }
 
 @Composable
-private fun Content(
+private fun BatteryOptimizationsContent(
     dontShowBattery: Boolean,
     onChangeDontShowBattery: (Boolean) -> Unit,
     isWhitelisted: Boolean,
