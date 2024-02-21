@@ -108,8 +108,7 @@ class CalendarSyncManager(
                 modified = true
             }
 
-            // TODO: Check if really true:
-            // This is unfortunately dirty: When an event has been inserted to a read-only calendar
+            // This is unfortunately ugly: When an event has been inserted to a read-only calendar
             // it's not enough to force synchronization (by returning true),
             // but we also need to make sure all events are downloaded again.
             if (modified)
@@ -130,7 +129,9 @@ class CalendarSyncManager(
                 modified = true
             }
 
-            // see same position in processLocallyDeleted
+            // This is unfortunately ugly: When an event has been inserted to a read-only calendar
+            // it's not enough to force synchronization (by returning true),
+            // but we also need to make sure all events are downloaded again.
             if (modified)
                 localCollection.lastSyncState = null
         }
