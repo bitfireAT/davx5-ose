@@ -7,7 +7,9 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.util.NoSuchPropertyException
 import androidx.annotation.AnyThread
+import androidx.lifecycle.MutableLiveData
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.SettingsManager.OnChangeListener
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.EntryPoint
@@ -170,6 +172,38 @@ class SettingsManager internal constructor(
     fun remove(key: String) = putString(key, null)
 
 
+    /*** LIVE DATA ***/
+
+    /**
+     * Returns a [MutableLiveData] which is backed by the settings with the given key.
+     * An observer must be added to the returned [MutableLiveData] to make it active.
+     */
+    fun getBooleanLive(key: String) = object : MutableLiveData<Boolean?>() {
+        private val preferenceChangeListener = OnChangeListener { updateValue() }
+
+        private fun updateValue() {
+            value = getBooleanOrNull(key)
+        }
+
+        // setValue is also called from postValue, so no need to override
+        override fun setValue(value: Boolean?) {
+            super.setValue(value)
+            putBoolean(key, value)
+        }
+
+        override fun onActive() {
+            super.onActive()
+            updateValue()
+            addOnChangeListener(preferenceChangeListener)
+        }
+
+        override fun onInactive() {
+            super.onInactive()
+            removeOnChangeListener(preferenceChangeListener)
+        }
+    }
+
+
     /*** HELPERS ***/
 
     fun dump(writer: Writer) {
@@ -180,7 +214,7 @@ class SettingsManager internal constructor(
     }
 
 
-    interface OnChangeListener {
+    fun interface OnChangeListener {
         /**
          * Will be called when something has changed in a [SettingsProvider].
          * May run in worker thread!
