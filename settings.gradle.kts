@@ -4,7 +4,7 @@ pluginManagement {
         mavenCentral()
 
         // AboutLibraries
-        maven { url "https://plugins.gradle.org/m2/" }
+        maven("https://plugins.gradle.org/m2/")
     }
 }
 
@@ -15,8 +15,8 @@ dependencyResolutionManagement {
         mavenCentral()
 
         // AppIntro, dav4jvm
-        maven { url "https://jitpack.io" }
+        maven("https://jitpack.io")
     }
 }
 
-include ':app'
+include(":app")
