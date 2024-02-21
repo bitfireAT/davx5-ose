@@ -10,10 +10,8 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
-import android.content.pm.ServiceInfo
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
-import android.os.Build
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.IntDef
@@ -75,9 +73,7 @@ import java.util.logging.Level
  *
  * Expedited: when run manually
  *
- * Long-running: yes (sync make take long when a lot of data is transferred over a slow connection/server).
- * Needs a foreground service, whose launch from background is restricted since Android 12. So this will only
- * work when the app is in foreground or battery optimizations are turned off.
+ * Long-running: no
  */
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
@@ -322,14 +318,6 @@ class SyncWorker @AssistedInject constructor(
         )
         val authority = inputData.getString(ARG_AUTHORITY) ?: throw IllegalArgumentException("$ARG_AUTHORITY required")
         val expedited = inputData.getBoolean(ARG_EXPEDITED, false)
-
-        // this is a long-running worker
-        try {
-            setForeground(getForegroundInfo())
-        } catch (e: IllegalStateException) {
-            Logger.log.log(Level.WARNING, "Couldn't create foreground service for sync worker. This is not necessarily an error, " +
-                    "but battery optimizations should be disabled to avoid this.", e)
-        }
 
         // check internet connection
         val ignoreVpns = AccountSettings(applicationContext, account).getIgnoreVpns()
