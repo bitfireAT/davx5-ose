@@ -125,10 +125,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Falló la detección del servicio</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">No se pudo refrescar lista de colección</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">No puede ejecutarse en primer plano</string>
-  <string name="battery_optimization_notify_text">Se requiere agregar a la lista blanca de optimización de batería</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Funcionando en primer plano.</string>
   <string name="foreground_service_notify_text">En algunos dispositivos, esto es necesario para la sincronización automática.</string>
   <!--AppSettingsActivity-->
@@ -142,8 +139,6 @@
   <string name="app_settings_battery_optimization">Optimización de batería</string>
   <string name="app_settings_battery_optimization_whitelisted">La app está la lista blanca (recomendado)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">La app no está en la lista blanca (no recomendado)</string>
-  <string name="app_settings_foreground_service">Mantener en primer plano.</string>
-  <string name="app_settings_foreground_service_details">Puede ayudar si tu dispositivo impide la sincronización automática.</string>
   <string name="app_settings_connection">Conexión</string>
   <string name="app_settings_proxy">Tipo de proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -196,7 +191,6 @@
   <string name="account_synchronize_now">Sincronizar ahora</string>
   <string name="account_settings">Ajustes de cuenta</string>
   <string name="account_rename">Renombrar cuenta</string>
-  <string name="account_rename_new_name">Información local no guardada puede ser desechada. Se requiere resincronizar después de renombrar. Nuevo nombre de cuenta:</string>
   <string name="account_rename_rename">Renombrar</string>
   <string name="account_rename_exists_already">El nombre de la cuenta ya está siendo utilizado</string>
   <string name="account_rename_couldnt_rename">No se puede renombrar la cuenta</string>

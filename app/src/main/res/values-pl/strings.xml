@@ -140,10 +140,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Wykrycie serwisu nie powiodło się</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Nie można odświeżyć listy kolekcji</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Nie można uruchomić na pierwszym planie</string>
-  <string name="battery_optimization_notify_text">Wymagana biała lista optymalizacji baterii</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Działa na pierwszym planie</string>
   <string name="foreground_service_notify_text">Na niektórych urządzeniach jest to konieczne do automatycznej synchronizacji.</string>
   <!--AppSettingsActivity-->
@@ -157,8 +154,6 @@
   <string name="app_settings_battery_optimization">Optymalizacja baterii</string>
   <string name="app_settings_battery_optimization_whitelisted">Aplikacja jest na białej liście (zalecane)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Aplikacja nie znajduje się na białej liście (niezalecane)</string>
-  <string name="app_settings_foreground_service">Pozostań na pierwszym planie</string>
-  <string name="app_settings_foreground_service_details">Może pomóc, jeśli Twoje urządzenie uniemożliwia automatyczną synchronizację</string>
   <string name="app_settings_connection">Łączność</string>
   <string name="app_settings_proxy">Typ proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -211,7 +206,6 @@
   <string name="account_synchronize_now">Synchronizuj teraz</string>
   <string name="account_settings">Ustawienia konta</string>
   <string name="account_rename">Zmień nazwę konta</string>
-  <string name="account_rename_new_name">Niezapisane dane lokalne mogą zostać usunięte. Po zmianie nazwy jest wymagana ponowna synchronizacja. Nowa nazwa konta:</string>
   <string name="account_rename_rename">Zmień nazwę</string>
   <string name="account_rename_exists_already">Nazwa konta jest już zajęta</string>
   <string name="account_rename_couldnt_rename">Nie udało się zmienić nazwy konta</string>

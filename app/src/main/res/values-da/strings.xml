@@ -139,10 +139,7 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Registrering af tjeneste kunne ikke foretages</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Kunne ikke opdatere samling liste</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Kan ikke køre i forgrunden</string>
-  <string name="battery_optimization_notify_text">Batteri optimering hvid listet påkrævet</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Kører i forgrund</string>
   <string name="foreground_service_notify_text">På nogle enheder er dette nødvendigt for automatisk synkronisering.</string>
   <!--AppSettingsActivity-->
@@ -156,8 +153,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="app_settings_battery_optimization">Batteri optimering</string>
   <string name="app_settings_battery_optimization_whitelisted">App er hvid listet (anbefalet)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">App er ikke hvid listet (ikke anbefalet)</string>
-  <string name="app_settings_foreground_service">Hold i forgrunden</string>
-  <string name="app_settings_foreground_service_details">Kan hjælpe hvis enhed forhindrer automatisk synkronisering</string>
   <string name="app_settings_connection">Forbindelse</string>
   <string name="app_settings_proxy">Proxy type</string>
   <string-array name="app_settings_proxy_types">
@@ -210,7 +205,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="account_synchronize_now">Synkronisere</string>
   <string name="account_settings">Opsætning af konti</string>
   <string name="account_rename">Omdøb konto</string>
-  <string name="account_rename_new_name">Lokale data der ikke er gemt kan gå tabt. Gen-synkronisering er krævet efter omdøbning. Nyt kontonavn: </string>
   <string name="account_rename_rename">Omdøbe</string>
   <string name="account_rename_exists_already">Konto navn er allerede i brug</string>
   <string name="account_rename_couldnt_rename">Kunne ikke omdøbe konto</string>

@@ -142,10 +142,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Service herkenning is mislukt</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">De collectielijst is niet bijgewerkt</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Kan niet op de voorgrond draaien</string>
-  <string name="battery_optimization_notify_text">Toestemming tot onbeperkt batterijgebruik is vereist</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Draait op de voorgrond</string>
   <string name="foreground_service_notify_text">Op sommige toestellen is dit nodig voor automatische synchronisatie.</string>
   <!--AppSettingsActivity-->
@@ -159,8 +156,6 @@
   <string name="app_settings_battery_optimization">Batterijoptimalisatie</string>
   <string name="app_settings_battery_optimization_whitelisted">Onbeperkt batterijgebruik toestaan (aanbevolen)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Beperkt batterijgebruik toestaan (niet aanbevolen)</string>
-  <string name="app_settings_foreground_service">Op de voorgrond houden</string>
-  <string name="app_settings_foreground_service_details">Kan helpen als automatische synchronisatie niet plaatsvindt</string>
   <string name="app_settings_connection">Verbinding</string>
   <string name="app_settings_proxy">Proxy type</string>
   <string-array name="app_settings_proxy_types">
@@ -213,7 +208,6 @@
   <string name="account_synchronize_now">Nu synchroniseren</string>
   <string name="account_settings">Account instellingen</string>
   <string name="account_rename">Naam account wijzigen</string>
-  <string name="account_rename_new_name">Niet opgeslagen lokale gegevens kunnen verloren gaan. Synchroniseren is vereist na verandering van naam. Nieuwe accountnaam:</string>
   <string name="account_rename_rename">Naam wijzigen</string>
   <string name="account_rename_exists_already">Accountnaam is al in gebruik</string>
   <string name="account_rename_couldnt_rename">Naam account is niet gewijzigd</string>

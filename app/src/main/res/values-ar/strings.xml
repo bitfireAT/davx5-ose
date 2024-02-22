@@ -43,8 +43,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">فشل اكتشاف الخدمة</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">لم يتمكن التطبيق من تجديد قائمة المجموعة</string>
-  <!--Battery Optimization-->
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <!--AppSettingsActivity-->
   <string name="app_settings">الإعدادات</string>
   <string name="app_settings_debug">تصحيح العلل</string>
@@ -74,7 +73,6 @@
   <string name="account_synchronize_now">زامن الآن</string>
   <string name="account_settings">إعدادات الحساب</string>
   <string name="account_rename">إعادة تسمية الحساب</string>
-  <string name="account_rename_new_name">البيانات المحلية غير المحفوظة قد يجري استبعادها.  مطلوب إعادة المزامنة بعد إعادة التسمية.  الاسم الجديد للحساب:</string>
   <string name="account_rename_rename">إعادة تسمية</string>
   <string name="account_rename_exists_already">اسم الحساب مأخوذ بالفعل</string>
   <string name="account_delete">حذف الحساب</string>

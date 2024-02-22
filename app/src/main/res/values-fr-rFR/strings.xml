@@ -84,8 +84,7 @@
   <!--global settings-->
   <!--AccountsActivity-->
   <!--RefreshCollectionsWorker-->
-  <!--Battery Optimization-->
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <!--AppSettingsActivity-->
   <string name="app_settings_debug">Déboguage</string>
   <!--AccountActivity-->

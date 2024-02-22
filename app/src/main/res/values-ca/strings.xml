@@ -131,6 +131,8 @@
   <string name="account_list_manage_connections">Gestiona les connexions</string>
   <string name="account_list_datasaver_enabled">S\'ha activat l\'estalviador de dades. La sincronització en segon pla està restringida.</string>
   <string name="account_list_manage_datasaver">Gestió de l\'estalviador de dades</string>
+  <string name="account_list_battery_saver_enabled">S\'ha habilitat l\'estalvi de bateria. Es podria restringir la sincronització.</string>
+  <string name="account_list_manage_battery_saver">Gestiona l\'estalvi de bateria</string>
   <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la propera sincronització normal.</string>
   <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
   <string name="account_list_empty">Us donem la benvinguda a DAVx⁵! \n\nAra podeu afegir un compte CalDAV / CardDAV.</string>
@@ -140,10 +142,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Ha fallat la detecció del servei</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">No s\'ha pogut actualitzar la llista de col·leccions</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">No s\'ha pogut executar en segon pla</string>
-  <string name="battery_optimization_notify_text">Es requereix incloure-la a la llista blanca d\'optimització de la bateria</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Executant-se en segon pla</string>
   <string name="foreground_service_notify_text">En alguns dispositius, això és necessari per la sincronització automàtica</string>
   <!--AppSettingsActivity-->
@@ -157,8 +156,6 @@
   <string name="app_settings_battery_optimization">Optimització de la bateria</string>
   <string name="app_settings_battery_optimization_whitelisted">L\'aplicació és a la llista blanca (recomanat)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">L\'aplicació no és a la llista blanca (no recomanat)</string>
-  <string name="app_settings_foreground_service">Manté en segon pla</string>
-  <string name="app_settings_foreground_service_details">Pot ajudar si el dispositiu evita la sincronització automàtica</string>
   <string name="app_settings_connection">Connexió</string>
   <string name="app_settings_proxy">Tipus de servidor intermediari</string>
   <string-array name="app_settings_proxy_types">
@@ -211,7 +208,8 @@
   <string name="account_synchronize_now">Sincronitza ara</string>
   <string name="account_settings">Configuració del compte</string>
   <string name="account_rename">Canvia el nom del compte</string>
-  <string name="account_rename_new_name">Les dades locals no desades es poden desestimar. Es requereix tornar a sincronitzar després del canvi de nom. Nom nou del compte:</string>
+  <string name="account_rename_new_name_description">Les dades locals sense desar es podrien descartar. Es requereix tornar a sincronitzar després de canviar el nom.</string>
+  <string name="account_rename_new_name">Nom nou del compte</string>
   <string name="account_rename_rename">Canvia el nom</string>
   <string name="account_rename_exists_already">Nom de compte existent</string>
   <string name="account_rename_couldnt_rename">No s\'ha pogut canviar el nom del compte</string>
@@ -362,6 +360,7 @@
   <string name="create_collection_display_name">Títol</string>
   <string name="create_collection_display_name_required">Cal un títol</string>
   <string name="create_collection_description">Descripció</string>
+  <string name="create_collection_description_optional">Descripció (opcional)</string>
   <string name="create_collection_optional">opcional</string>
   <string name="create_collection_home_set">Ubicació d’emmagatzematge</string>
   <string name="create_collection_home_set_required">Cal una ubicació d’emmagatzematge</string>
@@ -416,6 +415,7 @@
   <string name="webdav_add_mount_display_name">Nom a mostrar</string>
   <string name="webdav_add_mount_url">URL del WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL no vàlid</string>
+  <string name="webdav_add_mount_authentication">Autenticació (opcional)</string>
   <string name="webdav_add_mount_username">Nom d\'usuari/a</string>
   <string name="webdav_add_mount_password">Contrasenya</string>
   <string name="webdav_add_mount_add">Afegeix un muntatge</string>

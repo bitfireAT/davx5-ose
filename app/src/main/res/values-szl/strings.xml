@@ -65,8 +65,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Niy szło ôdświyżyć serwisu</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Niy szło ôdświyżyć listy kolekcyje</string>
-  <!--Battery Optimization-->
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Sztelōnki</string>
   <string name="app_settings_debug">Debugowanie</string>
@@ -100,7 +99,6 @@
   <string name="account_synchronize_now">Synchrōnizuj teroz</string>
   <string name="account_settings">Sztelōnki kōnta</string>
   <string name="account_rename">Przemianuj kōnto</string>
-  <string name="account_rename_new_name">Niyspamiyntane dane lokalne mogōm być skasowane. Synchrōnizacyjo na nowo je wymogano po przemianowaniu. Nowe miano kōnta:</string>
   <string name="account_rename_rename">Przemianuj</string>
   <string name="account_rename_exists_already">Miano kōnta je już zajynte</string>
   <string name="account_delete">Skasuj kōnto</string>

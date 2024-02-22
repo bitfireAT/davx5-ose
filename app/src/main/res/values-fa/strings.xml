@@ -134,10 +134,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">تشخیص سرویس ناموفق بود</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">لیست مجموعه به روز نشد</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">در پس زمینه اجرا نمی شود.</string>
-  <string name="battery_optimization_notify_text">افزودن به لیست سفید بهینه ساز باتری الزامیست.</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">در حال اجرا در پیش زمینه</string>
   <string name="foreground_service_notify_text">در برخی از دستگاه ها ، این مورد برای همگام سازی خودکار لازم است.</string>
   <!--AppSettingsActivity-->
@@ -151,8 +148,6 @@
   <string name="app_settings_battery_optimization">بهینه ساز باتری</string>
   <string name="app_settings_battery_optimization_whitelisted">برنامه در لیست سفید قرار دارد (توصیه می شود).</string>
   <string name="app_settings_battery_optimization_not_whitelisted">برنامه در لیست سفید قرار ندارد (توصیه نمی شود).</string>
-  <string name="app_settings_foreground_service">در پیش زمینه نگه دارید</string>
-  <string name="app_settings_foreground_service_details">اگر دستگاه شما از همگام سازی خودکار جلوگیری کند ، ممکن است کمک کند</string>
   <string name="app_settings_connection">ارتباط</string>
   <string name="app_settings_proxy">نوع پروکسی</string>
   <string-array name="app_settings_proxy_types">
@@ -205,7 +200,6 @@
   <string name="account_synchronize_now">اکنون همگام سازی کنید</string>
   <string name="account_settings">تنظیمات حساب</string>
   <string name="account_rename">تغییر نام حساب</string>
-  <string name="account_rename_new_name">داده های محلی ذخیره نشده ممکن است از بین بروند. پس از تغییر نام مجدداً همگام سازی لازم است. نام حساب جدید:</string>
   <string name="account_rename_rename">تغییر نام</string>
   <string name="account_rename_exists_already">نام حساب قبلاً گرفته شده است</string>
   <string name="account_rename_couldnt_rename">نمی‌توانید نام حساب را تغییر دهید</string>

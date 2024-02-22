@@ -124,10 +124,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">서비스 검색 실패</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">collection 목록을 새로 고칠 수 없습니다.</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">foreground에서 실행할 수 없습니다.</string>
-  <string name="battery_optimization_notify_text">배터리 최적화 허용목록 필요</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">foreground에서 실행중</string>
   <string name="foreground_service_notify_text">일부 장치에서는 자동 동기화를 위해 이 작업이 필요합니다.</string>
   <!--AppSettingsActivity-->
@@ -141,8 +138,6 @@
   <string name="app_settings_battery_optimization">배터리 최적화</string>
   <string name="app_settings_battery_optimization_whitelisted">앱이 허용목록에 포함(권장)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">앱이 허용목록에 미포함(권장하지 않음)</string>
-  <string name="app_settings_foreground_service">foreground에서 유지</string>
-  <string name="app_settings_foreground_service_details">장치가 자동 동기화를 차단하는 경우 도움이 될 수 있습니다.</string>
   <string name="app_settings_connection">연결</string>
   <string name="app_settings_proxy">프록시 타입</string>
   <string-array name="app_settings_proxy_types">
@@ -195,7 +190,6 @@
   <string name="account_synchronize_now">동기화</string>
   <string name="account_settings">계정 설정</string>
   <string name="account_rename">계정 이름 바꾸기</string>
-  <string name="account_rename_new_name">저장되지 않은 로컬 데이터는 삭제될 수 있습니다. 이름을 변경한 후 다시 동기화해야 합니다. 새 계정 이름:</string>
   <string name="account_rename_rename">이름 바꾸기</string>
   <string name="account_rename_exists_already">계정 이름이 이미 사용되었습니다.</string>
   <string name="account_rename_couldnt_rename">계정 이름을 바꿀 수 없습니다.</string>

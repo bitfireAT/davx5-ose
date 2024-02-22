@@ -125,10 +125,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Dò tìm dịch vụ thất bại</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Không thể làm mới danh sách bộ sưu tập</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Không thể chạy ở trước</string>
-  <string name="battery_optimization_notify_text">Bắt buộc không tối ưu hoá pin</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Đang chạy ở trước</string>
   <string name="foreground_service_notify_text">Trên một số thiết bị, điều này là cần thiết để đồng bộ hoá tự động.</string>
   <!--AppSettingsActivity-->
@@ -142,8 +139,6 @@
   <string name="app_settings_battery_optimization">Tối ưu hoá pin</string>
   <string name="app_settings_battery_optimization_whitelisted">Ứng dụng không được tối ưu (khuyên dùng)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Ứng dụng được tối ưu (không khuyên dùng)</string>
-  <string name="app_settings_foreground_service">Giữ ở trước</string>
-  <string name="app_settings_foreground_service_details">Có thể giúp nếu thiết bị của bạn ngăn chặn đồng bộ hoá tự động</string>
   <string name="app_settings_connection">Kết nối</string>
   <string name="app_settings_proxy">Loại proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -196,7 +191,6 @@
   <string name="account_synchronize_now">Đồng bộ hoá ngay</string>
   <string name="account_settings">Cài đặt tài khoản</string>
   <string name="account_rename">Đổi tên tài khoản</string>
-  <string name="account_rename_new_name">Dữ liệu cục bộ chưa được lưu có thể sẽ bị bỏ qua. Yêu cầu đồng bộ hoá lại sau khi đổi tên. Tên tài khoản mới:</string>
   <string name="account_rename_rename">Đổi tên</string>
   <string name="account_rename_exists_already">Tên tài khoản đã được sử dụng</string>
   <string name="account_rename_couldnt_rename">Không thể đổi tên tài khoản</string>

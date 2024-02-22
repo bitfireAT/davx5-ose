@@ -142,10 +142,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">サービスの検出に失敗しました</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">コレクション リストを更新できませんでした</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">フォアグラウンドで実行できません</string>
-  <string name="battery_optimization_notify_text">バッテリー最適化を無効にしてください</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">フォアグラウンドで実行</string>
   <string name="foreground_service_notify_text">一部のデバイスでは自動同期にこの設定が必要になります。</string>
   <!--AppSettingsActivity-->
@@ -159,8 +156,6 @@
   <string name="app_settings_battery_optimization">バッテリー最適化</string>
   <string name="app_settings_battery_optimization_whitelisted">このアプリでは無効 (推奨)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">有効 (非推奨)</string>
-  <string name="app_settings_foreground_service">フォアグラウンドを維持</string>
-  <string name="app_settings_foreground_service_details">自動同期に問題のあるデバイスでは有効かもしれません</string>
   <string name="app_settings_connection">接続</string>
   <string name="app_settings_proxy">プロキシーの種類</string>
   <string-array name="app_settings_proxy_types">
@@ -213,7 +208,8 @@
   <string name="account_synchronize_now">今すぐ同期</string>
   <string name="account_settings">アカウント設定</string>
   <string name="account_rename">アカウントの名前を変更</string>
-  <string name="account_rename_new_name">未保存のローカルデータが破棄されることがあります。名前の変更後に再同期が必要です。新しいアカウント名:</string>
+  <string name="account_rename_new_name_description">保存していないローカルデータが破棄されることがあります。名前を変更した後にもう一度同期してください。</string>
+  <string name="account_rename_new_name">新しいアカウント名</string>
   <string name="account_rename_rename">名前を変更</string>
   <string name="account_rename_exists_already">アカウント名はすでに取得されています</string>
   <string name="account_rename_couldnt_rename">アカウントの名前を変更できません</string>
@@ -362,6 +358,7 @@
   <string name="create_collection_display_name">タイトル</string>
   <string name="create_collection_display_name_required">タイトルが必要です</string>
   <string name="create_collection_description">説明</string>
+  <string name="create_collection_description_optional">説明 (オプション)</string>
   <string name="create_collection_optional">オプション</string>
   <string name="create_collection_home_set">ストレージの場所</string>
   <string name="create_collection_home_set_required">ストレージの場所が必要です</string>
@@ -416,6 +413,7 @@
   <string name="webdav_add_mount_display_name">表示名</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">無効な URL</string>
+  <string name="webdav_add_mount_authentication">認証 (オプション)</string>
   <string name="webdav_add_mount_username">ユーザー名</string>
   <string name="webdav_add_mount_password">パスワード</string>
   <string name="webdav_add_mount_add">マウントを追加</string>

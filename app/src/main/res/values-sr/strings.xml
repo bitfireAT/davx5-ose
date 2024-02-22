@@ -124,9 +124,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Откривање услуге није успело</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Не могох да освежим списак збирки</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_text">Неопходно стављање на белу листу за оптимизацију батерије</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_text">На неким уређајима је ово неопходно за аутоматску синхронизацију.</string>
   <!--AppSettingsActivity-->
   <string name="app_settings">Поставке</string>
@@ -186,7 +184,6 @@
   <string name="account_synchronize_now">Синхронизуј одмах</string>
   <string name="account_settings">Поставке налога</string>
   <string name="account_rename">Преименуј налог</string>
-  <string name="account_rename_new_name">Несачувани локални подаци могу бити изгубљни. Потребна је ресинхронизација након преименовања. Нови назив налога:</string>
   <string name="account_rename_rename">Преименуј</string>
   <string name="account_rename_exists_already">Назив налога је већ заузет</string>
   <string name="account_rename_couldnt_rename">Није било могуће преименовати налог</string>

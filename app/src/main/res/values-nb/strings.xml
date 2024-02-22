@@ -44,8 +44,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Tjenesteoppdagelse mislyktes</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Kunne ikke gjenoppfriske innsamlingsliste</string>
-  <!--Battery Optimization-->
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Innstillinger</string>
   <string name="app_settings_debug">Feilretting</string>
@@ -78,7 +77,6 @@
   <string name="account_synchronize_now">Synkroniser nå</string>
   <string name="account_settings">Kontoinnstillinger</string>
   <string name="account_rename">Gi konto nytt navn</string>
-  <string name="account_rename_new_name">Ulagret lokal data kan bli avslått. Ny synkronisering kreves etter ny navngivning. Nytt kontonavn:</string>
   <string name="account_rename_rename">Gi nytt navn</string>
   <string name="account_rename_exists_already">Brukernavnet er allerede i bruk</string>
   <string name="account_delete">Slett konto</string>

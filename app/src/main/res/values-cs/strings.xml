@@ -140,10 +140,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Vyhledání služby se nezdařilo</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Nedaří se znovu načíst seznam sady</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Běh na pozadí není zařízením umožňován</string>
-  <string name="battery_optimization_notify_text">Je zapotřebí zařadit na seznam výjimek z optimalizace akumulátoru</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Spuštěné v popředí</string>
   <string name="foreground_service_notify_text">Na některých zařízeních je toto nezbytné aby fungovala automatická synchronizace.</string>
   <!--AppSettingsActivity-->
@@ -157,8 +154,6 @@
   <string name="app_settings_battery_optimization">Optimalizace akumulátoru</string>
   <string name="app_settings_battery_optimization_whitelisted">Aplikace je zařazena na seznam výjimek (doporučeno)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Aplikace není zařazena na seznam výjimek (není doporučeno)</string>
-  <string name="app_settings_foreground_service">Ponechat spuštěné v popředí</string>
-  <string name="app_settings_foreground_service_details">Může pomoci pokud snaha zařízení o úsporu energie překáží automatické synchronizaci</string>
   <string name="app_settings_connection">Připojení</string>
   <string name="app_settings_proxy">Typ proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -211,7 +206,6 @@
   <string name="account_synchronize_now">Synchronizovat nyní</string>
   <string name="account_settings">Nastavení účtu</string>
   <string name="account_rename">Přejmenovat účet</string>
-  <string name="account_rename_new_name">Neuložená místní data mohou být vynechána. Po přejmenování je vyžadována nová synchronizace. Nové jméno účtu:</string>
   <string name="account_rename_rename">Přejmenovat</string>
   <string name="account_rename_exists_already">Tento název účtu už je používán někým jiným</string>
   <string name="account_rename_couldnt_rename">Účet se nedaří přejmenovat</string>

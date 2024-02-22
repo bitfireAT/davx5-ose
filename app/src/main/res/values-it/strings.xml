@@ -122,9 +122,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Impossibile trovare il servizio</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Impossibile aggiornare la lista delle raccolte</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_text">Ottimizzazione richiesta nel Risparmio Energetico</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Esecuzione in primo piano</string>
   <string name="foreground_service_notify_text">Su alcuni dispositivi, questo è necessario per la sincronizzazione automatica.</string>
   <!--AppSettingsActivity-->
@@ -138,8 +136,6 @@
   <string name="app_settings_battery_optimization">Ottimizzazione batteria</string>
   <string name="app_settings_battery_optimization_whitelisted">La app è in lista bianca (raccomandato)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">La app non è in lista bianca (non raccomandato)</string>
-  <string name="app_settings_foreground_service">Tenere in primo piano</string>
-  <string name="app_settings_foreground_service_details">Può aiutare se il dispositivo impedisce la sincronizzazione automatica</string>
   <string name="app_settings_connection">Connessione</string>
   <string name="app_settings_proxy">Tipo di proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -192,7 +188,6 @@
   <string name="account_synchronize_now">Sincronizza adesso</string>
   <string name="account_settings">Impostazioni account</string>
   <string name="account_rename">Rinomina account</string>
-  <string name="account_rename_new_name">I dati locali non salvati potrebbero essere rimossi. È necessario effettuare la risincronizzazione dopo la rinomina. Nuovo nome dell\'account:</string>
   <string name="account_rename_rename">Rinomina</string>
   <string name="account_rename_exists_already">Nome account già usato</string>
   <string name="account_rename_couldnt_rename">Impossibile rinominare l\'account</string>

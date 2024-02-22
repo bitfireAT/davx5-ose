@@ -142,10 +142,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">服务配置检测失败</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">无法刷新集合列表</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">无法在前台运行</string>
-  <string name="battery_optimization_notify_text">需要在电池优化中排除本应用</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">运行于前台</string>
   <string name="foreground_service_notify_text">在某些设备上，这是自动同步所必需的。 </string>
   <!--AppSettingsActivity-->
@@ -159,8 +156,6 @@
   <string name="app_settings_battery_optimization">电池优化</string>
   <string name="app_settings_battery_optimization_whitelisted">将应用加入白名单（推荐）</string>
   <string name="app_settings_battery_optimization_not_whitelisted">不把应用加入白名单（不推荐）</string>
-  <string name="app_settings_foreground_service">保持前台</string>
-  <string name="app_settings_foreground_service_details">如果你的设备阻止自动同步，这可能会有帮助</string>
   <string name="app_settings_connection">连接</string>
   <string name="app_settings_proxy">代理类型</string>
   <string-array name="app_settings_proxy_types">
@@ -213,7 +208,8 @@
   <string name="account_synchronize_now"> 立即同步</string>
   <string name="account_settings">账户设置</string>
   <string name="account_rename">重命名账户</string>
-  <string name="account_rename_new_name">重命名后，未上传的本地修改会被撤销，您需要重新执行同步。新账户名：</string>
+  <string name="account_rename_new_name_description">未保存的本地数据可能会消失。重命名后需要重新同步。</string>
+  <string name="account_rename_new_name">新账户名</string>
   <string name="account_rename_rename">重命名</string>
   <string name="account_rename_exists_already">账户名已被占用</string>
   <string name="account_rename_couldnt_rename">无法重命名账户</string>
@@ -362,6 +358,7 @@
   <string name="create_collection_display_name">标题</string>
   <string name="create_collection_display_name_required">请输入标题</string>
   <string name="create_collection_description">描述</string>
+  <string name="create_collection_description_optional">描述（可选）</string>
   <string name="create_collection_optional">可选</string>
   <string name="create_collection_home_set">存储位置</string>
   <string name="create_collection_home_set_required">存储位置是必需的</string>

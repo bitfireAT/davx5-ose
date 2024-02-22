@@ -142,10 +142,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Не удалось обнаружить службу</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Не удалось обновить список коллекций</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Невозможно запустить в приоритетном режиме</string>
-  <string name="battery_optimization_notify_text">Необходимо добавить в белый список оптимизации батареи</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Запущен в приоритетном режиме</string>
   <string name="foreground_service_notify_text">Для автосинхронизации на ряде устройств.</string>
   <!--AppSettingsActivity-->
@@ -159,8 +156,6 @@
   <string name="app_settings_battery_optimization">Оптимизация батареи</string>
   <string name="app_settings_battery_optimization_whitelisted">Приложение добавлено в белый список (рекомендуется)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Приложение не добавлено в белый список (не рекомендуется)</string>
-  <string name="app_settings_foreground_service">Приоритетный режим</string>
-  <string name="app_settings_foreground_service_details">Может помочь, если устройство препятствует автоматической синхронизации</string>
   <string name="app_settings_connection">Соединение</string>
   <string name="app_settings_proxy">Тип прокси</string>
   <string-array name="app_settings_proxy_types">
@@ -213,7 +208,8 @@
   <string name="account_synchronize_now">Синхронизировать</string>
   <string name="account_settings">Настройки аккаунта</string>
   <string name="account_rename">Переименовать аккаунт</string>
-  <string name="account_rename_new_name">Несохраненные локальные данные могут быть потеряны. Необходима повторная синхронизация после переименования. Новое имя аккаунта:</string>
+  <string name="account_rename_new_name_description">Несохраненные локальные данные могут быть потеряны. После переименования необходима повторная синхронизация.</string>
+  <string name="account_rename_new_name">Новое название аккаунта</string>
   <string name="account_rename_rename">Переименовать</string>
   <string name="account_rename_exists_already">Название аккаунта уже используется</string>
   <string name="account_rename_couldnt_rename">Не удалось переименовать аккаунт</string>
@@ -368,6 +364,7 @@
   <string name="create_collection_display_name">Название</string>
   <string name="create_collection_display_name_required">Название обязательно</string>
   <string name="create_collection_description">Описание</string>
+  <string name="create_collection_description_optional">Описание (необязательно)</string>
   <string name="create_collection_optional">опционально</string>
   <string name="create_collection_home_set">Место хранения</string>
   <string name="create_collection_home_set_required">Место хранения обязательно</string>

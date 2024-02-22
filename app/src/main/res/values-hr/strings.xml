@@ -109,8 +109,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Detekcija servisa nije uspjela</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Nije moguće osvježiti popis zbirki</string>
-  <!--Battery Optimization-->
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Pokrenuto u prednjem planu</string>
   <string name="foreground_service_notify_text">Na nekim uređajima, ovo je neophodno za automatsku sinkronizaciju.</string>
   <!--AppSettingsActivity-->
@@ -121,8 +120,6 @@
   <string name="app_settings_logging">Verbose logging</string>
   <string name="app_settings_logging_on">Logging je aktivan</string>
   <string name="app_settings_logging_off">Logging je onemogućen</string>
-  <string name="app_settings_foreground_service">Zadrži u prednjem planu</string>
-  <string name="app_settings_foreground_service_details">Može pomoći ukoliko vaš uređaj sprečava automatsku sinkronizaciju</string>
   <string name="app_settings_connection">Veza</string>
   <string name="app_settings_security">Sigurnost</string>
   <string name="app_settings_security_app_permissions">Dopuštenja aplikacije</string>
@@ -160,7 +157,6 @@
   <string name="account_synchronize_now">Sinkroniziraj sada</string>
   <string name="account_settings">Postavke računa</string>
   <string name="account_rename">Preimenuj račun</string>
-  <string name="account_rename_new_name">Ne spremljeni lokalni podatci mogu biti odbačeni. Ponovna sinkronizacija je potrebna nakon preimenovanja. Novi naziv računa:</string>
   <string name="account_rename_rename">Preimenuj</string>
   <string name="account_rename_exists_already">Naziv računa se već koristi</string>
   <string name="account_rename_couldnt_rename">Račun nije moguće preimenovati</string>
