@@ -9,6 +9,7 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import androidx.core.database.getIntOrNull
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -69,8 +70,22 @@ class LocalTaskList private constructor(
     }
 
     override var readOnly: Boolean
-        get() = TODO("Not yet implemented")
-        set(value) {}
+        get() = provider.client.query(
+            taskListSyncUri(), arrayOf(TaskListColumns.ACCESS_LEVEL),
+            null, null, null
+        )?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.getIntOrNull(0) == TaskListColumns.ACCESS_LEVEL_READ
+            else
+                false
+        } == true
+        set(readOnly) {
+            val values = ContentValues().apply { put(
+                TaskListColumns.ACCESS_LEVEL,
+                if (readOnly) TaskListColumns.ACCESS_LEVEL_READ else TaskListColumns.ACCESS_LEVEL_OWNER
+            )}
+            provider.client.update(taskListSyncUri(), values, null, null)
+        }
 
     override val tag: String
         get() = "tasks-${account.name}-$id"
