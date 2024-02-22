@@ -79,7 +79,7 @@ abstract class SyncAdapterService: Service() {
             }
 
             Logger.log.fine("Sync framework now starting SyncWorker")
-            val workerName = SyncWorker.enqueue(context, account, authority, upload = upload)
+            val workerName = SyncWorker.enqueue(context, account, authority, expedited = true, upload = upload)
 
             // Block the onPerformSync method to simulate an ongoing sync
             Logger.log.fine("Blocking sync framework until SyncWorker finishes")

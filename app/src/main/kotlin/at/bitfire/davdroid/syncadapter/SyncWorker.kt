@@ -63,6 +63,7 @@ import java.util.logging.Level
  *
  * By enqueuing this worker ([SyncWorker.enqueue]) a sync will be started immediately (as soon as
  * possible). Currently, there are three scenarios starting a sync:
+ *
  * 1) *manual sync*: User presses an in-app sync button and enqueues this worker directly.
  * 2) *periodic sync*: User defines time interval to sync in app settings. The [PeriodicSyncWorker] runs
  * in the background and enqueues this worker when due.
@@ -70,6 +71,9 @@ import java.util.logging.Level
  * button in one of the responsible apps. The [SyncAdapterService] is notified of this and enqueues
  * this worker.
  *
+ * Expedited: when run manually
+ *
+ * Long-running: no
  */
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
@@ -83,6 +87,9 @@ class SyncWorker @AssistedInject constructor(
         internal const val ARG_ACCOUNT_NAME = "accountName"
         internal const val ARG_ACCOUNT_TYPE = "accountType"
         internal const val ARG_AUTHORITY = "authority"
+
+        /** Boolean. Set to `true` when the job was requested as expedited job. */
+        private const val ARG_EXPEDITED = "expedited"
 
         private const val ARG_UPLOAD = "upload"
 
@@ -129,7 +136,7 @@ class SyncWorker @AssistedInject constructor(
             upload: Boolean = false
         ) {
             for (authority in SyncUtils.syncAuthorities(context))
-                enqueue(context, account, authority, resync, upload)
+                enqueue(context, account, authority, expedited = true, resync = resync, upload = upload)
         }
 
         /**
@@ -146,6 +153,7 @@ class SyncWorker @AssistedInject constructor(
             context: Context,
             account: Account,
             authority: String,
+            expedited: Boolean,
             @ArgResync resync: Int = NO_RESYNC,
             upload: Boolean = false
         ): String {
@@ -154,6 +162,8 @@ class SyncWorker @AssistedInject constructor(
                 .putString(ARG_AUTHORITY, authority)
                 .putString(ARG_ACCOUNT_NAME, account.name)
                 .putString(ARG_ACCOUNT_TYPE, account.type)
+            if (expedited)
+                argumentsBuilder.putBoolean(ARG_EXPEDITED, true)
             if (resync != NO_RESYNC)
                 argumentsBuilder.putInt(ARG_RESYNC, resync)
             argumentsBuilder.putBoolean(ARG_UPLOAD, upload)
@@ -165,7 +175,6 @@ class SyncWorker @AssistedInject constructor(
             val workRequest = OneTimeWorkRequestBuilder<SyncWorker>()
                 .addTag(workerName(account, authority))
                 .setInputData(argumentsBuilder.build())
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setBackoffCriteria(
                     BackoffPolicy.EXPONENTIAL,
                     WorkRequest.DEFAULT_BACKOFF_DELAY_MILLIS,   // 30 sec
@@ -179,17 +188,20 @@ class SyncWorker @AssistedInject constructor(
                         addTag(workerName(mainAccount, authority))
                     }
                 }
-                .build()
+
+            if (expedited)
+                workRequest.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
 
             // enqueue and start syncing
             val name = workerName(account, authority)
-            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name, with tags: ${workRequest.tags}")
+            val request = workRequest.build()
+            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name, expedited = $expedited, tags = ${request.tags}")
             WorkManager.getInstance(context).enqueueUniqueWork(
                 name,
                 ExistingWorkPolicy.KEEP,    // If sync is already running, just continue.
                                             // Existing retried work will not be replaced (for instance when
                                             // PeriodicSyncWorker enqueues another scheduled sync).
-                workRequest
+                request
             )
             return name
         }
@@ -305,8 +317,9 @@ class SyncWorker @AssistedInject constructor(
             inputData.getString(ARG_ACCOUNT_TYPE) ?: throw IllegalArgumentException("$ARG_ACCOUNT_TYPE required")
         )
         val authority = inputData.getString(ARG_AUTHORITY) ?: throw IllegalArgumentException("$ARG_AUTHORITY required")
+        val expedited = inputData.getBoolean(ARG_EXPEDITED, false)
 
-        // Check internet connection
+        // check internet connection
         val ignoreVpns = AccountSettings(applicationContext, account).getIgnoreVpns()
         val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
         if (!internetAvailable(connectivityManager, ignoreVpns)) {
@@ -319,7 +332,7 @@ class SyncWorker @AssistedInject constructor(
         // What are we going to sync? Select syncer based on authority
         val syncer: Syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                AddressBookSyncer(applicationContext)
+                AddressBookSyncer(applicationContext, expedited)
             CalendarContract.AUTHORITY ->
                 CalendarSyncer(applicationContext)
             ContactsContract.AUTHORITY ->
@@ -438,6 +451,7 @@ class SyncWorker @AssistedInject constructor(
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_DEFERRED)
             .build()
         return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
     }
