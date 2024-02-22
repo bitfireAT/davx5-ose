@@ -10,4 +10,5 @@
     <string name="why_badges_title">Pourquoi est-ce que DAVx5 propose-t-il des badges sans fonctionnalité ?</string>
     <string name="button_buy_badge_free">GRATUIT</string>
     <string name="button_buy_badge_bought">Merci !</string>
-    </resources>
+    <string name="network_problems">Problème réseau, réessayer plus tard.</string>
+</resources>
