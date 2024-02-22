@@ -14,8 +14,8 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.ical4android.AndroidTaskList
-import at.bitfire.ical4android.AndroidTaskListFactory
+import at.bitfire.ical4android.DmfsTaskList
+import at.bitfire.ical4android.DmfsTaskListFactory
 import at.bitfire.ical4android.TaskProvider
 import org.dmfs.tasks.contract.TaskContract.*
 import java.util.logging.Level
@@ -24,7 +24,7 @@ class LocalTaskList private constructor(
         account: Account,
         provider: TaskProvider,
         id: Long
-): AndroidTaskList<LocalTask>(account, provider, LocalTask.Factory, id), LocalCollection<LocalTask> {
+): DmfsTaskList<LocalTask>(account, provider, LocalTask.Factory, id), LocalCollection<LocalTask> {
 
     companion object {
 
@@ -144,7 +144,7 @@ class LocalTaskList private constructor(
     }
 
 
-    object Factory: AndroidTaskListFactory<LocalTaskList> {
+    object Factory: DmfsTaskListFactory<LocalTaskList> {
 
         override fun newInstance(account: Account, provider: TaskProvider, id: Long) =
                 LocalTaskList(account, provider, id)

@@ -16,7 +16,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.ical4android.AndroidTaskList
+import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -54,7 +54,7 @@ class TaskSyncer(context: Context): Syncer(context) {
 
             updateLocalTaskLists(taskProvider, account, accountSettings)
 
-            val taskLists = AndroidTaskList
+            val taskLists = DmfsTaskList
                 .find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
             for (taskList in taskLists) {
                 Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
@@ -83,7 +83,7 @@ class TaskSyncer(context: Context): Syncer(context) {
         // delete/update local task lists
         val updateColors = settings.getManageCalendarColors()
 
-        for (list in AndroidTaskList.find(account, provider, LocalTaskList.Factory, null, null))
+        for (list in DmfsTaskList.find(account, provider, LocalTaskList.Factory, null, null))
             list.syncId?.let {
                 val url = it.toHttpUrl()
                 val info = remoteTaskLists[url]
