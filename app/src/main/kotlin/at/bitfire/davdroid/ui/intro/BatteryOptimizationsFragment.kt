@@ -78,7 +78,7 @@ class BatteryOptimizationsFragment: Fragment() {
 
     private val ignoreBatteryOptimizationsResultLauncher =
         registerForActivityResult(IgnoreBatteryOptimizationsContract) {
-            model.checkWhitelisted()
+            model.checkBatteryOptimizations()
         }
 
 
@@ -88,15 +88,14 @@ class BatteryOptimizationsFragment: Fragment() {
             setContent {
                 MdcTheme {
                     val hintBatteryOptimizations by model.hintBatteryOptimizations.observeAsState()
-                    val hintAutostartPermission by model.hintAutostartPermission.observeAsState()
-                    val shouldBeWhitelisted by model.shouldBeWhitelisted.observeAsState(false)
-                    val isWhitelisted by model.isWhitelisted.observeAsState(false)
-
-                    LaunchedEffect(shouldBeWhitelisted, isWhitelisted) {
-                        if (shouldBeWhitelisted && !isWhitelisted)
+                    val shouldBeExempted by model.shouldBeExempted.observeAsState(false)
+                    val isExempted by model.isExempted.observeAsState(false)
+                    LaunchedEffect(shouldBeExempted, isExempted) {
+                        if (shouldBeExempted && !isExempted)
                             ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
                     }
 
+                    val hintAutostartPermission by model.hintAutostartPermission.observeAsState()
                     val uriHandler = SafeAndroidUriHandler(LocalContext.current)
                     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
                         BatteryOptimizationsContent(
@@ -104,9 +103,9 @@ class BatteryOptimizationsFragment: Fragment() {
                             onChangeDontShowBattery = {
                                 model.hintBatteryOptimizations.value = !it
                             },
-                            isWhitelisted = isWhitelisted,
-                            shouldBeWhitelisted = shouldBeWhitelisted,
-                            onChangeShouldBeWhitelisted = model.shouldBeWhitelisted::postValue,
+                            isExempted = isExempted,
+                            shouldBeExempted = shouldBeExempted,
+                            onChangeShouldBeExempted = model.shouldBeExempted::postValue,
                             dontShowAutostart = hintAutostartPermission == false,
                             onChangeDontShowAutostart = {
                                 model.hintAutostartPermission.value = !it
@@ -121,7 +120,7 @@ class BatteryOptimizationsFragment: Fragment() {
 
     override fun onResume() {
         super.onResume()
-        model.checkWhitelisted()
+        model.checkBatteryOptimizations()
     }
 
 
@@ -169,25 +168,26 @@ class BatteryOptimizationsFragment: Fragment() {
             val manufacturerWarning =
                     (evilManufacturers.contains(Build.MANUFACTURER.lowercase(Locale.ROOT)) || BuildConfig.DEBUG)
 
-            fun isWhitelisted(context: Context) =
+            fun isExempted(context: Context) =
                 context.getSystemService<PowerManager>()!!.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
         }
 
-        val shouldBeWhitelisted = MutableLiveData<Boolean>()
-        val isWhitelisted = MutableLiveData<Boolean>()
+        val shouldBeExempted = MutableLiveData<Boolean>()
+        val isExempted = MutableLiveData<Boolean>()
         val hintBatteryOptimizations = settings.getBooleanLive(HINT_BATTERY_OPTIMIZATIONS)
 
         val hintAutostartPermission = settings.getBooleanLive(HINT_AUTOSTART_PERMISSION)
 
-        fun checkWhitelisted() {
-            val whitelisted = isWhitelisted(getApplication())
-            isWhitelisted.value = whitelisted
-            shouldBeWhitelisted.value = whitelisted
+        fun checkBatteryOptimizations() {
+            val exempted = isExempted(getApplication())
+            isExempted.value = exempted
+            shouldBeExempted.value = exempted
 
             // if DAVx5 is whitelisted, always show a reminder as soon as it's not whitelisted anymore
-            if (whitelisted)
+            if (exempted)
                 settings.remove(HINT_BATTERY_OPTIMIZATIONS)
         }
+
     }
 
 
@@ -223,7 +223,7 @@ class BatteryOptimizationsFragment: Fragment() {
             // 2a. evil manufacturer AND
             // 2b. "don't show anymore" has not been clicked
             if (
-                    (!Model.isWhitelisted(context) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
+                    (!Model.isExempted(context) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
                     (Model.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
             )
                 100
@@ -242,9 +242,9 @@ private fun BatteryOptimizationsContent_Preview() {
         BatteryOptimizationsContent(
             dontShowBattery = true,
             onChangeDontShowBattery = {},
-            isWhitelisted = false,
-            shouldBeWhitelisted = true,
-            onChangeShouldBeWhitelisted = {},
+            isExempted = false,
+            shouldBeExempted = true,
+            onChangeShouldBeExempted = {},
             dontShowAutostart = false,
             onChangeDontShowAutostart = {},
             manufacturerWarning = true
@@ -256,9 +256,9 @@ private fun BatteryOptimizationsContent_Preview() {
 private fun BatteryOptimizationsContent(
     dontShowBattery: Boolean,
     onChangeDontShowBattery: (Boolean) -> Unit,
-    isWhitelisted: Boolean,
-    shouldBeWhitelisted: Boolean,
-    onChangeShouldBeWhitelisted: (Boolean) -> Unit,
+    isExempted: Boolean,
+    shouldBeExempted: Boolean,
+    onChangeShouldBeExempted: (Boolean) -> Unit,
     dontShowAutostart: Boolean,
     onChangeDontShowAutostart: (Boolean) -> Unit,
     manufacturerWarning: Boolean
@@ -288,11 +288,11 @@ private fun BatteryOptimizationsContent(
                         modifier = Modifier.weight(1f)
                     )
                     Switch(
-                        checked = shouldBeWhitelisted,
+                        checked = shouldBeExempted,
                         onCheckedChange = {
                             // Only accept click events if not whitelisted
-                            if (!isWhitelisted) {
-                                onChangeShouldBeWhitelisted(it)
+                            if (!isExempted) {
+                                onChangeShouldBeExempted(it)
                             }
                         },
                         enabled = !dontShowBattery
@@ -306,14 +306,14 @@ private fun BatteryOptimizationsContent(
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier.padding(top = 12.dp)
                 )
-                AnimatedVisibility(visible = !isWhitelisted) {
+                AnimatedVisibility(visible = !isExempted) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
                             checked = dontShowBattery,
                             onCheckedChange = onChangeDontShowBattery,
-                            enabled = !isWhitelisted
+                            enabled = !isExempted
                         )
                         Text(
                             text = stringResource(R.string.intro_battery_dont_show),
