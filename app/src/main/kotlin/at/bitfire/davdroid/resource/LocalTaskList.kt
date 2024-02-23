@@ -9,7 +9,6 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import androidx.core.database.getIntOrNull
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -69,23 +68,11 @@ class LocalTaskList private constructor(
 
     }
 
-    override var readOnly: Boolean
-        get() = provider.client.query(
-            taskListSyncUri(), arrayOf(TaskListColumns.ACCESS_LEVEL),
-            null, null, null
-        )?.use { cursor ->
-            if (cursor.moveToNext())
-                return cursor.getIntOrNull(0) == TaskListColumns.ACCESS_LEVEL_READ
-            else
-                false
-        } == true
-        set(readOnly) {
-            val values = ContentValues().apply { put(
-                TaskListColumns.ACCESS_LEVEL,
-                if (readOnly) TaskListColumns.ACCESS_LEVEL_READ else TaskListColumns.ACCESS_LEVEL_OWNER
-            )}
-            provider.client.update(taskListSyncUri(), values, null, null)
-        }
+    private var accessLevel: Int = TaskListColumns.ACCESS_LEVEL_UNDEFINED
+    override val readOnly
+        get() =
+            accessLevel != TaskListColumns.ACCESS_LEVEL_UNDEFINED &&
+            accessLevel <= TaskListColumns.ACCESS_LEVEL_READ
 
     override val tag: String
         get() = "tasks-${account.name}-$id"
@@ -115,8 +102,13 @@ class LocalTaskList private constructor(
         }
 
 
+    override fun populate(values: ContentValues) {
+        super.populate(values)
+        accessLevel = values.getAsInteger(TaskListColumns.ACCESS_LEVEL)
+    }
+
     fun update(info: Collection, updateColor: Boolean) =
-            update(valuesFromCollectionInfo(info, updateColor))
+        update(valuesFromCollectionInfo(info, updateColor))
 
 
     override fun findDeleted() = queryTasks(Tasks._DELETED, null)

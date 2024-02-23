@@ -50,9 +50,8 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
             }
     }
 
-    override var readOnly: Boolean
+    override val readOnly: Boolean
         get() = throw NotImplementedError()
-        set(value) = throw NotImplementedError()
 
     override val tag: String
         get() =  "jtx-${account.name}-$id"

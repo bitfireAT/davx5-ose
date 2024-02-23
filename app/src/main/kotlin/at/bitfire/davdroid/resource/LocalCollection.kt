@@ -21,7 +21,7 @@ interface LocalCollection<out T: LocalResource<*>> {
      * Whether the collection should be treated as read-only on sync.
      * Stops uploading dirty events (Server side changes are still downloaded).
      */
-    var readOnly: Boolean
+    val readOnly: Boolean
 
     /**
      * Finds local resources of this collection which have been marked as *deleted* by the user

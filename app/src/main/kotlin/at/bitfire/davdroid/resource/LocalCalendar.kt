@@ -86,27 +86,15 @@ class LocalCalendar private constructor(
 
     }
 
-    override var readOnly: Boolean
-        get() = provider.query(calendarSyncURI(), arrayOf(Calendars.CALENDAR_ACCESS_LEVEL), null, null, null)?.use { cursor ->
-            if (cursor.moveToNext())
-                return cursor.getIntOrNull(0) == Calendars.CAL_ACCESS_READ
-            else
-                false
-        } == true
-        set(readOnly) {
-            val values = ContentValues(1)
-            values.put(
-                Calendars.CALENDAR_ACCESS_LEVEL,
-                if (readOnly) Calendars.CAL_ACCESS_READ else Calendars.CAL_ACCESS_OWNER
-            )
-            provider.update(calendarSyncURI(), values, null, null)
-        }
-
     override val tag: String
         get() = "events-${account.name}-$id"
 
     override val title: String
         get() = displayName ?: id.toString()
+
+    private var accessLevel: Int = Calendars.CAL_ACCESS_OWNER   // assume full access if not specified
+    override val readOnly
+        get() = accessLevel <= Calendars.CAL_ACCESS_READ
 
     override var lastSyncState: SyncState?
         get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.use { cursor ->
@@ -121,6 +109,11 @@ class LocalCalendar private constructor(
             provider.update(calendarSyncURI(), values, null, null)
         }
 
+
+    override fun populate(info: ContentValues) {
+        super.populate(info)
+        accessLevel = info.getAsInteger(Calendars.CALENDAR_ACCESS_LEVEL)
+    }
 
     fun update(info: Collection, updateColor: Boolean) =
             update(valuesFromCollectionInfo(info, updateColor))
