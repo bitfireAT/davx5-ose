@@ -99,7 +99,7 @@ class CalendarSyncManager(
             SyncAlgorithm.COLLECTION_SYNC
 
     override fun processLocallyDeleted(): Boolean {
-        if (readOnly) {
+        if (localCollection.readOnly) {
             var modified = false
             for (event in localCollection.findDeleted()) {
                 Logger.log.warning("Restoring locally deleted event (read-only calendar!)")
@@ -123,7 +123,7 @@ class CalendarSyncManager(
 
     override fun uploadDirty(): Boolean {
         var modified = false
-        if (readOnly) {
+        if (localCollection.readOnly) {
             for (event in localCollection.findDirty()) {
                 Logger.log.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
                 localExceptionContext(event) { it.clearDirty(null, null) }

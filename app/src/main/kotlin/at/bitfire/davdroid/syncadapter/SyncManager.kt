@@ -141,12 +141,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     }
 
-    /**
-     * Whether the collection should be treated as read-only on sync.
-     * Stops uploading dirty events (Server side changes are still downloaded).
-     */
-    val readOnly = localCollection.readOnly
-
     init {
         // required for ServiceLoader -> ical4j -> ical4android
         Ical4Android.checkThreadContextClassLoader()
