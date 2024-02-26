@@ -6,8 +6,4 @@ package at.bitfire.davdroid.resource
 
 import at.bitfire.vcard4android.Contact
 
-interface LocalAddress: LocalResource<Contact> {
-
-    fun resetDeleted()
-
-}
+interface LocalAddress: LocalResource<Contact>
