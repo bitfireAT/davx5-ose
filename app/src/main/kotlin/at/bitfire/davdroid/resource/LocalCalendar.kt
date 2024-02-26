@@ -11,7 +11,6 @@ import android.content.ContentValues
 import android.net.Uri
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
-import androidx.core.database.getIntOrNull
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -112,7 +111,7 @@ class LocalCalendar private constructor(
 
     override fun populate(info: ContentValues) {
         super.populate(info)
-        accessLevel = info.getAsInteger(Calendars.CALENDAR_ACCESS_LEVEL)
+        accessLevel = info.getAsInteger(Calendars.CALENDAR_ACCESS_LEVEL) ?: Calendars.CAL_ACCESS_OWNER
     }
 
     fun update(info: Collection, updateColor: Boolean) =
