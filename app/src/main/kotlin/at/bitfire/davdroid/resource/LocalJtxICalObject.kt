@@ -47,4 +47,9 @@ class LocalJtxICalObject(
         }
 
     }
+
+    override fun resetDeleted() {
+        throw NotImplementedError()
+    }
+
 }
