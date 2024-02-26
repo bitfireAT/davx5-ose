@@ -130,6 +130,7 @@ object UiUtils {
     @Composable
     fun Spanned.toAnnotatedString() = buildAnnotatedString {
         val style = LocalTextStyle.current.toSpanStyle()
+        pushStyle(style)
         val spanned = this@toAnnotatedString
         append(spanned.toString())
         for (span in getSpans<Any>(0, spanned.length)) {
