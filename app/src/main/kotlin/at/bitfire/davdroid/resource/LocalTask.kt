@@ -105,7 +105,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
     }
 
     override fun resetDeleted() {
-        TODO("Not yet implemented")
+        throw NotImplementedError()
     }
 
 
