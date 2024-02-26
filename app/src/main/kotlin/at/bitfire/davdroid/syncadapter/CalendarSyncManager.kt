@@ -103,9 +103,7 @@ class CalendarSyncManager(
             var modified = false
             for (event in localCollection.findDeleted()) {
                 Logger.log.warning("Restoring locally deleted event (read-only calendar!)")
-                localExceptionContext(event) {
-                    LocalEvent.markAsNotDeleted(localCollection.provider, account, event.id!!)
-                }
+                localExceptionContext(event) { it.resetDeleted() }
                 modified = true
             }
 
