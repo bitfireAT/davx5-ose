@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsClient
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -128,6 +129,8 @@ object UiUtils {
     @OptIn(ExperimentalTextApi::class)
     @Composable
     fun Spanned.toAnnotatedString() = buildAnnotatedString {
+        val style = LocalTextStyle.current.toSpanStyle()
+        pushStyle(style)
         val spanned = this@toAnnotatedString
         append(spanned.toString())
         for (span in getSpans<Any>(0, spanned.length)) {
@@ -137,11 +140,11 @@ object UiUtils {
                 is StyleSpan ->
                     when (span.style) {
                         Typeface.BOLD -> addStyle(
-                            SpanStyle(fontWeight = FontWeight.Bold),
+                            style.copy(fontWeight = FontWeight.Bold),
                             start = start, end = end
                         )
                         Typeface.ITALIC -> addStyle(
-                            SpanStyle(fontStyle = FontStyle.Italic),
+                            style.copy(fontStyle = FontStyle.Italic),
                             start = start, end = end
                         )
                     }
@@ -151,7 +154,7 @@ object UiUtils {
                         start = start, end = end
                     )
                     addStyle(
-                        SpanStyle(textDecoration = TextDecoration.Underline),
+                        style.copy(textDecoration = TextDecoration.Underline),
                         start = start, end = end
                     )
                 }
