@@ -48,3 +48,5 @@ jobs:
           prerelease: ${{ env.prerelease }}
           files: app/build/outputs/apk/ose/release/*.apk
           fail_on_unmatched_files: true
+          generate_release_notes: true
+          discussion_category_name: Announcements
