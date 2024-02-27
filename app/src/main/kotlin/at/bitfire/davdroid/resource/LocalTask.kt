@@ -104,6 +104,10 @@ class LocalTask: DmfsTask, LocalResource<Task> {
         this.flags = flags
     }
 
+    override fun resetDeleted() {
+        throw NotImplementedError()
+    }
+
 
     object Factory: DmfsTaskFactory<LocalTask> {
         override fun fromProvider(taskList: DmfsTaskList<*>, values: ContentValues) =

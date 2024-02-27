@@ -68,6 +68,12 @@ class LocalTaskList private constructor(
 
     }
 
+    private var accessLevel: Int = TaskListColumns.ACCESS_LEVEL_UNDEFINED
+    override val readOnly
+        get() =
+            accessLevel != TaskListColumns.ACCESS_LEVEL_UNDEFINED &&
+            accessLevel <= TaskListColumns.ACCESS_LEVEL_READ
+
     override val tag: String
         get() = "tasks-${account.name}-$id"
 
@@ -96,8 +102,13 @@ class LocalTaskList private constructor(
         }
 
 
+    override fun populate(values: ContentValues) {
+        super.populate(values)
+        accessLevel = values.getAsInteger(TaskListColumns.ACCESS_LEVEL)
+    }
+
     fun update(info: Collection, updateColor: Boolean) =
-            update(valuesFromCollectionInfo(info, updateColor))
+        update(valuesFromCollectionInfo(info, updateColor))
 
 
     override fun findDeleted() = queryTasks(Tasks._DELETED, null)

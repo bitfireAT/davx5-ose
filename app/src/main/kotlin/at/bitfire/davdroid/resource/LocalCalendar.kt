@@ -91,6 +91,10 @@ class LocalCalendar private constructor(
     override val title: String
         get() = displayName ?: id.toString()
 
+    private var accessLevel: Int = Calendars.CAL_ACCESS_OWNER   // assume full access if not specified
+    override val readOnly
+        get() = accessLevel <= Calendars.CAL_ACCESS_READ
+
     override var lastSyncState: SyncState?
         get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.use { cursor ->
                     if (cursor.moveToNext())
@@ -104,6 +108,11 @@ class LocalCalendar private constructor(
             provider.update(calendarSyncURI(), values, null, null)
         }
 
+
+    override fun populate(info: ContentValues) {
+        super.populate(info)
+        accessLevel = info.getAsInteger(Calendars.CALENDAR_ACCESS_LEVEL) ?: Calendars.CAL_ACCESS_OWNER
+    }
 
     fun update(info: Collection, updateColor: Boolean) =
             update(valuesFromCollectionInfo(info, updateColor))

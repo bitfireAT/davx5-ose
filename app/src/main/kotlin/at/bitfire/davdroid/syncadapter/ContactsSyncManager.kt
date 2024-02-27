@@ -105,8 +105,6 @@ class ContactsSyncManager(
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
     }
 
-    private val readOnly = localAddressBook.readOnly
-
     private var hasVCard4 = false
     private var hasJCard = false
     private val groupStrategy = when (accountSettings.getGroupMethod()) {
@@ -177,7 +175,7 @@ class ContactsSyncManager(
             SyncAlgorithm.PROPFIND_REPORT
 
     override fun processLocallyDeleted() =
-            if (readOnly) {
+            if (localCollection.readOnly) {
                 var modified = false
                 for (group in localCollection.findDeletedGroups()) {
                     Logger.log.warning("Restoring locally deleted group (read-only address book!)")
@@ -205,7 +203,7 @@ class ContactsSyncManager(
     override fun uploadDirty(): Boolean {
         var modified = false
 
-        if (readOnly) {
+        if (localCollection.readOnly) {
             for (group in localCollection.findDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 localExceptionContext(group) { it.clearDirty(null, null) }

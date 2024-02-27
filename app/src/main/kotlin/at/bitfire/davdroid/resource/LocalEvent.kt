@@ -21,7 +21,6 @@ import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import net.fortuna.ical4j.model.property.ProdId
 import java.util.UUID
-
 class LocalEvent: AndroidEvent, LocalResource<Event> {
 
     companion object {
@@ -50,6 +49,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
                 null,null
             )
         }
+
 
         /**
          * Finds the amount of direct instances this event has (without exceptions); used by [numInstances]
@@ -256,6 +256,10 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         this.flags = flags
     }
 
+    override fun resetDeleted() {
+        val values = ContentValues(1).apply { put(Events.DELETED, 0) }
+        calendar.provider.update(eventSyncURI(), values, null, null)
+    }
 
     object Factory: AndroidEventFactory<LocalEvent> {
         override fun fromProvider(calendar: AndroidCalendar<*>, values: ContentValues) =
@@ -263,3 +267,4 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
     }
 
 }
+
