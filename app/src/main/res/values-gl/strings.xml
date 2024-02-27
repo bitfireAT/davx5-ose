@@ -142,10 +142,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Fallou a detección do servizo</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Non se actualizou a lista da colección</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Non pode executarse en segundo plano</string>
-  <string name="battery_optimization_notify_text">Require ter permiso para optimizacións de batería</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Executándose en primeiro plano</string>
   <string name="foreground_service_notify_text">En algúns dispositivos esto é necesario para a sincronización automática.</string>
   <!--AppSettingsActivity-->
@@ -159,8 +156,6 @@
   <string name="app_settings_battery_optimization">Optimización da batería</string>
   <string name="app_settings_battery_optimization_whitelisted">App está permitida (recomendado)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">App sen permiso (non recomendado)</string>
-  <string name="app_settings_foreground_service">Manter en primeiro plano</string>
-  <string name="app_settings_foreground_service_details">Podería ser útil se o dispositivo dificulta a sincronización automática</string>
   <string name="app_settings_connection">Conexión</string>
   <string name="app_settings_proxy">Tipo de Proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -213,7 +208,8 @@
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_settings">Axustes da conta</string>
   <string name="account_rename">Renomear conta</string>
-  <string name="account_rename_new_name">Os datos locais non gardados perderanse. A resincronización é precisa tras renomear. Novo nome da conta:</string>
+  <string name="account_rename_new_name_description">Poden perderse os datos locais non gardados. Requírese a sincronización após o cambio de nome.</string>
+  <string name="account_rename_new_name">Novo nome da conta</string>
   <string name="account_rename_rename">Renomear</string>
   <string name="account_rename_exists_already">O nome de conta xa está a ser utilizado</string>
   <string name="account_rename_couldnt_rename">Non cambiou o nome da conta</string>
@@ -364,6 +360,7 @@
   <string name="create_collection_display_name">Título</string>
   <string name="create_collection_display_name_required">Requírese o título</string>
   <string name="create_collection_description">Descrición</string>
+  <string name="create_collection_description_optional">Descrición (optativo)</string>
   <string name="create_collection_optional">optativo</string>
   <string name="create_collection_home_set">Localización do almacenamento</string>
   <string name="create_collection_home_set_required">Requírese a localización da almacenaxe</string>

@@ -90,4 +90,9 @@ interface LocalResource<in TData: Any> {
      */
     fun delete(): Int
 
+    /**
+     * Undoes deletion of the data object from the content provider.
+     */
+    fun resetDeleted()
+
 }

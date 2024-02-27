@@ -5,16 +5,16 @@
 package at.bitfire.davdroid.resource
 
 import android.content.ContentValues
-import at.bitfire.ical4android.AndroidTask
-import at.bitfire.ical4android.AndroidTaskFactory
-import at.bitfire.ical4android.AndroidTaskList
+import at.bitfire.ical4android.DmfsTask
+import at.bitfire.ical4android.DmfsTaskFactory
+import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.BatchOperation
 import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.Task
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.UUID
 
-class LocalTask: AndroidTask, LocalResource<Task> {
+class LocalTask: DmfsTask, LocalResource<Task> {
 
     companion object {
         const val COLUMN_ETAG = Tasks.SYNC1
@@ -30,14 +30,14 @@ class LocalTask: AndroidTask, LocalResource<Task> {
         private set
 
 
-    constructor(taskList: AndroidTaskList<*>, task: Task, fileName: String?, eTag: String?, flags: Int)
+    constructor(taskList: DmfsTaskList<*>, task: Task, fileName: String?, eTag: String?, flags: Int)
             : super(taskList, task) {
         this.fileName = fileName
         this.eTag = eTag
         this.flags = flags
     }
 
-    private constructor(taskList: AndroidTaskList<*>, values: ContentValues): super(taskList) {
+    private constructor(taskList: DmfsTaskList<*>, values: ContentValues): super(taskList) {
         id = values.getAsLong(Tasks._ID)
         fileName = values.getAsString(Tasks._SYNC_ID)
         eTag = values.getAsString(COLUMN_ETAG)
@@ -104,9 +104,13 @@ class LocalTask: AndroidTask, LocalResource<Task> {
         this.flags = flags
     }
 
+    override fun resetDeleted() {
+        throw NotImplementedError()
+    }
 
-    object Factory: AndroidTaskFactory<LocalTask> {
-        override fun fromProvider(taskList: AndroidTaskList<*>, values: ContentValues) =
+
+    object Factory: DmfsTaskFactory<LocalTask> {
+        override fun fromProvider(taskList: DmfsTaskList<*>, values: ContentValues) =
                 LocalTask(taskList, values)
     }
 }

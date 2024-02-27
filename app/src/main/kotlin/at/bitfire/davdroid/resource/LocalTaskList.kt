@@ -14,8 +14,8 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.ical4android.AndroidTaskList
-import at.bitfire.ical4android.AndroidTaskListFactory
+import at.bitfire.ical4android.DmfsTaskList
+import at.bitfire.ical4android.DmfsTaskListFactory
 import at.bitfire.ical4android.TaskProvider
 import org.dmfs.tasks.contract.TaskContract.*
 import java.util.logging.Level
@@ -24,7 +24,7 @@ class LocalTaskList private constructor(
         account: Account,
         provider: TaskProvider,
         id: Long
-): AndroidTaskList<LocalTask>(account, provider, LocalTask.Factory, id), LocalCollection<LocalTask> {
+): DmfsTaskList<LocalTask>(account, provider, LocalTask.Factory, id), LocalCollection<LocalTask> {
 
     companion object {
 
@@ -68,6 +68,12 @@ class LocalTaskList private constructor(
 
     }
 
+    private var accessLevel: Int = TaskListColumns.ACCESS_LEVEL_UNDEFINED
+    override val readOnly
+        get() =
+            accessLevel != TaskListColumns.ACCESS_LEVEL_UNDEFINED &&
+            accessLevel <= TaskListColumns.ACCESS_LEVEL_READ
+
     override val tag: String
         get() = "tasks-${account.name}-$id"
 
@@ -96,8 +102,13 @@ class LocalTaskList private constructor(
         }
 
 
+    override fun populate(values: ContentValues) {
+        super.populate(values)
+        accessLevel = values.getAsInteger(TaskListColumns.ACCESS_LEVEL)
+    }
+
     fun update(info: Collection, updateColor: Boolean) =
-            update(valuesFromCollectionInfo(info, updateColor))
+        update(valuesFromCollectionInfo(info, updateColor))
 
 
     override fun findDeleted() = queryTasks(Tasks._DELETED, null)
@@ -144,7 +155,7 @@ class LocalTaskList private constructor(
     }
 
 
-    object Factory: AndroidTaskListFactory<LocalTaskList> {
+    object Factory: DmfsTaskListFactory<LocalTaskList> {
 
         override fun newInstance(account: Account, provider: TaskProvider, id: Long) =
                 LocalTaskList(account, provider, id)

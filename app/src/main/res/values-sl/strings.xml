@@ -76,8 +76,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zaznava storitve ni uspela</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Zbirke ni bilo mogoče osvežiti</string>
-  <!--Battery Optimization-->
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Nastavitve</string>
   <string name="app_settings_debug">Razhroščevalnik</string>
@@ -112,7 +111,6 @@
   <string name="account_synchronize_now">Sinhroniziraj zdaj</string>
   <string name="account_settings">Nastavitve računa</string>
   <string name="account_rename">Preimenuj račun</string>
-  <string name="account_rename_new_name">Neshranjeni lokalni podatki bodo izbrisani. Ponovna sinhronizacija je potrebna po preimenovanju. Novo ime računa:</string>
   <string name="account_rename_rename">Preimenuj</string>
   <string name="account_rename_exists_already">Ima računa že obstaja</string>
   <string name="account_delete">Izbriši račun</string>

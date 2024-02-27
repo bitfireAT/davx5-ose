@@ -140,10 +140,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Gyűjteménylista frissítése nem sikerült</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Nem lehetséges az előtérben való futtatás</string>
-  <string name="battery_optimization_notify_text">Kivétel az akkumulátorhasználat optimalizálása alól</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Futás előtérben</string>
   <string name="foreground_service_notify_text">Egyes eszközökön erre szükség van az automatikus szinkronizáció működéséhez</string>
   <!--AppSettingsActivity-->
@@ -157,8 +154,6 @@
   <string name="app_settings_battery_optimization">Akkumulátorhasználat optimalizálása</string>
   <string name="app_settings_battery_optimization_whitelisted">Az optimalizálás kikapcsolva (ajánlott)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Az optimalizálás bekapcsolva (nem ajánlott)</string>
-  <string name="app_settings_foreground_service">Maradjon előtérben</string>
-  <string name="app_settings_foreground_service_details">Segíthet, ha az eszköz akadályozza az automatikus szinkronizációt</string>
   <string name="app_settings_connection">Kapcsolat</string>
   <string name="app_settings_proxy">A proxy típusa</string>
   <string-array name="app_settings_proxy_types">
@@ -211,7 +206,6 @@
   <string name="account_synchronize_now">Szinkronizálás most</string>
   <string name="account_settings">Fiókbeállítások</string>
   <string name="account_rename">Fiók átnevezése</string>
-  <string name="account_rename_new_name">Az elmentetlen helyben tárolt adatok elvesznek.  Az átnevezés után szinkronizálásra lesz szükség.  Új fióknév:</string>
   <string name="account_rename_rename">Átnevez</string>
   <string name="account_rename_exists_already">A fióknév már használatban van</string>
   <string name="account_rename_couldnt_rename">A fiók átnevezése nem sikerült.</string>

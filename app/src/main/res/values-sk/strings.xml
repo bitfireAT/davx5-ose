@@ -46,8 +46,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zisťovanie služby zlyhalo</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Nie je možné obnoviť zoznam kolekcií</string>
-  <!--Battery Optimization-->
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Nastavenia</string>
   <string name="app_settings_debug">Ladenie</string>
@@ -81,7 +80,6 @@
   <string name="account_synchronize_now">Teraz synchronizovať</string>
   <string name="account_settings">Nastavenia používateľského účtu</string>
   <string name="account_rename">Premenovať používateľský účet</string>
-  <string name="account_rename_new_name">Neuložené miestne dáta môžu byť zabudnuté. Po premenovaní je potrebná opätovná synchronizácia. Nové meno účtu:</string>
   <string name="account_rename_rename">Premenovať</string>
   <string name="account_rename_exists_already">Meno účtu sa už používa</string>
   <string name="account_delete">Odstrániť účet</string>

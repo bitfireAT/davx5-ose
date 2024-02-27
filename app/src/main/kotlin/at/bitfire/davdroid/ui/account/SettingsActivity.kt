@@ -603,7 +603,7 @@ class SettingsActivity: AppCompatActivity() {
          */
         private fun resync(authority: String, fullResync: Boolean) {
             val resync = if (fullResync) SyncWorker.FULL_RESYNC else SyncWorker.RESYNC
-            SyncWorker.enqueue(getApplication(), account, authority, resync)
+            SyncWorker.enqueue(getApplication(), account, authority, expedited = true, resync = resync)
         }
 
     }

@@ -84,6 +84,10 @@ import kotlin.collections.*
  *  - adds resources if new ones are detected
  *  - removes resources if not found 40x (delete locally)
  *
+ * Expedited: yes (always initiated by user)
+ *
+ * Long-running: no
+ *
  * @throws IllegalArgumentException when there's no service with the given service ID
  */
 @HiltWorker

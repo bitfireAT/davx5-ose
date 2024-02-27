@@ -110,9 +110,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Αποτυχία ανίχνευσης υπηρεσίας</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Αδυναμία ανανέωσης της λίστας συλλογής</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Αδυναμία εκτέλεσης στο προσκήνιο</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Εκτέλεση στο προσκήνιο</string>
   <string name="foreground_service_notify_text">Σε κάποιες συσκευές, αυτό είναι απαραίτητο για τον αυτόματο συγχρονισμό</string>
   <!--AppSettingsActivity-->
@@ -124,8 +122,6 @@
   <string name="app_settings_logging_on">Η καταγραφή είναι ενεργή</string>
   <string name="app_settings_logging_off">Η καταγραφή είναι απενεργοποιημένη</string>
   <string name="app_settings_battery_optimization">Βελτιστοποίηση μπαταρίας</string>
-  <string name="app_settings_foreground_service">Διατήρηση στο προσκήνιο</string>
-  <string name="app_settings_foreground_service_details">Μπορεί να βοηθήσει εάν η συσκευή σας δεν επιτρέπει αυτόματο συγχρονισμό</string>
   <string name="app_settings_connection">Σύνδεση</string>
   <string name="app_settings_proxy">Τύπος Proxy</string>
   <string name="app_settings_proxy_port">Θύρα Proxy</string>
@@ -171,7 +167,6 @@
   <string name="account_synchronize_now">Συγχρονισμός τώρα</string>
   <string name="account_settings">Ρυθμίσεις λογαριασμού</string>
   <string name="account_rename">Μετονομασία λογαριασμού</string>
-  <string name="account_rename_new_name">Τα μη αποθηκευμένα τοπικά δεδομένα ενδέχεται να απορριφθούν. Απαιτείται εκ νέου συγχρονισμός μετά τη μετονομασία. Νέο όνομα λογαριασμού:</string>
   <string name="account_rename_rename">Μετονομασία</string>
   <string name="account_rename_exists_already">Το όνομα λογαριασμού έχει ήδη ληφθεί</string>
   <string name="account_rename_couldnt_rename">Αδυναμία μετονομασίας λογαριασμού</string>

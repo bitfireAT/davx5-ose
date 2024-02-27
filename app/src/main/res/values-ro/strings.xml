@@ -131,6 +131,8 @@
   <string name="account_list_manage_connections">Gestionează conexiunile</string>
   <string name="account_list_datasaver_enabled">Economizorul de date este activat. Sincronizarea în fundal este restricționată.</string>
   <string name="account_list_manage_datasaver">Gestionează economizorul de date</string>
+  <string name="account_list_battery_saver_enabled">Economisirea bateriei este activată. Sincronizarea poate fi restricționată.</string>
+  <string name="account_list_manage_battery_saver">Gestionează economisirea bateriei</string>
   <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va sincroniza modificările locale imediat, ci în timpul următoarei sincronizări obișnuite.</string>
   <string name="account_list_manage_storage">Gestionează stocarea</string>
   <string name="account_list_empty">Bun venit la DAVx⁵!\n\nPoți adăuga acum un cont CalDAV/CardDAV.</string>
@@ -140,10 +142,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Detectarea serviciului a eșuat</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Lista de colecții nu a putut fi actualizată</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Nu poate rula în prim-plan</string>
-  <string name="battery_optimization_notify_text">Este necesară înscrierea în lista albă pentru optimizarea bateriei</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Rulează în prim-plan</string>
   <string name="foreground_service_notify_text">Pe unele dispozitive, acest lucru este necesar pentru sincronizarea automată.</string>
   <!--AppSettingsActivity-->
@@ -157,8 +156,6 @@
   <string name="app_settings_battery_optimization">Optimizarea bateriei</string>
   <string name="app_settings_battery_optimization_whitelisted">Aplicația este inclusă în lista albă (recomandat)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Aplicația nu este inclusă în lista albă (nu este recomandat)</string>
-  <string name="app_settings_foreground_service">Păstrează în prim-plan</string>
-  <string name="app_settings_foreground_service_details">Poate fi de ajutor dacă dispozitivul împiedică sincronizarea automată</string>
   <string name="app_settings_connection">Conexiune</string>
   <string name="app_settings_proxy">Tip proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -211,7 +208,6 @@
   <string name="account_synchronize_now">Sincronizează acum</string>
   <string name="account_settings">Setările contului</string>
   <string name="account_rename">Redenumește contul</string>
-  <string name="account_rename_new_name">Datele locale nesalvate pot fi respinse. Resincronizarea este necesară după redenumire. Numele nou al contului:</string>
   <string name="account_rename_rename">Redenumește</string>
   <string name="account_rename_exists_already">Numele contului este deja luat</string>
   <string name="account_rename_couldnt_rename">Nu s-a putut redenumi contul</string>
@@ -418,6 +414,7 @@
   <string name="webdav_add_mount_display_name">Numele afișat</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL greșit</string>
+  <string name="webdav_add_mount_authentication">Autentificare (opțional)</string>
   <string name="webdav_add_mount_username">Nume de utilizator</string>
   <string name="webdav_add_mount_password">Parolă</string>
   <string name="webdav_add_mount_add">Adaugă montare</string>

@@ -142,10 +142,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Diensterkennung fehlgeschlagen</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Darf nicht im Vordergrund ausgeführt werden</string>
-  <string name="battery_optimization_notify_text">Ausnahme von Akku-Optimierung erforderlich</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Läuft im Vordergrund</string>
   <string name="foreground_service_notify_text">Auf manchen Geräten für die automatische Synchronisierung benötigt</string>
   <!--AppSettingsActivity-->
@@ -159,8 +156,6 @@
   <string name="app_settings_battery_optimization">Akku-Optimierung</string>
   <string name="app_settings_battery_optimization_whitelisted">App ist ausgenommen (empfohlen)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">App ist nicht ausgenommen (nicht empfohlen)</string>
-  <string name="app_settings_foreground_service">Im Vordergrund bleiben</string>
-  <string name="app_settings_foreground_service_details">Kann helfen, wenn das Gerät automatische Synchronisierung verhindert</string>
   <string name="app_settings_connection">Verbindung</string>
   <string name="app_settings_proxy">Proxy-Typ</string>
   <string-array name="app_settings_proxy_types">
@@ -213,7 +208,8 @@
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
   <string name="account_settings">Konto-Einstellungen</string>
   <string name="account_rename">Konto umbenennen</string>
-  <string name="account_rename_new_name">Ungespeicherte lokale Änderungen können verloren gehen. Nach dem Umbenennen muss neu synchronisiert werden. Neuer Kontoname:</string>
+  <string name="account_rename_new_name_description">Nicht gespeicherte lokale Daten können verloren gehen. Nach dem Umbenennen ist eine erneute Synchronisierung erforderlich.</string>
+  <string name="account_rename_new_name">Neuer Kontoname</string>
   <string name="account_rename_rename">Umbenennen</string>
   <string name="account_rename_exists_already">Kontoname bereits verwendet</string>
   <string name="account_rename_couldnt_rename">Konto konnte nicht umbenannt werden</string>
@@ -364,6 +360,7 @@
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_display_name_required">Ein Titel wird benötigt</string>
   <string name="create_collection_description">Beschreibung</string>
+  <string name="create_collection_description_optional">Beschreibung (optional)</string>
   <string name="create_collection_optional">optional</string>
   <string name="create_collection_home_set">Speicherort</string>
   <string name="create_collection_home_set_required">Speicherort wird benötigt</string>

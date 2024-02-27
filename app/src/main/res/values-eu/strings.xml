@@ -140,10 +140,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Ezin izan da bilduma zerrenda freskatu</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Ezin da aurrealdean exekutatu</string>
-  <string name="battery_optimization_notify_text">Bateriaren optimizazioaren zerrenda zuria behar da</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Aurrealdean exekutatzen</string>
   <string name="foreground_service_notify_text">Gailu batzuetan, hau beharrezkoa da sinkronizazio automatikorako.</string>
   <!--AppSettingsActivity-->
@@ -157,8 +154,6 @@
   <string name="app_settings_battery_optimization">Bateria optimizazioa</string>
   <string name="app_settings_battery_optimization_whitelisted">Aplikazioa zerrenda zurian dago (gomendatuta)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Aplikazioa ez dago zerrenda zurian (ez gomendatuta)</string>
-  <string name="app_settings_foreground_service">Mantendu aurrealdean</string>
-  <string name="app_settings_foreground_service_details">Zure gailuak sinkronizazio automatikoa galarazten badu lagundu dezake</string>
   <string name="app_settings_connection">Konexioa</string>
   <string name="app_settings_proxy">Proxy mota</string>
   <string-array name="app_settings_proxy_types">
@@ -211,7 +206,6 @@
   <string name="account_synchronize_now">Sinkronizatu orain</string>
   <string name="account_settings">Kontuaren ezarpenak</string>
   <string name="account_rename">Berrizendatu kontua</string>
-  <string name="account_rename_new_name">Gorde gabeko datu lokalak baztertu daitezke. Berriro sinkronizatu behar da izena aldatu ostean. Kontuaren izen berria:</string>
   <string name="account_rename_rename">Berrizendatu</string>
   <string name="account_rename_exists_already">Kontuaren izena hartuta dago</string>
   <string name="account_rename_couldnt_rename">Ezin izan da kontua berrizendatu</string>

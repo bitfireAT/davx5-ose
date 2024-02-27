@@ -10,6 +10,7 @@
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
   <string name="share">Partager</string>
+  <string name="sync_started">La synchronisation a débuté</string>
   <string name="database_destructive_migration_title">Base de données corrompue</string>
   <string name="database_destructive_migration_text">Tous les comptes ont été supprimés localement.</string>
   <string name="notification_channel_debugging">Débogage</string>
@@ -128,6 +129,8 @@
   <string name="account_list_manage_connections">Gérer les connexions</string>
   <string name="account_list_datasaver_enabled">L\'économiseur de données est activé. La synchronisation en arrière-plan est limitée.</string>
   <string name="account_list_manage_datasaver">Gérer l\'économiseur de données</string>
+  <string name="account_list_battery_saver_enabled">L\'économiseur de batterie est activé. La synchronisation risque d\'être limitée.</string>
+  <string name="account_list_manage_battery_saver">Gérer l\'économiseur de batterie</string>
   <string name="account_list_low_storage">Espace de stockage faible. Android ne synchronisera pas les changements locaux immédiatement mais pendant la prochaine synchronisation.</string>
   <string name="account_list_manage_storage">Gérer le stockage</string>
   <string name="account_list_empty">Bienvenue sur DAVx⁵!\n\nVous pouvez maintenant ajouter un compte CalDAV ou CardDAV.</string>
@@ -137,10 +140,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">La détection du service a échoué</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Impossible d\'actualiser la liste de collection</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Ne peut pas fonctionner en premier plan</string>
-  <string name="battery_optimization_notify_text">Il est nécessaire de désactiver l’option \"Optimisation de la batterie\"</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Fonctionne au premier plan</string>
   <string name="foreground_service_notify_text">Sur certains appareils, cela est nécessaire pour la synchronisation automatique.</string>
   <!--AppSettingsActivity-->
@@ -154,8 +154,6 @@
   <string name="app_settings_battery_optimization">Optimisation de la batterie</string>
   <string name="app_settings_battery_optimization_whitelisted">L\'App est dans la liste blanche (recommandé)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">L\'App n\'est pas dans la liste blanche (non recommandé)</string>
-  <string name="app_settings_foreground_service">Garder au premier plan</string>
-  <string name="app_settings_foreground_service_details">Peut aider si votre appareil empêche la synchronisation automatique</string>
   <string name="app_settings_connection">Connexion</string>
   <string name="app_settings_proxy">Type de Proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -208,7 +206,7 @@
   <string name="account_synchronize_now">Synchroniser maintenant</string>
   <string name="account_settings">Paramètres du compte</string>
   <string name="account_rename">Renommer le compte</string>
-  <string name="account_rename_new_name">Les données locales non enregistrées pourraient être perdues. Une re-synchronisation est nécessaire après avoir renommé le compte. Nouveau nom du compte : </string>
+  <string name="account_rename_new_name">Nouveau nom d\'utilisateur</string>
   <string name="account_rename_rename">Renommer</string>
   <string name="account_rename_exists_already">Le nom du compte est déjà pris</string>
   <string name="account_rename_couldnt_rename">Impossible de renommer le compte</string>
@@ -233,6 +231,8 @@
   <string name="login_email_address">Adresse mail</string>
   <string name="login_email_address_error">Une adresse e-mail valide est requise</string>
   <string name="login_password">Mot de passe</string>
+  <string name="login_password_hide">Cacher le mot de passe</string>
+  <string name="login_password_show">Montrer le mot de passe</string>
   <string name="login_password_required">Mot de passe requis</string>
   <string name="login_type_url">Connexion avec une URL et un nom d\'utilisateur</string>
   <string name="login_url_must_be_http_or_https">L\'URL doit commencer par http(s)://</string>
@@ -259,7 +259,15 @@
   <string name="login_google_unexpected_warnings">Vous risquez de rencontrer des avertissements inattendus et/ou vous devez créer votre propre ID client.</string>
   <string name="login_google_account">Compte Google</string>
   <string name="login_google">Se connecter avec Google</string>
+  <string name="login_google_client_id">ID client (optionnel)</string>
   <string name="login_oauth_couldnt_obtain_auth_code">N\'a pas pu obtenir le code d\'autorisation</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Se connecter avec Nextcloud</string>
+  <string name="login_nextcloud_login_flow_text">La page de connexion Nextcloud va se lancer dans le navigateur</string>
+  <string name="login_nextcloud_login_flow_server_address">Adresse du serveur Nextcloud</string>
+  <string name="login_nextcloud_login_flow_sign_in">Se connecter</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Impossible d\'obtenir l\'URL de connexion</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Impossible d\'obtenir les données de connexion</string>
   <string name="login_configuration_detection">Détection de la configuration</string>
   <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur …</string>
   <string name="login_no_caldav_carddav">Aucun accès possible au service CalDAV ou CardDAV.</string>

@@ -32,6 +32,10 @@ import java.util.concurrent.TimeUnit
  * The different periodic sync workers each carry a unique work name composed of the account and
  * authority which they are responsible for. For each account there will be multiple dedicated periodic
  * sync workers for each authority. See [PeriodicSyncWorker.workerName] for more information.
+ *
+ * Deferrable: yes (PeriodicWorkRequest)
+ *
+ * Long-running: no
  */
 @HiltWorker
 class PeriodicSyncWorker @AssistedInject constructor(
@@ -121,7 +125,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
 
         // Just request immediate sync
         Logger.log.info("Requesting immediate sync")
-        SyncWorker.enqueue(applicationContext, account, authority)
+        SyncWorker.enqueue(applicationContext, account, authority, expedited = false)
         return Result.success()
     }
 }

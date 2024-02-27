@@ -135,10 +135,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Откриването на услугите се провали</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Грешка при презареждане</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Не може да работи на преден план</string>
-  <string name="battery_optimization_notify_text">Необходимо е да спрете оптимизирането на батерията за приложението</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Работи на преден план</string>
   <string name="foreground_service_notify_text">На някои устройства това е необходимо, за да работи автоматичното синхронизиране.</string>
   <!--AppSettingsActivity-->
@@ -152,8 +149,6 @@
   <string name="app_settings_battery_optimization">Оптимизиране на батерията</string>
   <string name="app_settings_battery_optimization_whitelisted">Приложението е в белия списък (препоръчително)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Приложението не е в белия списък (непрепоръчително)</string>
-  <string name="app_settings_foreground_service">Поддържане на преден план</string>
-  <string name="app_settings_foreground_service_details">Може да помогне ако устройството възпрепятства автоматичното синхронизиране</string>
   <string name="app_settings_connection">Връзка</string>
   <string name="app_settings_proxy">Вид на сървъра на прокси</string>
   <string-array name="app_settings_proxy_types">
@@ -206,7 +201,6 @@
   <string name="account_synchronize_now">Синхронизация</string>
   <string name="account_settings">Настройки на регистрацията</string>
   <string name="account_rename">Преименуване на регистрация</string>
-  <string name="account_rename_new_name">Незапазените местни данни могат да бъдат отхвърлени. След преименуването е нужно синхронизиране. Ново име на регистрацията:</string>
   <string name="account_rename_rename">Преименуване</string>
   <string name="account_rename_exists_already">Това име на регистрация вече се използва</string>
   <string name="account_rename_couldnt_rename">Грешка при преименуване</string>

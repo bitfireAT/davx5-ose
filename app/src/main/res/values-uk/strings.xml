@@ -79,8 +79,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Не вдалося виявити сервіси</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Не вдалося оновити перелік колекції</string>
-  <!--Battery Optimization-->
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <!--AppSettingsActivity-->
   <string name="app_settings">Налаштування</string>
   <string name="app_settings_debug">Зневадження</string>
@@ -124,7 +123,6 @@
   <string name="account_synchronize_now">Синхронізувати зараз</string>
   <string name="account_settings">Налаштування облікового запису</string>
   <string name="account_rename">Перейменувати обліковий запис</string>
-  <string name="account_rename_new_name">Незбережені локальні дані можуть бути втрачені. Необхідно виконати синхронізацію після перейменування. Нова назва облікового запису:</string>
   <string name="account_rename_rename">Перейменувати</string>
   <string name="account_rename_exists_already">Ім\'я запису вже зайняте</string>
   <string name="account_rename_couldnt_rename">Не вдалося перейменувати облікувку</string>

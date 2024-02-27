@@ -140,10 +140,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Servicedetektering misslyckades</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Det gick inte att uppdatera samlingslistan</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Kan inte köras i förgrunden</string>
-  <string name="battery_optimization_notify_text">Vitlista för batterioptimering krävs</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Arbetar i förgrunden</string>
   <string name="foreground_service_notify_text">På vissa enheter är detta nödvändigt för automatisk synkronisering.</string>
   <!--AppSettingsActivity-->
@@ -157,8 +154,6 @@
   <string name="app_settings_battery_optimization">Batterioptimering</string>
   <string name="app_settings_battery_optimization_whitelisted">Appen är vitlistad (rekommenderat)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">Appen är inte vitlistad (rekommenderas ej)</string>
-  <string name="app_settings_foreground_service">Håll i förgrunden</string>
-  <string name="app_settings_foreground_service_details">Kan hjälpa om din enhet förhindrar automatisk synkronisering</string>
   <string name="app_settings_connection">Anslutning</string>
   <string name="app_settings_proxy">Proxy typ</string>
   <string-array name="app_settings_proxy_types">
@@ -211,7 +206,6 @@
   <string name="account_synchronize_now">Synkronisera nu</string>
   <string name="account_settings">Kontoinställningar</string>
   <string name="account_rename">Byt namn på kontot</string>
-  <string name="account_rename_new_name">Lokala data som inte har sparats kan avvisas. Omsynkronisering krävs efter byte av namn. Nytt kontonamn:</string>
   <string name="account_rename_rename">Byt namn</string>
   <string name="account_rename_exists_already">Kontonamn är upptaget</string>
   <string name="account_rename_couldnt_rename">Kunde inte ändra namn på kontot</string>
