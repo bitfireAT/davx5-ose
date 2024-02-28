@@ -161,9 +161,9 @@
 
         <activity
             android:name=".ui.webdav.WebdavMountsActivity"
-            android:label="@string/webdav_mounts_title"
+            android:exported="true"
             android:parentActivityName=".ui.AccountsActivity"
-            android:exported="true" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.webdav.AddWebdavMountActivity"
             android:label="@string/webdav_add_mount_title"
