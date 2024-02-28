@@ -20,7 +20,7 @@ class PermissionsActivity: AppCompatActivity() {
 
         setContent {
             MdcTheme {
-                PermissionsFragmentContent()
+                PermissionsFragmentContent(model)
             }
         }
     }
