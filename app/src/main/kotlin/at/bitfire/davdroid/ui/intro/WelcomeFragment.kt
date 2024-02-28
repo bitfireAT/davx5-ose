@@ -14,6 +14,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,7 +58,10 @@ class WelcomeFragment: Fragment() {
         }
     }
 
-    @Preview(showSystemUi = true)
+    @Preview(
+        device = "id:3.7in WVGA (Nexus One)",
+        showSystemUi = true
+    )
     @Composable
     private fun ContentPortrait() {
         Column(
@@ -94,7 +98,7 @@ class WelcomeFragment: Fragment() {
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .wrapContentHeight()
                     .padding(horizontal = 32.dp)
                     .padding(
                         bottom = dimensionResource(
@@ -102,12 +106,14 @@ class WelcomeFragment: Fragment() {
                         )
                     )
             )
+
+            Spacer(modifier = Modifier.weight(0.1f))
         }
     }
 
     @Preview(
         showSystemUi = true,
-        device = "spec:width=411dp,height=891dp,dpi=420,isRound=false,chinSize=0dp,orientation=landscape"
+        device = "id:medium_tablet"
     )
     @Composable
     private fun ContentLandscape() {
@@ -150,7 +156,9 @@ class WelcomeFragment: Fragment() {
                     style = MaterialTheme.typography.h5.copy(fontSize = 48.sp),
                     lineHeight = 52.sp,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth()
                 )
             }
         }
