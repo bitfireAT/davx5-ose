@@ -49,6 +49,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
+import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.ical4android.TaskProvider
 import com.google.accompanist.themeadapter.material.MdcTheme
@@ -207,12 +208,24 @@ class RenameAccountFragment: DialogFragment() {
             }
         }
 
+        /**
+         * Called when an account has been renamed.
+         *
+         * @param oldAccount the old account
+         * @param newName the new account
+         * @param syncIntervals map with entries of type (authority -> sync interval) of the old account
+         */
         @SuppressLint("Recycle")
         @WorkerThread
         fun onAccountRenamed(accountManager: AccountManager, oldAccount: Account, newName: String, syncIntervals: List<Pair<String, Long?>>) {
             // account has now been renamed
             Logger.log.info("Updating account name references")
             val context: Application = getApplication()
+
+            // disable periodic workers of old account
+            syncIntervals.forEach { (authority, _) ->
+                PeriodicSyncWorker.disable(context, oldAccount, authority)
+            }
 
             // cancel maybe running synchronization
             SyncWorker.cancelSync(context, oldAccount)
