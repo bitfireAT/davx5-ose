@@ -5,12 +5,38 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import at.bitfire.davdroid.databinding.IntroWelcomeBinding
+import at.bitfire.davdroid.R
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -20,39 +46,114 @@ import javax.inject.Inject
 
 class WelcomeFragment: Fragment() {
 
-    private var _binding: IntroWelcomeBinding? = null
-    private val binding get() = _binding!!
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = IntroWelcomeBinding.inflate(inflater, container, false)
-
-        if (true /* ose build */) {
-            binding.logo.apply {
-                alpha = 0f
-                animate()
-                    .alpha(1f)
-                    .setDuration(300)
-            }
-            binding.yourDataYourChoice.apply {
-                translationX = -1000f
-                animate()
-                    .translationX(0f)
-                    .setDuration(300)
-            }
-            binding.takeControl.apply {
-                translationX = 1000f
-                animate()
-                    .translationX(0f)
-                    .setDuration(300)
+        return ComposeView(requireContext()).apply {
+            setContent {
+                if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE)
+                    ContentLandscape()
+                else
+                    ContentPortrait()
             }
         }
-
-        return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    @Preview(showSystemUi = true)
+    @Composable
+    private fun ContentPortrait() {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = colorResource(R.color.primaryDarkColor)),
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 48.dp)
+                    .weight(2f)
+            )
+
+            Text(
+                text = stringResource(R.string.intro_slogan1),
+                color = Color.White,
+                style = MaterialTheme.typography.subtitle1.copy(fontSize = 34.sp),
+                lineHeight = 38.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(horizontal = 16.dp)
+            )
+
+            Text(
+                text = stringResource(R.string.intro_slogan2),
+                color = Color.White,
+                style = MaterialTheme.typography.h5.copy(fontSize = 48.sp),
+                lineHeight = 52.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 32.dp)
+                    .padding(
+                        bottom = dimensionResource(
+                            com.github.appintro.R.dimen.appintro2_bottombar_height
+                        )
+                    )
+            )
+        }
+    }
+
+    @Preview(
+        showSystemUi = true,
+        device = "spec:width=411dp,height=891dp,dpi=420,isRound=false,chinSize=0dp,orientation=landscape"
+    )
+    @Composable
+    private fun ContentLandscape() {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = colorResource(R.color.primaryDarkColor))
+                .padding(
+                    bottom = dimensionResource(
+                        com.github.appintro.R.dimen.appintro2_bottombar_height
+                    )
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+            )
+
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 32.dp)
+                    .weight(2f)
+            ) {
+                Text(
+                    text = stringResource(R.string.intro_slogan1),
+                    color = Color.White,
+                    style = MaterialTheme.typography.subtitle1.copy(fontSize = 34.sp),
+                    lineHeight = 38.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Text(
+                    text = stringResource(R.string.intro_slogan2),
+                    color = Color.White,
+                    style = MaterialTheme.typography.h5.copy(fontSize = 48.sp),
+                    lineHeight = 52.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 
 
