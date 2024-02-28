@@ -24,7 +24,6 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -95,6 +94,28 @@ class PeriodicSyncWorkerTest {
         PeriodicSyncWorker.disable(context, account, CalendarContract.AUTHORITY)
         val workerName = PeriodicSyncWorker.workerName(account, CalendarContract.AUTHORITY)
         assertFalse(workScheduledOrRunning(context, workerName))
+    }
+
+    @Test
+    fun doWork_cancelsItselfOnInvalidAccount() {
+        val invalidAccount = Account("invalid", context.getString(R.string.account_type))
+        val authority = CalendarContract.AUTHORITY
+
+        // Enable the PeriodicSyncWorker
+        PeriodicSyncWorker.enable(context, invalidAccount, authority, 15*60, false)
+        assertTrue(workScheduledOrRunning(context, PeriodicSyncWorker.workerName(account, authority)))
+
+        // Run PeriodicSyncWorker as TestWorker
+        val inputData = workDataOf(
+            PeriodicSyncWorker.ARG_AUTHORITY to authority,
+            PeriodicSyncWorker.ARG_ACCOUNT_NAME to invalidAccount.name,
+            PeriodicSyncWorker.ARG_ACCOUNT_TYPE to invalidAccount.type
+        )
+        val result = TestWorkerBuilder<PeriodicSyncWorker>(context, executor, inputData).build().doWork()
+
+        // Verify that the PeriodicSyncWorker cancelled itself
+        assertTrue(result is androidx.work.ListenableWorker.Result.Failure)
+        assertFalse(workScheduledOrRunning(context, PeriodicSyncWorker.workerName(invalidAccount, authority)))
     }
 
     @Test
