@@ -297,7 +297,7 @@ class WebdavMountsActivity: AppCompatActivity() {
                     }
                     Spacer(Modifier.weight(1f))
                     IconButton(
-                        onClick = { /*TODO*/ }
+                        onClick = { showingDialog = true }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
