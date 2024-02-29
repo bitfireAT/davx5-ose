@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
@@ -156,35 +158,40 @@ class WebdavMountsActivity: AppCompatActivity() {
                 }
             }
         ) { paddingValues ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
             ) {
-                for (mountInfo in mountInfos) {
-                    WebdavMountsItem(mountInfo)
+                items(mountInfos, key = { it.mount.id }, contentType = { "mount" }) {
+                    WebdavMountsItem(it)
                 }
-                // todo: hide if there are mounts
-                Text(
-                    text = stringResource(R.string.webdav_mounts_empty),
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                )
-                Text(
-                    text = HtmlCompat.fromHtml(
-                        getString(
-                            R.string.webdav_add_mount_empty_more_info,
-                            helpUrl()
-                        ),
-                        0
-                    ).toAnnotatedString(),
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                if (mountInfos.isEmpty()) {
+                    item(key = "empty", contentType = "text") {
+                        Text(
+                            text = stringResource(R.string.webdav_mounts_empty),
+                            style = MaterialTheme.typography.h6,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                        )
+                    }
+                   item(key = "empty_more_info", contentType = "text") {
+                       Text(
+                           text = HtmlCompat.fromHtml(
+                               getString(
+                                   R.string.webdav_add_mount_empty_more_info,
+                                   helpUrl()
+                               ),
+                               0
+                           ).toAnnotatedString(),
+                           style = MaterialTheme.typography.body1,
+                           modifier = Modifier.fillMaxWidth()
+                       )
+                   }
+                }
             }
         }
     }
