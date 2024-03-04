@@ -32,9 +32,6 @@ interface SyncComponentBuilder {
 
 /**
  * Manages the lifecycle of [SyncComponent] by using [WeakReference].
- *
- * @sample at.bitfire.davdroid.syncadapter.LicenseValidator
- * @sample at.bitfire.davdroid.syncadapter.PaymentValidator
  */
 @Singleton
 class SyncComponentManager @Inject constructor(
