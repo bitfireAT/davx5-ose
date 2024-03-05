@@ -275,9 +275,7 @@ class WebdavMountsActivity: AppCompatActivity() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),
-                    style = MaterialTheme.typography.caption,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    style = MaterialTheme.typography.caption
                 )
                 
                 val quotaUsed = info.rootDocument?.quotaUsed
