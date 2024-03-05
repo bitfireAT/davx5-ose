@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui
 
 import android.Manifest
-import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsEndWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -47,6 +45,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
@@ -56,6 +55,7 @@ import at.bitfire.ical4android.TaskProvider.ProviderName
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.themeadapter.material.MdcTheme
+import java.util.logging.Level
 
 class PermissionsFragment: Fragment() {
 
@@ -117,13 +117,18 @@ fun PermissionsFragmentContent(model: PermissionsFragment.Model = viewModel()) {
         PermissionsCard(
             keepPermissions,
             onKeepPermissionsRequested = {
-                Toast.makeText(context, R.string.permissions_autoreset_instruction, Toast.LENGTH_LONG).show()
-                (context as? Activity)?.startActivity(
-                    Intent(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val intent = Intent(
                         Intent.ACTION_AUTO_REVOKE_PERMISSIONS,
                         Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
                     )
-                )
+                    try {
+                        context.startActivity(intent)
+                        Toast.makeText(context, R.string.permissions_autoreset_instruction, Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        Logger.log.log(Level.WARNING, "Couldn't start Keep Permissions activity", e)
+                    }
+                }
             }
         )
     }
@@ -313,7 +318,7 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
             modifier = Modifier.padding(top = 8.dp),
             onClick = { PermissionUtils.showAppSettings(context) }
         ) {
-            Text(stringResource(R.string.permissions_app_settings))
+            Text(stringResource(R.string.permissions_app_settings).uppercase())
         }
     }
 }
