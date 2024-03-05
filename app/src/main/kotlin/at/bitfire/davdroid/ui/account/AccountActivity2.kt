@@ -101,7 +101,7 @@ class AccountActivity2 : AppCompatActivity() {
                     hasCardDav = model.cardDavSvc.observeAsState().value != null,
                     addressBooksFactory = model.addressBooksFactory.observeAsState().value,
                     hasCalDav = model.calDavSvc.observeAsState().value != null,
-                    onChangeSync = { id, sync ->
+                    onUpdateCollectionSync = { id, sync ->
                         model.setCollectionSync(id, sync)
                     },
                     onNavUp = ::onNavigateUp
@@ -206,7 +206,8 @@ fun AccountOverview(
     hasCardDav: Boolean,
     addressBooksFactory: (() -> PagingSource<Int, Collection>)?,
     hasCalDav: Boolean,
-    onChangeSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
+    onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
+    onSync: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
     Scaffold(
@@ -268,7 +269,7 @@ fun AccountOverview(
                     Icon(Icons.Default.Sync, stringResource(R.string.account_refresh_calendar_list))
                 }
 
-                FloatingActionButton(onClick = { /* sync */ }) {
+                FloatingActionButton(onClick = onSync) {
                     Icon(Icons.Default.Sync, stringResource(R.string.account_synchronize_now))
                 }
             }
@@ -350,7 +351,7 @@ fun AccountOverview(
                             val pagedItems = pager.flow.collectAsLazyPagingItems()
                             AddressBooksList(
                                 pagedItems,
-                                onChangeSync = onChangeSync
+                                onChangeSync = onUpdateCollectionSync
                             )
                         }
                     }
