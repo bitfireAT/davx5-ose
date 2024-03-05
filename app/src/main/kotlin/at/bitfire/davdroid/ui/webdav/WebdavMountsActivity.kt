@@ -17,6 +17,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -46,6 +47,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +55,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextOverflow
@@ -86,7 +89,6 @@ import org.apache.commons.io.FileUtils
 import java.util.logging.Level
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
 class WebdavMountsActivity: AppCompatActivity() {
 
@@ -106,9 +108,13 @@ class WebdavMountsActivity: AppCompatActivity() {
 
         setContent {
             MdcTheme {
-                val mountInfos by model.mountInfos.observeAsState(emptyList())
+                CompositionLocalProvider(
+                    LocalUriHandler provides SafeAndroidUriHandler(this)
+                ) {
+                    val mountInfos by model.mountInfos.observeAsState(emptyList())
 
-                WebdavMountsContent(mountInfos)
+                    WebdavMountsContent(mountInfos)
+                }
             }
         }
     }
@@ -119,10 +125,9 @@ class WebdavMountsActivity: AppCompatActivity() {
             .build()
 
 
-    @OptIn(ExperimentalTextApi::class)
     @Composable
     fun WebdavMountsContent(mountInfos: List<MountInfo>) {
-        val uriHandler = SafeAndroidUriHandler(this)
+        val uriHandler = LocalUriHandler.current
 
         Scaffold(
             topBar = {
@@ -161,46 +166,61 @@ class WebdavMountsActivity: AppCompatActivity() {
                 }
             }
         ) { paddingValues ->
-            LazyColumn(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
-                    .padding(paddingValues)
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
             ) {
-                items(mountInfos, key = { it.mount.id }, contentType = { "mount" }) {
-                    WebdavMountsItem(it)
-                }
                 if (mountInfos.isEmpty()) {
-                    item(key = "empty", contentType = "text") {
-                        Text(
-                            text = stringResource(R.string.webdav_mounts_empty),
-                            style = MaterialTheme.typography.h6,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp)
-                        )
-                    }
-                    item(key = "empty_more_info", contentType = "text") {
-                        val text = HtmlCompat.fromHtml(
-                            getString(
-                                R.string.webdav_add_mount_empty_more_info,
-                                helpUrl()
-                            ),
-                            0
-                        ).toAnnotatedString()
-                        ClickableText(
-                            text = text,
-                            style = MaterialTheme.typography.body1,
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = { position ->
-                                text.getUrlAnnotations(position, position + 1)
-                                    .firstOrNull()
-                                    ?.let { uriHandler.openUri(it.item.url) }
-                            }
-                        )
+                    HintText()
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                            .padding(paddingValues)
+                    ) {
+                        items(mountInfos, key = { it.mount.id }, contentType = { "mount" }) {
+                            WebdavMountsItem(it)
+                        }
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    @OptIn(ExperimentalTextApi::class)
+    fun HintText() {
+        val uriHandler = LocalUriHandler.current
+
+        Column {
+            Text(
+                text = stringResource(R.string.webdav_mounts_empty),
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            )
+
+            val text = HtmlCompat.fromHtml(
+                getString(
+                    R.string.webdav_add_mount_empty_more_info,
+                    helpUrl()
+                ),
+                0
+            ).toAnnotatedString()
+            ClickableText(
+                text = text,
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { position ->
+                    text.getUrlAnnotations(position, position + 1)
+                        .firstOrNull()
+                        ?.let { uriHandler.openUri(it.item.url) }
+                }
+            )
         }
     }
 
