@@ -19,7 +19,9 @@ import androidx.annotation.MainThread
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsEndWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -36,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -131,6 +134,8 @@ fun PermissionsFragmentContent(model: PermissionsFragment.Model = viewModel()) {
 fun PermissionSwitchRow(
     text: String,
     permissions: List<String>,
+    summaryWhenGranted: String,
+    summaryWhenNotGranted: String,
     fontWeight: FontWeight = FontWeight.Normal
 ) {
     val state = rememberMultiplePermissionsState(permissions = permissions.toList())
@@ -138,8 +143,22 @@ fun PermissionSwitchRow(
     PermissionSwitchRow(
         text = text,
         fontWeight = fontWeight,
+        summaryWhenGranted = summaryWhenGranted,
+        summaryWhenNotGranted = summaryWhenNotGranted,
         allPermissionsGranted = state.allPermissionsGranted,
         onLaunchRequest = state::launchMultiplePermissionRequest
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PermissionSwitchRow_Preview() {
+    PermissionSwitchRow(
+        text = "Contacts",
+        allPermissionsGranted = false,
+        summaryWhenGranted = "Granted",
+        summaryWhenNotGranted = "Not granted",
+        onLaunchRequest = {}
     )
 }
 
@@ -147,6 +166,8 @@ fun PermissionSwitchRow(
 fun PermissionSwitchRow(
     text: String,
     allPermissionsGranted: Boolean,
+    summaryWhenGranted: String,
+    summaryWhenNotGranted: String,
     modifier: Modifier = Modifier,
     fontWeight: FontWeight = FontWeight.Normal,
     onLaunchRequest: () -> Unit
@@ -155,11 +176,19 @@ fun PermissionSwitchRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = text,
-            modifier = Modifier.weight(1f),
-            fontWeight = fontWeight
-        )
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = text,
+                modifier = Modifier.fillMaxWidth(),
+                fontWeight = fontWeight
+            )
+            Text(
+                text = if (allPermissionsGranted) summaryWhenGranted else summaryWhenNotGranted,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         Switch(
             checked = allPermissionsGranted,
             enabled = !allPermissionsGranted,
@@ -193,6 +222,8 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
         if (keepPermissions != null) {
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_autoreset_title),
+                summaryWhenGranted = stringResource(R.string.permissions_autoreset_status_on),
+                summaryWhenNotGranted = stringResource(R.string.permissions_autoreset_status_off),
                 allPermissionsGranted = keepPermissions,
                 onLaunchRequest = onKeepPermissionsRequested
             )
@@ -212,37 +243,51 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
         PermissionSwitchRow(
             text = stringResource(R.string.permissions_all_title),
             permissions = allPermissions,
+            summaryWhenGranted = stringResource(R.string.permissions_all_status_on),
+            summaryWhenNotGranted = stringResource(R.string.permissions_all_status_off),
             fontWeight = FontWeight.Bold
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_notification_title),
+                summaryWhenGranted = stringResource(R.string.permissions_notification_status_on),
+                summaryWhenNotGranted = stringResource(R.string.permissions_notification_status_off),
                 permissions = listOf(Manifest.permission.POST_NOTIFICATIONS)
             )
 
         PermissionSwitchRow(
             text = stringResource(R.string.permissions_calendar_title),
+            summaryWhenGranted = stringResource(R.string.permissions_calendar_status_on),
+            summaryWhenNotGranted = stringResource(R.string.permissions_calendar_status_off),
             permissions = CALENDAR_PERMISSIONS.toList()
         )
         PermissionSwitchRow(
             text = stringResource(R.string.permissions_contacts_title),
+            summaryWhenGranted = stringResource(R.string.permissions_contacts_status_on),
+            summaryWhenNotGranted = stringResource(R.string.permissions_contacts_status_off),
             permissions = CONTACT_PERMISSIONS.toList()
         )
 
         if (jtxAvailable)
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_jtx_title),
+                summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
+                summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
                 permissions = TaskProvider.PERMISSIONS_JTX.toList()
             )
         if (openTasksAvailable)
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_opentasks_title),
+                summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
+                summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
                 permissions = TaskProvider.PERMISSIONS_OPENTASKS.toList()
             )
         if (tasksOrgAvailable)
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_tasksorg_title),
+                summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
+                summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
                 permissions = TaskProvider.PERMISSIONS_TASKS_ORG.toList()
             )
 
