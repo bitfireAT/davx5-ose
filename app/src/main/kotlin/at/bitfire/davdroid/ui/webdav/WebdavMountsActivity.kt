@@ -195,7 +195,11 @@ class WebdavMountsActivity: AppCompatActivity() {
     fun HintText() {
         val uriHandler = LocalUriHandler.current
 
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
             Text(
                 text = stringResource(R.string.webdav_mounts_empty),
                 style = MaterialTheme.typography.h6,
