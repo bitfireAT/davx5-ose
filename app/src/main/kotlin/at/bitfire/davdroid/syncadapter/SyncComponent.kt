@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid.di
+package at.bitfire.davdroid.syncadapter
 
 import dagger.hilt.DefineComponent
 import dagger.hilt.components.SingletonComponent
