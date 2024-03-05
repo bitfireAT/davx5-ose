@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
@@ -53,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -117,6 +119,7 @@ class WebdavMountsActivity: AppCompatActivity() {
             .build()
 
 
+    @OptIn(ExperimentalTextApi::class)
     @Composable
     fun WebdavMountsContent(mountInfos: List<MountInfo>) {
         val uriHandler = SafeAndroidUriHandler(this)
@@ -178,16 +181,22 @@ class WebdavMountsActivity: AppCompatActivity() {
                         )
                     }
                    item(key = "empty_more_info", contentType = "text") {
-                       Text(
-                           text = HtmlCompat.fromHtml(
-                               getString(
-                                   R.string.webdav_add_mount_empty_more_info,
-                                   helpUrl()
-                               ),
-                               0
-                           ).toAnnotatedString(),
+                       val text = HtmlCompat.fromHtml(
+                           getString(
+                               R.string.webdav_add_mount_empty_more_info,
+                               helpUrl()
+                           ),
+                           0
+                       ).toAnnotatedString()
+                       ClickableText(
+                           text = text,
                            style = MaterialTheme.typography.body1,
-                           modifier = Modifier.fillMaxWidth()
+                           modifier = Modifier.fillMaxWidth(),
+                           onClick = { position ->
+                               text.getUrlAnnotations(position, position + 1)
+                                   .firstOrNull()
+                                   ?.let { uriHandler.openUri(it.item.url) }
+                           }
                        )
                    }
                 }
