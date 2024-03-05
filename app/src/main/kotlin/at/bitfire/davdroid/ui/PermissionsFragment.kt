@@ -136,6 +136,7 @@ fun PermissionSwitchRow(
     permissions: List<String>,
     summaryWhenGranted: String,
     summaryWhenNotGranted: String,
+    modifier: Modifier = Modifier,
     fontWeight: FontWeight = FontWeight.Normal
 ) {
     val state = rememberMultiplePermissionsState(permissions = permissions.toList())
@@ -146,7 +147,8 @@ fun PermissionSwitchRow(
         summaryWhenGranted = summaryWhenGranted,
         summaryWhenNotGranted = summaryWhenNotGranted,
         allPermissionsGranted = state.allPermissionsGranted,
-        onLaunchRequest = state::launchMultiplePermissionRequest
+        onLaunchRequest = state::launchMultiplePermissionRequest,
+        modifier = modifier
     )
 }
 
@@ -182,11 +184,13 @@ fun PermissionSwitchRow(
             Text(
                 text = text,
                 modifier = Modifier.fillMaxWidth(),
-                fontWeight = fontWeight
+                fontWeight = fontWeight,
+                style = MaterialTheme.typography.body1
             )
             Text(
                 text = if (allPermissionsGranted) summaryWhenGranted else summaryWhenNotGranted,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.body2
             )
         }
         Switch(
@@ -225,7 +229,8 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
                 summaryWhenGranted = stringResource(R.string.permissions_autoreset_status_on),
                 summaryWhenNotGranted = stringResource(R.string.permissions_autoreset_status_off),
                 allPermissionsGranted = keepPermissions,
-                onLaunchRequest = onKeepPermissionsRequested
+                onLaunchRequest = onKeepPermissionsRequested,
+                modifier = Modifier.padding(vertical = 4.dp)
             )
         }
 
@@ -245,7 +250,8 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
             permissions = allPermissions,
             summaryWhenGranted = stringResource(R.string.permissions_all_status_on),
             summaryWhenNotGranted = stringResource(R.string.permissions_all_status_off),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 4.dp)
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -253,20 +259,23 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
                 text = stringResource(R.string.permissions_notification_title),
                 summaryWhenGranted = stringResource(R.string.permissions_notification_status_on),
                 summaryWhenNotGranted = stringResource(R.string.permissions_notification_status_off),
-                permissions = listOf(Manifest.permission.POST_NOTIFICATIONS)
+                permissions = listOf(Manifest.permission.POST_NOTIFICATIONS),
+                modifier = Modifier.padding(vertical = 4.dp)
             )
 
         PermissionSwitchRow(
             text = stringResource(R.string.permissions_calendar_title),
             summaryWhenGranted = stringResource(R.string.permissions_calendar_status_on),
             summaryWhenNotGranted = stringResource(R.string.permissions_calendar_status_off),
-            permissions = CALENDAR_PERMISSIONS.toList()
+            permissions = CALENDAR_PERMISSIONS.toList(),
+            modifier = Modifier.padding(vertical = 4.dp)
         )
         PermissionSwitchRow(
             text = stringResource(R.string.permissions_contacts_title),
             summaryWhenGranted = stringResource(R.string.permissions_contacts_status_on),
             summaryWhenNotGranted = stringResource(R.string.permissions_contacts_status_off),
-            permissions = CONTACT_PERMISSIONS.toList()
+            permissions = CONTACT_PERMISSIONS.toList(),
+            modifier = Modifier.padding(vertical = 4.dp)
         )
 
         if (jtxAvailable)
@@ -274,21 +283,24 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
                 text = stringResource(R.string.permissions_jtx_title),
                 summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
                 summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
-                permissions = TaskProvider.PERMISSIONS_JTX.toList()
+                permissions = TaskProvider.PERMISSIONS_JTX.toList(),
+                modifier = Modifier.padding(vertical = 4.dp)
             )
         if (openTasksAvailable)
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_opentasks_title),
                 summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
                 summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
-                permissions = TaskProvider.PERMISSIONS_OPENTASKS.toList()
+                permissions = TaskProvider.PERMISSIONS_OPENTASKS.toList(),
+                modifier = Modifier.padding(vertical = 4.dp)
             )
         if (tasksOrgAvailable)
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_tasksorg_title),
                 summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
                 summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
-                permissions = TaskProvider.PERMISSIONS_TASKS_ORG.toList()
+                permissions = TaskProvider.PERMISSIONS_TASKS_ORG.toList(),
+                modifier = Modifier.padding(vertical = 4.dp)
             )
 
         Text(
