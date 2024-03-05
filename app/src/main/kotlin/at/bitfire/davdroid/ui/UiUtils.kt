@@ -22,6 +22,7 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -154,7 +155,10 @@ object UiUtils {
                         start = start, end = end
                     )
                     addStyle(
-                        style.copy(textDecoration = TextDecoration.Underline),
+                        style.copy(
+                            textDecoration = TextDecoration.Underline,
+                            color = MaterialTheme.colors.secondary
+                        ),
                         start = start, end = end
                     )
                 }
