@@ -16,6 +16,7 @@ jobs:
     name: Create release
     permissions:
       contents: write
+      discussions: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
