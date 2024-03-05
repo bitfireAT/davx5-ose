@@ -163,7 +163,6 @@ class WebdavMountsActivity: AppCompatActivity() {
                     .fillMaxSize()
                     .padding(16.dp)
                     .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
             ) {
                 items(mountInfos, key = { it.mount.id }, contentType = { "mount" }) {
                     WebdavMountsItem(it)
