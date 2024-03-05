@@ -31,7 +31,8 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
 fun AddressBooksList(
-    collections: LazyPagingItems<Collection>
+    collections: LazyPagingItems<Collection>,
+    onChangeSync: (id: Long, sync: Boolean) -> Unit
 ) {
     val listState: LazyListState = rememberLazyListState()
 
@@ -45,7 +46,12 @@ fun AddressBooksList(
             key = collections.itemKey()
         ) { index ->
             collections[index]?.let { item ->
-                AddressBook(item)
+                AddressBook(
+                    item,
+                    onChangeSync = { sync ->
+                        onChangeSync(item.id, sync)
+                    }
+                )
             }
         }
     }
@@ -53,13 +59,16 @@ fun AddressBooksList(
 }
 
 @Composable
-fun AddressBook(collection: Collection) {
+fun AddressBook(
+    collection: Collection,
+    onChangeSync: (sync: Boolean) -> Unit = {}
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Switch(
-            checked = false,
-            onCheckedChange = null,
+            checked = collection.sync,
+            onCheckedChange = onChangeSync,
             modifier = Modifier.padding(end = 8.dp)
         )
 

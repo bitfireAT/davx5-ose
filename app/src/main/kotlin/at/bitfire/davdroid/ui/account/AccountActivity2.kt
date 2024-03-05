@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -98,8 +99,11 @@ class AccountActivity2 : AppCompatActivity() {
                 AccountOverview(
                     account = model.account,
                     hasCardDav = model.cardDavSvc.observeAsState().value != null,
-                    addressBooks = model.addressBooks.observeAsState().value,
+                    addressBooksFactory = model.addressBooksFactory.observeAsState().value,
                     hasCalDav = model.calDavSvc.observeAsState().value != null,
+                    onChangeSync = { id, sync ->
+                        model.setCollectionSync(id, sync)
+                    },
                     onNavUp = ::onNavigateUp
                 )
             }
@@ -143,9 +147,11 @@ class AccountActivity2 : AppCompatActivity() {
         val accountManager: AccountManager = AccountManager.get(context)
 
         val cardDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CARDDAV)
-        val addressBooks = cardDavSvc.map { svc ->
+        val addressBooksFactory: LiveData<(() -> PagingSource<Int, Collection>)?> = cardDavSvc.map { svc ->
             svc?.id?.let { svcId ->
-                db.collectionDao().pageByServiceAndType(svcId, Collection.TYPE_ADDRESSBOOK)
+                {
+                    db.collectionDao().pageByServiceAndType(svcId, Collection.TYPE_ADDRESSBOOK)
+                }
             }
         }
 
@@ -184,6 +190,10 @@ class AccountActivity2 : AppCompatActivity() {
                 invalid.postValue(true)
         }
 
+        fun setCollectionSync(id: Long, sync: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+            db.collectionDao().updateSync(id, sync)
+        }
+
     }
 
 }
@@ -194,8 +204,9 @@ class AccountActivity2 : AppCompatActivity() {
 fun AccountOverview(
     account: Account,
     hasCardDav: Boolean,
-    addressBooks: PagingSource<Int, Collection>?,
+    addressBooksFactory: (() -> PagingSource<Int, Collection>)?,
     hasCalDav: Boolean,
+    onChangeSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onNavUp: () -> Unit = {}
 ) {
     Scaffold(
@@ -331,15 +342,16 @@ fun AccountOverview(
             ) { index ->
                 when (index) {
                     0 -> {
-                        if (addressBooks != null) {
+                        if (addressBooksFactory != null) {
                             val pager = Pager(
                                 config = PagingConfig(20),
-                                pagingSourceFactory = {
-                                    addressBooks
-                                }
+                                pagingSourceFactory = addressBooksFactory
                             )
                             val pagedItems = pager.flow.collectAsLazyPagingItems()
-                            AddressBooksList(pagedItems)
+                            AddressBooksList(
+                                pagedItems,
+                                onChangeSync = onChangeSync
+                            )
                         }
                     }
 
@@ -362,7 +374,7 @@ fun AccountOverview_CardDAV_CalDAV() {
     AccountOverview(
         account = Account("test@example.com", "test"),
         hasCardDav = true,
-        addressBooks = null,
+        addressBooksFactory = null,
         hasCalDav = true
     )
 }

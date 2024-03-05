@@ -13,6 +13,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import org.jetbrains.annotations.Async.Execute
 
 @Dao
 interface CollectionDao {
@@ -71,6 +72,9 @@ interface CollectionDao {
 
     @Update
     fun update(collection: Collection)
+
+    @Query("UPDATE collection SET sync=:sync WHERE id=:id")
+    fun updateSync(id: Long, sync: Boolean)
 
     /**
      * Tries to insert new row, but updates existing row if already present.
