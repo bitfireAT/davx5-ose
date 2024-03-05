@@ -208,6 +208,8 @@
   <string name="account_synchronize_now">Sincronizează acum</string>
   <string name="account_settings">Setările contului</string>
   <string name="account_rename">Redenumește contul</string>
+  <string name="account_rename_new_name_description">Datele locale nesalvate pot fi respinse. Resincronizarea este necesară după redenumire.</string>
+  <string name="account_rename_new_name">Nume cont nou</string>
   <string name="account_rename_rename">Redenumește</string>
   <string name="account_rename_exists_already">Numele contului este deja luat</string>
   <string name="account_rename_couldnt_rename">Nu s-a putut redenumi contul</string>
@@ -360,6 +362,7 @@
   <string name="create_collection_display_name">Titlu</string>
   <string name="create_collection_display_name_required">Titlul este obligatoriu</string>
   <string name="create_collection_description">Descriere</string>
+  <string name="create_collection_description_optional">Descriere (opțional)</string>
   <string name="create_collection_optional">opțional</string>
   <string name="create_collection_home_set">Locația de stocare</string>
   <string name="create_collection_home_set_required">Este necesară locația de stocare</string>

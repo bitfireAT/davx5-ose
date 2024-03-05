@@ -131,6 +131,8 @@
   <string name="account_list_manage_connections">Kudeatu konexioak</string>
   <string name="account_list_datasaver_enabled">Datu-aurrezpena gaituta. Atzeko planoko sinkronizazioa murriztuko da.</string>
   <string name="account_list_manage_datasaver">Kudeatu datu-aurrezpena</string>
+  <string name="account_list_battery_saver_enabled">Bateria-aurrezlea aktibatuta dago. Sinkronizazioa mugatuta egon daiteke.</string>
+  <string name="account_list_manage_battery_saver">Kudeatu bateria-arrezpena</string>
   <string name="account_list_low_storage">Biltegiratze lekua baxua. Android-ek ez ditu tokiko aldaketak berehala sinkronizatuko, hurrengo sinkronizazio arruntean baizik.</string>
   <string name="account_list_manage_storage">Kudeatu biltegia</string>
   <string name="account_list_empty">Ongi etorri DAVx⁵ aplikaziora!\n\nCalDAV/CardDAV kontu bat gehitu dezakezu orain.</string>
@@ -206,6 +208,8 @@
   <string name="account_synchronize_now">Sinkronizatu orain</string>
   <string name="account_settings">Kontuaren ezarpenak</string>
   <string name="account_rename">Berrizendatu kontua</string>
+  <string name="account_rename_new_name_description">Gorde gabeko datu lokalak baztertu daitezke. Berriro sinkronizatu behar da izena aldatu ostean. </string>
+  <string name="account_rename_new_name">Kontuaren izen berria</string>
   <string name="account_rename_rename">Berrizendatu</string>
   <string name="account_rename_exists_already">Kontuaren izena hartuta dago</string>
   <string name="account_rename_couldnt_rename">Ezin izan da kontua berrizendatu</string>
@@ -356,6 +360,7 @@
   <string name="create_collection_display_name">Izenburua</string>
   <string name="create_collection_display_name_required">Izenburua beharrezkoa da</string>
   <string name="create_collection_description">Deskribapena</string>
+  <string name="create_collection_description_optional">Deskribapena (aukerakoa)</string>
   <string name="create_collection_optional">aukerazkoa</string>
   <string name="create_collection_home_set">Biltegiratze kokapena</string>
   <string name="create_collection_home_set_required">Biltegiaren kokapena beharrezkoa da</string>
@@ -410,6 +415,7 @@
   <string name="webdav_add_mount_display_name">Bistaratze-izena</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">URL baliogabea</string>
+  <string name="webdav_add_mount_authentication">Autentifikazioa (aukerakoa)</string>
   <string name="webdav_add_mount_username">Erabiltzaile izena</string>
   <string name="webdav_add_mount_password">Pasahitza</string>
   <string name="webdav_add_mount_add">Gehitu muntaia</string>

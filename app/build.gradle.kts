@@ -24,8 +24,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 403140000
-        versionName = "4.3.14-beta.1"
+        versionCode = 403140002
+        versionName = "4.3.14"
 
         buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
 
@@ -106,6 +106,19 @@ android {
 
     androidResources {
         generateLocaleConfig = true
+    }
+
+    @Suppress("UnstableApiUsage")
+    testOptions {
+        managedDevices {
+            localDevices {
+                create("virtual") {
+                    device = "Pixel 3"
+                    apiLevel = 34
+                    systemImageSource = "aosp-atd"
+                }
+            }
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 # Comments apply to next line
 
 [versions]
-android-agp = "8.2.2"
+android-agp = "8.3.0"
 android-desugaring = "2.0.4"
 android-flexbox = "3.0.0"
 android-material = "1.11.0"
@@ -27,8 +27,8 @@ androidx-viewmodel = "2.7.0"
 androidx-work = "2.9.0"
 appIntro = "7.0.0-beta02"
 bitfire-cert4android = "f0964cb"
-bitfire-dav4jvm = "b30913f"
-bitfire-ical4android = "31650d1"
+bitfire-dav4jvm = "f428759"
+bitfire-ical4android = "195d0c9"
 bitfire-vcard4android = "03ef99a"
 commons-collections = "4.4"
 commons-lang = "3.14.0"
@@ -42,7 +42,7 @@ compose-bom = "2024.02.01"
 compose-compiler = "1.5.8"
 # don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
 dnsjava = "2.1.9"
-hilt = "2.50"
+hilt = "2.51"
 jaredrummler-colorpicker = "1.1.0"
 #  keep in sync with * app/build.gradle.kts composeOptions.kotlinCompilerExtensionVersion
 #                    * com.google.devtools.ksp at the end of this file
@@ -50,9 +50,9 @@ kotlin = "1.9.22"
 kotlinx-coroutines = "1.8.0"
 # see https://github.com/google/ksp/releases for version numbers
 ksp = "1.9.22-1.0.17"
-mikepenz-aboutLibraries = "10.10.0"
+mikepenz-aboutLibraries = "11.1.0"
 nsk90-kstatemachine = "0.27.0"
-mockk = "1.13.9"
+mockk = "1.13.10"
 okhttp = "4.12.0"
 openid-appauth = "0.11.1"
 room = "2.6.1"

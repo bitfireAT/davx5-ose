@@ -208,6 +208,8 @@
   <string name="account_synchronize_now">Nu synchroniseren</string>
   <string name="account_settings">Account instellingen</string>
   <string name="account_rename">Naam account wijzigen</string>
+  <string name="account_rename_new_name_description">Niet opgeslagen lokale gegevens kunnen worden verwijderd. Na het hernoemen is opnieuw synchroniseren vereist.</string>
+  <string name="account_rename_new_name">Nieuwe accountnaam</string>
   <string name="account_rename_rename">Naam wijzigen</string>
   <string name="account_rename_exists_already">Accountnaam is al in gebruik</string>
   <string name="account_rename_couldnt_rename">Naam account is niet gewijzigd</string>
@@ -358,6 +360,7 @@
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_display_name_required">Titel is verplicht</string>
   <string name="create_collection_description">Beschrijving</string>
+  <string name="create_collection_description_optional">Beschrijving (optioneel)</string>
   <string name="create_collection_optional">optioneel</string>
   <string name="create_collection_home_set">Opslaglocatie</string>
   <string name="create_collection_home_set_required">Opslaglocatie is verplicht</string>
