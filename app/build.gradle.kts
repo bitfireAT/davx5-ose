@@ -161,6 +161,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.base)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.paging)
+    implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.security)
     implementation(libs.androidx.swiperefreshlayout)
