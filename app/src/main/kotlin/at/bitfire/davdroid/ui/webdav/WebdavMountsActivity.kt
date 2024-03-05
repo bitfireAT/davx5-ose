@@ -180,25 +180,25 @@ class WebdavMountsActivity: AppCompatActivity() {
                                 .padding(bottom = 16.dp)
                         )
                     }
-                   item(key = "empty_more_info", contentType = "text") {
-                       val text = HtmlCompat.fromHtml(
-                           getString(
-                               R.string.webdav_add_mount_empty_more_info,
-                               helpUrl()
-                           ),
-                           0
-                       ).toAnnotatedString()
-                       ClickableText(
-                           text = text,
-                           style = MaterialTheme.typography.body1,
-                           modifier = Modifier.fillMaxWidth(),
-                           onClick = { position ->
-                               text.getUrlAnnotations(position, position + 1)
-                                   .firstOrNull()
-                                   ?.let { uriHandler.openUri(it.item.url) }
-                           }
-                       )
-                   }
+                    item(key = "empty_more_info", contentType = "text") {
+                        val text = HtmlCompat.fromHtml(
+                            getString(
+                                R.string.webdav_add_mount_empty_more_info,
+                                helpUrl()
+                            ),
+                            0
+                        ).toAnnotatedString()
+                        ClickableText(
+                            text = text,
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { position ->
+                                text.getUrlAnnotations(position, position + 1)
+                                    .firstOrNull()
+                                    ?.let { uriHandler.openUri(it.item.url) }
+                            }
+                        )
+                    }
                 }
             }
         }
