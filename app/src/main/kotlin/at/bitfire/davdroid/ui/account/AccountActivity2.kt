@@ -5,7 +5,10 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.app.Application
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.activity.compose.setContent
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
@@ -35,6 +39,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -55,6 +60,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -78,6 +84,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.SyncWorker
@@ -88,6 +95,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.logging.Level
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -166,6 +174,9 @@ class AccountActivity2 : AppCompatActivity() {
                         intent.putExtra(SettingsActivity.EXTRA_ACCOUNT, model.account)
                         startActivity(intent, null)
                     },
+                    onDeleteAccount = {
+                        model.deleteAccount()
+                    },
                     onNavUp = ::onNavigateUp
                 )
             }
@@ -194,6 +205,7 @@ class AccountActivity2 : AppCompatActivity() {
             const val PAGER_SIZE = 20
         }
 
+        /** whether the account is invalid and the AccountActivity shall be closed */
         val invalid = MutableLiveData<Boolean>()
 
         val showOnlyPersonal = MutableLiveData<Boolean>()
@@ -292,9 +304,76 @@ class AccountActivity2 : AppCompatActivity() {
                 invalid.postValue(true)
         }
 
+
+        // actions
+
+        fun deleteAccount() {
+            val accountManager = AccountManager.get(context)
+            accountManager.removeAccount(account, null, { future ->
+                try {
+                    if (future.result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT))
+                        Handler(Looper.getMainLooper()).post {
+                            invalid.postValue(true)
+                        }
+                } catch(e: Exception) {
+                    Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
+                }
+            }, null)
+        }
+
         fun setCollectionSync(id: Long, sync: Boolean) = viewModelScope.launch(Dispatchers.IO) {
             db.collectionDao().updateSync(id, sync)
         }
+
+
+        // helpers
+
+        fun getCollectionOwner(collection: Collection): LiveData<String?> {
+            val id = collection.ownerId ?: return MutableLiveData(null)
+            return db.principalDao().getLive(id).map { principal ->
+                if (principal == null)
+                    return@map null
+                principal.displayName ?: principal.url.toString()
+            }
+        }
+
+        fun getCollectionLastSynced(collection: Collection): LiveData<Map<String, Long>> {
+            return db.syncStatsDao().getLiveByCollectionId(collection.id).map { syncStatsList ->
+                val syncStatsMap = syncStatsList.associateBy { it.authority }
+                val interestingAuthorities = listOfNotNull(
+                    ContactsContract.AUTHORITY,
+                    CalendarContract.AUTHORITY,
+                    TaskUtils.currentProvider(getApplication())?.authority
+                )
+                val result = mutableMapOf<String, Long>()
+                for (authority in interestingAuthorities) {
+                    val lastSync = syncStatsMap[authority]?.lastSync
+                    if (lastSync != null)
+                        result[getAppNameFromAuthority(authority)] = lastSync
+                }
+                result
+            }
+        }
+
+        /**
+         * Tries to find the application name for given authority. Returns the authority if not
+         * found.
+         *
+         * @param authority authority to find the application name for (ie "at.techbee.jtx")
+         * @return the application name of authority (ie "jtx Board")
+         */
+        private fun getAppNameFromAuthority(authority: String): String {
+            val packageManager = getApplication<Application>().packageManager
+            val packageName = packageManager.resolveContentProvider(authority, 0)?.packageName ?: authority
+            return try {
+                val appInfo = packageManager.getPackageInfo(packageName, 0).applicationInfo
+                packageManager.getApplicationLabel(appInfo).toString()
+            } catch (e: PackageManager.NameNotFoundException) {
+                Logger.log.warning("Application name not found for authority: $authority")
+                authority
+            }
+        }
+
 
     }
 
@@ -322,6 +401,7 @@ fun AccountOverview(
     onRefreshCollections: () -> Unit = {},
     onSync: () -> Unit = {},
     onAccountSettings: () -> Unit = {},
+    onDeleteAccount: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
     val refreshing by remember { mutableStateOf(false) }
@@ -329,6 +409,8 @@ fun AccountOverview(
         refreshing,
         onRefresh = onRefreshCollections
     )
+
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -360,14 +442,19 @@ fun AccountOverview(
                         expanded = overflowOpen,
                         onDismissRequest = { overflowOpen = false }
                     ) {
-                        DropdownMenuItem(onClick = { /* rename */ }) {
+                        DropdownMenuItem(onClick = {
+                            /* rename account */
+                        }) {
                             Icon(
                                 Icons.Default.DriveFileRenameOutline, stringResource(R.string.account_rename),
                                 modifier = Modifier.padding(end = 8.dp)
                             )
                             Text(stringResource(R.string.account_rename))
                         }
-                        DropdownMenuItem(onClick = { /* delete */ }) {
+                        DropdownMenuItem(onClick = {
+                            showDeleteAccountDialog = true
+                            overflowOpen = false
+                        }) {
                             Icon(
                                 Icons.Default.Delete, stringResource(R.string.delete_collection),
                                 modifier = Modifier.padding(end = 8.dp)
@@ -375,6 +462,12 @@ fun AccountOverview(
                             Text(stringResource(R.string.delete_collection))
                         }
                     }
+
+                    if (showDeleteAccountDialog)
+                        DeleteAccountDialog(
+                            onConfirm = onDeleteAccount,
+                            onDismiss = { showDeleteAccountDialog = false }
+                        )
                 }
             )
         },
@@ -396,7 +489,9 @@ fun AccountOverview(
         },
         modifier = Modifier.pullRefresh(pullRefreshState)
     ) { padding ->
+        // content (tabs)
         var currentIdx = -1
+        @Suppress("KotlinConstantConditions")
         val idxCardDav: Int? = if (hasCardDav) ++currentIdx else null
         val idxCalDav: Int? = if (hasCalDav) ++currentIdx else null
         val idxWebcal: Int? = if ((subscriptions?.itemCount ?: 0) > 0) ++currentIdx else null
@@ -404,7 +499,6 @@ fun AccountOverview(
             (if (idxCardDav != null) 1 else 0) +
             (if (idxCalDav != null) 1 else 0) +
             (if (idxWebcal != null) 1 else 0)
-        Logger.log.info("Pages: $nrPages")
 
         Column {
             if (nrPages > 0) {
@@ -512,6 +606,29 @@ fun AccountOverview_CardDAV_CalDAV() {
 }
 
 @Composable
+@Preview
+fun DeleteAccountDialog(
+    onConfirm: () -> Unit = {},
+    onDismiss: () -> Unit = {}
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.account_delete_confirmation_title)) },
+        text = { Text(stringResource(R.string.account_delete_confirmation_text)) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(android.R.string.yes).uppercase())
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(android.R.string.no).uppercase())
+            }
+        }
+    )
+}
+
+@Composable
 fun ServiceTab(
     cardDavRefreshing: ServiceProgressValue,
     addressBooks: LazyPagingItems<Collection>?,
@@ -542,7 +659,7 @@ fun ServiceTab(
                     color = MaterialTheme.colors.secondary,
                     progress = 1f,
                     modifier = Modifier
-                        .graphicsLayer(alpha = progressAlpha)
+                        .alpha(progressAlpha)
                         .fillMaxWidth()
                 )
             else ->
