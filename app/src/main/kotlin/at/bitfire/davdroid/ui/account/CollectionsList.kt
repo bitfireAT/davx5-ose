@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -31,14 +30,11 @@ fun AddressBooksList(
     collections: LazyPagingItems<Collection>,
     onChangeSync: (id: Long, sync: Boolean) -> Unit
 ) {
-    val listState: LazyListState = rememberLazyListState()
-
     LazyColumn(
-        state = listState,
+        state = rememberLazyListState(),
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
     ) {
-
         items(
             count = collections.itemCount,
             key = collections.itemKey()
@@ -53,7 +49,6 @@ fun AddressBooksList(
             }
         }
     }
-
 }
 
 @Composable
@@ -61,9 +56,7 @@ fun AddressBook(
     collection: Collection,
     onChangeSync: (sync: Boolean) -> Unit = {}
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Switch(
             checked = collection.sync,
             onCheckedChange = onChangeSync,

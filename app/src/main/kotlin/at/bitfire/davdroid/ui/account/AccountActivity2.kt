@@ -6,6 +6,7 @@ import android.accounts.OnAccountsUpdateListener
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
+import android.provider.ContactsContract
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +14,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -25,6 +28,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
@@ -64,15 +68,16 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingSource
-import androidx.paging.cachedIn
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.work.WorkInfo
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.syncadapter.SyncWorker
 import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -106,14 +111,23 @@ class AccountActivity2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val cardDavSvc by model.cardDavSvc.observeAsState()
-
             MdcTheme {
+                val cardDavSvc by model.cardDavSvc.observeAsState()
+                val cardDavRefreshing by model.cardDavRefreshingActive.observeAsState(false)
+                val cardDavSyncActive by model.cardDavSyncActive.observeAsState(false)
+                val cardDavSyncPending by model.cardDavSyncPending.observeAsState(false)
+                val cardDavProgress = when {
+                    cardDavRefreshing || cardDavSyncActive -> AccountProgressValue.ACTIVE
+                    cardDavSyncPending -> AccountProgressValue.PENDING
+                    else -> AccountProgressValue.IDLE
+                }
+                val addressBooks by model.addressBooksPager.observeAsState()
+
                 AccountOverview(
                     account = model.account,
                     hasCardDav = cardDavSvc != null,
-                    cardDavWorking = model.cardDavWorking.observeAsState(false).value,
-                    addressBooksFactory = model.addressBooksFactory.observeAsState().value,
+                    cardDavRefreshing = cardDavProgress,
+                    addressBooks = addressBooks?.flow?.collectAsLazyPagingItems(),
                     hasCalDav = model.calDavSvc.observeAsState().value != null,
                     onUpdateCollectionSync = { id, sync ->
                         model.setCollectionSync(id, sync)
@@ -123,7 +137,9 @@ class AccountActivity2 : AppCompatActivity() {
                             RefreshCollectionsWorker.enqueue(getApplication(), svc.id)
                         }
                     },
-                    onSync = {},
+                    onSync = {
+                        SyncWorker.enqueueAllAuthorities(this, model.account)
+                    },
                     onAccountSettings = {
                         val intent = Intent(this, SettingsActivity::class.java)
                         intent.putExtra(SettingsActivity.EXTRA_ACCOUNT, model.account)
@@ -162,28 +178,35 @@ class AccountActivity2 : AppCompatActivity() {
         val accountManager: AccountManager = AccountManager.get(context)
 
         val cardDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CARDDAV)
-        val cardDavWorking = cardDavSvc.switchMap { svc ->
+        val cardDavRefreshingActive = cardDavSvc.switchMap { svc ->
             if (svc == null)
                 return@switchMap null
             RefreshCollectionsWorker.exists(application, RefreshCollectionsWorker.workerName(svc.id))
         }
-        val addressBooksFactory: LiveData<(() -> PagingSource<Int, Collection>)?> = cardDavSvc.map { svc ->
+        val cardDavSyncPending = SyncWorker.exists(
+            getApplication(),
+            listOf(WorkInfo.State.ENQUEUED),
+            account,
+            listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
+        )
+        val cardDavSyncActive = SyncWorker.exists(
+            getApplication(),
+            listOf(WorkInfo.State.RUNNING),
+            account,
+            listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
+        )
+        val addressBooksPager: LiveData<Pager<Int, Collection>?> = cardDavSvc.map { svc ->
             if (svc == null)
                 return@map null
-            { db.collectionDao().pageByServiceAndType(svc.id, Collection.TYPE_ADDRESSBOOK) }
+            Pager(
+                config = PagingConfig(20),
+                pagingSourceFactory = {
+                    db.collectionDao().pageByServiceAndType(svc.id, Collection.TYPE_ADDRESSBOOK)
+                }
+            )
         }
 
         val calDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CALDAV)
-        val calendars = calDavSvc.map { svc ->
-            svc?.id?.let { svcId ->
-                db.collectionDao().pageByServiceAndType(svcId, Collection.TYPE_CALENDAR)
-            }
-        }
-        val subscriptions = calDavSvc.map { svc ->
-            svc?.id?.let { svcId ->
-                db.collectionDao().pageByServiceAndType(svcId, Collection.TYPE_CALENDAR)
-            }
-        }
 
 
         init {
@@ -217,13 +240,19 @@ class AccountActivity2 : AppCompatActivity() {
 }
 
 
+enum class AccountProgressValue {
+    IDLE,
+    PENDING,
+    ACTIVE
+}
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun AccountOverview(
     account: Account,
     hasCardDav: Boolean,
-    cardDavWorking: Boolean,
-    addressBooksFactory: (() -> PagingSource<Int, Collection>)?,
+    cardDavRefreshing: AccountProgressValue,
+    addressBooks: LazyPagingItems<Collection>?,
     hasCalDav: Boolean,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onRefreshAddressBooks: () -> Unit = {},
@@ -374,27 +403,40 @@ fun AccountOverview(
                         when (index) {
                             0 -> {
                                 val progressAlpha by animateFloatAsState(
-                                    if (cardDavWorking) 1f else 0f,
+                                    when (cardDavRefreshing) {
+                                        AccountProgressValue.ACTIVE -> 1f
+                                        AccountProgressValue.PENDING -> .5f
+                                        else -> 0f
+                                    },
                                     label = "cardDavProgress"
                                 )
-                                LinearProgressIndicator(
-                                    color = MaterialTheme.colors.secondary,
-                                    modifier = Modifier
-                                        .graphicsLayer(alpha = progressAlpha)
-                                        .fillMaxWidth()
-                                )
+                                when (cardDavRefreshing) {
+                                    AccountProgressValue.ACTIVE ->
+                                        // indeterminate
+                                        LinearProgressIndicator(
+                                            color = MaterialTheme.colors.secondary,
+                                            modifier = Modifier
+                                                .graphicsLayer(alpha = progressAlpha)
+                                                .fillMaxWidth()
+                                        )
+                                    AccountProgressValue.PENDING ->
+                                        // determinate 100%, but semi-transparent (see progressAlpha)
+                                        LinearProgressIndicator(
+                                            color = MaterialTheme.colors.secondary,
+                                            progress = 1f,
+                                            modifier = Modifier
+                                                .graphicsLayer(alpha = progressAlpha)
+                                                .fillMaxWidth()
+                                        )
+                                    else ->
+                                        Spacer(Modifier.height(ProgressIndicatorDefaults.StrokeWidth))
+                                }
 
-                                if (addressBooksFactory != null) {
-                                    val pager = Pager(
-                                        config = PagingConfig(20),
-                                        pagingSourceFactory = addressBooksFactory
-                                    )
-                                    val pagedItems = pager.flow.cachedIn(scope).collectAsLazyPagingItems()
+                                if (addressBooks != null)
                                     AddressBooksList(
-                                        pagedItems,
+                                        addressBooks,
                                         onChangeSync = onUpdateCollectionSync
                                     )
-                                }
                             }
 
                             1 -> {
@@ -424,8 +466,8 @@ fun AccountOverview_CardDAV_CalDAV() {
     AccountOverview(
         account = Account("test@example.com", "test"),
         hasCardDav = true,
-        cardDavWorking = true,
-        addressBooksFactory = null,
+        cardDavRefreshing = AccountProgressValue.ACTIVE,
+        addressBooks = null,
         hasCalDav = true
     )
 }
