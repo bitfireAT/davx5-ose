@@ -83,6 +83,10 @@ class PermissionsFragment: Fragment() {
         val haveKeepPermissions = MutableLiveData<Boolean>()
         val needKeepPermissions = MutableLiveData<Boolean>()
 
+        val openTasksAvailable = MutableLiveData<Boolean>()
+        val tasksOrgAvailable = MutableLiveData<Boolean>()
+        val jtxAvailable = MutableLiveData<Boolean>()
+
         init {
             checkPermissions()
         }
@@ -97,6 +101,10 @@ class PermissionsFragment: Fragment() {
                 haveKeepPermissions.value = keepPermissions
                 needKeepPermissions.value = keepPermissions
             }
+
+            openTasksAvailable.value = pm.resolveContentProvider(ProviderName.OpenTasks.authority, 0) != null
+            tasksOrgAvailable.value = pm.resolveContentProvider(ProviderName.TasksOrg.authority, 0) != null
+            jtxAvailable.value = pm.resolveContentProvider(ProviderName.JtxBoard.authority, 0) != null
         }
 
     }
@@ -108,6 +116,9 @@ fun PermissionsFragmentContent(model: PermissionsFragment.Model = viewModel()) {
     val context = LocalContext.current
 
     val keepPermissions by model.needKeepPermissions.observeAsState()
+    val openTasksAvailable by model.openTasksAvailable.observeAsState()
+    val tasksOrgAvailable by model.tasksOrgAvailable.observeAsState()
+    val jtxAvailable by model.jtxAvailable.observeAsState()
 
     Column(
         modifier = Modifier
@@ -129,7 +140,10 @@ fun PermissionsFragmentContent(model: PermissionsFragment.Model = viewModel()) {
                         Logger.log.log(Level.WARNING, "Couldn't start Keep Permissions activity", e)
                     }
                 }
-            }
+            },
+            openTasksAvailable,
+            tasksOrgAvailable,
+            jtxAvailable
         )
     }
 }
@@ -211,13 +225,14 @@ fun PermissionSwitchRow(
 }
 
 @Composable
-fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () -> Unit) {
+fun PermissionsCard(
+    keepPermissions: Boolean?,
+    onKeepPermissionsRequested: () -> Unit,
+    openTasksAvailable: Boolean?,
+    tasksOrgAvailable: Boolean?,
+    jtxAvailable: Boolean?
+) {
     val context = LocalContext.current
-    val pm = context.packageManager
-
-    val openTasksAvailable = pm.resolveContentProvider(ProviderName.OpenTasks.authority, 0) != null
-    val tasksOrgAvailable = pm.resolveContentProvider(ProviderName.TasksOrg.authority, 0) != null
-    val jtxAvailable = pm.resolveContentProvider(ProviderName.JtxBoard.authority, 0) != null
 
     CardWithImage(
         title = stringResource(R.string.permissions_title),
@@ -244,11 +259,11 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
         allPermissions.addAll(CALENDAR_PERMISSIONS)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             allPermissions += Manifest.permission.POST_NOTIFICATIONS
-        if (openTasksAvailable)
+        if (openTasksAvailable == true)
             allPermissions.addAll(TaskProvider.PERMISSIONS_OPENTASKS)
-        if (tasksOrgAvailable)
+        if (tasksOrgAvailable == true)
             allPermissions.addAll(TaskProvider.PERMISSIONS_TASKS_ORG)
-        if (jtxAvailable)
+        if (jtxAvailable == true)
             allPermissions.addAll(TaskProvider.PERMISSIONS_JTX)
         PermissionSwitchRow(
             text = stringResource(R.string.permissions_all_title),
@@ -283,7 +298,7 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
             modifier = Modifier.padding(vertical = 4.dp)
         )
 
-        if (jtxAvailable)
+        if (jtxAvailable == true)
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_jtx_title),
                 summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
@@ -291,7 +306,7 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
                 permissions = TaskProvider.PERMISSIONS_JTX.toList(),
                 modifier = Modifier.padding(vertical = 4.dp)
             )
-        if (openTasksAvailable)
+        if (openTasksAvailable == true)
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_opentasks_title),
                 summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
@@ -299,7 +314,7 @@ fun PermissionsCard(keepPermissions: Boolean?, onKeepPermissionsRequested: () ->
                 permissions = TaskProvider.PERMISSIONS_OPENTASKS.toList(),
                 modifier = Modifier.padding(vertical = 4.dp)
             )
-        if (tasksOrgAvailable)
+        if (tasksOrgAvailable == true)
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_tasksorg_title),
                 summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
