@@ -26,7 +26,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 fun CollectionPropertiesDialog(
     collection: Collection,
     onDismiss: () -> Unit,
-    model: AccountActivity2.Model = viewModel()
+    model: AccountModel = viewModel()
 ) {
     val owner by model.getCollectionOwner(collection).observeAsState()
     val lastSynced by model.getCollectionLastSynced(collection).observeAsState(emptyMap())

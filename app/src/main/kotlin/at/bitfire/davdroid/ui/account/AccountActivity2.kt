@@ -1,16 +1,8 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.accounts.AccountManager
-import android.accounts.OnAccountsUpdateListener
-import android.app.Application
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.provider.CalendarContract
-import android.provider.ContactsContract
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Checkbox
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
@@ -43,11 +36,13 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.outlined.RuleFolder
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -62,40 +57,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.work.WorkInfo
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import com.google.accompanist.themeadapter.material.MdcTheme
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.logging.Level
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -106,8 +84,8 @@ class AccountActivity2 : AppCompatActivity() {
     }
 
     @Inject
-    lateinit var modelFactory: Model.Factory
-    val model by viewModels<Model> {
+    lateinit var modelFactory: AccountModel.Factory
+    val model by viewModels<AccountModel> {
         val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
             ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
         object: ViewModelProvider.Factory {
@@ -148,6 +126,10 @@ class AccountActivity2 : AppCompatActivity() {
 
                 AccountOverview(
                     account = model.account,
+                    showOnlyPersonal = model.showOnlyPersonal.observeAsState(AccountSettings.ShowOnlyPersonal(false, true)).value,
+                    onSetShowOnlyPersonal = {
+                        model.setShowOnlyPersonal(it)
+                    },
                     hasCardDav = cardDavSvc != null,
                     cardDavRefreshing = cardDavProgress,
                     addressBooks = addressBooks?.flow?.collectAsLazyPagingItems(),
@@ -189,194 +171,6 @@ class AccountActivity2 : AppCompatActivity() {
         }
     }
 
-
-    class Model @AssistedInject constructor(
-        application: Application,
-        val db: AppDatabase,
-        @Assisted val account: Account
-    ): AndroidViewModel(application), OnAccountsUpdateListener {
-
-        @AssistedFactory
-        interface Factory {
-            fun create(account: Account): Model
-        }
-
-        companion object {
-            const val PAGER_SIZE = 20
-        }
-
-        /** whether the account is invalid and the AccountActivity shall be closed */
-        val invalid = MutableLiveData<Boolean>()
-
-        val showOnlyPersonal = MutableLiveData<Boolean>()
-        val showOnlyPersonalWritable = MutableLiveData<Boolean>()
-
-        val context = getApplication<Application>()
-        val accountManager: AccountManager = AccountManager.get(context)
-
-        val cardDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CARDDAV)
-        val cardDavRefreshingActive = cardDavSvc.switchMap { svc ->
-            if (svc == null)
-                return@switchMap null
-            RefreshCollectionsWorker.exists(application, RefreshCollectionsWorker.workerName(svc.id))
-        }
-        val cardDavSyncPending = SyncWorker.exists(
-            getApplication(),
-            listOf(WorkInfo.State.ENQUEUED),
-            account,
-            listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
-        )
-        val cardDavSyncActive = SyncWorker.exists(
-            getApplication(),
-            listOf(WorkInfo.State.RUNNING),
-            account,
-            listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
-        )
-        val addressBooksPager: LiveData<Pager<Int, Collection>?> = cardDavSvc.map { svc ->
-            if (svc == null)
-                return@map null
-            Pager(
-                config = PagingConfig(PAGER_SIZE),
-                pagingSourceFactory = {
-                    db.collectionDao().pageByServiceAndType(svc.id, Collection.TYPE_ADDRESSBOOK)
-                }
-            )
-        }
-
-        val calDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CALDAV)
-        val calDavRefreshingActive = calDavSvc.switchMap { svc ->
-            if (svc == null)
-                return@switchMap null
-            RefreshCollectionsWorker.exists(application, RefreshCollectionsWorker.workerName(svc.id))
-        }
-        val calDavSyncPending = SyncWorker.exists(
-            getApplication(),
-            listOf(WorkInfo.State.ENQUEUED),
-            account,
-            listOf(CalendarContract.AUTHORITY)
-        )
-        val calDavSyncActive = SyncWorker.exists(
-            getApplication(),
-            listOf(WorkInfo.State.RUNNING),
-            account,
-            listOf(CalendarContract.AUTHORITY)
-        )
-        val calendarsPager: LiveData<Pager<Int, Collection>?> = calDavSvc.map { svc ->
-            if (svc == null)
-                return@map null
-            Pager(
-                config = PagingConfig(PAGER_SIZE),
-                pagingSourceFactory = {
-                    db.collectionDao().pageByServiceAndType(svc.id, Collection.TYPE_CALENDAR)
-                }
-            )
-        }
-        val webcalPager: LiveData<Pager<Int, Collection>?> = calDavSvc.map { svc ->
-            if (svc == null)
-                return@map null
-            Pager(
-                config = PagingConfig(PAGER_SIZE),
-                pagingSourceFactory = {
-                    db.collectionDao().pageByServiceAndType(svc.id, Collection.TYPE_WEBCAL)
-                }
-            )
-        }
-
-        init {
-            accountManager.addOnAccountsUpdatedListener(this, null, true)
-
-            viewModelScope.launch(Dispatchers.IO) {
-                val accountSettings = AccountSettings(context, account)
-                accountSettings.getShowOnlyPersonal().let { (value, locked) ->
-                    showOnlyPersonal.postValue(value)
-                    showOnlyPersonalWritable.postValue(locked)
-                }
-            }
-        }
-
-        override fun onCleared() {
-            super.onCleared()
-            accountManager.removeOnAccountsUpdatedListener(this)
-        }
-
-        override fun onAccountsUpdated(accounts: Array<out Account>) {
-            if (!accounts.contains(account))
-                invalid.postValue(true)
-        }
-
-
-        // actions
-
-        fun deleteAccount() {
-            val accountManager = AccountManager.get(context)
-            accountManager.removeAccount(account, null, { future ->
-                try {
-                    if (future.result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT))
-                        Handler(Looper.getMainLooper()).post {
-                            invalid.postValue(true)
-                        }
-                } catch(e: Exception) {
-                    Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
-                }
-            }, null)
-        }
-
-        fun setCollectionSync(id: Long, sync: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-            db.collectionDao().updateSync(id, sync)
-        }
-
-
-        // helpers
-
-        fun getCollectionOwner(collection: Collection): LiveData<String?> {
-            val id = collection.ownerId ?: return MutableLiveData(null)
-            return db.principalDao().getLive(id).map { principal ->
-                if (principal == null)
-                    return@map null
-                principal.displayName ?: principal.url.toString()
-            }
-        }
-
-        fun getCollectionLastSynced(collection: Collection): LiveData<Map<String, Long>> {
-            return db.syncStatsDao().getLiveByCollectionId(collection.id).map { syncStatsList ->
-                val syncStatsMap = syncStatsList.associateBy { it.authority }
-                val interestingAuthorities = listOfNotNull(
-                    ContactsContract.AUTHORITY,
-                    CalendarContract.AUTHORITY,
-                    TaskUtils.currentProvider(getApplication())?.authority
-                )
-                val result = mutableMapOf<String, Long>()
-                for (authority in interestingAuthorities) {
-                    val lastSync = syncStatsMap[authority]?.lastSync
-                    if (lastSync != null)
-                        result[getAppNameFromAuthority(authority)] = lastSync
-                }
-                result
-            }
-        }
-
-        /**
-         * Tries to find the application name for given authority. Returns the authority if not
-         * found.
-         *
-         * @param authority authority to find the application name for (ie "at.techbee.jtx")
-         * @return the application name of authority (ie "jtx Board")
-         */
-        private fun getAppNameFromAuthority(authority: String): String {
-            val packageManager = getApplication<Application>().packageManager
-            val packageName = packageManager.resolveContentProvider(authority, 0)?.packageName ?: authority
-            return try {
-                val appInfo = packageManager.getPackageInfo(packageName, 0).applicationInfo
-                packageManager.getApplicationLabel(appInfo).toString()
-            } catch (e: PackageManager.NameNotFoundException) {
-                Logger.log.warning("Application name not found for authority: $authority")
-                authority
-            }
-        }
-
-
-    }
-
 }
 
 
@@ -390,6 +184,8 @@ enum class ServiceProgressValue {
 @Composable
 fun AccountOverview(
     account: Account,
+    showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
+    onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit,
     hasCardDav: Boolean,
     cardDavRefreshing: ServiceProgressValue,
     addressBooks: LazyPagingItems<Collection>?,
@@ -404,6 +200,8 @@ fun AccountOverview(
     onDeleteAccount: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     val refreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullRefreshState(
         refreshing,
@@ -411,6 +209,18 @@ fun AccountOverview(
     )
 
     var showDeleteAccountDialog by remember { mutableStateOf(false) }
+
+    // tabs calculation
+    var currentIdx = -1
+    @Suppress("KotlinConstantConditions")
+    val idxCardDav: Int? = if (hasCardDav) ++currentIdx else null
+    val idxCalDav: Int? = if (hasCalDav) ++currentIdx else null
+    val idxWebcal: Int? = if ((subscriptions?.itemCount ?: 0) > 0) ++currentIdx else null
+    val nrPages =
+        (if (idxCardDav != null) 1 else 0) +
+                (if (idxCalDav != null) 1 else 0) +
+                (if (idxWebcal != null) 1 else 0)
+    val pagerState = rememberPagerState(pageCount = { nrPages })
 
     Scaffold(
         topBar = {
@@ -442,6 +252,59 @@ fun AccountOverview(
                         expanded = overflowOpen,
                         onDismissRequest = { overflowOpen = false }
                     ) {
+                        // TAB-SPECIFIC ACTIONS
+
+                        // create address book
+                        if (pagerState.currentPage == idxCardDav) {
+                            // create address book
+                            DropdownMenuItem(onClick = {
+                                val intent = Intent(context, CreateAddressBookActivity::class.java)
+                                intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, account)
+                                context.startActivity(intent)
+
+                                overflowOpen = false
+                            }) {
+                                Icon(
+                                    Icons.Default.CreateNewFolder, stringResource(R.string.create_addressbook),
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
+                                Text(stringResource(R.string.create_addressbook))
+                            }
+                        } else if (pagerState.currentPage == idxCalDav) {
+                            // create calendar
+                            DropdownMenuItem(onClick = {
+                                val intent = Intent(context, CreateCalendarActivity::class.java)
+                                intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, account)
+                                context.startActivity(intent)
+
+                                overflowOpen = false
+                            }) {
+                                Icon(
+                                    Icons.Default.CreateNewFolder, stringResource(R.string.create_calendar),
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
+                                Text(stringResource(R.string.create_calendar))
+                            }
+                        }
+
+                        // GENERAL ACTIONS
+
+                        // show only personal
+                        DropdownMenuItem(onClick = {
+                            // TODO
+                        }) {
+                            Text(stringResource(R.string.account_only_personal))
+                            Checkbox(
+                                checked = showOnlyPersonal.onlyPersonal,
+                                enabled = !showOnlyPersonal.locked,
+                                onCheckedChange = {
+                                    onSetShowOnlyPersonal(it)
+                                    overflowOpen = false
+                                }
+                            )
+                        }
+
+                        // rename account
                         DropdownMenuItem(onClick = {
                             /* rename account */
                         }) {
@@ -451,15 +314,17 @@ fun AccountOverview(
                             )
                             Text(stringResource(R.string.account_rename))
                         }
+
+                        // delete account
                         DropdownMenuItem(onClick = {
                             showDeleteAccountDialog = true
                             overflowOpen = false
                         }) {
                             Icon(
-                                Icons.Default.Delete, stringResource(R.string.delete_collection),
+                                Icons.Default.Delete, stringResource(R.string.account_delete),
                                 modifier = Modifier.padding(end = 8.dp)
                             )
-                            Text(stringResource(R.string.delete_collection))
+                            Text(stringResource(R.string.account_delete))
                         }
                     }
 
@@ -474,12 +339,11 @@ fun AccountOverview(
         floatingActionButton = {
             Column {
                 FloatingActionButton(
-                    onClick = { /* refresh list */ },
+                    onClick = onRefreshCollections,
                     backgroundColor = MaterialTheme.colors.background,
                     modifier = Modifier.padding(bottom = 16.dp)
                 ) {
-                    // TODO refresh calendar list vs address book list
-                    Icon(Icons.Default.Sync, stringResource(R.string.account_refresh_calendar_list))
+                    Icon(Icons.Outlined.RuleFolder, stringResource(R.string.account_refresh_collections))
                 }
 
                 FloatingActionButton(onClick = onSync) {
@@ -489,32 +353,20 @@ fun AccountOverview(
         },
         modifier = Modifier.pullRefresh(pullRefreshState)
     ) { padding ->
-        // content (tabs)
-        var currentIdx = -1
-        @Suppress("KotlinConstantConditions")
-        val idxCardDav: Int? = if (hasCardDav) ++currentIdx else null
-        val idxCalDav: Int? = if (hasCalDav) ++currentIdx else null
-        val idxWebcal: Int? = if ((subscriptions?.itemCount ?: 0) > 0) ++currentIdx else null
-        val nrPages =
-            (if (idxCardDav != null) 1 else 0) +
-            (if (idxCalDav != null) 1 else 0) +
-            (if (idxWebcal != null) 1 else 0)
-
         Column {
             if (nrPages > 0) {
                 val scope = rememberCoroutineScope()
-                val state = rememberPagerState(pageCount = { nrPages })
 
                 TabRow(
-                    selectedTabIndex = state.currentPage,
+                    selectedTabIndex = pagerState.currentPage,
                     modifier = Modifier.padding(padding)
                 ) {
                     if (idxCardDav != null)
                         Tab(
-                            selected = state.currentPage == idxCardDav,
+                            selected = pagerState.currentPage == idxCardDav,
                             onClick = {
                                 scope.launch {
-                                    state.scrollToPage(idxCardDav)
+                                    pagerState.scrollToPage(idxCardDav)
                                 }
                             }
                         ) {
@@ -526,11 +378,11 @@ fun AccountOverview(
 
                         AnimatedVisibility(idxCalDav != null) {
                             Tab(
-                                selected = state.currentPage == idxCalDav,
+                                selected = pagerState.currentPage == idxCalDav,
                                 onClick = {
                                     if (idxCalDav != null)
                                         scope.launch {
-                                            state.scrollToPage(idxCalDav)
+                                            pagerState.scrollToPage(idxCalDav)
                                         }
                                 }
                             ) {
@@ -543,11 +395,11 @@ fun AccountOverview(
 
                         AnimatedVisibility(idxWebcal != null) {
                             Tab(
-                                selected = state.currentPage == idxWebcal,
+                                selected = pagerState.currentPage == idxWebcal,
                                 onClick = {
                                     if (idxWebcal != null)
                                         scope.launch {
-                                            state.scrollToPage(idxWebcal)
+                                            pagerState.scrollToPage(idxWebcal)
                                         }
                                 }
                             ) {
@@ -560,7 +412,7 @@ fun AccountOverview(
                 }
 
                 HorizontalPager(
-                    state,
+                    pagerState,
                     verticalAlignment = Alignment.Top,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -595,6 +447,8 @@ fun AccountOverview(
 fun AccountOverview_CardDAV_CalDAV() {
     AccountOverview(
         account = Account("test@example.com", "test"),
+        showOnlyPersonal = AccountSettings.ShowOnlyPersonal(false, true),
+        onSetShowOnlyPersonal = {},
         hasCardDav = true,
         cardDavRefreshing = ServiceProgressValue.ACTIVE,
         addressBooks = null,

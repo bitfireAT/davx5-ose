@@ -251,6 +251,7 @@
     <string name="account_task_list">task list</string>
     <string name="account_journal">journal</string>
     <string name="account_only_personal">Show only personal</string>
+    <string name="account_refresh_collections">Refresh collections</string>
     <string name="account_refresh_address_book_list">Refresh address book list</string>
     <string name="account_create_new_address_book">Create new address book</string>
     <string name="account_refresh_calendar_list">Refresh calendar list</string>

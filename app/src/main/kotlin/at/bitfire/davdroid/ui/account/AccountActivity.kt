@@ -308,7 +308,7 @@ class AccountActivity: AppCompatActivity() {
         init {
             accountManager.addOnAccountsUpdatedListener(this, null, true)
             viewModelScope.launch(Dispatchers.IO) {
-                accountSettings.getShowOnlyPersonal().let { (value, locked) ->
+                accountSettings.getShowOnlyPersonalPair().let { (value, locked) ->
                     showOnlyPersonal.postValue(value)
                     showOnlyPersonalWritable.postValue(locked)
                 }
