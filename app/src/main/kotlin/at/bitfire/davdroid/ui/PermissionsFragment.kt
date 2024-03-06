@@ -82,7 +82,6 @@ class PermissionsFragment: Fragment() {
 
     class Model(app: Application): AndroidViewModel(app) {
 
-        val haveKeepPermissions = MutableLiveData<Boolean>()
         val needKeepPermissions = MutableLiveData<Boolean>()
 
         val openTasksAvailable = MutableLiveData<Boolean>()
@@ -110,9 +109,7 @@ class PermissionsFragment: Fragment() {
 
             // auto-reset permissions
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val keepPermissions = pm.isAutoRevokeWhitelisted
-                haveKeepPermissions.value = keepPermissions
-                needKeepPermissions.value = keepPermissions
+                needKeepPermissions.value = pm.isAutoRevokeWhitelisted
             }
 
             openTasksAvailable.value = pm.resolveContentProvider(ProviderName.OpenTasks.authority, 0) != null
