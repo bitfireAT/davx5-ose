@@ -26,14 +26,16 @@ import at.bitfire.davdroid.db.Collection
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
-fun AddressBooksList(
+fun CollectionsList(
     collections: LazyPagingItems<Collection>,
-    onChangeSync: (id: Long, sync: Boolean) -> Unit
+    onChangeSync: (id: Long, sync: Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
         state = rememberLazyListState(),
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
+        modifier = modifier
     ) {
         items(
             count = collections.itemCount,

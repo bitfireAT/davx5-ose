@@ -6,10 +6,12 @@ import android.accounts.OnAccountsUpdateListener
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
+import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
@@ -75,6 +77,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.SyncWorker
@@ -117,24 +120,42 @@ class AccountActivity2 : AppCompatActivity() {
                 val cardDavSyncActive by model.cardDavSyncActive.observeAsState(false)
                 val cardDavSyncPending by model.cardDavSyncPending.observeAsState(false)
                 val cardDavProgress = when {
-                    cardDavRefreshing || cardDavSyncActive -> AccountProgressValue.ACTIVE
-                    cardDavSyncPending -> AccountProgressValue.PENDING
-                    else -> AccountProgressValue.IDLE
+                    cardDavRefreshing || cardDavSyncActive -> ServiceProgressValue.ACTIVE
+                    cardDavSyncPending -> ServiceProgressValue.PENDING
+                    else -> ServiceProgressValue.IDLE
                 }
                 val addressBooks by model.addressBooksPager.observeAsState()
+
+                val calDavSvc by model.calDavSvc.observeAsState()
+                val calDavRefreshing by model.calDavRefreshingActive.observeAsState(false)
+                val calDavSyncActive by model.calDavSyncActive.observeAsState(false)
+                val calDavSyncPending by model.calDavSyncPending.observeAsState(false)
+                val calDavProgress = when {
+                    calDavRefreshing || calDavSyncActive -> ServiceProgressValue.ACTIVE
+                    calDavSyncPending -> ServiceProgressValue.PENDING
+                    else -> ServiceProgressValue.IDLE
+                }
+                val calendars by model.calendarsPager.observeAsState()
+                val subscriptions by model.webcalPager.observeAsState()
 
                 AccountOverview(
                     account = model.account,
                     hasCardDav = cardDavSvc != null,
                     cardDavRefreshing = cardDavProgress,
                     addressBooks = addressBooks?.flow?.collectAsLazyPagingItems(),
-                    hasCalDav = model.calDavSvc.observeAsState().value != null,
+                    hasCalDav = calDavSvc != null,
+                    calDavRefreshing = calDavProgress,
+                    calendars = calendars?.flow?.collectAsLazyPagingItems(),
+                    subscriptions = subscriptions?.flow?.collectAsLazyPagingItems(),
                     onUpdateCollectionSync = { id, sync ->
                         model.setCollectionSync(id, sync)
                     },
-                    onRefreshAddressBooks = {
+                    onRefreshCollections = {
                         cardDavSvc?.let { svc ->
-                            RefreshCollectionsWorker.enqueue(getApplication(), svc.id)
+                            RefreshCollectionsWorker.enqueue(this@AccountActivity2, svc.id)
+                        }
+                        calDavSvc?.let { svc ->
+                            RefreshCollectionsWorker.enqueue(this@AccountActivity2, svc.id)
                         }
                     },
                     onSync = {
@@ -169,6 +190,10 @@ class AccountActivity2 : AppCompatActivity() {
             fun create(account: Account): Model
         }
 
+        companion object {
+            const val PAGER_SIZE = 20
+        }
+
         val invalid = MutableLiveData<Boolean>()
 
         val showOnlyPersonal = MutableLiveData<Boolean>()
@@ -199,7 +224,7 @@ class AccountActivity2 : AppCompatActivity() {
             if (svc == null)
                 return@map null
             Pager(
-                config = PagingConfig(20),
+                config = PagingConfig(PAGER_SIZE),
                 pagingSourceFactory = {
                     db.collectionDao().pageByServiceAndType(svc.id, Collection.TYPE_ADDRESSBOOK)
                 }
@@ -207,7 +232,43 @@ class AccountActivity2 : AppCompatActivity() {
         }
 
         val calDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CALDAV)
-
+        val calDavRefreshingActive = calDavSvc.switchMap { svc ->
+            if (svc == null)
+                return@switchMap null
+            RefreshCollectionsWorker.exists(application, RefreshCollectionsWorker.workerName(svc.id))
+        }
+        val calDavSyncPending = SyncWorker.exists(
+            getApplication(),
+            listOf(WorkInfo.State.ENQUEUED),
+            account,
+            listOf(CalendarContract.AUTHORITY)
+        )
+        val calDavSyncActive = SyncWorker.exists(
+            getApplication(),
+            listOf(WorkInfo.State.RUNNING),
+            account,
+            listOf(CalendarContract.AUTHORITY)
+        )
+        val calendarsPager: LiveData<Pager<Int, Collection>?> = calDavSvc.map { svc ->
+            if (svc == null)
+                return@map null
+            Pager(
+                config = PagingConfig(PAGER_SIZE),
+                pagingSourceFactory = {
+                    db.collectionDao().pageByServiceAndType(svc.id, Collection.TYPE_CALENDAR)
+                }
+            )
+        }
+        val webcalPager: LiveData<Pager<Int, Collection>?> = calDavSvc.map { svc ->
+            if (svc == null)
+                return@map null
+            Pager(
+                config = PagingConfig(PAGER_SIZE),
+                pagingSourceFactory = {
+                    db.collectionDao().pageByServiceAndType(svc.id, Collection.TYPE_WEBCAL)
+                }
+            )
+        }
 
         init {
             accountManager.addOnAccountsUpdatedListener(this, null, true)
@@ -240,7 +301,7 @@ class AccountActivity2 : AppCompatActivity() {
 }
 
 
-enum class AccountProgressValue {
+enum class ServiceProgressValue {
     IDLE,
     PENDING,
     ACTIVE
@@ -251,11 +312,14 @@ enum class AccountProgressValue {
 fun AccountOverview(
     account: Account,
     hasCardDav: Boolean,
-    cardDavRefreshing: AccountProgressValue,
+    cardDavRefreshing: ServiceProgressValue,
     addressBooks: LazyPagingItems<Collection>?,
     hasCalDav: Boolean,
+    calDavRefreshing: ServiceProgressValue,
+    calendars: LazyPagingItems<Collection>?,
+    subscriptions: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
-    onRefreshAddressBooks: () -> Unit = {},
+    onRefreshCollections: () -> Unit = {},
     onSync: () -> Unit = {},
     onAccountSettings: () -> Unit = {},
     onNavUp: () -> Unit = {}
@@ -263,7 +327,7 @@ fun AccountOverview(
     val refreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullRefreshState(
         refreshing,
-        onRefresh = onRefreshAddressBooks
+        onRefresh = onRefreshCollections
     )
 
     Scaffold(
@@ -332,128 +396,100 @@ fun AccountOverview(
         },
         modifier = Modifier.pullRefresh(pullRefreshState)
     ) { padding ->
-        val cardDavPageCount = if (hasCardDav) 1 else 0
-        val calDavPageCount = if (hasCalDav) /* CalDAV, Webcal */ 2 else 0
-
         var currentIdx = -1
-        val idxCardDav: Int? = if (hasCardDav) currentIdx.inc() else null
+        val idxCardDav: Int? = if (hasCardDav) ++currentIdx else null
         val idxCalDav: Int? = if (hasCalDav) ++currentIdx else null
-        val idxWebcal: Int? = if (hasCalDav) ++currentIdx else null
-
-        val scope = rememberCoroutineScope()
-        val state = rememberPagerState(pageCount = { cardDavPageCount + calDavPageCount })
+        val idxWebcal: Int? = if ((subscriptions?.itemCount ?: 0) > 0) ++currentIdx else null
+        val nrPages =
+            (if (idxCardDav != null) 1 else 0) +
+            (if (idxCalDav != null) 1 else 0) +
+            (if (idxWebcal != null) 1 else 0)
+        Logger.log.info("Pages: $nrPages")
 
         Column {
-            TabRow(
-                selectedTabIndex = state.currentPage,
-                modifier = Modifier.padding(padding)
-            ) {
-                Tab(
-                    selected = state.currentPage == idxCardDav,
-                    onClick = {
-                        scope.launch {
-                            state.scrollToPage(0)
-                        }
-                    }
-                ) {
-                    Text(
-                        stringResource(R.string.account_carddav).uppercase(),
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
+            if (nrPages > 0) {
+                val scope = rememberCoroutineScope()
+                val state = rememberPagerState(pageCount = { nrPages })
 
-                Tab(
-                    selected = state.currentPage == idxCalDav,
-                    onClick = {
-                        scope.launch {
-                            state.scrollToPage(1)
-                        }
-                    }
+                TabRow(
+                    selectedTabIndex = state.currentPage,
+                    modifier = Modifier.padding(padding)
                 ) {
-                    Text(
-                        stringResource(R.string.account_caldav).uppercase(),
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
-
-                Tab(
-                    selected = state.currentPage == idxWebcal,
-                    onClick = {
-                        scope.launch {
-                            state.scrollToPage(2)
-                        }
-                    }
-                ) {
-                    Text(
-                        stringResource(R.string.account_webcal).uppercase(),
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
-            }
-
-            HorizontalPager(
-                state,
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) { index ->
-                Box {
-                    Column {
-                        when (index) {
-                            0 -> {
-                                val progressAlpha by animateFloatAsState(
-                                    when (cardDavRefreshing) {
-                                        AccountProgressValue.ACTIVE -> 1f
-                                        AccountProgressValue.PENDING -> .5f
-                                        else -> 0f
-                                    },
-                                    label = "cardDavProgress"
-                                )
-                                when (cardDavRefreshing) {
-                                    AccountProgressValue.ACTIVE ->
-                                        // indeterminate
-                                        LinearProgressIndicator(
-                                            color = MaterialTheme.colors.secondary,
-                                            modifier = Modifier
-                                                .graphicsLayer(alpha = progressAlpha)
-                                                .fillMaxWidth()
-                                        )
-                                    AccountProgressValue.PENDING ->
-                                        // determinate 100%, but semi-transparent (see progressAlpha)
-                                        LinearProgressIndicator(
-                                            color = MaterialTheme.colors.secondary,
-                                            progress = 1f,
-                                            modifier = Modifier
-                                                .graphicsLayer(alpha = progressAlpha)
-                                                .fillMaxWidth()
-                                        )
-                                    else ->
-                                        Spacer(Modifier.height(ProgressIndicatorDefaults.StrokeWidth))
+                    if (idxCardDav != null)
+                        Tab(
+                            selected = state.currentPage == idxCardDav,
+                            onClick = {
+                                scope.launch {
+                                    state.scrollToPage(idxCardDav)
                                 }
-
-                                if (addressBooks != null)
-                                    AddressBooksList(
-                                        addressBooks,
-                                        onChangeSync = onUpdateCollectionSync
-                                    )
                             }
+                        ) {
+                            Text(
+                                stringResource(R.string.account_carddav).uppercase(),
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
 
-                            1 -> {
-                                Text("CalDAV")
-                            }
-
-                            2 -> {
-                                Text("Webcal")
+                        AnimatedVisibility(idxCalDav != null) {
+                            Tab(
+                                selected = state.currentPage == idxCalDav,
+                                onClick = {
+                                    if (idxCalDav != null)
+                                        scope.launch {
+                                            state.scrollToPage(idxCalDav)
+                                        }
+                                }
+                            ) {
+                                Text(
+                                    stringResource(R.string.account_caldav).uppercase(),
+                                    modifier = Modifier.padding(8.dp)
+                                )
                             }
                         }
-                    }
 
-                    PullRefreshIndicator(
-                        refreshing = refreshing,
-                        state = pullRefreshState,
-                        modifier = Modifier.align(Alignment.TopCenter)
-                    )
+                        AnimatedVisibility(idxWebcal != null) {
+                            Tab(
+                                selected = state.currentPage == idxWebcal,
+                                onClick = {
+                                    if (idxWebcal != null)
+                                        scope.launch {
+                                            state.scrollToPage(idxWebcal)
+                                        }
+                                }
+                            ) {
+                                Text(
+                                    stringResource(R.string.account_webcal).uppercase(),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                        }
+                }
+
+                HorizontalPager(
+                    state,
+                    verticalAlignment = Alignment.Top,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) { index ->
+                    Box {
+                        when (index) {
+                            idxCardDav ->
+                                ServiceTab(cardDavRefreshing, addressBooks, onUpdateCollectionSync)
+
+                            idxCalDav ->
+                                ServiceTab(calDavRefreshing, calendars, onUpdateCollectionSync)
+
+                            idxWebcal ->
+                                ServiceTab(calDavRefreshing, subscriptions, onUpdateCollectionSync)
+                        }
+
+                        PullRefreshIndicator(
+                            refreshing = refreshing,
+                            state = pullRefreshState,
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
+                    }
                 }
             }
         }
@@ -466,8 +502,59 @@ fun AccountOverview_CardDAV_CalDAV() {
     AccountOverview(
         account = Account("test@example.com", "test"),
         hasCardDav = true,
-        cardDavRefreshing = AccountProgressValue.ACTIVE,
+        cardDavRefreshing = ServiceProgressValue.ACTIVE,
         addressBooks = null,
-        hasCalDav = true
+        hasCalDav = true,
+        calDavRefreshing = ServiceProgressValue.PENDING,
+        calendars = null,
+        subscriptions = null
     )
+}
+
+@Composable
+fun ServiceTab(
+    cardDavRefreshing: ServiceProgressValue,
+    addressBooks: LazyPagingItems<Collection>?,
+    onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit
+) {
+    Column {
+        // progress indicator
+        val progressAlpha by animateFloatAsState(
+            when (cardDavRefreshing) {
+                ServiceProgressValue.ACTIVE -> 1f
+                ServiceProgressValue.PENDING -> .5f
+                else -> 0f
+            },
+            label = "cardDavProgress"
+        )
+        when (cardDavRefreshing) {
+            ServiceProgressValue.ACTIVE ->
+                // indeterminate
+                LinearProgressIndicator(
+                    color = MaterialTheme.colors.secondary,
+                    modifier = Modifier
+                        .graphicsLayer(alpha = progressAlpha)
+                        .fillMaxWidth()
+                )
+            ServiceProgressValue.PENDING ->
+                // determinate 100%, but semi-transparent (see progressAlpha)
+                LinearProgressIndicator(
+                    color = MaterialTheme.colors.secondary,
+                    progress = 1f,
+                    modifier = Modifier
+                        .graphicsLayer(alpha = progressAlpha)
+                        .fillMaxWidth()
+                )
+            else ->
+                Spacer(Modifier.height(ProgressIndicatorDefaults.StrokeWidth))
+        }
+
+        //  collection list
+        if (addressBooks != null)
+            CollectionsList(
+                addressBooks,
+                onChangeSync = onUpdateCollectionSync,
+                modifier = Modifier.weight(1f)
+            )
+    }
 }
