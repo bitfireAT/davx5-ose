@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -114,20 +115,43 @@ fun CollectionListItem(
                 Icon(Icons.Default.TextSnippet, null)
 
             var showOverflow by remember { mutableStateOf(false) }
+            var showPropertiesDialog by remember { mutableStateOf(false) }
+
             IconButton(onClick = { showOverflow = true }) {
                 Icon(Icons.Default.MoreVert, null)
             }
-
-            var showPropertiesDialog by remember { mutableStateOf(false) }
             DropdownMenu(
                 expanded = showOverflow,
                 onDismissRequest = { showOverflow = false }
             ) {
+                // force read-only
+                DropdownMenuItem(onClick = {
+                    // TODO
+                    showOverflow = false
+                }) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(R.string.collection_force_read_only))
+                        Checkbox(
+                            checked = collection.forceReadOnly,
+                            onCheckedChange = { /* TODO */ }
+                        )
+                    }
+                }
+
+                // show properties
                 DropdownMenuItem(onClick = {
                     showPropertiesDialog = true
                     showOverflow = false
                 }) {
                     Text(stringResource(R.string.collection_properties))
+                }
+
+                // delete collection
+                DropdownMenuItem(onClick = {
+                    // TODO
+                    showOverflow = false
+                }) {
+                    Text(stringResource(R.string.delete_collection))
                 }
             }
 
