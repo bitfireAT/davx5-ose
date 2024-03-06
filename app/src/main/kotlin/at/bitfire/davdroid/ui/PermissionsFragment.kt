@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui
 
 import android.Manifest
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -44,6 +45,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.widget.CardWithImage
@@ -87,8 +89,19 @@ class PermissionsFragment: Fragment() {
         val tasksOrgAvailable = MutableLiveData<Boolean>()
         val jtxAvailable = MutableLiveData<Boolean>()
 
+        private val tasksWatcher = object: PackageChangedReceiver(app) {
+            @MainThread
+            override fun onReceive(context: Context?, intent: Intent?) {
+                checkPermissions()
+            }
+        }
+
         init {
             checkPermissions()
+        }
+
+        override fun onCleared() {
+            tasksWatcher.close()
         }
 
         @MainThread
