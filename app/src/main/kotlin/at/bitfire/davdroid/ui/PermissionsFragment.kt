@@ -116,9 +116,7 @@ class PermissionsFragment: Fragment() {
             tasksOrgAvailable.value = pm.resolveContentProvider(ProviderName.TasksOrg.authority, 0) != null
             jtxAvailable.value = pm.resolveContentProvider(ProviderName.JtxBoard.authority, 0) != null
         }
-
     }
-
 }
 
 @Composable
