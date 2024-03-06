@@ -55,7 +55,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextOverflow
@@ -209,9 +211,13 @@ class WebdavMountsActivity: AppCompatActivity() {
             )
 
             val text = HtmlCompat.fromHtml(
-                getString(
+                stringResource(
                     R.string.webdav_add_mount_empty_more_info,
-                    helpUrl()
+                    // helpUrl doesn't work in previews
+                    if (LocalInspectionMode.current)
+                        "https://example.com"
+                    else
+                        helpUrl().toString()
                 ),
                 0
             ).toAnnotatedString()
