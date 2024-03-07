@@ -19,11 +19,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.work.WorkInfo
+import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
@@ -32,7 +34,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import java.util.Optional
 import java.util.logging.Level
 
 class AccountModel @AssistedInject constructor(
@@ -113,6 +118,9 @@ class AccountModel @AssistedInject constructor(
     val calendarsPager = CollectionPager(db, calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
     val webcalPager = CollectionPager(db, calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
 
+    val deleteCollectionResult = MutableLiveData<Optional<Exception>>()
+
+
     init {
         accountManager.addOnAccountsUpdatedListener(this, null, true)
     }
@@ -130,6 +138,7 @@ class AccountModel @AssistedInject constructor(
 
     // actions
 
+    /** Deletes the account from the system (won't touch collections on the server). */
     fun deleteAccount() {
         val accountManager = AccountManager.get(context)
         accountManager.removeAccount(account, null, { future ->
@@ -142,6 +151,23 @@ class AccountModel @AssistedInject constructor(
                 Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
             }
         }, null)
+    }
+
+    /** Deletes the given collection from the database and the server. */
+    fun deleteCollection(collection: Collection) = viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+        HttpClient.Builder(getApplication(), AccountSettings(getApplication(), account))
+            .setForeground(true)
+            .build().use { httpClient ->
+                try {
+                    val davResource = DavResource(httpClient.okHttpClient, /*collection.url*/"https://www.example.com".toHttpUrl())
+                    davResource.delete(null) {}
+                    db.collectionDao().delete(collection)
+                    deleteCollectionResult.postValue(Optional.empty())
+                } catch (e: Exception) {
+                    Logger.log.log(Level.SEVERE, "Couldn't delete collection", e)
+                    deleteCollectionResult.postValue(Optional.of(e))
+                }
+            }
     }
 
     fun setCollectionSync(id: Long, sync: Boolean) = viewModelScope.launch(Dispatchers.IO) {

@@ -138,6 +138,7 @@ fun CollectionListItem(
 
             var showOverflow by remember { mutableStateOf(false) }
             var showPropertiesDialog by remember { mutableStateOf(false) }
+            var showDeleteCollectionDialog by remember { mutableStateOf(false) }
 
             IconButton(onClick = { showOverflow = true }) {
                 Icon(Icons.Default.MoreVert, null)
@@ -170,13 +171,18 @@ fun CollectionListItem(
 
                 // delete collection
                 DropdownMenuItem(onClick = {
-                    // TODO
+                    showDeleteCollectionDialog = true
                     showOverflow = false
                 }) {
                     Text(stringResource(R.string.delete_collection))
                 }
             }
 
+            if (showDeleteCollectionDialog)
+                DeleteCollectionDialog(
+                    collection = collection,
+                    onDismiss = { showDeleteCollectionDialog = false }
+                )
             if (showPropertiesDialog)
                 CollectionPropertiesDialog(
                     collection = collection,
