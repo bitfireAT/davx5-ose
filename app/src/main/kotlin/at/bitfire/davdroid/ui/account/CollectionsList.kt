@@ -126,6 +126,7 @@ fun CollectionListItem(
         ) {
             FlowRow(
                 verticalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.End,
                 maxItemsInEachRow = 2,
                 modifier = Modifier.fillMaxHeight()
             ) {
