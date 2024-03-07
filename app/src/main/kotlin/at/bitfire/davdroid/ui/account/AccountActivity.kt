@@ -1,5 +1,6 @@
 package at.bitfire.davdroid.ui.account
 
+import android.Manifest
 import android.accounts.Account
 import android.content.Intent
 import android.os.Bundle
@@ -29,6 +30,9 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
@@ -42,11 +46,13 @@ import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.material.icons.outlined.RuleFolder
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -68,9 +74,14 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.ui.PermissionsActivity
+import at.bitfire.davdroid.ui.widget.ActionCard
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -137,10 +148,12 @@ class AccountActivity2 : AppCompatActivity() {
                         model.setShowOnlyPersonal(it)
                     },
                     hasCardDav = cardDavSvc != null,
-                    cardDavRefreshing = cardDavProgress,
+                    cardDavProgress = cardDavProgress,
+                    cardDavRefreshing = cardDavRefreshing,
                     addressBooks = addressBooks?.flow?.collectAsLazyPagingItems(),
                     hasCalDav = calDavSvc != null,
-                    calDavRefreshing = calDavProgress,
+                    calDavProgress = calDavProgress,
+                    calDavRefreshing = calDavRefreshing,
                     calendars = calendars?.flow?.collectAsLazyPagingItems(),
                     subscriptions = subscriptions?.flow?.collectAsLazyPagingItems(),
                     onUpdateCollectionSync = { id, sync ->
@@ -190,10 +203,12 @@ fun AccountOverview(
     showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
     onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit,
     hasCardDav: Boolean,
-    cardDavRefreshing: ServiceProgressValue,
+    cardDavProgress: ServiceProgressValue,
+    cardDavRefreshing: Boolean,
     addressBooks: LazyPagingItems<Collection>?,
     hasCalDav: Boolean,
-    calDavRefreshing: ServiceProgressValue,
+    calDavProgress: ServiceProgressValue,
+    calDavRefreshing: Boolean,
     calendars: LazyPagingItems<Collection>?,
     subscriptions: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
@@ -206,12 +221,11 @@ fun AccountOverview(
 ) {
     val context = LocalContext.current
 
-    val refreshing by remember { mutableStateOf(false) }
+    val pullRefreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullRefreshState(
-        refreshing,
+        pullRefreshing,
         onRefresh = onRefreshCollections
     )
-    // TODO pull with collection colors
 
     var showDeleteAccountDialog by remember { mutableStateOf(false) }
 
@@ -226,6 +240,21 @@ fun AccountOverview(
                 (if (idxCalDav != null) 1 else 0) +
                 (if (idxWebcal != null) 1 else 0)
     val pagerState = rememberPagerState(pageCount = { nrPages })
+
+    // show snackbar when refreshing collection list
+    val snackbarHostState = remember { SnackbarHostState() }
+    val currentTabRefreshing =
+        if (pagerState.currentPage == idxCardDav)
+            cardDavRefreshing
+        else
+            calDavRefreshing
+    LaunchedEffect(currentTabRefreshing) {
+        if (currentTabRefreshing)
+            snackbarHostState.showSnackbar(
+                context.getString(R.string.account_refreshing_collections),
+                duration = SnackbarDuration.Indefinite
+            )
+    }
 
     Scaffold(
         topBar = {
@@ -360,6 +389,9 @@ fun AccountOverview(
                 }
             }
         },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        },
         modifier = Modifier.pullRefresh(pullRefreshState)
     ) { padding ->
         Column {
@@ -431,23 +463,31 @@ fun AccountOverview(
                         when (index) {
                             idxCardDav ->
                                 ServiceTab(
-                                    refreshing = cardDavRefreshing,
+                                    requiredPermissions = listOf(Manifest.permission.WRITE_CONTACTS),
+                                    refreshing = cardDavProgress,
                                     collections = addressBooks,
                                     onUpdateCollectionSync = onUpdateCollectionSync,
                                     onChangeForceReadOnly = onChangeForceReadOnly
                                 )
 
-                            idxCalDav ->
+                            idxCalDav -> {
+                                val permissions = mutableListOf(Manifest.permission.WRITE_CALENDAR)
+                                TaskUtils.currentProvider(context)?.let { tasksProvider ->
+                                    permissions += tasksProvider.permissions
+                                }
                                 ServiceTab(
-                                    refreshing = calDavRefreshing,
+                                    requiredPermissions = permissions,
+                                    refreshing = calDavProgress,
                                     collections = calendars,
                                     onUpdateCollectionSync = onUpdateCollectionSync,
                                     onChangeForceReadOnly = onChangeForceReadOnly
                                 )
+                            }
 
                             idxWebcal ->
                                 ServiceTab(
-                                    refreshing = calDavRefreshing,
+                                    requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
+                                    refreshing = calDavProgress,
                                     collections = subscriptions,
                                     onUpdateCollectionSync = onUpdateCollectionSync,
                                     onChangeForceReadOnly = onChangeForceReadOnly
@@ -455,7 +495,7 @@ fun AccountOverview(
                         }
 
                         PullRefreshIndicator(
-                            refreshing = refreshing,
+                            refreshing = pullRefreshing,
                             state = pullRefreshState,
                             modifier = Modifier.align(Alignment.TopCenter)
                         )
@@ -474,10 +514,12 @@ fun AccountOverview_CardDAV_CalDAV() {
         showOnlyPersonal = AccountSettings.ShowOnlyPersonal(false, true),
         onSetShowOnlyPersonal = {},
         hasCardDav = true,
-        cardDavRefreshing = ServiceProgressValue.ACTIVE,
+        cardDavProgress = ServiceProgressValue.ACTIVE,
+        cardDavRefreshing = false,
         addressBooks = null,
         hasCalDav = true,
-        calDavRefreshing = ServiceProgressValue.PENDING,
+        calDavProgress = ServiceProgressValue.PENDING,
+        calDavRefreshing = false,
         calendars = null,
         subscriptions = null
     )
@@ -506,13 +548,17 @@ fun DeleteAccountDialog(
     )
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ServiceTab(
+    requiredPermissions: List<String>,
     refreshing: ServiceProgressValue,
     collections: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit,
     onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit
 ) {
+    val context = LocalContext.current
+
     Column {
         // progress indicator
         val progressAlpha by animateFloatAsState(
@@ -545,7 +591,21 @@ fun ServiceTab(
                 Spacer(Modifier.height(ProgressIndicatorDefaults.StrokeWidth))
         }
 
-        //  collection list
+        // permissions warning
+        val permissionsState = rememberMultiplePermissionsState(requiredPermissions)
+        if (!permissionsState.allPermissionsGranted)
+            ActionCard(
+                icon = Icons.Default.SyncProblem,
+                actionText = stringResource(R.string.account_manage_permissions),
+                onAction = {
+                    val intent = Intent(context, PermissionsActivity::class.java)
+                    context.startActivity(intent)
+                }
+            ) {
+                Text(stringResource(R.string.account_missing_permissions))
+            }
+
+        // collection list
         if (collections != null)
             CollectionsList(
                 collections,

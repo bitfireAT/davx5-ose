@@ -561,7 +561,7 @@ fun SyncWarnings(
         if (notificationsWarning)
             ActionCard(
                 icon = Icons.Default.NotificationsOff,
-                actionText = stringResource(R.string.account_permissions_action),
+                actionText = stringResource(R.string.account_manage_permissions),
                 onAction = onClickPermissions
             ) {
                 Text(stringResource(R.string.account_list_no_notification_permission))

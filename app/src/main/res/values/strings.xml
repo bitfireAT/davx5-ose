@@ -224,12 +224,8 @@
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
     <string name="account_webcal">Webcal</string>
-    <string name="account_carddav_missing_permissions">No contacts sync (missing permissions)</string>
-    <string name="account_caldav_missing_calendar_permissions">No calendar sync (missing permissions)</string>
-    <string name="account_caldav_missing_tasks_permissions">No tasks sync (missing permissions)</string>
-    <string name="account_caldav_missing_permissions">No calendar and tasks sync (missing permissions)</string>
-    <string name="account_webcal_missing_calendar_permissions">Can\'t access calendars (missing permissions)</string>
-    <string name="account_permissions_action">Permissions</string>
+    <string name="account_missing_permissions">Additional permissions are required to synchronize these collections.</string>
+    <string name="account_manage_permissions">Manage permissions</string>
     <string name="account_no_address_books">There are no address books (yet).</string>
     <string name="account_no_calendars">There are no calendars (yet).</string>
     <string name="account_no_webcals">There are no calendar subscriptions (yet).</string>
@@ -252,9 +248,8 @@
     <string name="account_journal">journal</string>
     <string name="account_only_personal">Show only personal</string>
     <string name="account_refresh_collections">Refresh collections</string>
-    <string name="account_refresh_address_book_list">Refresh address book list</string>
+    <string name="account_refreshing_collections">Refreshing collection list</string>
     <string name="account_create_new_address_book">Create new address book</string>
-    <string name="account_refresh_calendar_list">Refresh calendar list</string>
     <string name="account_create_new_calendar">Create new calendar</string>
     <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
     <string name="account_install_icsx5">Install ICSx⁵</string>
