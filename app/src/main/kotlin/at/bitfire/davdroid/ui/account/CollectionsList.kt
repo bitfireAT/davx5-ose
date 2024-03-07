@@ -50,6 +50,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 fun CollectionsList(
     collections: LazyPagingItems<Collection>,
     onChangeSync: (id: Long, sync: Boolean) -> Unit,
+    onChangeForceReadOnly: (id: Long, forceReadOnly: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -67,6 +68,9 @@ fun CollectionsList(
                     item,
                     onChangeSync = { sync ->
                         onChangeSync(item.id, sync)
+                    },
+                    onChangeForceReadOnly = { forceReadOnly ->
+                        onChangeForceReadOnly(item.id, forceReadOnly)
                     }
                 )
             }
@@ -78,12 +82,12 @@ fun CollectionsList(
 @Composable
 fun CollectionListItem(
     collection: Collection,
-    onChangeSync: (sync: Boolean) -> Unit = {}
+    onChangeSync: (sync: Boolean) -> Unit = {},
+    onChangeForceReadOnly: (forceReadOnly: Boolean) -> Unit = {}
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .height(IntrinsicSize.Min)
+        modifier = Modifier.height(IntrinsicSize.Min)
     ) {
         if (collection.type == Collection.TYPE_CALENDAR || collection.type == Collection.TYPE_WEBCAL) {
             val color = collection.color?.let { Color(it) } ?: Color.Transparent
@@ -147,15 +151,22 @@ fun CollectionListItem(
                 onDismissRequest = { showOverflow = false }
             ) {
                 // force read-only
-                DropdownMenuItem(onClick = {
-                    // TODO
-                    showOverflow = false
-                }) {
+                DropdownMenuItem(
+                    enabled = collection.privWriteContent,
+                    onClick = {
+                        onChangeForceReadOnly(!collection.forceReadOnly)
+                        showOverflow = false
+                    }
+                ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(R.string.collection_force_read_only))
                         Checkbox(
-                            checked = collection.forceReadOnly,
-                            onCheckedChange = { /* TODO */ }
+                            enabled = collection.privWriteContent,
+                            checked = collection.readOnly(),
+                            onCheckedChange = { forceReadOnly ->
+                                onChangeForceReadOnly(forceReadOnly)
+                                showOverflow = false
+                            }
                         )
                     }
                 }

@@ -140,6 +140,9 @@ class AccountActivity2 : AppCompatActivity() {
                     onUpdateCollectionSync = { id, sync ->
                         model.setCollectionSync(id, sync)
                     },
+                    onChangeForceReadOnly = { id, forceReadOnly ->
+                        model.setCollectionForceReadOnly(id, forceReadOnly)
+                    },
                     onRefreshCollections = {
                         cardDavSvc?.let { svc ->
                             RefreshCollectionsWorker.enqueue(this@AccountActivity2, svc.id)
@@ -194,6 +197,7 @@ fun AccountOverview(
     calendars: LazyPagingItems<Collection>?,
     subscriptions: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
+    onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit = { _, _ -> },
     onRefreshCollections: () -> Unit = {},
     onSync: () -> Unit = {},
     onAccountSettings: () -> Unit = {},
@@ -425,13 +429,28 @@ fun AccountOverview(
                     Box {
                         when (index) {
                             idxCardDav ->
-                                ServiceTab(cardDavRefreshing, addressBooks, onUpdateCollectionSync)
+                                ServiceTab(
+                                    refreshing = cardDavRefreshing,
+                                    collections = addressBooks,
+                                    onUpdateCollectionSync = onUpdateCollectionSync,
+                                    onChangeForceReadOnly = onChangeForceReadOnly
+                                )
 
                             idxCalDav ->
-                                ServiceTab(calDavRefreshing, calendars, onUpdateCollectionSync)
+                                ServiceTab(
+                                    refreshing = calDavRefreshing,
+                                    collections = calendars,
+                                    onUpdateCollectionSync = onUpdateCollectionSync,
+                                    onChangeForceReadOnly = onChangeForceReadOnly
+                                )
 
                             idxWebcal ->
-                                ServiceTab(calDavRefreshing, subscriptions, onUpdateCollectionSync)
+                                ServiceTab(
+                                    refreshing = calDavRefreshing,
+                                    collections = subscriptions,
+                                    onUpdateCollectionSync = onUpdateCollectionSync,
+                                    onChangeForceReadOnly = onChangeForceReadOnly
+                                )
                         }
 
                         PullRefreshIndicator(
@@ -488,21 +507,22 @@ fun DeleteAccountDialog(
 
 @Composable
 fun ServiceTab(
-    cardDavRefreshing: ServiceProgressValue,
-    addressBooks: LazyPagingItems<Collection>?,
-    onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit
+    refreshing: ServiceProgressValue,
+    collections: LazyPagingItems<Collection>?,
+    onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit,
+    onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit
 ) {
     Column {
         // progress indicator
         val progressAlpha by animateFloatAsState(
-            when (cardDavRefreshing) {
+            when (refreshing) {
                 ServiceProgressValue.ACTIVE -> 1f
                 ServiceProgressValue.PENDING -> .5f
                 else -> 0f
             },
             label = "cardDavProgress"
         )
-        when (cardDavRefreshing) {
+        when (refreshing) {
             ServiceProgressValue.ACTIVE ->
                 // indeterminate
                 LinearProgressIndicator(
@@ -525,10 +545,11 @@ fun ServiceTab(
         }
 
         //  collection list
-        if (addressBooks != null)
+        if (collections != null)
             CollectionsList(
-                addressBooks,
+                collections,
                 onChangeSync = onUpdateCollectionSync,
+                onChangeForceReadOnly = onChangeForceReadOnly,
                 modifier = Modifier.weight(1f)
             )
     }

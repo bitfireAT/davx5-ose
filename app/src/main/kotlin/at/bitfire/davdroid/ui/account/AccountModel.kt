@@ -178,6 +178,10 @@ class AccountModel @AssistedInject constructor(
         db.collectionDao().updateSync(id, sync)
     }
 
+    fun setCollectionForceReadOnly(id: Long, forceReadOnly: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        db.collectionDao().updateForceReadOnly(id, forceReadOnly)
+    }
+
 
     // helpers
 
