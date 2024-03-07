@@ -4,6 +4,7 @@ import android.Manifest
 import android.accounts.Account
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -115,6 +116,12 @@ class AccountActivity2 : AppCompatActivity() {
                 // account does not exist anymore
                 finish()
         }
+        model.renameAccountError.observe(this) { error ->
+            if (error != null) {
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+                model.renameAccountError.value = null
+            }
+        }
 
         setContent {
             MdcTheme {
@@ -178,6 +185,9 @@ class AccountActivity2 : AppCompatActivity() {
                         intent.putExtra(SettingsActivity.EXTRA_ACCOUNT, model.account)
                         startActivity(intent, null)
                     },
+                    onRenameAccount = { newName ->
+                        model.renameAccount(newName)
+                    },
                     onDeleteAccount = {
                         model.deleteAccount()
                     },
@@ -216,6 +226,7 @@ fun AccountOverview(
     onRefreshCollections: () -> Unit = {},
     onSync: () -> Unit = {},
     onAccountSettings: () -> Unit = {},
+    onRenameAccount: (newName: String) -> Unit = {},
     onDeleteAccount: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
@@ -228,6 +239,7 @@ fun AccountOverview(
     )
 
     var showDeleteAccountDialog by remember { mutableStateOf(false) }
+    var showRenameAccountDialog by remember { mutableStateOf(false) }
 
     // tabs calculation
     var currentIdx = -1
@@ -344,7 +356,8 @@ fun AccountOverview(
 
                         // rename account
                         DropdownMenuItem(onClick = {
-                            /* rename account */
+                            showRenameAccountDialog = true
+                            overflowOpen = false
                         }) {
                             Icon(
                                 Icons.Default.DriveFileRenameOutline, stringResource(R.string.account_rename),
@@ -366,6 +379,16 @@ fun AccountOverview(
                         }
                     }
 
+                    // modal dialogs
+                    if (showRenameAccountDialog)
+                        RenameAccountDialog(
+                            oldName = account.name,
+                            onRenameAccount = { newName ->
+                                onRenameAccount(newName)
+                                showRenameAccountDialog = false
+                            },
+                            onDismiss = { showRenameAccountDialog = false }
+                        )
                     if (showDeleteAccountDialog)
                         DeleteAccountDialog(
                             onConfirm = onDeleteAccount,
