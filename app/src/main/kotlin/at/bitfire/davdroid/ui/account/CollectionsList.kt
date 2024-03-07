@@ -1,14 +1,21 @@
 package at.bitfire.davdroid.ui.account
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Checkbox
-import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -17,11 +24,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlaylistAddCheck
 import androidx.compose.material.icons.filled.RemoveCircle
-import androidx.compose.material.icons.filled.TextSnippet
 import androidx.compose.material.icons.filled.Today
+import androidx.compose.material.icons.outlined.Task
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,21 +74,32 @@ fun CollectionsList(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CollectionListItem(
     collection: Collection,
     onChangeSync: (sync: Boolean) -> Unit = {}
 ) {
-    val color = collection.color?.let { Color(it) }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier
+            .padding(8.dp)
+            .height(IntrinsicSize.Min)
     ) {
+        if (collection.type == Collection.TYPE_CALENDAR || collection.type == Collection.TYPE_WEBCAL) {
+            val color = collection.color?.let { Color(it) } ?: Color.Transparent
+            Box(
+                Modifier
+                    .background(color)
+                    .fillMaxHeight()
+                    .width(4.dp)
+            )
+        }
+
         Switch(
             checked = collection.sync,
             onCheckedChange = onChangeSync,
-            modifier = Modifier.padding(end = 8.dp)
+            modifier = Modifier.padding(horizontal = 4.dp)
         )
 
         Column(
@@ -97,22 +115,26 @@ fun CollectionListItem(
                     style = MaterialTheme.typography.body2
                 )
             }
-            if (color != null)
-                Divider(color = color)
         }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(start = 8.dp)
         ) {
-            if (collection.readOnly())
-                Icon(Icons.Default.RemoveCircle, null)
-            if (collection.supportsVEVENT == true)
-                Icon(Icons.Default.Today, null)
-            if (collection.supportsVTODO == true)
-                Icon(Icons.Default.PlaylistAddCheck, null)
-            if (collection.supportsVJOURNAL == true)
-                Icon(Icons.Default.TextSnippet, null)
+            FlowRow(
+                verticalArrangement = Arrangement.Center,
+                maxItemsInEachRow = 2,
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                if (collection.readOnly())
+                    Icon(Icons.Default.RemoveCircle, null)
+                if (collection.supportsVEVENT == true)
+                    Icon(Icons.Default.Today, null)
+                if (collection.supportsVTODO == true)
+                    Icon(Icons.Outlined.Task, null)
+                if (collection.supportsVJOURNAL == true)
+                    Icon(Icons.AutoMirrored.Default.EventNote, null)
+            }
 
             var showOverflow by remember { mutableStateOf(false) }
             var showPropertiesDialog by remember { mutableStateOf(false) }
@@ -169,10 +191,15 @@ fun CollectionListItem(
 fun CollectionsList_Sample_AddressBook() {
     CollectionListItem(
         Collection(
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = "https://example.com/carddav/addressbook".toHttpUrl(),
-            displayName = "Sample Address Book",
-            description = "This Sample Address Book even has some lengthy description."
+            type = Collection.TYPE_CALENDAR,
+            url = "https://example.com/caldav/sample".toHttpUrl(),
+            displayName = "Sample Calendar",
+            description = "This Sample Calendar even has some lengthy description.",
+            color = 0xffff0000.toInt(),
+            forceReadOnly = true,
+            supportsVEVENT = true,
+            supportsVTODO = true,
+            supportsVJOURNAL = true
         )
     )
 }

@@ -290,9 +290,13 @@ fun AccountOverview(
                         // GENERAL ACTIONS
 
                         // show only personal
-                        DropdownMenuItem(onClick = {
-                            // TODO
-                        }) {
+                        DropdownMenuItem(
+                            onClick = {
+                                onSetShowOnlyPersonal(!showOnlyPersonal.onlyPersonal)
+                                overflowOpen = false
+                            },
+                            enabled = !showOnlyPersonal.locked
+                        ) {
                             Text(stringResource(R.string.account_only_personal))
                             Checkbox(
                                 checked = showOnlyPersonal.onlyPersonal,

@@ -468,7 +468,7 @@ class AccountSettings(
     fun getShowOnlyPersonal(): ShowOnlyPersonal {
         @Suppress("DEPRECATION")
         val pair = getShowOnlyPersonalPair()
-        return ShowOnlyPersonal(pair.first, !pair.second)
+        return ShowOnlyPersonal(onlyPersonal = pair.first, locked = !pair.second)
     }
 
     /**
