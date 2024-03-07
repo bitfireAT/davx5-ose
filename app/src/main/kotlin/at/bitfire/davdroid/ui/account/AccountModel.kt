@@ -34,9 +34,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.Optional
 import java.util.logging.Level
 
@@ -154,17 +152,23 @@ class AccountModel @AssistedInject constructor(
     }
 
     /** Deletes the given collection from the database and the server. */
-    fun deleteCollection(collection: Collection) = viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+    fun deleteCollection(collection: Collection) = viewModelScope.launch(Dispatchers.IO) {
         HttpClient.Builder(getApplication(), AccountSettings(getApplication(), account))
             .setForeground(true)
             .build().use { httpClient ->
                 try {
-                    val davResource = DavResource(httpClient.okHttpClient, /*collection.url*/"https://www.example.com".toHttpUrl())
+                    // delete on server
+                    val davResource = DavResource(httpClient.okHttpClient, collection.url)
                     davResource.delete(null) {}
+
+                    // delete in database
                     db.collectionDao().delete(collection)
+
+                    // post success
                     deleteCollectionResult.postValue(Optional.empty())
                 } catch (e: Exception) {
                     Logger.log.log(Level.SEVERE, "Couldn't delete collection", e)
+                    // post error
                     deleteCollectionResult.postValue(Optional.of(e))
                 }
             }

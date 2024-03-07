@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,7 @@ import androidx.fragment.app.DialogFragment
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
 import com.google.accompanist.themeadapter.material.MdcTheme
+import okhttp3.HttpUrl
 import java.io.IOException
 
 class ExceptionInfoFragment: DialogFragment() {
@@ -57,7 +59,8 @@ class ExceptionInfoFragment: DialogFragment() {
                     setContent {
                         MdcTheme {
                             ExceptionInfoDialog(
-                                account, exception
+                                exception = exception,
+                                account = account
                             ) { dismiss() }
                         }
                     }
@@ -73,8 +76,9 @@ class ExceptionInfoFragment: DialogFragment() {
 
 @Composable
 fun ExceptionInfoDialog(
-    account: Account?,
     exception: Throwable,
+    account: Account? = null,
+    remoteResource: HttpUrl? = null,
     onDismissRequest: () -> Unit
 ) {
     val context = LocalContext.current
@@ -99,15 +103,21 @@ fun ExceptionInfoDialog(
                 )
             }
         },
-        text = { Text(exception::class.java.name + "\n" + exception.localizedMessage) },
+        text = {
+            Text(
+                exception::class.java.name + "\n" + exception.localizedMessage,
+                style = MaterialTheme.typography.body1
+            )
+        },
         dismissButton = {
             TextButton(
                 onClick = {
-                    val intent = DebugInfoActivity.IntentBuilder(context)
-                        .withAccount(account)
-                        .withCause(exception)
-                        .build()
-                    context.startActivity(intent)
+                    val intent = DebugInfoActivity.IntentBuilder(context).withCause(exception)
+                    if (account != null)
+                        intent.withAccount(account)
+                    if (remoteResource != null)
+                        intent.withRemoteResource(remoteResource)
+                    context.startActivity(intent.build())
                 }
             ) {
                 Text(stringResource(R.string.exception_show_details).uppercase())

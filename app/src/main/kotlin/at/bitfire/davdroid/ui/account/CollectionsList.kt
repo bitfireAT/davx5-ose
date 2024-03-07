@@ -83,7 +83,6 @@ fun CollectionListItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(8.dp)
             .height(IntrinsicSize.Min)
     ) {
         if (collection.type == Collection.TYPE_CALENDAR || collection.type == Collection.TYPE_WEBCAL) {
