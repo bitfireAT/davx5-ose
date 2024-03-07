@@ -150,26 +150,25 @@ fun CollectionListItem(
                 expanded = showOverflow,
                 onDismissRequest = { showOverflow = false }
             ) {
-                // force read-only
-                DropdownMenuItem(
-                    enabled = collection.privWriteContent,
-                    onClick = {
-                        onChangeForceReadOnly(!collection.forceReadOnly)
-                        showOverflow = false
+                // force read-only (only show for collections that are modifiable on the server)
+                if (collection.privWriteContent)
+                    DropdownMenuItem(
+                        onClick = {
+                            onChangeForceReadOnly(!collection.forceReadOnly)
+                            showOverflow = false
+                        }
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(stringResource(R.string.collection_force_read_only))
+                            Checkbox(
+                                checked = collection.readOnly(),
+                                onCheckedChange = { forceReadOnly ->
+                                    onChangeForceReadOnly(forceReadOnly)
+                                    showOverflow = false
+                                }
+                            )
+                        }
                     }
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(R.string.collection_force_read_only))
-                        Checkbox(
-                            enabled = collection.privWriteContent,
-                            checked = collection.readOnly(),
-                            onCheckedChange = { forceReadOnly ->
-                                onChangeForceReadOnly(forceReadOnly)
-                                showOverflow = false
-                            }
-                        )
-                    }
-                }
 
                 // show properties
                 DropdownMenuItem(onClick = {
@@ -179,13 +178,14 @@ fun CollectionListItem(
                     Text(stringResource(R.string.collection_properties))
                 }
 
-                // delete collection
-                DropdownMenuItem(onClick = {
-                    showDeleteCollectionDialog = true
-                    showOverflow = false
-                }) {
-                    Text(stringResource(R.string.delete_collection))
-                }
+                // delete collection (only show when required privilege is available)
+                if (collection.privUnbind)
+                    DropdownMenuItem(onClick = {
+                        showDeleteCollectionDialog = true
+                        showOverflow = false
+                    }) {
+                        Text(stringResource(R.string.delete_collection))
+                    }
             }
 
             if (showDeleteCollectionDialog)
