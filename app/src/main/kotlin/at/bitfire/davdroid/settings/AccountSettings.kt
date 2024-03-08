@@ -5,7 +5,8 @@ package at.bitfire.davdroid.settings
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.*
+import android.content.ContentResolver
+import android.content.Context
 import android.os.Bundle
 import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
@@ -459,6 +460,17 @@ class AccountSettings(
 
     // UI settings
 
+    data class ShowOnlyPersonal(
+        val onlyPersonal: Boolean,
+        val locked: Boolean
+    )
+
+    fun getShowOnlyPersonal(): ShowOnlyPersonal {
+        @Suppress("DEPRECATION")
+        val pair = getShowOnlyPersonalPair()
+        return ShowOnlyPersonal(onlyPersonal = pair.first, locked = !pair.second)
+    }
+
     /**
      * Whether only personal collections should be shown.
      *
@@ -467,7 +479,8 @@ class AccountSettings(
      *   1. (first) whether only personal collections should be shown
      *   2. (second) whether the user shall be able to change the setting (= setting not locked)
      */
-    fun getShowOnlyPersonal(): Pair<Boolean, Boolean> =
+    @Deprecated("Use getShowOnlyPersonal() instead", replaceWith = ReplaceWith("getShowOnlyPersonal()"))
+    fun getShowOnlyPersonalPair(): Pair<Boolean, Boolean> =
             when (settings.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
                 0 -> Pair(false, false)
                 1 -> Pair(true, false)

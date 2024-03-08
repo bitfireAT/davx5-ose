@@ -138,7 +138,7 @@
         </activity>
 
         <activity
-            android:name=".ui.account.AccountActivity"
+            android:name=".ui.account.AccountActivity2"
             android:parentActivityName=".ui.AccountsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
@@ -146,14 +146,14 @@
         <activity
             android:name=".ui.account.CreateAddressBookActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".ui.account.AccountActivity" />
+            android:parentActivityName=".ui.account.AccountActivity2" />
         <activity
             android:name=".ui.account.CreateCalendarActivity"
             android:label="@string/create_calendar"
-            android:parentActivityName=".ui.account.AccountActivity" />
+            android:parentActivityName=".ui.account.AccountActivity2" />
         <activity
             android:name=".ui.account.SettingsActivity"
-            android:parentActivityName=".ui.account.AccountActivity" />
+            android:parentActivityName=".ui.account.AccountActivity2" />
         <activity
             android:name=".ui.account.WifiPermissionsActivity"
             android:label="@string/wifi_permissions_label"
