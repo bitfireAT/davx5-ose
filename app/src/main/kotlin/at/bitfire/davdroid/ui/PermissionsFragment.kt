@@ -8,7 +8,6 @@ import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,23 +15,49 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.MainThread
-import androidx.core.content.ContextCompat
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.ActivityPermissionsBinding
+import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
 import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
-import at.bitfire.davdroid.util.PermissionUtils.havePermissions
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.accompanist.themeadapter.material.MdcTheme
+import java.util.logging.Level
 
 class PermissionsFragment: Fragment() {
 
@@ -40,67 +65,13 @@ class PermissionsFragment: Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = ActivityPermissionsBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.model = model
-
-        binding.text.text = getString(R.string.permissions_text, getString(R.string.app_name))
-
-        val requestPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-            model.checkPermissions()
-        }
-
-        model.needAutoResetPermission.observe(viewLifecycleOwner) { keepPermissions ->
-            if (keepPermissions == true && model.haveAutoResetPermission.value == false) {
-                Toast.makeText(requireActivity(), R.string.permissions_autoreset_instruction, Toast.LENGTH_LONG).show()
-                startActivity(Intent(
-                    Intent.ACTION_AUTO_REVOKE_PERMISSIONS,
-                    Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
-                ))
+        return ComposeView(requireContext()).apply {
+            setContent {
+                MdcTheme {
+                    PermissionsFragmentContent(model)
+                }
             }
         }
-        model.needContactsPermissions.observe(viewLifecycleOwner) { needContacts ->
-            if (needContacts && model.haveContactsPermissions.value == false)
-                requestPermission.launch(CONTACT_PERMISSIONS)
-        }
-        model.needCalendarPermissions.observe(viewLifecycleOwner) { needCalendars ->
-            if (needCalendars && model.haveCalendarPermissions.value == false)
-                requestPermission.launch(CALENDAR_PERMISSIONS)
-        }
-        model.needNotificationPermissions.observe(viewLifecycleOwner) { needNotifications ->
-            if (needNotifications == true && model.haveNotificationPermissions.value == false)
-                requestPermission.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS))
-        }
-        model.needOpenTasksPermissions.observe(viewLifecycleOwner) { needOpenTasks ->
-            if (needOpenTasks == true && model.haveOpenTasksPermissions.value == false)
-                requestPermission.launch(TaskProvider.PERMISSIONS_OPENTASKS)
-        }
-        model.needTasksOrgPermissions.observe(viewLifecycleOwner) { needTasksOrg ->
-            if (needTasksOrg == true && model.haveTasksOrgPermissions.value == false)
-                requestPermission.launch(TaskProvider.PERMISSIONS_TASKS_ORG)
-        }
-        model.needJtxPermissions.observe(viewLifecycleOwner) { needJtx ->
-            if (needJtx == true && model.haveJtxPermissions.value == false)
-                requestPermission.launch(TaskProvider.PERMISSIONS_JTX)
-        }
-        model.needAllPermissions.observe(viewLifecycleOwner) { needAll ->
-            if (needAll && model.haveAllPermissions.value == false) {
-                val all = mutableSetOf(*CONTACT_PERMISSIONS, *CALENDAR_PERMISSIONS, Manifest.permission.POST_NOTIFICATIONS)
-                if (model.haveOpenTasksPermissions.value != null)
-                    all.addAll(TaskProvider.PERMISSIONS_OPENTASKS)
-                if (model.haveTasksOrgPermissions.value != null)
-                    all.addAll(TaskProvider.PERMISSIONS_TASKS_ORG)
-                if (model.haveJtxPermissions.value != null)
-                    all.addAll(TaskProvider.PERMISSIONS_JTX)
-                requestPermission.launch(all.toTypedArray())
-            }
-        }
-
-        binding.appSettings.setOnClickListener {
-            PermissionUtils.showAppSettings(requireActivity())
-        }
-
-        return binding.root
     }
 
     override fun onResume() {
@@ -111,31 +82,18 @@ class PermissionsFragment: Fragment() {
 
     class Model(app: Application): AndroidViewModel(app) {
 
-        val haveAutoResetPermission = MutableLiveData<Boolean>()
-        val needAutoResetPermission = MutableLiveData<Boolean>()
+        val needKeepPermissions = MutableLiveData<Boolean>()
 
-        val haveContactsPermissions = MutableLiveData<Boolean>()
-        val needContactsPermissions = MutableLiveData<Boolean>()
-        val haveCalendarPermissions = MutableLiveData<Boolean>()
-        val needCalendarPermissions = MutableLiveData<Boolean>()
-        val haveNotificationPermissions = MutableLiveData<Boolean>()
-        val needNotificationPermissions = MutableLiveData<Boolean>()
+        val openTasksAvailable = MutableLiveData<Boolean>()
+        val tasksOrgAvailable = MutableLiveData<Boolean>()
+        val jtxAvailable = MutableLiveData<Boolean>()
 
-        val haveOpenTasksPermissions = MutableLiveData<Boolean>()
-        val needOpenTasksPermissions = MutableLiveData<Boolean>()
-        val haveTasksOrgPermissions = MutableLiveData<Boolean>()
-        val needTasksOrgPermissions = MutableLiveData<Boolean>()
-        val haveJtxPermissions = MutableLiveData<Boolean>()
-        val needJtxPermissions = MutableLiveData<Boolean>()
-        val tasksWatcher = object: PackageChangedReceiver(app) {
+        private val tasksWatcher = object: PackageChangedReceiver(app) {
             @MainThread
             override fun onReceive(context: Context?, intent: Intent?) {
                 checkPermissions()
             }
         }
-
-        val haveAllPermissions = MutableLiveData<Boolean>()
-        val needAllPermissions = MutableLiveData<Boolean>()
 
         init {
             checkPermissions()
@@ -151,79 +109,239 @@ class PermissionsFragment: Fragment() {
 
             // auto-reset permissions
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val keepPermissions = pm.isAutoRevokeWhitelisted
-                haveAutoResetPermission.value = keepPermissions
-                needAutoResetPermission.value = keepPermissions
+                needKeepPermissions.value = pm.isAutoRevokeWhitelisted
             }
 
-            // other permissions
-            val contactPermissions = havePermissions(getApplication(), CONTACT_PERMISSIONS)
-            haveContactsPermissions.value = contactPermissions
-            needContactsPermissions.value = contactPermissions
+            openTasksAvailable.value = pm.resolveContentProvider(ProviderName.OpenTasks.authority, 0) != null
+            tasksOrgAvailable.value = pm.resolveContentProvider(ProviderName.TasksOrg.authority, 0) != null
+            jtxAvailable.value = pm.resolveContentProvider(ProviderName.JtxBoard.authority, 0) != null
+        }
+    }
+}
 
-            val calendarPermissions = havePermissions(getApplication(), CALENDAR_PERMISSIONS)
-            haveCalendarPermissions.value = calendarPermissions
-            needCalendarPermissions.value = calendarPermissions
+@Composable
+fun PermissionsFragmentContent(model: PermissionsFragment.Model = viewModel()) {
+    val context = LocalContext.current
 
-            val notificationPermissions: Boolean
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                // Android 13: POST_NOTIFICATIONS permission required
-                notificationPermissions =
-                    ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-                haveNotificationPermissions.value = notificationPermissions
-                needNotificationPermissions.value = notificationPermissions
-            } else {
-                // Android <= 12: hide the POST_NOTIFICATIONS switch
-                notificationPermissions = true
-                haveNotificationPermissions.value = null
-                needNotificationPermissions.value = null
-            }
+    val keepPermissions by model.needKeepPermissions.observeAsState()
+    val openTasksAvailable by model.openTasksAvailable.observeAsState()
+    val tasksOrgAvailable by model.tasksOrgAvailable.observeAsState()
+    val jtxAvailable by model.jtxAvailable.observeAsState()
 
-            // OpenTasks
-            val openTasksAvailable = pm.resolveContentProvider(ProviderName.OpenTasks.authority, 0) != null
-            var openTasksPermissions: Boolean? = null
-            if (openTasksAvailable) {
-                openTasksPermissions = havePermissions(getApplication(), TaskProvider.PERMISSIONS_OPENTASKS)
-                haveOpenTasksPermissions.value = openTasksPermissions
-                needOpenTasksPermissions.value = openTasksPermissions
-            } else {
-                haveOpenTasksPermissions.value = null
-                needOpenTasksPermissions.value = null
-            }
-            // tasks.org
-            val tasksOrgAvailable = pm.resolveContentProvider(ProviderName.TasksOrg.authority, 0) != null
-            var tasksOrgPermissions: Boolean? = null
-            if (tasksOrgAvailable) {
-                tasksOrgPermissions = havePermissions(getApplication(), TaskProvider.PERMISSIONS_TASKS_ORG)
-                haveTasksOrgPermissions.value = tasksOrgPermissions
-                needTasksOrgPermissions.value = tasksOrgPermissions
-            } else {
-                haveTasksOrgPermissions.value = null
-                needTasksOrgPermissions.value = null
-            }
-            // jtx Board
-            val jtxAvailable = pm.resolveContentProvider(ProviderName.JtxBoard.authority, 0) != null
-            var jtxPermissions: Boolean? = null
-            if (jtxAvailable) {
-                jtxPermissions = havePermissions(getApplication(), TaskProvider.PERMISSIONS_JTX)
-                haveJtxPermissions.value = jtxPermissions
-                needJtxPermissions.value = jtxPermissions
-            } else {
-                haveJtxPermissions.value = null
-                needJtxPermissions.value = null
-            }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        PermissionsCard(
+            keepPermissions,
+            onKeepPermissionsRequested = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val intent = Intent(
+                        Intent.ACTION_AUTO_REVOKE_PERMISSIONS,
+                        Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                    )
+                    try {
+                        context.startActivity(intent)
+                        Toast.makeText(context, R.string.permissions_autoreset_instruction, Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        Logger.log.log(Level.WARNING, "Couldn't start Keep Permissions activity", e)
+                    }
+                }
+            },
+            openTasksAvailable,
+            tasksOrgAvailable,
+            jtxAvailable
+        )
+    }
+}
 
-            // "all permissions" switch
-            val allPermissions = contactPermissions &&
-                    calendarPermissions &&
-                    notificationPermissions &&
-                    (!openTasksAvailable || openTasksPermissions == true) &&
-                    (!tasksOrgAvailable || tasksOrgPermissions == true) &&
-                    (!jtxAvailable || jtxPermissions == true)
-            haveAllPermissions.value = allPermissions
-            needAllPermissions.value = allPermissions
+@Composable
+@OptIn(ExperimentalPermissionsApi::class)
+fun PermissionSwitchRow(
+    text: String,
+    permissions: List<String>,
+    summaryWhenGranted: String,
+    summaryWhenNotGranted: String,
+    modifier: Modifier = Modifier,
+    fontWeight: FontWeight = FontWeight.Normal
+) {
+    val state = rememberMultiplePermissionsState(permissions = permissions.toList())
+
+    PermissionSwitchRow(
+        text = text,
+        fontWeight = fontWeight,
+        summaryWhenGranted = summaryWhenGranted,
+        summaryWhenNotGranted = summaryWhenNotGranted,
+        allPermissionsGranted = state.allPermissionsGranted,
+        onLaunchRequest = state::launchMultiplePermissionRequest,
+        modifier = modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PermissionSwitchRow_Preview() {
+    PermissionSwitchRow(
+        text = "Contacts",
+        allPermissionsGranted = false,
+        summaryWhenGranted = "Granted",
+        summaryWhenNotGranted = "Not granted",
+        onLaunchRequest = {}
+    )
+}
+
+@Composable
+fun PermissionSwitchRow(
+    text: String,
+    allPermissionsGranted: Boolean,
+    summaryWhenGranted: String,
+    summaryWhenNotGranted: String,
+    modifier: Modifier = Modifier,
+    fontWeight: FontWeight = FontWeight.Normal,
+    onLaunchRequest: () -> Unit
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = text,
+                modifier = Modifier.fillMaxWidth(),
+                fontWeight = fontWeight,
+                style = MaterialTheme.typography.body1
+            )
+            Text(
+                text = if (allPermissionsGranted) summaryWhenGranted else summaryWhenNotGranted,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.body2
+            )
+        }
+        Switch(
+            checked = allPermissionsGranted,
+            enabled = !allPermissionsGranted,
+            onCheckedChange = { checked ->
+                if (checked) {
+                    onLaunchRequest()
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun PermissionsCard(
+    keepPermissions: Boolean?,
+    onKeepPermissionsRequested: () -> Unit,
+    openTasksAvailable: Boolean?,
+    tasksOrgAvailable: Boolean?,
+    jtxAvailable: Boolean?
+) {
+    val context = LocalContext.current
+
+    CardWithImage(
+        title = stringResource(R.string.permissions_title),
+        message = stringResource(
+            R.string.permissions_text,
+            stringResource(R.string.app_name)
+        ),
+        image = painterResource(R.drawable.intro_permissions),
+        modifier = Modifier.padding(8.dp)
+    ) {
+        if (keepPermissions != null) {
+            PermissionSwitchRow(
+                text = stringResource(R.string.permissions_autoreset_title),
+                summaryWhenGranted = stringResource(R.string.permissions_autoreset_status_on),
+                summaryWhenNotGranted = stringResource(R.string.permissions_autoreset_status_off),
+                allPermissionsGranted = keepPermissions,
+                onLaunchRequest = onKeepPermissionsRequested,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
         }
 
-    }
+        val allPermissions = mutableListOf<String>()
+        allPermissions.addAll(CONTACT_PERMISSIONS)
+        allPermissions.addAll(CALENDAR_PERMISSIONS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            allPermissions += Manifest.permission.POST_NOTIFICATIONS
+        if (openTasksAvailable == true)
+            allPermissions.addAll(TaskProvider.PERMISSIONS_OPENTASKS)
+        if (tasksOrgAvailable == true)
+            allPermissions.addAll(TaskProvider.PERMISSIONS_TASKS_ORG)
+        if (jtxAvailable == true)
+            allPermissions.addAll(TaskProvider.PERMISSIONS_JTX)
+        PermissionSwitchRow(
+            text = stringResource(R.string.permissions_all_title),
+            permissions = allPermissions,
+            summaryWhenGranted = stringResource(R.string.permissions_all_status_on),
+            summaryWhenNotGranted = stringResource(R.string.permissions_all_status_off),
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            PermissionSwitchRow(
+                text = stringResource(R.string.permissions_notification_title),
+                summaryWhenGranted = stringResource(R.string.permissions_notification_status_on),
+                summaryWhenNotGranted = stringResource(R.string.permissions_notification_status_off),
+                permissions = listOf(Manifest.permission.POST_NOTIFICATIONS),
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+        PermissionSwitchRow(
+            text = stringResource(R.string.permissions_calendar_title),
+            summaryWhenGranted = stringResource(R.string.permissions_calendar_status_on),
+            summaryWhenNotGranted = stringResource(R.string.permissions_calendar_status_off),
+            permissions = CALENDAR_PERMISSIONS.toList(),
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+        PermissionSwitchRow(
+            text = stringResource(R.string.permissions_contacts_title),
+            summaryWhenGranted = stringResource(R.string.permissions_contacts_status_on),
+            summaryWhenNotGranted = stringResource(R.string.permissions_contacts_status_off),
+            permissions = CONTACT_PERMISSIONS.toList(),
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+
+        if (jtxAvailable == true)
+            PermissionSwitchRow(
+                text = stringResource(R.string.permissions_jtx_title),
+                summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
+                summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
+                permissions = TaskProvider.PERMISSIONS_JTX.toList(),
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        if (openTasksAvailable == true)
+            PermissionSwitchRow(
+                text = stringResource(R.string.permissions_opentasks_title),
+                summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
+                summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
+                permissions = TaskProvider.PERMISSIONS_OPENTASKS.toList(),
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        if (tasksOrgAvailable == true)
+            PermissionSwitchRow(
+                text = stringResource(R.string.permissions_tasksorg_title),
+                summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
+                summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
+                permissions = TaskProvider.PERMISSIONS_TASKS_ORG.toList(),
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+        Text(
+            text = stringResource(R.string.permissions_app_settings_hint),
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(top = 24.dp)
+        )
+
+        OutlinedButton(
+            modifier = Modifier.padding(top = 8.dp),
+            onClick = { PermissionUtils.showAppSettings(context) }
+        ) {
+            Text(stringResource(R.string.permissions_app_settings).uppercase())
+        }
+    }
 }
