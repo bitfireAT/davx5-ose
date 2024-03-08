@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ActionCard(
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     actionText: String? = null,
     onAction: () -> Unit = {},
@@ -32,6 +33,7 @@ fun ActionCard(
     Card(Modifier
         .padding(horizontal = 8.dp, vertical = 4.dp)
         .fillMaxWidth()
+        .then(modifier)
     ) {
         Column(Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)) {
             if (icon != null)

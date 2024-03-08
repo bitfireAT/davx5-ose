@@ -251,6 +251,7 @@
     <string name="account_refreshing_collections">Refreshing collection list</string>
     <string name="account_create_new_address_book">Create new address book</string>
     <string name="account_create_new_calendar">Create new calendar</string>
+    <string name="account_webcal_external_app">"Webcal subscriptions can be synchronized with external apps."</string>
     <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
     <string name="account_install_icsx5">Install ICSx⁵</string>
 

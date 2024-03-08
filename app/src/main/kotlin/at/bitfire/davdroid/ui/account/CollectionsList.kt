@@ -23,6 +23,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.filled.MoreVert
@@ -37,7 +38,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
@@ -49,8 +53,9 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 @Composable
 fun CollectionsList(
     collections: LazyPagingItems<Collection>,
-    onChangeSync: (id: Long, sync: Boolean) -> Unit,
-    onChangeForceReadOnly: (id: Long, forceReadOnly: Boolean) -> Unit,
+    onChangeSync: (collectionId: Long, sync: Boolean) -> Unit,
+    onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit,
+    onSubscribe: (collection: Collection) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -64,15 +69,23 @@ fun CollectionsList(
             key = collections.itemKey()
         ) { index ->
             collections[index]?.let { item ->
-                CollectionListItem(
-                    item,
-                    onChangeSync = { sync ->
-                        onChangeSync(item.id, sync)
-                    },
-                    onChangeForceReadOnly = { forceReadOnly ->
-                        onChangeForceReadOnly(item.id, forceReadOnly)
-                    }
-                )
+                if (item.type == Collection.TYPE_WEBCAL)
+                    CollectionList_Subscription(
+                        item,
+                        onSubscribe = {
+                            onSubscribe(item)
+                        }
+                    )
+                else
+                    CollectionList_Item(
+                        item,
+                        onChangeSync = { sync ->
+                            onChangeSync(item.id, sync)
+                        },
+                        onChangeForceReadOnly = { forceReadOnly ->
+                            onChangeForceReadOnly(item.id, forceReadOnly)
+                        }
+                    )
             }
         }
     }
@@ -80,16 +93,18 @@ fun CollectionsList(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CollectionListItem(
+fun CollectionList_Item(
     collection: Collection,
     onChangeSync: (sync: Boolean) -> Unit = {},
     onChangeForceReadOnly: (forceReadOnly: Boolean) -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.height(IntrinsicSize.Min)
     ) {
-        if (collection.type == Collection.TYPE_CALENDAR || collection.type == Collection.TYPE_WEBCAL) {
+        if (collection.type == Collection.TYPE_CALENDAR) {
             val color = collection.color?.let { Color(it) } ?: Color.Transparent
             Box(
                 Modifier
@@ -102,7 +117,11 @@ fun CollectionListItem(
         Switch(
             checked = collection.sync,
             onCheckedChange = onChangeSync,
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .semantics {
+                    contentDescription = context.getString(R.string.account_synchronize_this_collection)
+                }
         )
 
         Column(
@@ -131,13 +150,13 @@ fun CollectionListItem(
                 modifier = Modifier.fillMaxHeight()
             ) {
                 if (collection.readOnly())
-                    Icon(Icons.Default.RemoveCircle, null)
+                    Icon(Icons.Default.RemoveCircle, stringResource(R.string.account_read_only))
                 if (collection.supportsVEVENT == true)
-                    Icon(Icons.Default.Today, null)
+                    Icon(Icons.Default.Today, stringResource(R.string.account_calendar))
                 if (collection.supportsVTODO == true)
-                    Icon(Icons.Outlined.Task, null)
+                    Icon(Icons.Outlined.Task, stringResource(R.string.account_task_list))
                 if (collection.supportsVJOURNAL == true)
-                    Icon(Icons.AutoMirrored.Default.EventNote, null)
+                    Icon(Icons.AutoMirrored.Default.EventNote, stringResource(R.string.account_journal))
             }
 
             var showOverflow by remember { mutableStateOf(false) }
@@ -205,8 +224,8 @@ fun CollectionListItem(
 
 @Composable
 @Preview
-fun CollectionsList_Sample_AddressBook() {
-    CollectionListItem(
+fun CollectionsList_Item_Sample() {
+    CollectionList_Item(
         Collection(
             type = Collection.TYPE_CALENDAR,
             url = "https://example.com/caldav/sample".toHttpUrl(),
@@ -217,6 +236,61 @@ fun CollectionsList_Sample_AddressBook() {
             supportsVEVENT = true,
             supportsVTODO = true,
             supportsVJOURNAL = true
+        )
+    )
+}
+
+@Composable
+fun CollectionList_Subscription(
+    item: Collection,
+    onSubscribe: () -> Unit = {}
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.height(IntrinsicSize.Min)
+    ) {
+        val color = item.color?.let { Color(it) } ?: Color.Transparent
+        Box(
+            Modifier
+                .background(color)
+                .fillMaxHeight()
+                .width(4.dp)
+        )
+
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .weight(1f)
+        ) {
+            Text(
+                item.title(),
+                style = MaterialTheme.typography.body1
+            )
+            item.description?.let { description ->
+                Text(
+                    description,
+                    style = MaterialTheme.typography.body2
+                )
+            }
+        }
+
+        TextButton(onClick = onSubscribe) {
+            Text("Subscribe".uppercase())
+        }
+    }
+
+}
+
+@Composable
+@Preview
+fun CollectionList_Subscription_Preview() {
+    CollectionList_Subscription(
+        Collection(
+            type = Collection.TYPE_WEBCAL,
+            url = "https://example.com/caldav/sample".toHttpUrl(),
+            displayName = "Sample Subscription",
+            description = "This Sample Subscription even has some lengthy description.",
+            color = 0xffff0000.toInt()
         )
     )
 }

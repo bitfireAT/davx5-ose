@@ -3,12 +3,12 @@ package at.bitfire.davdroid.ui.account
 import android.Manifest
 import android.accounts.Account
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
@@ -44,6 +44,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
@@ -148,9 +149,14 @@ class AccountActivity2 : AppCompatActivity() {
                 val calendars by model.calendarsPager.observeAsState()
                 val subscriptions by model.webcalPager.observeAsState()
 
+                var installIcsx5 by remember { mutableStateOf(false) }
+
                 AccountOverview(
                     account = model.account,
-                    showOnlyPersonal = model.showOnlyPersonal.observeAsState(AccountSettings.ShowOnlyPersonal(false, true)).value,
+                    showOnlyPersonal =
+                        model.showOnlyPersonal.observeAsState(
+                            AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = true)
+                        ).value,
                     onSetShowOnlyPersonal = {
                         model.setShowOnlyPersonal(it)
                     },
@@ -163,12 +169,16 @@ class AccountActivity2 : AppCompatActivity() {
                     calDavRefreshing = calDavRefreshing,
                     calendars = calendars?.flow?.collectAsLazyPagingItems(),
                     subscriptions = subscriptions?.flow?.collectAsLazyPagingItems(),
-                    onUpdateCollectionSync = { id, sync ->
-                        model.setCollectionSync(id, sync)
+                    onUpdateCollectionSync = { collectionId, sync ->
+                        model.setCollectionSync(collectionId, sync)
                     },
                     onChangeForceReadOnly = { id, forceReadOnly ->
                         model.setCollectionForceReadOnly(id, forceReadOnly)
                     },
+                    onSubscribe = { item ->
+                        installIcsx5 = !subscribeWebcal(item)
+                    },
+                    installIcsx5 = installIcsx5,
                     onRefreshCollections = {
                         cardDavSvc?.let { svc ->
                             RefreshCollectionsWorker.enqueue(this@AccountActivity2, svc.id)
@@ -197,6 +207,48 @@ class AccountActivity2 : AppCompatActivity() {
         }
     }
 
+    /**
+     * Subscribes to a Webcal using a compatible app like ICSx5.
+     *
+     * @return true if a compatible Webcal app is installed, false otherwise
+     */
+    fun subscribeWebcal(item: Collection): Boolean {
+        // subscribe
+        var uri = Uri.parse(item.source.toString())
+        when {
+            uri.scheme.equals("http", true) -> uri = uri.buildUpon().scheme("webcal").build()
+            uri.scheme.equals("https", true) -> uri = uri.buildUpon().scheme("webcals").build()
+        }
+
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        item.displayName?.let { intent.putExtra("title", it) }
+        item.color?.let { intent.putExtra("color", it) }
+
+        if (packageManager.resolveActivity(intent, 0) != null) {
+            startActivity(intent)
+            return true
+        }
+
+        return false
+            /*val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
+            val chooserIntent = Intent.createChooser(installIntent, getString(R.string.account_no_webcal_handler_found))
+            startActivity(chooserIntent)
+
+            snackbarHostState.showSnackbar(
+                message = stringResource(R.string.account_no_webcal_handler_found),
+                duration = SnackbarDuration.Long
+            )*/
+            /*val snack = Snackbar.make(parent, )
+
+            val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
+            if (activity.packageManager.resolveActivity(installIntent, 0) != null)
+                snack.setAction(R.string.account_install_icsx5) {
+                    activity.startActivityForResult(installIntent, 0)
+                }
+
+            snack.show()*/
+    }
+
 }
 
 
@@ -223,6 +275,8 @@ fun AccountOverview(
     subscriptions: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit = { _, _ -> },
+    onSubscribe: (Collection) -> Unit = {},
+    installIcsx5: Boolean = false,
     onRefreshCollections: () -> Unit = {},
     onSync: () -> Unit = {},
     onAccountSettings: () -> Unit = {},
@@ -242,31 +296,25 @@ fun AccountOverview(
     var showRenameAccountDialog by remember { mutableStateOf(false) }
 
     // tabs calculation
-    var currentIdx = -1
+    var nextIdx = -1
     @Suppress("KotlinConstantConditions")
-    val idxCardDav: Int? = if (hasCardDav) ++currentIdx else null
-    val idxCalDav: Int? = if (hasCalDav) ++currentIdx else null
-    val idxWebcal: Int? = if ((subscriptions?.itemCount ?: 0) > 0) ++currentIdx else null
+    val idxCardDav: Int? = if (hasCardDav) ++nextIdx else null
+    val idxCalDav: Int? = if (hasCalDav) ++nextIdx else null
+    val idxWebcal: Int? = if ((subscriptions?.itemCount ?: 0) > 0) ++nextIdx else null
     val nrPages =
         (if (idxCardDav != null) 1 else 0) +
                 (if (idxCalDav != null) 1 else 0) +
                 (if (idxWebcal != null) 1 else 0)
     val pagerState = rememberPagerState(pageCount = { nrPages })
 
-    // show snackbar when refreshing collection list
+    // snackbar
     val snackbarHostState = remember { SnackbarHostState() }
-    val currentTabRefreshing =
-        if (pagerState.currentPage == idxCardDav)
-            cardDavRefreshing
-        else
-            calDavRefreshing
-    LaunchedEffect(currentTabRefreshing) {
-        if (currentTabRefreshing)
-            snackbarHostState.showSnackbar(
-                context.getString(R.string.account_refreshing_collections),
-                duration = SnackbarDuration.Indefinite
-            )
-    }
+    AccountOverview_SnackbarContent(
+        snackbarHostState = snackbarHostState,
+        currentPageIsCardDav = pagerState.currentPage == idxCardDav,
+        cardDavRefreshing = cardDavRefreshing,
+        calDavRefreshing = calDavRefreshing
+    )
 
     Scaffold(
         topBar = {
@@ -407,9 +455,10 @@ fun AccountOverview(
                     Icon(Icons.Outlined.RuleFolder, stringResource(R.string.account_refresh_collections))
                 }
 
-                FloatingActionButton(onClick = onSync) {
-                    Icon(Icons.Default.Sync, stringResource(R.string.account_synchronize_now))
-                }
+                if (pagerState.currentPage == idxCardDav || pagerState.currentPage == idxCalDav)
+                    FloatingActionButton(onClick = onSync) {
+                        Icon(Icons.Default.Sync, stringResource(R.string.account_synchronize_now))
+                    }
             }
         },
         snackbarHost = {
@@ -440,39 +489,37 @@ fun AccountOverview(
                             )
                         }
 
-                        AnimatedVisibility(idxCalDav != null) {
-                            Tab(
-                                selected = pagerState.currentPage == idxCalDav,
-                                onClick = {
-                                    if (idxCalDav != null)
-                                        scope.launch {
-                                            pagerState.scrollToPage(idxCalDav)
-                                        }
+                    if (idxCalDav != null) {
+                        Tab(
+                            selected = pagerState.currentPage == idxCalDav,
+                            onClick = {
+                                scope.launch {
+                                    pagerState.scrollToPage(idxCalDav)
                                 }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_caldav).uppercase(),
-                                    modifier = Modifier.padding(8.dp)
-                                )
                             }
+                        ) {
+                            Text(
+                                stringResource(R.string.account_caldav).uppercase(),
+                                modifier = Modifier.padding(8.dp)
+                            )
                         }
+                    }
 
-                        AnimatedVisibility(idxWebcal != null) {
-                            Tab(
-                                selected = pagerState.currentPage == idxWebcal,
-                                onClick = {
-                                    if (idxWebcal != null)
-                                        scope.launch {
-                                            pagerState.scrollToPage(idxWebcal)
-                                        }
+                    if (idxWebcal != null) {
+                        Tab(
+                            selected = pagerState.currentPage == idxWebcal,
+                            onClick = {
+                                scope.launch {
+                                    pagerState.scrollToPage(idxWebcal)
                                 }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_webcal).uppercase(),
-                                    modifier = Modifier.padding(8.dp)
-                                )
                             }
+                        ) {
+                            Text(
+                                stringResource(R.string.account_webcal).uppercase(),
+                                modifier = Modifier.padding(8.dp)
+                            )
                         }
+                    }
                 }
 
                 HorizontalPager(
@@ -507,14 +554,36 @@ fun AccountOverview(
                                 )
                             }
 
-                            idxWebcal ->
-                                ServiceTab(
-                                    requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
-                                    refreshing = calDavProgress,
-                                    collections = subscriptions,
-                                    onUpdateCollectionSync = onUpdateCollectionSync,
-                                    onChangeForceReadOnly = onChangeForceReadOnly
-                                )
+                            idxWebcal -> {
+                                Column {
+                                    if (installIcsx5)
+                                        ActionCard(
+                                            icon = Icons.Default.Event,
+                                            actionText = stringResource(R.string.account_install_icsx5),
+                                            onAction = {
+                                                val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
+                                                if (context.packageManager.resolveActivity(installIntent, 0) != null)
+                                                    context.startActivity(installIntent)
+                                            },
+                                            modifier = Modifier.padding(top = 8.dp)
+                                        ) {
+                                            Text(stringResource(R.string.account_no_webcal_handler_found))
+                                        }
+                                    else
+                                        Text(
+                                            stringResource(R.string.account_webcal_external_app),
+                                            style = MaterialTheme.typography.body2,
+                                            modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)
+                                        )
+
+                                    ServiceTab(
+                                        requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
+                                        refreshing = calDavProgress,
+                                        collections = subscriptions,
+                                        onSubscribe = onSubscribe
+                                    )
+                                }
+                            }
                         }
 
                         PullRefreshIndicator(
@@ -549,6 +618,30 @@ fun AccountOverview_CardDAV_CalDAV() {
 }
 
 @Composable
+fun AccountOverview_SnackbarContent(
+    snackbarHostState: SnackbarHostState,
+    currentPageIsCardDav: Boolean,
+    cardDavRefreshing: Boolean,
+    calDavRefreshing: Boolean
+) {
+    val context = LocalContext.current
+
+    // show snackbar when refreshing collection list
+    val currentTabRefreshing =
+        if (currentPageIsCardDav)
+            cardDavRefreshing
+        else
+            calDavRefreshing
+    LaunchedEffect(currentTabRefreshing) {
+        if (currentTabRefreshing)
+            snackbarHostState.showSnackbar(
+                context.getString(R.string.account_refreshing_collections),
+                duration = SnackbarDuration.Indefinite
+            )
+    }
+}
+
+@Composable
 @Preview
 fun DeleteAccountDialog(
     onConfirm: () -> Unit = {},
@@ -577,8 +670,9 @@ fun ServiceTab(
     requiredPermissions: List<String>,
     refreshing: ServiceProgressValue,
     collections: LazyPagingItems<Collection>?,
-    onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit,
-    onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit
+    onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
+    onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit = { _, _ -> },
+    onSubscribe: (Collection) -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -634,6 +728,7 @@ fun ServiceTab(
                 collections,
                 onChangeSync = onUpdateCollectionSync,
                 onChangeForceReadOnly = onChangeForceReadOnly,
+                onSubscribe = onSubscribe,
                 modifier = Modifier.weight(1f)
             )
     }
