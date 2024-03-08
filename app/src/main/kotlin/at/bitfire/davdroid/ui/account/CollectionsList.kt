@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Checkbox
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -59,14 +58,13 @@ fun CollectionsList(
     onSubscribe: (collection: Collection) -> Unit = {}
 ) {
     LazyColumn(
-        state = rememberLazyListState(),
         contentPadding = PaddingValues(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
         modifier = modifier
     ) {
         items(
             count = collections.itemCount,
-            key = collections.itemKey()
+            key = collections.itemKey { it.id }
         ) { index ->
             collections[index]?.let { item ->
                 if (item.type == Collection.TYPE_WEBCAL)
