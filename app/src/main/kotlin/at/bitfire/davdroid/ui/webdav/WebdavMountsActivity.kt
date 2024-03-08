@@ -10,9 +10,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.DocumentsContract
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
@@ -26,9 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.FloatingActionButton
@@ -43,10 +38,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Help
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -56,17 +49,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.core.text.HtmlCompat
-import androidx.core.view.MenuProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
@@ -76,7 +66,6 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
 import at.bitfire.davdroid.util.DavUtils
@@ -94,6 +83,15 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class WebdavMountsActivity: AppCompatActivity() {
+
+    companion object {
+
+        fun helpUrl(context: Context) =
+            App.homepageUrl(context).buildUpon()
+                .appendEncodedPath("manual/webdav_mounts.html")
+                .build()
+
+    }
 
     private val model by viewModels<Model>()
 
@@ -122,14 +120,10 @@ class WebdavMountsActivity: AppCompatActivity() {
         }
     }
 
-    private fun helpUrl() =
-        App.homepageUrl(this).buildUpon()
-            .appendEncodedPath("manual/webdav_mounts.html")
-            .build()
-
 
     @Composable
     fun WebdavMountsContent(mountInfos: List<MountInfo>) {
+        val context = LocalContext.current
         val uriHandler = LocalUriHandler.current
 
         Scaffold(
@@ -148,7 +142,7 @@ class WebdavMountsActivity: AppCompatActivity() {
                     title = { Text(stringResource(R.string.webdav_mounts_title)) },
                     actions = {
                         IconButton(
-                            onClick = { uriHandler.openUri(helpUrl().toString()) }
+                            onClick = { uriHandler.openUri(helpUrl(context).toString()) }
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Help,
@@ -196,6 +190,7 @@ class WebdavMountsActivity: AppCompatActivity() {
     @Composable
     @OptIn(ExperimentalTextApi::class)
     fun HintText() {
+        val context = LocalContext.current
         val uriHandler = LocalUriHandler.current
 
         Column(
@@ -214,11 +209,7 @@ class WebdavMountsActivity: AppCompatActivity() {
             val text = HtmlCompat.fromHtml(
                 stringResource(
                     R.string.webdav_add_mount_empty_more_info,
-                    // helpUrl doesn't work in previews
-                    if (LocalInspectionMode.current)
-                        "https://example.com"
-                    else
-                        helpUrl().toString()
+                    helpUrl(context).toString()
                 ),
                 0
             ).toAnnotatedString()
