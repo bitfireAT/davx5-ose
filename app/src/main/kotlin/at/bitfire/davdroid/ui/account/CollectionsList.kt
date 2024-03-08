@@ -55,8 +55,8 @@ fun CollectionsList(
     collections: LazyPagingItems<Collection>,
     onChangeSync: (collectionId: Long, sync: Boolean) -> Unit,
     onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit,
-    onSubscribe: (collection: Collection) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSubscribe: (collection: Collection) -> Unit = {}
 ) {
     LazyColumn(
         state = rememberLazyListState(),
@@ -164,7 +164,7 @@ fun CollectionList_Item(
             var showDeleteCollectionDialog by remember { mutableStateOf(false) }
 
             IconButton(onClick = { showOverflow = true }) {
-                Icon(Icons.Default.MoreVert, null)
+                Icon(Icons.Default.MoreVert, stringResource(R.string.options_menu))
             }
             DropdownMenu(
                 expanded = showOverflow,

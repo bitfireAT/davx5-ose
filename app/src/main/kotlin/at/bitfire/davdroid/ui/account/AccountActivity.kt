@@ -212,7 +212,7 @@ class AccountActivity2 : AppCompatActivity() {
      *
      * @return true if a compatible Webcal app is installed, false otherwise
      */
-    fun subscribeWebcal(item: Collection): Boolean {
+    private fun subscribeWebcal(item: Collection): Boolean {
         // subscribe
         var uri = Uri.parse(item.source.toString())
         when {
@@ -230,23 +230,6 @@ class AccountActivity2 : AppCompatActivity() {
         }
 
         return false
-            /*val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
-            val chooserIntent = Intent.createChooser(installIntent, getString(R.string.account_no_webcal_handler_found))
-            startActivity(chooserIntent)
-
-            snackbarHostState.showSnackbar(
-                message = stringResource(R.string.account_no_webcal_handler_found),
-                duration = SnackbarDuration.Long
-            )*/
-            /*val snack = Snackbar.make(parent, )
-
-            val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=at.bitfire.icsdroid"))
-            if (activity.packageManager.resolveActivity(installIntent, 0) != null)
-                snack.setAction(R.string.account_install_icsx5) {
-                    activity.startActivityForResult(installIntent, 0)
-                }
-
-            snack.show()*/
     }
 
 }
@@ -321,10 +304,7 @@ fun AccountOverview(
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onNavUp) {
-                        Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_up)
-                        )
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
                     }
                 },
                 title = {
@@ -340,7 +320,7 @@ fun AccountOverview(
                         Icon(Icons.Default.Settings, stringResource(R.string.account_settings))
                     }
                     IconButton(onClick = { overflowOpen = !overflowOpen }) {
-                        Icon(Icons.Default.MoreVert, null)
+                        Icon(Icons.Default.MoreVert, stringResource(R.string.options_menu))
                     }
                     DropdownMenu(
                         expanded = overflowOpen,
@@ -359,7 +339,8 @@ fun AccountOverview(
                                 overflowOpen = false
                             }) {
                                 Icon(
-                                    Icons.Default.CreateNewFolder, stringResource(R.string.create_addressbook),
+                                    Icons.Default.CreateNewFolder,
+                                    contentDescription = stringResource(R.string.create_addressbook),
                                     modifier = Modifier.padding(end = 8.dp)
                                 )
                                 Text(stringResource(R.string.create_addressbook))
@@ -374,7 +355,8 @@ fun AccountOverview(
                                 overflowOpen = false
                             }) {
                                 Icon(
-                                    Icons.Default.CreateNewFolder, stringResource(R.string.create_calendar),
+                                    Icons.Default.CreateNewFolder,
+                                    contentDescription = stringResource(R.string.create_calendar),
                                     modifier = Modifier.padding(end = 8.dp)
                                 )
                                 Text(stringResource(R.string.create_calendar))
@@ -408,7 +390,8 @@ fun AccountOverview(
                             overflowOpen = false
                         }) {
                             Icon(
-                                Icons.Default.DriveFileRenameOutline, stringResource(R.string.account_rename),
+                                Icons.Default.DriveFileRenameOutline,
+                                contentDescription = stringResource(R.string.account_rename),
                                 modifier = Modifier.padding(end = 8.dp)
                             )
                             Text(stringResource(R.string.account_rename))
@@ -420,7 +403,8 @@ fun AccountOverview(
                             overflowOpen = false
                         }) {
                             Icon(
-                                Icons.Default.Delete, stringResource(R.string.account_delete),
+                                Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.account_delete),
                                 modifier = Modifier.padding(end = 8.dp)
                             )
                             Text(stringResource(R.string.account_delete))
@@ -452,11 +436,13 @@ fun AccountOverview(
                     backgroundColor = MaterialTheme.colors.background,
                     modifier = Modifier.padding(bottom = 16.dp)
                 ) {
+                    // Material 3: add Tooltip
                     Icon(Icons.Outlined.RuleFolder, stringResource(R.string.account_refresh_collections))
                 }
 
                 if (pagerState.currentPage == idxCardDav || pagerState.currentPage == idxCalDav)
                     FloatingActionButton(onClick = onSync) {
+                        // Material 3: add Tooltip
                         Icon(Icons.Default.Sync, stringResource(R.string.account_synchronize_now))
                     }
             }
@@ -653,12 +639,12 @@ fun DeleteAccountDialog(
         text = { Text(stringResource(R.string.account_delete_confirmation_text)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(stringResource(android.R.string.yes).uppercase())
+                Text(stringResource(android.R.string.ok).uppercase())
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(android.R.string.no).uppercase())
+                Text(stringResource(android.R.string.cancel).uppercase())
             }
         }
     )
