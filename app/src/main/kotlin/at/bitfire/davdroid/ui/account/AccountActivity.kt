@@ -127,6 +127,7 @@ class AccountActivity2 : AppCompatActivity() {
         setContent {
             MdcTheme {
                 val cardDavSvc by model.cardDavSvc.observeAsState()
+                val canCreateAddressBook by model.canCreateAddressBook.observeAsState(false)
                 val cardDavRefreshing by model.cardDavRefreshingActive.observeAsState(false)
                 val cardDavSyncActive by model.cardDavSyncActive.observeAsState(false)
                 val cardDavSyncPending by model.cardDavSyncPending.observeAsState(false)
@@ -138,6 +139,7 @@ class AccountActivity2 : AppCompatActivity() {
                 val addressBooks by model.addressBooksPager.observeAsState()
 
                 val calDavSvc by model.calDavSvc.observeAsState()
+                val canCreateCalendar by model.canCreateCalendar.observeAsState(false)
                 val calDavRefreshing by model.calDavRefreshingActive.observeAsState(false)
                 val calDavSyncActive by model.calDavSyncActive.observeAsState(false)
                 val calDavSyncPending by model.calDavSyncPending.observeAsState(false)
@@ -161,10 +163,12 @@ class AccountActivity2 : AppCompatActivity() {
                         model.setShowOnlyPersonal(it)
                     },
                     hasCardDav = cardDavSvc != null,
+                    canCreateAddressBook = canCreateAddressBook,
                     cardDavProgress = cardDavProgress,
                     cardDavRefreshing = cardDavRefreshing,
                     addressBooks = addressBooks?.flow?.collectAsLazyPagingItems(),
                     hasCalDav = calDavSvc != null,
+                    canCreateCalendar = canCreateCalendar,
                     calDavProgress = calDavProgress,
                     calDavRefreshing = calDavRefreshing,
                     calendars = calendars?.flow?.collectAsLazyPagingItems(),
@@ -248,10 +252,12 @@ fun AccountOverview(
     showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
     onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit,
     hasCardDav: Boolean,
+    canCreateAddressBook: Boolean,
     cardDavProgress: ServiceProgressValue,
     cardDavRefreshing: Boolean,
     addressBooks: LazyPagingItems<Collection>?,
     hasCalDav: Boolean,
+    canCreateCalendar: Boolean,
     calDavProgress: ServiceProgressValue,
     calDavRefreshing: Boolean,
     calendars: LazyPagingItems<Collection>?,
@@ -274,9 +280,6 @@ fun AccountOverview(
         pullRefreshing,
         onRefresh = onRefreshCollections
     )
-
-    var showDeleteAccountDialog by remember { mutableStateOf(false) }
-    var showRenameAccountDialog by remember { mutableStateOf(false) }
 
     // tabs calculation
     var nextIdx = -1
@@ -315,117 +318,19 @@ fun AccountOverview(
                     )
                 },
                 actions = {
-                    var overflowOpen by remember { mutableStateOf(false) }
-                    IconButton(onClick = onAccountSettings) {
-                        Icon(Icons.Default.Settings, stringResource(R.string.account_settings))
-                    }
-                    IconButton(onClick = { overflowOpen = !overflowOpen }) {
-                        Icon(Icons.Default.MoreVert, stringResource(R.string.options_menu))
-                    }
-                    DropdownMenu(
-                        expanded = overflowOpen,
-                        onDismissRequest = { overflowOpen = false }
-                    ) {
-                        // TAB-SPECIFIC ACTIONS
-
-                        // create address book
-                        if (pagerState.currentPage == idxCardDav) {
-                            // create address book
-                            DropdownMenuItem(onClick = {
-                                val intent = Intent(context, CreateAddressBookActivity::class.java)
-                                intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, account)
-                                context.startActivity(intent)
-
-                                overflowOpen = false
-                            }) {
-                                Icon(
-                                    Icons.Default.CreateNewFolder,
-                                    contentDescription = stringResource(R.string.create_addressbook),
-                                    modifier = Modifier.padding(end = 8.dp)
-                                )
-                                Text(stringResource(R.string.create_addressbook))
-                            }
-                        } else if (pagerState.currentPage == idxCalDav) {
-                            // create calendar
-                            DropdownMenuItem(onClick = {
-                                val intent = Intent(context, CreateCalendarActivity::class.java)
-                                intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, account)
-                                context.startActivity(intent)
-
-                                overflowOpen = false
-                            }) {
-                                Icon(
-                                    Icons.Default.CreateNewFolder,
-                                    contentDescription = stringResource(R.string.create_calendar),
-                                    modifier = Modifier.padding(end = 8.dp)
-                                )
-                                Text(stringResource(R.string.create_calendar))
-                            }
-                        }
-
-                        // GENERAL ACTIONS
-
-                        // show only personal
-                        DropdownMenuItem(
-                            onClick = {
-                                onSetShowOnlyPersonal(!showOnlyPersonal.onlyPersonal)
-                                overflowOpen = false
-                            },
-                            enabled = !showOnlyPersonal.locked
-                        ) {
-                            Text(stringResource(R.string.account_only_personal))
-                            Checkbox(
-                                checked = showOnlyPersonal.onlyPersonal,
-                                enabled = !showOnlyPersonal.locked,
-                                onCheckedChange = {
-                                    onSetShowOnlyPersonal(it)
-                                    overflowOpen = false
-                                }
-                            )
-                        }
-
-                        // rename account
-                        DropdownMenuItem(onClick = {
-                            showRenameAccountDialog = true
-                            overflowOpen = false
-                        }) {
-                            Icon(
-                                Icons.Default.DriveFileRenameOutline,
-                                contentDescription = stringResource(R.string.account_rename),
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
-                            Text(stringResource(R.string.account_rename))
-                        }
-
-                        // delete account
-                        DropdownMenuItem(onClick = {
-                            showDeleteAccountDialog = true
-                            overflowOpen = false
-                        }) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = stringResource(R.string.account_delete),
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
-                            Text(stringResource(R.string.account_delete))
-                        }
-                    }
-
-                    // modal dialogs
-                    if (showRenameAccountDialog)
-                        RenameAccountDialog(
-                            oldName = account.name,
-                            onRenameAccount = { newName ->
-                                onRenameAccount(newName)
-                                showRenameAccountDialog = false
-                            },
-                            onDismiss = { showRenameAccountDialog = false }
-                        )
-                    if (showDeleteAccountDialog)
-                        DeleteAccountDialog(
-                            onConfirm = onDeleteAccount,
-                            onDismiss = { showDeleteAccountDialog = false }
-                        )
+                    AccountOverview_Actions(
+                        account = account,
+                        canCreateAddressBook = canCreateAddressBook,
+                        canCreateCalendar = canCreateCalendar,
+                        showOnlyPersonal = showOnlyPersonal,
+                        onSetShowOnlyPersonal = onSetShowOnlyPersonal,
+                        currentPage = pagerState.currentPage,
+                        idxCardDav = idxCardDav,
+                        idxCalDav = idxCalDav,
+                        onRenameAccount = onRenameAccount,
+                        onDeleteAccount = onDeleteAccount,
+                        onAccountSettings = onAccountSettings
+                    )
                 }
             )
         },
@@ -592,15 +497,149 @@ fun AccountOverview_CardDAV_CalDAV() {
         showOnlyPersonal = AccountSettings.ShowOnlyPersonal(false, true),
         onSetShowOnlyPersonal = {},
         hasCardDav = true,
+        canCreateAddressBook = false,
         cardDavProgress = ServiceProgressValue.ACTIVE,
         cardDavRefreshing = false,
         addressBooks = null,
         hasCalDav = true,
+        canCreateCalendar = true,
         calDavProgress = ServiceProgressValue.PENDING,
         calDavRefreshing = false,
         calendars = null,
         subscriptions = null
     )
+}
+
+@Composable
+fun AccountOverview_Actions(
+    account: Account,
+    canCreateAddressBook: Boolean,
+    canCreateCalendar: Boolean,
+    showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
+    onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit,
+    currentPage: Int,
+    idxCardDav: Int?,
+    idxCalDav: Int?,
+    onRenameAccount: (newName: String) -> Unit,
+    onDeleteAccount: () -> Unit,
+    onAccountSettings: () -> Unit
+) {
+    val context = LocalContext.current
+
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
+    var showRenameAccountDialog by remember { mutableStateOf(false) }
+
+    var overflowOpen by remember { mutableStateOf(false) }
+    IconButton(onClick = onAccountSettings) {
+        Icon(Icons.Default.Settings, stringResource(R.string.account_settings))
+    }
+    IconButton(onClick = { overflowOpen = !overflowOpen }) {
+        Icon(Icons.Default.MoreVert, stringResource(R.string.options_menu))
+    }
+    DropdownMenu(
+        expanded = overflowOpen,
+        onDismissRequest = { overflowOpen = false }
+    ) {
+        // TAB-SPECIFIC ACTIONS
+
+        // create collection
+        if (currentPage == idxCardDav && canCreateAddressBook) {
+            // create address book
+            DropdownMenuItem(onClick = {
+                val intent = Intent(context, CreateAddressBookActivity::class.java)
+                intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, account)
+                context.startActivity(intent)
+
+                overflowOpen = false
+            }) {
+                Icon(
+                    Icons.Default.CreateNewFolder,
+                    contentDescription = stringResource(R.string.create_addressbook),
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(stringResource(R.string.create_addressbook))
+            }
+        } else if (currentPage == idxCalDav && canCreateCalendar) {
+            // create calendar
+            DropdownMenuItem(onClick = {
+                val intent = Intent(context, CreateCalendarActivity::class.java)
+                intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, account)
+                context.startActivity(intent)
+
+                overflowOpen = false
+            }) {
+                Icon(
+                    Icons.Default.CreateNewFolder,
+                    contentDescription = stringResource(R.string.create_calendar),
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(stringResource(R.string.create_calendar))
+            }
+        }
+
+        // GENERAL ACTIONS
+
+        // show only personal
+        DropdownMenuItem(
+            onClick = {
+                onSetShowOnlyPersonal(!showOnlyPersonal.onlyPersonal)
+                overflowOpen = false
+            },
+            enabled = !showOnlyPersonal.locked
+        ) {
+            Text(stringResource(R.string.account_only_personal))
+            Checkbox(
+                checked = showOnlyPersonal.onlyPersonal,
+                enabled = !showOnlyPersonal.locked,
+                onCheckedChange = {
+                    onSetShowOnlyPersonal(it)
+                    overflowOpen = false
+                }
+            )
+        }
+
+        // rename account
+        DropdownMenuItem(onClick = {
+            showRenameAccountDialog = true
+            overflowOpen = false
+        }) {
+            Icon(
+                Icons.Default.DriveFileRenameOutline,
+                contentDescription = stringResource(R.string.account_rename),
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(stringResource(R.string.account_rename))
+        }
+
+        // delete account
+        DropdownMenuItem(onClick = {
+            showDeleteAccountDialog = true
+            overflowOpen = false
+        }) {
+            Icon(
+                Icons.Default.Delete,
+                contentDescription = stringResource(R.string.account_delete),
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(stringResource(R.string.account_delete))
+        }
+    }
+
+    // modal dialogs
+    if (showRenameAccountDialog)
+        RenameAccountDialog(
+            oldName = account.name,
+            onRenameAccount = { newName ->
+                onRenameAccount(newName)
+                showRenameAccountDialog = false
+            },
+            onDismiss = { showRenameAccountDialog = false }
+        )
+    if (showDeleteAccountDialog)
+        DeleteAccountDialog(
+            onConfirm = onDeleteAccount,
+            onDismiss = { showDeleteAccountDialog = false }
+        )
 }
 
 @Composable

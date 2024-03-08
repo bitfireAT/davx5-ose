@@ -88,6 +88,12 @@ class AccountModel @AssistedInject constructor(
     val accountManager: AccountManager = AccountManager.get(context)
 
     val cardDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CARDDAV)
+    val canCreateAddressBook = cardDavSvc.switchMap { svc ->
+        if (svc != null)
+            db.homeSetDao().hasBindableByServiceLive(svc.id)
+        else
+            MutableLiveData(false)
+    }
     val cardDavRefreshingActive = cardDavSvc.switchMap { svc ->
         if (svc == null)
             return@switchMap null
@@ -108,6 +114,12 @@ class AccountModel @AssistedInject constructor(
     val addressBooksPager = CollectionPager(db, cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
 
     val calDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CALDAV)
+    val canCreateCalendar = calDavSvc.switchMap { svc ->
+        if (svc != null)
+            db.homeSetDao().hasBindableByServiceLive(svc.id)
+        else
+            MutableLiveData(false)
+    }
     val calDavRefreshingActive = calDavSvc.switchMap { svc ->
         if (svc == null)
             return@switchMap null
