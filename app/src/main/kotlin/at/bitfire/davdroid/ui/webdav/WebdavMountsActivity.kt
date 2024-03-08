@@ -4,198 +4,378 @@
 
 package at.bitfire.davdroid.ui.webdav
 
-import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.DocumentsContract
-import android.text.method.LinkMovementMethod
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Card
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.core.text.HtmlCompat
-import androidx.core.view.MenuProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.ActivityWebdavMountsBinding
-import at.bitfire.davdroid.databinding.WebdavMountsItemBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.ui.UiUtils
+import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
+import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
+import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl
 import org.apache.commons.io.FileUtils
 import java.util.logging.Level
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
 class WebdavMountsActivity: AppCompatActivity() {
 
-    private lateinit var binding: ActivityWebdavMountsBinding
+    companion object {
+
+        fun helpUrl(context: Context) =
+            App.homepageUrl(context).buildUpon()
+                .appendEncodedPath("manual/webdav_mounts.html")
+                .build()
+
+    }
+
     private val model by viewModels<Model>()
+
+    private val browser = registerForActivityResult(StartActivityForResult()) { result ->
+        result.data?.data?.let { uri ->
+            ShareCompat.IntentBuilder(this)
+                .setType(DavUtils.MIME_TYPE_ACCEPT_ALL)
+                .addStream(uri)
+                .startChooser()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityWebdavMountsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContent {
+            MdcTheme {
+                CompositionLocalProvider(
+                    LocalUriHandler provides SafeAndroidUriHandler(this)
+                ) {
+                    val mountInfos by model.mountInfos.observeAsState(emptyList())
 
-        binding.webdavMountsSeeManual.text = HtmlCompat.fromHtml(getString(R.string.webdav_add_mount_empty_more_info, helpUrl()), 0)
-        binding.webdavMountsSeeManual.movementMethod = LinkMovementMethod.getInstance()
-
-        val adapter = MountsAdapter(this, model)
-        binding.list.adapter = adapter
-        binding.list.layoutManager = LinearLayoutManager(this)
-        model.mountInfos.observe(this, { mounts ->
-            adapter.submitList(ArrayList(mounts))
-
-            val hasMounts = mounts.isNotEmpty()
-            binding.list.visibility = if (hasMounts) View.VISIBLE else View.GONE
-            binding.empty.visibility = if (hasMounts) View.GONE else View.VISIBLE
-        })
-
-        val browser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            result.data?.data?.let { uri ->
-                ShareCompat.IntentBuilder(this)
-                    .setType(DavUtils.MIME_TYPE_ACCEPT_ALL)
-                    .addStream(uri)
-                    .startChooser()
-            }
-        }
-        model.browseIntent.observe(this, { intent ->
-            if (intent != null)
-                browser.launch(intent)
-        })
-
-        binding.add.setOnClickListener {
-            startActivity(Intent(this, AddWebdavMountActivity::class.java))
-        }
-
-        addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.activity_webdav_mounts, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.help -> {
-                        onShowHelp()
-                        true
-                    }
-                    else -> false
+                    WebdavMountsContent(mountInfos)
                 }
             }
-        })
+        }
     }
 
-    fun onShowHelp() {
-        UiUtils.launchUri(this, helpUrl())
+
+    @Composable
+    fun WebdavMountsContent(mountInfos: List<MountInfo>) {
+        val context = LocalContext.current
+        val uriHandler = LocalUriHandler.current
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    navigationIcon = {
+                        IconButton(
+                            onClick = ::finish
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    title = { Text(stringResource(R.string.webdav_mounts_title)) },
+                    actions = {
+                        IconButton(
+                            onClick = { uriHandler.openUri(helpUrl(context).toString()) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Help,
+                                contentDescription = stringResource(R.string.help)
+                            )
+                        }
+                    }
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { startActivity(Intent(this, AddWebdavMountActivity::class.java)) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = stringResource(R.string.webdav_add_mount_add)
+                    )
+                }
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                if (mountInfos.isEmpty()) {
+                    HintText()
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                            .padding(paddingValues)
+                    ) {
+                        items(mountInfos, key = { it.mount.id }, contentType = { "mount" }) {
+                            WebdavMountsItem(it)
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    private fun helpUrl() =
-        App.homepageUrl(this).buildUpon()
-            .appendEncodedPath("manual/webdav_mounts.html")
-            .build()
+    @Composable
+    @OptIn(ExperimentalTextApi::class)
+    fun HintText() {
+        val context = LocalContext.current
+        val uriHandler = LocalUriHandler.current
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.webdav_mounts_empty),
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            )
+
+            val text = HtmlCompat.fromHtml(
+                stringResource(
+                    R.string.webdav_add_mount_empty_more_info,
+                    helpUrl(context).toString()
+                ),
+                0
+            ).toAnnotatedString()
+            ClickableText(
+                text = text,
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { position ->
+                    text.getUrlAnnotations(position, position + 1)
+                        .firstOrNull()
+                        ?.let { uriHandler.openUri(it.item.url) }
+                }
+            )
+        }
+    }
+
+    @Composable
+    fun WebdavMountsItem(info: MountInfo) {
+        var showingDialog by remember { mutableStateOf(false) }
+        if (showingDialog) {
+            AlertDialog(
+                onDismissRequest = { showingDialog = false },
+                title = { Text(stringResource(R.string.webdav_remove_mount_title)) },
+                text = { Text(stringResource(R.string.webdav_remove_mount_text)) },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            Logger.log.log(Level.INFO, "User removes mount point", info.mount)
+                            model.remove(info.mount)
+                        }
+                    ) {
+                        Text(stringResource(R.string.dialog_remove))
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showingDialog = false }
+                    ) {
+                        Text(stringResource(R.string.dialog_deny))
+                    }
+                }
+            )
+        }
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            backgroundColor = MaterialTheme.colors.onSecondary
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = info.mount.name,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    style = MaterialTheme.typography.body1
+                )
+                Text(
+                    text = info.mount.url.toString(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    style = MaterialTheme.typography.caption
+                )
+                
+                val quotaUsed = info.rootDocument?.quotaUsed
+                val quotaAvailable = info.rootDocument?.quotaAvailable
+                if (quotaUsed != null && quotaAvailable != null) {
+                    val quotaTotal = quotaUsed + quotaAvailable
+                    val progress = quotaUsed.toFloat() / quotaTotal
+                    LinearProgressIndicator(
+                        progress = progress,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp)
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.webdav_mounts_quota_used_available,
+                            FileUtils.byteCountToDisplaySize(quotaUsed),
+                            FileUtils.byteCountToDisplaySize(quotaAvailable)
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = {
+                            val authority = getString(R.string.webdav_authority)
+                            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "*/*"
+                            }
+                            val uri = DocumentsContract.buildRootUri(authority, info.mount.id.toString())
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri)
+                            }
+                            browser.launch(intent)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.webdav_mounts_share_content).uppercase()
+                        )
+                    }
+                    Spacer(Modifier.weight(1f))
+                    IconButton(
+                        onClick = { showingDialog = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = stringResource(R.string.webdav_mounts_unmount)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun WebdavMountsContent_Preview() {
+        MdcTheme {
+            WebdavMountsContent(emptyList())
+        }
+    }
+
+    @Preview(showBackground = true)
+    @Composable
+    fun WebdavMountsItem_Preview() {
+        MdcTheme {
+            WebdavMountsItem(
+                info = MountInfo(
+                    mount = WebDavMount(
+                        id = 0,
+                        name = "Preview Webdav Mount",
+                        url = HttpUrl.Builder()
+                            .scheme("https")
+                            .host("example.com")
+                            .build()
+                    ),
+                    rootDocument = WebDavDocument(
+                        mountId = 0,
+                        parentId = null,
+                        name = "Root",
+                        quotaAvailable = 1024 * 1024 * 1024,
+                        quotaUsed = 512 * 1024 * 1024
+                    )
+                )
+            )
+        }
+    }
 
 
     data class MountInfo(
         val mount: WebDavMount,
         val rootDocument: WebDavDocument?
     )
-
-    class MountsAdapter(
-        val context: Context,
-        val model: Model
-    ): ListAdapter<MountInfo, MountsAdapter.ViewHolder>(object: DiffUtil.ItemCallback<MountInfo>() {
-        override fun areItemsTheSame(oldItem: MountInfo, newItem: MountInfo) =
-            oldItem.mount.id == newItem.mount.id
-        override fun areContentsTheSame(oldItem: MountInfo, newItem: MountInfo) =
-            oldItem.mount.name == newItem.mount.name && oldItem.mount.url == newItem.mount.url &&
-            oldItem.rootDocument?.quotaUsed == newItem.rootDocument?.quotaUsed &&
-            oldItem.rootDocument?.quotaAvailable == newItem.rootDocument?.quotaAvailable
-    }) {
-        class ViewHolder(val binding: WebdavMountsItemBinding): RecyclerView.ViewHolder(binding.root)
-
-        val authority = context.getString(R.string.webdav_authority)
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val inflater = LayoutInflater.from(parent.context)
-            val binding = WebdavMountsItemBinding.inflate(inflater, parent, false)
-
-            return ViewHolder(binding)
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val info = getItem(position)
-            val binding = holder.binding
-            binding.name.text = info.mount.name
-            binding.url.text = info.mount.url.toString()
-
-            val quotaUsed = info.rootDocument?.quotaUsed
-            val quotaAvailable = info.rootDocument?.quotaAvailable
-            if (quotaUsed != null && quotaAvailable != null) {
-                val quotaTotal = quotaUsed + quotaAvailable
-
-                binding.quotaProgress.visibility = View.VISIBLE
-                binding.quotaProgress.progress = (quotaUsed*100 / quotaTotal).toInt()
-
-                binding.quota.visibility = View.VISIBLE
-                binding.quota.text = context.getString(R.string.webdav_mounts_quota_used_available,
-                    FileUtils.byteCountToDisplaySize(quotaUsed),
-                    FileUtils.byteCountToDisplaySize(quotaAvailable)
-                )
-            } else {
-                binding.quotaProgress.visibility = View.GONE
-                binding.quota.visibility = View.GONE
-            }
-
-            binding.browse.setOnClickListener {
-                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                intent.type = "*/*"
-                val uri = DocumentsContract.buildRootUri(authority, info.mount.id.toString())
-                intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri)
-                model.browseIntent.value = intent
-                model.browseIntent.value = null
-            }
-
-            binding.removeMountpoint.setOnClickListener {
-                AlertDialog.Builder(context)
-                    .setTitle(R.string.webdav_remove_mount_title)
-                    .setMessage(R.string.webdav_remove_mount_text)
-                    .setPositiveButton(R.string.dialog_remove) { _, _ ->
-                        Logger.log.log(Level.INFO, "User removes mount point", info.mount)
-                        model.remove(info.mount)
-                    }
-                    .setNegativeButton(R.string.dialog_deny, null)
-                    .show()
-            }
-        }
-    }
 
 
     @HiltViewModel
@@ -240,8 +420,6 @@ class WebdavMountsActivity: AppCompatActivity() {
                 postValue(result)
             }
         }
-
-        val browseIntent = MutableLiveData<Intent>()
 
         /**
          * Removes the mountpoint (deleting connection information)
