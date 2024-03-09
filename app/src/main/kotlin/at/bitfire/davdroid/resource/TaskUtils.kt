@@ -5,6 +5,9 @@
 package at.bitfire.davdroid.resource
 
 import android.content.Context
+import android.content.pm.PackageManager
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.SyncUtils
@@ -27,13 +30,27 @@ object TaskUtils {
 
     fun currentProvider(context: Context): ProviderName? {
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
-        val preferredAuthority = settingsManager.getString(Settings.PREFERRED_TASKS_PROVIDER)
-        ProviderName.entries.toTypedArray()
-                .sortedByDescending { it.authority == preferredAuthority }
-                .forEach { providerName ->
-            if (context.packageManager.resolveContentProvider(providerName.authority, 0) != null)
-                return providerName
+        val preferredAuthority = settingsManager.getString(Settings.PREFERRED_TASKS_PROVIDER) ?: return null
+        return preferredAuthorityToProviderName(preferredAuthority, context.packageManager)
+    }
+
+    fun currentProviderLive(context: Context): LiveData<ProviderName?> {
+        val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
+        return settingsManager.getStringLive(Settings.PREFERRED_TASKS_PROVIDER).map { preferred ->
+            preferredAuthorityToProviderName(preferred, context.packageManager)
         }
+    }
+
+    private fun preferredAuthorityToProviderName(
+        preferredAuthority: String,
+        packageManager: PackageManager
+    ): ProviderName? {
+        ProviderName.entries.toTypedArray()
+            .sortedByDescending { it.authority == preferredAuthority }
+            .forEach { providerName ->
+                if (packageManager.resolveContentProvider(providerName.authority, 0) != null)
+                    return providerName
+            }
         return null
     }
 

@@ -89,7 +89,7 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
         NotificationUtils.createChannels(this)
 
         // set light/dark mode
-        UiUtils.setTheme(this)   // when this is called in the asynchronous thread below, it recreates
+        UiUtils.updateTheme(this)   // when this is called in the asynchronous thread below, it recreates
                                  // some current activity and causes an IllegalStateException in rare cases
 
         // don't block UI for some background checks

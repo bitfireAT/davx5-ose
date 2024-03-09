@@ -55,6 +55,7 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
 import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
+import at.bitfire.davdroid.util.PermissionUtils
 import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -116,14 +117,14 @@ class BatteryOptimizationsPage: IntroPage {
             BatteryOptimizationsContent(
                 dontShowBattery = hintBatteryOptimizations == false,
                 onChangeDontShowBattery = {
-                    model.hintBatteryOptimizations.value = !it
+                    model.settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, !it)
                 },
                 isExempted = isExempted,
                 shouldBeExempted = shouldBeExempted,
                 onChangeShouldBeExempted = model.shouldBeExempted::postValue,
                 dontShowAutostart = hintAutostartPermission == false,
                 onChangeDontShowAutostart = {
-                    model.hintAutostartPermission.value = !it
+                    model.settings.putBoolean(HINT_AUTOSTART_PERMISSION, !it)
                 },
                 manufacturerWarning = Model.manufacturerWarning
             )
@@ -182,18 +183,16 @@ class BatteryOptimizationsPage: IntroPage {
         val shouldBeExempted = MutableLiveData<Boolean>()
         val isExempted = MutableLiveData<Boolean>()
         val hintBatteryOptimizations = settings.getBooleanLive(HINT_BATTERY_OPTIMIZATIONS)
-
-        val hintAutostartPermission = settings.getBooleanLive(HINT_AUTOSTART_PERMISSION)
-
         private val batteryOptimizationsReceiver = object: BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 checkBatteryOptimizations()
             }
         }
 
+        val hintAutostartPermission = settings.getBooleanLive(HINT_AUTOSTART_PERMISSION)
+
         init {
-            // There's an undocumented intent that is sent when the battery optimization whitelist changes.
-            val intentFilter = IntentFilter("android.os.action.POWER_SAVE_WHITELIST_CHANGED")
+            val intentFilter = IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED)
             context.registerReceiver(batteryOptimizationsReceiver, intentFilter)
 
             checkBatteryOptimizations()

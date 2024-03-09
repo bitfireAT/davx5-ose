@@ -152,8 +152,8 @@
   <string name="app_settings_logging_on">La journalisation est activée</string>
   <string name="app_settings_logging_off">La journalisation est désactivée</string>
   <string name="app_settings_battery_optimization">Optimisation de la batterie</string>
-  <string name="app_settings_battery_optimization_whitelisted">L\'App est dans la liste blanche (recommandé)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">L\'App n\'est pas dans la liste blanche (non recommandé)</string>
+  <string name="app_settings_battery_optimization_exempted">L\'App est dans la liste blanche (recommandé)</string>
+  <string name="app_settings_battery_optimization_optimized">L\'App n\'est pas dans la liste blanche (non recommandé)</string>
   <string name="app_settings_connection">Connexion</string>
   <string name="app_settings_proxy">Type de Proxy</string>
   <string-array name="app_settings_proxy_types">

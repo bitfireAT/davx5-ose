@@ -7,9 +7,8 @@ package at.bitfire.davdroid.settings
 import android.content.Context
 import android.util.NoSuchPropertyException
 import androidx.annotation.AnyThread
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.settings.SettingsManager.OnChangeListener
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.EntryPoint
@@ -19,7 +18,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.io.Writer
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.LinkedList
 import java.util.logging.Level
 import javax.inject.Singleton
 
@@ -126,14 +125,17 @@ class SettingsManager internal constructor(
 
     fun getBooleanOrNull(key: String): Boolean? = getValue(key) { provider -> provider.getBoolean(key) }
     fun getBoolean(key: String): Boolean = getBooleanOrNull(key) ?: throw NoSuchPropertyException(key)
+    fun getBooleanLive(key: String): LiveData<Boolean> = SettingLiveData { getBooleanOrNull(key) }
 
     fun getIntOrNull(key: String): Int? = getValue(key) { provider -> provider.getInt(key) }
     fun getInt(key: String): Int = getIntOrNull(key) ?: throw NoSuchPropertyException(key)
+    fun getIntLive(key: String): LiveData<Int> = SettingLiveData { getIntOrNull(key) }
 
     fun getLongOrNull(key: String): Long? = getValue(key) { provider -> provider.getLong(key) }
     fun getLong(key: String) = getLongOrNull(key) ?: throw NoSuchPropertyException(key)
 
     fun getString(key: String) = getValue(key) { provider -> provider.getString(key) }
+    fun getStringLive(key: String): LiveData<String> = SettingLiveData { getString(key) }
 
 
     fun isWritable(key: String): Boolean {
@@ -158,48 +160,41 @@ class SettingsManager internal constructor(
     }
 
     fun putBoolean(key: String, value: Boolean?) =
-            putValue(key, value) { provider -> provider.putBoolean(key, value) }
+        putValue(key, value) { provider -> provider.putBoolean(key, value) }
 
     fun putInt(key: String, value: Int?) =
-            putValue(key, value) { provider -> provider.putInt(key, value) }
+        putValue(key, value) { provider -> provider.putInt(key, value) }
 
     fun putLong(key: String, value: Long?) =
-            putValue(key, value) { provider -> provider.putLong(key, value) }
+        putValue(key, value) { provider -> provider.putLong(key, value) }
 
     fun putString(key: String, value: String?) =
-            putValue(key, value) { provider -> provider.putString(key, value) }
+        putValue(key, value) { provider -> provider.putString(key, value) }
 
     fun remove(key: String) = putString(key, null)
 
 
-    /*** LIVE DATA ***/
-
-    /**
-     * Returns a [MutableLiveData] which is backed by the settings with the given key.
-     * An observer must be added to the returned [MutableLiveData] to make it active.
-     */
-    fun getBooleanLive(key: String) = object : MutableLiveData<Boolean?>() {
-        private val preferenceChangeListener = OnChangeListener { updateValue() }
-
-        private fun updateValue() {
-            value = getBooleanOrNull(key)
-        }
-
-        // setValue is also called from postValue, so no need to override
-        override fun setValue(value: Boolean?) {
-            super.setValue(value)
-            putBoolean(key, value)
-        }
-
+    inner class SettingLiveData<T>(
+        val getValueOrNull: () -> T?
+    ): LiveData<T>(), OnChangeListener {
         override fun onActive() {
-            super.onActive()
-            updateValue()
-            addOnChangeListener(preferenceChangeListener)
+            addOnChangeListener(this)
+            update()
         }
 
         override fun onInactive() {
-            super.onInactive()
-            removeOnChangeListener(preferenceChangeListener)
+            removeOnChangeListener(this)
+        }
+
+        override fun onSettingsChanged() {
+            update()
+        }
+
+        private fun update() {
+            getValueOrNull()?.let { newValue ->
+                if (value != newValue)
+                    postValue(newValue)
+            }
         }
     }
 

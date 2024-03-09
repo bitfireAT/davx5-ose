@@ -137,8 +137,8 @@
   <string name="app_settings_logging_on">Ghi nhật ký đang hoạt động</string>
   <string name="app_settings_logging_off">Ghi nhật ký đã tắt</string>
   <string name="app_settings_battery_optimization">Tối ưu hoá pin</string>
-  <string name="app_settings_battery_optimization_whitelisted">Ứng dụng không được tối ưu (khuyên dùng)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Ứng dụng được tối ưu (không khuyên dùng)</string>
+  <string name="app_settings_battery_optimization_exempted">Ứng dụng không được tối ưu (khuyên dùng)</string>
+  <string name="app_settings_battery_optimization_optimized">Ứng dụng được tối ưu (không khuyên dùng)</string>
   <string name="app_settings_connection">Kết nối</string>
   <string name="app_settings_proxy">Loại proxy</string>
   <string-array name="app_settings_proxy_types">

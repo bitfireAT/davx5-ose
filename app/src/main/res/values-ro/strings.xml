@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">Înregistrarea este activă</string>
   <string name="app_settings_logging_off">Înregistrarea este dezactivată</string>
   <string name="app_settings_battery_optimization">Optimizarea bateriei</string>
-  <string name="app_settings_battery_optimization_whitelisted">Aplicația este inclusă în lista albă (recomandat)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Aplicația nu este inclusă în lista albă (nu este recomandat)</string>
+  <string name="app_settings_battery_optimization_exempted">Aplicația este inclusă în lista albă (recomandat)</string>
+  <string name="app_settings_battery_optimization_optimized">Aplicația nu este inclusă în lista albă (nu este recomandat)</string>
   <string name="app_settings_connection">Conexiune</string>
   <string name="app_settings_proxy">Tip proxy</string>
   <string-array name="app_settings_proxy_types">

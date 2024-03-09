@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">Логирование активно</string>
   <string name="app_settings_logging_off">Логирование отключено</string>
   <string name="app_settings_battery_optimization">Оптимизация батареи</string>
-  <string name="app_settings_battery_optimization_whitelisted">Приложение добавлено в белый список (рекомендуется)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Приложение не добавлено в белый список (не рекомендуется)</string>
+  <string name="app_settings_battery_optimization_exempted">Приложение добавлено в белый список (рекомендуется)</string>
+  <string name="app_settings_battery_optimization_optimized">Приложение не добавлено в белый список (не рекомендуется)</string>
   <string name="app_settings_connection">Соединение</string>
   <string name="app_settings_proxy">Тип прокси</string>
   <string-array name="app_settings_proxy_types">

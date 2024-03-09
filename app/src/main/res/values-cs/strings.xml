@@ -152,8 +152,8 @@
   <string name="app_settings_logging_on">Zaznamenávání událostí je aktivní</string>
   <string name="app_settings_logging_off">Zaznamenávání událostí je vypnuté</string>
   <string name="app_settings_battery_optimization">Optimalizace akumulátoru</string>
-  <string name="app_settings_battery_optimization_whitelisted">Aplikace je zařazena na seznam výjimek (doporučeno)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Aplikace není zařazena na seznam výjimek (není doporučeno)</string>
+  <string name="app_settings_battery_optimization_exempted">Aplikace je zařazena na seznam výjimek (doporučeno)</string>
+  <string name="app_settings_battery_optimization_optimized">Aplikace není zařazena na seznam výjimek (není doporučeno)</string>
   <string name="app_settings_connection">Připojení</string>
   <string name="app_settings_proxy">Typ proxy</string>
   <string-array name="app_settings_proxy_types">

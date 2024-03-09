@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class TasksWatcher protected constructor(
+class TasksWatcher private constructor(
     context: Context
 ): PackageChangedReceiver(context) {
 
@@ -20,7 +20,6 @@ class TasksWatcher protected constructor(
         fun watch(context: Context) = TasksWatcher(context)
 
     }
-
 
     override fun onReceive(context: Context, intent: Intent) {
         CoroutineScope(Dispatchers.Default).launch {

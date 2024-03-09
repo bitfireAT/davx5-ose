@@ -137,8 +137,8 @@
   <string name="app_settings_logging_on">El registro está activo</string>
   <string name="app_settings_logging_off">El registro está deshabilitado</string>
   <string name="app_settings_battery_optimization">Optimización de batería</string>
-  <string name="app_settings_battery_optimization_whitelisted">La app está la lista blanca (recomendado)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">La app no está en la lista blanca (no recomendado)</string>
+  <string name="app_settings_battery_optimization_exempted">La app está la lista blanca (recomendado)</string>
+  <string name="app_settings_battery_optimization_optimized">La app no está en la lista blanca (no recomendado)</string>
   <string name="app_settings_connection">Conexión</string>
   <string name="app_settings_proxy">Tipo de proxy</string>
   <string-array name="app_settings_proxy_types">

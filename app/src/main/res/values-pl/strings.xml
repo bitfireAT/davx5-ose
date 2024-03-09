@@ -152,8 +152,8 @@
   <string name="app_settings_logging_on">Logowanie jest włączone</string>
   <string name="app_settings_logging_off">Logowanie jest wyłączone</string>
   <string name="app_settings_battery_optimization">Optymalizacja baterii</string>
-  <string name="app_settings_battery_optimization_whitelisted">Aplikacja jest na białej liście (zalecane)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Aplikacja nie znajduje się na białej liście (niezalecane)</string>
+  <string name="app_settings_battery_optimization_exempted">Aplikacja jest na białej liście (zalecane)</string>
+  <string name="app_settings_battery_optimization_optimized">Aplikacja nie znajduje się na białej liście (niezalecane)</string>
   <string name="app_settings_connection">Łączność</string>
   <string name="app_settings_proxy">Typ proxy</string>
   <string-array name="app_settings_proxy_types">

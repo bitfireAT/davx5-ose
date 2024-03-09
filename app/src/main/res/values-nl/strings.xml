@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">Loggen is actief</string>
   <string name="app_settings_logging_off">Loggen is niet actief</string>
   <string name="app_settings_battery_optimization">Batterijoptimalisatie</string>
-  <string name="app_settings_battery_optimization_whitelisted">Onbeperkt batterijgebruik toestaan (aanbevolen)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Beperkt batterijgebruik toestaan (niet aanbevolen)</string>
+  <string name="app_settings_battery_optimization_exempted">Onbeperkt batterijgebruik toestaan (aanbevolen)</string>
+  <string name="app_settings_battery_optimization_optimized">Beperkt batterijgebruik toestaan (niet aanbevolen)</string>
   <string name="app_settings_connection">Verbinding</string>
   <string name="app_settings_proxy">Proxy type</string>
   <string-array name="app_settings_proxy_types">

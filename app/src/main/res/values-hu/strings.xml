@@ -152,8 +152,8 @@
   <string name="app_settings_logging_on">Naplózás bekapcsolva</string>
   <string name="app_settings_logging_off">Naplózás kikapcsolva</string>
   <string name="app_settings_battery_optimization">Akkumulátorhasználat optimalizálása</string>
-  <string name="app_settings_battery_optimization_whitelisted">Az optimalizálás kikapcsolva (ajánlott)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Az optimalizálás bekapcsolva (nem ajánlott)</string>
+  <string name="app_settings_battery_optimization_exempted">Az optimalizálás kikapcsolva (ajánlott)</string>
+  <string name="app_settings_battery_optimization_optimized">Az optimalizálás bekapcsolva (nem ajánlott)</string>
   <string name="app_settings_connection">Kapcsolat</string>
   <string name="app_settings_proxy">A proxy típusa</string>
   <string-array name="app_settings_proxy_types">

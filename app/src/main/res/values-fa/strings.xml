@@ -146,8 +146,8 @@
   <string name="app_settings_logging_on">ورود به سیستم فعال است</string>
   <string name="app_settings_logging_off">ورود به سیستم غیرفعال است</string>
   <string name="app_settings_battery_optimization">بهینه ساز باتری</string>
-  <string name="app_settings_battery_optimization_whitelisted">برنامه در لیست سفید قرار دارد (توصیه می شود).</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">برنامه در لیست سفید قرار ندارد (توصیه نمی شود).</string>
+  <string name="app_settings_battery_optimization_exempted">برنامه در لیست سفید قرار دارد (توصیه می شود).</string>
+  <string name="app_settings_battery_optimization_optimized">برنامه در لیست سفید قرار ندارد (توصیه نمی شود).</string>
   <string name="app_settings_connection">ارتباط</string>
   <string name="app_settings_proxy">نوع پروکسی</string>
   <string-array name="app_settings_proxy_types">

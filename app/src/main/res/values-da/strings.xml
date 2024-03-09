@@ -151,8 +151,8 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="app_settings_logging_on">Logning er aktiv</string>
   <string name="app_settings_logging_off">Logning er deaktiveret</string>
   <string name="app_settings_battery_optimization">Batteri optimering</string>
-  <string name="app_settings_battery_optimization_whitelisted">App er hvid listet (anbefalet)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">App er ikke hvid listet (ikke anbefalet)</string>
+  <string name="app_settings_battery_optimization_exempted">App er hvid listet (anbefalet)</string>
+  <string name="app_settings_battery_optimization_optimized">App er ikke hvid listet (ikke anbefalet)</string>
   <string name="app_settings_connection">Forbindelse</string>
   <string name="app_settings_proxy">Proxy type</string>
   <string-array name="app_settings_proxy_types">

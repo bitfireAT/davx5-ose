@@ -28,8 +28,8 @@ import java.util.logging.Level
 
 object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
 
-    const val LOGGER_NAME = "davx5"
-    private const val LOG_TO_FILE = "log_to_file"
+    private const val LOGGER_NAME = "davx5"
+    const val LOG_TO_FILE = "log_to_file"
 
     val log: java.util.logging.Logger = java.util.logging.Logger.getLogger(LOGGER_NAME)
 
@@ -105,7 +105,6 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                 ).build())
 
                 val prefIntent = Intent(context, AppSettingsActivity::class.java)
-                prefIntent.putExtra(AppSettingsActivity.EXTRA_SCROLL_TO, LOG_TO_FILE)
                 prefIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 val pendingPref = PendingIntent.getActivity(context, 0, prefIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 builder.addAction(NotificationCompat.Action.Builder(
