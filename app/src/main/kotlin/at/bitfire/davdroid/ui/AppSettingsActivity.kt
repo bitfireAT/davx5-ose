@@ -27,8 +27,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment
-import at.bitfire.davdroid.ui.intro.OpenSourceFragment
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -272,10 +271,10 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         private fun resetHints() {
-            settings.remove(BatteryOptimizationsFragment.Model.HINT_BATTERY_OPTIMIZATIONS)
-            settings.remove(BatteryOptimizationsFragment.Model.HINT_AUTOSTART_PERMISSION)
+            settings.remove(BatteryOptimizationsPage.Model.HINT_BATTERY_OPTIMIZATIONS)
+            settings.remove(BatteryOptimizationsPage.Model.HINT_AUTOSTART_PERMISSION)
             settings.remove(TasksModel.HINT_OPENTASKS_NOT_INSTALLED)
-            settings.remove(OpenSourceFragment.Model.SETTING_NEXT_DONATION_POPUP)
+            //settings.remove(OpenSourceFragment.Model.SETTING_NEXT_DONATION_POPUP)
             Snackbar.make(requireView(), R.string.app_settings_reset_hints_success, Snackbar.LENGTH_LONG).show()
         }
 
