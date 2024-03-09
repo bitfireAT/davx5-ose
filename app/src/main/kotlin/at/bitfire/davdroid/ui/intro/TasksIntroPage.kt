@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.TasksActivity
 import at.bitfire.davdroid.ui.TasksCard
-import at.bitfire.davdroid.ui.TasksModel
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -27,7 +27,7 @@ class TasksIntroPage : IntroPage {
     override fun getShowPolicy(application: Application): IntroPage.ShowPolicy {
         val settingsManager = EntryPointAccessors.fromApplication(application, TasksIntroPageEntryPoint::class.java).settingsManager()
 
-        return if (!TaskUtils.isAvailable(application) && settingsManager.getBooleanOrNull(TasksModel.HINT_OPENTASKS_NOT_INSTALLED) != false)
+        return if (!TaskUtils.isAvailable(application) && settingsManager.getBooleanOrNull(TasksActivity.Model.HINT_OPENTASKS_NOT_INSTALLED) != false)
             IntroPage.ShowPolicy.SHOW_ALWAYS
         else
             IntroPage.ShowPolicy.DONT_SHOW
@@ -35,7 +35,7 @@ class TasksIntroPage : IntroPage {
 
     @Composable
     override fun ComposePage() {
-        TasksCard(model = viewModel<TasksModel>())
+        TasksCard(model = viewModel<TasksActivity.Model>())
     }
 
 }

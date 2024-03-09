@@ -6,7 +6,7 @@ package at.bitfire.davdroid.ui.intro
 
 import android.app.Application
 import androidx.compose.runtime.Composable
-import at.bitfire.davdroid.ui.PermissionsFragmentContent
+import at.bitfire.davdroid.ui.PermissionsContent
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
 import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
@@ -28,7 +28,7 @@ class PermissionsIntroPage: IntroPage {
 
     @Composable
     override fun ComposePage() {
-        PermissionsFragmentContent()
+        PermissionsContent()
     }
 
 }
