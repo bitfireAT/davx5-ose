@@ -25,12 +25,15 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.AndroidViewModel
-import at.bitfire.davdroid.OseIntroPageFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import com.github.appintro.AppIntro2
 import com.google.accompanist.themeadapter.material.MdcTheme
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -39,10 +42,16 @@ class IntroActivity : AppIntro2() {
 
     companion object {
 
+        @EntryPoint
+        @InstallIn(ActivityComponent::class)
+        interface IntroActivityEntryPoint {
+            fun introPageFactory(): IntroPageFactory
+        }
+
         @WorkerThread
         fun shouldShowIntroActivity(activity: Activity): Boolean {
-            val pages = OseIntroPageFactory().introPages
-            return pages.any {
+            val introPageFactory = EntryPointAccessors.fromActivity(activity, IntroActivityEntryPoint::class.java).introPageFactory()
+            return introPageFactory.introPages.any {
                 it.getShowPolicy(activity.application) == IntroPage.ShowPolicy.SHOW_ALWAYS
             }
         }
