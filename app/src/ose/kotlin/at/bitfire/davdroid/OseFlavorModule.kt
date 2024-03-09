@@ -8,14 +8,15 @@ import at.bitfire.davdroid.ui.AboutActivity
 import at.bitfire.davdroid.ui.AccountsDrawerHandler
 import at.bitfire.davdroid.ui.OpenSourceLicenseInfoProvider
 import at.bitfire.davdroid.ui.OseAccountsDrawerHandler
-import at.bitfire.davdroid.ui.intro.IntroFragmentFactory
-import at.bitfire.davdroid.ui.intro.OpenSourceFragment
-import at.bitfire.davdroid.ui.intro.PermissionsIntroFragment
-import at.bitfire.davdroid.ui.intro.TasksIntroFragment
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage
+import at.bitfire.davdroid.ui.intro.IntroPage
+import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 
 interface OseFlavorModules {
@@ -30,28 +31,22 @@ interface OseFlavorModules {
         fun appLicenseInfoProvider(impl: OpenSourceLicenseInfoProvider): AboutActivity.AppLicenseInfoProvider
     }
 
-
-    //// intro fragments ////
-
     @Module
-    @InstallIn(ActivityComponent::class)
-    interface OpenSourceFragmentModule {
-        @Binds @IntoSet
-        fun getFactory(factory: OpenSourceFragment.Factory): IntroFragmentFactory
+    @InstallIn(SingletonComponent::class)
+    interface Global {
+        @Binds
+        fun introPageFactory(impl: OseIntroPageFactory): IntroPageFactory
     }
 
-    @Module
-    @InstallIn(ActivityComponent::class)
-    interface PermissionsIntroFragmentModule {
-        @Binds @IntoSet
-        fun getFactory(factory: PermissionsIntroFragment.Factory): IntroFragmentFactory
-    }
+
+    //// intro pages ////
 
     @Module
-    @InstallIn(ActivityComponent::class)
-    interface TasksIntroFragmentModule {
-        @Binds @IntoSet
-        fun getFactory(factory: TasksIntroFragment.Factory): IntroFragmentFactory
+    @InstallIn(SingletonComponent::class)
+    interface IntroPagesModule {
+        @Provides
+        @IntoSet
+        fun introPage(): IntroPage = BatteryOptimizationsPage()
     }
 
 }

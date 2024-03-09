@@ -4,11 +4,7 @@
 
 package at.bitfire.davdroid.ui.intro
 
-import android.content.Context
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.app.Application
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,67 +27,75 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.databinding.ObservableBoolean
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.intro.OpenSourceFragment.Model.Companion.SETTING_NEXT_DONATION_POPUP
 import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
-import com.google.accompanist.themeadapter.material.MdcTheme
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 
-@AndroidEntryPoint
-class OpenSourceFragment: Fragment() {
+class OpenSourcePage : IntroPage {
 
-    val model by viewModels<Model>()
-
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                MdcTheme {
-                    var dontShow by remember { mutableStateOf(model.dontShow.get()) }
-
-                    val uriHandler = SafeAndroidUriHandler(LocalContext.current)
-                    CompositionLocalProvider(LocalUriHandler provides uriHandler) {
-                        FragmentContent(
-                            dontShow = dontShow,
-                            onChangeDontShow = {
-                                model.dontShow.set(it)
-                                dontShow = it
-                            }
-                        )
-                    }
-                }
-            }
-        }
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface OpenSourcePageEntryPoint {
+        fun settingsManager(): SettingsManager
     }
 
+    override fun getShowPolicy(application: Application): IntroPage.ShowPolicy {
+        val settingsManager = EntryPointAccessors.fromApplication(application, OpenSourcePageEntryPoint::class.java).settingsManager()
+
+        return if (System.currentTimeMillis() > (settingsManager.getLongOrNull(Model.SETTING_NEXT_DONATION_POPUP) ?: 0))
+            IntroPage.ShowPolicy.SHOW_ALWAYS
+        else
+            IntroPage.ShowPolicy.DONT_SHOW
+    }
+
+    @Composable
+    override fun ComposePage() {
+        Page()
+    }
+
+    @Composable
+    private fun Page(model: Model = viewModel()) {
+        var dontShow by remember { mutableStateOf(model.dontShow.get()) }
+
+        val uriHandler = SafeAndroidUriHandler(LocalContext.current)
+        CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+            PageContent(
+                dontShow = dontShow,
+                onChangeDontShow = {
+                    model.dontShow.set(it)
+                    dontShow = it
+                }
+            )
+        }
+    }
 
     @Preview(
         showBackground = true,
         showSystemUi = true
     )
     @Composable
-    fun FragmentContent(
+    fun PageContent(
         dontShow: Boolean = false,
         onChangeDontShow: (Boolean) -> Unit = {}
     ) {
+        val context = LocalContext.current
         val uriHandler = LocalUriHandler.current
 
         Column(
@@ -112,7 +116,7 @@ class OpenSourceFragment: Fragment() {
                 OutlinedButton(
                     onClick = {
                         uriHandler.openUri(
-                            App.homepageUrl(requireActivity())
+                            App.homepageUrl(context)
                                 .buildUpon()
                                 .appendPath("donate")
                                 .build()
@@ -160,21 +164,6 @@ class OpenSourceFragment: Fragment() {
                 super.set(dontShowAgain)
             }
         }
-
-    }
-
-
-    class Factory @Inject constructor(
-        val settingsManager: SettingsManager
-    ): IntroFragmentFactory {
-
-        override fun getOrder(context: Context) =
-            if (System.currentTimeMillis() > (settingsManager.getLongOrNull(SETTING_NEXT_DONATION_POPUP) ?: 0))
-                500
-            else
-                0
-
-        override fun create() = OpenSourceFragment()
 
     }
 

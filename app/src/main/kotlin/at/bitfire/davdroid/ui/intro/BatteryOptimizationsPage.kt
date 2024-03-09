@@ -6,15 +6,14 @@ package at.bitfire.davdroid.ui.intro
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.PowerManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -40,95 +39,103 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_AUTOSTART_PERMISSION
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsFragment.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_AUTOSTART_PERMISSION
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
 import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
 import com.google.accompanist.themeadapter.material.MdcTheme
-import dagger.Binds
-import dagger.Module
+import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
-import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.multibindings.IntoSet
+import dagger.hilt.components.SingletonComponent
 import org.apache.commons.text.WordUtils
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
-@AndroidEntryPoint
-class BatteryOptimizationsFragment: Fragment() {
+class BatteryOptimizationsPage: IntroPage {
 
-    val model by viewModels<Model>()
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface BatteryOptimizationsPageEntryPoint {
+        fun settingsManager(): SettingsManager
+    }
 
-    private val ignoreBatteryOptimizationsResultLauncher =
-        registerForActivityResult(IgnoreBatteryOptimizationsContract) {
+    override fun getShowPolicy(application: Application): IntroPage.ShowPolicy {
+        val settingsManager = EntryPointAccessors.fromApplication(application, BatteryOptimizationsPageEntryPoint::class.java).settingsManager()
+
+        // show fragment when:
+        // 1. DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked, and/or
+        // 2a. evil manufacturer AND
+        // 2b. "don't show anymore" has not been clicked
+        return if (
+            (!Model.isExempted(application) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
+            (Model.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
+        )
+            IntroPage.ShowPolicy.SHOW_ALWAYS
+        else
+            IntroPage.ShowPolicy.DONT_SHOW
+    }
+
+    @Composable
+    override fun ComposePage() {
+        IntroPage_FromModel()
+    }
+
+    @Composable
+    private fun IntroPage_FromModel(
+        model: Model = viewModel()
+    ) {
+        val ignoreBatteryOptimizationsResultLauncher = rememberLauncherForActivityResult(IgnoreBatteryOptimizationsContract) {
             model.checkBatteryOptimizations()
         }
 
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                MdcTheme {
-                    val hintBatteryOptimizations by model.hintBatteryOptimizations.observeAsState()
-                    val shouldBeExempted by model.shouldBeExempted.observeAsState(false)
-                    val isExempted by model.isExempted.observeAsState(false)
-                    LaunchedEffect(shouldBeExempted, isExempted) {
-                        if (shouldBeExempted && !isExempted)
-                            ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
-                    }
-
-                    val hintAutostartPermission by model.hintAutostartPermission.observeAsState()
-                    val uriHandler = SafeAndroidUriHandler(LocalContext.current)
-                    CompositionLocalProvider(LocalUriHandler provides uriHandler) {
-                        BatteryOptimizationsContent(
-                            dontShowBattery = hintBatteryOptimizations == false,
-                            onChangeDontShowBattery = {
-                                model.hintBatteryOptimizations.value = !it
-                            },
-                            isExempted = isExempted,
-                            shouldBeExempted = shouldBeExempted,
-                            onChangeShouldBeExempted = model.shouldBeExempted::postValue,
-                            dontShowAutostart = hintAutostartPermission == false,
-                            onChangeDontShowAutostart = {
-                                model.hintAutostartPermission.value = !it
-                            },
-                            manufacturerWarning = Model.manufacturerWarning
-                        )
-                    }
-                }
-            }
+        val hintBatteryOptimizations by model.hintBatteryOptimizations.observeAsState()
+        val shouldBeExempted by model.shouldBeExempted.observeAsState(false)
+        val isExempted by model.isExempted.observeAsState(false)
+        LaunchedEffect(shouldBeExempted, isExempted) {
+            if (shouldBeExempted && !isExempted)
+                ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
-        model.checkBatteryOptimizations()
+        val hintAutostartPermission by model.hintAutostartPermission.observeAsState()
+        val uriHandler = SafeAndroidUriHandler(LocalContext.current)
+        CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+            BatteryOptimizationsContent(
+                dontShowBattery = hintBatteryOptimizations == false,
+                onChangeDontShowBattery = {
+                    model.hintBatteryOptimizations.value = !it
+                },
+                isExempted = isExempted,
+                shouldBeExempted = shouldBeExempted,
+                onChangeShouldBeExempted = model.shouldBeExempted::postValue,
+                dontShowAutostart = hintAutostartPermission == false,
+                onChangeDontShowAutostart = {
+                    model.hintAutostartPermission.value = !it
+                },
+                manufacturerWarning = Model.manufacturerWarning
+            )
+        }
     }
 
 
     @HiltViewModel
     class Model @Inject constructor(
-        application: Application,
+        val context: Application,
         val settings: SettingsManager
-    ): AndroidViewModel(application) {
+    ): ViewModel() {
 
         companion object {
 
@@ -178,8 +185,26 @@ class BatteryOptimizationsFragment: Fragment() {
 
         val hintAutostartPermission = settings.getBooleanLive(HINT_AUTOSTART_PERMISSION)
 
+        private val batteryOptimizationsReceiver = object: BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                checkBatteryOptimizations()
+            }
+        }
+
+        init {
+            // There's an undocumented intent that is sent when the battery optimization whitelist changes.
+            val intentFilter = IntentFilter("android.os.action.POWER_SAVE_WHITELIST_CHANGED")
+            context.registerReceiver(batteryOptimizationsReceiver, intentFilter)
+
+            checkBatteryOptimizations()
+        }
+
+        override fun onCleared() {
+            context.unregisterReceiver(batteryOptimizationsReceiver)
+        }
+
         fun checkBatteryOptimizations() {
-            val exempted = isExempted(getApplication())
+            val exempted = isExempted(context)
             isExempted.value = exempted
             shouldBeExempted.value = exempted
 
@@ -203,34 +228,6 @@ class BatteryOptimizationsFragment: Fragment() {
         override fun parseResult(resultCode: Int, intent: Intent?): Unit? {
             return null
         }
-    }
-
-
-    @Module
-    @InstallIn(ActivityComponent::class)
-    abstract class BatteryOptimizationsFragmentModule {
-        @Binds @IntoSet
-        abstract fun getFactory(factory: Factory): IntroFragmentFactory
-    }
-
-    class Factory @Inject constructor(
-        val settingsManager: SettingsManager
-    ): IntroFragmentFactory {
-
-        override fun getOrder(context: Context) =
-            // show fragment when:
-            // 1. DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked, and/or
-            // 2a. evil manufacturer AND
-            // 2b. "don't show anymore" has not been clicked
-            if (
-                    (!Model.isExempted(context) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
-                    (Model.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
-            )
-                100
-            else
-                IntroFragmentFactory.DONT_SHOW
-
-        override fun create() = BatteryOptimizationsFragment()
     }
 
 }
@@ -391,4 +388,5 @@ private fun BatteryOptimizationsContent(
         )
         Spacer(modifier = Modifier.height(90.dp))
     }
+
 }

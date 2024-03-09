@@ -4,12 +4,8 @@
 
 package at.bitfire.davdroid.ui.intro
 
-import android.content.Context
+import android.app.Application
 import android.content.res.Configuration
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -26,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -36,27 +31,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
 import at.bitfire.davdroid.R
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
-import dagger.multibindings.IntoSet
-import javax.inject.Inject
 
-class WelcomeFragment: Fragment() {
+class WelcomePage: IntroPage {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext()).apply {
-            setContent {
-                if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE)
-                    ContentLandscape()
-                else
-                    ContentPortrait()
-            }
-        }
+    override fun getShowPolicy(application: Application) = IntroPage.ShowPolicy.SHOW_ONLY_WITH_OTHERS
+
+    @Composable
+    override fun ComposePage() {
+        if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            ContentLandscape()
+        else
+            ContentPortrait()
     }
+
 
     @Preview(
         device = "id:3.7in WVGA (Nexus One)",
@@ -162,22 +150,6 @@ class WelcomeFragment: Fragment() {
                 )
             }
         }
-    }
-
-
-    @Module
-    @InstallIn(ActivityComponent::class)
-    abstract class WelcomeFragmentModule {
-        @Binds @IntoSet
-        abstract fun getFactory(factory: Factory): IntroFragmentFactory
-    }
-
-    class Factory @Inject constructor() : IntroFragmentFactory {
-
-        override fun getOrder(context: Context) = -1000
-
-        override fun create() = WelcomeFragment()
-
     }
 
 }
