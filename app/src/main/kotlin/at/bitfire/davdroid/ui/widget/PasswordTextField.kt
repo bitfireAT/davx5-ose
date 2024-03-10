@@ -28,9 +28,9 @@ import at.bitfire.davdroid.R
 fun PasswordTextField(
     password: String,
     labelText: String,
-    enabled: Boolean,
-    isError: Boolean,
-    onPasswordChange: (String) -> Unit
+    onPasswordChange: (String) -> Unit,
+    enabled: Boolean = true,
+    isError: Boolean = false
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
     OutlinedTextField(

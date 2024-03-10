@@ -5,33 +5,63 @@
 package at.bitfire.davdroid.ui.webdav
 
 import android.app.Application
-import android.content.Context
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuProvider
-import androidx.lifecycle.AndroidViewModel
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.ActivityAddWebdavMountBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.ui.UiUtils
+import at.bitfire.davdroid.ui.widget.PasswordTextField
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
-import com.google.android.material.snackbar.Snackbar
+import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -45,50 +75,233 @@ import java.util.logging.Level
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddWebdavMountActivity: AppCompatActivity() {
+class AddWebdavMountActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityAddWebdavMountBinding
     val model by viewModels<Model>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityAddWebdavMountBinding.inflate(layoutInflater)
-        binding.lifecycleOwner = this
-        binding.model = model
-        setContentView(binding.root)
+        setContent {
+            val isLoading by model.isLoading.observeAsState(initial = false)
+            val error by model.error.observeAsState(initial = null)
+            val displayName by model.displayName.observeAsState(initial = "")
+            val displayNameError by model.displayNameError.observeAsState(initial = null)
+            val url by model.url.observeAsState(initial = "")
+            val urlError by model.urlError.observeAsState(initial = null)
+            val username by model.userName.observeAsState(initial = "")
+            val password by model.password.observeAsState(initial = "")
 
-        model.error.observe(this) { error ->
-            if (error != null) {
-                Snackbar.make(binding.root, error, Snackbar.LENGTH_LONG).show()
-                model.error.value = null
+            MdcTheme {
+                Layout(
+                    isLoading = isLoading,
+                    error = error,
+                    onErrorClearRequested = { model.error.value = null },
+                    displayName = displayName,
+                    onDisplayNameChange = model.displayName::setValue,
+                    displayNameError = displayNameError,
+                    url = url,
+                    onUrlChange = model.url::setValue,
+                    urlError = urlError,
+                    username = username,
+                    onUsernameChange = model.userName::setValue,
+                    password = password,
+                    onPasswordChange = model.password::setValue
+                )
             }
         }
-
-        binding.addMount.setOnClickListener {
-            validate()
-        }
-
-        addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.activity_add_webdav_mount, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.help -> {
-                        onShowHelp()
-                        true
-                    }
-                    else -> false
-                }
-            }
-        })
     }
 
-    fun onShowHelp() {
-        UiUtils.launchUri(this,
-            App.homepageUrl(this).buildUpon().appendPath("tested-with").build())
+
+    @Composable
+    fun Layout(
+        isLoading: Boolean = false,
+        error: String? = null,
+        onErrorClearRequested: () -> Unit = {},
+        displayName: String = "",
+        onDisplayNameChange: (String) -> Unit = {},
+        displayNameError: String? = null,
+        url: String = "",
+        onUrlChange: (String) -> Unit = {},
+        urlError: String? = null,
+        username: String = "",
+        onUsernameChange: (String) -> Unit = {},
+        password: String = "",
+        onPasswordChange: (String) -> Unit = {}
+    ) {
+        val context = LocalContext.current
+        val uriHandler = LocalUriHandler.current
+
+        val snackbarHostState = remember { SnackbarHostState() }
+
+        LaunchedEffect(error) {
+            if (error != null) {
+                snackbarHostState.showSnackbar(
+                    message = error
+                )
+                onErrorClearRequested()
+            }
+        }
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.webdav_add_mount_title)) },
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                uriHandler.openUri(
+                                    App.homepageUrl(context)
+                                        .buildUpon()
+                                        .appendPath("tested-with")
+                                        .build()
+                                        .toString()
+                                )
+                            }
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.Help, stringResource(R.string.help))
+                        }
+                    }
+                )
+            },
+            bottomBar = {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = 4.dp
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            enabled = !isLoading,
+                            onClick = ::validate
+                        ) {
+                            Text(
+                                text = stringResource(R.string.webdav_add_mount_add).uppercase()
+                            )
+                        }
+                    }
+                }
+            },
+            snackbarHost = { SnackbarHost(snackbarHostState) }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                if (isLoading)
+                    LinearProgressIndicator(
+                        color = MaterialTheme.colors.primary,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                Form(
+                    displayName,
+                    onDisplayNameChange,
+                    displayNameError,
+                    url,
+                    onUrlChange,
+                    urlError,
+                    username,
+                    onUsernameChange,
+                    password,
+                    onPasswordChange
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun Form(
+        displayName: String,
+        onDisplayNameChange: (String) -> Unit,
+        displayNameError: String?,
+        url: String,
+        onUrlChange: (String) -> Unit,
+        urlError: String?,
+        username: String,
+        onUsernameChange: (String) -> Unit,
+        password: String,
+        onPasswordChange: (String) -> Unit
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            FormField(
+                displayName,
+                onDisplayNameChange,
+                displayNameError,
+                R.string.webdav_add_mount_display_name
+            )
+            FormField(
+                url,
+                onUrlChange,
+                urlError,
+                R.string.webdav_add_mount_url
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.webdav_add_mount_authentication),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+            FormField(
+                username,
+                onUsernameChange,
+                null,
+                R.string.webdav_add_mount_username
+            )
+
+            PasswordTextField(
+                password = password,
+                onPasswordChange = onPasswordChange,
+                labelText = stringResource(R.string.webdav_add_mount_password)
+            )
+        }
+    }
+
+    @Composable
+    fun FormField(
+        value: String,
+        onValueChange: (String) -> Unit,
+        error: String?,
+        @StringRes label: Int
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            label = { Text(stringResource(label)) },
+            singleLine = true,
+            isError = error != null
+        )
+        if (error != null) {
+            Text(
+                text = error,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.caption.copy(
+                    color = MaterialTheme.colors.error
+                )
+            )
+        }
+    }
+
+    @Preview
+    @Composable
+    fun Layout_Preview() {
+        MdcTheme {
+            Layout()
+        }
     }
 
 
@@ -134,8 +347,7 @@ class AddWebdavMountActivity: AppCompatActivity() {
                 null
 
         if (ok && url != null) {
-            binding.progress.visibility = View.VISIBLE
-            binding.addMount.isEnabled = false
+            model.isLoading.postValue(true)
 
             val mount = WebDavMount(
                 name = model.displayName.value ?: return,
@@ -145,10 +357,7 @@ class AddWebdavMountActivity: AppCompatActivity() {
                 if (model.addMount(mount, credentials))
                     finish()
 
-                launch(Dispatchers.Main) {
-                    binding.progress.visibility = View.INVISIBLE
-                    binding.addMount.isEnabled = true
-                }
+                model.isLoading.postValue(false)
             }
         }
     }
@@ -156,9 +365,9 @@ class AddWebdavMountActivity: AppCompatActivity() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        application: Application,
+        val context: Application,
         val db: AppDatabase
-    ) : AndroidViewModel(application) {
+    ): ViewModel() {
 
         val displayName = MutableLiveData<String>()
         val displayNameError = MutableLiveData<String>()
@@ -168,8 +377,7 @@ class AddWebdavMountActivity: AppCompatActivity() {
         val password = MutableLiveData<String>()
 
         val error = MutableLiveData<String>()
-
-        val context: Context get() = getApplication()
+        val isLoading = MutableLiveData(false)
 
 
         @WorkerThread
