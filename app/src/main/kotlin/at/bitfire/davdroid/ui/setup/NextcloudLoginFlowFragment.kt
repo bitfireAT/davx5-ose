@@ -55,9 +55,9 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import at.bitfire.vcard4android.GroupMethod
-import com.google.accompanist.themeadapter.material.MdcTheme
 import com.google.android.material.snackbar.Snackbar
 import dagger.Binds
 import dagger.Module
@@ -124,7 +124,7 @@ class NextcloudLoginFlowFragment: Fragment() {
 
         val view = ComposeView(requireActivity()).apply {
             setContent {
-                MdcTheme {
+                AppTheme {
                     NextcloudLoginComposable(
                         onStart = { url ->
                             model.start(url)

@@ -33,7 +33,6 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -48,15 +47,15 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
-import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
 import at.bitfire.davdroid.util.PermissionUtils
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -112,23 +111,20 @@ class BatteryOptimizationsPage: IntroPage {
         }
 
         val hintAutostartPermission by model.hintAutostartPermission.observeAsState()
-        val uriHandler = SafeAndroidUriHandler(LocalContext.current)
-        CompositionLocalProvider(LocalUriHandler provides uriHandler) {
-            BatteryOptimizationsContent(
-                dontShowBattery = hintBatteryOptimizations == false,
-                onChangeDontShowBattery = {
-                    model.settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, !it)
-                },
-                isExempted = isExempted,
-                shouldBeExempted = shouldBeExempted,
-                onChangeShouldBeExempted = model.shouldBeExempted::postValue,
-                dontShowAutostart = hintAutostartPermission == false,
-                onChangeDontShowAutostart = {
-                    model.settings.putBoolean(HINT_AUTOSTART_PERMISSION, !it)
-                },
-                manufacturerWarning = Model.manufacturerWarning
-            )
-        }
+        BatteryOptimizationsContent(
+            dontShowBattery = hintBatteryOptimizations == false,
+            onChangeDontShowBattery = {
+                model.settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, !it)
+            },
+            isExempted = isExempted,
+            shouldBeExempted = shouldBeExempted,
+            onChangeShouldBeExempted = model.shouldBeExempted::postValue,
+            dontShowAutostart = hintAutostartPermission == false,
+            onChangeDontShowAutostart = {
+                model.settings.putBoolean(HINT_AUTOSTART_PERMISSION, !it)
+            },
+            manufacturerWarning = Model.manufacturerWarning
+        )
     }
 
 
@@ -234,7 +230,7 @@ class BatteryOptimizationsPage: IntroPage {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun BatteryOptimizationsContent_Preview() {
-    MdcTheme {
+    AppTheme {
         BatteryOptimizationsContent(
             dontShowBattery = true,
             onChangeDontShowBattery = {},
@@ -346,14 +342,14 @@ private fun BatteryOptimizationsContent(
                     OutlinedButton(
                         onClick = {
                             uriHandler.openUri(
-                                App.homepageUrl(context)
-                                    .buildUpon()
-                                    .appendPath("faq")
-                                    .appendPath("synchronization-is-not-run-as-expected")
+                                Constants.HOMEPAGE_URL.buildUpon()
+                                    .appendPath(Constants.HOMEPAGE_PATH_FAQ)
+                                    .appendPath(Constants.HOMEPAGE_PATH_FAQ_SYNC_NOT_RUN)
                                     .appendQueryParameter(
                                         "manufacturer",
                                         Build.MANUFACTURER.lowercase(Locale.ROOT)
                                     )
+                                    .withStatParams("BatteryOptimizationsPage")
                                     .build().toString()
                             )
                         }

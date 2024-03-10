@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -57,7 +58,6 @@ import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.davdroid.ui.widget.RadioWithSwitch
 import at.bitfire.ical4android.TaskProvider
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -71,7 +71,7 @@ class TasksActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MdcTheme {
+            AppTheme {
                 TasksCard(model = model)
             }
         }
@@ -268,12 +268,13 @@ fun TasksCard(
                             HtmlCompat.FROM_HTML_MODE_COMPACT
                         ).toAnnotatedString()
 
+                        val uriHandler = LocalUriHandler.current
                         ClickableText(
                             text = summary,
                             onClick = { index ->
                                 // Get the tapped position, and check if there's any link
                                 summary.getUrlAnnotations(index, index).firstOrNull()?.item?.url?.let { url ->
-                                    UiUtils.launchUri(context, Uri.parse(url))
+                                    uriHandler.openUri(url)
                                 }
                             }
                         )

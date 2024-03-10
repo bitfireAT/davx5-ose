@@ -38,7 +38,6 @@ import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -71,13 +70,11 @@ import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.ui.widget.EditTextInputDialog
 import at.bitfire.davdroid.ui.widget.MultipleChoiceInputDialog
-import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
 import at.bitfire.davdroid.ui.widget.Setting
 import at.bitfire.davdroid.ui.widget.SettingsHeader
 import at.bitfire.davdroid.ui.widget.SwitchSetting
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -94,10 +91,8 @@ class AppSettingsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MdcTheme {
-                CompositionLocalProvider(LocalUriHandler provides SafeAndroidUriHandler(this)) {
-                    AppSettings()
-                }
+            AppTheme {
+                AppSettings()
             }
         }
     }

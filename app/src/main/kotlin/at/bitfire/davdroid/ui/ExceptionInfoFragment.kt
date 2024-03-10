@@ -57,7 +57,7 @@ class ExceptionInfoFragment: DialogFragment() {
             setContentView(
                 ComposeView(requireContext()).apply {
                     setContent {
-                        MdcTheme {
+                        AppTheme {
                             ExceptionInfoDialog(
                                 exception = exception,
                                 account = account

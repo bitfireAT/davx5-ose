@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.webdav
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.DocumentsContract
@@ -41,7 +42,6 @@ import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -60,18 +60,17 @@ import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
-import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -85,12 +84,9 @@ import javax.inject.Inject
 class WebdavMountsActivity: AppCompatActivity() {
 
     companion object {
-
-        fun helpUrl(context: Context) =
-            App.homepageUrl(context).buildUpon()
-                .appendEncodedPath("manual/webdav_mounts.html")
-                .build()
-
+        val helpUrl: Uri = Constants.MANUAL_URL.buildUpon()
+            .appendPath(Constants.MANUAL_PATH_WEBDAV_MOUNTS)
+            .build()
     }
 
     private val model by viewModels<Model>()
@@ -108,14 +104,9 @@ class WebdavMountsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MdcTheme {
-                CompositionLocalProvider(
-                    LocalUriHandler provides SafeAndroidUriHandler(this)
-                ) {
-                    val mountInfos by model.mountInfos.observeAsState(emptyList())
-
-                    WebdavMountsContent(mountInfos)
-                }
+            AppTheme {
+                val mountInfos by model.mountInfos.observeAsState(emptyList())
+                WebdavMountsContent(mountInfos)
             }
         }
     }
@@ -142,7 +133,9 @@ class WebdavMountsActivity: AppCompatActivity() {
                     title = { Text(stringResource(R.string.webdav_mounts_title)) },
                     actions = {
                         IconButton(
-                            onClick = { uriHandler.openUri(helpUrl(context).toString()) }
+                            onClick = {
+                                uriHandler.openUri(helpUrl.toString())
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Help,
@@ -209,7 +202,7 @@ class WebdavMountsActivity: AppCompatActivity() {
             val text = HtmlCompat.fromHtml(
                 stringResource(
                     R.string.webdav_add_mount_empty_more_info,
-                    helpUrl(context).toString()
+                    helpUrl.toString()
                 ),
                 0
             ).toAnnotatedString()
@@ -340,7 +333,7 @@ class WebdavMountsActivity: AppCompatActivity() {
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun WebdavMountsContent_Preview() {
-        MdcTheme {
+        AppTheme {
             WebdavMountsContent(emptyList())
         }
     }
@@ -348,7 +341,7 @@ class WebdavMountsActivity: AppCompatActivity() {
     @Preview(showBackground = true)
     @Composable
     fun WebdavMountsItem_Preview() {
-        MdcTheme {
+        AppTheme {
             WebdavMountsItem(
                 info = MountInfo(
                     mount = WebDavMount(

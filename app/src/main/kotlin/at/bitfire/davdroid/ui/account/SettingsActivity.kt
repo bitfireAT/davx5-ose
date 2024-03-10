@@ -24,7 +24,12 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.preference.*
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceGroup
+import androidx.preference.SwitchPreferenceCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -66,6 +71,7 @@ class SettingsActivity: AppCompatActivity() {
         title = getString(R.string.settings_title, account.name)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        // TODO add help button that leads to manual
 
         if (savedInstanceState == null)
             supportFragmentManager.beginTransaction()

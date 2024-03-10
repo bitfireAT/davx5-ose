@@ -61,7 +61,7 @@ class PermissionsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MdcTheme {
+            AppTheme {
                 PermissionsContent(model)
             }
         }
