@@ -200,7 +200,7 @@ class AddWebdavMountActivity : AppCompatActivity() {
             ) {
                 if (isLoading)
                     LinearProgressIndicator(
-                        color = MaterialTheme.colors.primary,
+                        color = MaterialTheme.colors.secondary,
                         modifier = Modifier.fillMaxWidth()
                     )
 
