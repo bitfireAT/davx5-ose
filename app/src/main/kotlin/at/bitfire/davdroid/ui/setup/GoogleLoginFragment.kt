@@ -33,17 +33,15 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -52,7 +50,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -67,8 +64,8 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.AppTheme
-import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
+import at.bitfire.davdroid.ui.setup.GoogleLoginFragment.Companion.URI_TESTED_WITH_GOOGLE
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -96,7 +93,11 @@ class GoogleLoginFragment(private val defaultEmail: String? = null): Fragment() 
         const val GOOGLE_POLICY_URL = "https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes"
 
         // Support site
-        val URI_TESTED_WITH_GOOGLE: Uri = Uri.parse("https://www.davx5.com/tested-with/google")
+        val URI_TESTED_WITH_GOOGLE: Uri =
+            Constants.HOMEPAGE_URL.buildUpon()
+                .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
+                .appendPath("google")
+                .build()
 
         // davx5integration@gmail.com (for davx5-ose)
         private const val CLIENT_ID = "1069050168830-eg09u4tk1cmboobevhm4k3bj1m4fav9i.apps.googleusercontent.com"
@@ -229,6 +230,8 @@ fun GoogleLogin(
     onLogin: (accountEmail: String, clientId: String?) -> Unit
 ) {
     val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
+
     AppTheme {
         Column(
             Modifier
@@ -242,14 +245,19 @@ fun GoogleLogin(
             Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(8.dp)) {
                     Row {
-                        Image(Icons.Default.Warning, colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface), contentDescription = "",
-                            modifier = Modifier.padding(top = 8.dp, end = 8.dp, bottom = 8.dp))
-                        Text(stringResource(R.string.login_google_see_tested_with))
+                        Text(
+                            stringResource(R.string.login_google_see_tested_with),
+                            style = MaterialTheme.typography.body2,
+                        )
                     }
-                    Text(stringResource(R.string.login_google_unexpected_warnings), modifier = Modifier.padding(vertical = 8.dp))
+                    Text(
+                        stringResource(R.string.login_google_unexpected_warnings),
+                        style = MaterialTheme.typography.body2,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                     Button(
                         onClick = {
-                            UiUtils.launchUri(context, GoogleLoginFragment.URI_TESTED_WITH_GOOGLE)
+                            uriHandler.openUri(URI_TESTED_WITH_GOOGLE.toString())
                         },
                         colors = ButtonDefaults.outlinedButtonColors(),
                         modifier = Modifier.wrapContentSize()
@@ -354,7 +362,7 @@ fun GoogleLogin(
                 style = MaterialTheme.typography.body2,
                 onClick = { position ->
                     privacyPolicyNote.getUrlAnnotations(position, position).firstOrNull()?.let {
-                        UiUtils.launchUri(context, it.item.url.toUri())
+                        uriHandler.openUri(it.item.url)
                     }
                 }
             )
@@ -367,7 +375,7 @@ fun GoogleLogin(
                 modifier = Modifier.padding(top = 12.dp),
                 onClick = { position ->
                     limitedUseNote.getUrlAnnotations(position, position).firstOrNull()?.let {
-                        UiUtils.launchUri(context, it.item.url.toUri())
+                        uriHandler.openUri(it.item.url)
                     }
                 }
             )

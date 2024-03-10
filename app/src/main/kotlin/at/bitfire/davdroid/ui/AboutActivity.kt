@@ -40,6 +40,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,7 +54,6 @@ import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.widget.PixelBoxes
-import com.google.accompanist.themeadapter.material.MdcTheme
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 import com.mikepenz.aboutlibraries.util.withJson
@@ -92,6 +92,8 @@ class AboutActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val uriHandler = LocalUriHandler.current
+
             AppTheme {
                 Scaffold(
                     topBar = {
@@ -109,11 +111,10 @@ class AboutActivity: AppCompatActivity() {
                             },
                             actions = {
                                 IconButton(onClick = {
-                                    val context = this@AboutActivity
-                                    UiUtils.launchUri(
-                                        context,
-                                        Constants.HOMEPAGE_URL.buildUpon().withStatParams("AboutActivity").build()
-                                    )
+                                    uriHandler.openUri(Constants.HOMEPAGE_URL
+                                        .buildUpon()
+                                        .withStatParams("AboutActivity")
+                                        .build().toString())
                                 }) {
                                     Icon(
                                         Icons.Default.Home,
