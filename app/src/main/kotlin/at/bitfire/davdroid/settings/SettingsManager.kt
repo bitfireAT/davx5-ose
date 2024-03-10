@@ -190,11 +190,11 @@ class SettingsManager internal constructor(
             update()
         }
 
+        @Synchronized
         private fun update() {
-            getValueOrNull()?.let { newValue ->
-                if (value != newValue)
-                    postValue(newValue)
-            }
+            val newValue = getValueOrNull()
+            if (value != newValue)
+                postValue(newValue)
         }
     }
 
