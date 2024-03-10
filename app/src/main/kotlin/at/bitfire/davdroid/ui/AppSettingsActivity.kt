@@ -87,7 +87,7 @@ import javax.inject.Inject
 class AppSettingsActivity: AppCompatActivity() {
 
     companion object {
-        const val HELP_URL = "https://manual.davx5.com/settings.html#app-wide-settings"
+        const val APP_SETTINGS_HELP_URL = "https://manual.davx5.com/settings.html#app-wide-settings"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,7 +123,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     title = { Text(stringResource(R.string.app_settings)) },
                     actions = {
                         IconButton(onClick = {
-                            uriHandler.openUri(SETTINGS_HELP_URL)
+                            uriHandler.openUri(APP_SETTINGS_HELP_URL)
                         }) {
                             Icon(Icons.AutoMirrored.Filled.Help, stringResource(R.string.help))
                         }
@@ -139,7 +139,7 @@ class AppSettingsActivity: AppCompatActivity() {
             ) {
                 Column(Modifier.padding(8.dp)) {
                     AppSettings_Debugging(
-                        verboseLogging = model.getPrefBoolean(Logger.LOG_TO_FILE).observeAsState(false).value,
+                        verboseLogging = model.getPrefBoolean(Logger.LOG_TO_FILE).observeAsState().value ?: false,
                         onUpdateVerboseLogging = { model.putPrefBoolean(Logger.LOG_TO_FILE, it) },
                         batterySavingExempted = model.getBatterySavingExempted().observeAsState(false).value,
                         onExemptFromBatterySaving = {
@@ -512,8 +512,8 @@ class AppSettingsActivity: AppCompatActivity() {
             }
         }
 
-        fun getPrefBoolean(keyToObserve: String): LiveData<Boolean> =
-            object : LiveData<Boolean>(), SharedPreferences.OnSharedPreferenceChangeListener {
+        fun getPrefBoolean(keyToObserve: String): LiveData<Boolean?> =
+            object : LiveData<Boolean?>(), SharedPreferences.OnSharedPreferenceChangeListener {
                 override fun onActive() {
                     preferences.registerOnSharedPreferenceChangeListener(this)
                     update()
