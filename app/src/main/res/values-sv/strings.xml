@@ -152,8 +152,8 @@
   <string name="app_settings_logging_on">Loggning är påslagen</string>
   <string name="app_settings_logging_off">Loggning är avstängd</string>
   <string name="app_settings_battery_optimization">Batterioptimering</string>
-  <string name="app_settings_battery_optimization_whitelisted">Appen är vitlistad (rekommenderat)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Appen är inte vitlistad (rekommenderas ej)</string>
+  <string name="app_settings_battery_optimization_exempted">Appen är vitlistad (rekommenderat)</string>
+  <string name="app_settings_battery_optimization_optimized">Appen är inte vitlistad (rekommenderas ej)</string>
   <string name="app_settings_connection">Anslutning</string>
   <string name="app_settings_proxy">Proxy typ</string>
   <string-array name="app_settings_proxy_types">

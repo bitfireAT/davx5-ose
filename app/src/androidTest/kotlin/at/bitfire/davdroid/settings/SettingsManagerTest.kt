@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.settings
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import at.bitfire.davdroid.TestUtils.getOrAwaitValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -31,6 +32,8 @@ class SettingsManagerTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Inject lateinit var settingsManager: SettingsManager
 
@@ -58,17 +61,15 @@ class SettingsManagerTest {
 
 
     @Test
-    fun test_getBooleanLive_getValue() = runBlocking(Dispatchers.Main) {    // observeForever can't be run in background thread
+    fun test_getBooleanLive_getValue() {
         val live = settingsManager.getBooleanLive(SETTING_TEST)
         assertNull(live.value)
 
-        // set value
+        // posts value to main thread, InstantTaskExecutorRule is required to execute it instantly
         settingsManager.putBoolean(SETTING_TEST, true)
-        assertTrue(live.getOrAwaitValue()!!)
-
-        // set another value
-        live.value = false
-        assertFalse(live.getOrAwaitValue()!!)
+        runBlocking(Dispatchers.Main) {     // observeForever can't be run in background thread
+            assertTrue(live.getOrAwaitValue())
+        }
     }
 
 

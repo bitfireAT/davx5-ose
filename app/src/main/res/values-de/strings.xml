@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">Protokollierung läuft</string>
   <string name="app_settings_logging_off">Keine Protokollierung</string>
   <string name="app_settings_battery_optimization">Akku-Optimierung</string>
-  <string name="app_settings_battery_optimization_whitelisted">App ist ausgenommen (empfohlen)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">App ist nicht ausgenommen (nicht empfohlen)</string>
+  <string name="app_settings_battery_optimization_exempted">App ist ausgenommen (empfohlen)</string>
+  <string name="app_settings_battery_optimization_optimized">App ist nicht ausgenommen (nicht empfohlen)</string>
   <string name="app_settings_connection">Verbindung</string>
   <string name="app_settings_proxy">Proxy-Typ</string>
   <string-array name="app_settings_proxy_types">

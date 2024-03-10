@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">O rexistro está activo</string>
   <string name="app_settings_logging_off">O rexistro está desactivado</string>
   <string name="app_settings_battery_optimization">Optimización da batería</string>
-  <string name="app_settings_battery_optimization_whitelisted">App está permitida (recomendado)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">App sen permiso (non recomendado)</string>
+  <string name="app_settings_battery_optimization_exempted">App está permitida (recomendado)</string>
+  <string name="app_settings_battery_optimization_optimized">App sen permiso (non recomendado)</string>
   <string name="app_settings_connection">Conexión</string>
   <string name="app_settings_proxy">Tipo de Proxy</string>
   <string-array name="app_settings_proxy_types">

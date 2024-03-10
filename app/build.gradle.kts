@@ -194,9 +194,7 @@ dependencies {
     implementation(libs.bitfire.vcard4android)
 
     // third-party libs
-    implementation(libs.openid.appauth)
     implementation(libs.appintro)
-    implementation(libs.mikepenz.aboutLibraries)
     implementation(libs.commons.collections)
     @Suppress("RedundantSuppression")
     implementation(libs.commons.io)
@@ -205,10 +203,12 @@ dependencies {
     @Suppress("RedundantSuppression")
     implementation(libs.dnsjava)
     implementation(libs.jaredrummler.colorpicker)
+    implementation(libs.mikepenz.aboutLibraries)
     implementation(libs.nsk90.kstatemachine)
     implementation(libs.okhttp.base)
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)
+    implementation(libs.openid.appauth)
 
     // for tests
     androidTestImplementation(libs.androidx.arch.core.testing)

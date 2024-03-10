@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">日志记录已开启</string>
   <string name="app_settings_logging_off">日志记录已禁用</string>
   <string name="app_settings_battery_optimization">电池优化</string>
-  <string name="app_settings_battery_optimization_whitelisted">将应用加入白名单（推荐）</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">不把应用加入白名单（不推荐）</string>
+  <string name="app_settings_battery_optimization_exempted">将应用加入白名单（推荐）</string>
+  <string name="app_settings_battery_optimization_optimized">不把应用加入白名单（不推荐）</string>
   <string name="app_settings_connection">连接</string>
   <string name="app_settings_proxy">代理类型</string>
   <string-array name="app_settings_proxy_types">

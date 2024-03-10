@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">ログ取得が有効</string>
   <string name="app_settings_logging_off">ログ取得が無効</string>
   <string name="app_settings_battery_optimization">バッテリー最適化</string>
-  <string name="app_settings_battery_optimization_whitelisted">このアプリでは無効 (推奨)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">有効 (非推奨)</string>
+  <string name="app_settings_battery_optimization_exempted">このアプリでは無効 (推奨)</string>
+  <string name="app_settings_battery_optimization_optimized">有効 (非推奨)</string>
   <string name="app_settings_connection">接続</string>
   <string name="app_settings_proxy">プロキシーの種類</string>
   <string-array name="app_settings_proxy_types">

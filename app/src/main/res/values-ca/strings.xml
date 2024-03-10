@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">Registre actiu</string>
   <string name="app_settings_logging_off">Registre inactiu</string>
   <string name="app_settings_battery_optimization">Optimització de la bateria</string>
-  <string name="app_settings_battery_optimization_whitelisted">L\'aplicació és a la llista blanca (recomanat)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">L\'aplicació no és a la llista blanca (no recomanat)</string>
+  <string name="app_settings_battery_optimization_exempted">L\'aplicació és a la llista blanca (recomanat)</string>
+  <string name="app_settings_battery_optimization_optimized">L\'aplicació no és a la llista blanca (no recomanat)</string>
   <string name="app_settings_connection">Connexió</string>
   <string name="app_settings_proxy">Tipus de servidor intermediari</string>
   <string-array name="app_settings_proxy_types">

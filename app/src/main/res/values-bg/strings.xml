@@ -147,8 +147,8 @@
   <string name="app_settings_logging_on">Дневникът е включен</string>
   <string name="app_settings_logging_off">Дневникът е изключен</string>
   <string name="app_settings_battery_optimization">Оптимизиране на батерията</string>
-  <string name="app_settings_battery_optimization_whitelisted">Приложението е в белия списък (препоръчително)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Приложението не е в белия списък (непрепоръчително)</string>
+  <string name="app_settings_battery_optimization_exempted">Приложението е в белия списък (препоръчително)</string>
+  <string name="app_settings_battery_optimization_optimized">Приложението не е в белия списък (непрепоръчително)</string>
   <string name="app_settings_connection">Връзка</string>
   <string name="app_settings_proxy">Вид на сървъра на прокси</string>
   <string-array name="app_settings_proxy_types">

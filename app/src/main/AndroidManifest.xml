@@ -85,6 +85,7 @@
         <activity
             android:name=".ui.AppSettingsActivity"
             android:label="@string/app_settings"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".ui.AccountsActivity"
             android:exported="true">
             <intent-filter>

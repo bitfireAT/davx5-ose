@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">Erregistratzea gaituta dago</string>
   <string name="app_settings_logging_off">Erregistratzea desgaituta dago</string>
   <string name="app_settings_battery_optimization">Bateria optimizazioa</string>
-  <string name="app_settings_battery_optimization_whitelisted">Aplikazioa zerrenda zurian dago (gomendatuta)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">Aplikazioa ez dago zerrenda zurian (ez gomendatuta)</string>
+  <string name="app_settings_battery_optimization_exempted">Aplikazioa zerrenda zurian dago (gomendatuta)</string>
+  <string name="app_settings_battery_optimization_optimized">Aplikazioa ez dago zerrenda zurian (ez gomendatuta)</string>
   <string name="app_settings_connection">Konexioa</string>
   <string name="app_settings_proxy">Proxy mota</string>
   <string-array name="app_settings_proxy_types">

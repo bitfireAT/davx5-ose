@@ -26,6 +26,9 @@ import at.bitfire.davdroid.ui.PermissionsActivity
 
 object PermissionUtils {
 
+    /** There's an undocumented intent that is sent when the battery optimization whitelist changes. */
+    const val ACTION_POWER_SAVE_WHITELIST_CHANGED = "android.os.action.POWER_SAVE_WHITELIST_CHANGED"
+
     val CONTACT_PERMISSIONS = arrayOf(
         Manifest.permission.READ_CONTACTS,
         Manifest.permission.WRITE_CONTACTS
