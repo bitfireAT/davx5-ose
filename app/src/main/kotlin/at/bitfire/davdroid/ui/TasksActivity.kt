@@ -71,7 +71,7 @@ class TasksActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MdcTheme {
+            AppTheme {
                 TasksCard(model = model)
             }
         }

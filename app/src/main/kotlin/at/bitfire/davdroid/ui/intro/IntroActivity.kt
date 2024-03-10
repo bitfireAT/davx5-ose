@@ -27,8 +27,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.AndroidViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.AppTheme
 import com.github.appintro.AppIntro2
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
@@ -112,7 +112,7 @@ class IntroActivity : AppIntro2() {
             ComposeView(requireActivity()).apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
-                    MdcTheme {
+                    AppTheme {
                         Box(Modifier.padding(bottom = dimensionResource(com.github.appintro.R.dimen.appintro2_bottombar_height))) {
                             page.ComposePage()
                         }

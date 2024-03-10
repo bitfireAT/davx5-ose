@@ -143,7 +143,7 @@ class AccountsActivity: AppCompatActivity() {
 
             val accounts by model.accountInfos.observeAsState()
 
-            MdcTheme {
+            AppTheme {
                 Scaffold(
                     scaffoldState = scaffoldState,
                     drawerContent = drawerContent(scope, scaffoldState),

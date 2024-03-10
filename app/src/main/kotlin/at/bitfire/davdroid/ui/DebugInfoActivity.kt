@@ -181,7 +181,7 @@ class DebugInfoActivity : AppCompatActivity() {
         }
 
         setContent { 
-            MdcTheme {
+            AppTheme {
                 val debugInfo by model.debugInfo.observeAsState()
                 val zipProgress by model.zipProgress.observeAsState(false)
 

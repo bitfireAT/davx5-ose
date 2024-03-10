@@ -66,9 +66,9 @@ import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
-import com.google.accompanist.themeadapter.material.MdcTheme
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -229,7 +229,7 @@ fun GoogleLogin(
     onLogin: (accountEmail: String, clientId: String?) -> Unit
 ) {
     val context = LocalContext.current
-    MdcTheme {
+    AppTheme {
         Column(
             Modifier
                 .padding(8.dp)

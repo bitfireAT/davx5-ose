@@ -42,7 +42,6 @@ import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -67,12 +66,11 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
-import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -106,14 +104,9 @@ class WebdavMountsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MdcTheme {
-                CompositionLocalProvider(
-                    LocalUriHandler provides SafeAndroidUriHandler(this)
-                ) {
-                    val mountInfos by model.mountInfos.observeAsState(emptyList())
-
-                    WebdavMountsContent(mountInfos)
-                }
+            AppTheme {
+                val mountInfos by model.mountInfos.observeAsState(emptyList())
+                WebdavMountsContent(mountInfos)
             }
         }
     }
@@ -340,7 +333,7 @@ class WebdavMountsActivity: AppCompatActivity() {
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun WebdavMountsContent_Preview() {
-        MdcTheme {
+        AppTheme {
             WebdavMountsContent(emptyList())
         }
     }
@@ -348,7 +341,7 @@ class WebdavMountsActivity: AppCompatActivity() {
     @Preview(showBackground = true)
     @Composable
     fun WebdavMountsItem_Preview() {
-        MdcTheme {
+        AppTheme {
             WebdavMountsItem(
                 info = MountInfo(
                     mount = WebDavMount(

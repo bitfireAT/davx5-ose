@@ -34,6 +34,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,10 +60,10 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.widget.PasswordTextField
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +94,7 @@ class AddWebdavMountActivity : AppCompatActivity() {
             val username by model.userName.observeAsState(initial = "")
             val password by model.password.observeAsState(initial = "")
 
-            MdcTheme {
+            AppTheme {
                 Layout(
                     isLoading = isLoading,
                     error = error,
@@ -147,6 +148,11 @@ class AddWebdavMountActivity : AppCompatActivity() {
         Scaffold(
             topBar = {
                 TopAppBar(
+                    navigationIcon = {
+                        IconButton(onClick = { onNavigateUp() }) {
+                            Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
+                        }
+                    },
                     title = { Text(stringResource(R.string.webdav_add_mount_title)) },
                     actions = {
                         IconButton(
@@ -299,7 +305,7 @@ class AddWebdavMountActivity : AppCompatActivity() {
     @Preview
     @Composable
     fun Layout_Preview() {
-        MdcTheme {
+        AppTheme {
             Layout()
         }
     }

@@ -32,8 +32,8 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.DebugInfoActivity
-import com.google.accompanist.themeadapter.material.MdcTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
@@ -80,7 +80,7 @@ class DetectConfigurationFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         ComposeView(requireContext()).apply {
             setContent {
-                MdcTheme {
+                AppTheme {
                     DetectConfigurationView()
                 }
 

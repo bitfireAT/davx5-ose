@@ -46,7 +46,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import com.google.accompanist.themeadapter.material.MdcTheme
+import at.bitfire.davdroid.ui.AppTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -82,7 +82,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setContent {
-            MdcTheme {
+            AppTheme {
                 val displayName by model.displayName.observeAsState()
                 val description by model.description.observeAsState()
                 val homeSet by model.homeSet.observeAsState()

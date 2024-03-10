@@ -80,11 +80,11 @@ import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.widget.ActionCard
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -125,7 +125,7 @@ class AccountActivity2 : AppCompatActivity() {
         }
 
         setContent {
-            MdcTheme {
+            AppTheme {
                 val cardDavSvc by model.cardDavSvc.observeAsState()
                 val canCreateAddressBook by model.canCreateAddressBook.observeAsState(false)
                 val cardDavRefreshing by model.cardDavRefreshingActive.observeAsState(false)

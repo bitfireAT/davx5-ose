@@ -92,7 +92,7 @@ class AboutActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MdcTheme {
+            AppTheme {
                 Scaffold(
                     topBar = {
                         TopAppBar(
