@@ -2,7 +2,6 @@
 
     <!-- common strings -->
     <string name="app_name" translatable="false">DAVx⁵</string>
-    <string name="homepage_url" translatable="false">https://www.davx5.com/</string>
 
     <string name="account_invalid">Account does not exist (anymore)</string>
     <string name="account_type" translatable="false">bitfire.at.davdroid</string>

@@ -60,8 +60,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
@@ -339,8 +340,15 @@ fun GoogleLogin(
 
             Spacer(Modifier.padding(8.dp))
 
+            val privacyPolicyUrl = Constants.HOMEPAGE_URL.buildUpon()
+                .appendPath(Constants.HOMEPAGE_PATH_PRIVACY)
+                .withStatParams("GoogleLoginFragment")
+                .build()
             val privacyPolicyNote = HtmlCompat.fromHtml(
-                stringResource(R.string.login_google_client_privacy_policy, context.getString(R.string.app_name), App.homepageUrl(context, App.HOMEPAGE_PRIVACY)), 0).toAnnotatedString()
+                stringResource(R.string.login_google_client_privacy_policy,
+                    context.getString(R.string.app_name),
+                    privacyPolicyUrl.toString()
+                ), 0).toAnnotatedString()
             ClickableText(
                 privacyPolicyNote,
                 style = MaterialTheme.typography.body2,

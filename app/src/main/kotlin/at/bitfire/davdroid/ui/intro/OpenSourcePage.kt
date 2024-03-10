@@ -36,7 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.widget.CardWithImage
@@ -116,9 +117,9 @@ class OpenSourcePage : IntroPage {
                 OutlinedButton(
                     onClick = {
                         uriHandler.openUri(
-                            App.homepageUrl(context)
-                                .buildUpon()
-                                .appendPath("donate")
+                            Constants.HOMEPAGE_URL.buildUpon()
+                                .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
+                                .withStatParams("OpenSourcePage")
                                 .build()
                                 .toString()
                         )

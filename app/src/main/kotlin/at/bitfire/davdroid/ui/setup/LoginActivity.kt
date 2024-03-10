@@ -11,7 +11,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
@@ -61,7 +62,10 @@ class LoginActivity: AppCompatActivity() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 if (menuItem.itemId == R.id.help) {
                     UiUtils.launchUri(this@LoginActivity,
-                        App.homepageUrl(this@LoginActivity).buildUpon().appendPath("tested-with").build())
+                        Constants.HOMEPAGE_URL.buildUpon()
+                            .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
+                            .withStatParams("LoginActivity")
+                            .build())
                     return true
                 }
 

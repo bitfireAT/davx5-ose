@@ -48,8 +48,9 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_AUTOSTART_PERMISSION
@@ -346,14 +347,14 @@ private fun BatteryOptimizationsContent(
                     OutlinedButton(
                         onClick = {
                             uriHandler.openUri(
-                                App.homepageUrl(context)
-                                    .buildUpon()
-                                    .appendPath("faq")
-                                    .appendPath("synchronization-is-not-run-as-expected")
+                                Constants.HOMEPAGE_URL.buildUpon()
+                                    .appendPath(Constants.HOMEPAGE_PATH_FAQ)
+                                    .appendPath(Constants.HOMEPAGE_PATH_FAQ_SYNC_NOT_RUN)
                                     .appendQueryParameter(
                                         "manufacturer",
                                         Build.MANUFACTURER.lowercase(Locale.ROOT)
                                     )
+                                    .withStatParams("BatteryOptimizationsPage")
                                     .build().toString()
                             )
                         }

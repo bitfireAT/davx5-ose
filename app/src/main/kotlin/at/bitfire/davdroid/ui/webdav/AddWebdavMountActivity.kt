@@ -51,7 +51,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.UrlUtils
-import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
@@ -151,11 +152,10 @@ class AddWebdavMountActivity : AppCompatActivity() {
                         IconButton(
                             onClick = {
                                 uriHandler.openUri(
-                                    App.homepageUrl(context)
-                                        .buildUpon()
-                                        .appendPath("tested-with")
-                                        .build()
-                                        .toString()
+                                    Constants.HOMEPAGE_URL.buildUpon()
+                                        .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
+                                        .withStatParams("AddWebdavMountActivity")
+                                        .build().toString()
                                 )
                             }
                         ) {

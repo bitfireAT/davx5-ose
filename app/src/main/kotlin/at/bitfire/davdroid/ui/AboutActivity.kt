@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui
 
 import android.app.Application
 import android.os.Bundle
-import android.view.*
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -48,8 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.widget.PixelBoxes
@@ -71,7 +71,9 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.*
+import java.util.LinkedList
+import java.util.Locale
+import java.util.Optional
 import java.util.logging.Level
 import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
@@ -108,7 +110,10 @@ class AboutActivity: AppCompatActivity() {
                             actions = {
                                 IconButton(onClick = {
                                     val context = this@AboutActivity
-                                    UiUtils.launchUri(context, App.homepageUrl(context))
+                                    UiUtils.launchUri(
+                                        context,
+                                        Constants.HOMEPAGE_URL.buildUpon().withStatParams("AboutActivity").build()
+                                    )
                                 }) {
                                     Icon(
                                         Icons.Default.Home,

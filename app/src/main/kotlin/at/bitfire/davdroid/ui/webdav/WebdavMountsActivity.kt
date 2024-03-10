@@ -7,6 +7,7 @@ package at.bitfire.davdroid.ui.webdav
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.DocumentsContract
@@ -60,7 +61,7 @@ import androidx.core.text.HtmlCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.App
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
@@ -85,12 +86,9 @@ import javax.inject.Inject
 class WebdavMountsActivity: AppCompatActivity() {
 
     companion object {
-
-        fun helpUrl(context: Context) =
-            App.homepageUrl(context).buildUpon()
-                .appendEncodedPath("manual/webdav_mounts.html")
-                .build()
-
+        val helpUrl: Uri = Constants.MANUAL_URL.buildUpon()
+            .appendPath(Constants.MANUAL_PATH_WEBDAV_MOUNTS)
+            .build()
     }
 
     private val model by viewModels<Model>()
@@ -142,7 +140,9 @@ class WebdavMountsActivity: AppCompatActivity() {
                     title = { Text(stringResource(R.string.webdav_mounts_title)) },
                     actions = {
                         IconButton(
-                            onClick = { uriHandler.openUri(helpUrl(context).toString()) }
+                            onClick = {
+                                uriHandler.openUri(helpUrl.toString())
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Help,
@@ -209,7 +209,7 @@ class WebdavMountsActivity: AppCompatActivity() {
             val text = HtmlCompat.fromHtml(
                 stringResource(
                     R.string.webdav_add_mount_empty_more_info,
-                    helpUrl(context).toString()
+                    helpUrl.toString()
                 ),
                 0
             ).toAnnotatedString()
