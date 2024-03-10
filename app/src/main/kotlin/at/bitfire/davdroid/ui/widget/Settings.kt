@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
@@ -23,15 +24,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SettingsHeader(content: @Composable () -> Unit) {
-    CompositionLocalProvider(
-        LocalTextStyle provides MaterialTheme.typography.h6.copy(
-            color = MaterialTheme.colors.secondary
-        )
-    ) {
-        Row(Modifier
-            .padding(top = 32.dp, start = 48.dp, end = 16.dp, bottom = 8.dp)
+fun SettingsHeader(divider: Boolean = false, content: @Composable () -> Unit) {
+    if (divider)
+        Divider(Modifier.padding(vertical = 8.dp))
+
+    Row(
+        Modifier
+            .padding(top = 16.dp, start = 52.dp, end = 16.dp, bottom = 8.dp)
             .fillMaxWidth()
+    ) {
+        CompositionLocalProvider(
+            LocalTextStyle provides MaterialTheme.typography.body1.copy(
+                color = MaterialTheme.colors.secondary
+            )
         ) {
             content()
         }
@@ -41,8 +46,10 @@ fun SettingsHeader(content: @Composable () -> Unit) {
 @Composable
 @Preview
 fun SettingsHeader_Sample() {
-    SettingsHeader {
-        Text("Some Settings Section")
+    Column {
+        SettingsHeader(divider = true) {
+            Text("Some Settings Section")
+        }
     }
 }
 
@@ -66,16 +73,17 @@ fun Setting(
     ) {
         Box(
             modifier = Modifier
-                .width(40.dp)
-                .padding(start = 4.dp),
+                .width(44.dp)
+                .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {
             icon()
         }
 
-        Column(Modifier
-            .padding(start = 8.dp)
-            .weight(1f)
+        Column(
+            Modifier
+                .padding(start = 8.dp)
+                .weight(1f)
         ) {
             name()
 
@@ -140,7 +148,8 @@ fun SwitchSetting(
             Switch(
                 checked = checked,
                 enabled = enabled,
-                onCheckedChange = onCheckedChange
+                onCheckedChange = onCheckedChange,
+                modifier = Modifier.padding(horizontal = 4.dp)
             )
         },
         enabled = enabled

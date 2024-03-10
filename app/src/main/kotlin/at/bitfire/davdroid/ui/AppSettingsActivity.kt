@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -118,7 +119,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     .padding(padding)
                     .verticalScroll(rememberScrollState())
             ) {
-                Column(Modifier.padding(horizontal = 8.dp)) {
+                Column(Modifier.padding(8.dp)) {
                     AppSettings_Debugging(
                         verboseLogging = model.getPrefBoolean(Logger.LOG_TO_FILE).observeAsState(false).value,
                         onUpdateVerboseLogging = { model.putPrefBoolean(Logger.LOG_TO_FILE, it) },
@@ -208,6 +209,7 @@ class AppSettingsActivity: AppCompatActivity() {
         SwitchSetting(
             checked = batterySavingExempted,
             enabled = !batterySavingExempted,
+            icon = Icons.Default.SyncProblem.takeUnless { batterySavingExempted },
             name = stringResource(R.string.app_settings_battery_optimization),
             summaryOn = stringResource(R.string.app_settings_battery_optimization_exempted),
             summaryOff = stringResource(R.string.app_settings_battery_optimization_optimized)
@@ -238,7 +240,7 @@ class AppSettingsActivity: AppCompatActivity() {
         proxyPort: Int? = null,
         onProxyPortUpdated: (Int) -> Unit = {}
     ) {
-        SettingsHeader {
+        SettingsHeader(divider = true) {
             Text(stringResource(R.string.app_settings_connection))
         }
 
@@ -321,7 +323,7 @@ class AppSettingsActivity: AppCompatActivity() {
     ) {
         val context = LocalContext.current
 
-        SettingsHeader {
+        SettingsHeader(divider = true) {
             Text(stringResource(R.string.app_settings_security))
         }
 
@@ -365,7 +367,7 @@ class AppSettingsActivity: AppCompatActivity() {
         onThemeSelected: (Int) -> Unit = {},
         onResetHints: () -> Unit = {}
     ) {
-        SettingsHeader {
+        SettingsHeader(divider = true) {
             Text(stringResource(R.string.app_settings_user_interface))
         }
 
@@ -426,7 +428,7 @@ class AppSettingsActivity: AppCompatActivity() {
     ) {
         val context = LocalContext.current
 
-        SettingsHeader {
+        SettingsHeader(divider = true) {
             Text(stringResource(R.string.app_settings_integration))
         }
 
@@ -434,7 +436,7 @@ class AppSettingsActivity: AppCompatActivity() {
         val appInfo = taskProvider?.packageName?.let { pkgName ->
             pm.getApplicationInfo(pkgName, 0)
         }
-        val appName = appInfo?.loadLabel(pm).toString()
+        val appName = appInfo?.loadLabel(pm)?.toString()
         Setting(
             name = {
                 Text(stringResource(R.string.app_settings_tasks_provider))
