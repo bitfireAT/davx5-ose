@@ -135,7 +135,7 @@ class SettingsManager internal constructor(
     fun getLong(key: String) = getLongOrNull(key) ?: throw NoSuchPropertyException(key)
 
     fun getString(key: String) = getValue(key) { provider -> provider.getString(key) }
-    fun getStringLive(key: String): LiveData<String> = SettingLiveData { getString(key) }
+    fun getStringLive(key: String): LiveData<String?> = SettingLiveData { getString(key) }
 
 
     fun isWritable(key: String): Boolean {

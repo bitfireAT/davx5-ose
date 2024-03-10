@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui
 
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -47,6 +46,7 @@ import androidx.core.text.HtmlCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
@@ -59,6 +59,7 @@ import at.bitfire.davdroid.ui.widget.RadioWithSwitch
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -100,26 +101,28 @@ class TasksActivity: AppCompatActivity() {
         }
 
         val currentProvider = TaskUtils.currentProviderLive(context)
-
-        val jtxInstalled = MutableLiveData<Boolean>()
         val jtxSelected = currentProvider.map { it == TaskProvider.ProviderName.JtxBoard }
-
-        val tasksOrgInstalled = MutableLiveData<Boolean>()
         val tasksOrgSelected = currentProvider.map { it == TaskProvider.ProviderName.TasksOrg }
-
-        val openTasksInstalled = MutableLiveData<Boolean>()
         val openTasksSelected = currentProvider.map { it == TaskProvider.ProviderName.OpenTasks }
 
-        private val tasksWatcher = object: PackageChangedReceiver(context) {
-            override fun onReceive(context: Context?, intent: Intent?) {
+        val jtxInstalled = MutableLiveData<Boolean>()
+        val tasksOrgInstalled = MutableLiveData<Boolean>()
+        val openTasksInstalled = MutableLiveData<Boolean>()
+
+        private val pkgChangedReceiver = object: PackageChangedReceiver(context) {
+            override fun onPackageChanged() {
                 jtxInstalled.postValue(isInstalled(TaskProvider.ProviderName.JtxBoard.packageName))
                 tasksOrgInstalled.postValue(isInstalled(TaskProvider.ProviderName.TasksOrg.packageName))
                 openTasksInstalled.postValue(isInstalled(TaskProvider.ProviderName.OpenTasks.packageName))
             }
         }
 
+        init {
+            pkgChangedReceiver.register(true)
+        }
+
         override fun onCleared() {
-            tasksWatcher.close()
+            pkgChangedReceiver.close()
         }
 
         private fun isInstalled(packageName: String): Boolean =
@@ -130,9 +133,8 @@ class TasksActivity: AppCompatActivity() {
                 false
             }
 
-        fun selectPreferredProvider(provider: TaskProvider.ProviderName) {
-            // Changes preferred task app setting, so onSettingsChanged() will be called
-            TaskUtils.setPreferredProvider(context, provider)
+        fun selectProvider(provider: TaskProvider.ProviderName) = viewModelScope.launch(Dispatchers.Default) {
+            TaskUtils.selectProvider(context, provider)
         }
 
     }
@@ -179,7 +181,7 @@ fun TasksCard(
 
     fun onProviderSelected(provider: TaskProvider.ProviderName) {
         if (model.currentProvider.value != provider)
-            model.selectPreferredProvider(provider)
+            model.selectProvider(provider)
     }
 
     Scaffold(

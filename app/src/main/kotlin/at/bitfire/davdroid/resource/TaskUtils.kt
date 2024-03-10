@@ -16,9 +16,6 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 object TaskUtils {
 
@@ -37,7 +34,10 @@ object TaskUtils {
     fun currentProviderLive(context: Context): LiveData<ProviderName?> {
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
         return settingsManager.getStringLive(Settings.PREFERRED_TASKS_PROVIDER).map { preferred ->
-            preferredAuthorityToProviderName(preferred, context.packageManager)
+            if (preferred != null)
+                preferredAuthorityToProviderName(preferred, context.packageManager)
+            else
+                null
         }
     }
 
@@ -56,12 +56,12 @@ object TaskUtils {
 
     fun isAvailable(context: Context) = currentProvider(context) != null
 
-    fun setPreferredProvider(context: Context, providerName: ProviderName) {
+    fun selectProvider(context: Context, providerName: ProviderName?, updateSyncSettings: Boolean = false) {
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
-        settingsManager.putString(Settings.PREFERRED_TASKS_PROVIDER, providerName.authority)
-        CoroutineScope(Dispatchers.Default).launch {
-            SyncUtils.updateTaskSync(context)
-        }
+        settingsManager.putString(Settings.PREFERRED_TASKS_PROVIDER, providerName?.authority)
+
+        // update sync settings
+        SyncUtils.updateTaskSync(context)
     }
 
 }

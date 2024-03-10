@@ -39,9 +39,12 @@ object Settings {
     const val PREFERRED_THEME = "preferred_theme"
     const val PREFERRED_THEME_DEFAULT = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 
-    const val LANGUAGE = "language"
-    const val LANGUAGE_SYSTEM = "language_system"
-
+    /**
+     * Selected tasks app. When at least one tasks app is installed, this setting is set to its authority.
+     * In case of multiple available tasks app, the user can choose one and this setting will reflect the selected one.
+     *
+     * If no tasks app is installed, this setting is not set.
+     */
     const val PREFERRED_TASKS_PROVIDER = "preferred_tasks_provider"
 
     /** whether collections are automatically selected for synchronization after their initial detection */
