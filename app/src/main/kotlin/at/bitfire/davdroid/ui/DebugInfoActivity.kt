@@ -88,7 +88,6 @@ import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import at.techbee.jtx.JtxContract
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -233,9 +232,17 @@ class DebugInfoActivity : AppCompatActivity() {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (debugInfo == null) item { LinearProgressIndicator() }
+            if (debugInfo == null)
+                item {
+                    LinearProgressIndicator(color = MaterialTheme.colors.secondary)
+                }
+
             if (debugInfo != null) {
-                if (zipProgress) item { LinearProgressIndicator() }
+                if (zipProgress)
+                    item {
+                        LinearProgressIndicator(color = MaterialTheme.colors.secondary)
+                    }
+
                 item {
                     CardWithImage(
                         image = painterResource(R.drawable.undraw_server_down),
