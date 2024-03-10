@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.webdav
 
 import android.app.Application
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -29,32 +28,26 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.UrlUtils
@@ -65,20 +58,21 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.ui.widget.PasswordTextField
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
 import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.net.URI
-import java.net.URISyntaxException
-import java.util.logging.Level
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.collections4.CollectionUtils
+import java.net.URI
+import java.net.URISyntaxException
+import java.util.logging.Level
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddWebdavMountActivity : AppCompatActivity() {
@@ -100,19 +94,19 @@ class AddWebdavMountActivity : AppCompatActivity() {
 
             MdcTheme {
                 Layout(
-                    isLoading,
-                    error,
-                    { model.error.value = null },
-                    displayName,
-                    model.displayName::setValue,
-                    displayNameError,
-                    url,
-                    model.url::setValue,
-                    urlError,
-                    username,
-                    model.userName::setValue,
-                    password,
-                    model.password::setValue
+                    isLoading = isLoading,
+                    error = error,
+                    onErrorClearRequested = { model.error.value = null },
+                    displayName = displayName,
+                    onDisplayNameChange = model.displayName::setValue,
+                    displayNameError = displayNameError,
+                    url = url,
+                    onUrlChange = model.url::setValue,
+                    urlError = urlError,
+                    username = username,
+                    onUsernameChange = model.userName::setValue,
+                    password = password,
+                    onPasswordChange = model.password::setValue
                 )
             }
         }
@@ -138,20 +132,18 @@ class AddWebdavMountActivity : AppCompatActivity() {
         val context = LocalContext.current
         val uriHandler = LocalUriHandler.current
 
-        val scaffoldState = rememberScaffoldState()
+        val snackbarHostState = remember { SnackbarHostState() }
 
-        if (error != null) {
-            LaunchedEffect(error) {
-                scaffoldState.snackbarHostState.showSnackbar(
-                    message = error,
-                    duration = SnackbarDuration.Long
+        LaunchedEffect(error) {
+            if (error != null) {
+                snackbarHostState.showSnackbar(
+                    message = error
                 )
                 onErrorClearRequested()
             }
         }
 
         Scaffold(
-            scaffoldState = scaffoldState,
             topBar = {
                 TopAppBar(
                     title = { Text(stringResource(R.string.webdav_add_mount_title)) },
@@ -191,7 +183,8 @@ class AddWebdavMountActivity : AppCompatActivity() {
                         }
                     }
                 }
-            }
+            },
+            snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -199,9 +192,12 @@ class AddWebdavMountActivity : AppCompatActivity() {
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
             ) {
-                if (isLoading) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                }
+                if (isLoading)
+                    LinearProgressIndicator(
+                        color = MaterialTheme.colors.primary,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
                 Form(
                     displayName,
                     onDisplayNameChange,
@@ -255,7 +251,7 @@ class AddWebdavMountActivity : AppCompatActivity() {
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
+                    .padding(vertical = 8.dp)
             )
             FormField(
                 username,
@@ -264,31 +260,10 @@ class AddWebdavMountActivity : AppCompatActivity() {
                 R.string.webdav_add_mount_username
             )
 
-            var showingPassword by remember { mutableStateOf(false) }
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = onPasswordChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                label = { Text(stringResource(R.string.webdav_add_mount_password)) },
-                singleLine = true,
-                visualTransformation = if (showingPassword)
-                    VisualTransformation.None
-                else
-                    PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { showingPassword = !showingPassword }) {
-                        Icon(
-                            imageVector = if (showingPassword)
-                                Icons.Filled.VisibilityOff
-                            else
-                                Icons.Filled.Visibility,
-                            contentDescription = null
-                        )
-                    }
-                }
+            PasswordTextField(
+                password = password,
+                onPasswordChange = onPasswordChange,
+                labelText = stringResource(R.string.webdav_add_mount_password)
             )
         }
     }
@@ -304,7 +279,8 @@ class AddWebdavMountActivity : AppCompatActivity() {
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
             label = { Text(stringResource(label)) },
             singleLine = true,
             isError = error != null
@@ -318,10 +294,9 @@ class AddWebdavMountActivity : AppCompatActivity() {
                 )
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
-    @Preview(showSystemUi = true, showBackground = true)
+    @Preview
     @Composable
     fun Layout_Preview() {
         MdcTheme {
@@ -390,9 +365,9 @@ class AddWebdavMountActivity : AppCompatActivity() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        application: Application,
+        val context: Application,
         val db: AppDatabase
-    ) : AndroidViewModel(application) {
+    ): ViewModel() {
 
         val displayName = MutableLiveData<String>()
         val displayNameError = MutableLiveData<String>()
@@ -403,8 +378,6 @@ class AddWebdavMountActivity : AppCompatActivity() {
 
         val error = MutableLiveData<String>()
         val isLoading = MutableLiveData(false)
-
-        val context: Context get() = getApplication()
 
 
         @WorkerThread
