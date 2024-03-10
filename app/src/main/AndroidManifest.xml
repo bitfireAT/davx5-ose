@@ -166,8 +166,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.webdav.AddWebdavMountActivity"
-            android:label="@string/webdav_add_mount_title"
-            android:parentActivityName=".ui.webdav.WebdavMountsActivity" />
+            android:parentActivityName=".ui.webdav.WebdavMountsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- account type "DAVx⁵" -->
         <service
