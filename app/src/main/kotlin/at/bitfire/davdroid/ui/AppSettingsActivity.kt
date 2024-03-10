@@ -142,6 +142,11 @@ class AppSettingsActivity: AppCompatActivity() {
                                 android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                                 Uri.parse("package:" + BuildConfig.APPLICATION_ID)
                             ))
+                        },
+                        onBatterySavingSettings = {
+                            startActivity(Intent(
+                                android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
+                            ))
                         }
                     )
 
@@ -193,7 +198,8 @@ class AppSettingsActivity: AppCompatActivity() {
         verboseLogging: Boolean,
         onUpdateVerboseLogging: (Boolean) -> Unit,
         batterySavingExempted: Boolean,
-        onExemptFromBatterySaving: () -> Unit
+        onExemptFromBatterySaving: () -> Unit,
+        onBatterySavingSettings: () -> Unit
     ) {
         val context = LocalContext.current
 
@@ -221,13 +227,15 @@ class AppSettingsActivity: AppCompatActivity() {
 
         SwitchSetting(
             checked = batterySavingExempted,
-            enabled = !batterySavingExempted,
             icon = Icons.Default.SyncProblem.takeUnless { batterySavingExempted },
             name = stringResource(R.string.app_settings_battery_optimization),
             summaryOn = stringResource(R.string.app_settings_battery_optimization_exempted),
             summaryOff = stringResource(R.string.app_settings_battery_optimization_optimized)
         ) {
-            onExemptFromBatterySaving()
+            if (batterySavingExempted)
+                onBatterySavingSettings()
+            else
+                onExemptFromBatterySaving()
         }
     }
 
@@ -239,7 +247,8 @@ class AppSettingsActivity: AppCompatActivity() {
                 verboseLogging = false,
                 onUpdateVerboseLogging = {},
                 batterySavingExempted = true,
-                onExemptFromBatterySaving = {}
+                onExemptFromBatterySaving = {},
+                onBatterySavingSettings = {}
             )
         }
     }
