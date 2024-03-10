@@ -49,6 +49,8 @@ import javax.inject.Inject
 class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
     companion object {
+        const val BILLINGCLIENT_CONNECTION_MAX_RETRIES = 4
+
         internal const val LAST_REVIEW_PROMPT = "lastReviewPrompt"
 
         /** Time between rating interval prompts in milliseconds */
@@ -521,7 +523,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
          */
         override fun onBillingServiceDisconnected() {
             connectionTriesCount++
-            val maxTries = Constants.BILLINGCLIENT_CONNECTION_MAX_RETRIES
+            val maxTries = BILLINGCLIENT_CONNECTION_MAX_RETRIES
             Logger.log.warning("Connecting to BillingService failed. Retrying $connectionTriesCount/$maxTries times")
             if (connectionTriesCount > maxTries) {
                 Logger.log.warning("Failed to connect to BillingService. Given up on re-trying")
