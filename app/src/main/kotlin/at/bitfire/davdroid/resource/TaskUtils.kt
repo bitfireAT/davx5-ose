@@ -25,15 +25,25 @@ object TaskUtils {
         fun settingsManager(): SettingsManager
     }
 
+    /**
+     * Returns the currently selected tasks provider (if it's still available = installed).
+     *
+     * @return the currently selected tasks provider, or null if none is available
+     */
     fun currentProvider(context: Context): ProviderName? {
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
-        val preferredAuthority = settingsManager.getString(Settings.PREFERRED_TASKS_PROVIDER) ?: return null
+        val preferredAuthority = settingsManager.getString(Settings.SELECTED_TASKS_PROVIDER) ?: return null
         return preferredAuthorityToProviderName(preferredAuthority, context.packageManager)
     }
 
+    /**
+     * Returns the currently selected tasks provider (if it's still available = installed).
+     *
+     * @return the currently selected tasks provider, or null if none is available
+     */
     fun currentProviderLive(context: Context): LiveData<ProviderName?> {
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
-        return settingsManager.getStringLive(Settings.PREFERRED_TASKS_PROVIDER).map { preferred ->
+        return settingsManager.getStringLive(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
             if (preferred != null)
                 preferredAuthorityToProviderName(preferred, context.packageManager)
             else
@@ -58,7 +68,7 @@ object TaskUtils {
 
     fun selectProvider(context: Context, providerName: ProviderName?, updateSyncSettings: Boolean = false) {
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
-        settingsManager.putString(Settings.PREFERRED_TASKS_PROVIDER, providerName?.authority)
+        settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, providerName?.authority)
 
         // update sync settings
         SyncUtils.updateTaskSync(context)

@@ -45,7 +45,7 @@ object Settings {
      *
      * If no tasks app is installed, this setting is not set.
      */
-    const val PREFERRED_TASKS_PROVIDER = "preferred_tasks_provider"
+    const val SELECTED_TASKS_PROVIDER = "preferred_tasks_provider"
 
     /** whether collections are automatically selected for synchronization after their initial detection */
     const val PRESELECT_COLLECTIONS = "preselect_collections"
