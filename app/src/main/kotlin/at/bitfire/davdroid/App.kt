@@ -10,7 +10,6 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
-import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
@@ -65,10 +64,8 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
             // watch storage because low storage means synchronization is stopped
             storageLowReceiver.listen()
 
-            // watch installed/removed apps
+            // watch installed/removed tasks apps and update sync settings accordingly
             TasksWatcher.watch(this)
-            // check whether a tasks app is currently installed
-            SyncUtils.updateTaskSync(this)
 
             // create/update app shortcuts
             UiUtils.updateShortcuts(this)

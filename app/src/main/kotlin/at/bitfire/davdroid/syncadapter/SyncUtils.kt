@@ -114,15 +114,17 @@ object SyncUtils {
 
     // task sync utils
 
+    /**
+     * Sets up sync for the current TaskProvider (and disables sync for unavailable task providers).
+     *
+     * In case of missing permissions, a notification is shown.
+     */
     @WorkerThread
     fun updateTaskSync(context: Context) {
-        val tasksProvider = TaskUtils.currentProvider(context)
-        Logger.log.info("App launched or other package (un)installed; current tasks provider = $tasksProvider")
+        val currentProvider = TaskUtils.currentProvider(context)
+        Logger.log.info("App launched or other package (un)installed; current tasks provider = $currentProvider")
 
         var permissionsRequired = false     // whether additional permissions are required
-        val currentProvider by lazy {       // only this provider shall be enabled (null to disable all providers)
-            TaskUtils.currentProvider(context)
-        }
 
         // check all accounts and (de)activate task provider(s) if a CalDAV service is defined
         val db = EntryPointAccessors.fromApplication(context, SyncUtilsEntryPoint::class.java).appDatabase()

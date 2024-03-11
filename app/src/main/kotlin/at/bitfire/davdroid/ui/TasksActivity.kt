@@ -5,14 +5,12 @@
 package at.bitfire.davdroid.ui
 
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.AnyThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -45,9 +43,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
@@ -60,6 +59,7 @@ import at.bitfire.davdroid.ui.widget.RadioWithSwitch
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -80,9 +80,9 @@ class TasksActivity: AppCompatActivity() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        application: Application,
+        val context: Application,
         val settings: SettingsManager
-    ) : AndroidViewModel(application), SettingsManager.OnChangeListener {
+    ) : ViewModel() {
 
         companion object {
 
@@ -95,83 +95,46 @@ class TasksActivity: AppCompatActivity() {
 
         }
 
-        val currentProvider = MutableLiveData<TaskProvider.ProviderName>()
-        val openTasksInstalled = MutableLiveData<Boolean>()
-        val openTasksRequested = MutableLiveData<Boolean>()
-        val openTasksSelected = MutableLiveData<Boolean>()
-        val tasksOrgInstalled = MutableLiveData<Boolean>()
-        val tasksOrgRequested = MutableLiveData<Boolean>()
-        val tasksOrgSelected = MutableLiveData<Boolean>()
-        val jtxInstalled = MutableLiveData<Boolean>()
-        val jtxRequested = MutableLiveData<Boolean>()
-        val jtxSelected = MutableLiveData<Boolean>()
+        val dontShow = settings.getBooleanLive(HINT_OPENTASKS_NOT_INSTALLED)
+        fun setDontShow(dontShow: Boolean) {
+            settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, !dontShow)
+        }
 
-        private val tasksWatcher = object: PackageChangedReceiver(application) {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                checkInstalled()
+        val currentProvider = TaskUtils.currentProviderLive(context)
+        val jtxSelected = currentProvider.map { it == TaskProvider.ProviderName.JtxBoard }
+        val tasksOrgSelected = currentProvider.map { it == TaskProvider.ProviderName.TasksOrg }
+        val openTasksSelected = currentProvider.map { it == TaskProvider.ProviderName.OpenTasks }
+
+        val jtxInstalled = MutableLiveData<Boolean>()
+        val tasksOrgInstalled = MutableLiveData<Boolean>()
+        val openTasksInstalled = MutableLiveData<Boolean>()
+
+        private val pkgChangedReceiver = object: PackageChangedReceiver(context) {
+            override fun onPackageChanged() {
+                jtxInstalled.postValue(isInstalled(TaskProvider.ProviderName.JtxBoard.packageName))
+                tasksOrgInstalled.postValue(isInstalled(TaskProvider.ProviderName.TasksOrg.packageName))
+                openTasksInstalled.postValue(isInstalled(TaskProvider.ProviderName.OpenTasks.packageName))
             }
         }
 
-        val dontShow = MutableLiveData(
-            settings.getBooleanOrNull(HINT_OPENTASKS_NOT_INSTALLED) == false
-        )
-
-        private val dontShowObserver = Observer<Boolean> { value ->
-            if (value)
-                settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
-            else
-                settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
-        }
-
         init {
-            checkInstalled()
-            settings.addOnChangeListener(this)
-            dontShow.observeForever(dontShowObserver)
+            pkgChangedReceiver.register(true)
         }
 
         override fun onCleared() {
-            settings.removeOnChangeListener(this)
-            tasksWatcher.close()
-            dontShow.removeObserver(dontShowObserver)
-        }
-
-        @AnyThread
-        fun checkInstalled() {
-            val taskProvider = TaskUtils.currentProvider(getApplication())
-            currentProvider.postValue(taskProvider)
-
-            val openTasks = isInstalled(TaskProvider.ProviderName.OpenTasks.packageName)
-            openTasksInstalled.postValue(openTasks)
-            openTasksRequested.postValue(openTasks)
-            openTasksSelected.postValue(taskProvider == TaskProvider.ProviderName.OpenTasks)
-
-            val tasksOrg = isInstalled(TaskProvider.ProviderName.TasksOrg.packageName)
-            tasksOrgInstalled.postValue(tasksOrg)
-            tasksOrgRequested.postValue(tasksOrg)
-            tasksOrgSelected.postValue(taskProvider == TaskProvider.ProviderName.TasksOrg)
-
-            val jtxBoard = isInstalled(TaskProvider.ProviderName.JtxBoard.packageName)
-            jtxInstalled.postValue(jtxBoard)
-            jtxRequested.postValue(jtxBoard)
-            jtxSelected.postValue(taskProvider == TaskProvider.ProviderName.JtxBoard)
+            pkgChangedReceiver.close()
         }
 
         private fun isInstalled(packageName: String): Boolean =
             try {
-                getApplication<Application>().packageManager.getPackageInfo(packageName, 0)
+                context.packageManager.getPackageInfo(packageName, 0)
                 true
             } catch (e: PackageManager.NameNotFoundException) {
                 false
             }
 
-        fun selectPreferredProvider(provider: TaskProvider.ProviderName) {
-            // Changes preferred task app setting, so onSettingsChanged() will be called
-            TaskUtils.setPreferredProvider(getApplication(), provider)
-        }
-
-
-        override fun onSettingsChanged() {
-            checkInstalled()
+        fun selectProvider(provider: TaskProvider.ProviderName) = viewModelScope.launch(Dispatchers.Default) {
+            TaskUtils.selectProvider(context, provider)
         }
 
     }
@@ -190,19 +153,16 @@ fun TasksCard(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val jtxInstalled by model.jtxInstalled.observeAsState(initial = false)
-    val jtxSelected by model.jtxSelected.observeAsState(initial = false)
-    val jtxRequested by model.jtxRequested.observeAsState(initial = false)
+    val jtxInstalled by model.jtxInstalled.observeAsState(false)
+    val jtxSelected by model.jtxSelected.observeAsState(false)
 
-    val tasksOrgInstalled by model.tasksOrgInstalled.observeAsState(initial = false)
-    val tasksOrgSelected by model.tasksOrgSelected.observeAsState(initial = false)
-    val tasksOrgRequested by model.tasksOrgRequested.observeAsState(initial = false)
+    val tasksOrgInstalled by model.tasksOrgInstalled.observeAsState(false)
+    val tasksOrgSelected by model.tasksOrgSelected.observeAsState(false)
 
-    val openTasksInstalled by model.openTasksInstalled.observeAsState(initial = false)
-    val openTasksSelected by model.openTasksSelected.observeAsState(initial = false)
-    val openTasksRequested by model.openTasksRequested.observeAsState(initial = false)
+    val openTasksInstalled by model.openTasksInstalled.observeAsState(false)
+    val openTasksSelected by model.openTasksSelected.observeAsState(false)
 
-    val dontShow by model.dontShow.observeAsState(initial = false)
+    val dontShow = model.dontShow.observeAsState().value ?: false
 
     fun installApp(packageName: String) {
         val uri = Uri.parse("market://details?id=$packageName&referrer=" +
@@ -221,7 +181,7 @@ fun TasksCard(
 
     fun onProviderSelected(provider: TaskProvider.ProviderName) {
         if (model.currentProvider.value != provider)
-            model.selectPreferredProvider(provider)
+            model.selectProvider(provider)
     }
 
     Scaffold(
@@ -249,7 +209,7 @@ fun TasksCard(
                         Text(stringResource(R.string.intro_tasks_jtx_info))
                     },
                     isSelected = jtxSelected,
-                    isToggled = jtxRequested,
+                    isToggled = jtxInstalled,
                     enabled = jtxInstalled,
                     onSelected = { onProviderSelected(TaskProvider.ProviderName.JtxBoard) },
                     onToggled = { toggled ->
@@ -280,7 +240,7 @@ fun TasksCard(
                         )
                     },
                     isSelected = tasksOrgSelected,
-                    isToggled = tasksOrgRequested,
+                    isToggled = tasksOrgInstalled,
                     enabled = tasksOrgInstalled,
                     onSelected = { onProviderSelected(TaskProvider.ProviderName.TasksOrg) },
                     onToggled = { toggled ->
@@ -297,7 +257,7 @@ fun TasksCard(
                         Text(stringResource(R.string.intro_tasks_opentasks_info))
                     },
                     isSelected = openTasksSelected,
-                    isToggled = openTasksRequested,
+                    isToggled = openTasksInstalled,
                     enabled = openTasksInstalled,
                     onSelected = { onProviderSelected(TaskProvider.ProviderName.OpenTasks) },
                     onToggled = { toggled ->
@@ -316,13 +276,13 @@ fun TasksCard(
                 ) {
                     Checkbox(
                         checked = dontShow,
-                        onCheckedChange = { model.dontShow.value = it }
+                        onCheckedChange = { model.setDontShow(it) }
                     )
                     Text(
                         text = stringResource(R.string.intro_tasks_dont_show),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { model.dontShow.value = !dontShow }
+                            .clickable { model.setDontShow(!dontShow) }
                     )
                 }
             }

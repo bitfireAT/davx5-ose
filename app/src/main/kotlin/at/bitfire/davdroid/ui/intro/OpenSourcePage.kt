@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -121,7 +122,8 @@ class OpenSourcePage : IntroPage {
                     Text(stringResource(R.string.intro_open_source_details))
                 }
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Checkbox(
                         checked = dontShow,
@@ -130,7 +132,9 @@ class OpenSourcePage : IntroPage {
                     Text(
                         text = stringResource(R.string.intro_open_source_dont_show),
                         style = MaterialTheme.typography.body2,
-                        modifier = Modifier.clickable { onChangeDontShow(!dontShow) }
+                        modifier = Modifier
+                            .clickable { onChangeDontShow(!dontShow) }
+                            .weight(1f)
                     )
                 }
             }

@@ -68,7 +68,7 @@ class SettingsManagerTest {
         // posts value to main thread, InstantTaskExecutorRule is required to execute it instantly
         settingsManager.putBoolean(SETTING_TEST, true)
         runBlocking(Dispatchers.Main) {     // observeForever can't be run in background thread
-            assertTrue(live.getOrAwaitValue())
+            assertTrue(live.getOrAwaitValue()!!)
         }
     }
 

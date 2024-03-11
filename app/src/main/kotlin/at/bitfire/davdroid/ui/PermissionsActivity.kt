@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui
 
 import android.Manifest
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -50,7 +49,6 @@ import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.themeadapter.material.MdcTheme
 import java.util.logging.Level
 
 class PermissionsActivity: AppCompatActivity() {
@@ -82,13 +80,13 @@ class PermissionsActivity: AppCompatActivity() {
         val jtxAvailable = MutableLiveData<Boolean>()
 
         private val tasksWatcher = object: PackageChangedReceiver(app) {
-            @MainThread
-            override fun onReceive(context: Context?, intent: Intent?) {
+            override fun onPackageChanged() {
                 checkPermissions()
             }
         }
 
         init {
+            tasksWatcher.register()
             checkPermissions()
         }
 
