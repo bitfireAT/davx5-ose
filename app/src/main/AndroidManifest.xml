@@ -157,7 +157,7 @@
             android:parentActivityName=".ui.account.AccountActivity2" />
         <activity
             android:name=".ui.account.WifiPermissionsActivity"
-            android:label="@string/wifi_permissions_label"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".ui.account.SettingsActivity" />
 
         <activity
