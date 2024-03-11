@@ -16,6 +16,7 @@ object Constants {
     val HOMEPAGE_URL = "https://www.davx5.com".toUri()
     const val HOMEPAGE_PATH_FAQ = "faq"
     const val HOMEPAGE_PATH_FAQ_SYNC_NOT_RUN = "synchronization-is-not-run-as-expected"
+    const val HOMEPAGE_PATH_FAQ_LOCATION_PERMISSION = "wifi-ssid-restriction-location-permission"
     const val HOMEPAGE_PATH_OPEN_SOURCE = "donate"
     const val HOMEPAGE_PATH_PRIVACY = "privacy"
     const val HOMEPAGE_PATH_TESTED_SERVICES = "tested-with"
