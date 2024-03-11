@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Watches whether a tasks app has been installed or uninstalled and updates
- * the preferred tasks app accordingly.
+ * the selected tasks app and task sync settings accordingly.
  */
 class TasksWatcher private constructor(
     context: Context

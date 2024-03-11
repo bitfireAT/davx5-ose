@@ -151,7 +151,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     )
 
                     AppSettings_Connection(
-                        proxyType = model.settings.getIntLive(Settings.PROXY_TYPE).observeAsState(Settings.PROXY_TYPE_NONE).value,
+                        proxyType = model.settings.getIntLive(Settings.PROXY_TYPE).observeAsState().value ?: Settings.PROXY_TYPE_NONE,
                         onProxyTypeUpdated = { model.settings.putInt(Settings.PROXY_TYPE, it) },
                         proxyHostName = model.settings.getStringLive(Settings.PROXY_HOST).observeAsState(null).value,
                         onProxyHostNameUpdated = { model.settings.putString(Settings.PROXY_HOST, it) },
@@ -160,7 +160,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     )
 
                     AppSettings_Security(
-                        distrustSystemCerts = model.settings.getBooleanLive(Settings.DISTRUST_SYSTEM_CERTIFICATES).observeAsState(false).value,
+                        distrustSystemCerts = model.settings.getBooleanLive(Settings.DISTRUST_SYSTEM_CERTIFICATES).observeAsState().value ?: false,
                         onDistrustSystemCertsUpdated = { model.settings.putBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES, it) },
                         onResetCertificates = {
                             model.resetCertificates()
@@ -172,7 +172,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     )
 
                     AppSettings_UserInterface(
-                        theme = model.settings.getIntLive(Settings.PREFERRED_THEME).observeAsState(Settings.PREFERRED_THEME_DEFAULT).value,
+                        theme = model.settings.getIntLive(Settings.PREFERRED_THEME).observeAsState().value ?: Settings.PREFERRED_THEME_DEFAULT,
                         onThemeSelected = {
                             model.settings.putInt(Settings.PREFERRED_THEME, it)
                             UiUtils.updateTheme(context)

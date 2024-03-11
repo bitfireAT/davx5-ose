@@ -162,7 +162,7 @@ fun TasksCard(
     val openTasksInstalled by model.openTasksInstalled.observeAsState(false)
     val openTasksSelected by model.openTasksSelected.observeAsState(false)
 
-    val dontShow by model.dontShow.observeAsState(false)
+    val dontShow = model.dontShow.observeAsState().value ?: false
 
     fun installApp(packageName: String) {
         val uri = Uri.parse("market://details?id=$packageName&referrer=" +

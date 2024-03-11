@@ -125,11 +125,11 @@ class SettingsManager internal constructor(
 
     fun getBooleanOrNull(key: String): Boolean? = getValue(key) { provider -> provider.getBoolean(key) }
     fun getBoolean(key: String): Boolean = getBooleanOrNull(key) ?: throw NoSuchPropertyException(key)
-    fun getBooleanLive(key: String): LiveData<Boolean> = SettingLiveData { getBooleanOrNull(key) }
+    fun getBooleanLive(key: String): LiveData<Boolean?> = SettingLiveData { getBooleanOrNull(key) }
 
     fun getIntOrNull(key: String): Int? = getValue(key) { provider -> provider.getInt(key) }
     fun getInt(key: String): Int = getIntOrNull(key) ?: throw NoSuchPropertyException(key)
-    fun getIntLive(key: String): LiveData<Int> = SettingLiveData { getIntOrNull(key) }
+    fun getIntLive(key: String): LiveData<Int?> = SettingLiveData { getIntOrNull(key) }
 
     fun getLongOrNull(key: String): Long? = getValue(key) { provider -> provider.getLong(key) }
     fun getLong(key: String) = getLongOrNull(key) ?: throw NoSuchPropertyException(key)

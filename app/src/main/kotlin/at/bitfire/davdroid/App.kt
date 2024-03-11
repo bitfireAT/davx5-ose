@@ -64,7 +64,7 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
             // watch storage because low storage means synchronization is stopped
             storageLowReceiver.listen()
 
-            // watch installed/removed apps
+            // watch installed/removed tasks apps and update sync settings accordingly
             TasksWatcher.watch(this)
 
             // create/update app shortcuts
