@@ -5,10 +5,12 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.security.KeyChain
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -16,16 +18,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.outlined.Task
 import androidx.compose.runtime.Composable
@@ -33,9 +43,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -55,11 +68,13 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.syncadapter.Syncer
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.widget.ActionCard
 import at.bitfire.davdroid.ui.widget.EditTextInputDialog
 import at.bitfire.davdroid.ui.widget.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.widget.Setting
 import at.bitfire.davdroid.ui.widget.SettingsHeader
 import at.bitfire.davdroid.ui.widget.SwitchSetting
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
@@ -69,6 +84,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.openid.appauth.AuthState
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -103,6 +119,7 @@ class AccountSettingsActivity: AppCompatActivity() {
             AppTheme {
                 val uriHandler = LocalUriHandler.current
 
+                val snackbarHostState = remember { SnackbarHostState() }
                 Scaffold(
                     topBar = {
                         TopAppBar(
@@ -120,10 +137,16 @@ class AccountSettingsActivity: AppCompatActivity() {
                                 }
                             }
                         )
-                    }
+                    },
+                    snackbarHost = { SnackbarHost(snackbarHostState) }
                 ) { padding ->
-                    Box(Modifier.padding(padding)) {
-                        AccountSettings_FromModel(model)
+                    Box(Modifier
+                        .padding(padding)
+                        .verticalScroll(rememberScrollState())) {
+                        AccountSettings_FromModel(
+                            snackbarHostState = snackbarHostState,
+                            model = model
+                        )
                     }
                 }
             }
@@ -138,23 +161,53 @@ class AccountSettingsActivity: AppCompatActivity() {
 
 
     @Composable
-    fun AccountSettings_FromModel(model: Model) {
-        SyncSettings(
-            contactsSyncInterval = model.syncIntervalContacts.observeAsState().value,
-            onUpdateContactsSyncInterval = { model.updateSyncInterval(getString(R.string.address_books_authority), it) },
-            calendarSyncInterval = model.syncIntervalCalendars.observeAsState().value,
-            onUpdateCalendarSyncInterval = { model.updateSyncInterval(CalendarContract.AUTHORITY, it) },
-            taskSyncInterval = model.syncIntervalTasks.observeAsState().value,
-            onUpdateTaskSyncInterval = { interval ->
-                model.tasksProvider?.let { model.updateSyncInterval(it.authority, interval) }
-            },
-            syncOnlyOnWifi = model.syncWifiOnly.observeAsState(false).value,
-            onUpdateSyncOnlyOnWifi = { model.updateSyncWifiOnly(it) },
-            onlyOnSsids = model.syncWifiOnlySSIDs.observeAsState().value,
-            onUpdateOnlyOnSsids = { model.updateSyncWifiOnlySSIDs(it) },
-            ignoreVpns = model.ignoreVpns.observeAsState(false).value,
-            onUpdateIgnoreVpns = { model.updateIgnoreVpns(it) }
-        )
+    fun AccountSettings_FromModel(
+        snackbarHostState: SnackbarHostState,
+        model: Model
+    ) {
+        Column(Modifier.padding(8.dp)) {
+            SyncSettings(
+                contactsSyncInterval = model.syncIntervalContacts.observeAsState().value,
+                onUpdateContactsSyncInterval = { model.updateSyncInterval(getString(R.string.address_books_authority), it) },
+                calendarSyncInterval = model.syncIntervalCalendars.observeAsState().value,
+                onUpdateCalendarSyncInterval = { model.updateSyncInterval(CalendarContract.AUTHORITY, it) },
+                taskSyncInterval = model.syncIntervalTasks.observeAsState().value,
+                onUpdateTaskSyncInterval = { interval ->
+                    model.tasksProvider?.let { model.updateSyncInterval(it.authority, interval) }
+                },
+                syncOnlyOnWifi = model.syncWifiOnly.observeAsState(false).value,
+                onUpdateSyncOnlyOnWifi = { model.updateSyncWifiOnly(it) },
+                onlyOnSsids = model.syncWifiOnlySSIDs.observeAsState().value,
+                onUpdateOnlyOnSsids = { model.updateSyncWifiOnlySSIDs(it) },
+                ignoreVpns = model.ignoreVpns.observeAsState(false).value,
+                onUpdateIgnoreVpns = { model.updateIgnoreVpns(it) }
+            )
+
+            val credentials by model.credentials.observeAsState()
+            credentials?.let {
+                AuthenticationSettings(
+                    snackbarHostState = snackbarHostState,
+                    credentials = it,
+                    onUpdateCredentials = { model.updateCredentials(it) }
+                )
+            }
+
+            CalDavSettings(
+                timeRangePastDays = model.timeRangePastDays.observeAsState().value,
+                onUpdateTimeRangePastDays = { model.updateTimeRangePastDays(it) },
+                defaultAlarmMinBefore = model.defaultAlarmMinBefore.observeAsState().value,
+                onUpdateDefaultAlarmMinBefore = { model.updateDefaultAlarm(it) },
+                manageCalendarColors = model.manageCalendarColors.observeAsState().value ?: false,
+                onUpdateManageCalendarColors = { model.updateManageCalendarColors(it) },
+                eventColors = model.eventColors.observeAsState().value ?: false,
+                onUpdateEventColors = { model.updateEventColors(it) }
+            )
+
+            CardDavSettings(
+                contactGroupMethod = model.contactGroupMethod.observeAsState().value,
+                onUpdateContactGroupMethod = { model.updateContactGroupMethod(it) }
+            )
+        }
     }
 
     @Composable
@@ -172,7 +225,9 @@ class AccountSettingsActivity: AppCompatActivity() {
         ignoreVpns: Boolean,
         onUpdateIgnoreVpns: (Boolean) -> Unit = {}
     ) {
-        Column(Modifier.padding(8.dp)) {
+        val context = LocalContext.current
+
+        Column {
             SettingsHeader(false) {
                 Text(stringResource(R.string.settings_sync))
             }
@@ -232,8 +287,28 @@ class AccountSettingsActivity: AppCompatActivity() {
                             .distinct()
                         onUpdateOnlyOnSsids(newSsids)
                         showWifiOnlySsidsDialog = false
-                    }
+                    },
+                    onDismiss = { showWifiOnlySsidsDialog = false }
                 )
+
+            // TODO make canAccessWifiSsid live-capable
+            val canAccessWifiSsid =
+                if (LocalInspectionMode.current)
+                    false
+                else
+                    PermissionUtils.canAccessWifiSsid(context)
+            if (onlyOnSsids != null && !canAccessWifiSsid)
+                ActionCard(
+                    icon = Icons.Default.SyncProblem,
+                    actionText = stringResource(R.string.settings_sync_wifi_only_ssids_permissions_action),
+                    onAction = {
+                        val intent = Intent(context, WifiPermissionsActivity::class.java)
+                        intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, account)
+                        startActivity(intent)
+                    }
+                ) {
+                    Text(stringResource(R.string.settings_sync_wifi_only_ssids_permissions_required))
+                }
 
             SwitchSetting(
                 icon = null,
@@ -276,6 +351,9 @@ class AccountSettingsActivity: AppCompatActivity() {
                     } catch (_: NumberFormatException) {
                     }
                     showSyncIntervalDialog = false
+                },
+                onDismiss = {
+                    showSyncIntervalDialog = false
                 }
             )
         }
@@ -291,6 +369,175 @@ class AccountSettingsActivity: AppCompatActivity() {
             syncOnlyOnWifi = false,
             onlyOnSsids = listOf("SSID1", "SSID2"),
             ignoreVpns = true
+        )
+    }
+
+    @Composable
+    fun AuthenticationSettings(
+        credentials: Credentials,
+        snackbarHostState: SnackbarHostState = SnackbarHostState(),
+        onUpdateCredentials: (Credentials) -> Unit = {}
+    ) {
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
+
+        Column(Modifier.padding(8.dp)) {
+            SettingsHeader(false) {
+                Text(stringResource(R.string.settings_authentication))
+            }
+
+            if (credentials.authState != null) {       // OAuth
+                Setting(
+                    icon = Icons.Default.Password,
+                    name = stringResource(R.string.settings_oauth),
+                    summary = stringResource(R.string.settings_oauth_summary),
+                    onClick = {
+                        // GoogleLoginFragment replacement
+                    }
+                )
+
+            } else {                                    // username/password
+                if (credentials.userName != null) {
+                    var showUsernameDialog by remember { mutableStateOf(false) }
+                    Setting(
+                        icon = Icons.Default.AccountCircle,
+                        name = stringResource(R.string.settings_username),
+                        summary = credentials.userName,
+                        onClick = {
+                            showUsernameDialog = true
+                        }
+                    )
+                    if (showUsernameDialog)
+                        EditTextInputDialog(
+                            title = stringResource(R.string.settings_username),
+                            initialValue = credentials.userName ?: "",
+                            onValueEntered = { newValue ->
+                                onUpdateCredentials(credentials.copy(userName = newValue))
+                            },
+                            onDismiss = { showUsernameDialog = false }
+                        )
+                }
+
+                if (credentials.password != null) {
+                    var showPasswordDialog by remember { mutableStateOf(false) }
+                    Setting(
+                        icon = Icons.Default.Password,
+                        name = stringResource(R.string.settings_password),
+                        summary = stringResource(R.string.settings_password_summary),
+                        onClick = {
+                            showPasswordDialog = true
+                        }
+                    )
+                    if (showPasswordDialog)
+                        EditTextInputDialog(
+                            title = stringResource(R.string.settings_password),
+                            initialValue = credentials.password,
+                            onValueEntered = { newValue ->
+                                onUpdateCredentials(credentials.copy(password = newValue))
+                            },
+                            onDismiss = { showPasswordDialog = false }
+                        )
+                }
+
+                // client certificate
+                Setting(
+                    icon = null,
+                    name = stringResource(R.string.settings_certificate_alias),
+                    summary = credentials.certificateAlias ?: stringResource(R.string.settings_certificate_alias_empty),
+                    onClick = {
+                        val activity = context as Activity
+                        KeyChain.choosePrivateKeyAlias(activity, { newAlias ->
+                            if (newAlias != null)
+                                onUpdateCredentials(credentials.copy(certificateAlias = newAlias))
+                            else
+                                scope.launch {
+                                    if (snackbarHostState.showSnackbar(
+                                        context.getString(R.string.settings_certificate_alias_empty),
+                                        actionLabel = context.getString(R.string.settings_certificate_install).uppercase()
+                                    ) == SnackbarResult.ActionPerformed) {
+                                        val intent = KeyChain.createInstallIntent()
+                                        if (intent.resolveActivity(context.packageManager) != null)
+                                            context.startActivity(intent)
+                                    }
+                                }
+                        }, null, null, null, -1, credentials.certificateAlias)
+                    }
+                )
+            }
+        }
+    }
+
+    @Composable
+    @Preview
+    fun AuthenticationSettings_Preview_ClientCertificate() {
+        AuthenticationSettings(
+            credentials = Credentials(certificateAlias = "alias")
+        )
+    }
+
+    @Composable
+    @Preview
+    fun AuthenticationSettings_Preview_OAuth() {
+        AuthenticationSettings(
+            credentials = Credentials(authState = AuthState())
+        )
+    }
+
+    @Composable
+    @Preview
+    fun AuthenticationSettings_Preview_UsernamePassword() {
+        AuthenticationSettings(
+            credentials = Credentials(userName = "user", password = "password")
+        )
+    }
+
+    @Composable
+    @Preview
+    fun AuthenticationSettings_Preview_UsernamePassword_ClientCertificate() {
+        AuthenticationSettings(
+            credentials = Credentials(userName = "user", password = "password", certificateAlias = "alias")
+        )
+    }
+
+
+
+    @Composable
+    fun CalDavSettings(
+        timeRangePastDays: Int?,
+        onUpdateTimeRangePastDays: (Int?) -> Unit = {},
+        defaultAlarmMinBefore: Int?,
+        onUpdateDefaultAlarmMinBefore: (Int?) -> Unit = {},
+        manageCalendarColors: Boolean,
+        onUpdateManageCalendarColors: (Boolean) -> Unit = {},
+        eventColors: Boolean,
+        onUpdateEventColors: (Boolean) -> Unit = {}
+    ) {
+
+    }
+
+    @Composable
+    @Preview
+    fun CalDavSettings_Preview() {
+        CalDavSettings(
+            timeRangePastDays = 30,
+            defaultAlarmMinBefore = 10,
+            manageCalendarColors = true,
+            eventColors = true
+        )
+    }
+
+    @Composable
+    fun CardDavSettings(
+        contactGroupMethod: GroupMethod?,
+        onUpdateContactGroupMethod: (GroupMethod) -> Unit = {}
+    ) {
+    }
+
+    @Composable
+    @Preview
+    fun CardDavSettings_Preview() {
+        CardDavSettings(
+            contactGroupMethod = GroupMethod.GROUP_VCARDS
         )
     }
 
@@ -326,43 +573,6 @@ class AccountSettingsActivity: AppCompatActivity() {
         }
 
         private fun initSettings() {
-            findPreference<EditTextPreference>(getString(R.string.settings_sync_wifi_only_ssids_key))!!.let {
-                model.syncWifiOnly.observe(viewLifecycleOwner) { wifiOnly ->
-                    it.isEnabled = wifiOnly && settings.isWritable(AccountSettings.KEY_WIFI_ONLY_SSIDS)
-                }
-                model.syncWifiOnlySSIDs.observe(viewLifecycleOwner) { onlySSIDs ->
-                    checkWifiPermissions()
-
-                    if (onlySSIDs != null) {
-                        it.text = onlySSIDs.joinToString(", ")
-                        it.summary = getString(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                                R.string.settings_sync_wifi_only_ssids_on_location_services
-                                else R.string.settings_sync_wifi_only_ssids_on, onlySSIDs.joinToString(", "))
-                    } else {
-                        it.text = ""
-                        it.setSummary(R.string.settings_sync_wifi_only_ssids_off)
-                    }
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        val newOnlySSIDs = (newValue as String)
-                                .split(',')
-                                .mapNotNull { StringUtils.trimToNull(it) }
-                                .distinct()
-                        model.updateSyncWifiOnlySSIDs(newOnlySSIDs)
-                        false
-                    }
-                }
-            }
-
-            findPreference<SwitchPreferenceCompat>(getString(R.string.settings_ignore_vpns_key))!!.let {
-                model.ignoreVpns.observe(viewLifecycleOwner) { ignoreVpns ->
-                    it.isEnabled = true
-                    it.isChecked = ignoreVpns
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, prefValue ->
-                        model.updateIgnoreVpns(prefValue as Boolean)
-                        false
-                    }
-                }
-            }
 
             // preference group: authentication
             val prefUserName = findPreference<EditTextPreference>(getString(R.string.settings_username_key))!!
