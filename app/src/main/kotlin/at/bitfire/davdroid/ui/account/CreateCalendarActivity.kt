@@ -5,87 +5,12 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.compose.BackHandler
-import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Checkbox
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ExposedDropdownMenuBox
-import androidx.compose.material.ExposedDropdownMenuDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.core.app.NavUtils
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.HomeSet
-import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.ui.AppTheme
-import at.bitfire.davdroid.ui.widget.ColorPickerDialog
-import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.ical4android.util.DateUtils
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.TimeZone
-import java.util.UUID
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import net.fortuna.ical4j.model.Calendar
-import org.apache.commons.lang3.StringUtils
 
 @AndroidEntryPoint
 class CreateCalendarActivity: AppCompatActivity() {
@@ -94,24 +19,25 @@ class CreateCalendarActivity: AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    @Inject lateinit var modelFactory: Model.Factory
-    val model by viewModels<Model> {
+    val account by lazy { intent.getParcelableExtra<Account>(CreateAddressBookActivity.EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
+
+    @Inject lateinit var modelFactory: AccountModel.Factory
+    val model by viewModels<AccountModel> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val account = intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
-                return modelFactory.create(account) as T
-            }
+            override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                modelFactory.create(account) as T
         }
     }
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
+            var displayName by remember { mutableStateOf("") }
+
             AppTheme {
-                val displayName by model.displayName.observeAsState(initial = "")
                 val displayNameError by model.displayNameError.observeAsState()
                 val color by model.color.observeAsState(initial = Constants.DAVDROID_GREEN_RGBA)
                 val description by model.description.observeAsState()
@@ -126,16 +52,18 @@ class CreateCalendarActivity: AppCompatActivity() {
 
                 LaunchedEffect(timeZones) {
                     // Select default time zone
-                    if (timeZone == null) model.timeZone.value = TimeZone.getDefault()
+                    if (timeZone == null)
+                        model.timeZone.value = TimeZone.getDefault()
                 }
                 LaunchedEffect(homeSets) {
                     // Select default home set
-                    if (homeSet == null) model.homeSet.value = homeSets.firstOrNull()
+                    if (homeSet == null)
+                        model.homeSet.value = homeSets.firstOrNull()
                 }
 
                 CreateCalendarLayout(
                     displayName = displayName,
-                    onDisplayNameChange = model.displayName::setValue,
+                    onDisplayNameChange = { displayName = it },
                     displayNameError = displayNameError,
                     color = color,
                     onColorChange = model.color::setValue,
@@ -154,13 +82,17 @@ class CreateCalendarActivity: AppCompatActivity() {
                     onSupportVTODOChange = model.supportVTODO::setValue,
                     supportVJOURNAL = supportVJOURNAL,
                     onSupportVJOURNALChange = model.supportVJOURNAL::setValue,
-                    onCreateCollectionRequested = ::onCreateCollection
+                    onCreateCollectionRequested = {
+                        onCreateCollection(displayName)
+                    }
                 )
             }
         }
     }
 
-    private fun onCreateCollection() {
+    private fun onCreateCollection(
+        displayName: String
+    ) {
         var ok = true
 
         val args = Bundle()
@@ -178,7 +110,6 @@ class CreateCalendarActivity: AppCompatActivity() {
             ok = false
         }
 
-        val displayName = model.displayName.value
         if (displayName.isNullOrBlank()) {
             model.displayNameError.value = getString(R.string.create_collection_display_name_required)
             ok = false
@@ -526,10 +457,7 @@ class CreateCalendarActivity: AppCompatActivity() {
         }
     }
 
-    @Preview(
-        showSystemUi = true,
-        showBackground = true
-    )
+    @Preview
     @Composable
     fun CreateCalendarLayout_Preview() {
         AppTheme {
@@ -570,13 +498,19 @@ class CreateCalendarActivity: AppCompatActivity() {
             fun create(account: Account): Model
         }
 
-        val displayName = MutableLiveData("")
         val displayNameError = MutableLiveData<String>()
 
         val description = MutableLiveData<String>()
         val color = MutableLiveData(Constants.DAVDROID_GREEN_RGBA)
 
-        val homeSets = MutableLiveData<List<HomeSet>>()
+        val service = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CALDAV)
+        val homeSets = service.switchMap { svc ->
+            if (svc == null)
+                MutableLiveData(emptyList())
+            else
+                db.homeSetDao().getLiveBindableByService(svc.id)
+        }
+
         val homeSet = MutableLiveData<HomeSet>()
         val homeSetError = MutableLiveData<String>()
 
@@ -588,15 +522,6 @@ class CreateCalendarActivity: AppCompatActivity() {
         val supportVTODO = MutableLiveData(true)
         val supportVJOURNAL = MutableLiveData(true)
 
-        init {
-            viewModelScope.launch(Dispatchers.IO) {
-                // load account info
-                db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { service ->
-                    homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
-                }
-            }
-        }
-
-    }
+    }*/
 
 }

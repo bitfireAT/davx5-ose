@@ -50,10 +50,10 @@ fun RenameAccountDialog(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Go
+                    imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onGo = {
+                    onDone = {
                         onRenameAccount(accountName.text)
                     }
                 ),

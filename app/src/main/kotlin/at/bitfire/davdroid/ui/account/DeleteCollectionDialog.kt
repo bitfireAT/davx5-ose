@@ -27,7 +27,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.ui.ExceptionInfoDialog
+import at.bitfire.davdroid.ui.widget.ExceptionInfoDialog
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.Optional
 
@@ -101,7 +101,7 @@ fun DeleteCollectionDialog_Content(
                 ExceptionInfoDialog(
                     exception = exception,
                     remoteResource = collection.url,
-                    onDismissRequest = onCancel
+                    onDismiss = onCancel
                 )
             }
 
