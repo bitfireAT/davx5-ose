@@ -31,10 +31,8 @@ import javax.inject.Inject
 class GplayAccountsDrawerHandler @Inject constructor() : StandardAccountsDrawerHandler() {
 
     @Composable
-    override fun SupportUs(onContribute: () -> Unit) {
+    override fun Contribute(onContribute: () -> Unit) {
         val context = LocalContext.current
-
-        MenuHeading(R.string.navigation_drawer_support_project)
         MenuEntry(
             icon = Icons.Default.VolunteerActivism,
             title = stringResource(R.string.earn_badges),
