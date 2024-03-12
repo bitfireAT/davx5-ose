@@ -23,7 +23,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -329,38 +328,6 @@ class AccountsActivity: AppCompatActivity() {
             }
         )
     }
-
-    @Composable
-    private fun drawerContent(
-        scope: CoroutineScope,
-        scaffoldState: ScaffoldState
-    ): @Composable (ColumnScope.() -> Unit) =
-        {
-            /*
-            LEGACY
-
-            AndroidView(factory = { context ->
-                // use legacy NavigationView for now
-                NavigationView(context).apply {
-                    inflateHeaderView(R.layout.nav_header_accounts)
-
-                    inflateMenu(R.menu.activity_accounts_drawer)
-                    accountsDrawerHandler.initMenu(this@AccountsActivity, menu)
-
-                    setNavigationItemSelectedListener { item ->
-                        scope.launch {
-                            accountsDrawerHandler.onNavigationItemSelected(
-                                this@AccountsActivity,
-                                item
-                            )
-                            scaffoldState.drawerState.close()
-                        }
-                        true
-                    }
-                }
-            }, modifier = Modifier.fillMaxWidth())
-             */
-        }
 
 
     data class AccountInfo(
