@@ -90,7 +90,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AccountActivity2 : AppCompatActivity() {
+class AccountActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
@@ -185,10 +185,10 @@ class AccountActivity2 : AppCompatActivity() {
                     installIcsx5 = installIcsx5,
                     onRefreshCollections = {
                         cardDavSvc?.let { svc ->
-                            RefreshCollectionsWorker.enqueue(this@AccountActivity2, svc.id)
+                            RefreshCollectionsWorker.enqueue(this@AccountActivity, svc.id)
                         }
                         calDavSvc?.let { svc ->
-                            RefreshCollectionsWorker.enqueue(this@AccountActivity2, svc.id)
+                            RefreshCollectionsWorker.enqueue(this@AccountActivity, svc.id)
                         }
                     },
                     onSync = {
