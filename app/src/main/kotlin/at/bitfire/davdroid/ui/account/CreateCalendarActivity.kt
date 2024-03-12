@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
@@ -152,10 +153,9 @@ class CreateCalendarActivity: AppCompatActivity() {
                     supportVTODO = supportVTODO,
                     onSupportVTODOChange = model.supportVTODO::setValue,
                     supportVJOURNAL = supportVJOURNAL,
-                    onSupportVJOURNALChange = model.supportVJOURNAL::setValue
-                ) {
-                    onCreateCollection()
-                }
+                    onSupportVJOURNALChange = model.supportVJOURNAL::setValue,
+                    onCreateCollectionRequested = ::onCreateCollection
+                )
             }
         }
     }
@@ -259,8 +259,9 @@ class CreateCalendarActivity: AppCompatActivity() {
         onCreateCollectionRequested: () -> Unit
     ) {
         fun onBackRequested() {
-            val intent = Intent(this, AccountActivity::class.java)
-            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
+            val intent = Intent(this, AccountActivity::class.java).apply {
+                putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
+            }
             NavUtils.navigateUpTo(this, intent)
         }
 
@@ -295,8 +296,13 @@ class CreateCalendarActivity: AppCompatActivity() {
                         }
                     },
                     actions = {
-                        TextButton(onClick = onCreateCollectionRequested) {
-                            Text(stringResource(R.string.create_collection_create))
+                        TextButton(
+                            onClick = onCreateCollectionRequested,
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colors.onPrimary
+                            )
+                        ) {
+                            Text(stringResource(R.string.create_collection_create).uppercase())
                         }
                     }
                 )
