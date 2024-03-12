@@ -34,6 +34,7 @@ import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.material.icons.filled.Wifi
@@ -50,12 +51,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.TaskStackBuilder
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -204,7 +205,7 @@ class AccountSettingsActivity: AppCompatActivity() {
             )
 
             CardDavSettings(
-                contactGroupMethod = model.contactGroupMethod.observeAsState().value,
+                contactGroupMethod = model.contactGroupMethod.observeAsState(GroupMethod.GROUP_VCARDS).value,
                 onUpdateContactGroupMethod = { model.updateContactGroupMethod(it) }
             )
         }
@@ -512,7 +513,87 @@ class AccountSettingsActivity: AppCompatActivity() {
         eventColors: Boolean,
         onUpdateEventColors: (Boolean) -> Unit = {}
     ) {
+        Column {
+            SettingsHeader {
+                Text(stringResource(R.string.settings_caldav))
+            }
 
+            var showTimeRangePastDialog by remember { mutableStateOf(false) }
+            Setting(
+                icon = Icons.Default.History,
+                name = stringResource(R.string.settings_sync_time_range_past),
+                summary =
+                    if (timeRangePastDays != null)
+                        pluralStringResource(R.plurals.settings_sync_time_range_past_days, timeRangePastDays, timeRangePastDays)
+                    else
+                        stringResource(R.string.settings_sync_time_range_past_none),
+                onClick = {
+                    showTimeRangePastDialog = true
+                }
+            )
+            if (showTimeRangePastDialog)
+                EditTextInputDialog(
+                    title = stringResource(R.string.settings_sync_time_range_past_message),
+                    initialValue = timeRangePastDays?.toString() ?: "",
+                    onValueEntered = { newValue ->
+                        val days = try {
+                            newValue.toInt()
+                        } catch (_: NumberFormatException) {
+                            null
+                        }
+                        onUpdateTimeRangePastDays(days)
+                        showTimeRangePastDialog = false
+                    },
+                    onDismiss = { showTimeRangePastDialog = false }
+                )
+
+            var showDefaultAlarmDialog by remember { mutableStateOf(false) }
+            Setting(
+                icon = null,
+                name = stringResource(R.string.settings_default_alarm),
+                summary =
+                    if (defaultAlarmMinBefore != null)
+                        pluralStringResource(R.plurals.settings_default_alarm_on, defaultAlarmMinBefore, defaultAlarmMinBefore)
+                    else
+                        stringResource(R.string.settings_default_alarm_off),
+                onClick = {
+                    showDefaultAlarmDialog = true
+                }
+            )
+            if (showDefaultAlarmDialog)
+                EditTextInputDialog(
+                    title = stringResource(R.string.settings_default_alarm_message),
+                    initialValue = defaultAlarmMinBefore?.toString() ?: "",
+                    onValueEntered = { newValue ->
+                        val minBefore = try {
+                            newValue.toInt()
+                        } catch (_: NumberFormatException) {
+                            null
+                        }
+                        onUpdateDefaultAlarmMinBefore(minBefore)
+                        showDefaultAlarmDialog = false
+                    },
+                    onDismiss = { showDefaultAlarmDialog = false }
+                )
+
+            SwitchSetting(
+                icon = null,
+                name = stringResource(R.string.settings_manage_calendar_colors),
+                summaryOn = stringResource(R.string.settings_manage_calendar_colors_on),
+                summaryOff = stringResource(R.string.settings_manage_calendar_colors_off),
+                checked = manageCalendarColors,
+                onCheckedChange = onUpdateManageCalendarColors
+            )
+
+            SwitchSetting(
+                icon = null,
+                name = stringResource(R.string.settings_event_colors),
+                summaryOn = stringResource(R.string.settings_event_colors_on),
+                summaryOff = stringResource(R.string.settings_event_colors_off),
+                checked = eventColors,
+                onCheckedChange = onUpdateEventColors
+            )
+        }
     }
 
     @Composable
@@ -528,9 +609,37 @@ class AccountSettingsActivity: AppCompatActivity() {
 
     @Composable
     fun CardDavSettings(
-        contactGroupMethod: GroupMethod?,
+        contactGroupMethod: GroupMethod,
         onUpdateContactGroupMethod: (GroupMethod) -> Unit = {}
     ) {
+        Column {
+            SettingsHeader {
+                Text(stringResource(R.string.settings_carddav))
+            }
+
+            val groupMethodNames = stringArrayResource(R.array.settings_contact_group_method_entries)
+            val groupMethodValues = stringArrayResource(R.array.settings_contact_group_method_values)
+            var showGroupMethodDialog by remember { mutableStateOf(false) }
+            Setting(
+                icon = Icons.Default.Contacts,
+                name = stringResource(R.string.settings_contact_group_method),
+                summary = groupMethodNames[groupMethodValues.indexOf(contactGroupMethod.name)],
+                onClick = {
+                    showGroupMethodDialog = true
+                }
+            )
+            if (showGroupMethodDialog)
+                MultipleChoiceInputDialog(
+                    title = stringResource(R.string.settings_contact_group_method),
+                    namesAndValues = groupMethodNames.zip(groupMethodValues),
+                    initialValue = contactGroupMethod.name,
+                    onValueSelected = { newValue ->
+                        onUpdateContactGroupMethod(GroupMethod.valueOf(newValue))
+                        showGroupMethodDialog = false
+                    },
+                    onDismiss = { showGroupMethodDialog = false }
+                )
+        }
     }
 
     @Composable
@@ -540,234 +649,6 @@ class AccountSettingsActivity: AppCompatActivity() {
             contactGroupMethod = GroupMethod.GROUP_VCARDS
         )
     }
-
-
-    /*@AndroidEntryPoint
-    class AccountSettingsFragment : PreferenceFragmentCompat() {
-
-        private val account by lazy { requireArguments().getParcelable<Account>(EXTRA_ACCOUNT)!! }
-        @Inject lateinit var settings: SettingsManager
-
-
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            addPreferencesFromResource(R.xml.settings_account)
-
-            findPreference<EditTextPreference>(getString(R.string.settings_password_key))!!.setOnBindEditTextListener { password ->
-                password.inputType = InputType.TYPE_CLASS_TEXT.or(InputType.TYPE_TEXT_VARIATION_PASSWORD)
-            }
-        }
-
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-            try {
-                initSettings()
-            } catch (e: InvalidAccountException) {
-                Toast.makeText(context, R.string.account_invalid, Toast.LENGTH_LONG).show()
-                requireActivity().finish()
-            }
-        }
-
-        override fun onResume() {
-            super.onResume()
-            checkWifiPermissions()
-        }
-
-        private fun initSettings() {
-
-            // preference group: authentication
-            val prefUserName = findPreference<EditTextPreference>(getString(R.string.settings_username_key))!!
-            val prefPassword = findPreference<EditTextPreference>(getString(R.string.settings_password_key))!!
-            val prefCertAlias = findPreference<Preference>(getString(R.string.settings_certificate_alias_key))!!
-            val prefOAuth = findPreference<Preference>(getString(R.string.settings_oauth_key))!!
-
-            model.credentials.observe(viewLifecycleOwner) { credentials ->
-                if (credentials.authState != null) {
-                    // using OAuth, hide other settings
-                    prefOAuth.isVisible = true
-                    prefUserName.isVisible = false
-                    prefPassword.isVisible = false
-                    prefCertAlias.isVisible = false
-
-                    prefOAuth.setOnPreferenceClickListener {
-                        parentFragmentManager.beginTransaction()
-                            .replace(android.R.id.content, GoogleLoginFragment(account.name), null)
-                            .addToBackStack(null)
-                            .commit()
-                        true
-                    }
-                } else {
-                    // not using OAuth, hide OAuth setting, show the others
-                    prefOAuth.isVisible = false
-                    prefUserName.isVisible = true
-                    prefPassword.isVisible = true
-                    prefCertAlias.isVisible = true
-
-                    prefUserName.summary = credentials.userName
-                    prefUserName.text = credentials.userName
-                    prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newUserName ->
-                        val newUserNameOrNull = StringUtils.trimToNull(newUserName as String)
-                        model.updateCredentials(Credentials(
-                            userName = newUserNameOrNull,
-                            password = credentials.password,
-                            certificateAlias = credentials.certificateAlias)
-                        )
-                        false
-                    }
-
-                    if (credentials.userName != null) {
-                        prefPassword.isVisible = true
-                        prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newPassword ->
-                            model.updateCredentials(Credentials(credentials.userName, newPassword as String, credentials.certificateAlias))
-                            false
-                        }
-                    } else
-                        prefPassword.isVisible = false
-
-                    prefCertAlias.summary = credentials.certificateAlias ?: getString(R.string.settings_certificate_alias_empty)
-                    prefCertAlias.setOnPreferenceClickListener {
-                        KeyChain.choosePrivateKeyAlias(requireActivity(), { newAlias ->
-                            model.updateCredentials(Credentials(credentials.userName, credentials.password, newAlias))
-                        }, null, null, null, -1, credentials.certificateAlias)
-                        true
-                    }
-                }
-            }
-
-            // preference group: CalDAV
-            model.hasCalDav.observe(viewLifecycleOwner) { hasCalDav ->
-                if (!hasCalDav)
-                    findPreference<PreferenceGroup>(getString(R.string.settings_caldav_key))!!.isVisible = false
-                else {
-                    findPreference<PreferenceGroup>(getString(R.string.settings_caldav_key))!!.isVisible = true
-
-                    // when model.hasCalDav is available, model.syncInterval* are also available
-                    // (because hasCalDav is calculated from them)
-                    val hasCalendars = model.syncIntervalCalendars.value != null
-
-                    findPreference<EditTextPreference>(getString(R.string.settings_sync_time_range_past_key))!!.let { pref ->
-                        if (hasCalendars)
-                            model.timeRangePastDays.observe(viewLifecycleOwner) { pastDays ->
-                                if (model.syncIntervalCalendars.value != null) {
-                                    pref.isVisible = true
-                                    if (pastDays != null) {
-                                        pref.text = pastDays.toString()
-                                        pref.summary = resources.getQuantityString(R.plurals.settings_sync_time_range_past_days, pastDays, pastDays)
-                                    } else {
-                                        pref.text = null
-                                        pref.setSummary(R.string.settings_sync_time_range_past_none)
-                                    }
-                                    pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                                        val days = try {
-                                            (newValue as String).toInt()
-                                        } catch(e: NumberFormatException) {
-                                            -1
-                                        }
-                                        model.updateTimeRangePastDays(if (days < 0) null else days)
-                                        false
-                                    }
-                                } else
-                                    pref.isVisible = false
-                            }
-                        else
-                            pref.isVisible = false
-                    }
-
-                    findPreference<EditTextPreference>(getString(R.string.settings_key_default_alarm))!!.let { pref ->
-                        if (hasCalendars)
-                            model.defaultAlarmMinBefore.observe(viewLifecycleOwner) { minBefore ->
-                                pref.isVisible = true
-                                if (minBefore != null) {
-                                    pref.text = minBefore.toString()
-                                    pref.summary = resources.getQuantityString(R.plurals.settings_default_alarm_on, minBefore, minBefore)
-                                } else {
-                                    pref.text = null
-                                    pref.summary = getString(R.string.settings_default_alarm_off)
-                                }
-                                pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                                    val minBefore = try {
-                                        (newValue as String).toInt()
-                                    } catch (e: java.lang.NumberFormatException) {
-                                        null
-                                    }
-                                    model.updateDefaultAlarm(minBefore)
-                                    false
-                                }
-                            }
-                        else
-                            pref.isVisible = false
-                    }
-
-                    findPreference<SwitchPreferenceCompat>(getString(R.string.settings_manage_calendar_colors_key))!!.let {
-                        model.manageCalendarColors.observe(viewLifecycleOwner) { manageCalendarColors ->
-                            it.isEnabled = !settings.containsKey(AccountSettings.KEY_MANAGE_CALENDAR_COLORS)
-                            it.isChecked = manageCalendarColors
-                            it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                                model.updateManageCalendarColors(newValue as Boolean)
-                                false
-                            }
-                        }
-                    }
-
-                    findPreference<SwitchPreferenceCompat>(getString(R.string.settings_event_colors_key))!!.let { pref ->
-                        if (hasCalendars)
-                            model.eventColors.observe(viewLifecycleOwner) { eventColors ->
-                                pref.isVisible = true
-                                pref.isEnabled = !settings.containsKey(AccountSettings.KEY_EVENT_COLORS)
-                                pref.isChecked = eventColors
-                                pref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                                    model.updateEventColors(newValue as Boolean)
-                                    false
-                                }
-                            }
-                        else
-                            pref.isVisible = false
-                    }
-                }
-            }
-
-            // preference group: CardDAV
-            model.syncIntervalContacts.observe(viewLifecycleOwner) { contactsSyncInterval ->
-                val hasCardDav = contactsSyncInterval != null
-                if (!hasCardDav)
-                    findPreference<PreferenceGroup>(getString(R.string.settings_carddav_key))!!.isVisible = false
-                else {
-                    findPreference<PreferenceGroup>(getString(R.string.settings_carddav_key))!!.isVisible = true
-                    findPreference<ListPreference>(getString(R.string.settings_contact_group_method_key))!!.let {
-                        model.contactGroupMethod.observe(viewLifecycleOwner) { groupMethod ->
-                            if (model.syncIntervalContacts.value != null) {
-                                it.isVisible = true
-                                it.value = groupMethod.name
-                                it.summary = it.entry
-                                if (settings.containsKey(AccountSettings.KEY_CONTACT_GROUP_METHOD))
-                                    it.isEnabled = false
-                                else {
-                                    it.isEnabled = true
-                                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, groupMethod ->
-                                        model.updateContactGroupMethod(GroupMethod.valueOf(groupMethod as String))
-                                        false
-                                    }
-                                }
-                            } else
-                                it.isVisible = false
-                        }
-                    }
-                }
-            }
-        }
-
-        @SuppressLint("WrongConstant")
-        private fun checkWifiPermissions() {
-            if (model.syncWifiOnlySSIDs.value != null && !PermissionUtils.canAccessWifiSsid(requireActivity()))
-                Snackbar.make(requireView(), R.string.settings_sync_wifi_only_ssids_permissions_required, UiUtils.SNACKBAR_LENGTH_VERY_LONG)
-                        .setAction(R.string.settings_sync_wifi_only_ssids_permissions_action) {
-                            val intent = Intent(requireActivity(), WifiPermissionsActivity::class.java)
-                            intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, account)
-                            startActivity(intent)
-                        }
-                    .show()
-        }
-
-    }*/
 
 
     class Model @AssistedInject constructor(
@@ -786,17 +667,10 @@ class AccountSettingsActivity: AppCompatActivity() {
         // settings
         val syncIntervalContacts = MutableLiveData<Long>()
         val syncIntervalCalendars = MutableLiveData<Long>()
+
+        // TODO tasksProvider LiveData
         val tasksProvider = TaskUtils.currentProvider(context)
         val syncIntervalTasks = MutableLiveData<Long>()
-        val hasCalDav = object: MediatorLiveData<Boolean>() {
-            init {
-                addSource(syncIntervalCalendars) { calculate() }
-                addSource(syncIntervalTasks) { calculate() }
-            }
-            private fun calculate() {
-                value = syncIntervalCalendars.value != null || syncIntervalTasks.value != null
-            }
-        }
 
         val syncWifiOnly = MutableLiveData<Boolean>()
         val syncWifiOnlySSIDs = MutableLiveData<List<String>>()

@@ -50,7 +50,7 @@ fun EditTextInputDialog(
         title = {
             Text(
                 title,
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.body1
             )
         },
         text = {
@@ -123,7 +123,7 @@ fun MultipleChoiceInputDialog(
         title = {
             Text(
                 title,
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.body1
             )
         },
         text = {
