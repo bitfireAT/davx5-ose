@@ -136,7 +136,8 @@
     <string name="navigation_drawer_manual">Manual</string>
     <string name="navigation_drawer_faq">FAQ</string>
     <string name="navigation_drawer_community">Community</string>
-    <string name="navigation_drawer_donate">Donate</string>
+    <string name="navigation_drawer_support_project">Support the project</string>
+    <string name="navigation_drawer_contribute">How to contribute</string>
     <string name="navigation_drawer_privacy_policy">Privacy policy</string>
     <string name="account_list_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
     <string name="account_list_no_internet">No validated Internet connectivity. Synchronization may not run.</string>

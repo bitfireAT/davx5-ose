@@ -4,69 +4,124 @@
 
 package at.bitfire.davdroid.ui
 
-import android.app.Activity
-import android.content.Intent
-import android.view.MenuItem
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.HelpCenter
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.VolunteerActivism
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.COMMUNITY_URL
 import at.bitfire.davdroid.Constants.FEDIVERSE_URL
 import at.bitfire.davdroid.Constants.MANUAL_URL
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import javax.inject.Inject
 
-/**
- * Default menu items control
- */
-class OseAccountsDrawerHandler @Inject constructor(): BaseAccountsDrawerHandler() {
+open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler() {
 
-    override fun onNavigationItemSelected(activity: Activity, item: MenuItem) {
-        val homepageUrl = Constants.HOMEPAGE_URL.buildUpon()
-            .withStatParams("OseAccountsDrawerHandler")
+    @Composable
+    override fun MenuEntries(
+        snackbarHostState: SnackbarHostState
+    ) {
+        val uriHandler = LocalUriHandler.current
 
-        when (item.itemId) {
+        // Most important entries
+        ImportantEntries(snackbarHostState)
 
-            R.id.nav_mastodon ->
-                UiUtils.launchUri(
-                    activity,
-                    FEDIVERSE_URL
-                )
+        // News
+        MenuHeading(R.string.navigation_drawer_news_updates)
+        MenuEntry(
+            icon = painterResource(R.drawable.mastodon),
+            title = Constants.FEDIVERSE_HANDLE,
+            onClick = {
+                uriHandler.openUri(FEDIVERSE_URL.toString())
+            }
+        )
 
-            R.id.nav_webdav_mounts ->
-                activity.startActivity(Intent(activity, WebdavMountsActivity::class.java))
+        // Tools
+        Tools()
 
-            R.id.nav_website ->
-                UiUtils.launchUri(
-                    activity,
-                    homepageUrl.build()
-                )
-            R.id.nav_manual ->
-                UiUtils.launchUri(
-                    activity,
-                    MANUAL_URL
-                )
-            R.id.nav_faq ->
-                UiUtils.launchUri(
-                    activity,
-                    homepageUrl.appendPath(Constants.HOMEPAGE_PATH_FAQ).build()
-                )
-            R.id.nav_community ->
-                UiUtils.launchUri(activity, COMMUNITY_URL)
-            R.id.nav_donate ->
-                UiUtils.launchUri(
-                    activity,
-                    homepageUrl.appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE).build()
-                )
-            R.id.nav_privacy ->
-                UiUtils.launchUri(
-                    activity,
-                    homepageUrl.appendPath(Constants.HOMEPAGE_PATH_PRIVACY).build()
-                )
+        // Support the project
+        SupportUs(onContribute = {
+            uriHandler.openUri(
+                Constants.HOMEPAGE_URL.buildUpon()
+                    .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
+                    .build().toString()
+            )
+        })
 
-            else ->
-                super.onNavigationItemSelected(activity, item)
+        // External links
+        MenuHeading(R.string.navigation_drawer_external_links)
+        MenuEntry(
+            icon = Icons.Default.Home,
+            title = stringResource(R.string.navigation_drawer_website),
+            onClick = {
+                uriHandler.openUri(Constants.HOMEPAGE_URL.toString())
+            }
+        )
+        MenuEntry(
+            icon = Icons.Default.Info,
+            title = stringResource(R.string.navigation_drawer_manual),
+            onClick = {
+                uriHandler.openUri(MANUAL_URL.toString())
+            }
+        )
+        MenuEntry(
+            icon = Icons.Default.HelpCenter,
+            title = stringResource(R.string.navigation_drawer_faq),
+            onClick = {
+                uriHandler.openUri(
+                    Constants.HOMEPAGE_URL.buildUpon()
+                        .appendPath(Constants.HOMEPAGE_PATH_FAQ)
+                        .build().toString()
+                )
+            }
+        )
+        MenuEntry(
+            icon = Icons.Default.Forum,
+            title = stringResource(R.string.navigation_drawer_community),
+            onClick = {
+                uriHandler.openUri(COMMUNITY_URL.toString())
+            }
+        )
+        MenuEntry(
+            icon = Icons.Default.CloudOff,
+            title = stringResource(R.string.navigation_drawer_privacy_policy),
+            onClick = {
+                uriHandler.openUri(
+                    Constants.HOMEPAGE_URL.buildUpon()
+                        .appendPath(Constants.HOMEPAGE_PATH_PRIVACY)
+                        .build().toString()
+                )
+            }
+        )
+    }
+
+    @Composable
+    @Preview
+    fun MenuEntries_Standard_Preview() {
+        Column {
+            MenuEntries(SnackbarHostState())
         }
+    }
+
+
+    @Composable
+    open fun SupportUs(onContribute: () -> Unit) {
+        MenuHeading(R.string.navigation_drawer_support_project)
+        MenuEntry(
+            icon = Icons.Default.VolunteerActivism,
+            title = stringResource(R.string.navigation_drawer_contribute),
+            onClick = onContribute
+        )
     }
 
 }
