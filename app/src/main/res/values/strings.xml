@@ -151,6 +151,7 @@
     <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
     <string name="accounts_global_sync_enable">Enable</string>
     <string name="accounts_sync_all">Sync all accounts</string>
+    <string name="accounts_sync_all_short">Sync all</string>
 
     <!-- RefreshCollectionsWorker -->
     <string name="refresh_collections_worker_refresh_failed">Service detection failed</string>
