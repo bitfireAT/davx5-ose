@@ -153,12 +153,13 @@
             android:label="@string/create_calendar"
             android:parentActivityName=".ui.account.AccountActivity" />
         <activity
-            android:name=".ui.account.SettingsActivity"
+            android:name=".ui.account.AccountSettingsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".ui.account.AccountActivity" />
         <activity
             android:name=".ui.account.WifiPermissionsActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".ui.account.SettingsActivity" />
+            android:parentActivityName=".ui.account.AccountSettingsActivity" />
 
         <activity
             android:name=".ui.webdav.WebdavMountsActivity"

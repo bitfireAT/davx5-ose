@@ -5,32 +5,47 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
-import android.security.KeyChain
-import android.text.InputType
-import android.view.View
-import android.widget.Toast
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Contacts
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.outlined.Task
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.app.TaskStackBuilder
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.preference.EditTextPreference
-import androidx.preference.ListPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceGroup
-import androidx.preference.SwitchPreferenceCompat
-import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
@@ -39,12 +54,14 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.syncadapter.Syncer
-import at.bitfire.davdroid.ui.UiUtils
-import at.bitfire.davdroid.ui.setup.GoogleLoginFragment
-import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.widget.EditTextInputDialog
+import at.bitfire.davdroid.ui.widget.MultipleChoiceInputDialog
+import at.bitfire.davdroid.ui.widget.Setting
+import at.bitfire.davdroid.ui.widget.SettingsHeader
+import at.bitfire.davdroid.ui.widget.SwitchSetting
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
-import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -52,31 +69,65 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.apache.commons.lang3.StringUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SettingsActivity: AppCompatActivity() {
+class AccountSettingsActivity: AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
+
+        const val ACCOUNT_SETTINGS_HELP_URL = "https://manual.davx5.com/settings.html#account-settings"
     }
 
-    private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
+    private val account by lazy {
+        intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
+    }
+
+    @Inject lateinit var modelFactory: Model.Factory
+    val model by viewModels<Model> {
+        object: ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>) =
+                modelFactory.create(account) as T
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        title = getString(R.string.settings_title, account.name)
+        title = account.name
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        // TODO add help button that leads to manual
+        setContent {
+            AppTheme {
+                val uriHandler = LocalUriHandler.current
 
-        if (savedInstanceState == null)
-            supportFragmentManager.beginTransaction()
-                    .replace(android.R.id.content, DialogFragment.instantiate(this, AccountSettingsFragment::class.java.name, intent.extras))
-                    .commit()
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            navigationIcon = {
+                                IconButton(onClick = { onNavigateUp() }) {
+                                    Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(R.string.navigate_up))
+                                }
+                            },
+                            title = { Text(account.name) },
+                            actions = {
+                                IconButton(onClick = {
+                                    uriHandler.openUri(ACCOUNT_SETTINGS_HELP_URL)
+                                }) {
+                                    Icon(Icons.AutoMirrored.Filled.Help, stringResource(R.string.help))
+                                }
+                            }
+                        )
+                    }
+                ) { padding ->
+                    Box(Modifier.padding(padding)) {
+                        AccountSettings_FromModel(model)
+                    }
+                }
+            }
+        }
     }
 
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
@@ -86,20 +137,169 @@ class SettingsActivity: AppCompatActivity() {
     }
 
 
-    @AndroidEntryPoint
+    @Composable
+    fun AccountSettings_FromModel(model: Model) {
+        SyncSettings(
+            contactsSyncInterval = model.syncIntervalContacts.observeAsState().value,
+            onUpdateContactsSyncInterval = { model.updateSyncInterval(getString(R.string.address_books_authority), it) },
+            calendarSyncInterval = model.syncIntervalCalendars.observeAsState().value,
+            onUpdateCalendarSyncInterval = { model.updateSyncInterval(CalendarContract.AUTHORITY, it) },
+            taskSyncInterval = model.syncIntervalTasks.observeAsState().value,
+            onUpdateTaskSyncInterval = { interval ->
+                model.tasksProvider?.let { model.updateSyncInterval(it.authority, interval) }
+            },
+            syncOnlyOnWifi = model.syncWifiOnly.observeAsState(false).value,
+            onUpdateSyncOnlyOnWifi = { model.updateSyncWifiOnly(it) },
+            onlyOnSsids = model.syncWifiOnlySSIDs.observeAsState().value,
+            onUpdateOnlyOnSsids = { model.updateSyncWifiOnlySSIDs(it) },
+            ignoreVpns = model.ignoreVpns.observeAsState(false).value,
+            onUpdateIgnoreVpns = { model.updateIgnoreVpns(it) }
+        )
+    }
+
+    @Composable
+    fun SyncSettings(
+        contactsSyncInterval: Long?,
+        onUpdateContactsSyncInterval: ((Long) -> Unit) = {},
+        calendarSyncInterval: Long?,
+        onUpdateCalendarSyncInterval: ((Long) -> Unit) = {},
+        taskSyncInterval: Long?,
+        onUpdateTaskSyncInterval: ((Long) -> Unit) = {},
+        syncOnlyOnWifi: Boolean,
+        onUpdateSyncOnlyOnWifi: (Boolean) -> Unit = {},
+        onlyOnSsids: List<String>?,
+        onUpdateOnlyOnSsids: (List<String>) -> Unit = {},
+        ignoreVpns: Boolean,
+        onUpdateIgnoreVpns: (Boolean) -> Unit = {}
+    ) {
+        Column(Modifier.padding(8.dp)) {
+            SettingsHeader(false) {
+                Text(stringResource(R.string.settings_sync))
+            }
+
+            if (contactsSyncInterval != null)
+                SyncIntervalSetting(
+                    icon = Icons.Default.Contacts,
+                    name = R.string.settings_sync_interval_contacts,
+                    syncInterval = contactsSyncInterval,
+                    onUpdateSyncInterval = onUpdateContactsSyncInterval
+                )
+            if (calendarSyncInterval != null)
+                SyncIntervalSetting(
+                    icon = Icons.Default.Event,
+                    name = R.string.settings_sync_interval_calendars,
+                    syncInterval = calendarSyncInterval,
+                    onUpdateSyncInterval = onUpdateCalendarSyncInterval
+                )
+            if (taskSyncInterval != null)
+                SyncIntervalSetting(
+                    icon = Icons.Outlined.Task,
+                    name = R.string.settings_sync_interval_tasks,
+                    syncInterval = taskSyncInterval,
+                    onUpdateSyncInterval = onUpdateTaskSyncInterval
+                )
+
+            SwitchSetting(
+                icon = Icons.Default.Wifi,
+                name = stringResource(R.string.settings_sync_wifi_only),
+                summaryOn = stringResource(R.string.settings_sync_wifi_only_on),
+                summaryOff = stringResource(R.string.settings_sync_wifi_only_off),
+                checked = syncOnlyOnWifi,
+                onCheckedChange = onUpdateSyncOnlyOnWifi
+            )
+
+            var showWifiOnlySsidsDialog by remember { mutableStateOf(false) }
+            Setting(
+                icon = null,
+                name = stringResource(R.string.settings_sync_wifi_only_ssids),
+                enabled = syncOnlyOnWifi,
+                summary =
+                    if (onlyOnSsids != null)
+                        stringResource(R.string.settings_sync_wifi_only_ssids_on, onlyOnSsids.joinToString(", "))
+                    else
+                        stringResource(R.string.settings_sync_wifi_only_ssids_off),
+                onClick = {
+                    showWifiOnlySsidsDialog = true
+                }
+            )
+            if (showWifiOnlySsidsDialog)
+                EditTextInputDialog(
+                    title = stringResource(R.string.settings_sync_wifi_only_ssids_message),
+                    initialValue = onlyOnSsids?.joinToString(", ") ?: "",
+                    onValueEntered = { newValue ->
+                        val newSsids = newValue.split(',')
+                            .map { it.trim() }
+                            .distinct()
+                        onUpdateOnlyOnSsids(newSsids)
+                        showWifiOnlySsidsDialog = false
+                    }
+                )
+
+            SwitchSetting(
+                icon = null,
+                name = stringResource(R.string.settings_ignore_vpns),
+                summaryOn = stringResource(R.string.settings_ignore_vpns_on),
+                summaryOff = stringResource(R.string.settings_ignore_vpns_off),
+                checked = ignoreVpns,
+                onCheckedChange = onUpdateIgnoreVpns
+            )
+        }
+    }
+
+    @Composable
+    fun SyncIntervalSetting(
+        icon: ImageVector,
+        @StringRes name: Int,
+        syncInterval: Long,
+        onUpdateSyncInterval: (Long) -> Unit
+    ) {
+        var showSyncIntervalDialog by remember { mutableStateOf(false) }
+        Setting(
+            icon = icon,
+            name = stringResource(name),
+            summary = stringResource(R.string.settings_sync_summary_periodically, syncInterval / 60),
+            onClick = {
+                showSyncIntervalDialog = true
+            }
+        )
+        if (showSyncIntervalDialog) {
+            val syncIntervalNames = stringArrayResource(R.array.settings_sync_interval_names)
+            val syncIntervalSeconds = stringArrayResource(R.array.settings_sync_interval_seconds)
+            MultipleChoiceInputDialog(
+                title = stringResource(name),
+                namesAndValues = syncIntervalNames.zip(syncIntervalSeconds),
+                initialValue = syncInterval.toString(),
+                onValueSelected = { newValue ->
+                    try {
+                        val seconds = newValue.toLong()
+                        onUpdateSyncInterval(seconds)
+                    } catch (_: NumberFormatException) {
+                    }
+                    showSyncIntervalDialog = false
+                }
+            )
+        }
+    }
+
+    @Composable
+    @Preview
+    fun SyncSettings_Preview() {
+        SyncSettings(
+            contactsSyncInterval = 60*60,
+            calendarSyncInterval = 4*60*60,
+            taskSyncInterval = 2*60*60,
+            syncOnlyOnWifi = false,
+            onlyOnSsids = listOf("SSID1", "SSID2"),
+            ignoreVpns = true
+        )
+    }
+
+
+    /*@AndroidEntryPoint
     class AccountSettingsFragment : PreferenceFragmentCompat() {
 
         private val account by lazy { requireArguments().getParcelable<Account>(EXTRA_ACCOUNT)!! }
         @Inject lateinit var settings: SettingsManager
-
-        @Inject lateinit var modelFactory: Model.Factory
-        val model by viewModels<Model> {
-            object: ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>) =
-                    modelFactory.create(account) as T
-            }
-        }
 
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -126,77 +326,6 @@ class SettingsActivity: AppCompatActivity() {
         }
 
         private fun initSettings() {
-            // preference group: sync
-            findPreference<ListPreference>(getString(R.string.settings_sync_interval_contacts_key))!!.let {
-                model.syncIntervalContacts.observe(viewLifecycleOwner) { interval: Long? ->
-                    if (interval != null) {
-                        it.isEnabled = true
-                        it.isVisible = true
-                        it.value = interval.toString()
-                        if (interval == AccountSettings.SYNC_INTERVAL_MANUALLY)
-                            it.setSummary(R.string.settings_sync_summary_manually)
-                        else
-                            it.summary = getString(R.string.settings_sync_summary_periodically, interval / 60)
-                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
-                            pref.isEnabled = false      // disable until updated setting is read from system again
-                            model.updateSyncInterval(getString(R.string.address_books_authority), (newValue as String).toLong())
-                            false
-                        }
-                    } else
-                        it.isVisible = false
-                }
-            }
-            findPreference<ListPreference>(getString(R.string.settings_sync_interval_calendars_key))!!.let {
-                model.syncIntervalCalendars.observe(viewLifecycleOwner) { interval: Long? ->
-                    if (interval != null) {
-                        it.isEnabled = true
-                        it.isVisible = true
-                        it.value = interval.toString()
-                        if (interval == AccountSettings.SYNC_INTERVAL_MANUALLY)
-                            it.setSummary(R.string.settings_sync_summary_manually)
-                        else
-                            it.summary = getString(R.string.settings_sync_summary_periodically, interval / 60)
-                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
-                            pref.isEnabled = false
-                            model.updateSyncInterval(CalendarContract.AUTHORITY, (newValue as String).toLong())
-                            false
-                        }
-                    } else
-                        it.isVisible = false
-                }
-            }
-            findPreference<ListPreference>(getString(R.string.settings_sync_interval_tasks_key))!!.let {
-                model.syncIntervalTasks.observe(viewLifecycleOwner) { interval: Long? ->
-                    val provider = model.tasksProvider
-                    if (provider != null && interval != null) {
-                        it.isEnabled = true
-                        it.isVisible = true
-                        it.value = interval.toString()
-                        if (interval == AccountSettings.SYNC_INTERVAL_MANUALLY)
-                            it.setSummary(R.string.settings_sync_summary_manually)
-                        else
-                            it.summary = getString(R.string.settings_sync_summary_periodically, interval / 60)
-                        it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
-                            pref.isEnabled = false
-                            model.updateSyncInterval(provider.authority, (newValue as String).toLong())
-                            false
-                        }
-                    } else
-                        it.isVisible = false
-                }
-            }
-
-            findPreference<SwitchPreferenceCompat>(getString(R.string.settings_sync_wifi_only_key))!!.let {
-                model.syncWifiOnly.observe(viewLifecycleOwner) { wifiOnly ->
-                    it.isEnabled = !settings.containsKey(AccountSettings.KEY_WIFI_ONLY)
-                    it.isChecked = wifiOnly
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, wifiOnly ->
-                        model.updateSyncWifiOnly(wifiOnly as Boolean)
-                        false
-                    }
-                }
-            }
-
             findPreference<EditTextPreference>(getString(R.string.settings_sync_wifi_only_ssids_key))!!.let {
                 model.syncWifiOnly.observe(viewLifecycleOwner) { wifiOnly ->
                     it.isEnabled = wifiOnly && settings.isWritable(AccountSettings.KEY_WIFI_ONLY_SSIDS)
@@ -428,14 +557,14 @@ class SettingsActivity: AppCompatActivity() {
                     .show()
         }
 
-    }
+    }*/
 
 
     class Model @AssistedInject constructor(
-        application: Application,
+        val context: Application,
         val settings: SettingsManager,
         @Assisted val account: Account
-    ): AndroidViewModel(application), SettingsManager.OnChangeListener {
+    ): ViewModel(), SettingsManager.OnChangeListener {
 
         @AssistedFactory
         interface Factory {
@@ -447,7 +576,7 @@ class SettingsActivity: AppCompatActivity() {
         // settings
         val syncIntervalContacts = MutableLiveData<Long>()
         val syncIntervalCalendars = MutableLiveData<Long>()
-        val tasksProvider = TaskUtils.currentProvider(application)
+        val tasksProvider = TaskUtils.currentProvider(context)
         val syncIntervalTasks = MutableLiveData<Long>()
         val hasCalDav = object: MediatorLiveData<Boolean>() {
             init {
@@ -474,7 +603,7 @@ class SettingsActivity: AppCompatActivity() {
 
 
         init {
-            accountSettings = AccountSettings(application, account)
+            accountSettings = AccountSettings(context, account)
 
             settings.addOnChangeListener(this)
 
@@ -495,7 +624,7 @@ class SettingsActivity: AppCompatActivity() {
             val accountSettings = accountSettings ?: return
 
             syncIntervalContacts.postValue(
-                accountSettings.getSyncInterval(getApplication<Application>().getString(R.string.address_books_authority))
+                accountSettings.getSyncInterval(context.getString(R.string.address_books_authority))
             )
             syncIntervalCalendars.postValue(accountSettings.getSyncInterval(CalendarContract.AUTHORITY))
             syncIntervalTasks.postValue(tasksProvider?.let { accountSettings.getSyncInterval(it.authority) })
@@ -580,7 +709,7 @@ class SettingsActivity: AppCompatActivity() {
             reload()
 
             resync(
-                authority = getApplication<Application>().getString(R.string.address_books_authority),
+                authority = context.getString(R.string.address_books_authority),
                 fullResync = true
             )
         }
@@ -609,7 +738,7 @@ class SettingsActivity: AppCompatActivity() {
          */
         private fun resync(authority: String, fullResync: Boolean) {
             val resync = if (fullResync) SyncWorker.FULL_RESYNC else SyncWorker.RESYNC
-            SyncWorker.enqueue(getApplication(), account, authority, expedited = true, resync = resync)
+            SyncWorker.enqueue(context, account, authority, expedited = true, resync = resync)
         }
 
     }

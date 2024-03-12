@@ -343,7 +343,6 @@
     <string name="settings_sync_wifi_only_ssids_key" translatable="false">sync_wifi_only_ssids</string>
     <string name="settings_sync_wifi_only_ssids">WiFi SSID restriction</string>
     <string name="settings_sync_wifi_only_ssids_on">Will only sync over %s</string>
-    <string name="settings_sync_wifi_only_ssids_on_location_services">Will only sync over %s (requires active location services)</string>
     <string name="settings_sync_wifi_only_ssids_off">All WiFi connections will be used</string>
     <string name="settings_sync_wifi_only_ssids_message">Comma-separated names (SSIDs) of allowed WiFi networks (leave blank for all)</string>
     <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID restriction requires further settings</string>
