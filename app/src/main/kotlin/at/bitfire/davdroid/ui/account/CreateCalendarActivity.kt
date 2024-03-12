@@ -5,53 +5,89 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.TextView
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Checkbox
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.app.NavUtils
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.ActivityCreateCalendarBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.ui.HomeSetAdapter
+import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.widget.ColorPickerDialog
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.util.DateUtils
-import com.jaredrummler.android.colorpicker.ColorPickerDialog
-import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.TimeZone
+import java.util.UUID
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.fortuna.ical4j.model.Calendar
 import org.apache.commons.lang3.StringUtils
-import java.time.ZoneId
-import java.time.format.TextStyle
-import java.util.Locale
-import java.util.TimeZone
-import java.util.UUID
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
+class CreateCalendarActivity: AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
@@ -68,80 +104,77 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         }
     }
 
-    lateinit var binding: ActivityCreateCalendarBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_create_calendar)
-        binding.lifecycleOwner = this
-        binding.model = model
+        setContent {
+            AppTheme {
+                val displayName by model.displayName.observeAsState(initial = "")
+                val displayNameError by model.displayNameError.observeAsState()
+                val color by model.color.observeAsState(initial = Constants.DAVDROID_GREEN_RGBA)
+                val description by model.description.observeAsState()
+                val homeSet by model.homeSet.observeAsState()
+                val homeSets by model.homeSets.observeAsState(initial = emptyList())
+                val timeZone by model.timeZone.observeAsState()
+                val timeZones = remember { TimeZone.getAvailableIDs().map(TimeZone::getTimeZone) }
+                val typeError by model.typeError.observeAsState()
+                val supportVEVENT by model.supportVEVENT.observeAsState(initial = false)
+                val supportVTODO by model.supportVTODO.observeAsState(initial = false)
+                val supportVJOURNAL by model.supportVJOURNAL.observeAsState(initial = false)
 
-        binding.color.setOnClickListener {
-            ColorPickerDialog.newBuilder()
-                    .setShowAlphaSlider(false)
-                    .setColor((binding.color.background as ColorDrawable).color)
-                    .show(this)
-        }
+                LaunchedEffect(timeZones) {
+                    // Select default time zone
+                    if (timeZone == null) model.timeZone.value = TimeZone.getDefault()
+                }
+                LaunchedEffect(homeSets) {
+                    // Select default home set
+                    if (homeSet == null) model.homeSet.value = homeSets.firstOrNull()
+                }
 
-        val homeSetAdapter = HomeSetAdapter(this)
-        model.homeSets.observe(this) { homeSets ->
-            homeSetAdapter.clear()
-            if (homeSets.isNotEmpty()) {
-                homeSetAdapter.addAll(homeSets)
-                val firstHomeSet = homeSets.first()
-                binding.homeset.setText(firstHomeSet.url.toString(), false)
-                model.homeSet = firstHomeSet
+                CreateCalendarLayout(
+                    displayName = displayName,
+                    onDisplayNameChange = model.displayName::setValue,
+                    displayNameError = displayNameError,
+                    color = color,
+                    onColorChange = model.color::setValue,
+                    description = description,
+                    onDescriptionChange = model.description::setValue,
+                    homeSet = homeSet,
+                    homeSets = homeSets,
+                    onHomeSetChange = model.homeSet::setValue,
+                    timeZone = timeZone,
+                    timeZones = timeZones,
+                    onTimeZoneChange = model.timeZone::setValue,
+                    typeError = typeError,
+                    supportVEVENT = supportVEVENT,
+                    onSupportVEVENTChange = model.supportVEVENT::setValue,
+                    supportVTODO = supportVTODO,
+                    onSupportVTODOChange = model.supportVTODO::setValue,
+                    supportVJOURNAL = supportVJOURNAL,
+                    onSupportVJOURNALChange = model.supportVJOURNAL::setValue
+                ) {
+                    onCreateCollection()
+                }
             }
         }
-        binding.homeset.setAdapter(homeSetAdapter)
-        binding.homeset.setOnItemClickListener { parent, _, position, _ ->
-            model.homeSet = parent.getItemAtPosition(position) as HomeSet?
-        }
-
-        binding.timezone.setAdapter(TimeZoneAdapter(this))
-        binding.timezone.setText(TimeZone.getDefault().id, false)
     }
 
-    override fun onColorSelected(dialogId: Int, rgb: Int) {
-        model.color.value = rgb
-    }
-
-    override fun onDialogDismissed(dialogId: Int) {
-        // color selection dismissed
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_create_collection, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) =
-            if (item.itemId == android.R.id.home) {
-                val intent = Intent(this, AccountActivity2::class.java)
-                intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, model.account)
-                NavUtils.navigateUpTo(this, intent)
-                true
-            } else
-                false
-
-    fun onCreateCollection(item: MenuItem) {
+    private fun onCreateCollection() {
         var ok = true
 
         val args = Bundle()
         args.putString(CreateCollectionFragment.ARG_SERVICE_TYPE, Service.TYPE_CALDAV)
 
-        val parent = model.homeSet
+        val parent = model.homeSet.value
         if (parent != null) {
-            binding.homesetLayout.error = null
+            model.homeSetError.value = null
             args.putString(
                 CreateCollectionFragment.ARG_URL,
                 parent.url.resolve(UUID.randomUUID().toString() + "/").toString()
             )
         } else {
-            binding.homesetLayout.error = getString(R.string.create_collection_home_set_required)
+            model.homeSetError.value = getString(R.string.create_collection_home_set_required)
             ok = false
         }
 
@@ -162,13 +195,13 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             args.putInt(CreateCollectionFragment.ARG_COLOR, it)
         }
 
-        val tzId = binding.timezone.text?.toString()
-        if (tzId.isNullOrBlank())
+        val tz = model.timeZone.value
+        if (tz == null)
             ok = false
         else {
-            DateUtils.ical4jTimeZone(tzId)?.let { tz ->
+            DateUtils.ical4jTimeZone(tz.id)?.let {
                 val cal = Calendar()
-                cal.components += tz.vTimeZone
+                cal.components += it.vTimeZone
                 args.putString(CreateCollectionFragment.ARG_TIMEZONE, cal.toString())
             }
             model.timezoneError.value = null
@@ -200,27 +233,345 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
         }
     }
 
-
-    class TimeZoneAdapter(context: Context): ArrayAdapter<String>(context, R.layout.text_list_item, android.R.id.text1)  {
-
-        init {
-            addAll(TimeZone.getAvailableIDs().toList())
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun CreateCalendarLayout(
+        displayName: String,
+        onDisplayNameChange: (String) -> Unit,
+        displayNameError: String?,
+        color: Int,
+        onColorChange: (Int) -> Unit,
+        description: String?,
+        onDescriptionChange: (String) -> Unit,
+        homeSet: HomeSet?,
+        homeSets: List<HomeSet>,
+        onHomeSetChange: (HomeSet) -> Unit,
+        timeZone: TimeZone?,
+        timeZones: List<TimeZone>,
+        onTimeZoneChange: (TimeZone) -> Unit,
+        typeError: String?,
+        supportVEVENT: Boolean,
+        onSupportVEVENTChange: (Boolean) -> Unit,
+        supportVTODO: Boolean,
+        onSupportVTODOChange: (Boolean) -> Unit,
+        supportVJOURNAL: Boolean,
+        onSupportVJOURNALChange: (Boolean) -> Unit,
+        onCreateCollectionRequested: () -> Unit
+    ) {
+        fun onBackRequested() {
+            val intent = Intent(this, AccountActivity2::class.java)
+            intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, model.account)
+            NavUtils.navigateUpTo(this, intent)
         }
 
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val tzId = getItem(position)!!
-            val tz = ZoneId.of(tzId)
-
-            val v: View = convertView ?: LayoutInflater.from(context).inflate(R.layout.text_list_item, parent, false)
-            v.findViewById<TextView>(android.R.id.text1).text = tz.id
-            v.findViewById<TextView>(android.R.id.text2).text = tz.getDisplayName(TextStyle.FULL, Locale.getDefault())
-
-            return v
+        BackHandler {
+            onBackRequested()
         }
 
-        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup) =
-            getView(position, convertView, parent)
+        var showingColorPicker by remember { mutableStateOf(false) }
+        if (showingColorPicker) {
+            ColorPickerDialog(
+                initialColor = color,
+                onSelectColor = {
+                    onColorChange(it)
+                    showingColorPicker = false
+                },
+                onDialogDismissed = { showingColorPicker = false }
+            )
+        }
 
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.create_calendar)) },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = ::onBackRequested
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    actions = {
+                        TextButton(onClick = onCreateCollectionRequested) {
+                            Text(stringResource(R.string.create_collection_create))
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+                    .padding(8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = displayName,
+                        onValueChange = onDisplayNameChange,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp),
+                        label = { Text(stringResource(R.string.create_collection_display_name)) },
+                        isError = displayNameError != null,
+                        singleLine = true
+                    )
+                    Surface(
+                        onClick = { showingColorPicker = true },
+                        modifier = Modifier.size(32.dp),
+                        color = Color(color)
+                    ) {}
+                }
+                displayNameError?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colors.error,
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+
+                OutlinedTextField(
+                    value = description ?: "",
+                    onValueChange = onDescriptionChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    label = { Text(stringResource(R.string.create_collection_description)) },
+                )
+                Text(
+                    text = stringResource(R.string.create_collection_optional),
+                    modifier = Modifier.fillMaxWidth(),
+                    style = MaterialTheme.typography.caption
+                )
+
+                DropdownField(
+                    value = homeSet,
+                    options = homeSets,
+                    label = stringResource(R.string.create_collection_home_set),
+                    onOptionSelected = onHomeSetChange,
+                    toString = { it.displayName ?: DavUtils.lastSegmentOfUrl(it.url) },
+                    subtitle = { it.url.toString() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                )
+
+                DropdownField(
+                    value = timeZone,
+                    options = timeZones,
+                    label = stringResource(R.string.create_calendar_time_zone),
+                    onOptionSelected = onTimeZoneChange,
+                    toString = { it.id },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                )
+
+                Text(
+                    text = stringResource(R.string.create_calendar_type),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                )
+                typeError?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        color = MaterialTheme.colors.error,
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    CheckboxWithText(
+                        checked = supportVEVENT,
+                        onCheckedChange = onSupportVEVENTChange,
+                        text = stringResource(R.string.create_calendar_type_vevent)
+                    )
+                    CheckboxWithText(
+                        checked = supportVTODO,
+                        onCheckedChange = onSupportVTODOChange,
+                        text = stringResource(R.string.create_calendar_type_vtodo)
+                    )
+                    CheckboxWithText(
+                        checked = supportVJOURNAL,
+                        onCheckedChange = onSupportVJOURNALChange,
+                        text = stringResource(R.string.create_calendar_type_vjournal)
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    @OptIn(ExperimentalMaterialApi::class)
+    fun <Type: Any> DropdownField(
+        value: Type?,
+        options: List<Type>,
+        label: String,
+        modifier: Modifier = Modifier,
+        toString: (Type) -> String = { it.toString() },
+        subtitle: (Type) -> String? = { null },
+        onOptionSelected: (Type) -> Unit
+    ) {
+        val density = LocalDensity.current
+
+        var expanded by remember { mutableStateOf(false) }
+        var itemHeight by remember { mutableStateOf<Dp?>(null) }
+        val scrollState = rememberLazyListState()
+
+        val displayItems = minOf(options.size, 4)
+
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it }
+        ) {
+            OutlinedTextField(
+                value = value?.let(toString) ?: "",
+                onValueChange = {},
+                modifier = modifier,
+                label = { Text(label) },
+                readOnly = true,
+                singleLine = true,
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+                }
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.size(
+                    width = 300.dp,
+                    height = itemHeight?.times(displayItems) ?: 300.dp
+                )
+            ) {
+                LaunchedEffect(Unit) {
+                    val index = options.indexOf(value).takeIf { it >= 0 } ?: return@LaunchedEffect
+                    scrollState.scrollToItem(index)
+                }
+
+                Box(
+                    modifier = Modifier.size(
+                        width = 300.dp,
+                        height = itemHeight?.times(displayItems) ?: 300.dp
+                    )
+                ) {
+                    // since there are a lot of timezones, we have to use lazy lists
+                    LazyColumn(
+                        state = scrollState
+                    ) {
+                        items(options) { option ->
+                            DropdownMenuItem(
+                                onClick = { onOptionSelected(option) },
+                                modifier = Modifier.onGloballyPositioned {
+                                    if (itemHeight == null) {
+                                        itemHeight = with(density) { it.size.height.toDp() }
+                                    }
+                                }
+                            ) {
+                                val textColor = if (option == value)
+                                    MaterialTheme.colors.secondary
+                                else
+                                    LocalContentColor.current
+                                Column {
+                                    Text(
+                                        text = option.let(toString),
+                                        style = MaterialTheme.typography.body1,
+                                        color = textColor
+                                    )
+                                    option.let(subtitle)?.let {
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.body2,
+                                            color = textColor.copy(alpha = 0.6f)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun CheckboxWithText(
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit,
+        text: String,
+        modifier: Modifier = Modifier
+    ) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(checked, onCheckedChange)
+            Text(
+                text = text,
+                style = MaterialTheme.typography.body2,
+                modifier = Modifier.clickable { onCheckedChange(!checked) }
+            )
+        }
+    }
+
+    @Preview(
+        showSystemUi = true,
+        showBackground = true
+    )
+    @Composable
+    fun CreateCalendarLayout_Preview() {
+        AppTheme {
+            CreateCalendarLayout(
+                displayName = "My Calendar",
+                onDisplayNameChange = {},
+                displayNameError = null,
+                color = Color.Blue.toArgb(),
+                onColorChange = {},
+                description = null,
+                onDescriptionChange = {},
+                homeSet = null,
+                homeSets = emptyList(),
+                onHomeSetChange = {},
+                timeZone = null,
+                timeZones = emptyList(),
+                onTimeZoneChange = {},
+                typeError = null,
+                supportVEVENT = false,
+                onSupportVEVENTChange = {},
+                supportVTODO = false,
+                onSupportVTODOChange = {},
+                supportVJOURNAL = false,
+                onSupportVJOURNALChange = {},
+                onCreateCollectionRequested = {}
+            )
+        }
+    }
+
+    @Preview(showBackground = true)
+    @Composable
+    fun CheckboxWithText_Preview() {
+        AppTheme {
+            CheckboxWithText(
+                checked = true,
+                onCheckedChange = {},
+                text = "Checkbox with Text"
+            )
+        }
     }
 
 
@@ -234,21 +585,23 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             fun create(account: Account): Model
         }
 
-        val displayName = MutableLiveData<String>()
+        val displayName = MutableLiveData("")
         val displayNameError = MutableLiveData<String>()
 
         val description = MutableLiveData<String>()
-        val color = MutableLiveData<Int>()
+        val color = MutableLiveData(Constants.DAVDROID_GREEN_RGBA)
 
         val homeSets = MutableLiveData<List<HomeSet>>()
-        var homeSet: HomeSet? = null
+        val homeSet = MutableLiveData<HomeSet>()
+        val homeSetError = MutableLiveData<String>()
 
+        val timeZone = MutableLiveData<TimeZone>()
         val timezoneError = MutableLiveData<String>()
 
         val typeError = MutableLiveData<String>()
-        val supportVEVENT = MutableLiveData<Boolean>()
-        val supportVTODO = MutableLiveData<Boolean>()
-        val supportVJOURNAL = MutableLiveData<Boolean>()
+        val supportVEVENT = MutableLiveData(false)
+        val supportVTODO = MutableLiveData(false)
+        val supportVJOURNAL = MutableLiveData(false)
 
         init {
             color.value = Constants.DAVDROID_GREEN_RGBA
