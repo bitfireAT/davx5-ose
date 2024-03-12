@@ -119,10 +119,10 @@ class CreateCalendarActivity: AppCompatActivity() {
                 val homeSets by model.homeSets.observeAsState(initial = emptyList())
                 val timeZone by model.timeZone.observeAsState()
                 val timeZones = remember { TimeZone.getAvailableIDs().map(TimeZone::getTimeZone) }
-                val typeError by model.typeError.observeAsState()
-                val supportVEVENT by model.supportVEVENT.observeAsState(initial = false)
-                val supportVTODO by model.supportVTODO.observeAsState(initial = false)
-                val supportVJOURNAL by model.supportVJOURNAL.observeAsState(initial = false)
+                val typeError by model.typeError.observeAsState(false)
+                val supportVEVENT by model.supportVEVENT.observeAsState(initial = true)
+                val supportVTODO by model.supportVTODO.observeAsState(initial = true)
+                val supportVJOURNAL by model.supportVJOURNAL.observeAsState(initial = true)
 
                 LaunchedEffect(timeZones) {
                     // Select default time zone
@@ -212,9 +212,9 @@ class CreateCalendarActivity: AppCompatActivity() {
         val supportsVJOURNAL = model.supportVJOURNAL.value ?: false
         if (!supportsVEVENT && !supportsVTODO && !supportsVJOURNAL) {
             ok = false
-            model.typeError.value = ""
+            model.typeError.value = true
         } else
-            model.typeError.value = null
+            model.typeError.value = false
 
         if (supportsVEVENT || supportsVTODO || supportsVJOURNAL) {
             // only if there's at least one component set not supported; don't include
@@ -249,7 +249,7 @@ class CreateCalendarActivity: AppCompatActivity() {
         timeZone: TimeZone?,
         timeZones: List<TimeZone>,
         onTimeZoneChange: (TimeZone) -> Unit,
-        typeError: String?,
+        typeError: Boolean,
         supportVEVENT: Boolean,
         onSupportVEVENTChange: (Boolean) -> Unit,
         supportVTODO: Boolean,
@@ -386,17 +386,8 @@ class CreateCalendarActivity: AppCompatActivity() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
+                    color = if (typeError) MaterialTheme.colors.error else Color.Unspecified
                 )
-                typeError?.let {
-                    Text(
-                        text = it,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        color = MaterialTheme.colors.error,
-                        style = MaterialTheme.typography.caption
-                    )
-                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -556,7 +547,7 @@ class CreateCalendarActivity: AppCompatActivity() {
                 timeZone = null,
                 timeZones = emptyList(),
                 onTimeZoneChange = {},
-                typeError = null,
+                typeError = false,
                 supportVEVENT = false,
                 onSupportVEVENTChange = {},
                 supportVTODO = false,
@@ -564,18 +555,6 @@ class CreateCalendarActivity: AppCompatActivity() {
                 supportVJOURNAL = false,
                 onSupportVJOURNALChange = {},
                 onCreateCollectionRequested = {}
-            )
-        }
-    }
-
-    @Preview(showBackground = true)
-    @Composable
-    fun CheckboxWithText_Preview() {
-        AppTheme {
-            CheckboxWithText(
-                checked = true,
-                onCheckedChange = {},
-                text = "Checkbox with Text"
             )
         }
     }
@@ -604,18 +583,12 @@ class CreateCalendarActivity: AppCompatActivity() {
         val timeZone = MutableLiveData<TimeZone>()
         val timezoneError = MutableLiveData<String>()
 
-        val typeError = MutableLiveData<String>()
-        val supportVEVENT = MutableLiveData(false)
-        val supportVTODO = MutableLiveData(false)
-        val supportVJOURNAL = MutableLiveData(false)
+        val typeError = MutableLiveData(false)
+        val supportVEVENT = MutableLiveData(true)
+        val supportVTODO = MutableLiveData(true)
+        val supportVJOURNAL = MutableLiveData(true)
 
         init {
-            color.value = Constants.DAVDROID_GREEN_RGBA
-
-            supportVEVENT.value = true
-            supportVTODO.value = true
-            supportVJOURNAL.value = true
-
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { service ->
