@@ -22,10 +22,15 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.COMMUNITY_URL
 import at.bitfire.davdroid.Constants.FEDIVERSE_URL
 import at.bitfire.davdroid.Constants.MANUAL_URL
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import javax.inject.Inject
 
 open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler() {
+
+    companion object {
+        const val WEB_CONTEXT = "AccountsDrawerHandler"
+    }
 
     @Composable
     override fun MenuEntries(
@@ -55,6 +60,7 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
             uriHandler.openUri(
                 Constants.HOMEPAGE_URL.buildUpon()
                     .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
+                    .withStatParams(WEB_CONTEXT)
                     .build().toString()
             )
         })
@@ -73,7 +79,10 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
             icon = Icons.Default.Home,
             title = stringResource(R.string.navigation_drawer_website),
             onClick = {
-                uriHandler.openUri(Constants.HOMEPAGE_URL.toString())
+                uriHandler.openUri(Constants.HOMEPAGE_URL
+                    .buildUpon()
+                    .withStatParams(WEB_CONTEXT)
+                    .build().toString())
             }
         )
         MenuEntry(
@@ -90,6 +99,7 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
                 uriHandler.openUri(
                     Constants.HOMEPAGE_URL.buildUpon()
                         .appendPath(Constants.HOMEPAGE_PATH_FAQ)
+                        .withStatParams(WEB_CONTEXT)
                         .build().toString()
                 )
             }
@@ -101,6 +111,7 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
                 uriHandler.openUri(
                     Constants.HOMEPAGE_URL.buildUpon()
                         .appendPath(Constants.HOMEPAGE_PATH_PRIVACY)
+                        .withStatParams(WEB_CONTEXT)
                         .build().toString()
                 )
             }
