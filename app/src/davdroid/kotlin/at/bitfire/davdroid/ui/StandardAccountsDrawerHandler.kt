@@ -50,13 +50,22 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
         Tools()
 
         // Support the project
-        SupportUs(onContribute = {
+        MenuHeading(R.string.navigation_drawer_support_project)
+        Contribute(onContribute = {
             uriHandler.openUri(
                 Constants.HOMEPAGE_URL.buildUpon()
                     .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
                     .build().toString()
             )
         })
+        MenuEntry(
+            icon = Icons.Default.Forum,
+            title = stringResource(R.string.navigation_drawer_community),
+            onClick = {
+                uriHandler.openUri(COMMUNITY_URL.toString())
+            }
+        )
+
 
         // External links
         MenuHeading(R.string.navigation_drawer_external_links)
@@ -86,13 +95,6 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
             }
         )
         MenuEntry(
-            icon = Icons.Default.Forum,
-            title = stringResource(R.string.navigation_drawer_community),
-            onClick = {
-                uriHandler.openUri(COMMUNITY_URL.toString())
-            }
-        )
-        MenuEntry(
             icon = Icons.Default.CloudOff,
             title = stringResource(R.string.navigation_drawer_privacy_policy),
             onClick = {
@@ -115,8 +117,7 @@ open class StandardAccountsDrawerHandler @Inject constructor(): AccountsDrawerHa
 
 
     @Composable
-    open fun SupportUs(onContribute: () -> Unit) {
-        MenuHeading(R.string.navigation_drawer_support_project)
+    open fun Contribute(onContribute: () -> Unit) {
         MenuEntry(
             icon = Icons.Default.VolunteerActivism,
             title = stringResource(R.string.navigation_drawer_contribute),
