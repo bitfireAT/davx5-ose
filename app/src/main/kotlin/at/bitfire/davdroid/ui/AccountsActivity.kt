@@ -85,7 +85,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.syncadapter.SyncWorker
-import at.bitfire.davdroid.ui.account.AccountActivity2
+import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import at.bitfire.davdroid.ui.widget.ActionCard
@@ -223,8 +223,8 @@ class AccountsActivity: AppCompatActivity() {
                                 accounts = accounts ?: emptyList(),
                                 onClickAccount = { account ->
                                     val activity = this@AccountsActivity
-                                    val intent = Intent(activity, AccountActivity2::class.java)
-                                    intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, account)
+                                    val intent = Intent(activity, AccountActivity::class.java)
+                                    intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
                                     activity.startActivity(intent)
                                 },
                                 modifier = Modifier

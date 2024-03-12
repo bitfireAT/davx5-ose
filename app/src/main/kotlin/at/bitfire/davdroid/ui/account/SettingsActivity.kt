@@ -82,7 +82,7 @@ class SettingsActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity2.EXTRA_ACCOUNT, account)
+        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
     }
 
 

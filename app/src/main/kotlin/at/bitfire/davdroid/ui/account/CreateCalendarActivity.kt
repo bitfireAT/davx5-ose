@@ -120,8 +120,8 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
     override fun onOptionsItemSelected(item: MenuItem) =
             if (item.itemId == android.R.id.home) {
-                val intent = Intent(this, AccountActivity2::class.java)
-                intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, model.account)
+                val intent = Intent(this, AccountActivity::class.java)
+                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
                 NavUtils.navigateUpTo(this, intent)
                 true
             } else

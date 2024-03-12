@@ -39,7 +39,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.AccountUtils
-import at.bitfire.davdroid.ui.account.AccountActivity2
+import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -113,9 +113,9 @@ class AccountDetailsFragment : Fragment() {
                         // close Create account activity
                         requireActivity().finish()
                         // open Account activity for created account
-                        val intent = Intent(requireActivity(), AccountActivity2::class.java)
+                        val intent = Intent(requireActivity(), AccountActivity::class.java)
                         val account = Account(name, getString(R.string.account_type))
-                        intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, account)
+                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
                         startActivity(intent)
                     } else {
                         Snackbar.make(requireActivity().findViewById(android.R.id.content), R.string.login_account_not_created, Snackbar.LENGTH_LONG).show()
