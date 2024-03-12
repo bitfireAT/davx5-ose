@@ -178,6 +178,8 @@ dependencies {
     implementation(libs.compose.runtime.livedata)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.toolingPreview)
+    implementation(libs.compose.dialogs.color)
+    implementation(libs.compose.dialogs.core)
 
     // Jetpack Room
     implementation(libs.room.runtime)

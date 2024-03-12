@@ -31,6 +31,7 @@ bitfire-dav4jvm = "f428759"
 bitfire-ical4android = "195d0c9"
 bitfire-vcard4android = "03ef99a"
 commons-collections = "4.4"
+compose-dialogs = "1.3.0"
 commons-lang = "3.14.0"
 # don't update until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/130]
 commons-io = "2.8.0"
@@ -91,6 +92,8 @@ bitfire-dav4jvm = { module = "com.github.bitfireAT:dav4jvm", version.ref = "bitf
 bitfire-ical4android = { module = "com.github.bitfireAT:ical4android", version.ref = "bitfire-ical4android" }
 bitfire-vcard4android = { module = "com.github.bitfireAT:vcard4android", version.ref = "bitfire-vcard4android" }
 commons-collections = { module = "org.apache.commons:commons-collections4", version.ref = "commons-collections" }
+compose-dialogs-color = { module = "com.maxkeppeler.sheets-compose-dialogs:color", version.ref = "compose-dialogs" }
+compose-dialogs-core = { module = "com.maxkeppeler.sheets-compose-dialogs:core", version.ref = "compose-dialogs" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
