@@ -25,6 +25,8 @@ object Constants {
     const val MANUAL_PATH_WEBDAV_MOUNTS = "webdav_mounts.html"
 
     val COMMUNITY_URL = "https://github.com/bitfireAT/davx5-ose/discussions".toUri()
+
+    val FEDIVERSE_HANDLE = "@davx5app@fosstodon.org"
     val FEDIVERSE_URL = "https://fosstodon.org/@davx5app".toUri()
 
     /**

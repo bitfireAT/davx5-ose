@@ -73,7 +73,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
@@ -94,8 +93,6 @@ import at.bitfire.davdroid.ui.widget.ActionCard
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.themeadapter.material.MdcTheme
-import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -133,8 +130,10 @@ class AccountsActivity: AppCompatActivity() {
 
         setContent {
             val scope = rememberCoroutineScope()
-            val scaffoldState = rememberScaffoldState()
             val snackbarHostState = remember { SnackbarHostState() }
+            val scaffoldState = rememberScaffoldState(
+                snackbarHostState = snackbarHostState
+            )
 
             val refreshing by remember { mutableStateOf(false) }
             val pullRefreshState = rememberPullRefreshState(refreshing, onRefresh = {
@@ -146,10 +145,18 @@ class AccountsActivity: AppCompatActivity() {
             AppTheme {
                 Scaffold(
                     scaffoldState = scaffoldState,
-                    drawerContent = drawerContent(scope, scaffoldState),
+                    drawerContent = {
+                        accountsDrawerHandler.AccountsDrawer(
+                            snackbarHostState = snackbarHostState,
+                            onCloseDrawer = {
+                                scope.launch {
+                                    scaffoldState.drawerState.close()
+                                }
+                            }
+                        )
+                    },
                     topBar = topBar(scope, scaffoldState, accounts?.isNotEmpty() == true),
-                    floatingActionButton = floatingActionButton(),
-                    snackbarHost = snackbarHost(snackbarHostState, scope)
+                    floatingActionButton = floatingActionButton()
                 ) { padding ->
                     Box(
                         Modifier
@@ -329,6 +336,9 @@ class AccountsActivity: AppCompatActivity() {
         scaffoldState: ScaffoldState
     ): @Composable (ColumnScope.() -> Unit) =
         {
+            /*
+            LEGACY
+
             AndroidView(factory = { context ->
                 // use legacy NavigationView for now
                 NavigationView(context).apply {
@@ -349,6 +359,7 @@ class AccountsActivity: AppCompatActivity() {
                     }
                 }
             }, modifier = Modifier.fillMaxWidth())
+             */
         }
 
 
