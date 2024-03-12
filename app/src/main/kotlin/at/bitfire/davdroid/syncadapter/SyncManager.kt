@@ -51,7 +51,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
-import at.bitfire.davdroid.ui.account.SettingsActivity
+import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
@@ -779,8 +779,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         val contentIntent: Intent
         var viewItemAction: NotificationCompat.Action? = null
         if (e is UnauthorizedException) {
-            contentIntent = Intent(context, SettingsActivity::class.java)
-            contentIntent.putExtra(SettingsActivity.EXTRA_ACCOUNT,
+            contentIntent = Intent(context, AccountSettingsActivity::class.java)
+            contentIntent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT,
                     if (authority == ContactsContract.AUTHORITY)
                         mainAccount
                     else

@@ -195,8 +195,8 @@ class AccountActivity : AppCompatActivity() {
                         SyncWorker.enqueueAllAuthorities(this, model.account)
                     },
                     onAccountSettings = {
-                        val intent = Intent(this, SettingsActivity::class.java)
-                        intent.putExtra(SettingsActivity.EXTRA_ACCOUNT, model.account)
+                        val intent = Intent(this, AccountSettingsActivity::class.java)
+                        intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, model.account)
                         startActivity(intent, null)
                     },
                     onRenameAccount = { newName ->

@@ -61,7 +61,7 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
-import at.bitfire.davdroid.ui.account.SettingsActivity
+import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import at.bitfire.davdroid.util.DavUtils.parent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -217,8 +217,8 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         } catch (e: UnauthorizedException) {
             Logger.log.log(Level.SEVERE, "Not authorized (anymore)", e)
             // notify that we need to re-authenticate in the account settings
-            val settingsIntent = Intent(applicationContext, SettingsActivity::class.java)
-                .putExtra(SettingsActivity.EXTRA_ACCOUNT, account)
+            val settingsIntent = Intent(applicationContext, AccountSettingsActivity::class.java)
+                .putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
             notifyRefreshError(
                 applicationContext.getString(R.string.sync_error_authentication_failed),
                 settingsIntent
