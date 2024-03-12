@@ -11,6 +11,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -19,9 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.android.material.color.MaterialColors
 
 @Composable
 fun SettingsHeader(divider: Boolean = false, content: @Composable () -> Unit) {
@@ -64,8 +67,10 @@ fun Setting(
     onClick: () -> Unit = {}
 ) {
     var modifier = Modifier.fillMaxWidth()
-    if (enabled)
-        modifier = modifier.clickable(onClick = onClick)
+    modifier = if (enabled)
+        modifier.clickable(onClick = onClick)
+    else
+        modifier.alpha(MaterialColors.ALPHA_DISABLED)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -85,7 +90,9 @@ fun Setting(
                 .padding(start = 8.dp)
                 .weight(1f)
         ) {
-            name()
+            ProvideTextStyle(MaterialTheme.typography.body1) {
+                name()
+            }
 
             if (summary != null)
                 Text(summary, style = MaterialTheme.typography.body2)
@@ -100,6 +107,7 @@ fun Setting(
     name: String,
     summary: String? = null,
     icon: ImageVector? = null,
+    enabled: Boolean = true,
     onClick: () -> Unit = {}
 ) {
     Setting(
@@ -111,6 +119,7 @@ fun Setting(
             Text(name, style = MaterialTheme.typography.body1)
         },
         summary = summary,
+        enabled = enabled,
         onClick = onClick
     )
 }
@@ -163,6 +172,7 @@ fun SwitchSetting(
 fun SwitchSetting_Sample() {
     SwitchSetting(
         name = "Some Switched Setting",
-        checked = true
+        checked = true,
+        summaryOn = "Currently on"
     )
 }

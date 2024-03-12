@@ -92,9 +92,9 @@ class AboutActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val uriHandler = LocalUriHandler.current
-
             AppTheme {
+                val uriHandler = LocalUriHandler.current
+
                 Scaffold(
                     topBar = {
                         TopAppBar(
