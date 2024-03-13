@@ -95,9 +95,12 @@ class TasksActivity: AppCompatActivity() {
 
         }
 
-        val dontShow = settings.getBooleanLive(HINT_OPENTASKS_NOT_INSTALLED)
-        fun setDontShow(dontShow: Boolean) {
-            settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, !dontShow)
+        val showAgain = settings.getBooleanLive(HINT_OPENTASKS_NOT_INSTALLED)
+        fun setShowAgain(showAgain: Boolean) {
+            if (showAgain)
+                settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
+            else
+                settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
         }
 
         val currentProvider = TaskUtils.currentProviderLive(context)
@@ -162,7 +165,7 @@ fun TasksCard(
     val openTasksInstalled by model.openTasksInstalled.observeAsState(false)
     val openTasksSelected by model.openTasksSelected.observeAsState(false)
 
-    val dontShow = model.dontShow.observeAsState().value ?: false
+    val showAgain = model.showAgain.observeAsState().value ?: true
 
     fun installApp(packageName: String) {
         val uri = Uri.parse("market://details?id=$packageName&referrer=" +
@@ -275,14 +278,14 @@ fun TasksCard(
                         .padding(vertical = 12.dp)
                 ) {
                     Checkbox(
-                        checked = dontShow,
-                        onCheckedChange = { model.setDontShow(it) }
+                        checked = !showAgain,
+                        onCheckedChange = { model.setShowAgain(!it) }
                     )
                     Text(
                         text = stringResource(R.string.intro_tasks_dont_show),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { model.setDontShow(!dontShow) }
+                            .clickable { model.setShowAgain(!showAgain) }
                     )
                 }
             }
