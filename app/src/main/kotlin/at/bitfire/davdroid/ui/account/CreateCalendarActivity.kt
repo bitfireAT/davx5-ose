@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Checkbox
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
@@ -46,18 +48,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.TaskStackBuilder
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.widget.CalendarColorPickerDialog
+import at.bitfire.davdroid.ui.widget.ExceptionInfoDialog
+import at.bitfire.davdroid.ui.widget.MultipleChoiceInputDialog
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.apache.commons.lang3.StringUtils
+import java.time.ZoneId
+import java.time.format.TextStyle
+import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -71,13 +88,15 @@ class CreateCalendarActivity: AppCompatActivity() {
 
     @Inject
     lateinit var modelFactory: AccountModel.Factory
-    val model by viewModels<AccountModel> {
+    val accountModel by viewModels<AccountModel> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
                 modelFactory.create(account) as T
         }
     }
+
+    val model: Model by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,17 +105,44 @@ class CreateCalendarActivity: AppCompatActivity() {
         setContent {
             AppTheme {
                 var displayName by remember { mutableStateOf("") }
+                var color by remember { mutableIntStateOf(Constants.DAVDROID_GREEN_RGBA) }
                 var description by remember { mutableStateOf("") }
                 var homeSet by remember { mutableStateOf<HomeSet?>(null) }
-                var color by remember { mutableIntStateOf(Constants.DAVDROID_GREEN_RGBA) }
+                var timeZoneId by remember { mutableStateOf<String>(ZoneId.systemDefault().id) }
+                var supportVEVENT by remember { mutableStateOf(true) }
+                var supportVTODO by remember { mutableStateOf(false) }
+                var supportVJOURNAL by remember { mutableStateOf(false) }
 
                 var isCreating by remember { mutableStateOf(false) }
-
-                val onCreateCollection = {
-
+                accountModel.createCollectionResult.observeAsState().value?.let { result ->
+                    if (result.isEmpty)
+                        finish()
+                    else
+                        ExceptionInfoDialog(
+                            exception = result.get(),
+                            onDismiss = {
+                                isCreating = false
+                                accountModel.createCollectionResult.value = null
+                            }
+                        )
                 }
 
-                val homeSets by model.bindableCalendarHomesets.observeAsState()
+                val onCreateCollection = {
+                    if (!isCreating) {
+                        isCreating = true
+                        homeSet?.let { homeSet ->
+                            accountModel.createCollection(
+                                homeSet = homeSet,
+                                addressBook = false,
+                                name = UUID.randomUUID().toString(),
+                                displayName = StringUtils.trimToNull(displayName),
+                                description = StringUtils.trimToNull(description)
+                            )
+                        }
+                    }
+                }
+
+                val homeSets by accountModel.bindableCalendarHomesets.observeAsState()
 
                 Scaffold(
                     topBar = {
@@ -108,7 +154,8 @@ class CreateCalendarActivity: AppCompatActivity() {
                                 }
                             },
                             actions = {
-                                val isCreateEnabled = !isCreating && displayName.isNotBlank()
+                                // FIXME hidden instead of visible when enabled
+                                val isCreateEnabled = !isCreating && displayName.isNotBlank() && homeSet != null
                                 TextButton(
                                     enabled = isCreateEnabled,
                                     onClick = { onCreateCollection() }
@@ -139,6 +186,14 @@ class CreateCalendarActivity: AppCompatActivity() {
                                 onColorChange = { color = it },
                                 description = description,
                                 onDescriptionChange = { description = it },
+                                timeZoneId = timeZoneId,
+                                onTimeZoneSelected = { timeZoneId = it },
+                                supportVEVENT = supportVEVENT,
+                                onSupportVEVENTChange = { supportVEVENT = it },
+                                supportVTODO = supportVTODO,
+                                onSupportVTODOChange = { supportVTODO = it },
+                                supportVJOURNAL = supportVJOURNAL,
+                                onSupportVJOURNALChange = { supportVJOURNAL = it },
                                 homeSet = homeSet,
                                 homeSets = homeSets,
                                 onHomeSetSelected = { homeSet = it }
@@ -147,54 +202,12 @@ class CreateCalendarActivity: AppCompatActivity() {
                     }
                 }
 
-                /*val displayNameError by model.displayNameError.observeAsState()
-                val color by model.color.observeAsState(initial = Constants.DAVDROID_GREEN_RGBA)
-                val description by model.description.observeAsState()
-                val homeSet by model.homeSet.observeAsState()
-                val homeSets by model.homeSets.observeAsState(initial = emptyList())
-                val timeZone by model.timeZone.observeAsState()
-                val timeZones = remember { TimeZone.getAvailableIDs().map(TimeZone::getTimeZone) }
+                /*
                 val typeError by model.typeError.observeAsState(false)
                 val supportVEVENT by model.supportVEVENT.observeAsState(initial = true)
                 val supportVTODO by model.supportVTODO.observeAsState(initial = true)
                 val supportVJOURNAL by model.supportVJOURNAL.observeAsState(initial = true)
-
-                LaunchedEffect(timeZones) {
-                    // Select default time zone
-                    if (timeZone == null)
-                        model.timeZone.value = TimeZone.getDefault()
-                }
-                LaunchedEffect(homeSets) {
-                    // Select default home set
-                    if (homeSet == null)
-                        model.homeSet.value = homeSets.firstOrNull()
-                }
-
-                CreateCalendarLayout(
-                    displayName = displayName,
-                    onDisplayNameChange = { displayName = it },
-                    displayNameError = displayNameError,
-                    color = color,
-                    onColorChange = model.color::setValue,
-                    description = description,
-                    onDescriptionChange = model.description::setValue,
-                    homeSet = homeSet,
-                    homeSets = homeSets,
-                    onHomeSetChange = model.homeSet::setValue,
-                    timeZone = timeZone,
-                    timeZones = timeZones,
-                    onTimeZoneChange = model.timeZone::setValue,
-                    typeError = typeError,
-                    supportVEVENT = supportVEVENT,
-                    onSupportVEVENTChange = model.supportVEVENT::setValue,
-                    supportVTODO = supportVTODO,
-                    onSupportVTODOChange = model.supportVTODO::setValue,
-                    supportVJOURNAL = supportVJOURNAL,
-                    onSupportVJOURNALChange = model.supportVJOURNAL::setValue,
-                    onCreateCollectionRequested = {
-                        onCreateCollection(displayName)
-                    }
-                )*/
+                */
             }
         }
     }
@@ -202,21 +215,29 @@ class CreateCalendarActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
+        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, accountModel.account)
     }
 
 
     @Composable
     fun CalendarForm(
         displayName: String,
-        onDisplayNameChange: (String) -> Unit,
+        onDisplayNameChange: (String) -> Unit = {},
         color: Int,
-        onColorChange: (Int) -> Unit,
+        onColorChange: (Int) -> Unit = {},
         description: String,
-        onDescriptionChange: (String) -> Unit,
+        onDescriptionChange: (String) -> Unit = {},
+        timeZoneId: String,
+        onTimeZoneSelected: (String) -> Unit = {},
+        supportVEVENT: Boolean,
+        onSupportVEVENTChange: (Boolean) -> Unit = {},
+        supportVTODO: Boolean,
+        onSupportVTODOChange: (Boolean) -> Unit = {},
+        supportVJOURNAL: Boolean,
+        onSupportVJOURNALChange: (Boolean) -> Unit = {},
         homeSet: HomeSet?,
         homeSets: List<HomeSet>,
-        onHomeSetSelected: (HomeSet) -> Unit
+        onHomeSetSelected: (HomeSet) -> Unit = {}
     ) {
         Column(Modifier
             .fillMaxWidth()
@@ -273,12 +294,117 @@ class CreateCalendarActivity: AppCompatActivity() {
                     .padding(top = 8.dp)
             )
 
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.create_calendar_time_zone),
+                        style = MaterialTheme.typography.body1
+                    )
+                    Text(
+                        ZoneId.of(timeZoneId).getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+
+                var showTimeZoneDialog by remember { mutableStateOf(false) }
+                TextButton(
+                    enabled =
+                        if (LocalInspectionMode.current)
+                            true
+                        else
+                            model.timeZoneDefs.observeAsState().value != null,
+                    onClick = { showTimeZoneDialog = true }
+                ) {
+                    Text("Select timezone".uppercase())
+                }
+                if (showTimeZoneDialog) {
+                    model.timeZoneDefs.observeAsState().value?.let { timeZoneDefs ->
+                        MultipleChoiceInputDialog(
+                            title = "Select timezone",
+                            namesAndValues = timeZoneDefs,
+                            initialValue = timeZoneId,
+                            onValueSelected = {
+                                onTimeZoneSelected(it)
+                                showTimeZoneDialog = false
+                            },
+                            onDismiss = { showTimeZoneDialog = false }
+                        )
+                    }
+                }
+            }
+
+            Text(
+                stringResource(R.string.create_calendar_type),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+            CheckboxRow(
+                labelId = R.string.create_calendar_type_vevent,
+                checked = supportVEVENT,
+                onCheckedChange = onSupportVEVENTChange
+            )
+            CheckboxRow(
+                labelId = R.string.create_calendar_type_vtodo,
+                checked = supportVTODO,
+                onCheckedChange = onSupportVTODOChange
+            )
+            CheckboxRow(
+                labelId = R.string.create_calendar_type_vjournal,
+                checked = supportVJOURNAL,
+                onCheckedChange = onSupportVJOURNALChange
+            )
+
             HomeSetSelection(
                 homeSet = homeSet,
                 homeSets = homeSets,
                 onHomeSetSelected = onHomeSetSelected
             )
         }
+    }
+
+    @Composable
+    fun CheckboxRow(
+        @StringRes labelId: Int,
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Checkbox(
+                checked = checked,
+                onCheckedChange = onCheckedChange
+            )
+            Text(
+                text = stringResource(labelId),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .clickable { onCheckedChange(!checked) }
+                    .weight(1f)
+            )
+        }
+    }
+
+    @Composable
+    @Preview
+    fun CalendarForm_Preview() {
+        CalendarForm(
+            displayName = "My Calendar",
+            color = Color.Magenta.toArgb(),
+            description = "This is my calendar",
+            timeZoneId = "Europe/Vienna",
+            supportVEVENT = true,
+            supportVTODO = false,
+            supportVJOURNAL = false,
+            homeSet = null,
+            homeSets = emptyList()
+        )
     }
 
 
@@ -355,154 +481,6 @@ class CreateCalendarActivity: AppCompatActivity() {
             frag.show(supportFragmentManager, null)
         }
     }
-
-    @OptIn(ExperimentalMaterialApi::class)
-    @Composable
-    fun CreateCalendarLayout(
-        displayName: String,
-        onDisplayNameChange: (String) -> Unit,
-        displayNameError: String?,
-        color: Int,
-        onColorChange: (Int) -> Unit,
-        description: String?,
-        onDescriptionChange: (String) -> Unit,
-        homeSet: HomeSet?,
-        homeSets: List<HomeSet>,
-        onHomeSetChange: (HomeSet) -> Unit,
-        timeZone: TimeZone?,
-        timeZones: List<TimeZone>,
-        onTimeZoneChange: (TimeZone) -> Unit,
-        typeError: Boolean,
-        supportVEVENT: Boolean,
-        onSupportVEVENTChange: (Boolean) -> Unit,
-        supportVTODO: Boolean,
-        onSupportVTODOChange: (Boolean) -> Unit,
-        supportVJOURNAL: Boolean,
-        onSupportVJOURNALChange: (Boolean) -> Unit,
-        onCreateCollectionRequested: () -> Unit
-    ) {
-        fun onBackRequested() {
-            val intent = Intent(this, AccountActivity::class.java).apply {
-                putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
-            }
-            NavUtils.navigateUpTo(this, intent)
-        }
-
-        BackHandler {
-            onBackRequested()
-        }
-
-        var showingColorPicker by remember { mutableStateOf(false) }
-        if (showingColorPicker) {
-            ColorPickerDialog(
-                initialColor = color,
-                onSelectColor = {
-                    onColorChange(it)
-                    showingColorPicker = false
-                },
-                onDialogDismissed = { showingColorPicker = false }
-            )
-        }
-
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(stringResource(R.string.create_calendar)) },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = ::onBackRequested
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    actions = {
-                        TextButton(
-                            onClick = onCreateCollectionRequested,
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = MaterialTheme.colors.onPrimary
-                            )
-                        ) {
-                            Text(stringResource(R.string.create_collection_create).uppercase())
-                        }
-                    }
-                )
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
-                    .padding(8.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedTextField(
-                        value = displayName,
-                        onValueChange = onDisplayNameChange,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 8.dp),
-                        label = { Text(stringResource(R.string.create_collection_display_name)) },
-                        isError = displayNameError != null,
-                        singleLine = true
-                    )
-                    Surface(
-                        onClick = { showingColorPicker = true },
-                        modifier = Modifier.size(32.dp),
-                        color = Color(color)
-                    ) {}
-                }
-                displayNameError?.let {
-                    Text(
-                        text = it,
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colors.error,
-                        style = MaterialTheme.typography.caption
-                    )
-                }
-
-                OutlinedTextField(
-                    value = description ?: "",
-                    onValueChange = onDescriptionChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    label = { Text(stringResource(R.string.create_collection_description)) },
-                )
-                Text(
-                    text = stringResource(R.string.create_collection_optional),
-                    modifier = Modifier.fillMaxWidth(),
-                    style = MaterialTheme.typography.caption
-                )
-
-                DropdownField(
-                    value = homeSet,
-                    options = homeSets,
-                    label = stringResource(R.string.create_collection_home_set),
-                    onOptionSelected = onHomeSetChange,
-                    toString = { it.displayName ?: DavUtils.lastSegmentOfUrl(it.url) },
-                    subtitle = { it.url.toString() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                )
-
-                DropdownField(
-                    value = timeZone,
-                    options = timeZones,
-                    label = stringResource(R.string.create_calendar_time_zone),
-                    onOptionSelected = onTimeZoneChange,
-                    toString = { it.id },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                )
 
                 Text(
                     text = stringResource(R.string.create_calendar_type),
@@ -654,19 +632,6 @@ class CreateCalendarActivity: AppCompatActivity() {
     fun CreateCalendarLayout_Preview() {
         AppTheme {
             CreateCalendarLayout(
-                displayName = "My Calendar",
-                onDisplayNameChange = {},
-                displayNameError = null,
-                color = Color.Blue.toArgb(),
-                onColorChange = {},
-                description = null,
-                onDescriptionChange = {},
-                homeSet = null,
-                homeSets = emptyList(),
-                onHomeSetChange = {},
-                timeZone = null,
-                timeZones = emptyList(),
-                onTimeZoneChange = {},
                 typeError = false,
                 supportVEVENT = false,
                 onSupportVEVENTChange = {},
@@ -677,43 +642,36 @@ class CreateCalendarActivity: AppCompatActivity() {
                 onCreateCollectionRequested = {}
             )
         }
-    }
-
-
-    class Model @AssistedInject constructor(
-        val db: AppDatabase,
-        @Assisted val account: Account
-    ): ViewModel() {
-
-        @AssistedFactory
-        interface Factory {
-            fun create(account: Account): Model
-        }
-
-        val displayNameError = MutableLiveData<String>()
-
-        val description = MutableLiveData<String>()
-        val color = MutableLiveData(Constants.DAVDROID_GREEN_RGBA)
-
-        val service = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CALDAV)
-        val homeSets = service.switchMap { svc ->
-            if (svc == null)
-                MutableLiveData(emptyList())
-            else
-                db.homeSetDao().getLiveBindableByService(svc.id)
-        }
-
-        val homeSet = MutableLiveData<HomeSet>()
-        val homeSetError = MutableLiveData<String>()
-
-        val timeZone = MutableLiveData<TimeZone>()
-        val timezoneError = MutableLiveData<String>()
-
-        val typeError = MutableLiveData(false)
-        val supportVEVENT = MutableLiveData(true)
-        val supportVTODO = MutableLiveData(true)
-        val supportVJOURNAL = MutableLiveData(true)
-
     }*/
+
+
+    @HiltViewModel
+    class Model @Inject constructor() : ViewModel() {
+
+        /**
+         * List of available time zones as <display name, ID> pairs.
+         */
+        val timeZoneDefs = MutableLiveData<List<Pair<String, String>>>()
+
+        init {
+            viewModelScope.launch(Dispatchers.IO) {
+                val timeZones = mutableListOf<Pair<String, String>>()
+
+                // iterate over Android time zones and take those with ical4j VTIMEZONE into consideration
+                val locale = Locale.getDefault()
+                for (id in ZoneId.getAvailableZoneIds()) {
+                    timeZones += Pair(
+                        ZoneId.of(id).getDisplayName(TextStyle.FULL, locale),
+                        id
+                    )
+                }
+
+                // TODO sort by Collation
+
+                timeZoneDefs.postValue(timeZones.sortedBy { it.first })
+            }
+        }
+
+    }
 
 }

@@ -383,7 +383,7 @@ class AccountModel @AssistedInject constructor(
                     // post success
                     createCollectionResult.postValue(Optional.empty())
                 } catch (e: Exception) {
-                    Logger.log.log(Level.SEVERE, "Couldn't delete collection", e)
+                    Logger.log.log(Level.SEVERE, "Couldn't create collection", e)
                     // post error
                     createCollectionResult.postValue(Optional.of(e))
                 }
@@ -410,8 +410,10 @@ class AccountModel @AssistedInject constructor(
             setPrefix("CAL", NS_CALDAV)
             setPrefix("CARD", NS_CARDDAV)
 
-            val mkcolType = if (addressBook) "mkcol" else "mkcalendar"
-            startTag(NS_WEBDAV, mkcolType)
+            if (addressBook)
+                startTag(NS_WEBDAV, "mkcol")
+            else
+                startTag(NS_CALDAV, "mkcalendar")
             startTag(NS_WEBDAV, "set")
             startTag(NS_WEBDAV, "prop")
 
@@ -461,11 +463,7 @@ class AccountModel @AssistedInject constructor(
 
                 if (supportsVEVENT != null || supportsVTODO != null || supportsVJOURNAL != null) {
                     // only if there's at least one explicitly supported calendar component set, otherwise don't include the property
-                    startTag(NS_CALDAV, "supported-calendar-component-set")
                     if (supportsVEVENT != false) {
-                        startTag(NS_CALDAV, "comp")
-                        attribute(null, "name", "VEVENT")
-                        endTag(NS_CALDAV, "comp")
                     }
                     if (supportsVTODO != false) {
                         startTag(NS_CALDAV, "comp")
@@ -477,13 +475,15 @@ class AccountModel @AssistedInject constructor(
                         attribute(null, "name", "VJOURNAL")
                         endTag(NS_CALDAV, "comp")
                     }
-                    endTag(NS_CALDAV, "supported-calendar-component-set")
                 }
             }
 
             endTag(NS_WEBDAV, "prop")
             endTag(NS_WEBDAV, "set")
-            endTag(NS_WEBDAV, mkcolType)
+            if (addressBook)
+                endTag(NS_WEBDAV, "mkcol")
+            else
+                endTag(NS_CALDAV, "mkcalendar")
             endDocument()
         }
         return writer.toString()
