@@ -333,7 +333,11 @@ class AccountSettingsActivity: AppCompatActivity() {
         Setting(
             icon = icon,
             name = stringResource(name),
-            summary = stringResource(R.string.settings_sync_summary_periodically, syncInterval / 60),
+            summary =
+                if (syncInterval == AccountSettings.SYNC_INTERVAL_MANUALLY)
+                    stringResource(R.string.settings_sync_summary_manually)
+                else
+                    stringResource(R.string.settings_sync_summary_periodically, syncInterval / 60),
             onClick = {
                 showSyncIntervalDialog = true
             }
