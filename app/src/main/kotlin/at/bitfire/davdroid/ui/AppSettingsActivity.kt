@@ -110,7 +110,7 @@ class AppSettingsActivity: AppCompatActivity() {
                 TopAppBar(
                     navigationIcon = {
                         IconButton(onClick = {
-                            onNavigateUp()
+                            onSupportNavigateUp()
                         }) {
                             Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
                         }

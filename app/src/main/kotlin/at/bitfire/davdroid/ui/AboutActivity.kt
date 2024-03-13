@@ -99,7 +99,7 @@ class AboutActivity: AppCompatActivity() {
                     topBar = {
                         TopAppBar(
                             navigationIcon = {
-                                IconButton(onClick = { onNavigateUp() }) {
+                                IconButton(onClick = { onSupportNavigateUp() }) {
                                     Icon(
                                         Icons.Default.ArrowBack,
                                         contentDescription = stringResource(R.string.navigate_up)

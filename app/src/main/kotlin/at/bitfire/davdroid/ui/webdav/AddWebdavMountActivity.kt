@@ -147,7 +147,7 @@ class AddWebdavMountActivity : AppCompatActivity() {
             topBar = {
                 TopAppBar(
                     navigationIcon = {
-                        IconButton(onClick = { onNavigateUp() }) {
+                        IconButton(onClick = { onSupportNavigateUp() }) {
                             Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
                         }
                     },

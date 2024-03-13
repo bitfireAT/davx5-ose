@@ -205,7 +205,7 @@ class AccountActivity : AppCompatActivity() {
                     onDeleteAccount = {
                         model.deleteAccount()
                     },
-                    onNavUp = ::onNavigateUp
+                    onNavigateUp = ::onSupportNavigateUp
                 )
             }
         }
@@ -271,7 +271,7 @@ fun AccountOverview(
     onAccountSettings: () -> Unit = {},
     onRenameAccount: (newName: String) -> Unit = {},
     onDeleteAccount: () -> Unit = {},
-    onNavUp: () -> Unit = {}
+    onNavigateUp: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -306,7 +306,7 @@ fun AccountOverview(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onNavUp) {
+                    IconButton(onClick = onNavigateUp) {
                         Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
                     }
                 },
