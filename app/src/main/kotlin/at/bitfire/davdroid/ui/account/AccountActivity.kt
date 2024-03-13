@@ -205,7 +205,7 @@ class AccountActivity : AppCompatActivity() {
                     onDeleteAccount = {
                         model.deleteAccount()
                     },
-                    onNavUp = ::onNavigateUp
+                    onNavUp = ::onSupportNavigateUp
                 )
             }
         }

@@ -5,10 +5,58 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
+import androidx.core.app.TaskStackBuilder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.HomeSet
+import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.widget.CalendarColorPickerDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -19,9 +67,10 @@ class CreateCalendarActivity: AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    val account by lazy { intent.getParcelableExtra<Account>(CreateAddressBookActivity.EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
+    val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
 
-    @Inject lateinit var modelFactory: AccountModel.Factory
+    @Inject
+    lateinit var modelFactory: AccountModel.Factory
     val model by viewModels<AccountModel> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -31,14 +80,74 @@ class CreateCalendarActivity: AppCompatActivity() {
     }
 
 
-    /*override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            var displayName by remember { mutableStateOf("") }
-
             AppTheme {
-                val displayNameError by model.displayNameError.observeAsState()
+                var displayName by remember { mutableStateOf("") }
+                var description by remember { mutableStateOf("") }
+                var homeSet by remember { mutableStateOf<HomeSet?>(null) }
+                var color by remember { mutableIntStateOf(Constants.DAVDROID_GREEN_RGBA) }
+
+                var isCreating by remember { mutableStateOf(false) }
+
+                val onCreateCollection = {
+
+                }
+
+                val homeSets by model.bindableCalendarHomesets.observeAsState()
+
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text(stringResource(R.string.create_calendar)) },
+                            navigationIcon = {
+                                IconButton(onClick = { onSupportNavigateUp() }) {
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.navigate_up))
+                                }
+                            },
+                            actions = {
+                                val isCreateEnabled = !isCreating && displayName.isNotBlank()
+                                TextButton(
+                                    enabled = isCreateEnabled,
+                                    onClick = { onCreateCollection() }
+                                ) {
+                                    Text(stringResource(R.string.create_collection_create).uppercase())
+                                }
+                            }
+                        )
+                    }
+                ) { padding ->
+                    Column(Modifier
+                        .padding(padding)
+                        .verticalScroll(rememberScrollState())
+                    ) {
+                        if (isCreating)
+                            LinearProgressIndicator(
+                                color = MaterialTheme.colors.secondary,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                            )
+
+                        homeSets?.let { homeSets ->
+                            CalendarForm(
+                                displayName = displayName,
+                                onDisplayNameChange = { displayName = it },
+                                color = color,
+                                onColorChange = { color = it },
+                                description = description,
+                                onDescriptionChange = { description = it },
+                                homeSet = homeSet,
+                                homeSets = homeSets,
+                                onHomeSetSelected = { homeSet = it }
+                            )
+                        }
+                    }
+                }
+
+                /*val displayNameError by model.displayNameError.observeAsState()
                 val color by model.color.observeAsState(initial = Constants.DAVDROID_GREEN_RGBA)
                 val description by model.description.observeAsState()
                 val homeSet by model.homeSet.observeAsState()
@@ -85,12 +194,95 @@ class CreateCalendarActivity: AppCompatActivity() {
                     onCreateCollectionRequested = {
                         onCreateCollection(displayName)
                     }
-                )
+                )*/
             }
         }
     }
 
-    private fun onCreateCollection(
+    override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
+
+    override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
+        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, model.account)
+    }
+
+
+    @Composable
+    fun CalendarForm(
+        displayName: String,
+        onDisplayNameChange: (String) -> Unit,
+        color: Int,
+        onColorChange: (Int) -> Unit,
+        description: String,
+        onDescriptionChange: (String) -> Unit,
+        homeSet: HomeSet?,
+        homeSets: List<HomeSet>,
+        onHomeSetSelected: (HomeSet) -> Unit
+    ) {
+        Column(Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val focusRequester = remember { FocusRequester() }
+                OutlinedTextField(
+                    value = displayName,
+                    onValueChange = onDisplayNameChange,
+                    label = { Text(stringResource(R.string.create_collection_display_name)) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
+                        .focusRequester(focusRequester)
+                )
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
+
+                var showColorPicker by remember { mutableStateOf(false) }
+                Box(Modifier
+                    .background(color = Color(color), shape = CircleShape)
+                    .clickable {
+                        showColorPicker = true
+                    }
+                    .size(32.dp)
+                )
+                if (showColorPicker) {
+                    CalendarColorPickerDialog(
+                        onSelectColor = {
+                            onColorChange(it)
+                            showColorPicker = false
+                        },
+                        onDismiss = { showColorPicker = false }
+                    )
+                }
+            }
+
+            OutlinedTextField(
+                value = description,
+                onValueChange = onDescriptionChange,
+                label = { Text(stringResource(R.string.create_collection_description_optional)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            )
+
+            HomeSetSelection(
+                homeSet = homeSet,
+                homeSets = homeSets,
+                onHomeSetSelected = onHomeSetSelected
+            )
+        }
+    }
+
+
+    /*private fun onCreateCollection(
         displayName: String
     ) {
         var ok = true

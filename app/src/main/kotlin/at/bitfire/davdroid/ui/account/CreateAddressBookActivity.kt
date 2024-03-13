@@ -10,9 +10,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -24,7 +22,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.RadioButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -37,12 +34,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,7 +48,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.widget.ExceptionInfoDialog
-import at.bitfire.davdroid.util.DavUtils
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.apache.commons.lang3.StringUtils
@@ -119,17 +113,13 @@ class CreateAddressBookActivity: AppCompatActivity() {
                 }
 
                 val homeSets by model.bindableAddressBookHomesets.observeAsState()
-                if (homeSet == null)
-                    homeSets?.let {
-                        homeSet = it.firstOrNull()
-                    }
 
                 Scaffold(
                     topBar = {
                         TopAppBar(
                             title = { Text(stringResource(R.string.create_addressbook)) },
                             navigationIcon = {
-                                IconButton(onClick = { onNavigateUp() }) {
+                                IconButton(onClick = { onSupportNavigateUp() }) {
                                     Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.navigate_up))
                                 }
                             },
@@ -137,9 +127,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
                                 val isCreateEnabled = !isCreating && displayName.isNotEmpty() && homeSet != null
                                 IconButton(
                                     enabled = isCreateEnabled,
-                                    onClick = {
-                                        onCreateCollection()
-                                    }
+                                    onClick = { onCreateCollection() }
                                 ) {
                                     Text(stringResource(R.string.create_collection_create).uppercase())
                                 }
@@ -198,12 +186,11 @@ class CreateAddressBookActivity: AppCompatActivity() {
         onHomeSetSelected: (HomeSet) -> Unit = {},
         onCreateCollection: () -> Unit = {}
     ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+        Column(Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
         ) {
-            val focusRequester = FocusRequester()
+            val focusRequester = remember { FocusRequester() }
             OutlinedTextField(
                 value = displayName,
                 onValueChange = onDisplayNameChange,
@@ -216,12 +203,8 @@ class CreateAddressBookActivity: AppCompatActivity() {
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
             )
-            var focusRequested by remember { mutableStateOf(false) }
-            LaunchedEffect(focusRequested) {
-                if (!focusRequested) {
-                    focusRequester.requestFocus()
-                    focusRequested = true
-                }
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
             }
 
             OutlinedTextField(
@@ -242,36 +225,11 @@ class CreateAddressBookActivity: AppCompatActivity() {
                     .padding(top = 8.dp)
             )
 
-            Text(
-                text = stringResource(R.string.create_collection_home_set),
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 8.dp)
+            HomeSetSelection(
+                homeSet = homeSet,
+                homeSets = homeSets,
+                onHomeSetSelected = onHomeSetSelected
             )
-            for (item in homeSets) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = homeSet == item,
-                        onClick = { onHomeSetSelected(item) }
-                    )
-                    Column(Modifier
-                        .clickable { onHomeSetSelected(item) }
-                        .weight(1f)) {
-                        Text(
-                            text = item.displayName ?: DavUtils.lastSegmentOfUrl(item.url),
-                            style = MaterialTheme.typography.body1
-                        )
-                        Text(
-                            text = item.url.encodedPath,
-                            style = MaterialTheme.typography.caption.copy(fontFamily = FontFamily.Monospace)
-                        )
-                    }
-                }
-            }
         }
     }
 

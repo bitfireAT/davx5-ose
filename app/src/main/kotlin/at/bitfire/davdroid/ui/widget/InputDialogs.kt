@@ -43,7 +43,6 @@ fun EditTextInputDialog(
             initialValue ?: "", selection = TextRange(initialValue?.length ?: 0)
         ))
     }
-    val focusRequester = remember { FocusRequester() }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -54,6 +53,7 @@ fun EditTextInputDialog(
             )
         },
         text = {
+            val focusRequester = remember { FocusRequester() }
             TextField(
                 value = textValue,
                 onValueChange = { textValue = it },
@@ -70,6 +70,9 @@ fun EditTextInputDialog(
                 ),
                 modifier = Modifier.focusRequester(focusRequester)
             )
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
         },
         confirmButton = {
             TextButton(
@@ -90,14 +93,6 @@ fun EditTextInputDialog(
             }
         }
     )
-
-    var requestFocus = remember { true }
-    LaunchedEffect(requestFocus) {
-        if (requestFocus) {
-            focusRequester.requestFocus()
-            requestFocus = false
-        }
-    }
 }
 
 @Composable

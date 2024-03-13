@@ -178,8 +178,6 @@ dependencies {
     implementation(libs.compose.runtime.livedata)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.toolingPreview)
-    implementation(libs.compose.dialogs.color)
-    implementation(libs.compose.dialogs.core)
 
     // Jetpack Room
     implementation(libs.room.runtime)
@@ -204,7 +202,6 @@ dependencies {
     implementation(libs.commons.text)
     @Suppress("RedundantSuppression")
     implementation(libs.dnsjava)
-    implementation(libs.jaredrummler.colorpicker)
     implementation(libs.mikepenz.aboutLibraries)
     implementation(libs.nsk90.kstatemachine)
     implementation(libs.okhttp.base)

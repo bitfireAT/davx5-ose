@@ -33,7 +33,6 @@ fun RenameAccountDialog(
     onDismiss: () -> Unit = {}
 ) {
     var accountName by remember { mutableStateOf(TextFieldValue(oldName, selection = TextRange(oldName.length))) }
-    val focusRequester = remember { FocusRequester() }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -43,6 +42,8 @@ fun RenameAccountDialog(
                 stringResource(R.string.account_rename_new_name_description),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
+
+            val focusRequester = remember { FocusRequester() }
             TextField(
                 value = accountName,
                 onValueChange = { accountName = it },
@@ -59,6 +60,9 @@ fun RenameAccountDialog(
                 ),
                 modifier = Modifier.focusRequester(focusRequester)
             )
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
         }},
         confirmButton = {
             TextButton(
@@ -74,17 +78,8 @@ fun RenameAccountDialog(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(android.R.string.cancel).uppercase())
             }
-        },
-    )
-
-    // request focus on the first composition
-    var requestFocus = remember { true }
-    LaunchedEffect(requestFocus) {
-        if (requestFocus) {
-            focusRequester.requestFocus()
-            requestFocus = false
         }
-    }
+    )
 }
 
 @Composable

@@ -125,7 +125,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     topBar = {
                         TopAppBar(
                             navigationIcon = {
-                                IconButton(onClick = { onNavigateUp() }) {
+                                IconButton(onClick = { onSupportNavigateUp() }) {
                                     Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(R.string.navigate_up))
                                 }
                             },
