@@ -139,7 +139,7 @@ abstract class BaseSyncWorker(
          * @return *true* if connected to the correct wifi OR no wifi names were specified in
          * account settings; *false* otherwise
          */
-        private fun correctWifiSsid(context: Context, accountSettings: AccountSettings): Boolean {
+        internal fun correctWifiSsid(context: Context, accountSettings: AccountSettings): Boolean {
             accountSettings.getSyncWifiOnlySSIDs()?.let { onlySSIDs ->
                 // check required permissions and location status
                 if (!PermissionUtils.canAccessWifiSsid(context)) {
