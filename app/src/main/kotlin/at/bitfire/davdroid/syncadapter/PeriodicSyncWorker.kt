@@ -78,7 +78,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
                         NetworkType.CONNECTED
                 ).build()
             val workRequest = PeriodicWorkRequestBuilder<PeriodicSyncWorker>(interval, TimeUnit.SECONDS)
-                .addTag(workerName(account, authority))     // which tags do we actually need?
+                .addTag(workerName(account, authority))
                 .addTag(commonTag(account, authority))
                 .setInputData(arguments)
                 .setConstraints(constraints)

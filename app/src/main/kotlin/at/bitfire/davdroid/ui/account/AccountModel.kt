@@ -95,18 +95,12 @@ class AccountModel @AssistedInject constructor(
         else
             MutableLiveData(false)
     }
-    val cardDavRefreshingActive = cardDavSvc.switchMap { svc ->
+    val cardDavRefreshing = cardDavSvc.switchMap { svc ->
         if (svc == null)
             return@switchMap null
         RefreshCollectionsWorker.exists(application, RefreshCollectionsWorker.workerName(svc.id))
     }
-    val cardDavSyncPending = BaseSyncWorker.exists(      // FIXME OneTimeSyncWorker.exists
-        getApplication(),
-        listOf(WorkInfo.State.ENQUEUED),
-        account,
-        listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
-    )
-    val cardDavSyncActive = BaseSyncWorker.exists(
+    val cardDavSyncing = BaseSyncWorker.exists(
         getApplication(),
         listOf(WorkInfo.State.RUNNING),
         account,
@@ -121,18 +115,12 @@ class AccountModel @AssistedInject constructor(
         else
             MutableLiveData(false)
     }
-    val calDavRefreshingActive = calDavSvc.switchMap { svc ->
+    val calDavRefreshing = calDavSvc.switchMap { svc ->
         if (svc == null)
             return@switchMap null
         RefreshCollectionsWorker.exists(application, RefreshCollectionsWorker.workerName(svc.id))
     }
-    val calDavSyncPending = BaseSyncWorker.exists(
-        getApplication(),
-        listOf(WorkInfo.State.ENQUEUED),
-        account,
-        listOf(CalendarContract.AUTHORITY)
-    )
-    val calDavSyncActive = BaseSyncWorker.exists(
+    val calDavSyncing = BaseSyncWorker.exists(
         getApplication(),
         listOf(WorkInfo.State.RUNNING),
         account,

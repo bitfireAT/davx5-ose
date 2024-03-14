@@ -168,7 +168,6 @@ class AccountsActivity: AppCompatActivity() {
                             )
                             .verticalScroll(rememberScrollState())
                     ) {
-
                         // background image
                         Image(
                             painterResource(R.drawable.accounts_background),
