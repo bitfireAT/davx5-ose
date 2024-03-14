@@ -30,9 +30,9 @@ import java.util.concurrent.TimeUnit
  * authority which they are responsible for. For each account there will be multiple dedicated periodic
  * sync workers for each authority. See [PeriodicSyncWorker.workerName] for more information.
  *
- * Deferrable: yes (PeriodicWorkRequest)
+ * Deferrable: yes (periodic)
  *
- * Expedited: no
+ * Expedited: no (→ no [getForegroundInfo])
  *
  * Long-running: no
  */

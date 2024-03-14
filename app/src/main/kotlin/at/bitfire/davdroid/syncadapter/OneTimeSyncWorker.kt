@@ -29,7 +29,9 @@ import java.util.logging.Level
 /**
  * One-time sync worker.
  *
- * Expedited: true
+ * Expedited: yes
+ *
+ * Long-running: no
  */
 @HiltWorker
 class OneTimeSyncWorker @AssistedInject constructor(
