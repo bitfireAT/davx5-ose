@@ -13,10 +13,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.os.Bundle
+import android.provider.ContactsContract
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import kotlinx.coroutines.CompletableDeferred
@@ -63,7 +65,7 @@ abstract class SyncAdapterService: Service() {
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             // We seem to have to pass this old SyncFramework extra for an Android 7 workaround
             val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
-            Logger.log.info("Sync request via sync framework (upload=$upload)")
+            Logger.log.info("Sync request via sync framework for $account $authority (upload=$upload)")
 
             val accountSettings = try {
                 AccountSettings(context, account)
@@ -78,8 +80,18 @@ abstract class SyncAdapterService: Service() {
                 return
             }
 
-            Logger.log.fine("Sync framework now starting SyncWorker")
-            val workerName = OneTimeSyncWorker.enqueue(context, account, authority, upload = upload)
+            /* Special case for contacts: because address books are separate accounts, changed contacts cause
+            this method to be called with authority = ContactsContract.AUTHORITY. However the sync worker shall be run for the
+            address book authority instead. */
+            val workerAccount = accountSettings.account         // main account in case of an address book account
+            val workerAuthority =
+                if (authority == ContactsContract.AUTHORITY)
+                    context.getString(R.string.address_books_authority)
+                else
+                    authority
+
+            Logger.log.fine("Starting OneTimeSyncWorker for $workerAccount $workerAuthority")
+            val workerName = OneTimeSyncWorker.enqueue(context, workerAccount, workerAuthority, upload = upload)
 
             // Block the onPerformSync method to simulate an ongoing sync
             Logger.log.fine("Blocking sync framework until SyncWorker finishes")
