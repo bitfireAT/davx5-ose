@@ -73,13 +73,13 @@ abstract class SyncAdapterService: Service() {
             }
 
             // Should we run the sync at all?
-            if (!SyncWorker.wifiConditionsMet(context, accountSettings)) {
+            if (!BaseSyncWorker.wifiConditionsMet(context, accountSettings)) {
                 Logger.log.info("Sync conditions not met. Aborting sync framework initiated sync")
                 return
             }
 
             Logger.log.fine("Sync framework now starting SyncWorker")
-            val workerName = SyncWorker.enqueue(context, account, authority, expedited = true, upload = upload)
+            val workerName = OneTimeSyncWorker.enqueue(context, account, authority, upload = upload)
 
             // Block the onPerformSync method to simulate an ongoing sync
             Logger.log.fine("Blocking sync framework until SyncWorker finishes")

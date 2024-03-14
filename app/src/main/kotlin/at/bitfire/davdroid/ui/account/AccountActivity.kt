@@ -79,7 +79,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.widget.ActionCard
@@ -192,7 +192,7 @@ class AccountActivity : AppCompatActivity() {
                         }
                     },
                     onSync = {
-                        SyncWorker.enqueueAllAuthorities(this, model.account)
+                        OneTimeSyncWorker.enqueueAllAuthorities(this, model.account)
                     },
                     onAccountSettings = {
                         val intent = Intent(this, AccountSettingsActivity::class.java)

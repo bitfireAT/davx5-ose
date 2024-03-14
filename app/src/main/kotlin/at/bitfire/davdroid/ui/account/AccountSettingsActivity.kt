@@ -66,7 +66,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.Syncer
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.widget.ActionCard
@@ -825,8 +825,12 @@ class AccountSettingsActivity: AppCompatActivity() {
          * _false_: sets [Syncer.SYNC_EXTRAS_RESYNC])
          */
         private fun resync(authority: String, fullResync: Boolean) {
-            val resync = if (fullResync) SyncWorker.FULL_RESYNC else SyncWorker.RESYNC
-            SyncWorker.enqueue(context, account, authority, expedited = true, resync = resync)
+            val resync =
+                if (fullResync)
+                    OneTimeSyncWorker.FULL_RESYNC
+                else
+                    OneTimeSyncWorker.RESYNC
+            OneTimeSyncWorker.enqueue(context, account, authority, resync = resync)
         }
 
     }

@@ -107,9 +107,9 @@ class PeriodicSyncWorkerTest {
 
         // Run PeriodicSyncWorker as TestWorker
         val inputData = workDataOf(
-            PeriodicSyncWorker.ARG_AUTHORITY to authority,
-            PeriodicSyncWorker.ARG_ACCOUNT_NAME to invalidAccount.name,
-            PeriodicSyncWorker.ARG_ACCOUNT_TYPE to invalidAccount.type
+            BaseSyncWorker.ARG_AUTHORITY to authority,
+            BaseSyncWorker.ARG_ACCOUNT_NAME to invalidAccount.name,
+            BaseSyncWorker.ARG_ACCOUNT_TYPE to invalidAccount.type
         )
         val result = TestWorkerBuilder<PeriodicSyncWorker>(context, executor, inputData).build().doWork()
 
@@ -130,16 +130,16 @@ class PeriodicSyncWorkerTest {
         )
         for (authority in authorities) {
             val inputData = workDataOf(
-                PeriodicSyncWorker.ARG_AUTHORITY to authority,
-                PeriodicSyncWorker.ARG_ACCOUNT_NAME to account.name,
-                PeriodicSyncWorker.ARG_ACCOUNT_TYPE to account.type
+                BaseSyncWorker.ARG_AUTHORITY to authority,
+                BaseSyncWorker.ARG_ACCOUNT_NAME to account.name,
+                BaseSyncWorker.ARG_ACCOUNT_TYPE to account.type
             )
             // Run PeriodicSyncWorker as TestWorker
             TestWorkerBuilder<PeriodicSyncWorker>(context, executor, inputData).build().doWork()
 
             // Check the PeriodicSyncWorker enqueued the right SyncWorker
             assertTrue(TestUtils.workScheduledOrRunningOrSuccessful(context,
-                SyncWorker.workerName(account, authority)
+                PeriodicSyncWorker.workerName(account, authority)
             ))
         }
     }

@@ -31,8 +31,7 @@ import java.util.logging.Level
  * Sync logic for address books
  */
 class AddressBookSyncer(
-    context: Context,
-    private val expedited: Boolean
+    context: Context
 ) : Syncer(context) {
 
     @EntryPoint
@@ -56,7 +55,8 @@ class AddressBookSyncer(
             if (updateLocalAddressBooks(account, syncResult))
                 for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
                     Logger.log.log(Level.INFO, "Running sync for address book", addressBookAccount)
-                    SyncWorker.enqueue(context, addressBookAccount, ContactsContract.AUTHORITY, expedited = expedited)
+                    // FIXME
+                    OneTimeSyncWorker.enqueue(context, addressBookAccount, ContactsContract.AUTHORITY)
                 }
         } catch (e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't sync address books", e)
