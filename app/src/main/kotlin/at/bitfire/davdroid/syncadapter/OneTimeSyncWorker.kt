@@ -20,7 +20,6 @@ import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -121,15 +120,6 @@ class OneTimeSyncWorker @AssistedInject constructor(
                 /* OneTimeSyncWorker is started by user or sync framework when there are local changes.
                 In both cases, synchronization should be done as soon as possible, so we set expedited. */
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-
-                // FIXME don't use separate workers per address book
-                .apply {
-                    // If this is a sub sync worker (address book sync), add the main account tag as well
-                    if (account.type == context.getString(R.string.account_type_address_book)) {
-                        val mainAccount = LocalAddressBook.mainAccount(context, account)
-                        addTag(workerName(mainAccount, authority))
-                    }
-                }
 
             // enqueue and start syncing
             val name = workerName(account, authority)

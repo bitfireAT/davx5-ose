@@ -366,7 +366,7 @@ class AccountsActivity: AppCompatActivity() {
                 }
             }
             fun update() = viewModelScope.launch(Dispatchers.Default) {
-                val authorities = SyncUtils.syncAuthorities(application, withContacts = true)
+                val authorities = SyncUtils.syncAuthorities(application)
                 val collator = Collator.getInstance()
                 postValue(myAccounts
                     .toList()
