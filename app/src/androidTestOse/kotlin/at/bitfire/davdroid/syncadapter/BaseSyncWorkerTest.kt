@@ -14,7 +14,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.TestUtils.workScheduledOrRunningOrSuccessful
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.network.ConnectionUtils
 import at.bitfire.davdroid.settings.AccountSettings
@@ -22,6 +21,7 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
+import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.mockkObject
 import org.junit.After
@@ -32,7 +32,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @HiltAndroidTest
-class SyncWorkerTest {
+class BaseSyncWorkerTest {
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
 
@@ -42,6 +42,8 @@ class SyncWorkerTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+    @get:Rule
+    val mockkRule = MockKRule(this)
 
     @Before
     fun inject() = hiltRule.inject()
@@ -71,17 +73,10 @@ class SyncWorkerTest {
 
 
     @Test
-    fun testEnqueue_enqueuesWorker() {
-        SyncWorker.enqueue(context, account, CalendarContract.AUTHORITY, true)
-        val workerName = SyncWorker.workerName(account, CalendarContract.AUTHORITY)
-        assertTrue(workScheduledOrRunningOrSuccessful(context, workerName))
-    }
-
-    @Test
     fun testWifiConditionsMet_withoutWifi() {
         val accountSettings = mockk<AccountSettings>()
         every { accountSettings.getSyncWifiOnly() } returns false
-        assertTrue(SyncWorker.wifiConditionsMet(context, accountSettings))
+        assertTrue(BaseSyncWorker.wifiConditionsMet(context, accountSettings))
     }
     
     @Test
@@ -91,10 +86,10 @@ class SyncWorkerTest {
 
         mockkObject(ConnectionUtils)
         every { ConnectionUtils.wifiAvailable(any()) } returns true
-        mockkObject(SyncWorker.Companion)
-        every { SyncWorker.Companion.correctWifiSsid(any(), any()) } returns true
+        mockkObject(BaseSyncWorker.Companion)
+        every { BaseSyncWorker.correctWifiSsid(any(), any()) } returns true
 
-        assertTrue(SyncWorker.wifiConditionsMet(context, accountSettings))
+        assertTrue(BaseSyncWorker.wifiConditionsMet(context, accountSettings))
     }
 
     @Test
@@ -104,10 +99,10 @@ class SyncWorkerTest {
 
         mockkObject(ConnectionUtils)
         every { ConnectionUtils.wifiAvailable(any()) } returns false
-        mockkObject(SyncWorker.Companion)
-        every { SyncWorker.Companion.correctWifiSsid(any(), any()) } returns true
+        mockkObject(BaseSyncWorker.Companion)
+        every { BaseSyncWorker.correctWifiSsid(any(), any()) } returns true
 
-        assertFalse(SyncWorker.wifiConditionsMet(context, accountSettings))
+        assertFalse(BaseSyncWorker.wifiConditionsMet(context, accountSettings))
     }
 
 

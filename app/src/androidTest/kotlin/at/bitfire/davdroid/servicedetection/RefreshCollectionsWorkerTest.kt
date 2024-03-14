@@ -10,11 +10,7 @@ import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
-import androidx.work.WorkManager
-import androidx.work.await
 import androidx.work.testing.WorkManagerTestInitHelper
-import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
-import at.bitfire.davdroid.TestUtils.workScheduledOrRunningOrSuccessful
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials
@@ -30,8 +26,8 @@ import at.bitfire.davdroid.ui.setup.LoginModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
+import io.mockk.junit4.MockKRule
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -53,6 +49,8 @@ class RefreshCollectionsWorkerTest {
     
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
+    @get:Rule
+    val mockkRule = MockKRule(this)
 
     val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 

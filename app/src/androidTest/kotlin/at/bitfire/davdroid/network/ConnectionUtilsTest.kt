@@ -13,14 +13,19 @@ import android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
 import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
+import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 @HiltAndroidTest
 class ConnectionUtilsTest {
+
+    @get:Rule
+    val mockkRule = MockKRule(this)
 
     private val connectivityManager = mockk<ConnectivityManager>()
     private val network1 = mockk<Network>()

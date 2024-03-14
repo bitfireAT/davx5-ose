@@ -7,23 +7,28 @@ package at.bitfire.davdroid.syncadapter
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentResolver
+import android.content.Context
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
-import androidx.work.testing.TestWorkerBuilder
+import androidx.work.ListenableWorker
+import androidx.work.WorkManager
+import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.testing.WorkManagerTestInitHelper
 import androidx.work.workDataOf
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.junit4.MockKRule
+import io.mockk.mockkObject
+import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.AfterClass
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -31,14 +36,13 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.Executors
 
 @HiltAndroidTest
 class PeriodicSyncWorkerTest {
 
     companion object {
 
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
         private val accountManager = AccountManager.get(context)
         private val account = Account("Test Account", context.getString(R.string.account_type))
@@ -70,10 +74,10 @@ class PeriodicSyncWorkerTest {
 
     }
 
-    private val executor = Executors.newSingleThreadExecutor()
-
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+    @get:Rule
+    val mockkRule = MockKRule(this)
 
     @Before
     fun inject() {
@@ -99,48 +103,28 @@ class PeriodicSyncWorkerTest {
     @Test
     fun doWork_cancelsItselfOnInvalidAccount() {
         val invalidAccount = Account("invalid", context.getString(R.string.account_type))
-        val authority = CalendarContract.AUTHORITY
-
-        // Enable the PeriodicSyncWorker
-        PeriodicSyncWorker.enable(context, invalidAccount, authority, 15*60, false)
-        assertTrue(workScheduledOrRunning(context, PeriodicSyncWorker.workerName(account, authority)))
 
         // Run PeriodicSyncWorker as TestWorker
         val inputData = workDataOf(
-            PeriodicSyncWorker.ARG_AUTHORITY to authority,
-            PeriodicSyncWorker.ARG_ACCOUNT_NAME to invalidAccount.name,
-            PeriodicSyncWorker.ARG_ACCOUNT_TYPE to invalidAccount.type
+            BaseSyncWorker.ARG_AUTHORITY to CalendarContract.AUTHORITY,
+            BaseSyncWorker.ARG_ACCOUNT_NAME to invalidAccount.name,
+            BaseSyncWorker.ARG_ACCOUNT_TYPE to invalidAccount.type
         )
-        val result = TestWorkerBuilder<PeriodicSyncWorker>(context, executor, inputData).build().doWork()
 
-        // Verify that the PeriodicSyncWorker cancelled itself
-        assertTrue(result is androidx.work.ListenableWorker.Result.Failure)
-        assertFalse(workScheduledOrRunning(context, PeriodicSyncWorker.workerName(invalidAccount, authority)))
-    }
+        // mock WorkManager to observe cancellation call
+        val workManager = WorkManager.getInstance(context)
+        mockkObject(workManager)
 
-    @Test
-    fun doWork_immediatelyEnqueuesSyncWorkerForGivenAuthority() {
-        val authorities = listOf(
-            context.getString(R.string.address_books_authority),
-            CalendarContract.AUTHORITY,
-            ContactsContract.AUTHORITY,
-            TaskProvider.ProviderName.JtxBoard.authority,
-            TaskProvider.ProviderName.OpenTasks.authority,
-            TaskProvider.ProviderName.TasksOrg.authority
-        )
-        for (authority in authorities) {
-            val inputData = workDataOf(
-                PeriodicSyncWorker.ARG_AUTHORITY to authority,
-                PeriodicSyncWorker.ARG_ACCOUNT_NAME to account.name,
-                PeriodicSyncWorker.ARG_ACCOUNT_TYPE to account.type
-            )
-            // Run PeriodicSyncWorker as TestWorker
-            TestWorkerBuilder<PeriodicSyncWorker>(context, executor, inputData).build().doWork()
+        // run test worker, expect failure
+        val testWorker = TestListenableWorkerBuilder<PeriodicSyncWorker>(context, inputData).build()
+        val result = runBlocking {
+            testWorker.doWork()
+        }
+        assertTrue(result is ListenableWorker.Result.Failure)
 
-            // Check the PeriodicSyncWorker enqueued the right SyncWorker
-            assertTrue(TestUtils.workScheduledOrRunningOrSuccessful(context,
-                SyncWorker.workerName(account, authority)
-            ))
+        // verify that worker called WorkManager.cancelWorkById(<its ID>)
+        verify {
+            workManager.cancelWorkById(testWorker.id)
         }
     }
 

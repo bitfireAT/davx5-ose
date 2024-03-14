@@ -39,8 +39,9 @@ import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
+import at.bitfire.davdroid.syncadapter.BaseSyncWorker
+import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
-import at.bitfire.davdroid.syncadapter.SyncWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -94,18 +95,12 @@ class AccountModel @AssistedInject constructor(
         else
             MutableLiveData(false)
     }
-    val cardDavRefreshingActive = cardDavSvc.switchMap { svc ->
+    val cardDavRefreshing = cardDavSvc.switchMap { svc ->
         if (svc == null)
             return@switchMap null
         RefreshCollectionsWorker.exists(application, RefreshCollectionsWorker.workerName(svc.id))
     }
-    val cardDavSyncPending = SyncWorker.exists(
-        getApplication(),
-        listOf(WorkInfo.State.ENQUEUED),
-        account,
-        listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
-    )
-    val cardDavSyncActive = SyncWorker.exists(
+    val cardDavSyncing = BaseSyncWorker.exists(
         getApplication(),
         listOf(WorkInfo.State.RUNNING),
         account,
@@ -120,18 +115,12 @@ class AccountModel @AssistedInject constructor(
         else
             MutableLiveData(false)
     }
-    val calDavRefreshingActive = calDavSvc.switchMap { svc ->
+    val calDavRefreshing = calDavSvc.switchMap { svc ->
         if (svc == null)
             return@switchMap null
         RefreshCollectionsWorker.exists(application, RefreshCollectionsWorker.workerName(svc.id))
     }
-    val calDavSyncPending = SyncWorker.exists(
-        getApplication(),
-        listOf(WorkInfo.State.ENQUEUED),
-        account,
-        listOf(CalendarContract.AUTHORITY)
-    )
-    val calDavSyncActive = SyncWorker.exists(
+    val calDavSyncing = BaseSyncWorker.exists(
         getApplication(),
         listOf(WorkInfo.State.RUNNING),
         account,
@@ -246,9 +235,9 @@ class AccountModel @AssistedInject constructor(
         }
 
         // cancel maybe running synchronization
-        SyncWorker.cancelSync(context, oldAccount)
-        for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
-            SyncWorker.cancelSync(context, addrBookAccount)
+        BaseSyncWorker.cancelAllWork(context, oldAccount)
+        /*for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
+            SyncWorker.cancelSync(context, addrBookAccount)*/
 
         // update account name references in database
         try {
@@ -296,7 +285,7 @@ class AccountModel @AssistedInject constructor(
         }
 
         // synchronize again
-        SyncWorker.enqueueAllAuthorities(context, newAccount)
+        OneTimeSyncWorker.enqueueAllAuthorities(context, newAccount)
     }
 
 

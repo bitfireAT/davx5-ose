@@ -17,8 +17,10 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.util.setAndVerifyUserData
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -31,8 +33,7 @@ import java.util.logging.Level
  * Sync logic for address books
  */
 class AddressBookSyncer(
-    context: Context,
-    private val expedited: Boolean
+    context: Context
 ) : Syncer(context) {
 
     @EntryPoint
@@ -41,23 +42,38 @@ class AddressBookSyncer(
         fun settingsManager(): SettingsManager
     }
 
+    companion object {
+        const val PREVIOUS_GROUP_METHOD = "previous_group_method"
+    }
+
     val entryPoint = EntryPointAccessors.fromApplication(context, AddressBooksSyncAdapterEntryPoint::class.java)
     val settingsManager = entryPoint.settingsManager()
+
 
     override fun sync(
         account: Account,
         extras: Array<String>,
-        authority: String,
+        authority: String,                      // address book authority (not contacts authority)
         httpClient: Lazy<HttpClient>,
-        provider: ContentProviderClient,
+        provider: ContentProviderClient,        // for noop address book provider (not for contacts provider)
         syncResult: SyncResult
     ) {
         try {
-            if (updateLocalAddressBooks(account, syncResult))
-                for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
-                    Logger.log.log(Level.INFO, "Running sync for address book", addressBookAccount)
-                    SyncWorker.enqueue(context, addressBookAccount, ContactsContract.AUTHORITY, expedited = expedited)
+            if (updateLocalAddressBooks(account, syncResult)) {
+                context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { contactsProvider ->
+                    for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
+                        Logger.log.info("Synchronizing address book $addressBookAccount")
+                        syncAddresBook(
+                            addressBookAccount,
+                            extras,
+                            ContactsContract.AUTHORITY,
+                            httpClient,
+                            contactsProvider,
+                            syncResult
+                        )
+                    }
                 }
+            }
         } catch (e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't sync address books", e)
         }
@@ -121,6 +137,45 @@ class AddressBookSyncer(
         }
 
         return true
+    }
+
+
+    fun syncAddresBook(
+        account: Account,
+        extras: Array<String>,
+        authority: String,
+        httpClient: Lazy<HttpClient>,
+        provider: ContentProviderClient,
+        syncResult: SyncResult
+    ) {
+        try {
+            val accountSettings = AccountSettings(context, account)
+            val addressBook = LocalAddressBook(context, account, provider)
+
+            // handle group method change
+            val groupMethod = accountSettings.getGroupMethod().name
+            accountSettings.accountManager.getUserData(account, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
+                if (previousGroupMethod != groupMethod) {
+                    Logger.log.info("Group method changed, deleting all local contacts/groups")
+
+                    // delete all local contacts and groups so that they will be downloaded again
+                    provider.delete(addressBook.syncAdapterURI(ContactsContract.RawContacts.CONTENT_URI), null, null)
+                    provider.delete(addressBook.syncAdapterURI(ContactsContract.Groups.CONTENT_URI), null, null)
+
+                    // reset sync state
+                    addressBook.syncState = null
+                }
+            }
+            accountSettings.accountManager.setAndVerifyUserData(account, PREVIOUS_GROUP_METHOD, groupMethod)
+
+            Logger.log.info("Synchronizing address book: ${addressBook.url}")
+            Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
+
+            ContactsSyncManager(context, account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook).performSync()
+        } catch(e: Exception) {
+            Logger.log.log(Level.SEVERE, "Couldn't sync contacts", e)
+        }
+        Logger.log.info("Contacts sync complete")
     }
 
 }

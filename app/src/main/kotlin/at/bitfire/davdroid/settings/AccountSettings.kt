@@ -12,7 +12,6 @@ import android.provider.CalendarContract
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -47,13 +46,12 @@ class AccountSettings(
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface AccountSettingsEntryPoint {
-        fun appDatabase(): AppDatabase
         fun settingsManager(): SettingsManager
     }
 
     companion object {
 
-        const val CURRENT_VERSION = 14
+        const val CURRENT_VERSION = 15
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
@@ -137,7 +135,6 @@ class AccountSettings(
     }
 
 
-    val db = EntryPointAccessors.fromApplication(context, AccountSettingsEntryPoint::class.java).appDatabase()
     val settings = EntryPointAccessors.fromApplication(context, AccountSettingsEntryPoint::class.java).settingsManager()
 
     val accountManager: AccountManager = AccountManager.get(context)
@@ -501,10 +498,7 @@ class AccountSettings(
             try {
                 val migrations = AccountSettingsMigrations(
                     context = context,
-                    db = db,
-                    settings = settings,
                     account = account,
-                    accountManager = accountManager,
                     accountSettings = this
                 )
                 val updateProc = AccountSettingsMigrations::class.java.getDeclaredMethod("update_${fromVersion}_$toVersion")
