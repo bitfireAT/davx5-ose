@@ -68,12 +68,10 @@
   <string name="permissions_notification_status_off">Notificacions desactivades (no recomanat)</string>
   <string name="permissions_notification_status_on">Notificacions activades</string>
   <string name="permissions_jtx_title">Permisos de jtx Board</string>
-  <string name="permissions_jtx_status_not_installed">Sense sincronització de tasques, diaris ni notes (no instal·lada)</string>
   <string name="permissions_jtx_status_off">Sense sincronització de tasques, diaris ni notes</string>
   <string name="permissions_jtx_status_on">És possible la sincronització de tasques, diaris o notes</string>
   <string name="permissions_opentasks_title">Permisos d\'OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisos de Tasks</string>
-  <string name="permissions_tasks_status_not_installed">Sense sincronització de les tasques (no instal·lat)</string>
   <string name="permissions_tasks_status_off">Sense sincronització de les tasques</string>
   <string name="permissions_tasks_status_on">Sincronització de les tasques possible</string>
   <string name="permissions_autoreset_title">Mantenir els permisos</string>
@@ -90,8 +88,6 @@
   <string name="wifi_permissions_location_permission_off">Permís d\'ubicació rebutjat</string>
   <string name="wifi_permissions_background_location_permission">Permís d\'ubicació en segon pla</string>
   <string name="wifi_permissions_background_location_permission_label">Permetre tota l\'estona</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Permís d\'ubicació establert a <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Permís d\'ubicació no establert a <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s utilitza el permís de localització només per determinar l\'SSID de la Wi-Fi actual per als comptes restringits de SSID. Això ocorrerà fins i tot quan l\'aplicació estigui en segon pla. No es recullen, s\'emmagatzemen, es processen ni s\'envien a cap lloc.</string>
   <string name="wifi_permissions_location_enabled">Localització sempre habilitada</string>
   <string name="wifi_permissions_location_enabled_on">El servei de localització està habilitat</string>
@@ -124,7 +120,6 @@
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Preguntes més freqüents</string>
   <string name="navigation_drawer_community">Comunitat</string>
-  <string name="navigation_drawer_donate">Fer una donació</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
   <string name="account_list_no_notification_permission">Notificacions desactivades. No es notificaran els errors de sincronització.</string>
   <string name="account_list_no_internet">No hi ha connectivitat a Internet validada. La sincronització no es pot executar.</string>
@@ -154,8 +149,6 @@
   <string name="app_settings_logging_on">Registre actiu</string>
   <string name="app_settings_logging_off">Registre inactiu</string>
   <string name="app_settings_battery_optimization">Optimització de la bateria</string>
-  <string name="app_settings_battery_optimization_exempted">L\'aplicació és a la llista blanca (recomanat)</string>
-  <string name="app_settings_battery_optimization_optimized">L\'aplicació no és a la llista blanca (no recomanat)</string>
   <string name="app_settings_connection">Connexió</string>
   <string name="app_settings_proxy">Tipus de servidor intermediari</string>
   <string-array name="app_settings_proxy_types">
@@ -195,12 +188,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Sense sincronització de contactes (manquen permisos)</string>
-  <string name="account_caldav_missing_calendar_permissions">Sense sincronització de calendari (manquen permisos)</string>
-  <string name="account_caldav_missing_tasks_permissions">Sense sincronització de tasques (manquen permisos)</string>
-  <string name="account_caldav_missing_permissions">Sense sincronització de calendari ni tasques (manquen permisos)</string>
-  <string name="account_webcal_missing_calendar_permissions">No s\'ha pogut accedir als calendaris (manquen permisos)</string>
-  <string name="account_permissions_action">Permisos</string>
   <string name="account_no_address_books">No existeixen llibretes d\'adreces (encara).</string>
   <string name="account_no_calendars">No existeixen calendaris (encara).</string>
   <string name="account_no_webcals">No hi ha subscripcions a calendaris (encara).</string>
@@ -222,9 +209,7 @@
   <string name="account_task_list">Llista de tasques</string>
   <string name="account_journal">Diari</string>
   <string name="account_only_personal">Mostra només les personals</string>
-  <string name="account_refresh_address_book_list">Actualitza la llista de llibretes d’adreces</string>
   <string name="account_create_new_address_book">Crea una llibreta d’adreces nova</string>
-  <string name="account_refresh_calendar_list">Actualitzar llista de calendaris</string>
   <string name="account_create_new_calendar">Crear nou calendari</string>
   <string name="account_no_webcal_handler_found">No s\'ha trobat cap aplicació compatible amb Webcal</string>
   <string name="account_install_icsx5">Instal·la ICSx⁵</string>
@@ -301,7 +286,6 @@
   <string name="settings_sync_wifi_only_off">No es té en compte el tipus de connexió</string>
   <string name="settings_sync_wifi_only_ssids">Restricció per SSID de la Wi-Fi</string>
   <string name="settings_sync_wifi_only_ssids_on">Només sincronitzarà des de %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Només sincronitzarà des de %s (es necessiten els serveis d\'ubicació actius)</string>
   <string name="settings_sync_wifi_only_ssids_off">S\'utilitzaran totes les connexions Wi-Fi</string>
   <string name="settings_sync_wifi_only_ssids_message">Noms (SSID) separats per comes de les xarxes Wi-Fi permeses (deixeu-ho en blanc per a totes)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restricció per SSID de la Wi-Fi requereix una configuració addicional</string>
@@ -312,14 +296,12 @@
   <string name="settings_authentication">Autentificació</string>
   <string name="settings_oauth">Re-Autenticar</string>
   <string name="settings_oauth_summary">Tornar a realitzar l\'inici de sessió amb OAuth</string>
-  <string name="settings_username_key">nom d\'usuari</string>
   <string name="settings_username">Nom d\'usuari/a</string>
   <string name="settings_enter_username">Escriu el nom d\'usuari/a:</string>
   <string name="settings_password">Contrasenya</string>
   <string name="settings_password_summary">Actualitzeu la contrasenya segons el vostre servidor.</string>
   <string name="settings_enter_password">Introduïu la contrasenya:</string>
-  <string name="settings_certificate_alias">Àlies del certificat de client</string>
-  <string name="settings_certificate_alias_empty">No s\'ha seleccionat cap certificat</string>
+  <string name="settings_certificate_install">Instal·la un certificat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Límit de temps dels esdeveniments passats</string>
   <string name="settings_sync_time_range_past_none">Tots els esdeveniments se sincronitzaran</string>

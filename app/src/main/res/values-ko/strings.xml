@@ -58,12 +58,10 @@
   <string name="permissions_calendar_status_off">캘린더 동기화 없음(권장하지 않음)</string>
   <string name="permissions_calendar_status_on">캘린더를 동기화 할 수 있음</string>
   <string name="permissions_jtx_title">jtx Board 권한</string>
-  <string name="permissions_jtx_status_not_installed">동기화할 작업, 일지 &amp;  노트가 없음(설치되지 않음)</string>
   <string name="permissions_jtx_status_off">동기화할 작업, 일지, 노트가 없음</string>
   <string name="permissions_jtx_status_on">동기회 가능한 작업, 일지, 노트</string>
   <string name="permissions_opentasks_title">OpenTasks 권한</string>
   <string name="permissions_tasksorg_title">작업 권한</string>
-  <string name="permissions_tasks_status_not_installed">작업 동기화 되지 않음 (설치되지 않음)</string>
   <string name="permissions_tasks_status_off">할일 목록 동기화 하지않음</string>
   <string name="permissions_tasks_status_on">할일 목록 동기화 가능</string>
   <string name="permissions_autoreset_title">권한 유지</string>
@@ -80,8 +78,6 @@
   <string name="wifi_permissions_location_permission_off">위치 권한 거부</string>
   <string name="wifi_permissions_background_location_permission">백그라운드 위치 권한</string>
   <string name="wifi_permissions_background_location_permission_label">항상 허용</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[위치 권한이 <b>%s</b>로 설정됨]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[위치 권한이 <b>%s</b>로 설정되지 않음 ]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s은 SSID 제한 계정에 대한 현재 WiFi의 SSID를 확인하는 데만 위치 권한을 사용합니다. 이것은 앱이 백그라운드에 있을 때에도 발생할 것이다. 어떤 위치 데이터도 수집, 저장, 처리 또는 어디로든 전송되지 않습니다.</string>
   <string name="wifi_permissions_location_enabled">위치 정보 항상 사용</string>
   <string name="wifi_permissions_location_enabled_on">위치 서비스를 사용할 수 있습니다.</string>
@@ -114,7 +110,6 @@
   <string name="navigation_drawer_manual">메뉴얼</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">커뮤니티</string>
-  <string name="navigation_drawer_donate">기부</string>
   <string name="navigation_drawer_privacy_policy">개인 정보 보호 정책</string>
   <string name="account_list_empty">DAVx⁵에 오신 것을 환영 합니다!/n/n
 당신은  CalDAV/CardDAV 계정을 지금 추가 할 수 있습니다.</string>
@@ -136,8 +131,6 @@
   <string name="app_settings_logging_on">logging이 활성되었습니다.</string>
   <string name="app_settings_logging_off">logging이 비활성화되었습니다.</string>
   <string name="app_settings_battery_optimization">배터리 최적화</string>
-  <string name="app_settings_battery_optimization_exempted">앱이 허용목록에 포함(권장)</string>
-  <string name="app_settings_battery_optimization_optimized">앱이 허용목록에 미포함(권장하지 않음)</string>
   <string name="app_settings_connection">연결</string>
   <string name="app_settings_proxy">프록시 타입</string>
   <string-array name="app_settings_proxy_types">
@@ -177,12 +170,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">연락처 동기화 되지않음 (missing permissions)</string>
-  <string name="account_caldav_missing_calendar_permissions">캘린더가 동기화되지 않음 (missing permissions)</string>
-  <string name="account_caldav_missing_tasks_permissions">할일목록이 동기화 되지않음 (missing permissions)</string>
-  <string name="account_caldav_missing_permissions">캘린더 및 할일 목록이 동기화되지 않음(missing permissions)</string>
-  <string name="account_webcal_missing_calendar_permissions">캘린더에 접근할 수 없음 (missing permissions)</string>
-  <string name="account_permissions_action">권한</string>
   <string name="account_no_address_books">주소록이 없다. (yet)</string>
   <string name="account_no_calendars">캘린더가 없다.(yet)</string>
   <string name="account_no_webcals">구독하는 캘린더가 없습니다. (yet)</string>
@@ -202,9 +189,7 @@
   <string name="account_task_list">할일 목록</string>
   <string name="account_journal">일지</string>
   <string name="account_only_personal">개인만 표시</string>
-  <string name="account_refresh_address_book_list">주소록 목록 새로 고침</string>
   <string name="account_create_new_address_book">새 주소록 만들기</string>
-  <string name="account_refresh_calendar_list">캘린더 목록 새로 고침</string>
   <string name="account_create_new_calendar">새 캘린더 작성</string>
   <string name="account_no_webcal_handler_found">Webcal 지원 앱을 찾을 수 없습니다.</string>
   <string name="account_install_icsx5">ICSx⁵를 설치합니다.</string>
@@ -262,7 +247,6 @@
   <string name="settings_sync_wifi_only_off">연결 유형은 고려되지 않습니다.</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID 제한</string>
   <string name="settings_sync_wifi_only_ssids_on">다음에 대해서만 동기화됨 %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">%s에서만 동기화 수행(active location services 필요)</string>
   <string name="settings_sync_wifi_only_ssids_off">모든 WiFi 연결이 사용됩니다.</string>
   <string name="settings_sync_wifi_only_ssids_message">쉼표로 구분된 허용되는 WIFI 네트워크의 이름(모두 빈칸으로 두세요)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 제한에 추가 설정이 필요함</string>
@@ -273,8 +257,7 @@
   <string name="settings_password">비밀번호</string>
   <string name="settings_password_summary">귀하의 서버에  비밀번호 업데이트.</string>
   <string name="settings_enter_password">비밀번호를 입력:</string>
-  <string name="settings_certificate_alias">클라이언트 인증서 별칭</string>
-  <string name="settings_certificate_alias_empty">인증서를 선택하지 않음</string>
+  <string name="settings_certificate_install">인증서 설치</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">지난 이벤트 시간 제한</string>
   <string name="settings_sync_time_range_past_none">모든 이벤트가 동기화 됩니다.</string>

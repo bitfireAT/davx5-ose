@@ -65,12 +65,10 @@
   <string name="permissions_notification_status_off">Notifikationer slået fra (ej anbefalet)</string>
   <string name="permissions_notification_status_on">Notifikationer slået til</string>
   <string name="permissions_jtx_title">jtx Board rettigheder</string>
-  <string name="permissions_jtx_status_not_installed">Ingen opgaver, journaler &amp; noter synkronisering (ikke installeret)</string>
   <string name="permissions_jtx_status_off">Ingen opgaver, journaler &amp; noter synkronisering</string>
   <string name="permissions_jtx_status_on">Opgaver, journaler og noter synkronisering mulig</string>
   <string name="permissions_opentasks_title">OpenTasks rettigheder</string>
   <string name="permissions_tasksorg_title">Opgaver rettigheder</string>
-  <string name="permissions_tasks_status_not_installed">Ingen opgave synkronisering (ikke installeret)</string>
   <string name="permissions_tasks_status_off">Ingen opgave synkronisering</string>
   <string name="permissions_tasks_status_on">Opgave synkronisering mulig</string>
   <string name="permissions_autoreset_title">Behold rettigheder</string>
@@ -87,8 +85,6 @@
   <string name="wifi_permissions_location_permission_off">Placering rettighed afvist</string>
   <string name="wifi_permissions_background_location_permission">Baggrund placerings-rettighed</string>
   <string name="wifi_permissions_background_location_permission_label">Tillad altid</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Placering rettighed sat til <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Placering rettighed ikke sat til <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s bruger kun placering rettighed for at bestemme nuværende trådløs SSID for SSID begrænset konti. Dette sker selvom programmet kører i baggrund. Ingen placering data bliver opsamlet, gemt, behandlet eller sendt.</string>
   <string name="wifi_permissions_location_enabled">Placering altid aktiveret</string>
   <string name="wifi_permissions_location_enabled_on">Placering tjeneste er aktiveret</string>
@@ -121,7 +117,6 @@
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">OSS</string>
   <string name="navigation_drawer_community">Fællesskab</string>
-  <string name="navigation_drawer_donate">Donation</string>
   <string name="navigation_drawer_privacy_policy">Privatlivs politik</string>
   <string name="account_list_no_notification_permission">Notifikationer slået fra. Du vil ikke blive gjort opmærksom på synkroniserings-fejl.</string>
   <string name="account_list_no_internet">Ingen valideret internetforbindelse. 
@@ -151,8 +146,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="app_settings_logging_on">Logning er aktiv</string>
   <string name="app_settings_logging_off">Logning er deaktiveret</string>
   <string name="app_settings_battery_optimization">Batteri optimering</string>
-  <string name="app_settings_battery_optimization_exempted">App er hvid listet (anbefalet)</string>
-  <string name="app_settings_battery_optimization_optimized">App er ikke hvid listet (ikke anbefalet)</string>
   <string name="app_settings_connection">Forbindelse</string>
   <string name="app_settings_proxy">Proxy type</string>
   <string-array name="app_settings_proxy_types">
@@ -192,12 +185,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Ingen kontakter synkronisering (mangler rettigheder)</string>
-  <string name="account_caldav_missing_calendar_permissions">Ingen kalender synkronisering (mangler rettigheder)</string>
-  <string name="account_caldav_missing_tasks_permissions">Ingen opgave synkronisering (mangler rettigheder)</string>
-  <string name="account_caldav_missing_permissions">Ingen kalender og opgaver synkronisering (mangler rettigheder)</string>
-  <string name="account_webcal_missing_calendar_permissions">Kan ikke tilgå kalendere (mangler rettigheder)</string>
-  <string name="account_permissions_action">Rettigheder</string>
   <string name="account_no_address_books">Der er endnu ingen adressebog.</string>
   <string name="account_no_calendars">Der er endnu ingen kalender.</string>
   <string name="account_no_webcals">Der er endnu ingen kalender abonnementer.</string>
@@ -217,9 +204,7 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="account_task_list">opgave liste</string>
   <string name="account_journal">journal</string>
   <string name="account_only_personal">Vis kun personlig</string>
-  <string name="account_refresh_address_book_list">Opdater adressebogslister</string>
   <string name="account_create_new_address_book">Oprett ny adressebog</string>
-  <string name="account_refresh_calendar_list">Opdatere kalenderliste</string>
   <string name="account_create_new_calendar">Oprette ny kalender</string>
   <string name="account_no_webcal_handler_found">Der er ikke fundet noget program der kan håndtere Webcal.</string>
   <string name="account_install_icsx5">Installere ICSx⁵</string>
@@ -292,7 +277,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="settings_sync_wifi_only_off">Forbindelsestypen har ingen betydning</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID-begrænsning</string>
   <string name="settings_sync_wifi_only_ssids_on">Synkroniserer kun over %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Vil kun synkronisere over %s (aktiv placering tjenester påkrævet)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WiFi-forbindelser vil blive anvendt</string>
   <string name="settings_sync_wifi_only_ssids_message">Kommaseparerede navne (SSID\'er) over tilladte WiFi-netværk (efterlad blank for at bruge alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Trådløs SSID begrænsning kræver yderligere opsætning</string>
@@ -302,14 +286,12 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="settings_ignore_vpns_off">VPN uden underliggende valideret internetforbindelse er nok til at køre synkronisering</string>
   <string name="settings_authentication">Adgangsgodkendelse</string>
   <string name="settings_oauth_summary">Udfør OAuth-login igen</string>
-  <string name="settings_username_key">brugernavn</string>
   <string name="settings_username">Brugernavn</string>
   <string name="settings_enter_username">Indtaste brugernavn:</string>
   <string name="settings_password">Adgangskode</string>
   <string name="settings_password_summary">Opdater adgangskoden, så den svarer til din server.</string>
   <string name="settings_enter_password">Indtast adgangskode:</string>
-  <string name="settings_certificate_alias">Alias for klientcertifikat</string>
-  <string name="settings_certificate_alias_empty">Intet certifikat valgt</string>
+  <string name="settings_certificate_install">Installere certifikat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsafgrænsning for tidligere begivenheder</string>
   <string name="settings_sync_time_range_past_none">Alle begivenheder vil blive synkroniseret</string>

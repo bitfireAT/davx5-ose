@@ -68,12 +68,10 @@
   <string name="permissions_notification_status_off">Meldingen uitgeschakeld (niet aanbevolen)</string>
   <string name="permissions_notification_status_on">Meldingen ingeschakeld</string>
   <string name="permissions_jtx_title">jtx Board-rechten</string>
-  <string name="permissions_jtx_status_not_installed">Geen taak-, kalender- en notitiesync (niet geïnstalleerd)</string>
   <string name="permissions_jtx_status_off">Geen taak-, kalender- en notitiesync</string>
   <string name="permissions_jtx_status_on">Taak-, kalender- en notitie-sync mogelijk</string>
   <string name="permissions_opentasks_title">OpenTasks rechten</string>
   <string name="permissions_tasksorg_title">Rechten voor taken</string>
-  <string name="permissions_tasks_status_not_installed">Geen taak-sync (niet geïnstalleerd)</string>
   <string name="permissions_tasks_status_off">Geen taak-sync</string>
   <string name="permissions_tasks_status_on">Taak-sync mogelijk</string>
   <string name="permissions_autoreset_title">Rechten behouden</string>
@@ -90,8 +88,6 @@
   <string name="wifi_permissions_location_permission_off">Toegang tot locatie geweigerd</string>
   <string name="wifi_permissions_background_location_permission">Toegang tot locatie op de achtergrond</string>
   <string name="wifi_permissions_background_location_permission_label">Onbeperkt toestaan</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Locatie recht ingesteld op <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Locatie recht niet ingesteld op <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%sgebruikt het locatie recht alleen om de huidige WiFi-SSID voor SSID-beperkte accounts te bepalen. Dit gebeurt zelfs als de app zich op de achtergrond bevindt. Locatiegegevens worden niet verzameld, opgeslagen, verwerkt of verzonden.</string>
   <string name="wifi_permissions_location_enabled">Toegang tot locatie altijd ingeschakeld</string>
   <string name="wifi_permissions_location_enabled_on">Toegang tot locatie is ingeschakeld</string>
@@ -124,7 +120,6 @@
   <string name="navigation_drawer_manual">Handleiding</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">Community</string>
-  <string name="navigation_drawer_donate">Doneren</string>
   <string name="navigation_drawer_privacy_policy">Privacybeleid</string>
   <string name="account_list_no_notification_permission">Meldingen uitgeschakeld. U krijgt geen meldingen over synchronisatiefouten.</string>
   <string name="account_list_no_internet">Geen gevalideerde internetverbinding. Synchronisatie wordt mogelijk niet uitgevoerd.</string>
@@ -154,8 +149,6 @@
   <string name="app_settings_logging_on">Loggen is actief</string>
   <string name="app_settings_logging_off">Loggen is niet actief</string>
   <string name="app_settings_battery_optimization">Batterijoptimalisatie</string>
-  <string name="app_settings_battery_optimization_exempted">Onbeperkt batterijgebruik toestaan (aanbevolen)</string>
-  <string name="app_settings_battery_optimization_optimized">Beperkt batterijgebruik toestaan (niet aanbevolen)</string>
   <string name="app_settings_connection">Verbinding</string>
   <string name="app_settings_proxy">Proxy type</string>
   <string-array name="app_settings_proxy_types">
@@ -195,12 +188,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Geen contacten synchronisatie (ontbrekende rechten)</string>
-  <string name="account_caldav_missing_calendar_permissions">Geen kalender synchronisatie (ontbrekende rechten)</string>
-  <string name="account_caldav_missing_tasks_permissions">Geen taken synchronisatie (ontbrekende rechten)</string>
-  <string name="account_caldav_missing_permissions">Geen synchronisatie van kalender en taken (ontbrekende rechten)</string>
-  <string name="account_webcal_missing_calendar_permissions">Geen toegang tot kalenders (ontbrekende rechten)</string>
-  <string name="account_permissions_action">Rechten</string>
   <string name="account_no_address_books">Er zijn (nog) geen adresboeken.</string>
   <string name="account_no_calendars">Er zijn (nog) geen kalenders.</string>
   <string name="account_no_webcals">Er zijn (nog) geen kalender abonnementen.</string>
@@ -222,9 +209,7 @@
   <string name="account_task_list">takenlijst</string>
   <string name="account_journal">logboek</string>
   <string name="account_only_personal">Alleen persoonlijk tonen</string>
-  <string name="account_refresh_address_book_list">Adresboeken vernieuwen</string>
   <string name="account_create_new_address_book">Nieuw adresboek maken</string>
-  <string name="account_refresh_calendar_list">Kalenders bijwerken</string>
   <string name="account_create_new_calendar">Nieuwe kalender maken</string>
   <string name="account_no_webcal_handler_found">Geen Webcal-app gevonden</string>
   <string name="account_install_icsx5">ICSx⁵ installeren</string>
@@ -301,7 +286,6 @@
   <string name="settings_sync_wifi_only_off">Type verbinding is niet relevant</string>
   <string name="settings_sync_wifi_only_ssids">Tot bepaalde WiFi-SSID beperken</string>
   <string name="settings_sync_wifi_only_ssids_on">Synchronisatie alleen via %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Alleen via %s (Altijd toegang tot locatie toestaan)</string>
   <string name="settings_sync_wifi_only_ssids_off">Elke WiFI-SSID toestaan</string>
   <string name="settings_sync_wifi_only_ssids_message">Door komma\'s gescheiden namen (SSID\'s) van toegestane WiFi-netwerken (laat leeg voor alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Beperking WiFi-SSID vereist verdere instellingen</string>
@@ -312,14 +296,12 @@
   <string name="settings_authentication">Verificatie</string>
   <string name="settings_oauth">Opnieuw authenticeren</string>
   <string name="settings_oauth_summary">Voer OAuth-aanmelding opnieuw uit</string>
-  <string name="settings_username_key">Gebruikersnaam</string>
   <string name="settings_username">Gebruikersnaam</string>
   <string name="settings_enter_username">Gebruikersnaam invoeren:</string>
   <string name="settings_password">Wachtwoord</string>
   <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
   <string name="settings_enter_password">Wachtwoord invoeren:</string>
-  <string name="settings_certificate_alias">Cliënt-certificaat alias </string>
-  <string name="settings_certificate_alias_empty">Geen certificaat geselecteerd</string>
+  <string name="settings_certificate_install">Certificaat installeren</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Gebeurtenissen in verleden tijd</string>
   <string name="settings_sync_time_range_past_none">Worden alle gesynchroniseerd</string>

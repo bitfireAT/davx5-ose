@@ -68,12 +68,10 @@
   <string name="permissions_notification_status_off">Notificări dezactivate (nu este recomandat)</string>
   <string name="permissions_notification_status_on">Notificări activate</string>
   <string name="permissions_jtx_title">Permisiuni pentru jtx Board</string>
-  <string name="permissions_jtx_status_not_installed">Nicio sarcină, jurnale și note sincronizate (nu sunt instalate)</string>
   <string name="permissions_jtx_status_off">Nicio sarcină, jurnale și note sincronizate</string>
   <string name="permissions_jtx_status_on">Este posibilă sincronizarea sarcinilor, jurnalelor, notelor</string>
   <string name="permissions_opentasks_title">Permisiuni OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisiuni pentru sarcini</string>
-  <string name="permissions_tasks_status_not_installed">Nicio sincronizare a sarcinilor (nu este instalat)</string>
   <string name="permissions_tasks_status_off">Nicio sincronizare a sarcinilor</string>
   <string name="permissions_tasks_status_on">Este posibilă sincronizarea sarcinilor</string>
   <string name="permissions_autoreset_title">Păstrează permisiunile</string>
@@ -90,8 +88,6 @@
   <string name="wifi_permissions_location_permission_off">Permisiunea de locație refuzată</string>
   <string name="wifi_permissions_background_location_permission">Permisiunea de locație în fundal</string>
   <string name="wifi_permissions_background_location_permission_label">Permite tot timpul</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Permisiunea locației este setată pentru <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Permisiunea locației nu este setată pentru <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s folosește permisiunea Locație numai pentru a determina SSID-ul WiFi actual pentru conturile restricționate de SSID. Acest lucru se va întâmpla chiar și atunci când aplicația este în fundal. Nu sunt colectate, stocate, procesate sau trimise nicăieri date despre locație.</string>
   <string name="wifi_permissions_location_enabled">Locația este întotdeauna activată</string>
   <string name="wifi_permissions_location_enabled_on">Serviciul de localizare este activat</string>
@@ -124,7 +120,6 @@
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Întrebări frecvente</string>
   <string name="navigation_drawer_community">Comunitate</string>
-  <string name="navigation_drawer_donate">Donează</string>
   <string name="navigation_drawer_privacy_policy">Politica de confidențialitate</string>
   <string name="account_list_no_notification_permission">Notificări dezactivate. Nu vei fi notificat despre erorile de sincronizare.</string>
   <string name="account_list_no_internet">Nicio conexiune la internet validată. Este posibil ca sincronizarea să nu ruleze.</string>
@@ -154,8 +149,6 @@
   <string name="app_settings_logging_on">Înregistrarea este activă</string>
   <string name="app_settings_logging_off">Înregistrarea este dezactivată</string>
   <string name="app_settings_battery_optimization">Optimizarea bateriei</string>
-  <string name="app_settings_battery_optimization_exempted">Aplicația este inclusă în lista albă (recomandat)</string>
-  <string name="app_settings_battery_optimization_optimized">Aplicația nu este inclusă în lista albă (nu este recomandat)</string>
   <string name="app_settings_connection">Conexiune</string>
   <string name="app_settings_proxy">Tip proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -195,12 +188,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Fără sincronizare contacte (permisiuni lipsă)</string>
-  <string name="account_caldav_missing_calendar_permissions">Fără sincronizare calendar (permisiuni lipsă)</string>
-  <string name="account_caldav_missing_tasks_permissions">Fără sincronizare sarcini (permisiuni lipsă)</string>
-  <string name="account_caldav_missing_permissions">Fără sincronizare calendar și sarcini (permisiuni lipsă)</string>
-  <string name="account_webcal_missing_calendar_permissions">Nu se pot accesa calendarele (permisiuni lipsă)</string>
-  <string name="account_permissions_action">Permisiuni</string>
   <string name="account_no_address_books">Nu există  (încă) agende de adrese.</string>
   <string name="account_no_calendars">Nu există calendare (încă).</string>
   <string name="account_no_webcals">Nu există abonamente la calendar (încă).</string>
@@ -222,9 +209,7 @@
   <string name="account_task_list">lista de sarcini</string>
   <string name="account_journal">jurnal</string>
   <string name="account_only_personal">Afișează numai personal</string>
-  <string name="account_refresh_address_book_list">Actualizează lista agendei de adrese</string>
   <string name="account_create_new_address_book">Creează o nouă agendă de adrese</string>
-  <string name="account_refresh_calendar_list">Actualizează lista de calendare</string>
   <string name="account_create_new_calendar">Creează un calendar nou</string>
   <string name="account_no_webcal_handler_found">Nu a fost găsită nicio aplicație compatibilă cu Webcal</string>
   <string name="account_install_icsx5">Instalează ICSx⁵</string>
@@ -301,7 +286,6 @@
   <string name="settings_sync_wifi_only_off">Tipul de conexiune nu este luat în considerare</string>
   <string name="settings_sync_wifi_only_ssids">Restricție SSID WiFi</string>
   <string name="settings_sync_wifi_only_ssids_on">Se va sincroniza numai prin %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Se va sincroniza numai prin %s (necesită servicii de localizare activate)</string>
   <string name="settings_sync_wifi_only_ssids_off">Toate conexiunile WiFi vor fi utilizate</string>
   <string name="settings_sync_wifi_only_ssids_message">Nume separate prin virgulă (SSID) ale rețelelor WiFi permise (lasă necompletat pentru toate)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Restricția SSID WiFi necesită setări suplimentare</string>
@@ -312,14 +296,12 @@
   <string name="settings_authentication">Autentificare</string>
   <string name="settings_oauth">Reautentificare</string>
   <string name="settings_oauth_summary">Efectuează din nou autentificarea OAuth</string>
-  <string name="settings_username_key">nume de utilizator</string>
   <string name="settings_username">Nume de utilizator</string>
   <string name="settings_enter_username">Introdu numele de utilizator:</string>
   <string name="settings_password">Parolă</string>
   <string name="settings_password_summary">Actualizează parola în funcție de server.</string>
   <string name="settings_enter_password">Introdu parola:</string>
-  <string name="settings_certificate_alias">Alias ​​certificat de client</string>
-  <string name="settings_certificate_alias_empty">Niciun certificat selectat</string>
+  <string name="settings_certificate_install">Instalare certificat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limită de timp pentru evenimentele din trecut</string>
   <string name="settings_sync_time_range_past_none">Toate evenimentele vor fi sincronizate</string>

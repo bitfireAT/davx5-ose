@@ -68,12 +68,10 @@
   <string name="permissions_notification_status_off">Jakinarazpenak desgaituta (ez gomendatuta)</string>
   <string name="permissions_notification_status_on">Jakinarazpenak gaituta</string>
   <string name="permissions_jtx_title">jtx taularen baimenak</string>
-  <string name="permissions_jtx_status_not_installed">Zereginen, egunkarien eta noten sinkronizaziorik ez (instalatu gabe)</string>
   <string name="permissions_jtx_status_off">Zeregin, egunkari, noten sinkronizaziorik ez</string>
   <string name="permissions_jtx_status_on">Zeregin, egunkari, noten sinkronizazioa posible</string>
   <string name="permissions_opentasks_title">OpenTasks baimenak</string>
   <string name="permissions_tasksorg_title">Tasks baimenak</string>
-  <string name="permissions_tasks_status_not_installed">Ez sinkronizatu zereginak (instalatu gabe)</string>
   <string name="permissions_tasks_status_off">Zeregin sink. ez</string>
   <string name="permissions_tasks_status_on">Zereginen sinkronizazioa posible</string>
   <string name="permissions_autoreset_title">Mantendu baimenak</string>
@@ -90,8 +88,6 @@
   <string name="wifi_permissions_location_permission_off">Kokapen baimena ukatuta</string>
   <string name="wifi_permissions_background_location_permission">Atzeko planoko kokapen baimena</string>
   <string name="wifi_permissions_background_location_permission_label">Baimendu beti</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Kokapen baimena <b>%s</b>(e)ra ezarri da]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Kokapen baimena ez da <b>%s</b>(e)ra ezarri]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s zure kokapen baimena erabiltzen du uneko WiFi SSIDa SSIDz murriztatutako kontuen kontra egiaztatzeko. Hau aplikazioa atzeko planoan badago ere gertatuko da. Ez da kokapen daturik biltzen, gordetzen, prozesatzen edo inora bidaltzen.</string>
   <string name="wifi_permissions_location_enabled">Kokapena beti gaituta</string>
   <string name="wifi_permissions_location_enabled_on">Kokapen zerbitzua gaituta dago</string>
@@ -124,7 +120,6 @@
   <string name="navigation_drawer_manual">Manuala</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">Komunitatea</string>
-  <string name="navigation_drawer_donate">Dohaintza egin</string>
   <string name="navigation_drawer_privacy_policy">Pribatutasun gidalerroak</string>
   <string name="account_list_no_notification_permission">Jakinarazpenak desgaituta. Ez zaitugu sinkronizazio-erroreei buruz jakinaraziko.</string>
   <string name="account_list_no_internet">Ez dago baliozkotutako Interneteko konexiorik. Baliteke sinkronizazioa ez exekutatzea.</string>
@@ -154,8 +149,6 @@
   <string name="app_settings_logging_on">Erregistratzea gaituta dago</string>
   <string name="app_settings_logging_off">Erregistratzea desgaituta dago</string>
   <string name="app_settings_battery_optimization">Bateria optimizazioa</string>
-  <string name="app_settings_battery_optimization_exempted">Aplikazioa zerrenda zurian dago (gomendatuta)</string>
-  <string name="app_settings_battery_optimization_optimized">Aplikazioa ez dago zerrenda zurian (ez gomendatuta)</string>
   <string name="app_settings_connection">Konexioa</string>
   <string name="app_settings_proxy">Proxy mota</string>
   <string-array name="app_settings_proxy_types">
@@ -195,12 +188,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Kontaktu sinkronizaziorik ez (baimenak falta dira)</string>
-  <string name="account_caldav_missing_calendar_permissions">Egutegi sinkronizaziorik ez (baimenak falta dira)</string>
-  <string name="account_caldav_missing_tasks_permissions">Zeregin sinkronizaziorik ez (baimenak falta dira)</string>
-  <string name="account_caldav_missing_permissions">Egutegi eta zeregin sinkronizaziorik ez (baimenak falta dira)</string>
-  <string name="account_webcal_missing_calendar_permissions">Ezin dira egutegiak atzitu (baimenak falta dira)</string>
-  <string name="account_permissions_action">Baimenak</string>
   <string name="account_no_address_books">Ez dago helbide libururik (oraindik).</string>
   <string name="account_no_calendars">Ez dago egutegirik (oraindik).</string>
   <string name="account_no_webcals">Ez dago egutegi harpidetzarik (oraindik).</string>
@@ -222,9 +209,7 @@
   <string name="account_task_list">zeregin zerrenda</string>
   <string name="account_journal">egunkaria</string>
   <string name="account_only_personal">Erakutsi pertsonala soilik</string>
-  <string name="account_refresh_address_book_list">Freskatu helbide liburuen zerrenda</string>
   <string name="account_create_new_address_book">Sortu helbide liburu berria</string>
-  <string name="account_refresh_calendar_list">Freskatu egutegi zerrenda</string>
   <string name="account_create_new_calendar">Sortu egutegi berria</string>
   <string name="account_no_webcal_handler_found">Ez da Webcal-ekin bateragarria den aplikaziorik aurkitu</string>
   <string name="account_install_icsx5">Instalatu ICSx⁵</string>
@@ -301,7 +286,6 @@
   <string name="settings_sync_wifi_only_off">Konexio mota ez da kontuan hartzen</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID murriztapena</string>
   <string name="settings_sync_wifi_only_ssids_on">%s(r)en bidez soilik sinkronizatuko du</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">%s(r)en bidez soilik sinkronizatuko du (kokapen zerbitzua gaituta behar du)</string>
   <string name="settings_sync_wifi_only_ssids_off">WiFi konexio guztiak erabiliko dira</string>
   <string name="settings_sync_wifi_only_ssids_message">Komaz banatutako izenak (SSIDak) baimendutako WiFi sareentzako (utzi hutsik denentzako)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID murriztapenak ezarpen gehiago behar ditu</string>
@@ -312,14 +296,12 @@
   <string name="settings_authentication">Autentifikazioa</string>
   <string name="settings_oauth">Berriro autentifikatu</string>
   <string name="settings_oauth_summary">Egin OAuth saioa berriro</string>
-  <string name="settings_username_key">erabiltzaile-izena</string>
   <string name="settings_username">Erabiltzaile izena</string>
   <string name="settings_enter_username">Sartu erabiltzaile izena:</string>
   <string name="settings_password">Pasahitza</string>
   <string name="settings_password_summary">Eguneratu pasahitza zure zerbitzariaren arabera</string>
   <string name="settings_enter_password">Sartu zure pasahitza:</string>
-  <string name="settings_certificate_alias">Bezeroaren ziurtagiriaren aliasa</string>
-  <string name="settings_certificate_alias_empty">Ez da ziurtagiririk hautatu</string>
+  <string name="settings_certificate_install">Instalatu ziurtagiria</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Aurreko gertaeren denbora muga</string>
   <string name="settings_sync_time_range_past_none">Ekintza guztiak sinkronizatuko dira</string>

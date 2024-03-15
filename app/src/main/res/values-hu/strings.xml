@@ -68,12 +68,10 @@
   <string name="permissions_notification_status_off">Az értesítések tiltása (nem ajánlott)</string>
   <string name="permissions_notification_status_on">Értesítések engedélyezése</string>
   <string name="permissions_jtx_title">jtx Board engedélyek</string>
-  <string name="permissions_jtx_status_not_installed">Nincs feladat, napló- és jegyzetszinkronizálás (nincs telepítve)</string>
   <string name="permissions_jtx_status_off">Nincsenek szinkronizálandó feladatok, naplóbejegyzések és jegyzetek</string>
   <string name="permissions_jtx_status_on">Van lehetőség a feladatok, naplóbejegyzések és jegyzetek szinkronizálására</string>
   <string name="permissions_opentasks_title">OpenTasks engedélyek</string>
   <string name="permissions_tasksorg_title">Feladat engedélyek</string>
-  <string name="permissions_tasks_status_not_installed">A feladatlisták szinkronizálása nem lehetséges (nincs telepítve)</string>
   <string name="permissions_tasks_status_off">Nincs feladatszinkronizálás</string>
   <string name="permissions_tasks_status_on">A feladatlisták szinkronizálása lehetséges</string>
   <string name="permissions_autoreset_title">Engedélyek megtartása</string>
@@ -90,8 +88,6 @@
   <string name="wifi_permissions_location_permission_off">Helyadat engedélyek megtagadva</string>
   <string name="wifi_permissions_background_location_permission">Helyadatok engedélyezése a háttérben</string>
   <string name="wifi_permissions_background_location_permission_label">Mindig engedélyezze</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Helyadat engedély beállítva <b>%s</b>re]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Helyadat engedély nincs beállítva<b>%s</b>re]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s a Helyadat engedélyt csak arra használja, hogy a jelenlegi WiFi SSID-jét meghatározza SSID-korlátozott fiókokhoz. Ez a funkció akkor is működik, ha az alkalmazás háttérben van. Semmilyen helyadatot nem gyűjtünk, tárolunk, feldolgozunk vagy küldünk bárhová.</string>
   <string name="wifi_permissions_location_enabled">Helyadatok mindig engedélyezve</string>
   <string name="wifi_permissions_location_enabled_on">Hely szolgáltatás bekapcsolva</string>
@@ -124,7 +120,6 @@
   <string name="navigation_drawer_manual">Kézikönyv</string>
   <string name="navigation_drawer_faq">GYIK</string>
   <string name="navigation_drawer_community">Közösség</string>
-  <string name="navigation_drawer_donate">Támogatás</string>
   <string name="navigation_drawer_privacy_policy">Adatvédelmi irányelv</string>
   <string name="account_list_no_notification_permission">Az értesítések tiltva vannak.  A szinkronizálási hibákról nem fog értesítést kapni.</string>
   <string name="account_list_no_internet">Nincs ellenőrzött Internet kapcsolat.  A szinkronizáció nem biztos, hogy fog futni. </string>
@@ -152,8 +147,6 @@
   <string name="app_settings_logging_on">Naplózás bekapcsolva</string>
   <string name="app_settings_logging_off">Naplózás kikapcsolva</string>
   <string name="app_settings_battery_optimization">Akkumulátorhasználat optimalizálása</string>
-  <string name="app_settings_battery_optimization_exempted">Az optimalizálás kikapcsolva (ajánlott)</string>
-  <string name="app_settings_battery_optimization_optimized">Az optimalizálás bekapcsolva (nem ajánlott)</string>
   <string name="app_settings_connection">Kapcsolat</string>
   <string name="app_settings_proxy">A proxy típusa</string>
   <string-array name="app_settings_proxy_types">
@@ -193,12 +186,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">A névjegyek szinkronizálása nem működik (nincs engedélyezve)</string>
-  <string name="account_caldav_missing_calendar_permissions">A naptárak szinkronizálása nem működik (nincs engedélyezve)</string>
-  <string name="account_caldav_missing_tasks_permissions">A feladatok szinkronizálása nem működik (nincs engedélyezve)</string>
-  <string name="account_caldav_missing_permissions">A naptárak és feladatok szinkronizálása nem működik (nincs engedélyezve)</string>
-  <string name="account_webcal_missing_calendar_permissions">A naptárak elérése nem működik (nincs engedélyezve)</string>
-  <string name="account_permissions_action">Engedélyek</string>
   <string name="account_no_address_books">Nincsenek címjegyzékek (még).</string>
   <string name="account_no_calendars">Nincsenek naptárak (még).</string>
   <string name="account_no_webcals">Nem iratkozott fel egyetlen naptárra sem (még).</string>
@@ -218,9 +205,7 @@
   <string name="account_task_list">feladatlista</string>
   <string name="account_journal">napló</string>
   <string name="account_only_personal">Csak a személyesek megjelenítése</string>
-  <string name="account_refresh_address_book_list">Címjegyzék-lista frissítése</string>
   <string name="account_create_new_address_book">Új címjegyzék létrehozása</string>
-  <string name="account_refresh_calendar_list">Naptárlista frissítése</string>
   <string name="account_create_new_calendar">Új naptár létrehozása</string>
   <string name="account_no_webcal_handler_found">Nem található Webcal-képes alkalmazás</string>
   <string name="account_install_icsx5">ICSx⁵ telepítése</string>
@@ -297,7 +282,6 @@
   <string name="settings_sync_wifi_only_off">Szinkronizálás a kapcsolat típusától függetlenül</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID szűrés</string>
   <string name="settings_sync_wifi_only_ssids_on">Az alábbi hálózatok használhatók: %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Szinkronizálás csak a megadott hálózaton (%s) keresztül (bekapcsolt helymeghatározási szolgáltatást igényel)</string>
   <string name="settings_sync_wifi_only_ssids_off">Minden hálózat használható</string>
   <string name="settings_sync_wifi_only_ssids_message">A használható WiFi hálózatok nevei (SSID), vesszővel elválasztva (hagyja üresen, ha nem akar szűrést beállítani)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID  szűréshez további beállítások szükségesek</string>
@@ -308,14 +292,12 @@
   <string name="settings_authentication">Authentikáció</string>
   <string name="settings_oauth">Autentikáció megismétlése</string>
   <string name="settings_oauth_summary">Az OAuth bejelentkezés megismétlése</string>
-  <string name="settings_username_key">felhasználónév</string>
   <string name="settings_username">Felhasználónév</string>
   <string name="settings_enter_username">Adja meg a felhasználónevet:</string>
   <string name="settings_password">Jelszó</string>
   <string name="settings_password_summary">Adja meg a szerveren érvényes új jelszót.</string>
   <string name="settings_enter_password">Adja meg a jelszót:</string>
-  <string name="settings_certificate_alias">Tanúsítvány alternatív megnevezése</string>
-  <string name="settings_certificate_alias_empty">Nincs tanúsítvány kiválasztva</string>
+  <string name="settings_certificate_install">Tanúsítvány telepítése</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Múltbéli események időkorlátja</string>
   <string name="settings_sync_time_range_past_none">Minden esemény szinkronizálása</string>

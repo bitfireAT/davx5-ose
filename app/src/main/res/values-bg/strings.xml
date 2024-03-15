@@ -9,7 +9,10 @@
   <string name="field_required">Задължително поле</string>
   <string name="help">Помощ</string>
   <string name="manage_accounts">Управление на регистрации</string>
+  <string name="navigate_up">Придвижване нагоре</string>
+  <string name="no_internet_sync_scheduled">Няма връзка с интернет, насрочено е синхронизиране за по-късно</string>
   <string name="share">Споделяне</string>
+  <string name="sync_started">Синхронизирането е започнало</string>
   <string name="database_destructive_migration_title">Повредено хранилище</string>
   <string name="database_destructive_migration_text">Всички местни профили са премахнати.</string>
   <string name="notification_channel_debugging">Отстраняване на дефекти</string>
@@ -65,12 +68,10 @@
   <string name="permissions_notification_status_off">Известията са изключени (непрепоръчително)</string>
   <string name="permissions_notification_status_on">Известията са еключени</string>
   <string name="permissions_jtx_title">Разрешения за jtx Board</string>
-  <string name="permissions_jtx_status_not_installed">Няма (инсталирана) синхронизация на задачи, дневници и бележки</string>
   <string name="permissions_jtx_status_off">Без синхронизиране на задачи, дневници и бележки</string>
   <string name="permissions_jtx_status_on">Възможно синхронизиране на задачи, дневници и бележки</string>
   <string name="permissions_opentasks_title">Разрешения за OpenTasks</string>
   <string name="permissions_tasksorg_title">Разрешения за Tasks</string>
-  <string name="permissions_tasks_status_not_installed">Няма (инсталирана) синхронизация на задачи</string>
   <string name="permissions_tasks_status_off">Няма синхронизация на задачи</string>
   <string name="permissions_tasks_status_on">Задачите могат да бъдат синхронизирани</string>
   <string name="permissions_autoreset_title">Предпазване от нулиране на разрешенията</string>
@@ -87,8 +88,6 @@
   <string name="wifi_permissions_location_permission_off">Липсва разрешение за местоположението</string>
   <string name="wifi_permissions_background_location_permission">Достъп до местоположението във фонов режим</string>
   <string name="wifi_permissions_background_location_permission_label">Разрешаване във всички случаи</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Разрешението за местоположението е <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Разрешението за местоположението не е <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s използва разрешението за местоположение за достъп до името на мрежата, когато се изисква синхронизиране само през определена мрежа. Това се случва дори и когато приложението се изпълнява във фонов режим. Не се събират, съхраняват, обработват и разпространяват данни за местоположението.</string>
   <string name="wifi_permissions_location_enabled">Винаги включено местоположение</string>
   <string name="wifi_permissions_location_enabled_on">Услугата за местоположението е включена</string>
@@ -121,12 +120,15 @@
   <string name="navigation_drawer_manual">Ръководство</string>
   <string name="navigation_drawer_faq">Често задавани въпроси</string>
   <string name="navigation_drawer_community">Общност</string>
-  <string name="navigation_drawer_donate">Дарения</string>
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
   <string name="account_list_no_notification_permission">Известията са изключени. Няма да бъдете известявани за грешки при синхронизиране.</string>
+  <string name="account_list_no_internet">Няма потвърдена връзка с интернет. Синхронизацията може да не се изпълни.</string>
   <string name="account_list_manage_connections">Управление на връзките</string>
   <string name="account_list_datasaver_enabled">Включена е икономия на данни. Синхронизацията във фонов режим е ограничена.</string>
   <string name="account_list_manage_datasaver">Икономия на трафик</string>
+  <string name="account_list_battery_saver_enabled">Включена е икономия на батерия. Синхронизацията може да е ограничена.</string>
+  <string name="account_list_manage_battery_saver">Икономия на батерия</string>
+  <string name="account_list_low_storage">Пространството за съхранение е малко. Андроид няма да синхронизира местните промени веднага, а по време на следващата редовна синхронизация.</string>
   <string name="account_list_manage_storage">Управление на хранилището</string>
   <string name="account_list_empty">Добре дошли при DAVx⁵!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Автоматичното синхронизиране е изключено на ниво система</string>
@@ -147,8 +149,6 @@
   <string name="app_settings_logging_on">Дневникът е включен</string>
   <string name="app_settings_logging_off">Дневникът е изключен</string>
   <string name="app_settings_battery_optimization">Оптимизиране на батерията</string>
-  <string name="app_settings_battery_optimization_exempted">Приложението е в белия списък (препоръчително)</string>
-  <string name="app_settings_battery_optimization_optimized">Приложението не е в белия списък (непрепоръчително)</string>
   <string name="app_settings_connection">Връзка</string>
   <string name="app_settings_proxy">Вид на сървъра на прокси</string>
   <string-array name="app_settings_proxy_types">
@@ -188,12 +188,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Контактите не се синхронизират (липсват разрешения)</string>
-  <string name="account_caldav_missing_calendar_permissions">Календарите те не се синхронизират (липсват разрешения)</string>
-  <string name="account_caldav_missing_tasks_permissions">Задачите не се синхронизират (липсват разрешения)</string>
-  <string name="account_caldav_missing_permissions">Календари и задачи не се синхронизират (липсват разрешения)</string>
-  <string name="account_webcal_missing_calendar_permissions">Няма достъп до календарите (липсват разрешения)</string>
-  <string name="account_permissions_action">Разрешения</string>
   <string name="account_no_address_books">Няма адресници (все още)</string>
   <string name="account_no_calendars">Няма календари (все още)</string>
   <string name="account_no_webcals">Няма абонаменти за календари (все още)</string>
@@ -201,6 +195,8 @@
   <string name="account_synchronize_now">Синхронизация</string>
   <string name="account_settings">Настройки на регистрацията</string>
   <string name="account_rename">Преименуване на регистрация</string>
+  <string name="account_rename_new_name_description">Незапазените местни данни могат да бъдат отхвърлени. След преименуването е нужно синхронизиране.</string>
+  <string name="account_rename_new_name">Ново име на регистрацията</string>
   <string name="account_rename_rename">Преименуване</string>
   <string name="account_rename_exists_already">Това име на регистрация вече се използва</string>
   <string name="account_rename_couldnt_rename">Грешка при преименуване</string>
@@ -213,9 +209,7 @@
   <string name="account_task_list">списък със задачи</string>
   <string name="account_journal">дневник</string>
   <string name="account_only_personal">Само лични</string>
-  <string name="account_refresh_address_book_list">Презареждане на адресници</string>
   <string name="account_create_new_address_book">Създаване на адресник</string>
-  <string name="account_refresh_calendar_list">Презареждане на календари</string>
   <string name="account_create_new_calendar">Създаване на календар</string>
   <string name="account_no_webcal_handler_found">Няма инсталирана програма за Webcal абонамент.</string>
   <string name="account_install_icsx5">Инсталиране на ICSx⁵</string>
@@ -225,6 +219,8 @@
   <string name="login_email_address">Електронна поща</string>
   <string name="login_email_address_error">Необходим е действителен електронен адрес</string>
   <string name="login_password">Парола</string>
+  <string name="login_password_hide">Скриване на паролата</string>
+  <string name="login_password_show">Показване на паролата</string>
   <string name="login_password_required">Необходима е парола</string>
   <string name="login_type_url">Вход с адрес и потребителско име</string>
   <string name="login_url_must_be_http_or_https">Адресът трябва да започва с http(s)://</string>
@@ -255,6 +251,14 @@
   <string name="login_google_client_privacy_policy"><![CDATA[%1$s прехвърля данните за контактите и календарите ви към Google единствено за синхронизиране с това устройство.  За подробности вижте нашата <a href="%2$s">Политика за поверителност</a>.]]></string>
   <string name="login_google_client_limited_use"><![CDATA[%1$s отговаря на <a href="%2$s">Политиката за потребителски данни на услугите на Google API</a>, включително на Изискванията за ограничена употреба.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Не може да бъде получен код за упълномощаване</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">Вход с Nextcloud</string>
+  <string name="login_nextcloud_login_flow">Стъпки за влизане</string>
+  <string name="login_nextcloud_login_flow_text">По този начин ще се стартират стъпките за влизане в Nextcloud чрез мрежов четец.</string>
+  <string name="login_nextcloud_login_flow_server_address">Адрес на сървъра на Nextcloud</string>
+  <string name="login_nextcloud_login_flow_sign_in">Вход</string>
+  <string name="login_nextcloud_login_flow_no_login_url">Адресът за вход не може да бъде получен</string>
+  <string name="login_nextcloud_login_flow_no_login_data">Данните за вход не могат да бъдат получени</string>
   <string name="login_configuration_detection">Откриване на настройки</string>
   <string name="login_querying_server">Изчакайте, запитване на сървъра…</string>
   <string name="login_no_caldav_carddav">Не са открити услуги на CalDAV или CardDAV.</string>
@@ -282,22 +286,22 @@
   <string name="settings_sync_wifi_only_off">Видът на връзката не е от значение</string>
   <string name="settings_sync_wifi_only_ssids">Ограничения на Wi-Fi по SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Ще синхронизира само през %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Ще синхронизира само през %s (изисква услуга за местоположението)</string>
   <string name="settings_sync_wifi_only_ssids_off">Ще бъдат използвани всички връзки по Wi-Fi </string>
   <string name="settings_sync_wifi_only_ssids_message">Разделени със запетая имена (SSID) на разрешените мрежи по Wi-Fi (празно за всички мрежи)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ограниченията на Wi-Fi по SSID изискват допълнителни настройки</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Управление</string>
+  <string name="settings_ignore_vpns">Използването на ВЧМ изисква връзка с интернет</string>
+  <string name="settings_ignore_vpns_on">VPN без работеща и проверена връзка с интернет не е достатъчен, за да се извършва синхронизация (препоръчително)</string>
+  <string name="settings_ignore_vpns_off">VPN без работеща и проверена връзка с интернет е достатъчен, за да се извършва синхронизация</string>
   <string name="settings_authentication">Удостоверяване</string>
   <string name="settings_oauth">Повторно удостоверяване</string>
   <string name="settings_oauth_summary">Изпълнява повторно влизане чрез OAuth</string>
-  <string name="settings_username_key">потребителско име</string>
   <string name="settings_username">Потребителско име</string>
   <string name="settings_enter_username">Въведете потребитеско име:</string>
   <string name="settings_password">Парола</string>
   <string name="settings_password_summary">Променете паролата съгласно сървъра.</string>
   <string name="settings_enter_password">Въведете парола:</string>
-  <string name="settings_certificate_alias">Псевдоним на клиентския сертификат</string>
-  <string name="settings_certificate_alias_empty">Няма избран сертификат</string>
+  <string name="settings_certificate_install">Инсталиране на сертификат</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Ограничения за събития от миналото</string>
   <string name="settings_sync_time_range_past_none">Всички събития ще се синхронизират</string>
@@ -338,6 +342,7 @@
   <string name="create_collection_display_name">Заглавие</string>
   <string name="create_collection_display_name_required">Необходимо е заглавие</string>
   <string name="create_collection_description">Описание</string>
+  <string name="create_collection_description_optional">Описание (по желание)</string>
   <string name="create_collection_optional">по желание</string>
   <string name="create_collection_home_set">Местоположение на хранилището</string>
   <string name="create_collection_home_set_required">Местоположението на хранилището е задължително</string>
@@ -392,6 +397,7 @@
   <string name="webdav_add_mount_display_name">Видимо име</string>
   <string name="webdav_add_mount_url">Адрес на WebDAV</string>
   <string name="webdav_add_mount_url_invalid">Недействителен адрес</string>
+  <string name="webdav_add_mount_authentication">Удостоверяване (по желание)</string>
   <string name="webdav_add_mount_username">Потребителско име</string>
   <string name="webdav_add_mount_password">Парола</string>
   <string name="webdav_add_mount_add">Монтиране</string>

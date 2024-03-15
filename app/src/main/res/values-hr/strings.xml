@@ -54,7 +54,6 @@
   <string name="permissions_calendar_status_on">Moguća sinkronizacija kalendara</string>
   <string name="permissions_opentasks_title">OpenTasks dopuštenja</string>
   <string name="permissions_tasksorg_title">Dopuštenja zadataka</string>
-  <string name="permissions_tasks_status_not_installed">Bez sinkronizacije zadataka (nije instalirano)</string>
   <string name="permissions_tasks_status_on">Moguća sinkronizacija zadataka</string>
   <string name="permissions_autoreset_title">Zadrži dopuštenja</string>
   <string name="permissions_autoreset_status_off">Dopuštenja mogu biti automatski resetirana (nije preporučeno)</string>
@@ -69,8 +68,6 @@
   <string name="wifi_permissions_location_permission_off">Dopuštenja lokacije odbijena</string>
   <string name="wifi_permissions_background_location_permission">Pozadinska dopuštenja lokacije</string>
   <string name="wifi_permissions_background_location_permission_label">Dopusti cijelo vrijeme</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Lokalna dopuštenja postavljena na <b>%s</b> ]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Lokalna dopuštenja nisu postavljena na <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s koristi dopuštenje za lokaciju samo kako bi se utvrdilo sadašnje WiFi SSID za SSID-ograničenim računa. To će se dogoditi čak i kada je aplikacija u pozadini. Podaci o lokaciji se ne prikupljaju, pohranjuju, obrađuju ili šalju bilo gdje.</string>
   <string name="wifi_permissions_location_enabled">Lokacija uvijek omogućena</string>
   <string name="wifi_permissions_location_enabled_on">Lokacijske usluge su omogućene</string>
@@ -100,7 +97,6 @@
   <string name="navigation_drawer_website">Web stranica</string>
   <string name="navigation_drawer_manual">Upute</string>
   <string name="navigation_drawer_faq">FAQ</string>
-  <string name="navigation_drawer_donate">Doniraj</string>
   <string name="navigation_drawer_privacy_policy">Pravila o zaštiti privatnosti</string>
   <string name="account_list_empty">Dobrodošli u DAVx⁵!\n\nSada možete dodati CalDAV/CardDAV račun.</string>
   <string name="accounts_global_sync_disabled">Automatska sinkronizacija je onemogućena na razini sustava</string>
@@ -144,12 +140,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Bez sinkronizacije kontakata (nedostaju dopuštenja)</string>
-  <string name="account_caldav_missing_calendar_permissions">Bez sinkronizacije kalendara (nedostaju dopuštenja)</string>
-  <string name="account_caldav_missing_tasks_permissions">Bez sinkronizacije zadataka (nedostaju dopuštenja)</string>
-  <string name="account_caldav_missing_permissions">Bez sinkronizacije kalendara i zadataka (nedostaju dopuštenja)</string>
-  <string name="account_webcal_missing_calendar_permissions">Nije moguće pristupiti kalendarima (nedostaju dopuštenja)</string>
-  <string name="account_permissions_action">Dopuštenja</string>
   <string name="account_no_address_books">Ne postoji adresar (još).</string>
   <string name="account_no_calendars">Ne postoji kalendar (još).</string>
   <string name="account_no_webcals">Ne postoje pretplate na kalendar (još).</string>
@@ -168,9 +158,7 @@
   <string name="account_calendar">kalendar</string>
   <string name="account_task_list">popis zadataka</string>
   <string name="account_only_personal">Prikaži samo osobno</string>
-  <string name="account_refresh_address_book_list">Osvježi popis adresara</string>
   <string name="account_create_new_address_book">Kreiraj novi adresar</string>
-  <string name="account_refresh_calendar_list">Osvježi popis kalendara</string>
   <string name="account_create_new_calendar">Kreiraj novi kalendar</string>
   <string name="account_no_webcal_handler_found">Aplikacija sa Webcal mogućnostima nije pronađena</string>
   <string name="account_install_icsx5">Instaliraj ICSx⁵</string>
@@ -227,7 +215,6 @@
   <string name="settings_sync_wifi_only_off">Vrsta veze se ne uzima u obzir</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID ograničenje</string>
   <string name="settings_sync_wifi_only_ssids_on">Sinhronizirat će se samo preko %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Sinkronizirat će se samo preko %s (potrebne su aktivne usluge lokacije)</string>
   <string name="settings_sync_wifi_only_ssids_off">Koristit će se sve WiFi veze</string>
   <string name="settings_sync_wifi_only_ssids_message">Zarezom odijeljeni nazivi (SSIDa) dozvoljenih WiFi mreža (ostaviti prazno za sve mreže)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID ograničenje zahtijeva daljnje postavke</string>
@@ -238,8 +225,7 @@
   <string name="settings_password">Lozinka</string>
   <string name="settings_password_summary">Ažurirajte lozinku vezanu uz vaš poslužitelj.</string>
   <string name="settings_enter_password">Unesite svoju lozinku:</string>
-  <string name="settings_certificate_alias">Pseudonim klijentskog certifikata</string>
-  <string name="settings_certificate_alias_empty">Nije odabran nijedan certifikat</string>
+  <string name="settings_certificate_install">Instaliraj certifikat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Vremensko ograničenje za prošli događaj</string>
   <string name="settings_sync_time_range_past_none">Svi događaju biti će sinkronizirani</string>

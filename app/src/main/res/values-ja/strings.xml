@@ -11,6 +11,7 @@
   <string name="manage_accounts">アカウントの管理</string>
   <string name="navigate_up">上に移動</string>
   <string name="no_internet_sync_scheduled">インターネット接続がありません。同期を待機しています</string>
+  <string name="options_menu">オプションメニュー</string>
   <string name="share">共有</string>
   <string name="sync_started">同期を開始しました</string>
   <string name="database_destructive_migration_title">データベースが破損しています</string>
@@ -68,12 +69,10 @@
   <string name="permissions_notification_status_off">通知が無効です (非推奨)</string>
   <string name="permissions_notification_status_on">通知が有効です</string>
   <string name="permissions_jtx_title">jtx Board へのアクセス</string>
-  <string name="permissions_jtx_status_not_installed">ジャーナル、メモ、タスクを同期しない (未インストール)</string>
   <string name="permissions_jtx_status_off">ジャーナル、メモ、タスクを同期しない</string>
   <string name="permissions_jtx_status_on">ジャーナル、メモ、タスクを同期できます</string>
   <string name="permissions_opentasks_title">OpenTasks へのアクセス</string>
   <string name="permissions_tasksorg_title">Tasks へのアクセス</string>
-  <string name="permissions_tasks_status_not_installed">タスクを同期しない (未インストール)</string>
   <string name="permissions_tasks_status_off">タスクを同期しない</string>
   <string name="permissions_tasks_status_on">タスクを同期できます</string>
   <string name="permissions_autoreset_title">権限を維持</string>
@@ -90,8 +89,8 @@
   <string name="wifi_permissions_location_permission_off">位置情報の権限が拒否されています</string>
   <string name="wifi_permissions_background_location_permission">バックグラウンドでの位置情報へのアクセス</string>
   <string name="wifi_permissions_background_location_permission_label">常に許可</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[位置情報の権限は <b>%s</b> に設定されています]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[位置情報の権限は <b>%s</b> に設定されていません]]></string>
+  <string name="wifi_permissions_background_location_permission_on">位置情報の権限は %s に設定されています</string>
+  <string name="wifi_permissions_background_location_permission_off">位置情報の権限は %s に設定されていません</string>
   <string name="wifi_permissions_background_location_disclaimer">%s は位置情報の権限を SSID で制限されたアカウントのために現在の WiFi SSID を確認する目的にのみ使用します。これはアプリがバックグラウンドでも発生します。位置情報データが収集、保存、処理および送信されることはありません。</string>
   <string name="wifi_permissions_location_enabled">位置情報は常に有効です</string>
   <string name="wifi_permissions_location_enabled_on">位置情報サービスは有効です</string>
@@ -124,7 +123,8 @@
   <string name="navigation_drawer_manual">マニュアル</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">コミュニティ</string>
-  <string name="navigation_drawer_donate">寄付</string>
+  <string name="navigation_drawer_support_project">プロジェクトを支援</string>
+  <string name="navigation_drawer_contribute">貢献する方法</string>
   <string name="navigation_drawer_privacy_policy">プライバシーポリシー</string>
   <string name="account_list_no_notification_permission">通知が無効です。同期エラーが発生しても通知されません。</string>
   <string name="account_list_no_internet">検証されたインターネット接続がありません。同期が実行されない場合があります。</string>
@@ -141,7 +141,7 @@
   <string name="accounts_sync_all">すべてのアカウントを同期</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">サービスの検出に失敗しました</string>
-  <string name="refresh_collections_worker_refresh_couldnt_refresh">コレクション リストを更新できませんでした</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">コレクションリストを再読み込みできませんでした</string>
   <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">フォアグラウンドで実行</string>
   <string name="foreground_service_notify_text">一部のデバイスでは自動同期にこの設定が必要になります。</string>
@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">ログ取得が有効</string>
   <string name="app_settings_logging_off">ログ取得が無効</string>
   <string name="app_settings_battery_optimization">バッテリー最適化</string>
-  <string name="app_settings_battery_optimization_exempted">このアプリでは無効 (推奨)</string>
-  <string name="app_settings_battery_optimization_optimized">有効 (非推奨)</string>
+  <string name="app_settings_battery_optimization_exempted">アプリは除外されています (推奨)</string>
+  <string name="app_settings_battery_optimization_optimized">バッテリー最適化が適用されています (非推奨)</string>
   <string name="app_settings_connection">接続</string>
   <string name="app_settings_proxy">プロキシーの種類</string>
   <string-array name="app_settings_proxy_types">
@@ -195,16 +195,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">連絡先を同期しません (権限なし)</string>
-  <string name="account_caldav_missing_calendar_permissions">カレンダーを同期しません (権限なし)</string>
-  <string name="account_caldav_missing_tasks_permissions">タスクを同期しません (権限なし)</string>
-  <string name="account_caldav_missing_permissions">カレンダーとタスクを同期しません (権限なし)</string>
-  <string name="account_webcal_missing_calendar_permissions">カレンダーにアクセスできません (権限なし)</string>
-  <string name="account_permissions_action">許可</string>
+  <string name="account_missing_permissions">これらのコレクションを同期するには、追加の権限が必要です。</string>
+  <string name="account_manage_permissions">権限を管理</string>
   <string name="account_no_address_books">アドレス帳は (まだ) ありません。</string>
   <string name="account_no_calendars">カレンダーは (まだ) ありません。</string>
   <string name="account_no_webcals">カレンダーのサブスクリプションは (まだ) ありません。</string>
-  <string name="account_swipe_down">下にスワイプすると、サーバーからリストを更新します。</string>
+  <string name="account_swipe_down">下にスワイプすると、サーバーからリストを再読み込みします。</string>
   <string name="account_synchronize_now">今すぐ同期</string>
   <string name="account_settings">アカウント設定</string>
   <string name="account_rename">アカウントの名前を変更</string>
@@ -222,10 +218,11 @@
   <string name="account_task_list">タスクリスト</string>
   <string name="account_journal">ジャーナル</string>
   <string name="account_only_personal">プライベートのみ表示</string>
-  <string name="account_refresh_address_book_list">アドレス帳リストを更新</string>
+  <string name="account_refresh_collections">コレクションを再読み込み</string>
+  <string name="account_refreshing_collections">コレクションリストを再読み込みしています</string>
   <string name="account_create_new_address_book">新しいアドレス帳を作成</string>
-  <string name="account_refresh_calendar_list">カレンダーリストを更新</string>
   <string name="account_create_new_calendar">新しいカレンダーを作成</string>
+  <string name="account_webcal_external_app">Webcal の購読は外部アプリで同期できます。</string>
   <string name="account_no_webcal_handler_found">Webcal に対応するアプリが見つかりませんでした</string>
   <string name="account_install_icsx5">ICSx⁵ をインストール</string>
   <!--AddAccountActivity-->
@@ -301,7 +298,6 @@
   <string name="settings_sync_wifi_only_off">接続の種類は考慮されません</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID 制限</string>
   <string name="settings_sync_wifi_only_ssids_on">%s でのみ同期します</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">%s でのみ同期します (有効な位置情報サービスが必要)</string>
   <string name="settings_sync_wifi_only_ssids_off">すべての WiFi 接続が使用されます</string>
   <string name="settings_sync_wifi_only_ssids_message">利用可能な WiFi ネットワークのカンマ区切りの名前 (SSID) (空白にするとすべて)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 制限にはさらに設定が必要です</string>
@@ -312,14 +308,14 @@
   <string name="settings_authentication">認証</string>
   <string name="settings_oauth">再認証</string>
   <string name="settings_oauth_summary">もう一度 OAuth ログインを実行</string>
-  <string name="settings_username_key">ユーザー名</string>
   <string name="settings_username">ユーザー名</string>
   <string name="settings_enter_username">ユーザー名を入力:</string>
   <string name="settings_password">パスワード</string>
   <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
   <string name="settings_enter_password">パスワードを入力:</string>
-  <string name="settings_certificate_alias">クライアント証明書の別名</string>
-  <string name="settings_certificate_alias_empty">証明書が選択されていません</string>
+  <string name="settings_certificate_alias">クライアント証明書</string>
+  <string name="settings_certificate_alias_empty">クライアント証明書が使用できないか、選択されていません</string>
+  <string name="settings_certificate_install">証明書をインストール</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">過去の予定の読み込み制限</string>
   <string name="settings_sync_time_range_past_none">すべての予定が同期されます</string>
