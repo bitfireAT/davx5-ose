@@ -179,7 +179,7 @@ class AccountActivity : AppCompatActivity() {
                         }
                     },
                     onSync = {
-                        OneTimeSyncWorker.enqueueAllAuthorities(this, model.account)
+                        OneTimeSyncWorker.enqueueAllAuthorities(this, model.account, manual = true)
                     },
                     onAccountSettings = {
                         val intent = Intent(this, AccountSettingsActivity::class.java)

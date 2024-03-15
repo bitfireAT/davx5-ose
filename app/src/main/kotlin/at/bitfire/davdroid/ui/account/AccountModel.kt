@@ -285,7 +285,7 @@ class AccountModel @AssistedInject constructor(
         }
 
         // synchronize again
-        OneTimeSyncWorker.enqueueAllAuthorities(context, newAccount)
+        OneTimeSyncWorker.enqueueAllAuthorities(context, newAccount, manual = true)
     }
 
 

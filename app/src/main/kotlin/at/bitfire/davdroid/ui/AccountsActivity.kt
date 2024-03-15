@@ -413,7 +413,7 @@ class AccountsActivity: AppCompatActivity() {
 
             // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
             for (account in allAccounts())
-                OneTimeSyncWorker.enqueueAllAuthorities(context, account)
+                OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
         }
 
 

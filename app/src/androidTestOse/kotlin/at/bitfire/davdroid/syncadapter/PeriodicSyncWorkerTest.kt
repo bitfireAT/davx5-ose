@@ -106,9 +106,9 @@ class PeriodicSyncWorkerTest {
 
         // Run PeriodicSyncWorker as TestWorker
         val inputData = workDataOf(
-            BaseSyncWorker.ARG_AUTHORITY to CalendarContract.AUTHORITY,
-            BaseSyncWorker.ARG_ACCOUNT_NAME to invalidAccount.name,
-            BaseSyncWorker.ARG_ACCOUNT_TYPE to invalidAccount.type
+            BaseSyncWorker.INPUT_AUTHORITY to CalendarContract.AUTHORITY,
+            BaseSyncWorker.INPUT_ACCOUNT_NAME to invalidAccount.name,
+            BaseSyncWorker.INPUT_ACCOUNT_TYPE to invalidAccount.type
         )
 
         // mock WorkManager to observe cancellation call

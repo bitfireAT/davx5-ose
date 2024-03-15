@@ -71,11 +71,12 @@ class OneTimeSyncWorker @AssistedInject constructor(
         fun enqueueAllAuthorities(
             context: Context,
             account: Account,
+            manual: Boolean = false,
             @ArgResync resync: Int = NO_RESYNC,
             upload: Boolean = false
         ) {
             for (authority in SyncUtils.syncAuthorities(context))
-                enqueue(context, account, authority, resync = resync, upload = upload)
+                enqueue(context, account, authority, manual = manual, resync = resync, upload = upload)
         }
 
         /**
@@ -83,6 +84,7 @@ class OneTimeSyncWorker @AssistedInject constructor(
          *
          * @param account       account to sync
          * @param authority     authority to sync (for instance: [CalendarContract.AUTHORITY])
+         * @param manual        user-initiated sync (ignores network checks)
          * @param resync        whether to request (full) re-synchronization or not
          * @param upload        see [ContentResolver.SYNC_EXTRAS_UPLOAD] used only for contacts sync
          *                      and android 7 workaround
@@ -92,14 +94,17 @@ class OneTimeSyncWorker @AssistedInject constructor(
             context: Context,
             account: Account,
             authority: String,
+            manual: Boolean = false,
             @ArgResync resync: Int = NO_RESYNC,
             upload: Boolean = false
         ): String {
             // Worker arguments
             val argumentsBuilder = Data.Builder()
-                .putString(ARG_AUTHORITY, authority)
-                .putString(ARG_ACCOUNT_NAME, account.name)
-                .putString(ARG_ACCOUNT_TYPE, account.type)
+                .putString(INPUT_AUTHORITY, authority)
+                .putString(INPUT_ACCOUNT_NAME, account.name)
+                .putString(INPUT_ACCOUNT_TYPE, account.type)
+            if (manual)
+                argumentsBuilder.putBoolean(INPUT_MANUAL, true)
             if (resync != NO_RESYNC)
                 argumentsBuilder.putInt(ARG_RESYNC, resync)
             argumentsBuilder.putBoolean(ARG_UPLOAD, upload)
@@ -156,11 +161,6 @@ class OneTimeSyncWorker @AssistedInject constructor(
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_DEFERRED)
             .build()
         return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
-    }
-
-
-    override suspend fun doWork(): Result {
-        return super.doWork()
     }
 
 }

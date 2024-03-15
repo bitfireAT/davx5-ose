@@ -44,9 +44,12 @@ abstract class BaseSyncWorker(
     companion object {
 
         // common worker input parameters
-        const val ARG_ACCOUNT_NAME = "accountName"
-        const val ARG_ACCOUNT_TYPE = "accountType"
-        const val ARG_AUTHORITY = "authority"
+        const val INPUT_ACCOUNT_NAME = "accountName"
+        const val INPUT_ACCOUNT_TYPE = "accountType"
+        const val INPUT_AUTHORITY = "authority"
+
+        /** set to true for user-initiated sync that skips network checks */
+        const val INPUT_MANUAL = "manual"
 
         /**
          * How often this work will be retried to run after soft (network) errors.
@@ -174,10 +177,10 @@ abstract class BaseSyncWorker(
     override suspend fun doWork(): Result {
         // ensure we got the required arguments
         val account = Account(
-            inputData.getString(ARG_ACCOUNT_NAME) ?: throw IllegalArgumentException("$ARG_ACCOUNT_NAME required"),
-            inputData.getString(ARG_ACCOUNT_TYPE) ?: throw IllegalArgumentException("$ARG_ACCOUNT_TYPE required")
+            inputData.getString(INPUT_ACCOUNT_NAME) ?: throw IllegalArgumentException("$INPUT_ACCOUNT_NAME required"),
+            inputData.getString(INPUT_ACCOUNT_TYPE) ?: throw IllegalArgumentException("$INPUT_ACCOUNT_TYPE required")
         )
-        val authority = inputData.getString(ARG_AUTHORITY) ?: throw IllegalArgumentException("$ARG_AUTHORITY required")
+        val authority = inputData.getString(INPUT_AUTHORITY) ?: throw IllegalArgumentException("$INPUT_AUTHORITY required")
 
         val syncTag = commonTag(account, authority)
         Logger.log.info("${javaClass.simpleName} called for $syncTag")
@@ -200,12 +203,22 @@ abstract class BaseSyncWorker(
                 return Result.failure()
             }
 
-            // check internet connection
-            val ignoreVpns = accountSettings.getIgnoreVpns()
-            val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
-            if (!ConnectionUtils.internetAvailable(connectivityManager, ignoreVpns)) {
-                Logger.log.info("WorkManager started SyncWorker without Internet connection. Aborting.")
-                return Result.failure()
+            if (inputData.getBoolean(INPUT_MANUAL, false))
+                Logger.log.info("Manual sync, skipping network checks")
+            else {
+                // check internet connection
+                val ignoreVpns = accountSettings.getIgnoreVpns()
+                val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
+                if (!ConnectionUtils.internetAvailable(connectivityManager, ignoreVpns)) {
+                    Logger.log.info("WorkManager started SyncWorker without Internet connection. Aborting.")
+                    return Result.success()
+                }
+
+                // check WiFi restriction
+                if (!wifiConditionsMet(applicationContext, accountSettings)) {
+                    Logger.log.info("WiFi conditions not met. Won't run periodic sync.")
+                    return Result.success()
+                }
             }
 
             return doSyncWork(account, authority, accountSettings)
@@ -220,7 +233,7 @@ abstract class BaseSyncWorker(
         authority: String,
         accountSettings: AccountSettings
     ): Result = withContext(dispatcher) {
-        Logger.log.info("Running sync worker: account=$account, authority=$authority")
+        Logger.log.info("Running ${javaClass.name}: account=$account, authority=$authority")
 
         // What are we going to sync? Select syncer based on authority
         val syncer: Syncer = when (authority) {

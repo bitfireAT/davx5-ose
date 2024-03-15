@@ -16,8 +16,6 @@ import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.settings.AccountSettings
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.concurrent.TimeUnit
@@ -66,9 +64,9 @@ class PeriodicSyncWorker @AssistedInject constructor(
          */
         fun enable(context: Context, account: Account, authority: String, interval: Long, syncWifiOnly: Boolean): Operation {
             val arguments = Data.Builder()
-                .putString(ARG_AUTHORITY, authority)
-                .putString(ARG_ACCOUNT_NAME, account.name)
-                .putString(ARG_ACCOUNT_TYPE, account.type)
+                .putString(INPUT_AUTHORITY, authority)
+                .putString(INPUT_ACCOUNT_NAME, account.name)
+                .putString(INPUT_ACCOUNT_TYPE, account.type)
                 .build()
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(
@@ -103,21 +101,6 @@ class PeriodicSyncWorker @AssistedInject constructor(
             WorkManager.getInstance(context)
                 .cancelUniqueWork(workerName(account, authority))
 
-    }
-
-    override suspend fun doSyncWork(
-        account: Account,
-        authority: String,
-        accountSettings: AccountSettings
-    ): Result {
-        Logger.log.info("Running periodic sync for account=$account, authority=$authority")
-
-        if (!wifiConditionsMet(applicationContext, accountSettings)) {
-            Logger.log.info("WiFi conditions not met. Won't run periodic sync.")
-            return Result.failure()
-        }
-
-        return super.doSyncWork(account, authority, accountSettings)
     }
 
 }
