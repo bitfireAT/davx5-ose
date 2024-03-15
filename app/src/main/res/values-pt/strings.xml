@@ -26,8 +26,6 @@
   <string name="intro_slogan1">Seus dados. Sua escolha.</string>
   <string name="intro_slogan2">Assuma o controle.</string>
   <string name="intro_battery_title">Intervalos de sincronização regulares</string>
-  <string name="intro_battery_not_whitelisted">Desativado (não recomendado)</string>
-  <string name="intro_battery_whitelisted">Ativado (recomendado)</string>
   <string name="intro_battery_text">Para sincronização em intervalos regulares, o %s deve ter permissão para executar em segundo plano. Caso contrário, o Android poderá pausar a sincronização a qualquer momento.</string>
   <string name="intro_battery_dont_show">Eu não preciso de intervalos de sincronização regulares.*</string>
   <string name="intro_autostart_title">Compatibilidade %s</string>
@@ -77,9 +75,7 @@
   <string name="about_libraries">Bibliotecas</string>
   <string name="about_version">Versão %1$s (%2$d)</string>
   <string name="about_build_date">Compilado em %s</string>
-  <string name="about_flavor_info">Esta versão só é elegível para distribuição na Google Play.</string>
   <string name="about_license_info_no_warranty">Este programa é distribuído SEM NENHUMA GARANTIA. Ele é software livre e pode ser redistribuído sob algumas condições.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Agradecemos a: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Não foi possível criar o arquivo de log</string>
   <string name="logging_notification_view_share">Ver/partilhar</string>
@@ -88,7 +84,6 @@
   <string name="navigation_drawer_subtitle">Sincronização de CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Sobre / Licença</string>
   <string name="navigation_drawer_beta_feedback">Comentários sobre a versão beta</string>
-  <string name="install_email_client">Instale um cliente de e-mail</string>
   <string name="install_browser">Instale um navegador Web</string>
   <string name="navigation_drawer_settings">Configurações</string>
   <string name="navigation_drawer_news_updates">Novidades e atualizações</string>
@@ -102,8 +97,6 @@
   <string name="account_list_manage_connections">Gerenciar conexões</string>
   <string name="account_list_manage_storage">Gerenciar armazenamento</string>
   <string name="account_list_empty">Bem-vindo(a) ao DAVx⁵!\n\nVocê pode adicionar uma conta CalDAV/CardDAV agora.</string>
-  <string name="accounts_global_sync_disabled">A sincronização automática pelo sistema está desativada</string>
-  <string name="accounts_global_sync_enable">Ativar</string>
   <string name="accounts_sync_all">Sincronizar todas as contas</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Falha na detecção do serviço</string>
@@ -149,15 +142,10 @@
   <string name="app_settings_reset_hints_summary">Restaura as sugestões que foram descartadas anteriormente</string>
   <string name="app_settings_reset_hints_success">Todas as sugestões serão exibidas novamente</string>
   <string name="app_settings_integration">Integração</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Sincronizando com %s</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Não há livros de endereços (ainda).</string>
-  <string name="account_no_calendars">Não há calendários (ainda).</string>
-  <string name="account_no_webcals">Não há assinaturas de calendário (ainda).</string>
-  <string name="account_swipe_down">Deslize para baixo para atualizar a lista do servidor.</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_settings">Configurações da conta</string>
   <string name="account_rename">Renomear conta</string>
@@ -171,8 +159,6 @@
   <string name="account_read_only">Somente leitura</string>
   <string name="account_calendar">calendário</string>
   <string name="account_task_list">lista de tarefas</string>
-  <string name="account_create_new_address_book">Criar novo livro de endereços</string>
-  <string name="account_create_new_calendar">Criar novo calendário</string>
   <string name="account_no_webcal_handler_found">Não foi encontrado um aplicativo capaz de lidar com Webcal</string>
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -208,7 +194,6 @@
   <string name="login_username_password_wrong">Nome de usuário (endereço de e-mail) / senha incorreto?</string>
   <string name="login_view_logs">Mostrar detalhes</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Configurações: %s</string>
   <string name="settings_sync">Sincronização</string>
   <string name="settings_sync_interval_contacts">Intervalo sinc. de contatos</string>
   <string name="settings_sync_summary_manually">Apenas manualmente</string>
@@ -234,10 +219,8 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">Gerenciar</string>
   <string name="settings_authentication">Autenticação</string>
   <string name="settings_username">Nome do usuário</string>
-  <string name="settings_enter_username">Digite o nome do usuário:</string>
   <string name="settings_password">Senha</string>
   <string name="settings_password_summary">Atualize a senha de acordo com seu servidor</string>
-  <string name="settings_enter_password">Digite sua senha:</string>
   <string name="settings_certificate_install">Instalar certificado</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite de tempo para eventos passados</string>
@@ -333,6 +316,4 @@
   <string name="sync_invalid_task">Tarefa inválida recebida do servidor</string>
   <string name="sync_invalid_resources_ignoring">Ignorando um ou mais recursos inválidos</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Segurança da conexão</string>
-  <string name="trust_certificate_unknown_certificate_found">O DAVx⁵ encontrou um certificado desconhecido. Deseja torná-lo confiável?</string>
 </resources>

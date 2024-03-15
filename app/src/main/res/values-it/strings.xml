@@ -27,8 +27,6 @@
   <string name="intro_slogan1">Tuoi i dati. Tua la scelta.</string>
   <string name="intro_slogan2">Riprendi il controllo.</string>
   <string name="intro_battery_title">Intervalli di sincronizzazione regolari.</string>
-  <string name="intro_battery_not_whitelisted">Disabilitato (sconsigliato)</string>
-  <string name="intro_battery_whitelisted">Abilitato (scelta consigliata)</string>
   <string name="intro_battery_text">Per sincronizzare i dati a intervalli regolari, %s deve essere autorizzato a girare in background. Altrimenti Android può mettere in pausa gli aggiornamenti in qualunque momento.</string>
   <string name="intro_battery_dont_show">Non ho bisogno di sincronizzare a intervalli di tempo regolari.*</string>
   <string name="intro_autostart_title">%s compatibilità</string>
@@ -90,9 +88,7 @@
   <string name="about_version">Versione %1$s (%2$d)</string>
   <string name="about_build_date">Compilato su %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) e contibutori</string>
-  <string name="about_flavor_info">Questa versione è idonea solo per la distribuzione tramite Google Play</string>
   <string name="about_license_info_no_warranty">Il programma è distribuito SENZA ALCUNA GARANZIA. È software libero e può essere redistribuito sotto alcune condizioni.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Grazie a: </i>%s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Impossibile creare il file di log</string>
   <string name="logging_notification_text">Adesso l\'accesso all\' %s delle attività </string>
@@ -102,7 +98,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV adattatore di sincronizzazione</string>
   <string name="navigation_drawer_about">Informazioni / Licenza</string>
   <string name="navigation_drawer_beta_feedback">Feedback sulla beta</string>
-  <string name="install_email_client">Installare un client email</string>
   <string name="install_browser">Installare un browser Web</string>
   <string name="navigation_drawer_settings">Impostazioni</string>
   <string name="navigation_drawer_news_updates">Notizie &amp; aggiornamenti</string>
@@ -114,8 +109,6 @@
   <string name="navigation_drawer_community">Comunità</string>
   <string name="navigation_drawer_privacy_policy">Politica sulla riservatezza</string>
   <string name="account_list_empty">Benvenuto a DAVx⁵!\n\nÈ ora possibile aggiungere account CalDAV/CardDAV.</string>
-  <string name="accounts_global_sync_disabled">La sincronizzazione automatica dell\'intero sistema è disabilitata</string>
-  <string name="accounts_global_sync_enable">Attiva</string>
   <string name="accounts_sync_all">Sincronizzazione di tutti gli account</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Impossibile trovare il servizio</string>
@@ -165,16 +158,11 @@
   <string name="app_settings_reset_hints_success">I suggerimenti verranno mostrati</string>
   <string name="app_settings_integration">Integrazione</string>
   <string name="app_settings_tasks_provider">Funzioni dell\'applicazione</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Sincronizzazione con %s</string>
   <string name="app_settings_tasks_provider_none">Nessuna applicazione compatibile con e funzionalità trovata</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Non ci sono rubriche indirizzi (ancora)</string>
-  <string name="account_no_calendars">Non ci sono calendari (ancora)</string>
-  <string name="account_no_webcals">Non ci sono sottoscrizioni a calendari (ancora)</string>
-  <string name="account_swipe_down">Scorri in basso per aggiornare la lista dal server</string>
   <string name="account_synchronize_now">Sincronizza adesso</string>
   <string name="account_settings">Impostazioni account</string>
   <string name="account_rename">Rinomina account</string>
@@ -189,8 +177,6 @@
   <string name="account_calendar">calendario</string>
   <string name="account_task_list">elenco attività</string>
   <string name="account_only_personal">Mostra solo personale</string>
-  <string name="account_create_new_address_book">Crea un nuovo indirizzario</string>
-  <string name="account_create_new_calendar">Crea nuovo calendario</string>
   <string name="account_no_webcal_handler_found">Non ho trovato nessuna applicazione abilitata per Webcal</string>
   <string name="account_install_icsx5">Installa ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -231,7 +217,6 @@
   <string name="login_username_password_wrong">Nome utente (indirizzo email) / password sbagliata?</string>
   <string name="login_view_logs">Visualizza dettagli</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Impostazioni: %s</string>
   <string name="settings_sync">Sincronizzazione</string>
   <string name="settings_sync_interval_contacts">Intervallo sincr. Contatti</string>
   <string name="settings_sync_summary_manually">Solo manualmente</string>
@@ -261,10 +246,8 @@
   <string name="settings_ignore_vpns_off">La VPN senza una connessione internet validata è sufficiente per lanciare la sincronizzazione</string>
   <string name="settings_authentication">Autenticazione</string>
   <string name="settings_username">Nome utente</string>
-  <string name="settings_enter_username">Inserisci nome utente:</string>
   <string name="settings_password">Password</string>
   <string name="settings_password_summary">Aggiorna la password come sul tuo server.</string>
-  <string name="settings_enter_password">Inserisci la tua password:</string>
   <string name="settings_certificate_install">Installa il certificato</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite di tempo per gli eventi trascorsi</string>
@@ -384,6 +367,4 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="sync_invalid_task">Attività non valida ricevuta dal server</string>
   <string name="sync_invalid_resources_ignoring">Una o più risorse non valide ignorate</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: sicurezza della connessione</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ ha trovato un certificato sconosciuto. Ritenerlo affidabile?</string>
 </resources>

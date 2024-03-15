@@ -26,8 +26,6 @@
   <string name="intro_slogan1">Dine data. Dit valg.</string>
   <string name="intro_slogan2">Tag kontrol</string>
   <string name="intro_battery_title">Regelmæssigt synkroniseringsinterval</string>
-  <string name="intro_battery_not_whitelisted">Deaktiveret (ikke anbefalet)</string>
-  <string name="intro_battery_whitelisted">Aktiveret (anbefalet)</string>
   <string name="intro_battery_text">For regelmæssig synkroniseringsinterval, %s skal have tilladelse til at køre i baggrunden. Ellers kan Android til enhver tid pause synkronisering.</string>
   <string name="intro_battery_dont_show">Ingen regelmæssigt synkroniseringsinterval.*</string>
   <string name="intro_autostart_title">%s kompatibilitet</string>
@@ -65,8 +63,6 @@
   <string name="permissions_notification_status_off">Notifikationer slået fra (ej anbefalet)</string>
   <string name="permissions_notification_status_on">Notifikationer slået til</string>
   <string name="permissions_jtx_title">jtx Board rettigheder</string>
-  <string name="permissions_jtx_status_off">Ingen opgaver, journaler &amp; noter synkronisering</string>
-  <string name="permissions_jtx_status_on">Opgaver, journaler og noter synkronisering mulig</string>
   <string name="permissions_opentasks_title">OpenTasks rettigheder</string>
   <string name="permissions_tasksorg_title">Opgaver rettigheder</string>
   <string name="permissions_tasks_status_off">Ingen opgave synkronisering</string>
@@ -95,9 +91,7 @@
   <string name="about_version">Version %1$s (%2$d)</string>
   <string name="about_build_date">Oversat den %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) og bidragydere</string>
-  <string name="about_flavor_info">Denne version er kun berettiget til distribution via Google Play.</string>
   <string name="about_license_info_no_warranty">Dette program leveres ABSOLUT UDEN GARANTI. Det er fri software, og du er velkommen til at videredistribuere det under visse betingelse.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>tak til: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kan ikke oprette log fil</string>
   <string name="logging_notification_text">Logger alle %s aktiviteter</string>
@@ -107,7 +101,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / licens</string>
   <string name="navigation_drawer_beta_feedback">Beta tilbagemelding</string>
-  <string name="install_email_client">Installér e-mail klient</string>
   <string name="install_browser">Installere netlæser</string>
   <string name="navigation_drawer_settings">Opsætning</string>
   <string name="navigation_drawer_news_updates">Nyheder &amp; opdateringer</string>
@@ -128,8 +121,6 @@ Synkronisering kører muligvis ikke.</string>
 Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, men under den næste almindelige synkronisering.</string>
   <string name="account_list_manage_storage">Administrer lagerplads</string>
   <string name="account_list_empty">Velkommen til DAVx⁵!\n\nDu kan nu tilføje en CalDAV/CardDAV konto.</string>
-  <string name="accounts_global_sync_disabled">Automatisk synkronisering på tværs af systemet er deaktiveret</string>
-  <string name="accounts_global_sync_enable">Aktivere</string>
   <string name="accounts_sync_all">Synkroniser alle konti</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Registrering af tjeneste kunne ikke foretages</string>
@@ -179,16 +170,11 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="app_settings_reset_hints_success">Al vejledning vil blive vist igen</string>
   <string name="app_settings_integration">Integration</string>
   <string name="app_settings_tasks_provider">Opgaver program</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Synkronisering med %s</string>
   <string name="app_settings_tasks_provider_none">Der er ikke fundet et program der kan håndtere opgaver</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Der er endnu ingen adressebog.</string>
-  <string name="account_no_calendars">Der er endnu ingen kalender.</string>
-  <string name="account_no_webcals">Der er endnu ingen kalender abonnementer.</string>
-  <string name="account_swipe_down">Træk ned for at genopfriske listen fra serveren.</string>
   <string name="account_synchronize_now">Synkronisere</string>
   <string name="account_settings">Opsætning af konti</string>
   <string name="account_rename">Omdøb konto</string>
@@ -204,8 +190,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="account_task_list">opgave liste</string>
   <string name="account_journal">journal</string>
   <string name="account_only_personal">Vis kun personlig</string>
-  <string name="account_create_new_address_book">Oprett ny adressebog</string>
-  <string name="account_create_new_calendar">Oprette ny kalender</string>
   <string name="account_no_webcal_handler_found">Der er ikke fundet noget program der kan håndtere Webcal.</string>
   <string name="account_install_icsx5">Installere ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -256,7 +240,6 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="login_username_password_wrong">Brugernavn (e-mail adresse) / adgangskode forkert?</string>
   <string name="login_view_logs">Vis detaljer</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Indstillinger: %s</string>
   <string name="settings_sync">Synkronisering</string>
   <string name="settings_sync_interval_contacts">Synkroniseringsinterval for kontakter</string>
   <string name="settings_sync_summary_manually">Kun manuelt</string>
@@ -287,10 +270,8 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="settings_authentication">Adgangsgodkendelse</string>
   <string name="settings_oauth_summary">Udfør OAuth-login igen</string>
   <string name="settings_username">Brugernavn</string>
-  <string name="settings_enter_username">Indtaste brugernavn:</string>
   <string name="settings_password">Adgangskode</string>
   <string name="settings_password_summary">Opdater adgangskoden, så den svarer til din server.</string>
-  <string name="settings_enter_password">Indtast adgangskode:</string>
   <string name="settings_certificate_install">Installere certifikat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsafgrænsning for tidligere begivenheder</string>
@@ -412,6 +393,4 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="sync_invalid_task">Modtaget ugyldig opgave fra server</string>
   <string name="sync_invalid_resources_ignoring">Ignorere en eller flere ugyldige kilder</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Forbindelsessikkerhed</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ er stødt på et ukendt certifikat. Vil du stole på det? </string>
 </resources>

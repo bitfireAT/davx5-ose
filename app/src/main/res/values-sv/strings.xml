@@ -29,8 +29,6 @@
   <string name="intro_slogan1">Din data. Ditt val.</string>
   <string name="intro_slogan2">Ta kontroll</string>
   <string name="intro_battery_title">Regelbundna synkroniseringsintervall</string>
-  <string name="intro_battery_not_whitelisted">Inaktiverat (ej rekommenderat)</string>
-  <string name="intro_battery_whitelisted">Aktiverat (rekommenderat)</string>
   <string name="intro_battery_text">För att programmet skall kunna köra regelbunden synkronisering %s måste det tillåtas att köra i bakgrunden. Annars kan Android pausa synkroniseringen när som helst.</string>
   <string name="intro_battery_dont_show">Jag behöver inte regelbunden synkronisering.*</string>
   <string name="intro_autostart_title">%s kompatibilitet</string>
@@ -68,8 +66,6 @@
   <string name="permissions_notification_status_off">Notifieringar avaktiverade (ej rekommenderat)</string>
   <string name="permissions_notification_status_on">Notifieringar aktiva</string>
   <string name="permissions_jtx_title">jtx Bordsbehörigheter</string>
-  <string name="permissions_jtx_status_off">Ingen synkronisering av uppgifter, journaler, anteckningar</string>
-  <string name="permissions_jtx_status_on">Synkronisering av uppgifter, journaler, anteckningar är möjlig</string>
   <string name="permissions_opentasks_title">OpenTasks-behörigheter</string>
   <string name="permissions_tasksorg_title">Tasks behörighet</string>
   <string name="permissions_tasks_status_off">Ingen synkronisering av uppgifter</string>
@@ -98,9 +94,7 @@
   <string name="about_version">Version %1$s (%2$d)</string>
   <string name="about_build_date">Kompilerad på %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) och bidragsgivare</string>
-  <string name="about_flavor_info">Den här versionen är endast berättigad för distribution genom Google Play</string>
   <string name="about_license_info_no_warranty">Detta program levereras med ABSOLUT INGEN GARANTI. Det är fri programvara, och du kan vidaredistribuera den under vissa förutsättningar.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Tack till: </i> %s ]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kunde inte skapa loggfil</string>
   <string name="logging_notification_text">Loggar nu alla %s aktiviteter</string>
@@ -110,7 +104,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Synk Adapter</string>
   <string name="navigation_drawer_about">Om / Licens</string>
   <string name="navigation_drawer_beta_feedback">Betafeedback</string>
-  <string name="install_email_client">Installera en e-postklient</string>
   <string name="install_browser">Installera en webbläsare</string>
   <string name="navigation_drawer_settings">Inställningar</string>
   <string name="navigation_drawer_news_updates">Nyheter &amp; uppdateringar</string>
@@ -129,8 +122,6 @@
   <string name="account_list_low_storage">Lagringsutrymmet är lågt. Android kommer inte synka lokala ändringar direkt, utan vänta till nästa regelbundna synkronisering.</string>
   <string name="account_list_manage_storage">Hantera lagring</string>
   <string name="account_list_empty">Välkommen till DAVx⁵!\n\nDu kan lägga till ett CalDAV/CardDAV-konto nu.</string>
-  <string name="accounts_global_sync_disabled">Systemomfattande automatisk synkronisering är inaktiverad</string>
-  <string name="accounts_global_sync_enable">Aktivera</string>
   <string name="accounts_sync_all">Synkronisera alla konton</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Servicedetektering misslyckades</string>
@@ -180,16 +171,11 @@
   <string name="app_settings_reset_hints_success">Alla tips kommer visas igen</string>
   <string name="app_settings_integration">Integrering</string>
   <string name="app_settings_tasks_provider">Tasks appen</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Synkroniserar med %s</string>
   <string name="app_settings_tasks_provider_none">Ingen kompatibel task-app hittades</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Det finns inga adressböcker (ännu).</string>
-  <string name="account_no_calendars">Det finns inga kalendrar (ännu).</string>
-  <string name="account_no_webcals">Det finns inga kalenderprenumerationer (ännu).</string>
-  <string name="account_swipe_down">Svep nedåt för att uppdatera listan från servern.</string>
   <string name="account_synchronize_now">Synkronisera nu</string>
   <string name="account_settings">Kontoinställningar</string>
   <string name="account_rename">Byt namn på kontot</string>
@@ -205,8 +191,6 @@
   <string name="account_task_list">uppgiftslista</string>
   <string name="account_journal">Journal</string>
   <string name="account_only_personal">Visa endast personligt</string>
-  <string name="account_create_new_address_book">Skapa ny adressbok</string>
-  <string name="account_create_new_calendar">Skapa ny kalender</string>
   <string name="account_no_webcal_handler_found">Ingen Webcal-kompatibel app hittades</string>
   <string name="account_install_icsx5">Installera ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -261,7 +245,6 @@
   <string name="login_username_password_wrong">Användarnamn (e-postadress) / lösenord är fel?</string>
   <string name="login_view_logs">Visa detaljer</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Inställningar: %s</string>
   <string name="settings_sync">Synkronisering</string>
   <string name="settings_sync_interval_contacts">Intervall för kontaktsynkronisering</string>
   <string name="settings_sync_summary_manually">Bara manuellt</string>
@@ -293,10 +276,8 @@
   <string name="settings_oauth">Autentisera på nytt</string>
   <string name="settings_oauth_summary">Genomför OAuth-inloggning igen</string>
   <string name="settings_username">Användarnamn</string>
-  <string name="settings_enter_username">Skriv in användarnamn</string>
   <string name="settings_password">Lösenord</string>
   <string name="settings_password_summary">Uppdatera lösenordet enligt din server.</string>
-  <string name="settings_enter_password">Ange ditt lösenord:</string>
   <string name="settings_certificate_install">Installera certifikat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsgräns för tidigare händelser</string>
@@ -418,6 +399,4 @@
   <string name="sync_invalid_task">Fick ogiltigt ärende från servern</string>
   <string name="sync_invalid_resources_ignoring">Ignorerar en eller flera ogiltiga resurser</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Anslutningssäkerhet</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ har stött på ett okänt certifikat. Vill du lita på det?</string>
 </resources>

@@ -29,8 +29,6 @@
   <string name="intro_slogan1">Datele tale. Alegerea ta.</string>
   <string name="intro_slogan2">Preia controlul.</string>
   <string name="intro_battery_title">Intervale regulate de sincronizare</string>
-  <string name="intro_battery_not_whitelisted">Dezactivat (nu este recomandat)</string>
-  <string name="intro_battery_whitelisted">Activat (recomandat)</string>
   <string name="intro_battery_text">Pentru sincronizare la intervale regulate, %s trebuie să aibă voie să ruleze în fundal. În caz contrar, Android poate întrerupe sincronizarea în orice moment.</string>
   <string name="intro_battery_dont_show">Nu am nevoie de intervale regulate de sincronizare.*</string>
   <string name="intro_autostart_title">Compatibilitate %s </string>
@@ -68,8 +66,6 @@
   <string name="permissions_notification_status_off">Notificări dezactivate (nu este recomandat)</string>
   <string name="permissions_notification_status_on">Notificări activate</string>
   <string name="permissions_jtx_title">Permisiuni pentru jtx Board</string>
-  <string name="permissions_jtx_status_off">Nicio sarcină, jurnale și note sincronizate</string>
-  <string name="permissions_jtx_status_on">Este posibilă sincronizarea sarcinilor, jurnalelor, notelor</string>
   <string name="permissions_opentasks_title">Permisiuni OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisiuni pentru sarcini</string>
   <string name="permissions_tasks_status_off">Nicio sincronizare a sarcinilor</string>
@@ -98,9 +94,7 @@
   <string name="about_version">Versiune %1$s (%2$d)</string>
   <string name="about_build_date">Compilată la %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (inginerie web bitfire GmbH) și contribuitori</string>
-  <string name="about_flavor_info">Această versiune este eligibilă pentru distribuție numai prin Google Play.</string>
   <string name="about_license_info_no_warranty">Acest program vine cu ABSOLUT NICIO GARANȚIE. Este software gratuit și ești binevenit să îl redistribui în anumite condiții.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Mulțumiri: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nu s-a putut crea fișierul jurnal</string>
   <string name="logging_notification_text">Acum se înregistrează toate activitățile %s</string>
@@ -110,7 +104,6 @@
   <string name="navigation_drawer_subtitle">Adaptor de sincronizare CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Despre / Licență</string>
   <string name="navigation_drawer_beta_feedback">Feedback beta</string>
-  <string name="install_email_client">Instalează un client de e-mail</string>
   <string name="install_browser">Instalează un browser web</string>
   <string name="navigation_drawer_settings">Setări</string>
   <string name="navigation_drawer_news_updates">Știri și actualizări</string>
@@ -131,8 +124,6 @@
   <string name="account_list_low_storage">Spațiu de depozitare redus. Android nu va sincroniza modificările locale imediat, ci în timpul următoarei sincronizări obișnuite.</string>
   <string name="account_list_manage_storage">Gestionează stocarea</string>
   <string name="account_list_empty">Bun venit la DAVx⁵!\n\nPoți adăuga acum un cont CalDAV/CardDAV.</string>
-  <string name="accounts_global_sync_disabled">Sincronizarea automată la nivel de sistem este dezactivată</string>
-  <string name="accounts_global_sync_enable">Activează</string>
   <string name="accounts_sync_all">Sincronizează toate conturile</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Detectarea serviciului a eșuat</string>
@@ -182,16 +173,11 @@
   <string name="app_settings_reset_hints_success">Toate sugestiile vor fi afișate din nou</string>
   <string name="app_settings_integration">Integrare</string>
   <string name="app_settings_tasks_provider">Aplicația de sarcini</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Sincronizare cu %s</string>
   <string name="app_settings_tasks_provider_none">Nu a fost găsită nicio aplicație de sarcini compatibilă</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Nu există  (încă) agende de adrese.</string>
-  <string name="account_no_calendars">Nu există calendare (încă).</string>
-  <string name="account_no_webcals">Nu există abonamente la calendar (încă).</string>
-  <string name="account_swipe_down">Glisează în jos pentru a reîmprospăta lista de pe server.</string>
   <string name="account_synchronize_now">Sincronizează acum</string>
   <string name="account_settings">Setările contului</string>
   <string name="account_rename">Redenumește contul</string>
@@ -209,8 +195,6 @@
   <string name="account_task_list">lista de sarcini</string>
   <string name="account_journal">jurnal</string>
   <string name="account_only_personal">Afișează numai personal</string>
-  <string name="account_create_new_address_book">Creează o nouă agendă de adrese</string>
-  <string name="account_create_new_calendar">Creează un calendar nou</string>
   <string name="account_no_webcal_handler_found">Nu a fost găsită nicio aplicație compatibilă cu Webcal</string>
   <string name="account_install_icsx5">Instalează ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -265,7 +249,6 @@
   <string name="login_username_password_wrong">Nume de utilizator (adresă de e-mail)/parolă greșită?</string>
   <string name="login_view_logs">Afișează detaliile</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Setări: %s</string>
   <string name="settings_sync">Sincronizare</string>
   <string name="settings_sync_interval_contacts">Interval de sincronizare a contactelor</string>
   <string name="settings_sync_summary_manually">Doar manual</string>
@@ -297,10 +280,8 @@
   <string name="settings_oauth">Reautentificare</string>
   <string name="settings_oauth_summary">Efectuează din nou autentificarea OAuth</string>
   <string name="settings_username">Nume de utilizator</string>
-  <string name="settings_enter_username">Introdu numele de utilizator:</string>
   <string name="settings_password">Parolă</string>
   <string name="settings_password_summary">Actualizează parola în funcție de server.</string>
-  <string name="settings_enter_password">Introdu parola:</string>
   <string name="settings_certificate_install">Instalare certificat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limită de timp pentru evenimentele din trecut</string>
@@ -426,6 +407,4 @@
   <string name="sync_invalid_task">S-a primit sarcină nevalidă de la server</string>
   <string name="sync_invalid_resources_ignoring">Ignorarea uneia sau mai multor resurse nevalide</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Securitatea conexiunii</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ a întâlnit un certificat necunoscut. Vrei să ai încredere?</string>
 </resources>

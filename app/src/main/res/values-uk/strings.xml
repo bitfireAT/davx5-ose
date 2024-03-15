@@ -24,8 +24,6 @@
   <string name="intro_slogan1">Ваша дата. Ваш вибір.</string>
   <string name="intro_slogan2">Візьміть під свій контроль.</string>
   <string name="intro_battery_title">Інтервали регулярної синхронізації</string>
-  <string name="intro_battery_not_whitelisted">Вимкнено (не рекомендуєтсья)</string>
-  <string name="intro_battery_whitelisted">Дозволено (рекомендується)</string>
   <string name="intro_battery_dont_show">Мені не потрібні інтервали регулярної синхронізації.*</string>
   <string name="intro_more_info">Детальніше</string>
   <string name="intro_tasks_title">Підтримка завдань</string>
@@ -52,7 +50,6 @@
   <string name="about_libraries">Бібліотеки</string>
   <string name="about_version">Версія %1$s (%2$d)</string>
   <string name="about_build_date">Складено на %s</string>
-  <string name="about_flavor_info">Цю версію прийнятно розповсюджувати тільки через Google Play.</string>
   <string name="about_license_info_no_warranty">Цей програмний засіб постачається АБСОЛЮТНО БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ. Це вільне програмне забезпечення, і ви можете поширювати її, за деякими умовами.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Не вдалося створити файл звіту</string>
@@ -61,7 +58,6 @@
   <string name="navigation_drawer_subtitle">Адаптер синхронізації CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Про / Ліцензія</string>
   <string name="navigation_drawer_beta_feedback">Beta відгук</string>
-  <string name="install_email_client">Будь ласка, встановіть клієнт електронної пошти</string>
   <string name="install_browser">Будь ласка, встановіть веб-браузер</string>
   <string name="navigation_drawer_settings">Налаштування</string>
   <string name="navigation_drawer_news_updates">Новини та оновлення</string>
@@ -71,8 +67,6 @@
   <string name="navigation_drawer_faq">Питання/Відповіді</string>
   <string name="navigation_drawer_privacy_policy">Політика конфіденційності</string>
   <string name="account_list_empty">Вітаємо у DAVx⁵!\n\nТепер можете додавати облікові записи CalDAV/CardDAV.</string>
-  <string name="accounts_global_sync_disabled">Автоматичну синхронізацію вимкнено зі сторони системи</string>
-  <string name="accounts_global_sync_enable">Увімкнути</string>
   <string name="accounts_sync_all">Синхронізувати всі обліківки</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Не вдалося виявити сервіси</string>
@@ -113,10 +107,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Немає адресних книг (поки що).</string>
-  <string name="account_no_calendars">Немає жодного календаря. (поки що)</string>
-  <string name="account_no_webcals">Немає підписок на календар (поки що).</string>
-  <string name="account_swipe_down">Потягніть донизу, аби оновити список з серверу.</string>
   <string name="account_synchronize_now">Синхронізувати зараз</string>
   <string name="account_settings">Налаштування облікового запису</string>
   <string name="account_rename">Перейменувати обліковий запис</string>
@@ -130,8 +120,6 @@
   <string name="account_read_only">лише читання</string>
   <string name="account_calendar">календар</string>
   <string name="account_task_list">перелік завдань</string>
-  <string name="account_create_new_address_book">Створити нову адресну книгу</string>
-  <string name="account_create_new_calendar">Створити новий календар</string>
   <string name="account_no_webcal_handler_found">Не знайдено додатку з підтримкою Webcal</string>
   <string name="account_install_icsx5">Встановити ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -165,7 +153,6 @@
   <string name="login_username_password_wrong">Невірне імʼя користувача (електронна адреса)/пароль?</string>
   <string name="login_view_logs">Показати деталі</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Налаштування: %s</string>
   <string name="settings_sync">Синхронізація</string>
   <string name="settings_sync_interval_contacts">Інтервал синхронізації контактів</string>
   <string name="settings_sync_summary_manually">Лише вручну</string>
@@ -191,10 +178,8 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">Керувати</string>
   <string name="settings_authentication">Автентифікація</string>
   <string name="settings_username">Ім\'я користувача</string>
-  <string name="settings_enter_username">Введіть ім\'я користувача:</string>
   <string name="settings_password">Пароль</string>
   <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
-  <string name="settings_enter_password">Введіть Ваш пароль:</string>
   <string name="settings_certificate_install">Встановити сертифікат</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Інтервал синхронізації</string>
@@ -276,6 +261,4 @@
   <string name="sync_invalid_task">Отримано помилкове завдання від сервера</string>
   <string name="sync_invalid_resources_ignoring">Ігнорування одного або більше хибних джерел</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Безпека з\'єднання</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ зіткнувся з невідомим сертифікатом. Чи довіряти йому?</string>
 </resources>

@@ -21,8 +21,6 @@
   <string name="intro_slogan1">Vaši podaci. Vaš izbor.</string>
   <string name="intro_slogan2">Preuzmite kontrolu.</string>
   <string name="intro_battery_title">Redoviti intervali sinkronizacije</string>
-  <string name="intro_battery_not_whitelisted">Onemogućeno (nije preporučeno)</string>
-  <string name="intro_battery_whitelisted">Omogućeno (preporučeno)</string>
   <string name="intro_battery_text">Za sinkronizaciju u redovitim intervalima, %s mora imati omogućen rad u pozadini. Inače, Android može zaustaviti sinkronizaciju u bilo kojem trenutku.</string>
   <string name="intro_battery_dont_show">Ne trebam redovita sinkroniziranja.</string>
   <string name="intro_autostart_title">%s kompatibilnost</string>
@@ -77,9 +75,7 @@
   <string name="about_libraries">Bibiloteke</string>
   <string name="about_version">Verzija %1$s(%2$d)</string>
   <string name="about_build_date">Kompilirano na %s</string>
-  <string name="about_flavor_info">Ova verzija ispunjava uvjete za distribuciju samo na Google Play trgovini. </string>
   <string name="about_license_info_no_warranty">Ovaj program dolazi BEZ APSOLUTNO BILO KAKVOG JAMSTVA. To je besplatni softver i možete ga distribuirati pod određenim uvjetima. </string>
-  <string name="about_translations_thanks"><![CDATA[<i>Thanks to: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Couldn\'t create log file</string>
   <string name="logging_notification_text">Now logging all %s activities </string>
@@ -89,7 +85,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
   <string name="navigation_drawer_about">About / License</string>
   <string name="navigation_drawer_beta_feedback">Beta feedback</string>
-  <string name="install_email_client">Molimo instalirajte aplikaciju za e-poštu</string>
   <string name="install_browser">Molimo instalirajte web preglednik</string>
   <string name="navigation_drawer_settings">Postavke</string>
   <string name="navigation_drawer_news_updates">Novosti &amp; aktualnosti</string>
@@ -99,8 +94,6 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_privacy_policy">Pravila o zaštiti privatnosti</string>
   <string name="account_list_empty">Dobrodošli u DAVx⁵!\n\nSada možete dodati CalDAV/CardDAV račun.</string>
-  <string name="accounts_global_sync_disabled">Automatska sinkronizacija je onemogućena na razini sustava</string>
-  <string name="accounts_global_sync_enable">Omogući</string>
   <string name="accounts_sync_all">Sinkroniziraj sve račune</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Detekcija servisa nije uspjela</string>
@@ -134,16 +127,11 @@
   <string name="app_settings_reset_hints_success">Sve naznake će ponovno biti prikazane</string>
   <string name="app_settings_integration">Integracija</string>
   <string name="app_settings_tasks_provider">Tasks aplikacija</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Sinkronizira sa %s</string>
   <string name="app_settings_tasks_provider_none">Kompatibilna aplikacija za zadatke nije pronađena</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Ne postoji adresar (još).</string>
-  <string name="account_no_calendars">Ne postoji kalendar (još).</string>
-  <string name="account_no_webcals">Ne postoje pretplate na kalendar (još).</string>
-  <string name="account_swipe_down">Povucite prstom prema dolje za osvježavanje popisa sa poslužitelja.</string>
   <string name="account_synchronize_now">Sinkroniziraj sada</string>
   <string name="account_settings">Postavke računa</string>
   <string name="account_rename">Preimenuj račun</string>
@@ -158,8 +146,6 @@
   <string name="account_calendar">kalendar</string>
   <string name="account_task_list">popis zadataka</string>
   <string name="account_only_personal">Prikaži samo osobno</string>
-  <string name="account_create_new_address_book">Kreiraj novi adresar</string>
-  <string name="account_create_new_calendar">Kreiraj novi kalendar</string>
   <string name="account_no_webcal_handler_found">Aplikacija sa Webcal mogućnostima nije pronađena</string>
   <string name="account_install_icsx5">Instaliraj ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -194,7 +180,6 @@
   <string name="login_username_password_wrong">Korisničko ime (adresa e-pošte) / lozinka pogrešni?</string>
   <string name="login_view_logs">Prikaži detalje</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Postavke %s</string>
   <string name="settings_sync">Sinkronizacija</string>
   <string name="settings_sync_interval_contacts">Interval sinkr. kontakata</string>
   <string name="settings_sync_summary_manually">Samo ručno</string>
@@ -221,10 +206,8 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">Upravljaj</string>
   <string name="settings_authentication">Autentifkacija</string>
   <string name="settings_username">Korisničko ime</string>
-  <string name="settings_enter_username">Unesite korisničko ime:</string>
   <string name="settings_password">Lozinka</string>
   <string name="settings_password_summary">Ažurirajte lozinku vezanu uz vaš poslužitelj.</string>
-  <string name="settings_enter_password">Unesite svoju lozinku:</string>
   <string name="settings_certificate_install">Instaliraj certifikat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Vremensko ograničenje za prošli događaj</string>
@@ -322,6 +305,4 @@
   <string name="sync_invalid_task">Primljen je nevažeći zadatak sa poslužitelja</string>
   <string name="sync_invalid_resources_ignoring">Zanemarivanje jednog ili više nevaljanih resursa</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Sigurnost veze</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ je naišao na nepoznati certifikat. Želite li mu vjerovati?</string>
 </resources>

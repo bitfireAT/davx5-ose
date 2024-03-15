@@ -29,8 +29,6 @@
   <string name="intro_slogan1">Вашите данни. Вашият избор</string>
   <string name="intro_slogan2">Поемете контрол</string>
   <string name="intro_battery_title">Периодично синхронизиране</string>
-  <string name="intro_battery_not_whitelisted">Изключено (не се препоръчва)</string>
-  <string name="intro_battery_whitelisted">Включено (препоръчително)</string>
   <string name="intro_battery_text">За да синхронизира периодично, %s се нуждае от разрешение да работи на заден план. В противен случай Android може да спре синхронизацията по всяко време.</string>
   <string name="intro_battery_dont_show">Не желая периодично синхронизиране.*</string>
   <string name="intro_autostart_title">%s съвместимост</string>
@@ -68,8 +66,6 @@
   <string name="permissions_notification_status_off">Известията са изключени (непрепоръчително)</string>
   <string name="permissions_notification_status_on">Известията са еключени</string>
   <string name="permissions_jtx_title">Разрешения за jtx Board</string>
-  <string name="permissions_jtx_status_off">Без синхронизиране на задачи, дневници и бележки</string>
-  <string name="permissions_jtx_status_on">Възможно синхронизиране на задачи, дневници и бележки</string>
   <string name="permissions_opentasks_title">Разрешения за OpenTasks</string>
   <string name="permissions_tasksorg_title">Разрешения за Tasks</string>
   <string name="permissions_tasks_status_off">Няма синхронизация на задачи</string>
@@ -98,9 +94,7 @@
   <string name="about_version">Издание %1$s (%2$d)</string>
   <string name="about_build_date">Компилирано на %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) и сътрудници</string>
-  <string name="about_flavor_info">Тази версия може да се разпространява само чрез Google Play.</string>
   <string name="about_license_info_no_warranty">Тази програма се предлага с АБСОЛЮТНО НИКАКВА ГАРАНЦИЯ. Тя е свободен софтуер и можете да я разпространявате при определени условия.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Благодарение на: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Не може да бъде създаден дневник</string>
   <string name="logging_notification_text">Действията на %s се записват в дневник</string>
@@ -110,7 +104,6 @@
   <string name="navigation_drawer_subtitle">Адаптор за синхронизиране на CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Относно / лиценз</string>
   <string name="navigation_drawer_beta_feedback">Обратна връзка към бета</string>
-  <string name="install_email_client">Инсталиране приложение за електронна поща</string>
   <string name="install_browser">Инсталиране на мрежов четец</string>
   <string name="navigation_drawer_settings">Настройки</string>
   <string name="navigation_drawer_news_updates">Новини и издания</string>
@@ -131,8 +124,6 @@
   <string name="account_list_low_storage">Пространството за съхранение е малко. Андроид няма да синхронизира местните промени веднага, а по време на следващата редовна синхронизация.</string>
   <string name="account_list_manage_storage">Управление на хранилището</string>
   <string name="account_list_empty">Добре дошли при DAVx⁵!\n\nМожете да добавите регистрация за CalDAV/CardDAV.</string>
-  <string name="accounts_global_sync_disabled">Автоматичното синхронизиране е изключено на ниво система</string>
-  <string name="accounts_global_sync_enable">Включване</string>
   <string name="accounts_sync_all">Синхронизиране на всички профили</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Откриването на услугите се провали</string>
@@ -182,16 +173,11 @@
   <string name="app_settings_reset_hints_success">Всички подсказки ще бъдат показани отново</string>
   <string name="app_settings_integration">Интеграция</string>
   <string name="app_settings_tasks_provider">Приложението Tasks</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Синхронизиране чрез %s</string>
   <string name="app_settings_tasks_provider_none">Не е инсталирана съвместимо приложение за задачи.</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Няма адресници (все още)</string>
-  <string name="account_no_calendars">Няма календари (все още)</string>
-  <string name="account_no_webcals">Няма абонаменти за календари (все още)</string>
-  <string name="account_swipe_down">Дръпнете надолу за презареждане от сървъра.</string>
   <string name="account_synchronize_now">Синхронизация</string>
   <string name="account_settings">Настройки на регистрацията</string>
   <string name="account_rename">Преименуване на регистрация</string>
@@ -209,8 +195,6 @@
   <string name="account_task_list">списък със задачи</string>
   <string name="account_journal">дневник</string>
   <string name="account_only_personal">Само лични</string>
-  <string name="account_create_new_address_book">Създаване на адресник</string>
-  <string name="account_create_new_calendar">Създаване на календар</string>
   <string name="account_no_webcal_handler_found">Няма инсталирана програма за Webcal абонамент.</string>
   <string name="account_install_icsx5">Инсталиране на ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -265,7 +249,6 @@
   <string name="login_username_password_wrong">Грешно потребителско име или парола?</string>
   <string name="login_view_logs">Подробности</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Настройки: %s</string>
   <string name="settings_sync">Синхронизация</string>
   <string name="settings_sync_interval_contacts">Интервал на синхронизиране на контактите</string>
   <string name="settings_sync_summary_manually">Само ръчно</string>
@@ -297,10 +280,8 @@
   <string name="settings_oauth">Повторно удостоверяване</string>
   <string name="settings_oauth_summary">Изпълнява повторно влизане чрез OAuth</string>
   <string name="settings_username">Потребителско име</string>
-  <string name="settings_enter_username">Въведете потребитеско име:</string>
   <string name="settings_password">Парола</string>
   <string name="settings_password_summary">Променете паролата съгласно сървъра.</string>
-  <string name="settings_enter_password">Въведете парола:</string>
   <string name="settings_certificate_install">Инсталиране на сертификат</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Ограничения за събития от миналото</string>
@@ -424,6 +405,4 @@
   <string name="sync_invalid_task">Получен е недействителен файл от сървъра</string>
   <string name="sync_invalid_resources_ignoring">Пренебрегване на сбъркани данни</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Защита на връзката</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ се натъкна на непознат сертификат.  Ще му се довериш ли?</string>
 </resources>
