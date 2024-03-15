@@ -88,9 +88,8 @@ object SyncUtils {
      * Returns a list of all available sync authorities:
      *
      *   1. calendar authority
-     *   2. contacts authority (only if [withContacts] is *true* - mostly we don't want it included)
-     *   3. address books authority
-     *   4. tasks authority/ies (if available, when tasks managing app(s) installed)
+     *   2. address books authority
+     *   3. current tasks authority (if available)
      *
      * Checking the availability of authorities may be relatively expensive, so the
      * result should be cached for the current operation.

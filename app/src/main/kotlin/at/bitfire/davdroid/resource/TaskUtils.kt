@@ -70,8 +70,8 @@ object TaskUtils {
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
         settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, providerName?.authority)
 
-        // update sync settings
-        SyncUtils.updateTaskSync(context)
+        if (updateSyncSettings)
+            SyncUtils.updateTaskSync(context)
     }
 
 }
