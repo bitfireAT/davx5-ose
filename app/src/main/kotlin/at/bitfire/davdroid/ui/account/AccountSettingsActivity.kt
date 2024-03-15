@@ -672,7 +672,6 @@ class AccountSettingsActivity: AppCompatActivity() {
         val syncIntervalContacts = MutableLiveData<Long>()
         val syncIntervalCalendars = MutableLiveData<Long>()
 
-        // TODO tasksProvider LiveData
         val tasksProvider = TaskUtils.currentProvider(context)
         val syncIntervalTasks = MutableLiveData<Long>()
 

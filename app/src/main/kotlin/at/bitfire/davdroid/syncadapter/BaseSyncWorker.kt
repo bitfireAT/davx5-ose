@@ -87,19 +87,23 @@ abstract class BaseSyncWorker(
          * @param workStates   list of states of workers to match
          * @param account      the account which the workers belong to
          * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
+         * @param whichTag     function to generate tag that should be observed for given account and authority
          * @return *true* if at least one worker with matching query was found; *false* otherwise
          */
         fun exists(
             context: Context,
             workStates: List<WorkInfo.State>,
             account: Account? = null,
-            authorities: List<String>? = null
+            authorities: List<String>? = null,
+            whichTag: (account: Account, authority: String) -> String = { account, authority ->
+                commonTag(account, authority)
+            }
         ): LiveData<Boolean> {
             val workQuery = WorkQuery.Builder
                 .fromStates(workStates)
             if (account != null && authorities != null)
                 workQuery.addTags(
-                    authorities.map { authority -> commonTag(account, authority) }
+                    authorities.map { authority -> whichTag(account, authority) }
                 )
             return WorkManager.getInstance(context)
                 .getWorkInfosLiveData(workQuery.build()).map { workInfoList ->
