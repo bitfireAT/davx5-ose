@@ -116,8 +116,8 @@ object SyncUtils {
      */
     @WorkerThread
     fun updateTaskSync(context: Context) {
+        Logger.log.info("Updating task sync")
         val currentProvider = TaskUtils.currentProvider(context)
-        Logger.log.info("App launched or other package (un)installed; current tasks provider = $currentProvider")
 
         var permissionsRequired = false     // whether additional permissions are required
 
@@ -127,16 +127,14 @@ object SyncUtils {
         for (account in accountManager.getAccountsByType(context.getString(R.string.account_type))) {
             val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
             for (providerName in TaskProvider.ProviderName.entries) {
-                val isSyncable = ContentResolver.getIsSyncable(account, providerName.authority)     // may be -1 (unknown state)
-                val shallBeSyncable = hasCalDAV && providerName == currentProvider
-                if ((shallBeSyncable && isSyncable != 1) || (!shallBeSyncable && isSyncable != 0)) {
-                    // enable/disable sync
-                    setSyncableFromSettings(context, account, providerName.authority, shallBeSyncable)
+                val syncable = hasCalDAV && providerName == currentProvider
 
-                    // if sync has just been enabled: check whether additional permissions are required
-                    if (shallBeSyncable && !PermissionUtils.havePermissions(context, providerName.permissions))
-                        permissionsRequired = true
-                }
+                // enable/disable sync
+                setSyncableFromSettings(context, account, providerName.authority, syncable)
+
+                // if sync has just been enabled: check whether additional permissions are required
+                if (syncable && !PermissionUtils.havePermissions(context, providerName.permissions))
+                    permissionsRequired = true
             }
         }
 
@@ -148,19 +146,21 @@ object SyncUtils {
 
     private fun setSyncableFromSettings(context: Context, account: Account, authority: String, syncable: Boolean) {
         val settingsManager by lazy { EntryPointAccessors.fromApplication(context, SyncUtilsEntryPoint::class.java).settingsManager() }
-        if (syncable) {
-            Logger.log.info("Enabling $authority sync for $account")
-            ContentResolver.setIsSyncable(account, authority, 1)
-            try {
-                val settings = AccountSettings(context, account)
+        try {
+            val settings = AccountSettings(context, account)
+            if (syncable) {
+                Logger.log.info("Enabling $authority sync for $account")
+                ContentResolver.setIsSyncable(account, authority, 1)
+
                 val interval = settings.getTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
                 settings.setSyncInterval(authority, interval)
-            } catch (e: InvalidAccountException) {
-                // account has already been removed
+            } else {
+                Logger.log.info("Disabling $authority sync for $account")
+                ContentResolver.setIsSyncable(account, authority, 0)
+                PeriodicSyncWorker.disable(context, account, authority)
             }
-        } else {
-            Logger.log.info("Disabling $authority sync for $account")
-            ContentResolver.setIsSyncable(account, authority, 0)
+        } catch (e: InvalidAccountException) {
+            // account has already been removed
         }
     }
 

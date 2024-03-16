@@ -66,12 +66,11 @@ object TaskUtils {
 
     fun isAvailable(context: Context) = currentProvider(context) != null
 
-    fun selectProvider(context: Context, providerName: ProviderName?, updateSyncSettings: Boolean = false) {
+    fun selectProvider(context: Context, providerName: ProviderName?) {
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
         settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, providerName?.authority)
 
-        if (updateSyncSettings)
-            SyncUtils.updateTaskSync(context)
+        SyncUtils.updateTaskSync(context)
     }
 
 }

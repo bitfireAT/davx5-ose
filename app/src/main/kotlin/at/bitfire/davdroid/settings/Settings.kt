@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatDelegate
 
 object Settings {
 
-    const val BATTERY_OPTIMIZATION = "battery_optimization"
-
     const val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
 
     const val PROXY_TYPE = "proxy_type"         // Integer
@@ -43,7 +41,7 @@ object Settings {
      * Selected tasks app. When at least one tasks app is installed, this setting is set to its authority.
      * In case of multiple available tasks app, the user can choose one and this setting will reflect the selected one.
      *
-     * If no tasks app is installed, this setting is not set.
+     * If no tasks app is available, this setting is not set.
      */
     const val SELECTED_TASKS_PROVIDER = "preferred_tasks_provider"
 
