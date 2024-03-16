@@ -22,7 +22,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
-import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.syncadapter.BaseSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -420,7 +420,7 @@ class AccountSettingsMigrations(
     @Suppress("unused")
     private fun update_4_5() {
         // call PackageChangedReceiver which then enables/disables OpenTasks sync when it's (not) available
-        SyncUtils.updateTaskSync(context)
+        TaskUtils.selectProvider(context, TaskUtils.currentProvider(context))
     }
 
     @Suppress("unused")

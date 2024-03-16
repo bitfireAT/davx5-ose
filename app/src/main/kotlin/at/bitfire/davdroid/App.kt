@@ -61,7 +61,7 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
             // watch for account changes/deletions
             accountsUpdatedListener.listen()
 
-            // watch storage because low storage means synchronization is stopped
+            // watch storage because low storage means sync framework stops local content update notifications
             storageLowReceiver.listen()
 
             // watch installed/removed tasks apps and update sync settings accordingly
