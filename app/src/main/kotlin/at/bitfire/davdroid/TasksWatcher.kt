@@ -6,7 +6,7 @@ package at.bitfire.davdroid
 
 import android.content.Context
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

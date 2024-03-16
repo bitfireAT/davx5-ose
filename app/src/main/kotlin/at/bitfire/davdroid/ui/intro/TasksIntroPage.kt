@@ -7,7 +7,7 @@ package at.bitfire.davdroid.ui.intro
 import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.TasksActivity
 import at.bitfire.davdroid.ui.TasksCard
