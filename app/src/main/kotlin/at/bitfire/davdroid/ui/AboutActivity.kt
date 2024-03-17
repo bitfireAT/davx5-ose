@@ -92,14 +92,14 @@ class AboutActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val uriHandler = LocalUriHandler.current
-
             AppTheme {
+                val uriHandler = LocalUriHandler.current
+
                 Scaffold(
                     topBar = {
                         TopAppBar(
                             navigationIcon = {
-                                IconButton(onClick = { onNavigateUp() }) {
+                                IconButton(onClick = { onSupportNavigateUp() }) {
                                     Icon(
                                         Icons.Default.ArrowBack,
                                         contentDescription = stringResource(R.string.navigate_up)

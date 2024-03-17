@@ -69,7 +69,6 @@
   <string name="navigation_drawer_website">Spletna stran</string>
   <string name="navigation_drawer_manual">Priročnik</string>
   <string name="navigation_drawer_faq">Pogosta vprašanja</string>
-  <string name="navigation_drawer_donate">Prispevaj</string>
   <string name="account_list_empty">Dobrodošli v DAVx⁵!\n\nZdaj lahko dodate CalDAV/CardDAV račun.</string>
   <string name="accounts_global_sync_disabled">Sistemska avtomatska sinhronizacija je izklopljena</string>
   <string name="accounts_global_sync_enable">Omogoči</string>
@@ -103,7 +102,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_permissions_action">Dovoljenja</string>
   <string name="account_no_address_books">Trenutno ni nobenega imenika (še).</string>
   <string name="account_no_calendars">Trenutno ni nobenega koledarja (še).</string>
   <string name="account_no_webcals">Trenutno ni nobene koledar naročnine (še).</string>
@@ -122,9 +120,7 @@
   <string name="account_task_list">seznam opravil</string>
   <string name="account_journal">dnevnik</string>
   <string name="account_only_personal">Pokaži samo osebno</string>
-  <string name="account_refresh_address_book_list">Osveži seznam imenikov</string>
   <string name="account_create_new_address_book">Ustvari nov imenik</string>
-  <string name="account_refresh_calendar_list">Osveži seznam koledarjev</string>
   <string name="account_create_new_calendar">Ustvari nov koledar</string>
   <string name="account_no_webcal_handler_found">Nobena Webcal sposobna aplikacija ni bila najdena</string>
   <string name="account_install_icsx5">Namesti ICSx⁵</string>
@@ -175,7 +171,6 @@
   <string name="settings_sync_wifi_only_off">Tip povezave ni upoštevan</string>
   <string name="settings_sync_wifi_only_ssids">WiFI SSIF omejitev</string>
   <string name="settings_sync_wifi_only_ssids_on">Bo sinhroniziralo samo preko %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Bo sinhroniziralo samo preko %s (potrebuje aktivirano določanje lokacije)</string>
   <string name="settings_sync_wifi_only_ssids_off">Vse WiFi povezave bodo uporabljene</string>
   <string name="settings_sync_wifi_only_ssids_message">Z vejico ločena imena (SSID) dovoljenih WiFi omrežij (pusti prazno za vse)</string>
   <string name="settings_authentication">Avtentikacija</string>
@@ -184,7 +179,6 @@
   <string name="settings_password">Geslo</string>
   <string name="settings_password_summary">Posodobi geslo ustrezajoč strežniku.</string>
   <string name="settings_enter_password">Vnesi vaše geslo:</string>
-  <string name="settings_certificate_alias">Alias certifikata klienta</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Pretekli dogodek časovna omejitev</string>
   <string name="settings_sync_time_range_past_none">Vsi dogodki bodo sinhronizirani</string>

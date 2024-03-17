@@ -68,12 +68,10 @@
   <string name="permissions_notification_status_off">Upozornění vypnuta (nedoporučeno)</string>
   <string name="permissions_notification_status_on">Upozornění zapnuta</string>
   <string name="permissions_jtx_title">Oprávnění pro jtx Board</string>
-  <string name="permissions_jtx_status_not_installed">Bez synchronizace úkolů, žurnálů a poznámek (není nainstalováno)</string>
   <string name="permissions_jtx_status_off">Bez synchronizace úkolů, žurnálů a poznámek</string>
   <string name="permissions_jtx_status_on">Synchronizace úkolů, žurnálů a poznámek možná</string>
   <string name="permissions_opentasks_title">Oprávnění pro OpenTasks</string>
   <string name="permissions_tasksorg_title">Oprávnění pro úkoly</string>
-  <string name="permissions_tasks_status_not_installed">Bez synchronizace úkolů (nenainstalováno)</string>
   <string name="permissions_tasks_status_off">Žádné úlohy ohledně synchronizace</string>
   <string name="permissions_tasks_status_on">Synchronizace úkolů možná</string>
   <string name="permissions_autoreset_title">Ponechat oprávnění</string>
@@ -90,8 +88,6 @@
   <string name="wifi_permissions_location_permission_off">Oprávnění pro přístup k poloze odepřeno</string>
   <string name="wifi_permissions_background_location_permission">Oprávnění pro přístup k poloze na pozadí</string>
   <string name="wifi_permissions_background_location_permission_label">Povolit napořád</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Oprávnění pro přístup k poloze nastaveno na <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Oprávnění pro přístup k poloze nenastaveno na <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s používá oprávnění k přístupu k poloze pouze pro zjišťování názvu (SSID) WiFi sítě, ke které jste právě připojení a to pro účely účtů, omezených právě na dané SSID. Toto se děje i když je aplikace spuštěná na pozadí. Žádná data o poloze nejsou shromažďována, ukládána, zpracovávána ani nikam odesílána.</string>
   <string name="wifi_permissions_location_enabled">Určování polohy vždy zapnuté</string>
   <string name="wifi_permissions_location_enabled_on">Služba určování polohy je zapnutá</string>
@@ -124,7 +120,6 @@
   <string name="navigation_drawer_manual">Příručka</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">Komunita</string>
-  <string name="navigation_drawer_donate">Obdarovat</string>
   <string name="navigation_drawer_privacy_policy">Ochrana soukromí</string>
   <string name="account_list_no_notification_permission">Upozornění vypnuta. Nebudete upozorněni na chyby při synchronizaci.</string>
   <string name="account_list_no_internet">Bez ověřeného připojení k internetu. Synchronizace nemusí běžet.</string>
@@ -152,8 +147,6 @@
   <string name="app_settings_logging_on">Zaznamenávání událostí je aktivní</string>
   <string name="app_settings_logging_off">Zaznamenávání událostí je vypnuté</string>
   <string name="app_settings_battery_optimization">Optimalizace akumulátoru</string>
-  <string name="app_settings_battery_optimization_exempted">Aplikace je zařazena na seznam výjimek (doporučeno)</string>
-  <string name="app_settings_battery_optimization_optimized">Aplikace není zařazena na seznam výjimek (není doporučeno)</string>
   <string name="app_settings_connection">Připojení</string>
   <string name="app_settings_proxy">Typ proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -193,12 +186,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Bez synchronizace kontaktů (chybí oprávnění)</string>
-  <string name="account_caldav_missing_calendar_permissions">Bez synchronizace kalendáře (chybí oprávnění)</string>
-  <string name="account_caldav_missing_tasks_permissions">Žádné úkoly k synchronizaci (chybí oprávnění)</string>
-  <string name="account_caldav_missing_permissions">Bez synchronizace kalendáře a úkolů (chybí oprávnění)</string>
-  <string name="account_webcal_missing_calendar_permissions">Nedaří se přistupovat ke kalendářům (chybí oprávnění)</string>
-  <string name="account_permissions_action">Oprávnění</string>
   <string name="account_no_address_books">(Zatím) zde nejsou žádné adresáře kontaktů.</string>
   <string name="account_no_calendars">(Zatím) zde nejsou žádné kalendáře.</string>
   <string name="account_no_webcals">(Zatím) zde nejsou žádná přihlášení se k odebírání kalendáře.</string>
@@ -218,9 +205,7 @@
   <string name="account_task_list">seznam úkolů</string>
   <string name="account_journal">žurnál</string>
   <string name="account_only_personal">Zobrazit pouze osobní</string>
-  <string name="account_refresh_address_book_list">Znovu načíst seznam adresářů kontaktů</string>
   <string name="account_create_new_address_book">Vytvořit nový adresář kontaktů</string>
-  <string name="account_refresh_calendar_list">Znovu načíst seznam kalendářů</string>
   <string name="account_create_new_calendar">Vytvořit nový kalendář</string>
   <string name="account_no_webcal_handler_found">Nenalezena žádná aplikace, která by umožňovala webcal</string>
   <string name="account_install_icsx5">Nainstalovat ICSx⁵</string>
@@ -297,7 +282,6 @@
   <string name="settings_sync_wifi_only_off">Druh připojení není brán v potaz</string>
   <string name="settings_sync_wifi_only_ssids">Omezení na názvy (SSID) WiFi sítí</string>
   <string name="settings_sync_wifi_only_ssids_on">Bude synchronizovat pouze přes %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Bude synchronizovat pouze přes %s (vyžaduje zapnuté služby pro určování polohy)</string>
   <string name="settings_sync_wifi_only_ssids_off">Bude použito libovolné WiFi připojení</string>
   <string name="settings_sync_wifi_only_ssids_message">Čárkou oddělovaný seznam názvů (SSID) WiFi sítí, přes které synchronizovat (pokud omezovat nechcete, nevyplňujte)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Omezení na názvy (SSID) WiFi sítí vyžaduje další nastavení</string>
@@ -308,14 +292,12 @@
   <string name="settings_authentication">Ověření</string>
   <string name="settings_oauth">Znovu ověřit</string>
   <string name="settings_oauth_summary">Znovu provést přihlášení OAuth</string>
-  <string name="settings_username_key">uživatelské jméno</string>
   <string name="settings_username">Uživatelské jméno</string>
   <string name="settings_enter_username">Zadejte uživatelské jméno:</string>
   <string name="settings_password">Heslo</string>
   <string name="settings_password_summary">Aktualizovat heslo dle svého serveru.</string>
   <string name="settings_enter_password">Zadejte své heslo:</string>
-  <string name="settings_certificate_alias">Alternativní název klientského certifikátu</string>
-  <string name="settings_certificate_alias_empty">Není vybrán certifikát</string>
+  <string name="settings_certificate_install">Instalovat certifikát</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Časový limit pro staré události</string>
   <string name="settings_sync_time_range_past_none">Synchronizovat všechny události</string>

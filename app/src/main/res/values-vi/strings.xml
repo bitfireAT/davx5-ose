@@ -60,12 +60,10 @@
   <string name="permissions_calendar_status_off">Không đồng bộ lịch (không được khuyến nghị)</string>
   <string name="permissions_calendar_status_on">Có thể đồng bộ lịch</string>
   <string name="permissions_jtx_title">Quyền của jtx Board</string>
-  <string name="permissions_jtx_status_not_installed">Không đồng bộ công việc, nhật ký &amp; ghi chú (chưa cài đặt)</string>
   <string name="permissions_jtx_status_off">Không đồng bộ công việc, nhật ký, ghi chú</string>
   <string name="permissions_jtx_status_on">Có thể đồng bộ công việc, nhật ký, ghi chú</string>
   <string name="permissions_opentasks_title">Quyền OpenTasks</string>
   <string name="permissions_tasksorg_title">Quyền Tasks</string>
-  <string name="permissions_tasks_status_not_installed">Không đồng bộ công việc (không được cài đặt)</string>
   <string name="permissions_tasks_status_off">Không đồng bộ công việc</string>
   <string name="permissions_tasks_status_on">Có thể đồng bộ công việc</string>
   <string name="permissions_autoreset_title">Giữ các quyền</string>
@@ -82,8 +80,6 @@
   <string name="wifi_permissions_location_permission_off">Đã từ chối quyền vị trí</string>
   <string name="wifi_permissions_background_location_permission">Quyền vị trí trong nền</string>
   <string name="wifi_permissions_background_location_permission_label">Luôn cho phép</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Đã đặt quyền vị trí thành <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Chưa đặt quyền vị trí thành <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s sử dụng quyền Vị trí chỉ để xác định SSID của mạng WiFi hiện tại cho các tài khoản bị giới hạn SSID. Điều này sẽ xảy ra kể cả khi ứng dụng này ở trong nền. Không có dữ liệu vị trí nào được thu thập, lưu trữ, xử lý hay gửi đi đâu cả.</string>
   <string name="wifi_permissions_location_enabled">Vị trí luôn được bật</string>
   <string name="wifi_permissions_location_enabled_on">Dịch vụ vị trí đã bật</string>
@@ -116,7 +112,6 @@
   <string name="navigation_drawer_manual">Hướng dẫn</string>
   <string name="navigation_drawer_faq">Câu hỏi thường gặp</string>
   <string name="navigation_drawer_community">Cộng đồng</string>
-  <string name="navigation_drawer_donate">Quyên góp</string>
   <string name="navigation_drawer_privacy_policy">Chính sách riêng tư</string>
   <string name="account_list_empty">Chào mừng đến DAVx⁵!\n\nBạn có thể thêm một tài khoản CalDAV/CardDAV ngay.</string>
   <string name="accounts_global_sync_disabled">Đồng bộ hoá tự động trên toàn hệ thống bị tắt</string>
@@ -137,8 +132,6 @@
   <string name="app_settings_logging_on">Ghi nhật ký đang hoạt động</string>
   <string name="app_settings_logging_off">Ghi nhật ký đã tắt</string>
   <string name="app_settings_battery_optimization">Tối ưu hoá pin</string>
-  <string name="app_settings_battery_optimization_exempted">Ứng dụng không được tối ưu (khuyên dùng)</string>
-  <string name="app_settings_battery_optimization_optimized">Ứng dụng được tối ưu (không khuyên dùng)</string>
   <string name="app_settings_connection">Kết nối</string>
   <string name="app_settings_proxy">Loại proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -178,12 +171,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Không đồng bộ danh bạ (thiếu quyền)</string>
-  <string name="account_caldav_missing_calendar_permissions">Không đồng bộ lịch (thiếu quyền)</string>
-  <string name="account_caldav_missing_tasks_permissions">Không đồng bộ công việc (thiếu quyền)</string>
-  <string name="account_caldav_missing_permissions">Không đồng bộ lịch và công việc (thiếu quyền)</string>
-  <string name="account_webcal_missing_calendar_permissions">Không thể truy cập lịch (thiếu quyền)</string>
-  <string name="account_permissions_action">Quyền</string>
   <string name="account_no_address_books">Chưa có sổ địa chỉ nào.</string>
   <string name="account_no_calendars">Chưa có lịch nào.</string>
   <string name="account_no_webcals">Chưa có lượt đăng ký lịch nào.</string>
@@ -203,9 +190,7 @@
   <string name="account_task_list">danh sách công việc</string>
   <string name="account_journal">nhật ký</string>
   <string name="account_only_personal">Chỉ hiện cá nhân</string>
-  <string name="account_refresh_address_book_list">Làm mới danh sách sổ địa chỉ</string>
   <string name="account_create_new_address_book">Tạo sổ địa chỉ mới</string>
-  <string name="account_refresh_calendar_list">Làm mới danh sách lịch</string>
   <string name="account_create_new_calendar">Tạo lịch mới</string>
   <string name="account_no_webcal_handler_found">Không tìm thấy ứng dụng nào có khả năng xử lý Webcal</string>
   <string name="account_install_icsx5">Cài đặt ICSx⁵</string>
@@ -263,7 +248,6 @@
   <string name="settings_sync_wifi_only_off">Loại kết nối không được cân nhắc</string>
   <string name="settings_sync_wifi_only_ssids">Giới hạn WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Sẽ chỉ đồng bộ qua %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Sẽ chỉ đồng bộ qua %s (yêu cầu dịch vụ vị trí đang hoạt động)</string>
   <string name="settings_sync_wifi_only_ssids_off">Tất cả kết nối WiFi sẽ được sử dụng</string>
   <string name="settings_sync_wifi_only_ssids_message">Tên được chia tách bởi dấu phẩy (SSID) của các mạng WiFi được cho phép (để trống để cho phép tất cả)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Giới hạn WiFi SSID yêu cầu cài đặt sâu hơn</string>
@@ -274,8 +258,7 @@
   <string name="settings_password">Mật khẩu</string>
   <string name="settings_password_summary">Cập nhật mật khẩu theo như máy chủ của bạn.</string>
   <string name="settings_enter_password">Nhập mật khẩu:</string>
-  <string name="settings_certificate_alias">Bí danh chứng chỉ khách</string>
-  <string name="settings_certificate_alias_empty">Chưa chọn chứng chỉ nào</string>
+  <string name="settings_certificate_install">Cài đặt chứng chỉ</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Giới hạn thời gian cho sự kiện trong quá khứ</string>
   <string name="settings_sync_time_range_past_none">Tất cả sự kiện sẽ được đồng bộ hoá</string>

@@ -23,7 +23,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -73,7 +72,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
@@ -85,17 +83,16 @@ import androidx.work.WorkQuery
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
+import at.bitfire.davdroid.syncadapter.BaseSyncWorker
+import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
-import at.bitfire.davdroid.syncadapter.SyncWorker
-import at.bitfire.davdroid.ui.account.AccountActivity2
+import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import at.bitfire.davdroid.ui.widget.ActionCard
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.themeadapter.material.MdcTheme
-import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -133,8 +130,10 @@ class AccountsActivity: AppCompatActivity() {
 
         setContent {
             val scope = rememberCoroutineScope()
-            val scaffoldState = rememberScaffoldState()
             val snackbarHostState = remember { SnackbarHostState() }
+            val scaffoldState = rememberScaffoldState(
+                snackbarHostState = snackbarHostState
+            )
 
             val refreshing by remember { mutableStateOf(false) }
             val pullRefreshState = rememberPullRefreshState(refreshing, onRefresh = {
@@ -146,10 +145,18 @@ class AccountsActivity: AppCompatActivity() {
             AppTheme {
                 Scaffold(
                     scaffoldState = scaffoldState,
-                    drawerContent = drawerContent(scope, scaffoldState),
+                    drawerContent = {
+                        accountsDrawerHandler.AccountsDrawer(
+                            snackbarHostState = snackbarHostState,
+                            onCloseDrawer = {
+                                scope.launch {
+                                    scaffoldState.drawerState.close()
+                                }
+                            }
+                        )
+                    },
                     topBar = topBar(scope, scaffoldState, accounts?.isNotEmpty() == true),
-                    floatingActionButton = floatingActionButton(),
-                    snackbarHost = snackbarHost(snackbarHostState, scope)
+                    floatingActionButton = floatingActionButton()
                 ) { padding ->
                     Box(
                         Modifier
@@ -161,7 +168,6 @@ class AccountsActivity: AppCompatActivity() {
                             )
                             .verticalScroll(rememberScrollState())
                     ) {
-
                         // background image
                         Image(
                             painterResource(R.drawable.accounts_background),
@@ -217,8 +223,8 @@ class AccountsActivity: AppCompatActivity() {
                                 accounts = accounts ?: emptyList(),
                                 onClickAccount = { account ->
                                     val activity = this@AccountsActivity
-                                    val intent = Intent(activity, AccountActivity2::class.java)
-                                    intent.putExtra(AccountActivity2.EXTRA_ACCOUNT, account)
+                                    val intent = Intent(activity, AccountActivity::class.java)
+                                    intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
                                     activity.startActivity(intent)
                                 },
                                 modifier = Modifier
@@ -323,34 +329,6 @@ class AccountsActivity: AppCompatActivity() {
         )
     }
 
-    @Composable
-    private fun drawerContent(
-        scope: CoroutineScope,
-        scaffoldState: ScaffoldState
-    ): @Composable (ColumnScope.() -> Unit) =
-        {
-            AndroidView(factory = { context ->
-                // use legacy NavigationView for now
-                NavigationView(context).apply {
-                    inflateHeaderView(R.layout.nav_header_accounts)
-
-                    inflateMenu(R.menu.activity_accounts_drawer)
-                    accountsDrawerHandler.initMenu(this@AccountsActivity, menu)
-
-                    setNavigationItemSelectedListener { item ->
-                        scope.launch {
-                            accountsDrawerHandler.onNavigationItemSelected(
-                                this@AccountsActivity,
-                                item
-                            )
-                            scaffoldState.drawerState.close()
-                        }
-                        true
-                    }
-                }
-            }, modifier = Modifier.fillMaxWidth())
-        }
-
 
     data class AccountInfo(
         val account: Account,
@@ -387,7 +365,7 @@ class AccountsActivity: AppCompatActivity() {
                 }
             }
             fun update() = viewModelScope.launch(Dispatchers.Default) {
-                val authorities = SyncUtils.syncAuthorities(application, withContacts = true)
+                val authorities = SyncUtils.syncAuthorities(application)
                 val collator = Collator.getInstance()
                 postValue(myAccounts
                     .toList()
@@ -403,7 +381,7 @@ class AccountsActivity: AppCompatActivity() {
                             },
                             isSyncing = workInfos.any { info ->
                                 authorities.any { authority ->
-                                    info.tags.contains(SyncWorker.workerName(account, authority))
+                                    info.tags.contains(BaseSyncWorker.commonTag(account, authority))
                                 }
                             }
                         )
@@ -435,7 +413,7 @@ class AccountsActivity: AppCompatActivity() {
 
             // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
             for (account in allAccounts())
-                SyncWorker.enqueueAllAuthorities(context, account)
+                OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
         }
 
 

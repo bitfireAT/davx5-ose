@@ -6,8 +6,7 @@ package at.bitfire.davdroid
 
 import android.content.Context
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.TaskUtils
-import at.bitfire.davdroid.syncadapter.SyncUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,28 +30,26 @@ class TasksWatcher private constructor(
 
     override fun onPackageChanged() {
         CoroutineScope(Dispatchers.Default).launch {
-            if (TaskUtils.currentProvider(context) == null) {
-                /* Currently no usable tasks provider.
-                Iterate through all supported providers and select one, if available. */
+            val currentProvider = TaskUtils.currentProvider(context)
+            Logger.log.info("App launched or package (un)installed; current tasks provider = $currentProvider")
 
+            if (currentProvider == null) {
+                // Iterate through all supported providers and select one, if available.
                 var providerSelected = false
                 for (provider in TaskProvider.ProviderName.entries) {
                     val available = context.packageManager.resolveContentProvider(provider.authority, 0) != null
                     if (available) {
                         Logger.log.info("Selecting new tasks provider: $provider")
-                        TaskUtils.selectProvider(context, provider, updateSyncSettings = false)
+                        TaskUtils.selectProvider(context, provider)
                         providerSelected = true
                         break
                     }
                 }
 
                 if (!providerSelected)
-                    // no provider available, also clear setting
-                    TaskUtils.selectProvider(context, null, updateSyncSettings = false)
+                    // no provider available (anymore), also clear setting and sync
+                    TaskUtils.selectProvider(context, null)
             }
-
-            // update sync settings
-            SyncUtils.updateTaskSync(context)
         }
     }
 

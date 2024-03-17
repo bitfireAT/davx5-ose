@@ -63,7 +63,6 @@
   <string name="navigation_drawer_website">我們的網站</string>
   <string name="navigation_drawer_manual">使用説明書</string>
   <string name="navigation_drawer_faq">常見問答</string>
-  <string name="navigation_drawer_donate">贊助我們</string>
   <string name="navigation_drawer_privacy_policy">隱私權政策</string>
   <string name="account_list_empty">歡迎使用 DAVx⁵!\n\n您現在可以新增 CalDAV/CardDAV 帳號</string>
   <string name="accounts_global_sync_disabled">操作系統的自動同步被關閉了</string>
@@ -117,9 +116,7 @@
   <string name="account_calendar">行事曆</string>
   <string name="account_task_list">待辦事項</string>
   <string name="account_only_personal">只顯示個人</string>
-  <string name="account_refresh_address_book_list">更新通訊錄清單</string>
   <string name="account_create_new_address_book">建立新的通訊錄</string>
-  <string name="account_refresh_calendar_list">更新行事曆清單</string>
   <string name="account_create_new_calendar">建立新行事曆</string>
   <string name="account_no_webcal_handler_found">未找到支援Webcal的APP</string>
   <string name="account_install_icsx5">安裝ICSx⁵</string>
@@ -170,7 +167,6 @@
   <string name="settings_sync_wifi_only_off">任何網路連線都可使用</string>
   <string name="settings_sync_wifi_only_ssids">限用特定 WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">只在%s連線時同步</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">只在%s連線時同步（需要啟用定位服務）</string>
   <string name="settings_sync_wifi_only_ssids_off">所有 WiFi 連線都可以使用</string>
   <string name="settings_sync_wifi_only_ssids_message">使用逗號分割的名稱 (SSIDs) 表示的 WiFi 連線（留空則代表全部）</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
@@ -180,8 +176,6 @@
   <string name="settings_password">密碼</string>
   <string name="settings_password_summary">您在伺服器上使用中的密碼</string>
   <string name="settings_enter_password">輸入密碼：</string>
-  <string name="settings_certificate_alias">客戶端憑證別名</string>
-  <string name="settings_certificate_alias_empty">未選擇憑證</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">過去活動的時間限制</string>
   <string name="settings_sync_time_range_past_none">將會同步所有活動</string>

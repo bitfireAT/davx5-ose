@@ -15,6 +15,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalJtxCollection
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
@@ -62,7 +63,7 @@ class JtxSyncer(context: Context): Syncer(context) {
             }
 
         } catch (e: TaskProvider.ProviderTooOldException) {
-            SyncUtils.notifyProviderTooOld(context, e)
+            TaskUtils.notifyProviderTooOld(context, e)
         } catch (e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't sync jtx collections", e)
         }

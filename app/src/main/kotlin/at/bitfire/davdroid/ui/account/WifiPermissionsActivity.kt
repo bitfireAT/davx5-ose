@@ -120,7 +120,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.putExtra(SettingsActivity.EXTRA_ACCOUNT, account)
+        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
     }
 
 

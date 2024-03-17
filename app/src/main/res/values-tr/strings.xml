@@ -24,7 +24,6 @@
   <string name="navigation_drawer_external_links">Harici bağlantılar</string>
   <string name="navigation_drawer_website">Web sitesi</string>
   <string name="navigation_drawer_faq">SSS</string>
-  <string name="navigation_drawer_donate">Bağış yap</string>
   <string name="account_list_empty">DAVx⁵\'e hoşgeldin!\n\nŞimdi bir CalDAV/CardDAV hesabı ekleyebilirsin.</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Servis keşfi başarısız</string>
@@ -49,9 +48,7 @@
   <string name="account_delete_confirmation_title">Hesap gerçekten silinsin mi?</string>
   <string name="account_delete_confirmation_text">Rehber, takvim ve iş listelerinin tüm yerel kopyaları silinecektir.</string>
   <string name="account_read_only">salt-okunur</string>
-  <string name="account_refresh_address_book_list">Rehber listesini yenile</string>
   <string name="account_create_new_address_book">Yeni rehber oluştur</string>
-  <string name="account_refresh_calendar_list">Takvim listesini yenile</string>
   <string name="account_create_new_calendar">Yeni takvim oluştur</string>
   <!--AddAccountActivity-->
   <string name="login_title">Hesap ekle</string>

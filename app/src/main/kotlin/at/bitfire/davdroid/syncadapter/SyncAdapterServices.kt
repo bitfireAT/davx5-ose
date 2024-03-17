@@ -13,15 +13,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.os.Bundle
-import androidx.lifecycle.Observer
-import androidx.work.WorkInfo
+import android.provider.ContactsContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
@@ -63,7 +63,7 @@ abstract class SyncAdapterService: Service() {
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             // We seem to have to pass this old SyncFramework extra for an Android 7 workaround
             val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
-            Logger.log.info("Sync request via sync framework (upload=$upload)")
+            Logger.log.info("Sync request via sync framework for $account $authority (upload=$upload)")
 
             val accountSettings = try {
                 AccountSettings(context, account)
@@ -73,52 +73,45 @@ abstract class SyncAdapterService: Service() {
             }
 
             // Should we run the sync at all?
-            if (!SyncWorker.wifiConditionsMet(context, accountSettings)) {
+            if (!BaseSyncWorker.wifiConditionsMet(context, accountSettings)) {
                 Logger.log.info("Sync conditions not met. Aborting sync framework initiated sync")
                 return
             }
 
-            Logger.log.fine("Sync framework now starting SyncWorker")
-            val workerName = SyncWorker.enqueue(context, account, authority, expedited = true, upload = upload)
+            /* Special case for contacts: because address books are separate accounts, changed contacts cause
+            this method to be called with authority = ContactsContract.AUTHORITY. However the sync worker shall be run for the
+            address book authority instead. */
+            val workerAccount = accountSettings.account         // main account in case of an address book account
+            val workerAuthority =
+                if (authority == ContactsContract.AUTHORITY)
+                    context.getString(R.string.address_books_authority)
+                else
+                    authority
 
-            // Block the onPerformSync method to simulate an ongoing sync
-            Logger.log.fine("Blocking sync framework until SyncWorker finishes")
+            Logger.log.fine("Starting OneTimeSyncWorker for $workerAccount $workerAuthority and waiting for it")
+            val workerName = OneTimeSyncWorker.enqueue(context, workerAccount, workerAuthority, upload = upload)
 
             // Because we are not allowed to observe worker state on a background thread, we can not
             // use it to block the sync adapter. Instead we check periodically whether the sync has
             // finished, putting the thread to sleep in between checks.
             val workManager = WorkManager.getInstance(context)
-            val status = workManager.getWorkInfosForUniqueWorkLiveData(workerName)
-
-            val observer = Observer<List<WorkInfo>> { workInfoList ->
-                for (workInfo in workInfoList) {
-                    if (workInfo.state.isFinished)
-                        finished.complete(true)
-                }
-            }
 
             try {
-                runBlocking(Dispatchers.Main) {     // observeForever not allowed in background thread
-                    status.observeForever(observer)
-                }
-
                 runBlocking {
-                    try {
-                        withTimeout(10 * 60 * 1000) {   // block max. 10 minutes
-                            finished.await()
+                    withTimeout(10 * 60 * 1000) {   // block max. 10 minutes
+                        // wait for finished worker state
+                        workManager.getWorkInfosForUniqueWorkFlow(workerName).collect { info ->
+                            if (info.any { it.state.isFinished })
+                                cancel(CancellationException("$workerName has finished"))
                         }
-                    } catch (e: TimeoutCancellationException) {
-                        Logger.log.info("Sync job timed out, won't block sync framework anymore")
                     }
                 }
-            } finally {
-                // remove observer in any case
-                runBlocking(Dispatchers.Main) {
-                    status.removeObserver(observer)
-                }
+            } catch (e: CancellationException) {
+                // waiting for work was cancelled, either by timeout or because the worker has finished
+                Logger.log.log(Level.FINE, "Not waiting for OneTimeSyncWorker anymore (this is not an error)", e)
             }
 
-            Logger.log.info("Returning to sync framework")
+            Logger.log.fine("Returning to sync framework")
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {

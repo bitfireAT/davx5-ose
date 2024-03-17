@@ -57,7 +57,6 @@
   <string name="navigation_drawer_website">Strōna WWW</string>
   <string name="navigation_drawer_manual">Ryncznie</string>
   <string name="navigation_drawer_faq">Pytania i ôdpowiedzi</string>
-  <string name="navigation_drawer_donate">Dowka</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
   <string name="account_list_empty">Witōmy w DAVx⁵!\n\nMożesz teroz przidać kōnto CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Autōmatyczno synchrōnizacyjo dlo cołkigo systymu je zastawiōno</string>
@@ -108,9 +107,7 @@
   <string name="account_read_only">ino do ôdczytu</string>
   <string name="account_calendar">kalyndorz</string>
   <string name="account_task_list">lista zadań</string>
-  <string name="account_refresh_address_book_list">Ôdświyż lista ksiōnżek adresowych</string>
   <string name="account_create_new_address_book">Stwōrz nowo ksiōnżka adresowo</string>
-  <string name="account_refresh_calendar_list">Ôdświyż wykoz kalyndorzōw</string>
   <string name="account_create_new_calendar">Stwōrz nowy kalyndorz</string>
   <string name="account_no_webcal_handler_found">Niy szło znojś aplikacyje, co ôbsuguje Webcal</string>
   <string name="account_install_icsx5">Zainstaluj ICSx⁵</string>
@@ -161,7 +158,6 @@
   <string name="settings_sync_wifi_only_off">Zorta połōnczynio niy mo znaczynio</string>
   <string name="settings_sync_wifi_only_ssids">Ôgraniczynia WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Bydzie synchrōnizować ino bez %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Bydzie synchrōnizować ino bez %s (wymogo aktywnych serwisōw lokalizacyje)</string>
   <string name="settings_sync_wifi_only_ssids_off">Wszyjske połōnczynia WiFi bydōm używane</string>
   <string name="settings_sync_wifi_only_ssids_message">Ôddzielōne kōmami miana (SSID) przizwolōnych necōw WiFi (ôstow prōzne dlo wszyjskich)</string>
   <string name="settings_authentication">Autoryzowanie</string>
@@ -170,7 +166,6 @@
   <string name="settings_password">Hasło</string>
   <string name="settings_password_summary">Zaktualizuj hasło zgodnie ze serwerym.</string>
   <string name="settings_enter_password">Wpisz hasło:</string>
-  <string name="settings_certificate_alias">Alias certyfikatu klijynta</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limit czasowy przeszłych zdarzyń</string>
   <string name="settings_sync_time_range_past_none">Wszyjske zdarzynia bydōm zsynchrōnizowane</string>

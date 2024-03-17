@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
@@ -35,16 +36,21 @@ fun ActionCard(
         .fillMaxWidth()
         .then(modifier)
     ) {
-        Column(Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)) {
-            if (icon != null)
-                Row {
-                    Icon(icon, "", Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(end = 8.dp))
+        Column(Modifier
+            .padding(top = 8.dp, start = 8.dp, end = 8.dp)
+            .fillMaxWidth(),
+        ) {
+            ProvideTextStyle(MaterialTheme.typography.body1) {
+                if (icon != null)
+                    Row {
+                        Icon(icon, "", Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(end = 8.dp))
+                        content()
+                    }
+                else
                     content()
-                }
-            else
-                content()
+            }
 
             if (actionText != null)
                 TextButton(onClick = onAction) {

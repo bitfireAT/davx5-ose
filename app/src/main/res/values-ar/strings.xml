@@ -1,12 +1,23 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
+  <string name="account_invalid">هذا الحساب ليس مسجلاً (لم يعد مسجلاً)</string>
   <string name="account_title_address_book">DAVx⁵ دفتر عناوين</string>
   <string name="address_books_authority_title">دفاتر العناوين</string>
+  <string name="dialog_remove">أزل</string>
+  <string name="dialog_deny">ألغِ</string>
+  <string name="field_required">يجب ملء هذا الحقل</string>
   <string name="help">مساعدة</string>
   <string name="manage_accounts">إدارة الحسابات</string>
+  <string name="navigate_up">العودة</string>
+  <string name="no_internet_sync_scheduled">لا اتصال، تُجَدول المزامنة</string>
+  <string name="share">شارك</string>
+  <string name="sync_started">بدأت المزامنة</string>
+  <string name="database_destructive_migration_title">عطبت قاعدة البيانات</string>
+  <string name="database_destructive_migration_text">أزيلت الحسابات المحلية كلها</string>
   <string name="notification_channel_debugging">تصحيح العلل</string>
   <string name="notification_channel_general">رسائل هامة أخرى</string>
+  <string name="notification_channel_status">الرسائل غير المهمة</string>
   <string name="notification_channel_sync">مزامنة</string>
   <string name="notification_channel_sync_errors">أخطاء المزامنة</string>
   <string name="notification_channel_sync_errors_desc">الأخطاء الهامة التي توقف المزامنة ، نحو ردود الخادم غير المتوقعة</string>
@@ -15,8 +26,34 @@
   <string name="notification_channel_sync_io_errors">أخطاء الشبكة و عمليات الإدخال/الإخراج</string>
   <string name="notification_channel_sync_io_errors_desc">أوقات المهل، مشاكل الاتصال ، ...الخ (مؤقتة في العادة)</string>
   <!--IntroActivity-->
+  <string name="intro_slogan1">بياناتك. قرارك.</string>
+  <string name="intro_slogan2">تحكَّم</string>
+  <string name="intro_battery_title">الفواصل البينية للمزامنة</string>
+  <string name="intro_battery_not_whitelisted">عطِّل (غير منصوح به)</string>
+  <string name="intro_battery_whitelisted">مكِّن (منصوح به)</string>
+  <string name="intro_battery_text">يجب السماح لـ %s بالعمل في الخلفية لتنجح المزامنة المجدولة. وإلا فإن آندرويد يمكنه إيقاف المزامنة في أية وقت.</string>
+  <string name="intro_battery_dont_show">لا أحتاج إلى جدولة المزامنة.*</string>
+  <string name="intro_autostart_title">توافق %s</string>
+  <string name="intro_autostart_text">هذا الجهاز يأبى المزامنة. إذا واجهتك هذه المشكة، لا خيار إلا أن تحلها يدويا.</string>
+  <string name="intro_autostart_dont_show">أنهيت الإعدادت الإجبارية. توقف عن تذكيري أبداً.*</string>
+  <string name="intro_leave_unchecked">* اتركها مفرغة لتذكيرك لاحقا. يمكن إعادة ضبطها في إعدادات التطبيق / %s.</string>
   <string name="intro_more_info">المزيد من المعلومات</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_title">دعم المهمات</string>
+  <string name="intro_tasks_text1">إذا كان خادمك داعما للمهمات، يمكن مزامنتها مع تطبيق مهمات معتمد:</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">يبدو أن تطويره متوقف منذ مدة
+- غير منصوح به</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_no_app_store">لا متجر تطبيقات متاحا</string>
+  <string name="intro_tasks_dont_show">لا أحتاج دعم المهمات.*</string>
+  <string name="intro_open_source_title">برمجيات حرة المصدر</string>
+  <string name="intro_open_source_text">نحن سعداء باستخدامك تطبيقنا حر المصدر %s. التطوير والعناية والدعم كلها مهام صعبة. نرجوا أن تضع المساهمة معنا أو التبرع لنا في عين الاعتبار. سنكون ممتنين لمساهمتك أو تبرعك.</string>
+  <string name="intro_open_source_details">كيفية المساهمة أو التبرع</string>
+  <string name="intro_open_source_dont_show">لا تظهرها في المدى القريب</string>
   <!--PermissionsActivity-->
+  <string name="permissions_title">الأذونات</string>
+  <string name="permissions_text">%sيتطلب بعض الأذونات للعمل بكفء.</string>
   <!--WifiPermissionsActivity-->
   <!--AboutActivity-->
   <string name="about_libraries">المكتبات</string>
@@ -36,7 +73,6 @@
   <string name="navigation_drawer_website">موقع الويب</string>
   <string name="navigation_drawer_manual">دليل الاستخدام</string>
   <string name="navigation_drawer_faq">الأسئلة الشائعة</string>
-  <string name="navigation_drawer_donate">تبرَّع</string>
   <string name="account_list_empty">مرحباً بك في DAVx⁵ !\n\n يمكنك إضافة حساب CalDAV أو CardDAV الآن.</string>
   <string name="accounts_global_sync_disabled">تم تعطيل المزامنة التلقائية على مستوى النظام</string>
   <string name="accounts_global_sync_enable">تفعيل</string>
@@ -82,9 +118,7 @@
   <string name="account_read_only">للقراءة فقط</string>
   <string name="account_calendar">تقويم</string>
   <string name="account_task_list">قائمة مهام</string>
-  <string name="account_refresh_address_book_list">تجديد قائمة دفتر العناوين</string>
   <string name="account_create_new_address_book">إنشاء دفتر عناوين جديد</string>
-  <string name="account_refresh_calendar_list">تجديد قائمة التقويم</string>
   <string name="account_create_new_calendar">إنشاء تقويم جديد</string>
   <string name="account_no_webcal_handler_found">لم نجِد تطبيقاً قادراً على استخدام Webcal</string>
   <string name="account_install_icsx5">تثبيت ICSx⁵</string>
@@ -135,7 +169,6 @@
   <string name="settings_sync_wifi_only_off">نوع الاتصال غير مأخوذ في الاعتبار</string>
   <string name="settings_sync_wifi_only_ssids">تقييد SSID لـ WiFi</string>
   <string name="settings_sync_wifi_only_ssids_on">ستتم المزامنة فقط عبر %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">ستتم المزامنة عبر %sفقط (يتطلب تفعيل خدمات الموقع الجغرافي)</string>
   <string name="settings_sync_wifi_only_ssids_off">سيتم استخدام جميع اتصالات WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">أسماء (SSIDs) مفصولة بفواصل لشبكات WiFi المسموح الاتصال عبرها (اتركه فارغاً للسماح للكل)</string>
   <string name="settings_authentication">المصادقة</string>
@@ -144,7 +177,6 @@
   <string name="settings_password">كلمة المرور</string>
   <string name="settings_password_summary">حدّث كلمة المرور المعمول بها في خادمك.</string>
   <string name="settings_enter_password">أدخل كلمة المرور:</string>
-  <string name="settings_certificate_alias">الكنية (الاسم المستعار) في شهادة العميل</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">الحد الزمني للأحداث الماضية</string>
   <string name="settings_sync_time_range_past_none">ستتم مزامنة جميع الأحداث</string>

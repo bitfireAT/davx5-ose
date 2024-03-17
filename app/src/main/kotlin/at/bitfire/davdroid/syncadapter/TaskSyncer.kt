@@ -15,6 +15,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
@@ -61,7 +62,7 @@ class TaskSyncer(context: Context): Syncer(context) {
                 TasksSyncManager(context, account, accountSettings, httpClient.value, extras, authority, syncResult, taskList).performSync()
             }
         } catch (e: TaskProvider.ProviderTooOldException) {
-            SyncUtils.notifyProviderTooOld(context, e)
+            TaskUtils.notifyProviderTooOld(context, e)
             syncResult.databaseError = true
         } catch (e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't sync task lists", e)

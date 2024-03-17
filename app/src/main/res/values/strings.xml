@@ -136,7 +136,8 @@
     <string name="navigation_drawer_manual">Manual</string>
     <string name="navigation_drawer_faq">FAQ</string>
     <string name="navigation_drawer_community">Community</string>
-    <string name="navigation_drawer_donate">Donate</string>
+    <string name="navigation_drawer_support_project">Support the project</string>
+    <string name="navigation_drawer_contribute">How to contribute</string>
     <string name="navigation_drawer_privacy_policy">Privacy policy</string>
     <string name="account_list_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
     <string name="account_list_no_internet">No validated Internet connectivity. Synchronization may not run.</string>
@@ -310,13 +311,10 @@
     <!-- AccountSettingsActivity -->
     <string name="settings_title">Settings: %s</string>
     <string name="settings_sync">Synchronization</string>
-    <string name="settings_sync_interval_contacts_key" translatable="false">sync_interval_contacts</string>
     <string name="settings_sync_interval_contacts">Contacts sync. interval</string>
     <string name="settings_sync_summary_manually">Only manually</string>
     <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Every %d minutes + immediately on local changes</string>
-    <string name="settings_sync_interval_calendars_key" translatable="false">sync_interval_calendars</string>
     <string name="settings_sync_interval_calendars">Calendars sync. interval</string>
-    <string name="settings_sync_interval_tasks_key" translatable="false">sync_interval_tasks</string>
     <string name="settings_sync_interval_tasks">Tasks sync. interval</string>
     <string-array name="settings_sync_interval_seconds" translatable="false">
         <item>-1</item>
@@ -336,39 +334,30 @@
         <item>Every 4 hours</item>
         <item>Once a day</item>
     </string-array>
-    <string name="settings_sync_wifi_only_key" translatable="false">sync_wifi_only</string>
     <string name="settings_sync_wifi_only">Sync over WiFi only</string>
     <string name="settings_sync_wifi_only_on">Synchronization is restricted to WiFi connections</string>
     <string name="settings_sync_wifi_only_off">Connection type is not taken into consideration</string>
-    <string name="settings_sync_wifi_only_ssids_key" translatable="false">sync_wifi_only_ssids</string>
     <string name="settings_sync_wifi_only_ssids">WiFi SSID restriction</string>
     <string name="settings_sync_wifi_only_ssids_on">Will only sync over %s</string>
-    <string name="settings_sync_wifi_only_ssids_on_location_services">Will only sync over %s (requires active location services)</string>
     <string name="settings_sync_wifi_only_ssids_off">All WiFi connections will be used</string>
     <string name="settings_sync_wifi_only_ssids_message">Comma-separated names (SSIDs) of allowed WiFi networks (leave blank for all)</string>
     <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID restriction requires further settings</string>
     <string name="settings_sync_wifi_only_ssids_permissions_action">Manage</string>
-    <string name="settings_ignore_vpns_key" translatable="false">ignore_vpns</string>
     <string name="settings_ignore_vpns">VPN requires underlying Internet</string>
     <string name="settings_ignore_vpns_on">VPN without underlying validated Internet connection is not enough to run synchronization (recommended)</string>
     <string name="settings_ignore_vpns_off">VPN without underlying validated Internet connection is enough to run synchronization</string>
     <string name="settings_authentication">Authentication</string>
-    <string name="settings_oauth_key" translatable="false">oauth</string>
     <string name="settings_oauth">Re-authenticate</string>
     <string name="settings_oauth_summary">Perform OAuth login again</string>
-    <string name="settings_username_key">username</string>
     <string name="settings_username">User name</string>
     <string name="settings_enter_username">Enter user name:</string>
-    <string name="settings_password_key" translatable="false">password</string>
     <string name="settings_password">Password</string>
     <string name="settings_password_summary">Update the password according to your server.</string>
     <string name="settings_enter_password">Enter your password:</string>
-    <string name="settings_certificate_alias_key" translatable="false">certificate_alias</string>
-    <string name="settings_certificate_alias">Client certificate alias</string>
-    <string name="settings_certificate_alias_empty">No certificate selected</string>
-    <string name="settings_caldav_key" translatable="false">caldav</string>
+    <string name="settings_certificate_alias">Client certificate</string>
+    <string name="settings_certificate_alias_empty">No certificate available or selected</string>
+    <string name="settings_certificate_install">Install certificate</string>
     <string name="settings_caldav">CalDAV</string>
-    <string name="settings_sync_time_range_past_key" translatable="false">time_range_past_days</string>
     <string name="settings_sync_time_range_past">Past event time limit</string>
     <string name="settings_sync_time_range_past_none">All events will be synchronized</string>
     <plurals name="settings_sync_time_range_past_days">
@@ -384,17 +373,13 @@
     </plurals>
     <string name="settings_default_alarm_off">No default reminders are created</string>
     <string name="settings_default_alarm_message">If default reminders shall be created for events without reminder: the desired number of minutes before the event. Leave blank to disable default reminders.</string>
-    <string name="settings_manage_calendar_colors_key" translatable="false">manage_calendar_colors</string>
     <string name="settings_manage_calendar_colors">Manage calendar colors</string>
     <string name="settings_manage_calendar_colors_on">Calendar colors are reset at each sync</string>
     <string name="settings_manage_calendar_colors_off">Calendar colors can be set by other apps</string>
-    <string name="settings_event_colors_key" translatable="false">event_colors</string>
     <string name="settings_event_colors">Event color support</string>
     <string name="settings_event_colors_on">Event colors are synced</string>
     <string name="settings_event_colors_off">Event colors are not synced</string>
-    <string name="settings_carddav_key" translatable="false">carddav</string>
     <string name="settings_carddav">CardDAV</string>
-    <string name="settings_contact_group_method_key" translatable="false">contact_group_method</string>
     <string name="settings_contact_group_method">Contact group method</string>
     <string-array name="settings_contact_group_method_values" translatable="false">
         <item>GROUP_VCARDS</item>

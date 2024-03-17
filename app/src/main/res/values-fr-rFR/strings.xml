@@ -68,12 +68,10 @@
   <string name="permissions_notification_status_off">Les notifications sont désactivées (non recommandé)</string>
   <string name="permissions_notification_status_on">Notifications activées </string>
   <string name="permissions_jtx_title">Autorisations jtx Board</string>
-  <string name="permissions_jtx_status_not_installed">Pas de synchronisation des tâches, journaux et notes (non installé)</string>
   <string name="permissions_jtx_status_off">Pas de synchronisation des tâches, journaux et notes</string>
   <string name="permissions_jtx_status_on">Synchronisation possible des tâches, des journaux et des notes</string>
   <string name="permissions_opentasks_title">Autorisations d\'OpenTasks</string>
   <string name="permissions_tasksorg_title">Autorisations de Tasks</string>
-  <string name="permissions_tasks_status_not_installed">Pas de synchronisation des tâches (non installé)</string>
   <string name="permissions_tasks_status_off">Aucune tâche synchronisée</string>
   <string name="permissions_tasks_status_on">Synchronisation des tâches possible</string>
   <string name="permissions_autoreset_title">Conserver les autorisations</string>
@@ -88,7 +86,6 @@
   <!--AppSettingsActivity-->
   <string name="app_settings_debug">Déboguage</string>
   <!--AccountActivity-->
-  <string name="account_permissions_action">Autorisations</string>
   <string name="account_read_only">lecture seule</string>
   <!--AddAccountActivity-->
   <string name="login_title">Ajouter un compte</string>

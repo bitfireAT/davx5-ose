@@ -42,7 +42,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -131,7 +130,6 @@ class AddWebdavMountActivity : AppCompatActivity() {
         password: String = "",
         onPasswordChange: (String) -> Unit = {}
     ) {
-        val context = LocalContext.current
         val uriHandler = LocalUriHandler.current
 
         val snackbarHostState = remember { SnackbarHostState() }
@@ -149,7 +147,7 @@ class AddWebdavMountActivity : AppCompatActivity() {
             topBar = {
                 TopAppBar(
                     navigationIcon = {
-                        IconButton(onClick = { onNavigateUp() }) {
+                        IconButton(onClick = { onSupportNavigateUp() }) {
                             Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
                         }
                     },
