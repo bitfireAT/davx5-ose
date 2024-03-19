@@ -2,10 +2,8 @@ package at.bitfire.davdroid.widget
 
 import android.accounts.AccountManager
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.ColorFilter
@@ -16,8 +14,6 @@ import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.SizeMode
-import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
@@ -30,8 +26,7 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextDefaults
 import androidx.glance.unit.ColorProvider
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.syncadapter.SyncWorker
-import at.bitfire.davdroid.ui.AccountsActivity
+import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.ui.onPrimaryGreen
 import at.bitfire.davdroid.ui.primaryGreen
 import kotlinx.coroutines.CoroutineScope
@@ -86,7 +81,7 @@ class SyncButtonWidget : GlanceAppWidget() {
         val accountType = context.getString(R.string.account_type)
         val accounts = AccountManager.get(context).getAccountsByType(accountType)
         for (account in accounts) {
-            SyncWorker.enqueueAllAuthorities(context, account)
+            OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
         }
 
         withContext(Dispatchers.Main) {
