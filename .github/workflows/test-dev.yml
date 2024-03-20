@@ -39,15 +39,7 @@ jobs:
             app/build
 
       - name: Run lint and unit tests
-        run: ./gradlew app:check
-      - name: Archive results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: |
-            app/build/outputs/lint*
-            app/build/reports
-          overwrite: true
+        run: ./gradlew --build-cache --configuration-cache app:check
 
   test_on_emulator:
     name: Tests with emulator
@@ -91,12 +83,5 @@ jobs:
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
       - name: Run device tests
-        run: ./gradlew --no-daemon app:virtualCheck
+        run: ./gradlew --build-cache --configuration-cache app:virtualCheck
 
-      - name: Archive results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: app/build/reports
-          overwrite: true
