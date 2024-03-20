@@ -81,7 +81,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.PermissionsActivity
-import at.bitfire.davdroid.ui.widget.ActionCard
+import at.bitfire.davdroid.ui.composable.ActionCard
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dagger.hilt.android.AndroidEntryPoint

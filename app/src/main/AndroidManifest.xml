@@ -296,7 +296,7 @@
         </provider>
 
         <!-- Widgets -->
-        <receiver android:name=".widget.SyncButtonWidgetReceiver"
+        <receiver android:name=".ui.widget.SyncButtonWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

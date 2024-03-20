@@ -1,4 +1,4 @@
-package at.bitfire.davdroid.widget
+package at.bitfire.davdroid.ui.widget
 
 import android.accounts.AccountManager
 import android.content.Context
@@ -58,14 +58,14 @@ class SyncButtonWidget : GlanceAppWidget() {
         ) {
             Image(
                 provider = ImageProvider(R.drawable.ic_sync),
-                contentDescription = context.getString(R.string.accounts_sync_all),
+                contentDescription = context.getString(R.string.widget_sync_all_accounts),
                 modifier = GlanceModifier
                     .padding(vertical = 8.dp, horizontal = 8.dp)
                     .size(32.dp),
                 colorFilter = ColorFilter.tint(ColorProvider(onPrimaryGreen))
             )
             Text(
-                text = context.getString(R.string.accounts_sync_all_short),
+                text = context.getString(R.string.widget_sync_all),
                 modifier = GlanceModifier
                     .defaultWeight()
                     .padding(end = 8.dp),
@@ -88,4 +88,5 @@ class SyncButtonWidget : GlanceAppWidget() {
             Toast.makeText(context, R.string.sync_started, Toast.LENGTH_SHORT).show()
         }
     }
+
 }

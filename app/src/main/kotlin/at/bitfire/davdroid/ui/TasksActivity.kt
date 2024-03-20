@@ -54,8 +54,8 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
-import at.bitfire.davdroid.ui.widget.CardWithImage
-import at.bitfire.davdroid.ui.widget.RadioWithSwitch
+import at.bitfire.davdroid.ui.composable.CardWithImage
+import at.bitfire.davdroid.ui.composable.RadioWithSwitch
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -152,7 +152,6 @@
     <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
     <string name="accounts_global_sync_enable">Enable</string>
     <string name="accounts_sync_all">Sync all accounts</string>
-    <string name="accounts_sync_all_short">Sync all</string>
 
     <!-- RefreshCollectionsWorker -->
     <string name="refresh_collections_worker_refresh_failed">Service detection failed</string>
@@ -490,6 +489,10 @@
     <string name="sync_invalid_event">Received invalid event from server</string>
     <string name="sync_invalid_task">Received invalid task from server</string>
     <string name="sync_invalid_resources_ignoring">Ignoring one or more invalid resources</string>
+
+    <!-- widgets -->
+    <string name="widget_sync_all">Sync all</string>
+    <string name="widget_sync_all_accounts">Sync all accounts</string>
 
     <!-- cert4android -->
     <string name="certificate_notification_connection_security">DAVx⁵: Connection security</string>

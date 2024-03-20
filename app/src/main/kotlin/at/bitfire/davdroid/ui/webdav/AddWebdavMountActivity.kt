@@ -60,7 +60,7 @@ import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.AppTheme
-import at.bitfire.davdroid.ui.widget.PasswordTextField
+import at.bitfire.davdroid.ui.composable.PasswordTextField
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
 import dagger.hilt.android.AndroidEntryPoint
