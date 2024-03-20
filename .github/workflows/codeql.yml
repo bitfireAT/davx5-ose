@@ -57,7 +57,7 @@ jobs:
     #  uses: github/codeql-action/autobuild@v2
 
     - name: Build
-      run: ./gradlew --build-cache --configuration-cache --no-daemon app:assembleOseDebug
+      run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon app:assembleOseDebug
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3

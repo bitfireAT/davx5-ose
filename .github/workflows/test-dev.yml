@@ -41,7 +41,7 @@ jobs:
             app/build
 
       - name: Run lint and unit tests
-        run: ./gradlew --build-cache --configuration-cache app:check
+        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:check
 
   test_on_emulator:
     name: Tests with emulator
@@ -87,5 +87,5 @@ jobs:
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
       - name: Run device tests
-        run: ./gradlew --build-cache --configuration-cache app:virtualCheck
+        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:virtualCheck
 
