@@ -63,9 +63,9 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.widget.CalendarColorPickerDialog
 import at.bitfire.davdroid.ui.widget.ExceptionInfoDialog
-import at.bitfire.davdroid.ui.widget.MultipleChoiceInputDialog
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
