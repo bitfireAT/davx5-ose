@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Navigation drawer -->
     <string name="nav_earn_badges">Support us with badges</string>
     <string name="nav_rate_us">Review in Google Play</string>
     <string name="nav_feedback_inapp_didnt_appear">In-app review didn\'t appear?</string>
     <string name="nav_feedback_google_play">Send in Google Play</string>
     <string name="nav_feedback_scroll_to_reviews">Scroll to review section to submit feedback</string>
+
+    <!-- AboutActivity -->
+    <string name="about_flavor_info">This version is only eligible for distribution over Google Play.</string>
+
+    <!-- EarnBadgesActivity -->
     <plurals name="you_earned_badges">
         <item quantity="one">You\'ve earned a badge, thank you!</item>
         <item quantity="other">You have earned %d badges, thank you!</item>
@@ -21,4 +27,5 @@
     <string name="earn_badges">Earn badges to support us!</string>
     <string name="billing_unavailable">Billing API not available</string>
     <string name="network_problems">Network problems, please try again later.</string>
+
 </resources>
