@@ -24,8 +24,6 @@
   <string name="intro_slogan1">Τα δεδομένα σου. Οι επιλογές σου.</string>
   <string name="intro_slogan2">Πάρε τον έλεγχο.</string>
   <string name="intro_battery_title">Τακτά διαστήματα συγχρονισμού</string>
-  <string name="intro_battery_not_whitelisted">Απενεργοποιημένο (δεν προτείνεται)</string>
-  <string name="intro_battery_whitelisted">Ενεργοποιημένο (προτείνεται)</string>
   <string name="intro_battery_text">Για συγχρονισμό σε τακτικά διαστήματα, πρέπει να επιτραπεί στο %s να λειτουργεί στο παρασκήνιο. Αλλιώς, το Android μπορεί να παύση τον συγχρονισμό ανά πάσα στιγμή.</string>
   <string name="intro_battery_dont_show">Δεν χρειάζομαι τακτικά διαστήματα συγχρονισμού.*</string>
   <string name="intro_autostart_title">%s Συμβατότητα</string>
@@ -77,7 +75,6 @@
   <string name="about_version">Έκδοση %1$s (%2$d)</string>
   <string name="about_build_date">Μεταγλωττισμένο σε %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) και συνεργάτες</string>
-  <string name="about_flavor_info">Αυτή η έκδοση είναι κατάλληλη μόνο για διανομή μέσω του Google Play.</string>
   <string name="about_license_info_no_warranty">Αυτό το πρόγραμμα συνοδεύεται χωρις ΚΑΜΙΑ ΕΓΓΥΗΣΗ. Είναι ελεύθερο λογισμικό και είστε ευπρόσδεκτοι να το αναδιανείμετε υπό ορισμένες προϋποθέσεις.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Αδυναμία δημιουργίας αρχείου ιστορικού</string>
@@ -88,7 +85,6 @@
   <string name="navigation_drawer_subtitle">Προσαρμογέας συγχρονισμού CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Περί / άδεια χρήσης</string>
   <string name="navigation_drawer_beta_feedback">Ανατροφοδότηση beta</string>
-  <string name="install_email_client">Παρακαλούμε εγκαταστήστε ένα πελάτη ηλεκτρονικού ταχυδρομείου</string>
   <string name="install_browser">Παρακαλούμε εγκαταστήστε έναν περιηγητή ιστού</string>
   <string name="navigation_drawer_settings">Ρυθμίσεις</string>
   <string name="navigation_drawer_news_updates">Νέα &amp; ενημερώσεις</string>
@@ -100,8 +96,6 @@
   <string name="navigation_drawer_community">Κοινότητα</string>
   <string name="navigation_drawer_privacy_policy">Πολιτική απορρήτου</string>
   <string name="account_list_empty">Καλώς ήρθατε στο DAVx⁵!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
-  <string name="accounts_global_sync_disabled">Ο αυτόματος συγχρονισμός σε όλο το σύστημα είναι απενεργοποιημένος</string>
-  <string name="accounts_global_sync_enable">Ενεργοποίηση</string>
   <string name="accounts_sync_all">Συγχρονισμός όλων των λογαριασμών</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Αποτυχία ανίχνευσης υπηρεσίας</string>
@@ -144,16 +138,11 @@
   <string name="app_settings_reset_hints_success">Όλες οι συμβουλές θα εμφανιστούν ξανά</string>
   <string name="app_settings_integration">Ενσωμάτωση</string>
   <string name="app_settings_tasks_provider">Εφαρμογή εργασιών</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Γίνεται συγχρονισμός με %s</string>
   <string name="app_settings_tasks_provider_none">Δεν βρέθηκε συμβατή εφαρμογή εργασιών</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Δεν υπάρχουν βιβλία διευθύνσεων (ακόμα).</string>
-  <string name="account_no_calendars">Δεν υπάρχουν ημερολόγια (ακόμα).</string>
-  <string name="account_no_webcals">Δεν υπάρχουν συνδρομές ημερολογίου (ακόμα).</string>
-  <string name="account_swipe_down">Σύρετε προς τα κάτω για να ανανεώσετε τη λίστα από το διακομιστή.</string>
   <string name="account_synchronize_now">Συγχρονισμός τώρα</string>
   <string name="account_settings">Ρυθμίσεις λογαριασμού</string>
   <string name="account_rename">Μετονομασία λογαριασμού</string>
@@ -168,8 +157,6 @@
   <string name="account_calendar">ημερολόγιο</string>
   <string name="account_task_list">λίστα εργασιών</string>
   <string name="account_only_personal">Εμφάνιση μόνο προσωπικών</string>
-  <string name="account_create_new_address_book">Δημιουργία νέου βιβλίου διευθύνσεων</string>
-  <string name="account_create_new_calendar">Δημιουργία νέου ημερολογίου</string>
   <string name="account_no_webcal_handler_found">Δεν βρέθηκε εφαρμογή με δυνατότητα Webcal</string>
   <string name="account_install_icsx5">Εγκατάσταση ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -204,7 +191,6 @@
   <string name="login_username_password_wrong">Λάθος ονομασία χρήστη (διεύθυνση ηλ. ταχυδρομείου) / συνθηματικού</string>
   <string name="login_view_logs">Εμφάνιση λεπτομερειών</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Ρυθμίσεις: %s</string>
   <string name="settings_sync">Συγχρονισμός</string>
   <string name="settings_sync_interval_contacts">Μεσοδιάστημα συγχρονισμού επαφών</string>
   <string name="settings_sync_summary_manually">Μόνο χειροκίνητα</string>
@@ -231,10 +217,8 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">Διαχείριση</string>
   <string name="settings_authentication">Πιστοποίηση</string>
   <string name="settings_username">Όνομα χρήστη</string>
-  <string name="settings_enter_username">Εισάγετε όνομα χρήστη:</string>
   <string name="settings_password">Συνθηματικό</string>
   <string name="settings_password_summary">Ενημερώστε το συνθηματικό σύμφωνα με τον διακομιστή σας.</string>
-  <string name="settings_enter_password">Εισάγετε το συνθηματικό σας:</string>
   <string name="settings_certificate_install">Εγκατάσταση πιστοποιητικού</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Προθεσμία παρελθόντος συμβάντος</string>
@@ -339,6 +323,4 @@
   <string name="sync_invalid_task">Έλαβε μη έγκυρη εργασία από το διακομιστή</string>
   <string name="sync_invalid_resources_ignoring">Αγνόηση ενός ή περισσοτέρων μη έγκυρων πόρων</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Ασφάλεια σύνδεσης</string>
-  <string name="trust_certificate_unknown_certificate_found">Το DAVx⁵ εντόπισε ένα άγνωστο πιστοποιητικό. Θέλετε να το εμπιστεύεστε;</string>
 </resources>

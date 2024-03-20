@@ -29,8 +29,6 @@
   <string name="intro_slogan1">بياناتك. قرارك.</string>
   <string name="intro_slogan2">تحكَّم</string>
   <string name="intro_battery_title">الفواصل البينية للمزامنة</string>
-  <string name="intro_battery_not_whitelisted">عطِّل (غير منصوح به)</string>
-  <string name="intro_battery_whitelisted">مكِّن (منصوح به)</string>
   <string name="intro_battery_text">يجب السماح لـ %s بالعمل في الخلفية لتنجح المزامنة المجدولة. وإلا فإن آندرويد يمكنه إيقاف المزامنة في أية وقت.</string>
   <string name="intro_battery_dont_show">لا أحتاج إلى جدولة المزامنة.*</string>
   <string name="intro_autostart_title">توافق %s</string>
@@ -59,7 +57,6 @@
   <string name="about_libraries">المكتبات</string>
   <string name="about_version">النسخة %1$s (%2$d)</string>
   <string name="about_build_date">التجميع على %s</string>
-  <string name="about_flavor_info">هذا الإصدار صالح للتوزيع عبر Google Play فقط.</string>
   <string name="about_license_info_no_warranty">يقدَّم هذا البرنامج دون أدنى مسؤولية.  إنه برنامج حر، وندعوك لإعادة توزيعه حسب أحكام محددة.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">لا يمكن إنشاء ملف سجل</string>
@@ -74,8 +71,6 @@
   <string name="navigation_drawer_manual">دليل الاستخدام</string>
   <string name="navigation_drawer_faq">الأسئلة الشائعة</string>
   <string name="account_list_empty">مرحباً بك في DAVx⁵ !\n\n يمكنك إضافة حساب CalDAV أو CardDAV الآن.</string>
-  <string name="accounts_global_sync_disabled">تم تعطيل المزامنة التلقائية على مستوى النظام</string>
-  <string name="accounts_global_sync_enable">تفعيل</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">فشل اكتشاف الخدمة</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">لم يتمكن التطبيق من تجديد قائمة المجموعة</string>
@@ -118,8 +113,6 @@
   <string name="account_read_only">للقراءة فقط</string>
   <string name="account_calendar">تقويم</string>
   <string name="account_task_list">قائمة مهام</string>
-  <string name="account_create_new_address_book">إنشاء دفتر عناوين جديد</string>
-  <string name="account_create_new_calendar">إنشاء تقويم جديد</string>
   <string name="account_no_webcal_handler_found">لم نجِد تطبيقاً قادراً على استخدام Webcal</string>
   <string name="account_install_icsx5">تثبيت ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -148,7 +141,6 @@
   <string name="login_no_caldav_carddav">لم نجِد خدمة CalDAV أو CardDAV.</string>
   <string name="login_view_logs">عرض التفاصيل</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">%s الإعدادات:</string>
   <string name="settings_sync">المزامنة</string>
   <string name="settings_sync_interval_contacts">مدة مزامنة جهات الاتصال</string>
   <string name="settings_sync_summary_manually">يدوية فقط</string>
@@ -173,10 +165,8 @@
   <string name="settings_sync_wifi_only_ssids_message">أسماء (SSIDs) مفصولة بفواصل لشبكات WiFi المسموح الاتصال عبرها (اتركه فارغاً للسماح للكل)</string>
   <string name="settings_authentication">المصادقة</string>
   <string name="settings_username">اسم المستخدم</string>
-  <string name="settings_enter_username">أدخل اسم المستخدم:</string>
   <string name="settings_password">كلمة المرور</string>
   <string name="settings_password_summary">حدّث كلمة المرور المعمول بها في خادمك.</string>
-  <string name="settings_enter_password">أدخل كلمة المرور:</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">الحد الزمني للأحداث الماضية</string>
   <string name="settings_sync_time_range_past_none">ستتم مزامنة جميع الأحداث</string>
@@ -239,6 +229,4 @@
   <string name="sync_invalid_task">استلام مهمة غير صالحة من الخادم</string>
   <string name="sync_invalid_resources_ignoring">جرى تجاهل مورد غير صالح واحد أو أكثر</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: أمن الاتصال</string>
-  <string name="trust_certificate_unknown_certificate_found">عثر DAVx⁵ على شهادة غير معروفة. هل تريد الوثوق بها؟</string>
 </resources>

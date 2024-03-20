@@ -30,8 +30,6 @@
   <string name="intro_slogan1">Os teus datos. Ti elixes.</string>
   <string name="intro_slogan2">Toma o control.</string>
   <string name="intro_battery_title">Intervalos regulares de sincronización</string>
-  <string name="intro_battery_not_whitelisted">Desactivado (non recomendado)</string>
-  <string name="intro_battery_whitelisted">Activado (recomendado)</string>
   <string name="intro_battery_text">Para sincronizar a intervalos regulares, %s debe ter permiso para executarse en segundo plano. Se non, Android podería deter a sincronización.</string>
   <string name="intro_battery_dont_show">Non preciso sincr. con regularidade.*</string>
   <string name="intro_autostart_title">Compatibilidade de %s</string>
@@ -69,8 +67,6 @@
   <string name="permissions_notification_status_off">Notificacións desactivadas (non recomendado)</string>
   <string name="permissions_notification_status_on">Notificacións activadas</string>
   <string name="permissions_jtx_title">permisos para jtx Board</string>
-  <string name="permissions_jtx_status_off">Sen sincr. de tarefas, diarios, notas</string>
-  <string name="permissions_jtx_status_on">Dispoñible sincr. de tarefas, diarios e notas</string>
   <string name="permissions_opentasks_title">Permisos para OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisos para Tasks</string>
   <string name="permissions_tasks_status_off">Tarefas non sincr.</string>
@@ -100,9 +96,7 @@
   <string name="about_version">Versión  %1$s (%2$d)</string>
   <string name="about_build_date">Compilada en %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) e colaboradoras</string>
-  <string name="about_flavor_info">Esta versión só está dispoñible para distribución en Google Play.</string>
   <string name="about_license_info_no_warranty">Este programa non proporciona NINGUNHA GARANTÍA. É software libre, e convidámoste a redistribuílo baixo certas condicións.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Grazas a: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Non se creou ficheiro de rexistro</string>
   <string name="logging_notification_text">Rexistrando todas as %s actividades</string>
@@ -112,7 +106,6 @@
   <string name="navigation_drawer_subtitle">Adaptador de sincr. CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Acerca de / Licenza</string>
   <string name="navigation_drawer_beta_feedback">Comenta sobre a Beta</string>
-  <string name="install_email_client">Instala un cliente de email</string>
   <string name="install_browser">Instala un navegador web</string>
   <string name="navigation_drawer_settings">Axustes</string>
   <string name="navigation_drawer_news_updates">Novas &amp; actualizacións</string>
@@ -135,8 +128,6 @@
   <string name="account_list_low_storage">Queda pouco espazo de almacenaxe. Android non vai sincronizar os cambios locais inmediatamente, farao na próxima sincronización regular.</string>
   <string name="account_list_manage_storage">Xestionar almacenaxe</string>
   <string name="account_list_empty">Benvida a DAVx⁵!\n\nXa podes engadir unha conta CalDAV/CardDAV</string>
-  <string name="accounts_global_sync_disabled">A sincronización global automática do sistema está desactivada</string>
-  <string name="accounts_global_sync_enable">Activar</string>
   <string name="accounts_sync_all">Sincroniza todas as contas</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Fallou a detección do servizo</string>
@@ -188,7 +179,6 @@
   <string name="app_settings_reset_hints_success">Mostraranse todos os consellos de novo</string>
   <string name="app_settings_integration">Integración</string>
   <string name="app_settings_tasks_provider">App Tarefas</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Sincronizando con %s</string>
   <string name="app_settings_tasks_provider_none">Non se atopan app de tarefas compatible</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
@@ -196,10 +186,6 @@
   <string name="account_webcal">Webcal</string>
   <string name="account_missing_permissions">Requírense permisos adicionais para poder sincronizar estas coleccións.</string>
   <string name="account_manage_permissions">Xestionar permisos</string>
-  <string name="account_no_address_books">No existen libretas de enderezos (aínda).</string>
-  <string name="account_no_calendars">Non existen calendarios (aínda).</string>
-  <string name="account_no_webcals">Non tes subscricións a calendario (aínda).</string>
-  <string name="account_swipe_down">Arrastra hacia abaixo para actualizar a lista desde o servidor.</string>
   <string name="account_synchronize_now">Sincronizar agora</string>
   <string name="account_settings">Axustes da conta</string>
   <string name="account_rename">Renomear conta</string>
@@ -219,8 +205,6 @@
   <string name="account_only_personal">Mostrar só personal</string>
   <string name="account_refresh_collections">Actualizar coleccións</string>
   <string name="account_refreshing_collections">A actualizar a lista de coleccións</string>
-  <string name="account_create_new_address_book">Crear nova libreta de enderezos</string>
-  <string name="account_create_new_calendar">Crear novo calendario</string>
   <string name="account_webcal_external_app">As subscricións Webcal poden sincronizarse con apps externas.</string>
   <string name="account_no_webcal_handler_found">Non se atopou app para Webcal</string>
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
@@ -276,7 +260,6 @@
   <string name="login_username_password_wrong">¿Usuaria (enderezo email) / contrasinal incorrectos?</string>
   <string name="login_view_logs">Mostrar detalles</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Axustes: %s</string>
   <string name="settings_sync">Sincronización</string>
   <string name="settings_sync_interval_contacts">Intervalo de sincr. contactos</string>
   <string name="settings_sync_summary_manually">Só manual</string>
@@ -308,10 +291,8 @@
   <string name="settings_oauth">Volver a autenticar</string>
   <string name="settings_oauth_summary">Intentar acceder con OAuth outra vez</string>
   <string name="settings_username">Nome de usuaria</string>
-  <string name="settings_enter_username">Escribe o nome de usuaria:</string>
   <string name="settings_password">Contrasinal</string>
   <string name="settings_password_summary">Actualizar o contrasinal de acordo ao teu servidor.</string>
-  <string name="settings_enter_password">Escribir contrasinal:</string>
   <string name="settings_certificate_alias">Certificado do cliente</string>
   <string name="settings_certificate_alias_empty">Sen certificado dispoñible ou seleccionado</string>
   <string name="settings_certificate_install">Instalar certificado</string>
@@ -437,6 +418,4 @@
   <string name="sync_invalid_task">Recibida tarefa non válida desde o servidor</string>
   <string name="sync_invalid_resources_ignoring">Ignorando un ou varios recursos non válidos</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: seguridade da conexión</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ atopou un certificado descoñecido. Queres confiar nel?</string>
 </resources>

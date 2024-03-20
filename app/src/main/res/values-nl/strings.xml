@@ -29,8 +29,6 @@
   <string name="intro_slogan1">Jouw gegevens. Jouw keuze.</string>
   <string name="intro_slogan2">Houd zelf de controle</string>
   <string name="intro_battery_title">regelmatige sync-intervallen</string>
-  <string name="intro_battery_not_whitelisted">Uitgeschakeld (niet aanbevolen)</string>
-  <string name="intro_battery_whitelisted">Ingeschakeld (aanbevolen)</string>
   <string name="intro_battery_text">Om op gezette tijden te synchroniseren moet %s zonder beperking op de achtergrond kunnen draaien. Anders kan Android het synchroniseren op elk moment onderbreken.</string>
   <string name="intro_battery_dont_show">Synchroniseren op gezette tijden is niet nodig.*</string>
   <string name="intro_autostart_title">%s compatibiliteit</string>
@@ -68,8 +66,6 @@
   <string name="permissions_notification_status_off">Meldingen uitgeschakeld (niet aanbevolen)</string>
   <string name="permissions_notification_status_on">Meldingen ingeschakeld</string>
   <string name="permissions_jtx_title">jtx Board-rechten</string>
-  <string name="permissions_jtx_status_off">Geen taak-, kalender- en notitiesync</string>
-  <string name="permissions_jtx_status_on">Taak-, kalender- en notitie-sync mogelijk</string>
   <string name="permissions_opentasks_title">OpenTasks rechten</string>
   <string name="permissions_tasksorg_title">Rechten voor taken</string>
   <string name="permissions_tasks_status_off">Geen taak-sync</string>
@@ -98,9 +94,7 @@
   <string name="about_version">Versie%1$s (%2$d)</string>
   <string name="about_build_date">Gecompileerd op %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) en bijdragers</string>
-  <string name="about_flavor_info">Deze versie is enkel beschikbaar in Google Play</string>
   <string name="about_license_info_no_warranty">Dit programma wordt geleverd met ABSOLUUT GEEN GARANTIE. Het is gratis software, en mag opnieuw worden verspreid onder bepaalde voorwaarden.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Dank aan: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kon geen logbestand aanmaken</string>
   <string name="logging_notification_text">Logt nu alle %s activiteiten</string>
@@ -110,7 +104,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync adapter</string>
   <string name="navigation_drawer_about">Over / Licentie</string>
   <string name="navigation_drawer_beta_feedback">Beta terugkoppeling</string>
-  <string name="install_email_client">E-mailprogramma is vereist</string>
   <string name="install_browser">Webbrowser is vereist</string>
   <string name="navigation_drawer_settings">Instellingen</string>
   <string name="navigation_drawer_news_updates">Nieuws &amp; updates</string>
@@ -131,8 +124,6 @@
   <string name="account_list_low_storage">Weinig opslagruimte. Android zal lokale wijzigingen niet onmiddellijk synchroniseren, maar tijdens de volgende reguliere synchronisatie.</string>
   <string name="account_list_manage_storage">Opslag beheren</string>
   <string name="account_list_empty">Welkom bij DAVx⁵!\n\nJe kunt nu een CalDAV/CardDAV account toevoegen.</string>
-  <string name="accounts_global_sync_disabled">Automatisch synchroniseren is voor alle accounts uitgeschakeld</string>
-  <string name="accounts_global_sync_enable">Inschakelen</string>
   <string name="accounts_sync_all">Alle accounts synchroniseren</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Service herkenning is mislukt</string>
@@ -182,16 +173,11 @@
   <string name="app_settings_reset_hints_success">Alle hints opnieuw weergeven</string>
   <string name="app_settings_integration">Integratie</string>
   <string name="app_settings_tasks_provider">Taken app</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Synchroniseren met %s</string>
   <string name="app_settings_tasks_provider_none">Geen compatibele taken app gevonden</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Er zijn (nog) geen adresboeken.</string>
-  <string name="account_no_calendars">Er zijn (nog) geen kalenders.</string>
-  <string name="account_no_webcals">Er zijn (nog) geen kalender abonnementen.</string>
-  <string name="account_swipe_down">Omlaag vegen om de lijst van de server te actualiseren.</string>
   <string name="account_synchronize_now">Nu synchroniseren</string>
   <string name="account_settings">Account instellingen</string>
   <string name="account_rename">Naam account wijzigen</string>
@@ -209,8 +195,6 @@
   <string name="account_task_list">takenlijst</string>
   <string name="account_journal">logboek</string>
   <string name="account_only_personal">Alleen persoonlijk tonen</string>
-  <string name="account_create_new_address_book">Nieuw adresboek maken</string>
-  <string name="account_create_new_calendar">Nieuwe kalender maken</string>
   <string name="account_no_webcal_handler_found">Geen Webcal-app gevonden</string>
   <string name="account_install_icsx5">ICSx⁵ installeren</string>
   <!--AddAccountActivity-->
@@ -265,7 +249,6 @@
   <string name="login_username_password_wrong">Is gebruikersnaam (e-mailadres) / wachtwoord verkeerd?</string>
   <string name="login_view_logs">Details weergeven</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Instellingen: %s</string>
   <string name="settings_sync">Synchronisatie</string>
   <string name="settings_sync_interval_contacts">Contacten synchronisatie interval</string>
   <string name="settings_sync_summary_manually">Alleen handmatig</string>
@@ -297,10 +280,8 @@
   <string name="settings_oauth">Opnieuw authenticeren</string>
   <string name="settings_oauth_summary">Voer OAuth-aanmelding opnieuw uit</string>
   <string name="settings_username">Gebruikersnaam</string>
-  <string name="settings_enter_username">Gebruikersnaam invoeren:</string>
   <string name="settings_password">Wachtwoord</string>
   <string name="settings_password_summary">Gebruik het zelfde wachtwoord als op de server.</string>
-  <string name="settings_enter_password">Wachtwoord invoeren:</string>
   <string name="settings_certificate_install">Certificaat installeren</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Gebeurtenissen in verleden tijd</string>
@@ -424,6 +405,4 @@
   <string name="sync_invalid_task">Ongeldige taak ontvangen van server</string>
   <string name="sync_invalid_resources_ignoring">Een of meer ongeldige bronnen negeren</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Beveiliging van de verbinding</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ is een onbekend certificaat tegengekomen. Moet het vertrouwd worden?</string>
 </resources>

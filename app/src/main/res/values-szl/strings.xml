@@ -18,8 +18,6 @@
   <string name="intro_slogan1">Twoje dane. Twōj wybōr.</string>
   <string name="intro_slogan2">Przejmij kōntrola.</string>
   <string name="intro_battery_title">Regularne interwały synchrōnizacyje</string>
-  <string name="intro_battery_not_whitelisted">Zastawiōne (niyrekōmyndowane)</string>
-  <string name="intro_battery_whitelisted">Włōnczōne (rekōmyndowane)</string>
   <string name="intro_battery_text">Żeby regularnie synchrōnizować, %s musi mieć zwolo na fungowanie na zadku. W inkszym przipadku Android może w kożdyj chwili zastawić synchrōnizacyjo.</string>
   <string name="intro_battery_dont_show">Niy potrzebuja regularnyj synchrōnizacyje.*</string>
   <string name="intro_autostart_title">Zgodność %s</string>
@@ -40,16 +38,13 @@
   <string name="about_libraries">Bibliotyki</string>
   <string name="about_version">Wersyjo %1$s (%2$d)</string>
   <string name="about_build_date">Skōmpilowano %s</string>
-  <string name="about_flavor_info">Ta wersyjo je do dystrybucyje ino na Google Play.</string>
   <string name="about_license_info_no_warranty">Tyn program przichodzi BEZ ŻODNYJ GWARANCYJE. To je wolne ôprogramowanie i możesz je rozkludzać pod ôkryślōnymi warōnkami.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Dziynki: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Niy szło stworzić zbioru dziynnika</string>
   <!--AccountsActivity-->
   <string name="navigation_drawer_subtitle">Adapter synchrōnizacyje CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Ô DAVx⁵ / Licyncyjo</string>
   <string name="navigation_drawer_beta_feedback">Przekoż ôpinijo</string>
-  <string name="install_email_client">Zainstaluj klijynt emaila</string>
   <string name="install_browser">Zainstaluj przeglōndarka internetowo</string>
   <string name="navigation_drawer_settings">Sztelōnki</string>
   <string name="navigation_drawer_news_updates">Nowości i aktualizacyje</string>
@@ -59,8 +54,6 @@
   <string name="navigation_drawer_faq">Pytania i ôdpowiedzi</string>
   <string name="navigation_drawer_privacy_policy">Polityka prywatności</string>
   <string name="account_list_empty">Witōmy w DAVx⁵!\n\nMożesz teroz przidać kōnto CalDAV/CardDAV.</string>
-  <string name="accounts_global_sync_disabled">Autōmatyczno synchrōnizacyjo dlo cołkigo systymu je zastawiōno</string>
-  <string name="accounts_global_sync_enable">Włōncz</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Niy szło ôdświyżyć serwisu</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Niy szło ôdświyżyć listy kolekcyje</string>
@@ -91,10 +84,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Niy ma (jeszcze) żodnych ksiōnżek adresowych.</string>
-  <string name="account_no_calendars">Niy ma (jeszcze) żodnych kalyndorzōw.</string>
-  <string name="account_no_webcals">Niy ma (jeszcze) żodnych subskrypcyji kalyndorzōw.</string>
-  <string name="account_swipe_down">Przeciōng w dōł, żeby ôdświyżyć lista ze serwera.</string>
   <string name="account_synchronize_now">Synchrōnizuj teroz</string>
   <string name="account_settings">Sztelōnki kōnta</string>
   <string name="account_rename">Przemianuj kōnto</string>
@@ -107,8 +96,6 @@
   <string name="account_read_only">ino do ôdczytu</string>
   <string name="account_calendar">kalyndorz</string>
   <string name="account_task_list">lista zadań</string>
-  <string name="account_create_new_address_book">Stwōrz nowo ksiōnżka adresowo</string>
-  <string name="account_create_new_calendar">Stwōrz nowy kalyndorz</string>
   <string name="account_no_webcal_handler_found">Niy szło znojś aplikacyje, co ôbsuguje Webcal</string>
   <string name="account_install_icsx5">Zainstaluj ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -137,7 +124,6 @@
   <string name="login_no_caldav_carddav">Niy idzie znojść usugi CalDAV abo CardDAV.</string>
   <string name="login_view_logs">Pokoż informacyje</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Sztelōnki: %s</string>
   <string name="settings_sync">Synchrōnizacyjo</string>
   <string name="settings_sync_interval_contacts">Frekwyncyjo synchrōnizacyje kōntaktōw</string>
   <string name="settings_sync_summary_manually">Ino ryncznie</string>
@@ -162,10 +148,8 @@
   <string name="settings_sync_wifi_only_ssids_message">Ôddzielōne kōmami miana (SSID) przizwolōnych necōw WiFi (ôstow prōzne dlo wszyjskich)</string>
   <string name="settings_authentication">Autoryzowanie</string>
   <string name="settings_username">Miano używocza</string>
-  <string name="settings_enter_username">Wpisz miano używocza:</string>
   <string name="settings_password">Hasło</string>
   <string name="settings_password_summary">Zaktualizuj hasło zgodnie ze serwerym.</string>
-  <string name="settings_enter_password">Wpisz hasło:</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limit czasowy przeszłych zdarzyń</string>
   <string name="settings_sync_time_range_past_none">Wszyjske zdarzynia bydōm zsynchrōnizowane</string>
@@ -237,6 +221,4 @@
   <string name="sync_invalid_task">Dostane zadanie ze serwera je niynoleżne</string>
   <string name="sync_invalid_resources_ignoring">Ignorowanie jednego abo wiyncyj niynoleżnych zasobōw</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Bezpieczyństwo połōnczynio</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ trefiōł niyznōmy certyfikat. Chcesz go przidać?</string>
 </resources>

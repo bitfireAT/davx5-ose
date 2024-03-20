@@ -26,8 +26,6 @@
   <string name="intro_slogan1">داده های شما، انتخاب شما</string>
   <string name="intro_slogan2">کنترل را بدست بگیرید</string>
   <string name="intro_battery_title">فواصل همگام سازی منظم</string>
-  <string name="intro_battery_not_whitelisted">غیر فعال (توصیه نمی‌شود)</string>
-  <string name="intro_battery_whitelisted">فعال (توصیه می‌شود)</string>
   <string name="intro_battery_text">برای همگام سازی در فواصل منظم ، باید %s در پس زمینه اجرا شود. در غیر این صورت ، اندروید ممکن است هماهنگ سازی را متوقف کند.</string>
   <string name="intro_battery_dont_show">من به فواصل همگام سازی منظم نیاز ندارم. *</string>
   <string name="intro_autostart_title">سازگاری %s</string>
@@ -65,8 +63,6 @@
   <string name="permissions_notification_status_off">اعلان ها غیرفعال اند (توصیه نمی شود).</string>
   <string name="permissions_notification_status_on">اعلان ها فعال اند.</string>
   <string name="permissions_jtx_title">مجوز برنامه jtx Board</string>
-  <string name="permissions_jtx_status_off">تسک، ثبت وقایع و یادداشت ها همگام سازی نمی شوند.</string>
-  <string name="permissions_jtx_status_on">تسک، ثبت وقایع و یادداشت ها همگام سازی می شوند.</string>
   <string name="permissions_opentasks_title">مجوزهای OpenTasks</string>
   <string name="permissions_tasksorg_title">مجوز فعالیت ها</string>
   <string name="permissions_tasks_status_off">عدم همگام سازی وظایف</string>
@@ -94,9 +90,7 @@
   <string name="about_libraries">کتابخانه ها</string>
   <string name="about_version">ورژن %1$s (%2$d)</string>
   <string name="about_build_date">در %s وارد شده است</string>
-  <string name="about_flavor_info">این نسخه تنها برای پخش در Google Play واجد شرایط است.</string>
   <string name="about_license_info_no_warranty">این برنامه کاملاً بدون ضمانت است. این یک نرم افزار رایگان است ، و شما می توانید تحت شرایط خاص توزیع مجدد آن را انجام دهید.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>با تشکر از: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">پرونده ثبت ایجاد نشد</string>
   <string name="logging_notification_text">اکنون همه %s فعالیت ها را ثبت می کنید</string>
@@ -106,7 +100,6 @@
   <string name="navigation_drawer_subtitle"> همگام سازی CalDAV / CardDAV</string>
   <string name="navigation_drawer_about">درباره / مجوز</string>
   <string name="navigation_drawer_beta_feedback">بازخورد بتا</string>
-  <string name="install_email_client">لطفاً یک سرویس گیرنده ایمیل نصب کنید</string>
   <string name="install_browser">لطفاً یک مرورگر وب نصب کنید</string>
   <string name="navigation_drawer_settings">تنظیمات</string>
   <string name="navigation_drawer_news_updates">اخبار و amp؛ به روز رسانی</string>
@@ -123,8 +116,6 @@
   <string name="account_list_manage_datasaver">مدیریت محافظ داده</string>
   <string name="account_list_manage_storage">مدیریت حافظه</string>
   <string name="account_list_empty">به همگام‌ساز DAVx⁵ خوش آمدید</string>
-  <string name="accounts_global_sync_disabled">همگام سازی خودکار در کل سیستم غیرفعال است</string>
-  <string name="accounts_global_sync_enable">فعال</string>
   <string name="accounts_sync_all">همگام سازی همه حساب‌ها</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">تشخیص سرویس ناموفق بود</string>
@@ -174,16 +165,11 @@
   <string name="app_settings_reset_hints_success">همه نکات دوباره نشان داده خواهد شد</string>
   <string name="app_settings_integration">ادغام</string>
   <string name="app_settings_tasks_provider">برنامه مدیریت فعالیت ها</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">همگام سازی با %s</string>
   <string name="app_settings_tasks_provider_none">برنامه سازگار یافت نشد</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">هیچ کتاب آدرسی وجود ندارد (هنوز).</string>
-  <string name="account_no_calendars">هیچ تقویمی وجود ندارد (هنوز).</string>
-  <string name="account_no_webcals">هیچ اشتراک تقویمی وجود ندارد (هنوز).</string>
-  <string name="account_swipe_down">برای تازه کردن لیست از سرور ، صفحه را به پایین بکشید.</string>
   <string name="account_synchronize_now">اکنون همگام سازی کنید</string>
   <string name="account_settings">تنظیمات حساب</string>
   <string name="account_rename">تغییر نام حساب</string>
@@ -199,8 +185,6 @@
   <string name="account_task_list">لیست کار</string>
   <string name="account_journal">وقایع</string>
   <string name="account_only_personal">فقط شخصی ها را نمایش بده</string>
-  <string name="account_create_new_address_book">کتاب آدرس جدید ایجاد کنید</string>
-  <string name="account_create_new_calendar">تقویم جدید ایجاد کنید</string>
   <string name="account_no_webcal_handler_found">هیچ برنامه ای با قابلیت Webcal پیدا نشد</string>
   <string name="account_install_icsx5">ICSx⁵ را نصب کنید</string>
   <!--AddAccountActivity-->
@@ -236,7 +220,6 @@
   <string name="login_username_password_wrong">نام کاربری (آدرس ایمیل) / رمز عبور اشتباه است؟</string>
   <string name="login_view_logs">نمایش جزئیات</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">تنظیمات %s</string>
   <string name="settings_sync">همگام سازی</string>
   <string name="settings_sync_interval_contacts">همگام سازی مخاطبین </string>
   <string name="settings_sync_summary_manually">فقط دستی</string>
@@ -263,10 +246,8 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">مدیریت</string>
   <string name="settings_authentication">احراز هویت</string>
   <string name="settings_username">نام کاربری</string>
-  <string name="settings_enter_username">نام کاربری را وارد کنید</string>
   <string name="settings_password">گذرواژه</string>
   <string name="settings_password_summary">رمز عبور را با توجه به سرور خود به روز کنید.</string>
-  <string name="settings_enter_password">گذرواژه را وارد کنید:</string>
   <string name="settings_certificate_install">نصب گواهی</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">محدودیت زمانی رویداد گذشته</string>
@@ -374,6 +355,4 @@
   <string name="sync_invalid_task">کار نامعتبر از سرور دریافت شد</string>
   <string name="sync_invalid_resources_ignoring">نادیده گرفتن یک یا چند منبع نامعتبر</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">همگام ساز DAVx⁵: امنیت اتصال</string>
-  <string name="trust_certificate_unknown_certificate_found">همگام ساز DAVx⁵ با یک گواهی ناشناخته روبرو شده است. آیا می خواهید به آن اعتماد کنید؟</string>
 </resources>

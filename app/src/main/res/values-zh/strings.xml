@@ -30,8 +30,6 @@
   <string name="intro_slogan1">您的数据。您的选择。</string>
   <string name="intro_slogan2">获得控制。</string>
   <string name="intro_battery_title">定期同步间隔</string>
-  <string name="intro_battery_not_whitelisted">禁用（不推荐）</string>
-  <string name="intro_battery_whitelisted">启用（推荐）</string>
   <string name="intro_battery_text">为了定期进行同步，必须允许%s在后台运行。否则，Android可能会随时暂停同步。</string>
   <string name="intro_battery_dont_show">我不需要定期的同步。*</string>
   <string name="intro_autostart_title">%s兼容性</string>
@@ -69,8 +67,6 @@
   <string name="permissions_notification_status_off">已禁用通知（不推荐）</string>
   <string name="permissions_notification_status_on">已启用通知</string>
   <string name="permissions_jtx_title">jtx Board 权限</string>
-  <string name="permissions_jtx_status_off">无任务、日记、笔记同步</string>
-  <string name="permissions_jtx_status_on">可同步任务、日记和笔记</string>
   <string name="permissions_opentasks_title">OpenTasks权限</string>
   <string name="permissions_tasksorg_title">Tasks权限</string>
   <string name="permissions_tasks_status_off">无任务同步</string>
@@ -101,9 +97,7 @@
   <string name="about_version">版本 %1$s (%2$d)</string>
   <string name="about_build_date">编译于 %s</string>
   <string name="about_copyright">©Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) 及贡献者</string>
-  <string name="about_flavor_info">此版本只允许在 Google Play 上发行。</string>
   <string name="about_license_info_no_warranty">本程序不附带任何担保。这是一款自由软件，你可以有条件地传播它。</string>
-  <string name="about_translations_thanks"><![CDATA[<i>谢谢：</i>%s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">无法创建日志文件</string>
   <string name="logging_notification_text">正记录%s的所有活动</string>
@@ -113,7 +107,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同步器</string>
   <string name="navigation_drawer_about">关于 / 许可</string>
   <string name="navigation_drawer_beta_feedback">测试版反馈</string>
-  <string name="install_email_client">请安装邮件客户端</string>
   <string name="install_browser">请安装网页浏览器</string>
   <string name="navigation_drawer_settings">设置</string>
   <string name="navigation_drawer_news_updates">最新消息</string>
@@ -136,8 +129,6 @@
   <string name="account_list_low_storage">低存储空间。Android 不会立即同步本地更改，但会在下次定期同步时进行</string>
   <string name="account_list_manage_storage">管理存储</string>
   <string name="account_list_empty">欢迎使用 DAVx⁵！\n\n请开始增加 CalDAV/CardDAV 账户。</string>
-  <string name="accounts_global_sync_disabled">系统全局自动同步已禁用</string>
-  <string name="accounts_global_sync_enable">启用</string>
   <string name="accounts_sync_all">同步所有账户</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">服务配置检测失败</string>
@@ -189,7 +180,6 @@
   <string name="app_settings_reset_hints_success">所有提示将会再次显示</string>
   <string name="app_settings_integration">集成</string>
   <string name="app_settings_tasks_provider">Tasks 应用</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">正与%s同步</string>
   <string name="app_settings_tasks_provider_none">未找到兼容的任务应用</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
@@ -197,10 +187,6 @@
   <string name="account_webcal">Webcal</string>
   <string name="account_missing_permissions">需要额外权限来同步这些集合</string>
   <string name="account_manage_permissions">管理权限</string>
-  <string name="account_no_address_books">暂无通讯录。</string>
-  <string name="account_no_calendars">暂无日历。</string>
-  <string name="account_no_webcals">暂无日历订阅。</string>
-  <string name="account_swipe_down">下拉可从服务器获取最新列表。</string>
   <string name="account_synchronize_now"> 立即同步</string>
   <string name="account_settings">账户设置</string>
   <string name="account_rename">重命名账户</string>
@@ -220,8 +206,6 @@
   <string name="account_only_personal">只显示个人</string>
   <string name="account_refresh_collections">刷新集合</string>
   <string name="account_refreshing_collections">正在刷新集合列表</string>
-  <string name="account_create_new_address_book">创建通讯录</string>
-  <string name="account_create_new_calendar">创建日历</string>
   <string name="account_webcal_external_app">可以用外部应用来同步 Webcal 订阅</string>
   <string name="account_no_webcal_handler_found">找不到支持 Webcal 的应用</string>
   <string name="account_install_icsx5">安装 ICSx⁵</string>
@@ -277,7 +261,6 @@
   <string name="login_username_password_wrong">用户名（邮箱地址）或密码错误？</string>
   <string name="login_view_logs">显示详情</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">设置：%s</string>
   <string name="settings_sync">同步</string>
   <string name="settings_sync_interval_contacts">通讯录自动同步间隔</string>
   <string name="settings_sync_summary_manually">手动同步</string>
@@ -309,10 +292,8 @@
   <string name="settings_oauth">重新验证身份</string>
   <string name="settings_oauth_summary">再次进行 OAuth 登录</string>
   <string name="settings_username">用户名</string>
-  <string name="settings_enter_username">输入用户名</string>
   <string name="settings_password">密码</string>
   <string name="settings_password_summary">修改服务器密码</string>
-  <string name="settings_enter_password">输入密码</string>
   <string name="settings_certificate_alias">客户端证书</string>
   <string name="settings_certificate_alias_empty">无证书可用或未选择证书</string>
   <string name="settings_certificate_install">安装证书</string>
@@ -436,6 +417,4 @@
   <string name="sync_invalid_task">从服务器收到无效的任务项</string>
   <string name="sync_invalid_resources_ignoring">正在忽略若干无效资源</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: 连接安全性</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ 遇到了未知证书。你是否要信任该证书？</string>
 </resources>

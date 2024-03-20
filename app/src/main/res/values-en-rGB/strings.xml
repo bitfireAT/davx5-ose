@@ -26,8 +26,6 @@
   <string name="intro_slogan1">Your data. Your choice.</string>
   <string name="intro_slogan2">Take control.</string>
   <string name="intro_battery_title">Regular sync intervals</string>
-  <string name="intro_battery_not_whitelisted">Disabled (not recommended)</string>
-  <string name="intro_battery_whitelisted">Enabled (recommended)</string>
   <string name="intro_battery_text">For synchronisation at regular intervals, %s must be allowed to run in the background. Otherwise, Android may pause synchronisation at any time.</string>
   <string name="intro_battery_dont_show">I don\'t need regular sync intervals.*</string>
   <string name="intro_autostart_title">%s compatibility</string>
@@ -65,8 +63,6 @@
   <string name="permissions_notification_status_off">Notifications disabled (not recommended)</string>
   <string name="permissions_notification_status_on">Notifications enabled</string>
   <string name="permissions_jtx_title">jtx Board permissions</string>
-  <string name="permissions_jtx_status_off">No tasks, journals, notes sync</string>
-  <string name="permissions_jtx_status_on">Tasks, journals, notes sync possible</string>
   <string name="permissions_opentasks_title">OpenTasks permissions</string>
   <string name="permissions_tasksorg_title">Tasks permissions</string>
   <string name="permissions_tasks_status_off">No task sync</string>
@@ -95,9 +91,7 @@
   <string name="about_version">Version %1$s (%2$d)</string>
   <string name="about_build_date">Compiled on %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) and contributors</string>
-  <string name="about_flavor_info">This version is only eligible for distribution over Google Play.</string>
   <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Thanks to: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Couldn\'t create log file</string>
   <string name="logging_notification_text">Now logging all %s activities</string>
@@ -107,7 +101,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
   <string name="navigation_drawer_about">About / License</string>
   <string name="navigation_drawer_beta_feedback">Beta feedback</string>
-  <string name="install_email_client">Please install an email client</string>
   <string name="install_browser">Please install a Web browser</string>
   <string name="navigation_drawer_settings">Settings</string>
   <string name="navigation_drawer_news_updates">News &amp; updates</string>
@@ -126,8 +119,6 @@
   <string name="account_list_low_storage">Storage space low. Android will not sync local changes immediately, but during the next regular sync.</string>
   <string name="account_list_manage_storage">Manage storage</string>
   <string name="account_list_empty">Welcome to DAVx⁵!\n\nYou can add a CalDAV/CardDAV account now.</string>
-  <string name="accounts_global_sync_disabled">System-wide automatic synchronisation is disabled</string>
-  <string name="accounts_global_sync_enable">Enable</string>
   <string name="accounts_sync_all">Sync all accounts</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Service detection failed</string>
@@ -177,16 +168,11 @@
   <string name="app_settings_reset_hints_success">All hints will be shown again</string>
   <string name="app_settings_integration">Integration</string>
   <string name="app_settings_tasks_provider">Tasks app</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Synchronising with %s</string>
   <string name="app_settings_tasks_provider_none">No compatible tasks app found</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">There are no address books (yet).</string>
-  <string name="account_no_calendars">There are no calendars (yet).</string>
-  <string name="account_no_webcals">There are no calendar subscriptions (yet).</string>
-  <string name="account_swipe_down">Swipe down to refresh the list from the server.</string>
   <string name="account_synchronize_now">Synchronise now</string>
   <string name="account_settings">Account settings</string>
   <string name="account_rename">Rename account</string>
@@ -202,8 +188,6 @@
   <string name="account_task_list">task list</string>
   <string name="account_journal">journal</string>
   <string name="account_only_personal">Show only personal</string>
-  <string name="account_create_new_address_book">Create new address book</string>
-  <string name="account_create_new_calendar">Create new calendar</string>
   <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
   <string name="account_install_icsx5">Install ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -256,7 +240,6 @@
   <string name="login_username_password_wrong">Username (email address) / password wrong?</string>
   <string name="login_view_logs">Show details</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Settings: %s</string>
   <string name="settings_sync">Synchronisation</string>
   <string name="settings_sync_interval_contacts">Contacts sync. interval</string>
   <string name="settings_sync_summary_manually">Only manually</string>
@@ -288,10 +271,8 @@
   <string name="settings_oauth">Re-authenticate</string>
   <string name="settings_oauth_summary">Perform OAuth login again</string>
   <string name="settings_username">User name</string>
-  <string name="settings_enter_username">Enter user name:</string>
   <string name="settings_password">Password</string>
   <string name="settings_password_summary">Update the password according to your server.</string>
-  <string name="settings_enter_password">Enter your password:</string>
   <string name="settings_certificate_install">Install certificate</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Past event time limit</string>
@@ -413,6 +394,4 @@
   <string name="sync_invalid_task">Received invalid task from server</string>
   <string name="sync_invalid_resources_ignoring">Ignoring one or more invalid resources</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Connection security</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ has encountered an unknown certificate. Do you want to trust it?</string>
 </resources>

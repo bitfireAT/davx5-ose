@@ -29,8 +29,6 @@
   <string name="intro_slogan1">Vaše data. Vaše volba.</string>
   <string name="intro_slogan2">Mějte pod svou kontrolou.</string>
   <string name="intro_battery_title">Synchronizace v pravidelných intervalech</string>
-  <string name="intro_battery_not_whitelisted">Vypnuto (nedoporučeno)</string>
-  <string name="intro_battery_whitelisted">Zapnuto (doporučeno)</string>
   <string name="intro_battery_text">Pokud chcete synchronizaci v pravidelných intervalech, je třeba %s povolit být spuštěné na pozadí. V opačném případě může systém Android synchronizaci kdykoli pozastavit.</string>
   <string name="intro_battery_dont_show">Nepotřebuji synchronizaci v pravidelných intervalech.*</string>
   <string name="intro_autostart_title">Kompatibilita %s</string>
@@ -68,8 +66,6 @@
   <string name="permissions_notification_status_off">Upozornění vypnuta (nedoporučeno)</string>
   <string name="permissions_notification_status_on">Upozornění zapnuta</string>
   <string name="permissions_jtx_title">Oprávnění pro jtx Board</string>
-  <string name="permissions_jtx_status_off">Bez synchronizace úkolů, žurnálů a poznámek</string>
-  <string name="permissions_jtx_status_on">Synchronizace úkolů, žurnálů a poznámek možná</string>
   <string name="permissions_opentasks_title">Oprávnění pro OpenTasks</string>
   <string name="permissions_tasksorg_title">Oprávnění pro úkoly</string>
   <string name="permissions_tasks_status_off">Žádné úlohy ohledně synchronizace</string>
@@ -98,9 +94,7 @@
   <string name="about_version">Verze %1$s (%2$d)</string>
   <string name="about_build_date">Sestaveno %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) a přispěvatelé</string>
-  <string name="about_flavor_info">Tuto verzi je možné šířit pouze přes Google Play.</string>
   <string name="about_license_info_no_warranty">Na tento program nejsou poskytovány ŽÁDNÉ ZÁRUKY. Jedná se o svobodný software a jeho šíření dál je vítáno, ovšem za podmínky, že stejné svobody zůstanou zachovány i všem dalším příjemcům.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Poděkování: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nedaří se vytvořit soubor pro záznam událostí</string>
   <string name="logging_notification_text">Nyní je zaznamenáváno všech %s aktivit</string>
@@ -110,7 +104,6 @@
   <string name="navigation_drawer_subtitle">Adaptér synchronizace CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">O aplikaci / Licence</string>
   <string name="navigation_drawer_beta_feedback">Zpětná vazba k vývojové verzi</string>
-  <string name="install_email_client">Nainstalujte si e-mailového klienta</string>
   <string name="install_browser">Nainstalujte si webový prohlížeč</string>
   <string name="navigation_drawer_settings">Nastavení</string>
   <string name="navigation_drawer_news_updates">Novinky a aktualizace</string>
@@ -129,8 +122,6 @@
   <string name="account_list_low_storage">Málo volného místa v úložišti. Android nebude synchronizovat místní změny okamžitě, ale při další běžné synchronizaci.</string>
   <string name="account_list_manage_storage">Spravovat úložiště</string>
   <string name="account_list_empty">Vítejte v aplikaci DAVx⁵!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
-  <string name="accounts_global_sync_disabled">Automatická synchronizace v rámci celého systému je vypnutá</string>
-  <string name="accounts_global_sync_enable">Zapnout</string>
   <string name="accounts_sync_all">Synchronizovat všechny účty</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Vyhledání služby se nezdařilo</string>
@@ -180,16 +171,11 @@
   <string name="app_settings_reset_hints_success">Všechny rady budou znovu zobrazeny</string>
   <string name="app_settings_integration">Napojení</string>
   <string name="app_settings_tasks_provider">Aplikace pro úkoly</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Synchronizuje se s %s</string>
   <string name="app_settings_tasks_provider_none">Nenalezena žádná kompatibilní aplikace pro úkoly</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">(Zatím) zde nejsou žádné adresáře kontaktů.</string>
-  <string name="account_no_calendars">(Zatím) zde nejsou žádné kalendáře.</string>
-  <string name="account_no_webcals">(Zatím) zde nejsou žádná přihlášení se k odebírání kalendáře.</string>
-  <string name="account_swipe_down">Seznam ze serveru znovu načtete přejetím prstem dolů.</string>
   <string name="account_synchronize_now">Synchronizovat nyní</string>
   <string name="account_settings">Nastavení účtu</string>
   <string name="account_rename">Přejmenovat účet</string>
@@ -205,8 +191,6 @@
   <string name="account_task_list">seznam úkolů</string>
   <string name="account_journal">žurnál</string>
   <string name="account_only_personal">Zobrazit pouze osobní</string>
-  <string name="account_create_new_address_book">Vytvořit nový adresář kontaktů</string>
-  <string name="account_create_new_calendar">Vytvořit nový kalendář</string>
   <string name="account_no_webcal_handler_found">Nenalezena žádná aplikace, která by umožňovala webcal</string>
   <string name="account_install_icsx5">Nainstalovat ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -261,7 +245,6 @@
   <string name="login_username_password_wrong">Nesprávné uživatelské jméno (e-mailová adresa) nebo heslo?</string>
   <string name="login_view_logs">Zobrazit podrobnosti</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Nastavení: %s</string>
   <string name="settings_sync">Synchronizace</string>
   <string name="settings_sync_interval_contacts">Interval synchronizace kontaktů</string>
   <string name="settings_sync_summary_manually">Pouze ručně</string>
@@ -293,10 +276,8 @@
   <string name="settings_oauth">Znovu ověřit</string>
   <string name="settings_oauth_summary">Znovu provést přihlášení OAuth</string>
   <string name="settings_username">Uživatelské jméno</string>
-  <string name="settings_enter_username">Zadejte uživatelské jméno:</string>
   <string name="settings_password">Heslo</string>
   <string name="settings_password_summary">Aktualizovat heslo dle svého serveru.</string>
-  <string name="settings_enter_password">Zadejte své heslo:</string>
   <string name="settings_certificate_install">Instalovat certifikát</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Časový limit pro staré události</string>
@@ -422,6 +403,4 @@
   <string name="sync_invalid_task">Ze serveru obdržen neplatný úkol</string>
   <string name="sync_invalid_resources_ignoring">Ignoruje se jeden či více neplatný prostředků</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Zabezpečení připojení</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ nalezlo neznámý certifikát. Chcete mu důvěřovat?</string>
 </resources>

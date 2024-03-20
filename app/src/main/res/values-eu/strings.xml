@@ -29,8 +29,6 @@
   <string name="intro_slogan1">Zure datuak. Zure aukera.</string>
   <string name="intro_slogan2">Har ezazu kontrola.</string>
   <string name="intro_battery_title">Sinkronizazio tarte erregularrak</string>
-  <string name="intro_battery_not_whitelisted">Desgaituta (ez gomendatuta)</string>
-  <string name="intro_battery_whitelisted">Gaituta (gomendatuta)</string>
   <string name="intro_battery_text">Sinkronizazioa tarte erregularretan ahalbidetzeko, %s atzeko planoan exekutatzen utzi behar da. Bestela, Androidek sinkronizazioa gelditu dezake edozein unean.</string>
   <string name="intro_battery_dont_show">Ez ditut sinkronizazio tarte erregularrak behar.*</string>
   <string name="intro_autostart_title">%s bateragarritasuna</string>
@@ -68,8 +66,6 @@
   <string name="permissions_notification_status_off">Jakinarazpenak desgaituta (ez gomendatuta)</string>
   <string name="permissions_notification_status_on">Jakinarazpenak gaituta</string>
   <string name="permissions_jtx_title">jtx taularen baimenak</string>
-  <string name="permissions_jtx_status_off">Zeregin, egunkari, noten sinkronizaziorik ez</string>
-  <string name="permissions_jtx_status_on">Zeregin, egunkari, noten sinkronizazioa posible</string>
   <string name="permissions_opentasks_title">OpenTasks baimenak</string>
   <string name="permissions_tasksorg_title">Tasks baimenak</string>
   <string name="permissions_tasks_status_off">Zeregin sink. ez</string>
@@ -98,9 +94,7 @@
   <string name="about_version">%1$s (%2$d) bertsioa</string>
   <string name="about_build_date">%s(e)an konpilatuta</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) eta kolaboratzaileak</string>
-  <string name="about_flavor_info">Bertsio hau Google Play bidez soilik banatu daiteke.</string>
   <string name="about_license_info_no_warranty">Programa hau INOLAKO BERMERIK GABE dator. Software librea da, eta birbanatzeko baimena duzu baldintza batzuk kontuan hartuz.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Eskerrik asko: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Ezin izan da egunkari fitxategia sortu</string>
   <string name="logging_notification_text">%s jarduera guztiak erregistratzen</string>
@@ -110,7 +104,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV sinkronizazio moldagailua</string>
   <string name="navigation_drawer_about">Honi buruz / Lizentzia</string>
   <string name="navigation_drawer_beta_feedback">Beta iritzia</string>
-  <string name="install_email_client">Instalatu e-mail bezero bat</string>
   <string name="install_browser">Instalatu web nabigatzaile bat</string>
   <string name="navigation_drawer_settings">Ezarpenak</string>
   <string name="navigation_drawer_news_updates">Berriak eta eguneraketak</string>
@@ -131,8 +124,6 @@
   <string name="account_list_low_storage">Biltegiratze lekua baxua. Android-ek ez ditu tokiko aldaketak berehala sinkronizatuko, hurrengo sinkronizazio arruntean baizik.</string>
   <string name="account_list_manage_storage">Kudeatu biltegia</string>
   <string name="account_list_empty">Ongi etorri DAVx⁵ aplikaziora!\n\nCalDAV/CardDAV kontu bat gehitu dezakezu orain.</string>
-  <string name="accounts_global_sync_disabled">Sistema osoko sinkronizazio automatikoa desgaituta dago</string>
-  <string name="accounts_global_sync_enable">Gaitu</string>
   <string name="accounts_sync_all">Sinkronizatu kontu guztiak</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zerbitzuaren detekzioak huts egin du</string>
@@ -182,16 +173,11 @@
   <string name="app_settings_reset_hints_success">Aholku guztiak erakutsiko dira berriro</string>
   <string name="app_settings_integration">Integrazioa</string>
   <string name="app_settings_tasks_provider">Tasks aplikazioa</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">%s(r)ekin sinkronizatzen</string>
   <string name="app_settings_tasks_provider_none">Ez da zeregin aplikazio bategarririk aurkitu</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Ez dago helbide libururik (oraindik).</string>
-  <string name="account_no_calendars">Ez dago egutegirik (oraindik).</string>
-  <string name="account_no_webcals">Ez dago egutegi harpidetzarik (oraindik).</string>
-  <string name="account_swipe_down">Lerratu beherantz zerbitzariaren zerrenda freskatzeko.</string>
   <string name="account_synchronize_now">Sinkronizatu orain</string>
   <string name="account_settings">Kontuaren ezarpenak</string>
   <string name="account_rename">Berrizendatu kontua</string>
@@ -209,8 +195,6 @@
   <string name="account_task_list">zeregin zerrenda</string>
   <string name="account_journal">egunkaria</string>
   <string name="account_only_personal">Erakutsi pertsonala soilik</string>
-  <string name="account_create_new_address_book">Sortu helbide liburu berria</string>
-  <string name="account_create_new_calendar">Sortu egutegi berria</string>
   <string name="account_no_webcal_handler_found">Ez da Webcal-ekin bateragarria den aplikaziorik aurkitu</string>
   <string name="account_install_icsx5">Instalatu ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -265,7 +249,6 @@
   <string name="login_username_password_wrong">Erabiltzaile-izena (eposta) / pasahitza txarto dago?</string>
   <string name="login_view_logs">Erakutsi xehetasunak</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Ezarpenak: %s</string>
   <string name="settings_sync">Sinkronizazioa</string>
   <string name="settings_sync_interval_contacts">Kontaktuen sink. tartea</string>
   <string name="settings_sync_summary_manually">Eskuz soilik</string>
@@ -297,10 +280,8 @@
   <string name="settings_oauth">Berriro autentifikatu</string>
   <string name="settings_oauth_summary">Egin OAuth saioa berriro</string>
   <string name="settings_username">Erabiltzaile izena</string>
-  <string name="settings_enter_username">Sartu erabiltzaile izena:</string>
   <string name="settings_password">Pasahitza</string>
   <string name="settings_password_summary">Eguneratu pasahitza zure zerbitzariaren arabera</string>
-  <string name="settings_enter_password">Sartu zure pasahitza:</string>
   <string name="settings_certificate_install">Instalatu ziurtagiria</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Aurreko gertaeren denbora muga</string>
@@ -424,6 +405,4 @@
   <string name="sync_invalid_task">Zeregin baliogabea jaso da zerbitzaritik</string>
   <string name="sync_invalid_resources_ignoring">Baliabide baliogabe bat edo gehiago ezikusten</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Konexio segurtasuna</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ aplikazioak ziurtagiri ezezagun bat aurkitu du. Fidagarritzat jo nahi duzu?</string>
 </resources>

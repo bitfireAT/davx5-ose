@@ -30,8 +30,6 @@
   <string name="intro_slogan1">あなたのデータはあなたの手に</string>
   <string name="intro_slogan2">コントロールを始める</string>
   <string name="intro_battery_title">一定の間隔で同期</string>
-  <string name="intro_battery_not_whitelisted">無効 (非推奨)</string>
-  <string name="intro_battery_whitelisted">有効 (推奨)</string>
   <string name="intro_battery_text">一定の間隔で同期するには、%s のバックグラウンドでの動作を許可する必要があります。許可しない場合、Android によって同期が停止されることがあります。</string>
   <string name="intro_battery_dont_show">一定間隔での同期は不要です*</string>
   <string name="intro_autostart_title">%s 適合性</string>
@@ -69,8 +67,6 @@
   <string name="permissions_notification_status_off">通知が無効です (非推奨)</string>
   <string name="permissions_notification_status_on">通知が有効です</string>
   <string name="permissions_jtx_title">jtx Board へのアクセス</string>
-  <string name="permissions_jtx_status_off">ジャーナル、メモ、タスクを同期しない</string>
-  <string name="permissions_jtx_status_on">ジャーナル、メモ、タスクを同期できます</string>
   <string name="permissions_opentasks_title">OpenTasks へのアクセス</string>
   <string name="permissions_tasksorg_title">Tasks へのアクセス</string>
   <string name="permissions_tasks_status_off">タスクを同期しない</string>
@@ -101,9 +97,7 @@
   <string name="about_version">バージョン %1$s (%2$d)</string>
   <string name="about_build_date">コンパイル日時 %s</string>
   <string name="about_copyright">© Ricki Hirner、Bernhard Stockmann (bitfire web engineering GmbH) と貢献者</string>
-  <string name="about_flavor_info">このバージョンは Google Play での配信にのみ対応しています。</string>
   <string name="about_license_info_no_warranty">このプログラムは完全に無保証で提供されます。これはフリーソフトウェアで、特定の条件下での再頒布を歓迎します。</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Thanks to: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">ログファイルを作成できませんでした</string>
   <string name="logging_notification_text">%s のすべてのアクティビティのログを記録しています</string>
@@ -113,7 +107,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同期アダプター</string>
   <string name="navigation_drawer_about">アプリについて / ライセンス</string>
   <string name="navigation_drawer_beta_feedback">ベータフィードバック</string>
-  <string name="install_email_client">メールクライアントをインストールしてください</string>
   <string name="install_browser">ウェブブラウザをインストールしてください</string>
   <string name="navigation_drawer_settings">設定</string>
   <string name="navigation_drawer_news_updates">ニュース &amp; アップデート</string>
@@ -136,8 +129,6 @@
   <string name="account_list_low_storage">ストレージの容量が残りわずかです。Android はローカルの変更を即座に同期しませんが、次の通常サイクルで同期します。</string>
   <string name="account_list_manage_storage">ストレージを管理</string>
   <string name="account_list_empty">DAVx⁵ にようこそ！\n\nCalDAV/CardDAV アカウントを追加できるようになりました。</string>
-  <string name="accounts_global_sync_disabled">システム全体の自動同期が無効です</string>
-  <string name="accounts_global_sync_enable">有効</string>
   <string name="accounts_sync_all">すべてのアカウントを同期</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">サービスの検出に失敗しました</string>
@@ -189,7 +180,6 @@
   <string name="app_settings_reset_hints_success">すべてのヒントを再表示します</string>
   <string name="app_settings_integration">統合</string>
   <string name="app_settings_tasks_provider">タスク管理アプリ</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">%s と同期しています</string>
   <string name="app_settings_tasks_provider_none">連携できるアプリがありません</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
@@ -197,10 +187,6 @@
   <string name="account_webcal">Webcal</string>
   <string name="account_missing_permissions">これらのコレクションを同期するには、追加の権限が必要です。</string>
   <string name="account_manage_permissions">権限を管理</string>
-  <string name="account_no_address_books">アドレス帳は (まだ) ありません。</string>
-  <string name="account_no_calendars">カレンダーは (まだ) ありません。</string>
-  <string name="account_no_webcals">カレンダーのサブスクリプションは (まだ) ありません。</string>
-  <string name="account_swipe_down">下にスワイプすると、サーバーからリストを再読み込みします。</string>
   <string name="account_synchronize_now">今すぐ同期</string>
   <string name="account_settings">アカウント設定</string>
   <string name="account_rename">アカウントの名前を変更</string>
@@ -220,8 +206,6 @@
   <string name="account_only_personal">プライベートのみ表示</string>
   <string name="account_refresh_collections">コレクションを再読み込み</string>
   <string name="account_refreshing_collections">コレクションリストを再読み込みしています</string>
-  <string name="account_create_new_address_book">新しいアドレス帳を作成</string>
-  <string name="account_create_new_calendar">新しいカレンダーを作成</string>
   <string name="account_webcal_external_app">Webcal の購読は外部アプリで同期できます。</string>
   <string name="account_no_webcal_handler_found">Webcal に対応するアプリが見つかりませんでした</string>
   <string name="account_install_icsx5">ICSx⁵ をインストール</string>
@@ -277,7 +261,6 @@
   <string name="login_username_password_wrong">ユーザー名 (メールアドレス) / パスワード が間違っていませんか？</string>
   <string name="login_view_logs">詳細を表示</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">設定: %s</string>
   <string name="settings_sync">同期</string>
   <string name="settings_sync_interval_contacts">連絡先の同期間隔</string>
   <string name="settings_sync_summary_manually">手動のみ</string>
@@ -309,10 +292,8 @@
   <string name="settings_oauth">再認証</string>
   <string name="settings_oauth_summary">もう一度 OAuth ログインを実行</string>
   <string name="settings_username">ユーザー名</string>
-  <string name="settings_enter_username">ユーザー名を入力:</string>
   <string name="settings_password">パスワード</string>
   <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
-  <string name="settings_enter_password">パスワードを入力:</string>
   <string name="settings_certificate_alias">クライアント証明書</string>
   <string name="settings_certificate_alias_empty">クライアント証明書が使用できないか、選択されていません</string>
   <string name="settings_certificate_install">証明書をインストール</string>
@@ -436,6 +417,4 @@
   <string name="sync_invalid_task">サーバーから無効なタスクを受信しました</string>
   <string name="sync_invalid_resources_ignoring">1 件または複数の無効なリソースを無視します</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: 接続セキュリティ</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ が未知の証明書を検出しました。信頼しますか？</string>
 </resources>

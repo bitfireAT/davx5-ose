@@ -29,8 +29,6 @@
   <string name="intro_slogan1">Az Ön adatai.  Az Ön döntése.</string>
   <string name="intro_slogan2">Vegye kézbe az irányítást.</string>
   <string name="intro_battery_title">Rendszeres ütemezett szinkronizálás</string>
-  <string name="intro_battery_not_whitelisted">Kikapcsolva (nem javasolt)</string>
-  <string name="intro_battery_whitelisted">Bekapcsolva (javasolt)</string>
   <string name="intro_battery_text">A rendszeres ütemezett szinkronizáláshoz a %s számára engedélyezni kell a háttérben futást, különben az Android rendszer a szinkronizálást bármikor leállíthatja.</string>
   <string name="intro_battery_dont_show">Nincs szükségem rendszeres ütemezett szinkronizálásra.*</string>
   <string name="intro_autostart_title">%s kompatibilitás</string>
@@ -68,8 +66,6 @@
   <string name="permissions_notification_status_off">Az értesítések tiltása (nem ajánlott)</string>
   <string name="permissions_notification_status_on">Értesítések engedélyezése</string>
   <string name="permissions_jtx_title">jtx Board engedélyek</string>
-  <string name="permissions_jtx_status_off">Nincsenek szinkronizálandó feladatok, naplóbejegyzések és jegyzetek</string>
-  <string name="permissions_jtx_status_on">Van lehetőség a feladatok, naplóbejegyzések és jegyzetek szinkronizálására</string>
   <string name="permissions_opentasks_title">OpenTasks engedélyek</string>
   <string name="permissions_tasksorg_title">Feladat engedélyek</string>
   <string name="permissions_tasks_status_off">Nincs feladatszinkronizálás</string>
@@ -98,9 +94,7 @@
   <string name="about_version">Verziószám:%1$s (%2$d)</string>
   <string name="about_build_date">Fordítás ideje: %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) és a közreműködők</string>
-  <string name="about_flavor_info">Ez a verzió csak a Google Play Áruházon keresztül terjeszthető</string>
   <string name="about_license_info_no_warranty">Ehhez a program SEMMIFÉLE GARANCIA NEM JÁR.   Ez a program szabad szoftver, ami a bizonyos feltételek mellett szabadon terjeszthető.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Köszönet a következőknek: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">A naplófájl létrehozása nem sikerült</string>
   <string name="logging_notification_text">Mostantól %s minden művelete naplózásra kerül</string>
@@ -110,7 +104,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV szinkronizációs adapter</string>
   <string name="navigation_drawer_about">Névjegy / Licenc</string>
   <string name="navigation_drawer_beta_feedback">Tesztelői visszajelzés</string>
-  <string name="install_email_client">Kérjük, telepítsen egy levelező-klienst</string>
   <string name="install_browser">Kérjük, telepítsen egy böngészőt</string>
   <string name="navigation_drawer_settings">Beállítások</string>
   <string name="navigation_drawer_news_updates">Hírek és frissítések</string>
@@ -129,8 +122,6 @@
   <string name="account_list_low_storage">A rendelkezésre álló tárhely kevés.  Az Android nem fogja a helyi erőforrásokat azonnal szinkronizálni, csak a következő rendes alkalommal.</string>
   <string name="account_list_manage_storage">Tárhely kezelése</string>
   <string name="account_list_empty">Üdvözöljük a DAVx⁵ felhasználók között!\n\nMost már felvehet CalDAV/CardDav fiókokat.</string>
-  <string name="accounts_global_sync_disabled">A rendszerszintű automatikus szinkronizálás ki van kapcsolva</string>
-  <string name="accounts_global_sync_enable">Bekapcsolás</string>
   <string name="accounts_sync_all">Az összes fiók szinkronizálása</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Szolgáltatások felderítése nem sikerült</string>
@@ -180,16 +171,11 @@
   <string name="app_settings_reset_hints_success">Az összes tipp újra meg fog jelenni</string>
   <string name="app_settings_integration">Integráció</string>
   <string name="app_settings_tasks_provider">Feladatok alkalmazás</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Szinkronizálás ezzel: %s </string>
   <string name="app_settings_tasks_provider_none">Nem található kompatibilis feladat alkalmazás</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Nincsenek címjegyzékek (még).</string>
-  <string name="account_no_calendars">Nincsenek naptárak (még).</string>
-  <string name="account_no_webcals">Nem iratkozott fel egyetlen naptárra sem (még).</string>
-  <string name="account_swipe_down">Lefelé húzással frissítse a listát a szerverről.</string>
   <string name="account_synchronize_now">Szinkronizálás most</string>
   <string name="account_settings">Fiókbeállítások</string>
   <string name="account_rename">Fiók átnevezése</string>
@@ -205,8 +191,6 @@
   <string name="account_task_list">feladatlista</string>
   <string name="account_journal">napló</string>
   <string name="account_only_personal">Csak a személyesek megjelenítése</string>
-  <string name="account_create_new_address_book">Új címjegyzék létrehozása</string>
-  <string name="account_create_new_calendar">Új naptár létrehozása</string>
   <string name="account_no_webcal_handler_found">Nem található Webcal-képes alkalmazás</string>
   <string name="account_install_icsx5">ICSx⁵ telepítése</string>
   <!--AddAccountActivity-->
@@ -261,7 +245,6 @@
   <string name="login_username_password_wrong">Felhasználónév (e-mail cím) vagy jelszó hibás?</string>
   <string name="login_view_logs">Részletek mutatása</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Beállítások: %s</string>
   <string name="settings_sync">Szinkronizálás</string>
   <string name="settings_sync_interval_contacts">Névjegyszinkronizálás sűrűsége</string>
   <string name="settings_sync_summary_manually">Manuális</string>
@@ -293,10 +276,8 @@
   <string name="settings_oauth">Autentikáció megismétlése</string>
   <string name="settings_oauth_summary">Az OAuth bejelentkezés megismétlése</string>
   <string name="settings_username">Felhasználónév</string>
-  <string name="settings_enter_username">Adja meg a felhasználónevet:</string>
   <string name="settings_password">Jelszó</string>
   <string name="settings_password_summary">Adja meg a szerveren érvényes új jelszót.</string>
-  <string name="settings_enter_password">Adja meg a jelszót:</string>
   <string name="settings_certificate_install">Tanúsítvány telepítése</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Múltbéli események időkorlátja</string>
@@ -418,6 +399,4 @@
   <string name="sync_invalid_task">A szerver érvénytelen feladatot küldött</string>
   <string name="sync_invalid_resources_ignoring">Egy vagy több érvénytelen erőforrás kihagyva</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: kapcsolatbiztonság</string>
-  <string name="trust_certificate_unknown_certificate_found">Egy eddig ismeretlen tanúsítvány érkezett.  Megbízhatónak kívánja elfogadni?</string>
 </resources>
