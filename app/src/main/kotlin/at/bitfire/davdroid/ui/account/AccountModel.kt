@@ -15,10 +15,10 @@ import android.provider.ContactsContract
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
@@ -26,36 +26,46 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.work.WorkInfo
 import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.XmlUtils
+import at.bitfire.dav4jvm.property.caldav.NS_APPLE_ICAL
+import at.bitfire.dav4jvm.property.caldav.NS_CALDAV
+import at.bitfire.dav4jvm.property.carddav.NS_CARDDAV
+import at.bitfire.dav4jvm.property.webdav.NS_WEBDAV
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
 import at.bitfire.davdroid.syncadapter.BaseSyncWorker
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
+import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.TaskUtils
+import at.bitfire.ical4android.util.DateUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import net.fortuna.ical4j.model.Calendar
+import java.io.StringWriter
 import java.util.Optional
 import java.util.logging.Level
 
 class AccountModel @AssistedInject constructor(
-    application: Application,
+    val context: Application,
     val db: AppDatabase,
     @Assisted val account: Account
-): AndroidViewModel(application), OnAccountsUpdateListener {
+): ViewModel(), OnAccountsUpdateListener {
 
     @AssistedFactory
     interface Factory {
@@ -69,7 +79,7 @@ class AccountModel @AssistedInject constructor(
     /** whether the account is invalid and the AccountActivity shall be closed */
     val invalid = MutableLiveData<Boolean>()
 
-    private val settings = AccountSettings(application, account)
+    private val settings = AccountSettings(context, account)
     private val refreshSettingsSignal = MutableLiveData(Unit)
     val showOnlyPersonal = refreshSettingsSignal.switchMap<Unit, AccountSettings.ShowOnlyPersonal> {
         object : LiveData<AccountSettings.ShowOnlyPersonal>() {
@@ -85,23 +95,25 @@ class AccountModel @AssistedInject constructor(
         refreshSettingsSignal.postValue(Unit)
     }
 
-    val context = getApplication<Application>()
     val accountManager: AccountManager = AccountManager.get(context)
 
     val cardDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CARDDAV)
-    val canCreateAddressBook = cardDavSvc.switchMap { svc ->
+    val bindableAddressBookHomesets = cardDavSvc.switchMap { svc ->
         if (svc != null)
-            db.homeSetDao().hasBindableByServiceLive(svc.id)
+            db.homeSetDao().getLiveBindableByService(svc.id)
         else
-            MutableLiveData(false)
+            MutableLiveData(emptyList())
+    }
+    val canCreateAddressBook = bindableAddressBookHomesets.map { homeSets ->
+        homeSets.isNotEmpty()
     }
     val cardDavRefreshing = cardDavSvc.switchMap { svc ->
         if (svc == null)
             return@switchMap null
-        RefreshCollectionsWorker.exists(application, RefreshCollectionsWorker.workerName(svc.id))
+        RefreshCollectionsWorker.exists(context, RefreshCollectionsWorker.workerName(svc.id))
     }
     val cardDavSyncPending = BaseSyncWorker.exists(
-        getApplication(),
+        context,
         listOf(WorkInfo.State.ENQUEUED),
         account,
         listOf(context.getString(R.string.address_books_authority)),
@@ -111,7 +123,7 @@ class AccountModel @AssistedInject constructor(
         }
     )
     val cardDavSyncing = BaseSyncWorker.exists(
-        getApplication(),
+        context,
         listOf(WorkInfo.State.RUNNING),
         account,
         listOf(context.getString(R.string.address_books_authority))
@@ -120,20 +132,23 @@ class AccountModel @AssistedInject constructor(
 
     private val tasksProvider = TaskUtils.currentProviderLive(context)
     val calDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CALDAV)
-    val canCreateCalendar = calDavSvc.switchMap { svc ->
+    val bindableCalendarHomesets = calDavSvc.switchMap { svc ->
         if (svc != null)
-            db.homeSetDao().hasBindableByServiceLive(svc.id)
+            db.homeSetDao().getLiveBindableByService(svc.id)
         else
-            MutableLiveData(false)
+            MutableLiveData(emptyList())
+    }
+    val canCreateCalendar = bindableCalendarHomesets.map { homeSets ->
+        homeSets.isNotEmpty()
     }
     val calDavRefreshing = calDavSvc.switchMap { svc ->
         if (svc == null)
             return@switchMap null
-        RefreshCollectionsWorker.exists(application, RefreshCollectionsWorker.workerName(svc.id))
+        RefreshCollectionsWorker.exists(context, RefreshCollectionsWorker.workerName(svc.id))
     }
     val calDavSyncPending = tasksProvider.switchMap { tasks ->
         BaseSyncWorker.exists(
-            getApplication(),
+            context,
             listOf(WorkInfo.State.ENQUEUED),
             account,
             listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority),
@@ -145,7 +160,7 @@ class AccountModel @AssistedInject constructor(
     }
     val calDavSyncing = tasksProvider.switchMap { tasks ->
         BaseSyncWorker.exists(
-            getApplication(),
+            context,
             listOf(WorkInfo.State.RUNNING),
             account,
             listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority)
@@ -155,7 +170,6 @@ class AccountModel @AssistedInject constructor(
     val webcalPager = CollectionPager(db, calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
 
     val renameAccountError = MutableLiveData<String>()
-    val deleteCollectionResult = MutableLiveData<Optional<Exception>>()
 
 
     init {
@@ -252,7 +266,6 @@ class AccountModel @AssistedInject constructor(
     fun onAccountRenamed(accountManager: AccountManager, oldAccount: Account, newName: String, syncIntervals: List<Pair<String, Long?>>) {
         // account has now been renamed
         Logger.log.info("Updating account name references")
-        val context: Application = getApplication()
 
         // disable periodic workers of old account
         syncIntervals.forEach { (authority, _) ->
@@ -329,9 +342,192 @@ class AccountModel @AssistedInject constructor(
         }, null)
     }
 
+
+    val createCollectionResult = MutableLiveData<Optional<Exception>>()
+    /**
+     * Creates a WebDAV collection using MKCOL or MKCALENDAR.
+     *
+     * @param homeSet       home set into which the collection shall be created
+     * @param addressBook   *true* if an address book shall be created, *false* if a calendar should be created
+     * @param name          name (path segment) of the collection
+     */
+    fun createCollection(
+        homeSet: HomeSet,
+        addressBook: Boolean,
+        name: String,
+        displayName: String?,
+        description: String?,
+        color: Int? = null,
+        timeZoneId: String? = null,
+        supportsVEVENT: Boolean? = null,
+        supportsVTODO: Boolean? = null,
+        supportsVJOURNAL: Boolean? = null
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        HttpClient.Builder(context, AccountSettings(context, account))
+            .setForeground(true)
+            .build().use { httpClient ->
+                try {
+                    // delete on server
+                    val url = homeSet.url.newBuilder()
+                        .addPathSegment(name)
+                        .addPathSegment("")     // trailing slash
+                        .build()
+                    val dav = DavResource(httpClient.okHttpClient, url)
+
+                    val xml = generateMkColXml(
+                        addressBook = addressBook,
+                        displayName = displayName,
+                        description = description,
+                        color = color,
+                        timezoneDef = timeZoneId?.let { tzId ->
+                            DateUtils.ical4jTimeZone(tzId)?.let { tz ->
+                                val cal = Calendar()
+                                cal.components += tz.vTimeZone
+                                cal.toString()
+                            }
+                        },
+                        supportsVEVENT = supportsVEVENT,
+                        supportsVTODO = supportsVTODO,
+                        supportsVJOURNAL = supportsVJOURNAL
+                    )
+
+                    dav.mkCol(
+                        xmlBody = xml,
+                        method = if (addressBook) "MKCOL" else "MKCALENDAR"
+                    ) {
+                        // success, otherwise an exception would have been thrown
+                    }
+
+                    // no HTTP error -> create collection locally
+                    val collection = Collection(
+                        serviceId = homeSet.serviceId,
+                        homeSetId = homeSet.id,
+                        url = url,
+                        type = if (addressBook) Collection.TYPE_ADDRESSBOOK else Collection.TYPE_CALENDAR,
+                        displayName = displayName,
+                        description = description
+                    )
+                    db.collectionDao().insert(collection)
+
+                    // trigger service detection (because the collection may actually have other properties than the ones we have inserted)
+                    RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
+
+                    // post success
+                    createCollectionResult.postValue(Optional.empty())
+                } catch (e: Exception) {
+                    Logger.log.log(Level.SEVERE, "Couldn't create collection", e)
+                    // post error
+                    createCollectionResult.postValue(Optional.of(e))
+                }
+            }
+    }
+
+    private fun generateMkColXml(
+        addressBook: Boolean,
+        displayName: String?,
+        description: String?,
+        color: Int? = null,
+        timezoneDef: String? = null,
+        supportsVEVENT: Boolean? = null,
+        supportsVTODO: Boolean? = null,
+        supportsVJOURNAL: Boolean? = null
+    ): String {
+        val writer = StringWriter()
+        val serializer = XmlUtils.newSerializer()
+        serializer.apply {
+            setOutput(writer)
+
+            startDocument("UTF-8", null)
+            setPrefix("", NS_WEBDAV)
+            setPrefix("CAL", NS_CALDAV)
+            setPrefix("CARD", NS_CARDDAV)
+
+            if (addressBook)
+                startTag(NS_WEBDAV, "mkcol")
+            else
+                startTag(NS_CALDAV, "mkcalendar")
+            startTag(NS_WEBDAV, "set")
+            startTag(NS_WEBDAV, "prop")
+
+            startTag(NS_WEBDAV, "resourcetype")
+            startTag(NS_WEBDAV, "collection")
+            endTag(NS_WEBDAV, "collection")
+            if (addressBook) {
+                startTag(NS_CARDDAV, "addressbook")
+                endTag(NS_CARDDAV, "addressbook")
+            } else {
+                startTag(NS_CALDAV, "calendar")
+                endTag(NS_CALDAV, "calendar")
+            }
+            endTag(NS_WEBDAV, "resourcetype")
+
+            displayName?.let {
+                startTag(NS_WEBDAV, "displayname")
+                text(it)
+                endTag(NS_WEBDAV, "displayname")
+            }
+
+            if (addressBook) {
+                // addressbook-specific properties
+                description?.let {
+                    startTag(NS_CARDDAV, "addressbook-description")
+                    text(it)
+                    endTag(NS_CARDDAV, "addressbook-description")
+                }
+
+            } else {
+                // calendar-specific properties
+                description?.let {
+                    startTag(NS_CALDAV, "calendar-description")
+                    text(it)
+                    endTag(NS_CALDAV, "calendar-description")
+                }
+                color?.let {
+                    startTag(NS_APPLE_ICAL, "calendar-color")
+                    text(DavUtils.ARGBtoCalDAVColor(it))
+                    endTag(NS_APPLE_ICAL, "calendar-color")
+                }
+                timezoneDef?.let {
+                    startTag(NS_CALDAV, "calendar-timezone")
+                    cdsect(it)
+                    endTag(NS_CALDAV, "calendar-timezone")
+                }
+
+                if (supportsVEVENT != null || supportsVTODO != null || supportsVJOURNAL != null) {
+                    // only if there's at least one explicitly supported calendar component set, otherwise don't include the property
+                    if (supportsVEVENT != false) {
+                        startTag(NS_CALDAV, "comp")
+                        attribute(null, "name", "VEVENT")
+                        endTag(NS_CALDAV, "comp")
+                    }
+                    if (supportsVTODO != false) {
+                        startTag(NS_CALDAV, "comp")
+                        attribute(null, "name", "VTODO")
+                        endTag(NS_CALDAV, "comp")
+                    }
+                    if (supportsVJOURNAL != false) {
+                        startTag(NS_CALDAV, "comp")
+                        attribute(null, "name", "VJOURNAL")
+                        endTag(NS_CALDAV, "comp")
+                    }
+                }
+            }
+
+            endTag(NS_WEBDAV, "prop")
+            endTag(NS_WEBDAV, "set")
+            if (addressBook)
+                endTag(NS_WEBDAV, "mkcol")
+            else
+                endTag(NS_CALDAV, "mkcalendar")
+            endDocument()
+        }
+        return writer.toString()
+    }
+
+    val deleteCollectionResult = MutableLiveData<Optional<Exception>>()
     /** Deletes the given collection from the database and the server. */
     fun deleteCollection(collection: Collection) = viewModelScope.launch(Dispatchers.IO) {
-        HttpClient.Builder(getApplication(), AccountSettings(getApplication(), account))
+        HttpClient.Builder(context, AccountSettings(context, account))
             .setForeground(true)
             .build().use { httpClient ->
                 try {
@@ -378,7 +574,7 @@ class AccountModel @AssistedInject constructor(
             val interestingAuthorities = listOfNotNull(
                 ContactsContract.AUTHORITY,
                 CalendarContract.AUTHORITY,
-                TaskUtils.currentProvider(getApplication())?.authority
+                TaskUtils.currentProvider(context)?.authority
             )
             val result = mutableMapOf<String, Long>()
             for (authority in interestingAuthorities) {
@@ -398,7 +594,7 @@ class AccountModel @AssistedInject constructor(
      * @return the application name of authority (ie "jtx Board")
      */
     private fun getAppNameFromAuthority(authority: String): String {
-        val packageManager = getApplication<Application>().packageManager
+        val packageManager = context.packageManager
         val packageName = packageManager.resolveContentProvider(authority, 0)?.packageName ?: authority
         return try {
             val appInfo = packageManager.getPackageInfo(packageName, 0).applicationInfo
@@ -413,7 +609,7 @@ class AccountModel @AssistedInject constructor(
     class CollectionPager(
         val db: AppDatabase,
         service: LiveData<Service?>,
-        val collectionType: String,
+        private val collectionType: String,
         showOnlyPersonal: LiveData<AccountSettings.ShowOnlyPersonal>
     ) : MediatorLiveData<Pager<Int, Collection>?>() {
 

@@ -206,7 +206,6 @@ dependencies {
     implementation(libs.commons.text)
     @Suppress("RedundantSuppression")
     implementation(libs.dnsjava)
-    implementation(libs.jaredrummler.colorpicker)
     implementation(libs.mikepenz.aboutLibraries)
     implementation(libs.nsk90.kstatemachine)
     implementation(libs.okhttp.base)

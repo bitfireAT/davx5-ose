@@ -1,7 +1,7 @@
 # Comments apply to next line
 
 [versions]
-android-agp = "8.3.0"
+android-agp = "8.3.1"
 android-desugaring = "2.0.4"
 android-flexbox = "3.0.0"
 android-material = "1.11.0"
@@ -109,7 +109,6 @@ glance-material = { module = "androidx.glance:glance-material", version.ref = "g
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
-jaredrummler-colorpicker = { module = "com.jaredrummler:colorpicker", version.ref = "jaredrummler-colorpicker" }
 junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
