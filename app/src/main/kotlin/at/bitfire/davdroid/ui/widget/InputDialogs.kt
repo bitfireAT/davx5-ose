@@ -3,11 +3,13 @@ package at.bitfire.davdroid.ui.widget
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
@@ -29,6 +31,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 
 @Composable
 fun EditTextInputDialog(
@@ -43,7 +47,6 @@ fun EditTextInputDialog(
             initialValue ?: "", selection = TextRange(initialValue?.length ?: 0)
         ))
     }
-    val focusRequester = remember { FocusRequester() }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -54,6 +57,7 @@ fun EditTextInputDialog(
             )
         },
         text = {
+            val focusRequester = remember { FocusRequester() }
             TextField(
                 value = textValue,
                 onValueChange = { textValue = it },
@@ -70,6 +74,9 @@ fun EditTextInputDialog(
                 ),
                 modifier = Modifier.focusRequester(focusRequester)
             )
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
         },
         confirmButton = {
             TextButton(
@@ -90,14 +97,6 @@ fun EditTextInputDialog(
             }
         }
     )
-
-    var requestFocus = remember { true }
-    LaunchedEffect(requestFocus) {
-        if (requestFocus) {
-            focusRequester.requestFocus()
-            requestFocus = false
-        }
-    }
 }
 
 @Composable
@@ -118,38 +117,51 @@ fun MultipleChoiceInputDialog(
     onValueSelected: (String) -> Unit = {},
     onDismiss: () -> Unit = {},
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(
-                title,
-                style = MaterialTheme.typography.body1
-            )
-        },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                for ((name, value) in namesAndValues)
-                   Row(verticalAlignment = Alignment.CenterVertically) {
-                       RadioButton(
-                           selected = value == initialValue,
-                           onClick = {
-                               onValueSelected(value)
-                               onDismiss()
-                           }
-                       )
-                       Text(
-                           name,
-                           style = MaterialTheme.typography.body1,
-                           modifier = Modifier.clickable {
-                               onValueSelected(value)
-                               onDismiss()
-                           }
-                       )
-                   }
+    Dialog(onDismissRequest = onDismiss) {
+        Card {
+            Column {
+                Text(
+                    title,
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+
+                LazyColumn(Modifier.padding(8.dp)) {
+                    items(
+                        count = namesAndValues.size,
+                        key = { index -> namesAndValues[index].second },
+                        itemContent = { index ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                val (name, value) = namesAndValues[index]
+                                RadioButton(
+                                    selected = value == initialValue,
+                                    onClick = {
+                                        onValueSelected(value)
+                                        onDismiss()
+                                    }
+                                )
+                                Text(
+                                    name,
+                                    style = MaterialTheme.typography.body1,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable {
+                                            onValueSelected(value)
+                                            onDismiss()
+                                        }
+                                )
+                            }
+                        }
+                    )
+                }
             }
-        },
-        buttons = {}
-    )
+        }
+    }
 }
 
 @Composable
