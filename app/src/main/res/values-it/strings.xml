@@ -10,6 +10,7 @@
   <string name="help">Aiuto</string>
   <string name="manage_accounts">Gestione account</string>
   <string name="share">Condividi</string>
+  <string name="sync_started">Sincronizzazione iniziata</string>
   <string name="database_destructive_migration_title">Database danneggiato</string>
   <string name="database_destructive_migration_text">Tutti gli account sono stati rimossi localmente.</string>
   <string name="notification_channel_debugging">Debugging</string>
@@ -39,6 +40,7 @@
   <string name="intro_tasks_text1">Se le attività sono supportate dal tuo server, possono essere sincronizzate con una app per attività supportata:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Non sembra essere più sviluppato - non raccomandato.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Alcune funzionalità <a href="https://www.davx5.com/faq/tasks/advanced-task-features"> non sono (ancora) supportate </a>.]]></string>
   <string name="intro_tasks_no_app_store">Nessun app store disponibile</string>
   <string name="intro_tasks_dont_show">Non ho bisogno del supporto alle attività.*</string>
@@ -63,7 +65,6 @@
   <string name="permissions_notification_status_on">Notifiche attive</string>
   <string name="permissions_opentasks_title">Autorizzazioni di OpenTasks</string>
   <string name="permissions_tasksorg_title">Autorizzazioni delle attività</string>
-  <string name="permissions_tasks_status_not_installed">Attività non sincronizzate (app non installata)</string>
   <string name="permissions_tasks_status_on">Permette di sincronizzare le attività</string>
   <string name="permissions_autoreset_title">Mantieni autorizzazioni</string>
   <string name="permissions_autoreset_status_off">Le autorizzazioni possono essere reimpostate automaticamente (sconsigliato)</string>
@@ -79,8 +80,6 @@
   <string name="wifi_permissions_location_permission_off">Negare l\'autorizzazione della posizione</string>
   <string name="wifi_permissions_background_location_permission">Autorizzazione della posizione in background</string>
   <string name="wifi_permissions_background_location_permission_label">Permettere sempre</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Permesso della posizione impostato all\' <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Autorizzazione della posizione non impostato all\'<b> 1%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">1%s utilizza l\'autorizzazione della posizione solo per determinare l\'SSID del WIFI attuale per gli account SSID-limitati. Questo accade anche quando l\'applicazione è in modalità background. Nessun dato sulla posizione è raccolto, salvato, processato o mandato da qualche parte.</string>
   <string name="wifi_permissions_location_enabled">Posizione sempre disabilitata</string>
   <string name="wifi_permissions_location_enabled_on">Servizio di posizione abiltato</string>
@@ -113,7 +112,6 @@
   <string name="navigation_drawer_manual">Manuale</string>
   <string name="navigation_drawer_faq">Domande Frequenti</string>
   <string name="navigation_drawer_community">Comunità</string>
-  <string name="navigation_drawer_donate">Donazione</string>
   <string name="navigation_drawer_privacy_policy">Politica sulla riservatezza</string>
   <string name="account_list_empty">Benvenuto a DAVx⁵!\n\nÈ ora possibile aggiungere account CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">La sincronizzazione automatica dell\'intero sistema è disabilitata</string>
@@ -134,8 +132,6 @@
   <string name="app_settings_logging_on">Log attivo</string>
   <string name="app_settings_logging_off">Log disabilitato</string>
   <string name="app_settings_battery_optimization">Ottimizzazione batteria</string>
-  <string name="app_settings_battery_optimization_exempted">La app è in lista bianca (raccomandato)</string>
-  <string name="app_settings_battery_optimization_optimized">La app non è in lista bianca (non raccomandato)</string>
   <string name="app_settings_connection">Connessione</string>
   <string name="app_settings_proxy">Tipo di proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -175,12 +171,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">I contatti non sono sincronizzati (autorizzazioni mancanti)</string>
-  <string name="account_caldav_missing_calendar_permissions">Il calendario non è sincronizzato (autorizzazioni mancanti)</string>
-  <string name="account_caldav_missing_tasks_permissions">Le attività non sono sincronizzate (autorizzazioni mancanti)</string>
-  <string name="account_caldav_missing_permissions">Il calendario e le attività non sono sincronizzati (autorizzazioni mancanti)</string>
-  <string name="account_webcal_missing_calendar_permissions">Impossibile leggere i calendari (autorizzazioni mancanti)</string>
-  <string name="account_permissions_action">Autorizzazioni</string>
   <string name="account_no_address_books">Non ci sono rubriche indirizzi (ancora)</string>
   <string name="account_no_calendars">Non ci sono calendari (ancora)</string>
   <string name="account_no_webcals">Non ci sono sottoscrizioni a calendari (ancora)</string>
@@ -199,9 +189,7 @@
   <string name="account_calendar">calendario</string>
   <string name="account_task_list">elenco attività</string>
   <string name="account_only_personal">Mostra solo personale</string>
-  <string name="account_refresh_address_book_list">Aggiorna elenco degli indirizzari</string>
   <string name="account_create_new_address_book">Crea un nuovo indirizzario</string>
-  <string name="account_refresh_calendar_list">Aggiorna lista calendari</string>
   <string name="account_create_new_calendar">Crea nuovo calendario</string>
   <string name="account_no_webcal_handler_found">Non ho trovato nessuna applicazione abilitata per Webcal</string>
   <string name="account_install_icsx5">Installa ICSx⁵</string>
@@ -264,7 +252,6 @@
   <string name="settings_sync_wifi_only_off">Il tipo di connessione non è preso in considerazione</string>
   <string name="settings_sync_wifi_only_ssids">Restrizione SSID WiFi</string>
   <string name="settings_sync_wifi_only_ssids_on">Sincronizzeremo solo oltre %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Sincronizzeremo solo oltre  %s (richiede che i servizi di localizzazione siano attivi)</string>
   <string name="settings_sync_wifi_only_ssids_off">Verranno utilizzate tutte le connessioni WIFI </string>
   <string name="settings_sync_wifi_only_ssids_message">Nomi (SSID) delle reti WiFi autorizzate separati da virgola (lascia vuoto per autorizzarle tutte)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Le restrizioni del SSID WIFI richiedono ulteriori impostazioni</string>
@@ -278,8 +265,7 @@
   <string name="settings_password">Password</string>
   <string name="settings_password_summary">Aggiorna la password come sul tuo server.</string>
   <string name="settings_enter_password">Inserisci la tua password:</string>
-  <string name="settings_certificate_alias">Alias certificato cliente</string>
-  <string name="settings_certificate_alias_empty">Nessun certificato selezionato</string>
+  <string name="settings_certificate_install">Installa il certificato</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite di tempo per gli eventi trascorsi</string>
   <string name="settings_sync_time_range_past_none">Verranno sincronizzati tutti gli eventi</string>

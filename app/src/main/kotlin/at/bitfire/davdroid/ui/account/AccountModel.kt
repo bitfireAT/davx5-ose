@@ -41,12 +41,13 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
+import at.bitfire.davdroid.syncadapter.BaseSyncWorker
+import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
-import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.util.DavUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -104,25 +105,30 @@ class AccountModel @AssistedInject constructor(
     val canCreateAddressBook = bindableAddressBookHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
-    val cardDavRefreshingActive = cardDavSvc.switchMap { svc ->
+    val cardDavRefreshing = cardDavSvc.switchMap { svc ->
         if (svc == null)
             return@switchMap null
         RefreshCollectionsWorker.exists(context, RefreshCollectionsWorker.workerName(svc.id))
     }
-    val cardDavSyncPending = SyncWorker.exists(
+    val cardDavSyncPending = BaseSyncWorker.exists(
         context,
         listOf(WorkInfo.State.ENQUEUED),
         account,
-        listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
+        listOf(context.getString(R.string.address_books_authority)),
+        whichTag = { account, authority ->
+            // we are only interested in pending OneTimeSyncWorkers because there's always a pending PeriodicSyncWorker
+            OneTimeSyncWorker.workerName(account, authority)
+        }
     )
-    val cardDavSyncActive = SyncWorker.exists(
+    val cardDavSyncing = BaseSyncWorker.exists(
         context,
         listOf(WorkInfo.State.RUNNING),
         account,
-        listOf(context.getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
+        listOf(context.getString(R.string.address_books_authority))
     )
     val addressBooksPager = CollectionPager(db, cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
 
+    private val tasksProvider = TaskUtils.currentProviderLive(context)
     val calDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CALDAV)
     val bindableCalendarHomesets = calDavSvc.switchMap { svc ->
         if (svc != null)
@@ -133,23 +139,31 @@ class AccountModel @AssistedInject constructor(
     val canCreateCalendar = bindableCalendarHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
-    val calDavRefreshingActive = calDavSvc.switchMap { svc ->
+    val calDavRefreshing = calDavSvc.switchMap { svc ->
         if (svc == null)
             return@switchMap null
         RefreshCollectionsWorker.exists(context, RefreshCollectionsWorker.workerName(svc.id))
     }
-    val calDavSyncPending = SyncWorker.exists(
-        context,
-        listOf(WorkInfo.State.ENQUEUED),
-        account,
-        listOf(CalendarContract.AUTHORITY)
-    )
-    val calDavSyncActive = SyncWorker.exists(
-        context,
-        listOf(WorkInfo.State.RUNNING),
-        account,
-        listOf(CalendarContract.AUTHORITY)
-    )
+    val calDavSyncPending = tasksProvider.switchMap { tasks ->
+        BaseSyncWorker.exists(
+            context,
+            listOf(WorkInfo.State.ENQUEUED),
+            account,
+            listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority),
+            whichTag = { account, authority ->
+                // we are only interested in pending OneTimeSyncWorkers because there's always a pending PeriodicSyncWorker
+                OneTimeSyncWorker.workerName(account, authority)
+            }
+        )
+    }
+    val calDavSyncing = tasksProvider.switchMap { tasks ->
+        BaseSyncWorker.exists(
+            context,
+            listOf(WorkInfo.State.RUNNING),
+            account,
+            listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority)
+        )
+    }
     val calendarsPager = CollectionPager(db, calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
     val webcalPager = CollectionPager(db, calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
 
@@ -194,7 +208,7 @@ class AccountModel @AssistedInject constructor(
             context.getString(R.string.address_books_authority),
             CalendarContract.AUTHORITY
         )
-        TaskUtils.currentProvider(context)?.authority?.let { authorities.add(it) }
+        tasksProvider.value?.authority?.let { authorities.add(it) }
         val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
 
         val accountManager = AccountManager.get(context)
@@ -257,9 +271,9 @@ class AccountModel @AssistedInject constructor(
         }
 
         // cancel maybe running synchronization
-        SyncWorker.cancelSync(context, oldAccount)
-        for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
-            SyncWorker.cancelSync(context, addrBookAccount)
+        BaseSyncWorker.cancelAllWork(context, oldAccount)
+        /*for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
+            SyncWorker.cancelSync(context, addrBookAccount)*/
 
         // update account name references in database
         try {
@@ -307,7 +321,7 @@ class AccountModel @AssistedInject constructor(
         }
 
         // synchronize again
-        SyncWorker.enqueueAllAuthorities(context, newAccount)
+        OneTimeSyncWorker.enqueueAllAuthorities(context, newAccount, manual = true)
     }
 
 

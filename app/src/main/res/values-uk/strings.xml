@@ -43,7 +43,6 @@
   <string name="permissions_calendar_status_on">Можлива синхронізація календаря</string>
   <string name="permissions_opentasks_title">Дозволи OpenTasks</string>
   <string name="permissions_tasksorg_title">Дозволи завдань</string>
-  <string name="permissions_tasks_status_not_installed">Без синхронізації завдань (не встановлено)</string>
   <string name="permissions_tasks_status_on">Можлива синхронізація завдань</string>
   <string name="permissions_app_settings">Налаштування застосунку</string>
   <!--WifiPermissionsActivity-->
@@ -70,7 +69,6 @@
   <string name="navigation_drawer_website">Веб сайт</string>
   <string name="navigation_drawer_manual">Посібник</string>
   <string name="navigation_drawer_faq">Питання/Відповіді</string>
-  <string name="navigation_drawer_donate">Підтримка</string>
   <string name="navigation_drawer_privacy_policy">Політика конфіденційності</string>
   <string name="account_list_empty">Вітаємо у DAVx⁵!\n\nТепер можете додавати облікові записи CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Автоматичну синхронізацію вимкнено зі сторони системи</string>
@@ -115,7 +113,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_permissions_action">Дозволи</string>
   <string name="account_no_address_books">Немає адресних книг (поки що).</string>
   <string name="account_no_calendars">Немає жодного календаря. (поки що)</string>
   <string name="account_no_webcals">Немає підписок на календар (поки що).</string>
@@ -133,9 +130,7 @@
   <string name="account_read_only">лише читання</string>
   <string name="account_calendar">календар</string>
   <string name="account_task_list">перелік завдань</string>
-  <string name="account_refresh_address_book_list">Оновити перелік адресних книг</string>
   <string name="account_create_new_address_book">Створити нову адресну книгу</string>
-  <string name="account_refresh_calendar_list">Оновити перелік каленарів</string>
   <string name="account_create_new_calendar">Створити новий календар</string>
   <string name="account_no_webcal_handler_found">Не знайдено додатку з підтримкою Webcal</string>
   <string name="account_install_icsx5">Встановити ICSx⁵</string>
@@ -191,7 +186,6 @@
   <string name="settings_sync_wifi_only_off">Не враховувати тип з\'єднання</string>
   <string name="settings_sync_wifi_only_ssids">Обмеження WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Синхронізувати лише через %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Синхронізація відбуватиметься тільки через %s (вимагає ввімкнені служби локації)</string>
   <string name="settings_sync_wifi_only_ssids_off">Може використовуватись всі Wi-Fi з\'єднання</string>
   <string name="settings_sync_wifi_only_ssids_message">Назви (SSID) дозволених Wi-Fi мереж, розділені комами (залиште порожнім для всіх)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Керувати</string>
@@ -201,8 +195,7 @@
   <string name="settings_password">Пароль</string>
   <string name="settings_password_summary">Оновити пароль, згідно налаштувань Вашого сервера.</string>
   <string name="settings_enter_password">Введіть Ваш пароль:</string>
-  <string name="settings_certificate_alias">Прив\'язка сертифікату клієнта</string>
-  <string name="settings_certificate_alias_empty">Не вибрано сертифікат</string>
+  <string name="settings_certificate_install">Встановити сертифікат</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Інтервал синхронізації</string>
   <string name="settings_sync_time_range_past_none">Всі події будуть синхронізовані</string>

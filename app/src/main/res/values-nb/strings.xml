@@ -37,7 +37,6 @@
   <string name="navigation_drawer_website">Nettside</string>
   <string name="navigation_drawer_manual">Manuell</string>
   <string name="navigation_drawer_faq">O-S-S</string>
-  <string name="navigation_drawer_donate">Doner</string>
   <string name="account_list_empty">Velkommen til DAVx⁵.\n\nDu kan legge til en CalDAV/CardDAV-konto nå.</string>
   <string name="accounts_global_sync_disabled">Systemomspennende automatisk synkronisering avskrudd</string>
   <string name="accounts_global_sync_enable">Skru på</string>
@@ -86,9 +85,7 @@
   <string name="account_read_only">kun lesbar</string>
   <string name="account_calendar">kalender</string>
   <string name="account_task_list">oppgaveliste</string>
-  <string name="account_refresh_address_book_list">Gjenoppfrisk adressebokliste</string>
   <string name="account_create_new_address_book">Opprett ny adressebok</string>
-  <string name="account_refresh_calendar_list">Gjenoppfrisk kalenderliste</string>
   <string name="account_create_new_calendar">Opprett ny kalender</string>
   <string name="account_no_webcal_handler_found">Fant ingen programmer med støtte for Webcal</string>
   <string name="account_install_icsx5">Installer ICSx⁵</string>
@@ -138,7 +135,6 @@
   <string name="settings_sync_wifi_only_off">Tilkoblingstypen blir ikke tatt i betraktning</string>
   <string name="settings_sync_wifi_only_ssids">Wi-Fi SSID -begrensning</string>
   <string name="settings_sync_wifi_only_ssids_on">Vil kun synkronisere over %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Vil bare synkronisere over %s (krever å ha lokasjonstjenester aktivert)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle Wi-Fi -tilkoblinger vil bli brukt</string>
   <string name="settings_sync_wifi_only_ssids_message">Kommainndelte navn (SSID-er) på tillatte Wi-Fi -nettverk (la stå tomt for alle)</string>
   <string name="settings_authentication">Identitetsbekreftelse</string>

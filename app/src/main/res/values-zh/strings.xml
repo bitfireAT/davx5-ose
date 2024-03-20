@@ -11,6 +11,7 @@
   <string name="manage_accounts">管理账户</string>
   <string name="navigate_up">向上导航</string>
   <string name="no_internet_sync_scheduled">无互联网连接，安排同步中</string>
+  <string name="options_menu">选项菜单</string>
   <string name="share">分享</string>
   <string name="sync_started">同步已启动</string>
   <string name="database_destructive_migration_title">数据库损坏</string>
@@ -68,12 +69,10 @@
   <string name="permissions_notification_status_off">已禁用通知（不推荐）</string>
   <string name="permissions_notification_status_on">已启用通知</string>
   <string name="permissions_jtx_title">jtx Board 权限</string>
-  <string name="permissions_jtx_status_not_installed">无任务、日记  &amp; 笔记同步（未安装）</string>
   <string name="permissions_jtx_status_off">无任务、日记、笔记同步</string>
   <string name="permissions_jtx_status_on">可同步任务、日记和笔记</string>
   <string name="permissions_opentasks_title">OpenTasks权限</string>
   <string name="permissions_tasksorg_title">Tasks权限</string>
-  <string name="permissions_tasks_status_not_installed">无任务同步 （未安装）</string>
   <string name="permissions_tasks_status_off">无任务同步</string>
   <string name="permissions_tasks_status_on">可同步任务</string>
   <string name="permissions_autoreset_title">保留权限</string>
@@ -90,8 +89,8 @@
   <string name="wifi_permissions_location_permission_off">位置权限被拒</string>
   <string name="wifi_permissions_background_location_permission">后台位置权限</string>
   <string name="wifi_permissions_background_location_permission_label">始终允许</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[位置权限设定为<b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[位置权限未设为%s<b>]]></string>
+  <string name="wifi_permissions_background_location_permission_on">位置权限已设为：%s</string>
+  <string name="wifi_permissions_background_location_permission_off">位置权限未设为：%s</string>
   <string name="wifi_permissions_background_location_disclaimer">%s 仅使用位置权限为 SSID 受限帐户确定当前 WiFi 的SSID。应用在后台运行时也会获取 SSID。位置数据不会被收集、存储、处理或发送到任何地方。</string>
   <string name="wifi_permissions_location_enabled">始终允许定位</string>
   <string name="wifi_permissions_location_enabled_on">位置服务已启用</string>
@@ -124,7 +123,8 @@
   <string name="navigation_drawer_manual">手册</string>
   <string name="navigation_drawer_faq">常见问题</string>
   <string name="navigation_drawer_community">社区</string>
-  <string name="navigation_drawer_donate">捐助</string>
+  <string name="navigation_drawer_support_project">支持项目</string>
+  <string name="navigation_drawer_contribute">如何作贡献</string>
   <string name="navigation_drawer_privacy_policy">隐私政策</string>
   <string name="account_list_no_notification_permission">已禁用通知。你将不会收到同步出错的通知</string>
   <string name="account_list_no_internet">没有经验证的互联网连接。同步可能不会运行</string>
@@ -154,8 +154,8 @@
   <string name="app_settings_logging_on">日志记录已开启</string>
   <string name="app_settings_logging_off">日志记录已禁用</string>
   <string name="app_settings_battery_optimization">电池优化</string>
-  <string name="app_settings_battery_optimization_exempted">将应用加入白名单（推荐）</string>
-  <string name="app_settings_battery_optimization_optimized">不把应用加入白名单（不推荐）</string>
+  <string name="app_settings_battery_optimization_exempted">排除本应用（推荐）</string>
+  <string name="app_settings_battery_optimization_optimized">施加电池限制（不推荐）</string>
   <string name="app_settings_connection">连接</string>
   <string name="app_settings_proxy">代理类型</string>
   <string-array name="app_settings_proxy_types">
@@ -195,12 +195,8 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">无联系人同步 （缺少权限）</string>
-  <string name="account_caldav_missing_calendar_permissions">无日历同步（缺少权限）</string>
-  <string name="account_caldav_missing_tasks_permissions">无任务同步 （缺少权限）</string>
-  <string name="account_caldav_missing_permissions">无日历和任务同步 （缺少权限）</string>
-  <string name="account_webcal_missing_calendar_permissions">无法访问日历 （缺少权限）</string>
-  <string name="account_permissions_action">权限</string>
+  <string name="account_missing_permissions">需要额外权限来同步这些集合</string>
+  <string name="account_manage_permissions">管理权限</string>
   <string name="account_no_address_books">暂无通讯录。</string>
   <string name="account_no_calendars">暂无日历。</string>
   <string name="account_no_webcals">暂无日历订阅。</string>
@@ -222,10 +218,11 @@
   <string name="account_task_list">任务列表</string>
   <string name="account_journal">日记</string>
   <string name="account_only_personal">只显示个人</string>
-  <string name="account_refresh_address_book_list">刷新通讯录列表</string>
+  <string name="account_refresh_collections">刷新集合</string>
+  <string name="account_refreshing_collections">正在刷新集合列表</string>
   <string name="account_create_new_address_book">创建通讯录</string>
-  <string name="account_refresh_calendar_list">刷新日历列表</string>
   <string name="account_create_new_calendar">创建日历</string>
+  <string name="account_webcal_external_app">可以用外部应用来同步 Webcal 订阅</string>
   <string name="account_no_webcal_handler_found">找不到支持 Webcal 的应用</string>
   <string name="account_install_icsx5">安装 ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -301,7 +298,6 @@
   <string name="settings_sync_wifi_only_off">同步不受数据连接类型限制</string>
   <string name="settings_sync_wifi_only_ssids">WiFi SSID 限制</string>
   <string name="settings_sync_wifi_only_ssids_on">只使用 %s 网络同步</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">将只在 %s 上同步（需要生效的位置服务）</string>
   <string name="settings_sync_wifi_only_ssids_off">任意 WiFi 网络均可同步</string>
   <string name="settings_sync_wifi_only_ssids_message">请用半角逗号分隔允许同步的 WiFi 网络名（SSID），留空则允许任意网络</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID 限制需要进一步设置</string>
@@ -312,14 +308,14 @@
   <string name="settings_authentication">认证</string>
   <string name="settings_oauth">重新验证身份</string>
   <string name="settings_oauth_summary">再次进行 OAuth 登录</string>
-  <string name="settings_username_key">用户名</string>
   <string name="settings_username">用户名</string>
   <string name="settings_enter_username">输入用户名</string>
   <string name="settings_password">密码</string>
   <string name="settings_password_summary">修改服务器密码</string>
   <string name="settings_enter_password">输入密码</string>
-  <string name="settings_certificate_alias">客户端证书别名</string>
-  <string name="settings_certificate_alias_empty">没有证书被选中</string>
+  <string name="settings_certificate_alias">客户端证书</string>
+  <string name="settings_certificate_alias_empty">无证书可用或未选择证书</string>
+  <string name="settings_certificate_install">安装证书</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">旧日程时间限制</string>
   <string name="settings_sync_time_range_past_none">同步所有日程</string>

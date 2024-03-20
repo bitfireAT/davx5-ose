@@ -60,12 +60,10 @@
   <string name="permissions_calendar_status_off">Sin sincronización de calendario (no recomendado)</string>
   <string name="permissions_calendar_status_on">Sincronización de calendario permitida</string>
   <string name="permissions_jtx_title">Permisos de tablero jtx</string>
-  <string name="permissions_jtx_status_not_installed">Tareas, diarios y notas sin sincronizar (no instalado)</string>
   <string name="permissions_jtx_status_off">Tareas, diarios, notas sin sincronizar</string>
   <string name="permissions_jtx_status_on">Sincronización posible de tareas, diarios y notas</string>
   <string name="permissions_opentasks_title">Permisos de OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisos de las tareas</string>
-  <string name="permissions_tasks_status_not_installed">Sin sincronización de tareas (no instalado)</string>
   <string name="permissions_tasks_status_off">Sin sincronización de tareas</string>
   <string name="permissions_tasks_status_on">Sincronización de tareas permitidas</string>
   <string name="permissions_autoreset_title">Mantener permisos</string>
@@ -82,8 +80,6 @@
   <string name="wifi_permissions_location_permission_off">Permiso de ubicación denegado</string>
   <string name="wifi_permissions_background_location_permission">Permiso de ubicación en segundo plano</string>
   <string name="wifi_permissions_background_location_permission_label">Permitir todo el tiemp</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Permiso de ubicación establecido en <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Permiso de ubicación no establecido en <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s usa el permiso de ubicación solo para determinar el SSID del WiFi actual para las cuentas con restricción de SSID. Esto ocurrirá incluso cuando la aplicación esté en segundo plano. No se recogen, almacenan, procesan o envían datos de ubicación a ninguna parte.</string>
   <string name="wifi_permissions_location_enabled">Ubicación siempre activada</string>
   <string name="wifi_permissions_location_enabled_on">El servicio de ubicación está activado</string>
@@ -116,7 +112,6 @@
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">Preguntas frequentes</string>
   <string name="navigation_drawer_community">Comunidad</string>
-  <string name="navigation_drawer_donate">Donar</string>
   <string name="navigation_drawer_privacy_policy">Reglamento de privacidad</string>
   <string name="account_list_empty">Bienvenido a DAVx⁵!\n\nAhora puedes añadir una cuenta CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Sincronización automática del sistema completo está deshabilitada</string>
@@ -137,8 +132,6 @@
   <string name="app_settings_logging_on">El registro está activo</string>
   <string name="app_settings_logging_off">El registro está deshabilitado</string>
   <string name="app_settings_battery_optimization">Optimización de batería</string>
-  <string name="app_settings_battery_optimization_exempted">La app está la lista blanca (recomendado)</string>
-  <string name="app_settings_battery_optimization_optimized">La app no está en la lista blanca (no recomendado)</string>
   <string name="app_settings_connection">Conexión</string>
   <string name="app_settings_proxy">Tipo de proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -178,12 +171,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Sin sincronización de contactos (faltan permisos)</string>
-  <string name="account_caldav_missing_calendar_permissions">Sin sincronización de calendario (faltan permisos)</string>
-  <string name="account_caldav_missing_tasks_permissions">Sin sincronización de tareas (faltan permisos)</string>
-  <string name="account_caldav_missing_permissions">Sin sincronización de calendario y tareas (faltan permisos)</string>
-  <string name="account_webcal_missing_calendar_permissions">No se puede acceder a los calendarios (faltan permisos)</string>
-  <string name="account_permissions_action">Permisos</string>
   <string name="account_no_address_books">No hay libretas de direciones (todavía).</string>
   <string name="account_no_calendars">No hay calendarios (todavía). </string>
   <string name="account_no_webcals">No hay suscripciones a calendarios (todavía).</string>
@@ -203,9 +190,7 @@
   <string name="account_task_list">lista de tareas</string>
   <string name="account_journal">diario</string>
   <string name="account_only_personal">Mostrar solo personal</string>
-  <string name="account_refresh_address_book_list">Refrescar contactos</string>
   <string name="account_create_new_address_book">Crear nueva agenda</string>
-  <string name="account_refresh_calendar_list">Refrescar calendario</string>
   <string name="account_create_new_calendar">Crear nuevo calendario</string>
   <string name="account_no_webcal_handler_found">No se encontró aplicación para administrar Webcal</string>
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
@@ -263,7 +248,6 @@
   <string name="settings_sync_wifi_only_off">Tipo de conexión no tenido en cuenta</string>
   <string name="settings_sync_wifi_only_ssids">Restricción WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Solo se sincronizará a través de %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Solo sincronizará sobre %s (requiere servicios de ubicación activos)</string>
   <string name="settings_sync_wifi_only_ssids_off">Todas las conexiones WiFi serán usadas</string>
   <string name="settings_sync_wifi_only_ssids_message">Nombres separados por comas (SSIDs) de redes WiFi permitidas (deje vacío para todas)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restricción del SSID WiFi requiere más ajustes</string>
@@ -274,8 +258,7 @@
   <string name="settings_password">Contraseña</string>
   <string name="settings_password_summary">Actualiza la contraseña de acuerdo a tu servidor.</string>
   <string name="settings_enter_password">Introduce tu contraseña:</string>
-  <string name="settings_certificate_alias">Alias del certificado cliente</string>
-  <string name="settings_certificate_alias_empty">No se ha seleccionado ningún certificado</string>
+  <string name="settings_certificate_install">Instalar certificado</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Límite de tiempo de eventos pasados</string>
   <string name="settings_sync_time_range_past_none">Todos los eventos serán sincronizados</string>

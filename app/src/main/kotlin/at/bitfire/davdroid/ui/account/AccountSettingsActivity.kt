@@ -63,10 +63,10 @@ import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.TaskUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.Syncer
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.widget.ActionCard
@@ -333,7 +333,11 @@ class AccountSettingsActivity: AppCompatActivity() {
         Setting(
             icon = icon,
             name = stringResource(name),
-            summary = stringResource(R.string.settings_sync_summary_periodically, syncInterval / 60),
+            summary =
+                if (syncInterval == AccountSettings.SYNC_INTERVAL_MANUALLY)
+                    stringResource(R.string.settings_sync_summary_manually)
+                else
+                    stringResource(R.string.settings_sync_summary_periodically, syncInterval / 60),
             onClick = {
                 showSyncIntervalDialog = true
             }
@@ -668,7 +672,6 @@ class AccountSettingsActivity: AppCompatActivity() {
         val syncIntervalContacts = MutableLiveData<Long>()
         val syncIntervalCalendars = MutableLiveData<Long>()
 
-        // TODO tasksProvider LiveData
         val tasksProvider = TaskUtils.currentProvider(context)
         val syncIntervalTasks = MutableLiveData<Long>()
 
@@ -821,8 +824,12 @@ class AccountSettingsActivity: AppCompatActivity() {
          * _false_: sets [Syncer.SYNC_EXTRAS_RESYNC])
          */
         private fun resync(authority: String, fullResync: Boolean) {
-            val resync = if (fullResync) SyncWorker.FULL_RESYNC else SyncWorker.RESYNC
-            SyncWorker.enqueue(context, account, authority, expedited = true, resync = resync)
+            val resync =
+                if (fullResync)
+                    OneTimeSyncWorker.FULL_RESYNC
+                else
+                    OneTimeSyncWorker.RESYNC
+            OneTimeSyncWorker.enqueue(context, account, authority, resync = resync)
         }
 
     }

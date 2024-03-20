@@ -15,11 +15,7 @@ import androidx.work.NetworkType
 import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.InvalidAccountException
-import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.settings.AccountSettings
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.concurrent.TimeUnit
@@ -28,13 +24,13 @@ import java.util.concurrent.TimeUnit
 /**
  * Handles scheduled sync requests.
  *
- * Enqueues immediate [SyncWorker] syncs at the appropriate moment.
- *
  * The different periodic sync workers each carry a unique work name composed of the account and
  * authority which they are responsible for. For each account there will be multiple dedicated periodic
  * sync workers for each authority. See [PeriodicSyncWorker.workerName] for more information.
  *
- * Deferrable: yes (PeriodicWorkRequest)
+ * Deferrable: yes (periodic)
+ *
+ * Expedited: no (→ no [getForegroundInfo])
  *
  * Long-running: no
  */
@@ -42,13 +38,9 @@ import java.util.concurrent.TimeUnit
 class PeriodicSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters
-) : Worker(appContext, workerParams) {
+) : BaseSyncWorker(appContext, workerParams) {
 
     companion object {
-        // Worker input parameters
-        internal const val ARG_ACCOUNT_NAME = "accountName"
-        internal const val ARG_ACCOUNT_TYPE = "accountType"
-        internal const val ARG_AUTHORITY = "authority"
 
         /**
          * Unique work name of this worker. Can also be used as tag.
@@ -57,7 +49,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
          *
          * @param account the account this worker is running for
          * @param authority the authority this worker is running for
-         * @return Name of this worker composed as "sync $authority ${account.type}/${account.name}"
+         * @return Name of this worker composed as "periodic-sync $authority ${account.type}/${account.name}"
          */
         fun workerName(account: Account, authority: String): String =
             "periodic-sync $authority ${account.type}/${account.name}"
@@ -72,9 +64,9 @@ class PeriodicSyncWorker @AssistedInject constructor(
          */
         fun enable(context: Context, account: Account, authority: String, interval: Long, syncWifiOnly: Boolean): Operation {
             val arguments = Data.Builder()
-                .putString(ARG_AUTHORITY, authority)
-                .putString(ARG_ACCOUNT_NAME, account.name)
-                .putString(ARG_ACCOUNT_TYPE, account.type)
+                .putString(INPUT_AUTHORITY, authority)
+                .putString(INPUT_ACCOUNT_NAME, account.name)
+                .putString(INPUT_ACCOUNT_TYPE, account.type)
                 .build()
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(
@@ -85,6 +77,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
                 ).build()
             val workRequest = PeriodicWorkRequestBuilder<PeriodicSyncWorker>(interval, TimeUnit.SECONDS)
                 .addTag(workerName(account, authority))
+                .addTag(commonTag(account, authority))
                 .setInputData(arguments)
                 .setConstraints(constraints)
                 .build()
@@ -110,29 +103,4 @@ class PeriodicSyncWorker @AssistedInject constructor(
 
     }
 
-    override fun doWork(): Result {
-        val account = Account(
-            inputData.getString(ARG_ACCOUNT_NAME) ?: throw IllegalArgumentException("$ARG_ACCOUNT_NAME required"),
-            inputData.getString(ARG_ACCOUNT_TYPE) ?: throw IllegalArgumentException("$ARG_ACCOUNT_TYPE required")
-        )
-        val authority = inputData.getString(ARG_AUTHORITY) ?: throw IllegalArgumentException("$ARG_AUTHORITY required")
-        Logger.log.info("Running periodic sync worker: account=$account, authority=$authority")
-
-        val accountSettings = try {
-            AccountSettings(applicationContext, account)
-        } catch (e: InvalidAccountException) {
-            Logger.log.warning("Account $account doesn't exist anymore, cancelling periodic sync")
-            disable(applicationContext, account, authority)
-            return Result.failure()
-        }
-        if (!SyncWorker.wifiConditionsMet(applicationContext, accountSettings)) {
-            Logger.log.info("Sync conditions not met. Won't run sync.")
-            return Result.failure()
-        }
-
-        // Just request immediate sync
-        Logger.log.info("Requesting immediate sync")
-        SyncWorker.enqueue(applicationContext, account, authority, expedited = false)
-        return Result.success()
-    }
 }

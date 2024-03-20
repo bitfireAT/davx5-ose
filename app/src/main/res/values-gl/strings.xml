@@ -11,6 +11,7 @@
   <string name="manage_accounts">Xestionar contas</string>
   <string name="navigate_up">Ir arriba</string>
   <string name="no_internet_sync_scheduled">Non hai conexión, programando a sincr</string>
+  <string name="options_menu">Menú de opcións</string>
   <string name="share">Compartir</string>
   <string name="sync_started">Comezou a sincronización</string>
   <string name="database_destructive_migration_title">Base de datos estragada</string>
@@ -68,12 +69,10 @@
   <string name="permissions_notification_status_off">Notificacións desactivadas (non recomendado)</string>
   <string name="permissions_notification_status_on">Notificacións activadas</string>
   <string name="permissions_jtx_title">permisos para jtx Board</string>
-  <string name="permissions_jtx_status_not_installed">Sen sincr. de tarefas, diarios e notas (non instalado)</string>
   <string name="permissions_jtx_status_off">Sen sincr. de tarefas, diarios, notas</string>
   <string name="permissions_jtx_status_on">Dispoñible sincr. de tarefas, diarios e notas</string>
   <string name="permissions_opentasks_title">Permisos para OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisos para Tasks</string>
-  <string name="permissions_tasks_status_not_installed">Sen sincronización de tarefas (non instalado) </string>
   <string name="permissions_tasks_status_off">Tarefas non sincr.</string>
   <string name="permissions_tasks_status_on">É posible sincronizar as tarefas</string>
   <string name="permissions_autoreset_title">Manter permisos</string>
@@ -90,8 +89,7 @@
   <string name="wifi_permissions_location_permission_off">Permiso de localización denegado</string>
   <string name="wifi_permissions_background_location_permission">Permiso de localización en segundo plano</string>
   <string name="wifi_permissions_background_location_permission_label">Permitir en todo momento</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Permiso de localización establecido a <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Permiso de localización non establecido a <b>%s</b>]]></string>
+  <string name="wifi_permissions_background_location_permission_on">Permiso de localización establecido como: %s</string>
   <string name="wifi_permissions_background_location_disclaimer">%s utiliza o permiso de Localización só para determinar o SSID da WiFi para contas restrinxidas a uns SSIDs. Esto acontecerá incluso cando a app está en segundo plano. Non se recollen datos de localización, nin se gardan, procesan ou envían a ningún sitio.</string>
   <string name="wifi_permissions_location_enabled">Localización sempre activada</string>
   <string name="wifi_permissions_location_enabled_on">Servizo de localización activado</string>
@@ -124,7 +122,8 @@
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">PMF</string>
   <string name="navigation_drawer_community">Comunidade</string>
-  <string name="navigation_drawer_donate">Doar</string>
+  <string name="navigation_drawer_support_project">Apoia ao proxecto</string>
+  <string name="navigation_drawer_contribute">Como colaborar</string>
   <string name="navigation_drawer_privacy_policy">Política de Privacidade</string>
   <string name="account_list_no_notification_permission">Notificacións desactivadas. Non verás os avisos de erro na sincr.</string>
   <string name="account_list_no_internet">Sen conexión a Internet verificada. A sincronización podería fallar.</string>
@@ -154,8 +153,8 @@
   <string name="app_settings_logging_on">O rexistro está activo</string>
   <string name="app_settings_logging_off">O rexistro está desactivado</string>
   <string name="app_settings_battery_optimization">Optimización da batería</string>
-  <string name="app_settings_battery_optimization_exempted">App está permitida (recomendado)</string>
-  <string name="app_settings_battery_optimization_optimized">App sen permiso (non recomendado)</string>
+  <string name="app_settings_battery_optimization_exempted">A app está excluída (recomendado)</string>
+  <string name="app_settings_battery_optimization_optimized">Aplícanse restricións da batería (non recomendado)</string>
   <string name="app_settings_connection">Conexión</string>
   <string name="app_settings_proxy">Tipo de Proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -195,12 +194,8 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Sen sincronización  de contactos (faltan permisos)</string>
-  <string name="account_caldav_missing_calendar_permissions">Sen sincronización de calendario (faltan permisos)</string>
-  <string name="account_caldav_missing_tasks_permissions">Sen sincronización de tarefas (faltan permisos)</string>
-  <string name="account_caldav_missing_permissions">Sen sincronización de calendario e tarefas (faltan permisos)</string>
-  <string name="account_webcal_missing_calendar_permissions">Non se pode acceder aos calendarios (faltan permisos)</string>
-  <string name="account_permissions_action">Permisos</string>
+  <string name="account_missing_permissions">Requírense permisos adicionais para poder sincronizar estas coleccións.</string>
+  <string name="account_manage_permissions">Xestionar permisos</string>
   <string name="account_no_address_books">No existen libretas de enderezos (aínda).</string>
   <string name="account_no_calendars">Non existen calendarios (aínda).</string>
   <string name="account_no_webcals">Non tes subscricións a calendario (aínda).</string>
@@ -222,10 +217,11 @@
   <string name="account_task_list">lista de tarefas</string>
   <string name="account_journal">diario</string>
   <string name="account_only_personal">Mostrar só personal</string>
-  <string name="account_refresh_address_book_list">Actualizar lista de libreta de enderezos</string>
+  <string name="account_refresh_collections">Actualizar coleccións</string>
+  <string name="account_refreshing_collections">A actualizar a lista de coleccións</string>
   <string name="account_create_new_address_book">Crear nova libreta de enderezos</string>
-  <string name="account_refresh_calendar_list">Actualizar lista de calendario</string>
   <string name="account_create_new_calendar">Crear novo calendario</string>
+  <string name="account_webcal_external_app">As subscricións Webcal poden sincronizarse con apps externas.</string>
   <string name="account_no_webcal_handler_found">Non se atopou app para Webcal</string>
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -301,7 +297,6 @@
   <string name="settings_sync_wifi_only_off">Non se terá en conta o tipo de conexión</string>
   <string name="settings_sync_wifi_only_ssids">Restrición SSID WiFi</string>
   <string name="settings_sync_wifi_only_ssids_on">Sincr. só en %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Só se sincronizará baixo %s (require servizos de localización activos)</string>
   <string name="settings_sync_wifi_only_ssids_off">Utilizaranse todas as conexións WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">Nome das rede WiFi permitidas (SSIDs) separados por vírgulas (en branco para todas)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">A restrición WiFi SSID precisa máis axustes</string>
@@ -312,14 +307,14 @@
   <string name="settings_authentication">Autenticación</string>
   <string name="settings_oauth">Volver a autenticar</string>
   <string name="settings_oauth_summary">Intentar acceder con OAuth outra vez</string>
-  <string name="settings_username_key">identificador</string>
   <string name="settings_username">Nome de usuaria</string>
   <string name="settings_enter_username">Escribe o nome de usuaria:</string>
   <string name="settings_password">Contrasinal</string>
   <string name="settings_password_summary">Actualizar o contrasinal de acordo ao teu servidor.</string>
   <string name="settings_enter_password">Escribir contrasinal:</string>
-  <string name="settings_certificate_alias">Alias do certificado cliente</string>
-  <string name="settings_certificate_alias_empty">Non hai certificado seleccionado</string>
+  <string name="settings_certificate_alias">Certificado do cliente</string>
+  <string name="settings_certificate_alias_empty">Sen certificado dispoñible ou seleccionado</string>
+  <string name="settings_certificate_install">Instalar certificado</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Límite temporal para eventos pasados</string>
   <string name="settings_sync_time_range_past_none">Sincronizaranse todos os eventos</string>

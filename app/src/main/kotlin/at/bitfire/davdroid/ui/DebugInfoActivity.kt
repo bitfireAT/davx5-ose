@@ -82,8 +82,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
-import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.syncadapter.BaseSyncWorker
 import at.bitfire.davdroid.ui.widget.CardWithImage
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
@@ -870,30 +869,26 @@ class DebugInfoActivity : AppCompatActivity() {
                 TaskProvider.ProviderName.OpenTasks.authority,
                 TaskProvider.ProviderName.TasksOrg.authority
             ).forEach { authority ->
-                for (workerName in listOf(
-                    SyncWorker.workerName(account, authority),
-                    PeriodicSyncWorker.workerName(account, authority)
-                )) {
-                    WorkManager.getInstance(context).getWorkInfos(
-                        WorkQuery.Builder.fromUniqueWorkNames(listOf(workerName)).build()
-                    ).get().forEach { workInfo ->
-                        table.addLine(
-                            workInfo.tags.map { it.replace("\\bat\\.bitfire\\.davdroid\\.".toRegex(), ".") },
-                            authority,
-                            "${workInfo.state} (${workInfo.stopReason})",
-                            workInfo.nextScheduleTimeMillis.let { nextRun ->
-                                when (nextRun) {
-                                    Long.MAX_VALUE -> "—"
-                                    else -> DateUtils.getRelativeTimeSpanString(nextRun)
-                                }
-                            },
-                            workInfo.runAttemptCount,
-                            workInfo.generation,
-                            workInfo.periodicityInfo?.let { periodicity ->
-                                "every ${periodicity.repeatIntervalMillis/60000} min"
-                            } ?: "not periodic"
-                        )
-                    }
+                val tag = BaseSyncWorker.commonTag(account, authority)
+                WorkManager.getInstance(context).getWorkInfos(
+                    WorkQuery.Builder.fromTags(listOf(tag)).build()
+                ).get().forEach { workInfo ->
+                    table.addLine(
+                        workInfo.tags.map { it.replace("\\bat\\.bitfire\\.davdroid\\.".toRegex(), ".") },
+                        authority,
+                        "${workInfo.state} (${workInfo.stopReason})",
+                        workInfo.nextScheduleTimeMillis.let { nextRun ->
+                            when (nextRun) {
+                                Long.MAX_VALUE -> "—"
+                                else -> DateUtils.getRelativeTimeSpanString(nextRun)
+                            }
+                        },
+                        workInfo.runAttemptCount,
+                        workInfo.generation,
+                        workInfo.periodicityInfo?.let { periodicity ->
+                            "every ${periodicity.repeatIntervalMillis/60000} min"
+                        } ?: "not periodic"
+                    )
                 }
             }
             return table.toString()

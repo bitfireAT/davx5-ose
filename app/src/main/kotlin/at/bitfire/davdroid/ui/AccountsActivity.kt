@@ -83,8 +83,9 @@ import androidx.work.WorkQuery
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
+import at.bitfire.davdroid.syncadapter.BaseSyncWorker
+import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
-import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
@@ -167,7 +168,6 @@ class AccountsActivity: AppCompatActivity() {
                             )
                             .verticalScroll(rememberScrollState())
                     ) {
-
                         // background image
                         Image(
                             painterResource(R.drawable.accounts_background),
@@ -365,7 +365,7 @@ class AccountsActivity: AppCompatActivity() {
                 }
             }
             fun update() = viewModelScope.launch(Dispatchers.Default) {
-                val authorities = SyncUtils.syncAuthorities(application, withContacts = true)
+                val authorities = SyncUtils.syncAuthorities(application)
                 val collator = Collator.getInstance()
                 postValue(myAccounts
                     .toList()
@@ -381,7 +381,7 @@ class AccountsActivity: AppCompatActivity() {
                             },
                             isSyncing = workInfos.any { info ->
                                 authorities.any { authority ->
-                                    info.tags.contains(SyncWorker.workerName(account, authority))
+                                    info.tags.contains(BaseSyncWorker.commonTag(account, authority))
                                 }
                             }
                         )
@@ -413,7 +413,7 @@ class AccountsActivity: AppCompatActivity() {
 
             // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
             for (account in allAccounts())
-                SyncWorker.enqueueAllAuthorities(context, account)
+                OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
         }
 
 

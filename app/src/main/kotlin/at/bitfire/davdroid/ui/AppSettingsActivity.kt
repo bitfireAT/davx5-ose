@@ -63,7 +63,6 @@ import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage
@@ -74,6 +73,7 @@ import at.bitfire.davdroid.ui.widget.Setting
 import at.bitfire.davdroid.ui.widget.SettingsHeader
 import at.bitfire.davdroid.ui.widget.SwitchSetting
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel

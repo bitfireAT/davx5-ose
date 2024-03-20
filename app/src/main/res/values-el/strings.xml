@@ -54,7 +54,6 @@
   <string name="permissions_calendar_status_on">Ο Συγχρονισμός ημερολογίου είναι δυνατός</string>
   <string name="permissions_opentasks_title">Δικαιώματα OpenTasks</string>
   <string name="permissions_tasksorg_title">Δικαιώματα εργασιών</string>
-  <string name="permissions_tasks_status_not_installed">Μη συγχρονισμός εργασιών (δεν είναι εγκατεστημένο)</string>
   <string name="permissions_tasks_status_on">Ο Συγχρονισμός εργασιών είναι διαθέσιμος</string>
   <string name="permissions_autoreset_title">Διατήρηση δικαιωμάτων</string>
   <string name="permissions_autoreset_status_off">Τα δικαιώματα μπορούν να επαναφερθούν αυτόματα (δεν προτείνεται)</string>
@@ -68,8 +67,6 @@
   <string name="wifi_permissions_location_permission_off">Απενεργοποιήθηκε το δικαίωμα εντοπισμού</string>
   <string name="wifi_permissions_background_location_permission">Δικαίωμα εντοπισμού στο παρασκήνιο</string>
   <string name="wifi_permissions_background_location_permission_label">Να επιτρέπεται συνέχεια</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Το δικαίωμα στον εντοπισμό είναι <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Το δικαίωμα στον εντοπισμό δεν είναι <b>%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">%s χρησιμοποιεί την υπηρεσία εντοπισμού μόνο για να προσδιορίσει το SSID του τρέχοντος WIFI για λογαριασμούς με περιορισμούς σε SSIDs. Αυτό γίνεται ακόμα και όταν η εφαρμογή βρίσκεται στο παρασκήνιο. Κανένα δεδομένο εντοπισμού δεν συλλέγεται, καταχωρείται, επεξεργάζεται η αποστέλνεται οπουδήποτε.</string>
   <string name="wifi_permissions_location_enabled">Η υπηρεσία εντοπισμού είναι πάντα ενεργοποιημένη</string>
   <string name="wifi_permissions_location_enabled_on">Η υπηρεσία εντοπισμού είναι ενεργοποιημένη</string>
@@ -101,7 +98,6 @@
   <string name="navigation_drawer_manual">Χειροκίνητα</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">Κοινότητα</string>
-  <string name="navigation_drawer_donate">Δωρεά</string>
   <string name="navigation_drawer_privacy_policy">Πολιτική απορρήτου</string>
   <string name="account_list_empty">Καλώς ήρθατε στο DAVx⁵!\n\nΜπορείτε να προσθέσετε τώρα έναν λογαριασμό CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">Ο αυτόματος συγχρονισμός σε όλο το σύστημα είναι απενεργοποιημένος</string>
@@ -154,12 +150,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">Μη συγχρονισμός επαφών (έλλειψη δικαιωμάτων)</string>
-  <string name="account_caldav_missing_calendar_permissions">Μη συγχρονισμός ημερολογίου (έλλειψη δικαιωμάτων)</string>
-  <string name="account_caldav_missing_tasks_permissions">Μη συγχρονισμός εργασιών (έλλειψη δικαιωμάτων)</string>
-  <string name="account_caldav_missing_permissions">Μη συγχρονισμός ημερολογίου και εργασιών (έλλειψη δικαιωμάτων)</string>
-  <string name="account_webcal_missing_calendar_permissions">Δεν υπάρχει πρόσβαση στα ημερολόγια (έλλειψη δικαιωμάτων)</string>
-  <string name="account_permissions_action">Δικαιώματα</string>
   <string name="account_no_address_books">Δεν υπάρχουν βιβλία διευθύνσεων (ακόμα).</string>
   <string name="account_no_calendars">Δεν υπάρχουν ημερολόγια (ακόμα).</string>
   <string name="account_no_webcals">Δεν υπάρχουν συνδρομές ημερολογίου (ακόμα).</string>
@@ -178,9 +168,7 @@
   <string name="account_calendar">ημερολόγιο</string>
   <string name="account_task_list">λίστα εργασιών</string>
   <string name="account_only_personal">Εμφάνιση μόνο προσωπικών</string>
-  <string name="account_refresh_address_book_list">Ανανέωση λίστας βιβλίου διευθύνσεων</string>
   <string name="account_create_new_address_book">Δημιουργία νέου βιβλίου διευθύνσεων</string>
-  <string name="account_refresh_calendar_list">Ανανέωση λίστας ημερολογίου</string>
   <string name="account_create_new_calendar">Δημιουργία νέου ημερολογίου</string>
   <string name="account_no_webcal_handler_found">Δεν βρέθηκε εφαρμογή με δυνατότητα Webcal</string>
   <string name="account_install_icsx5">Εγκατάσταση ICSx⁵</string>
@@ -237,7 +225,6 @@
   <string name="settings_sync_wifi_only_off">Ο τύπος σύνδεσης δεν λαμβάνεται υπόψη</string>
   <string name="settings_sync_wifi_only_ssids">Περιορισμός WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Θα γίνεται συγχρονισμός μόνο μέσω %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Θα συγχρονίζεται μόνο μέσω %s (απαιτεί ενεργές υπηρεσίες τοποθεσίας)</string>
   <string name="settings_sync_wifi_only_ssids_off">Θα χρησιμοποιηθούν όλες οι συνδέσεις WiFi</string>
   <string name="settings_sync_wifi_only_ssids_message">Ονόματα που χωρίζονται με κόμμα (SSIDs) των επιτρεπόμενων δικτύων WiFi (αφήστε κενό για όλους)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">Ο περιορισμός WiFi SSID χρειάζεται επιπλέον ρυθμίσεις</string>
@@ -248,8 +235,7 @@
   <string name="settings_password">Συνθηματικό</string>
   <string name="settings_password_summary">Ενημερώστε το συνθηματικό σύμφωνα με τον διακομιστή σας.</string>
   <string name="settings_enter_password">Εισάγετε το συνθηματικό σας:</string>
-  <string name="settings_certificate_alias">Ψευδώνυμα πιστοποιητικού πελάτη</string>
-  <string name="settings_certificate_alias_empty">Δεν επιλέχτηκε πιστοποιητικό</string>
+  <string name="settings_certificate_install">Εγκατάσταση πιστοποιητικού</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Προθεσμία παρελθόντος συμβάντος</string>
   <string name="settings_sync_time_range_past_none">Όλα τα συμβάντα θα συγχρονίσουν</string>
