@@ -34,6 +34,8 @@ jobs:
         distribution: 'temurin'
         java-version: 17
     - uses: gradle/actions/setup-gradle@v3
+      with:
+        cache-encryption-key: ${{ secrets.gradle_encryption_key }}
 
     - name: Use app/build and gradle configuration cache
       uses: actions/cache/restore@v4
