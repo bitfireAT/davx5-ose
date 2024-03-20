@@ -41,7 +41,6 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
@@ -49,12 +48,15 @@ import at.bitfire.davdroid.syncadapter.BaseSyncWorker
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.TaskUtils
+import at.bitfire.ical4android.util.DateUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import net.fortuna.ical4j.model.Calendar
 import java.io.StringWriter
 import java.util.Optional
 import java.util.logging.Level
@@ -354,7 +356,11 @@ class AccountModel @AssistedInject constructor(
         addressBook: Boolean,
         name: String,
         displayName: String?,
-        description: String?
+        description: String?,
+        timeZoneId: String? = null,
+        supportsVEVENT: Boolean? = null,
+        supportsVTODO: Boolean? = null,
+        supportsVJOURNAL: Boolean? = null
     ) = viewModelScope.launch(Dispatchers.IO) {
         HttpClient.Builder(context, AccountSettings(context, account))
             .setForeground(true)
@@ -370,7 +376,17 @@ class AccountModel @AssistedInject constructor(
                     val xml = generateMkColXml(
                         addressBook = addressBook,
                         displayName = displayName,
-                        description = description
+                        description = description,
+                        timezoneDef = timeZoneId?.let { tzId ->
+                            DateUtils.ical4jTimeZone(tzId)?.let { tz ->
+                                val cal = Calendar()
+                                cal.components += tz.vTimeZone
+                                cal.toString()
+                            }
+                        },
+                        supportsVEVENT = supportsVEVENT,
+                        supportsVTODO = supportsVTODO,
+                        supportsVJOURNAL = supportsVJOURNAL
                     )
 
                     dav.mkCol(
@@ -478,6 +494,9 @@ class AccountModel @AssistedInject constructor(
                 if (supportsVEVENT != null || supportsVTODO != null || supportsVJOURNAL != null) {
                     // only if there's at least one explicitly supported calendar component set, otherwise don't include the property
                     if (supportsVEVENT != false) {
+                        startTag(NS_CALDAV, "comp")
+                        attribute(null, "name", "VEVENT")
+                        endTag(NS_CALDAV, "comp")
                     }
                     if (supportsVTODO != false) {
                         startTag(NS_CALDAV, "comp")

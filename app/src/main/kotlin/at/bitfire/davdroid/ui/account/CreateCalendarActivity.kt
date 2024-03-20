@@ -71,6 +71,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
+import java.text.Collator
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
@@ -136,7 +137,11 @@ class CreateCalendarActivity: AppCompatActivity() {
                                 addressBook = false,
                                 name = UUID.randomUUID().toString(),
                                 displayName = StringUtils.trimToNull(displayName),
-                                description = StringUtils.trimToNull(description)
+                                description = StringUtils.trimToNull(description),
+                                timeZoneId = timeZoneId,
+                                supportsVEVENT = supportVEVENT,
+                                supportsVTODO = supportVTODO,
+                                supportsVJOURNAL = supportVJOURNAL
                             )
                         }
                     }
@@ -154,9 +159,8 @@ class CreateCalendarActivity: AppCompatActivity() {
                                 }
                             },
                             actions = {
-                                // FIXME hidden instead of visible when enabled
                                 val isCreateEnabled = !isCreating && displayName.isNotBlank() && homeSet != null
-                                TextButton(
+                                IconButton(
                                     enabled = isCreateEnabled,
                                     onClick = { onCreateCollection() }
                                 ) {
@@ -666,9 +670,8 @@ class CreateCalendarActivity: AppCompatActivity() {
                     )
                 }
 
-                // TODO sort by Collation
-
-                timeZoneDefs.postValue(timeZones.sortedBy { it.first })
+                val collator = Collator.getInstance()
+                timeZoneDefs.postValue(timeZones.sortedBy { collator.getCollationKey(it.first) })
             }
         }
 
