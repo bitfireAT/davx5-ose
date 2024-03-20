@@ -357,6 +357,7 @@ class AccountModel @AssistedInject constructor(
         name: String,
         displayName: String?,
         description: String?,
+        color: Int? = null,
         timeZoneId: String? = null,
         supportsVEVENT: Boolean? = null,
         supportsVTODO: Boolean? = null,
@@ -377,6 +378,7 @@ class AccountModel @AssistedInject constructor(
                         addressBook = addressBook,
                         displayName = displayName,
                         description = description,
+                        color = color,
                         timezoneDef = timeZoneId?.let { tzId ->
                             DateUtils.ical4jTimeZone(tzId)?.let { tz ->
                                 val cal = Calendar()
@@ -607,7 +609,7 @@ class AccountModel @AssistedInject constructor(
     class CollectionPager(
         val db: AppDatabase,
         service: LiveData<Service?>,
-        val collectionType: String,
+        private val collectionType: String,
         showOnlyPersonal: LiveData<AccountSettings.ShowOnlyPersonal>
     ) : MediatorLiveData<Pager<Int, Collection>?>() {
 
