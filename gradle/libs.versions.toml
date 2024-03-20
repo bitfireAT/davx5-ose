@@ -1,7 +1,7 @@
 # Comments apply to next line
 
 [versions]
-android-agp = "8.3.0"
+android-agp = "8.3.1"
 android-desugaring = "2.0.4"
 android-flexbox = "3.0.0"
 android-material = "1.11.0"
