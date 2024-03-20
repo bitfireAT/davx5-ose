@@ -1,4 +1,4 @@
-package at.bitfire.davdroid.ui.widget
+package at.bitfire.davdroid.ui.composable
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

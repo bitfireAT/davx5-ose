@@ -42,6 +42,7 @@ compose-bom = "2024.02.02"
 compose-compiler = "1.5.8"
 # don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
 dnsjava = "2.1.9"
+glance = "1.0.0"
 hilt = "2.51"
 jaredrummler-colorpicker = "1.1.0"
 #  keep in sync with * app/build.gradle.kts composeOptions.kotlinCompilerExtensionVersion
@@ -103,6 +104,8 @@ compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
+glance-base = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
+glance-material = { module = "androidx.glance:glance-material", version.ref = "glance" }
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }

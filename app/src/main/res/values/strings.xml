@@ -490,6 +490,10 @@
     <string name="sync_invalid_task">Received invalid task from server</string>
     <string name="sync_invalid_resources_ignoring">Ignoring one or more invalid resources</string>
 
+    <!-- widgets -->
+    <string name="widget_sync_all">Sync all</string>
+    <string name="widget_sync_all_accounts">Sync all accounts</string>
+
     <!-- cert4android -->
     <string name="certificate_notification_connection_security">DAVx⁵: Connection security</string>
     <string name="trust_certificate_unknown_certificate_found">DAVx⁵ has encountered an unknown certificate. Do you want to trust it?</string>

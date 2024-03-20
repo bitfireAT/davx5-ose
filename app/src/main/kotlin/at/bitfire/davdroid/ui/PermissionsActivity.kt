@@ -39,8 +39,8 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.ui.widget.CardWithImage
-import at.bitfire.davdroid.ui.widget.PermissionSwitchRow
+import at.bitfire.davdroid.ui.composable.CardWithImage
+import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import java.util.logging.Level

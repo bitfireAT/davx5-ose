@@ -1,4 +1,4 @@
-package at.bitfire.davdroid.ui.widget
+package at.bitfire.davdroid.ui.composable
 
 import android.content.Context
 import android.widget.Toast

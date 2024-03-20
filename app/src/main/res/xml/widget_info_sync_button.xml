@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:initialLayout="@layout/glance_default_loading_layout"
+    android:minWidth="100dp"
+    android:minHeight="30dp"
+    android:targetCellWidth="1"
+    android:targetCellHeight="1"
+    android:maxResizeWidth="250dp"
+    android:maxResizeHeight="30dp"
+    android:resizeMode="horizontal"
+    tools:ignore="UnusedAttribute">
+</appwidget-provider>

@@ -179,6 +179,10 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.toolingPreview)
 
+    // Glance Widgets
+    implementation(libs.glance.base)
+    implementation(libs.glance.material)
+
     // Jetpack Room
     implementation(libs.room.runtime)
     implementation(libs.room.base)

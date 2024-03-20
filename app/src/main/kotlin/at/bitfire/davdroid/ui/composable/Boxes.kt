@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid.ui.widget
+package at.bitfire.davdroid.ui.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
