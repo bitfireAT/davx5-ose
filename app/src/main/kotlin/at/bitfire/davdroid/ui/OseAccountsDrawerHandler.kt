@@ -7,9 +7,9 @@ package at.bitfire.davdroid.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpCenter
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Forum
-import androidx.compose.material.icons.filled.HelpCenter
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.VolunteerActivism
@@ -93,7 +93,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
             }
         )
         MenuEntry(
-            icon = Icons.Default.HelpCenter,
+            icon = Icons.AutoMirrored.Default.HelpCenter,
             title = stringResource(R.string.navigation_drawer_faq),
             onClick = {
                 uriHandler.openUri(
