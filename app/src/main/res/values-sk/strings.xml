@@ -22,7 +22,6 @@
   <string name="about_libraries">Knižnice</string>
   <string name="about_version">Verzia %1$s (%2$d)</string>
   <string name="about_build_date">Preložené na %s</string>
-  <string name="about_flavor_info">Túto verziu je možné šíriť iba prostredníctvom Google Play.</string>
   <string name="about_license_info_no_warranty">Tento program sa poskytuje BEZ AKEJKOĽVEK ZÁRUKY. Je to slobodný softvér a môžete ho ďalej šíriť pri splnení určitých podmienok.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nie je možné vytvoriť súbor protokolu</string>
@@ -30,7 +29,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adaptér</string>
   <string name="navigation_drawer_about">O programe / Licencia</string>
   <string name="navigation_drawer_beta_feedback">Odozva na beta-verziu</string>
-  <string name="install_email_client">Prosím, nainštalujte e-mailového klienta</string>
   <string name="install_browser">Prosím, nainštalujte webový prehliadač</string>
   <string name="navigation_drawer_settings">Nastavenia</string>
   <string name="navigation_drawer_news_updates">Novinky &amp; aktualizácie</string>
@@ -40,8 +38,6 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_privacy_policy">Zásady bezpečnosti</string>
   <string name="account_list_empty">Vitajte v programe DAVx⁵!\n\nTeraz môžete pridať používateľský účet pre CalDAV/CardDAV .</string>
-  <string name="accounts_global_sync_disabled">Automatická synchronizácia platná pre celý systém je zakázaná</string>
-  <string name="accounts_global_sync_enable">Povoliť</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Zisťovanie služby zlyhalo</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Nie je možné obnoviť zoznam kolekcií</string>
@@ -72,10 +68,6 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Neexistujú žiadne adresáre (zatiaľ)</string>
-  <string name="account_no_calendars">Neexistujú žiadne kalendáre (zatiaľ)</string>
-  <string name="account_no_webcals">Neexistujú žiadne odbery pre kalendár (zatiaľ)</string>
-  <string name="account_swipe_down">Potiahnite nadol aby ste znovu načítali zoznam zo serveru</string>
   <string name="account_synchronize_now">Teraz synchronizovať</string>
   <string name="account_settings">Nastavenia používateľského účtu</string>
   <string name="account_rename">Premenovať používateľský účet</string>
@@ -88,8 +80,6 @@
   <string name="account_read_only">len na čítanie</string>
   <string name="account_calendar">kalendár</string>
   <string name="account_task_list">zoznam úloh</string>
-  <string name="account_create_new_address_book">Vytvoriť nový adresár</string>
-  <string name="account_create_new_calendar">Vytvoriť nový kalendár</string>
   <string name="account_no_webcal_handler_found">Nenašla sa žiadna aplikácia schopná používať Webcal</string>
   <string name="account_install_icsx5">Nainštalovať ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -118,7 +108,6 @@
   <string name="login_no_caldav_carddav">Nie je možné nájsť služby CalDAV ani CardDAV.</string>
   <string name="login_view_logs">Zobraziť podrobnosti</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Nastavenia: %s</string>
   <string name="settings_sync">Synchronizácia</string>
   <string name="settings_sync_interval_contacts">Synchr. interval pre kontakty</string>
   <string name="settings_sync_summary_manually">Iba manuálne</string>
@@ -143,10 +132,8 @@
   <string name="settings_sync_wifi_only_ssids_message">Čiarkou oddelený zoznam mien (SSID) povolených WiFi sietí (ponechať prázdne pre všetky)</string>
   <string name="settings_authentication">Overenie</string>
   <string name="settings_username">Meno používateľa</string>
-  <string name="settings_enter_username">Zadajte meno používateľa:</string>
   <string name="settings_password">Heslo</string>
   <string name="settings_password_summary">Aktualizujte heslo podľa vášho servera.</string>
-  <string name="settings_enter_password">Zadajte vaše heslo:</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Uplynul časový limit pre udalosť</string>
   <string name="settings_sync_time_range_past_none">Budú sa synchronizovať všetky udalosti</string>
@@ -220,6 +207,4 @@
   <string name="sync_invalid_task">Úloha prijatá zo servera nie je platná</string>
   <string name="sync_invalid_resources_ignoring">Ignoruje sa jeden alebo viac neplatných zdrojov</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Zabezpečenie spojenia</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ zistil neznámy certifikát. Prajete si dôverovať mu?</string>
 </resources>

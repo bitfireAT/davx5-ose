@@ -29,8 +29,6 @@
   <string name="intro_slogan1">Les teves dades. La teva elecció.</string>
   <string name="intro_slogan2">Pren el control.</string>
   <string name="intro_battery_title">Intervals de sincronització regulars</string>
-  <string name="intro_battery_not_whitelisted">Desactivat (no recomanat)</string>
-  <string name="intro_battery_whitelisted">Activat (recomanat)</string>
   <string name="intro_battery_text">Per la sincronització en intervals regulars, cal que %s tingui permís per executar-se en segon pla. En cas contrari, Android podria aturar la sincronització en qualsevol moment.</string>
   <string name="intro_battery_dont_show">No necessito intervals de sincronització regulars.*</string>
   <string name="intro_autostart_title">Compatibilitat amb %s</string>
@@ -68,8 +66,6 @@
   <string name="permissions_notification_status_off">Notificacions desactivades (no recomanat)</string>
   <string name="permissions_notification_status_on">Notificacions activades</string>
   <string name="permissions_jtx_title">Permisos de jtx Board</string>
-  <string name="permissions_jtx_status_off">Sense sincronització de tasques, diaris ni notes</string>
-  <string name="permissions_jtx_status_on">És possible la sincronització de tasques, diaris o notes</string>
   <string name="permissions_opentasks_title">Permisos d\'OpenTasks</string>
   <string name="permissions_tasksorg_title">Permisos de Tasks</string>
   <string name="permissions_tasks_status_off">Sense sincronització de les tasques</string>
@@ -98,9 +94,7 @@
   <string name="about_version">Versió %1$s (%2$d)</string>
   <string name="about_build_date">Compilat el %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) i col·laboradors</string>
-  <string name="about_flavor_info">Aquesta versió només és apta per la seva distribució a Google Play.</string>
   <string name="about_license_info_no_warranty">Aquest programa és distribuït sense CAP TIPUS DE GARANTIA. És programari lliure, i està permesa la seva re-distribució sota certes condicions.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Gràcies a: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">No s\'ha pogut crear el fitxer de registre</string>
   <string name="logging_notification_text">Iniciant a totes les %s activitats</string>
@@ -110,7 +104,6 @@
   <string name="navigation_drawer_subtitle">Adaptador de sincronització CalDAV / CardDAV</string>
   <string name="navigation_drawer_about">Quant a/llicència</string>
   <string name="navigation_drawer_beta_feedback">Retroacció de la Beta</string>
-  <string name="install_email_client">Si us plau, instal·leu un client de correu</string>
   <string name="install_browser">Si us plau, instal·leu un navegador.</string>
   <string name="navigation_drawer_settings">Configuració</string>
   <string name="navigation_drawer_news_updates">Novetats i actualitzacions</string>
@@ -131,8 +124,6 @@
   <string name="account_list_low_storage">Espai d\'emmagatzematge baix. L\'Android no sincronitzarà els canvis locals immediatament, sinó durant la propera sincronització normal.</string>
   <string name="account_list_manage_storage">Gestiona l\'emmagatzematge</string>
   <string name="account_list_empty">Us donem la benvinguda a DAVx⁵! \n\nAra podeu afegir un compte CalDAV / CardDAV.</string>
-  <string name="accounts_global_sync_disabled">La sincronització automàtica de tot el sistema està inhabilitada</string>
-  <string name="accounts_global_sync_enable">Activa</string>
   <string name="accounts_sync_all">Sincronitza tots els comptes</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Ha fallat la detecció del servei</string>
@@ -182,16 +173,11 @@
   <string name="app_settings_reset_hints_success">Es mostraran de nou tots els consells</string>
   <string name="app_settings_integration">Integració</string>
   <string name="app_settings_tasks_provider">Aplicació de tasques</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Sincronitzant amb %s</string>
   <string name="app_settings_tasks_provider_none">No s\'ha trobat cap aplicació de tasques compatible</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">No existeixen llibretes d\'adreces (encara).</string>
-  <string name="account_no_calendars">No existeixen calendaris (encara).</string>
-  <string name="account_no_webcals">No hi ha subscripcions a calendaris (encara).</string>
-  <string name="account_swipe_down">Llisca avall per a refrescar la llista del servidor.</string>
   <string name="account_synchronize_now">Sincronitza ara</string>
   <string name="account_settings">Configuració del compte</string>
   <string name="account_rename">Canvia el nom del compte</string>
@@ -209,8 +195,6 @@
   <string name="account_task_list">Llista de tasques</string>
   <string name="account_journal">Diari</string>
   <string name="account_only_personal">Mostra només les personals</string>
-  <string name="account_create_new_address_book">Crea una llibreta d’adreces nova</string>
-  <string name="account_create_new_calendar">Crear nou calendari</string>
   <string name="account_no_webcal_handler_found">No s\'ha trobat cap aplicació compatible amb Webcal</string>
   <string name="account_install_icsx5">Instal·la ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -265,7 +249,6 @@
   <string name="login_username_password_wrong">Nom d\'usuari (adreça de correu) / contrasenya incorrectes?</string>
   <string name="login_view_logs">Mostra els detalls</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Configuració: %s</string>
   <string name="settings_sync">Sincronització</string>
   <string name="settings_sync_interval_contacts">Interval de sincronització dels contactes</string>
   <string name="settings_sync_summary_manually">Només a mà</string>
@@ -297,10 +280,8 @@
   <string name="settings_oauth">Re-Autenticar</string>
   <string name="settings_oauth_summary">Tornar a realitzar l\'inici de sessió amb OAuth</string>
   <string name="settings_username">Nom d\'usuari/a</string>
-  <string name="settings_enter_username">Escriu el nom d\'usuari/a:</string>
   <string name="settings_password">Contrasenya</string>
   <string name="settings_password_summary">Actualitzeu la contrasenya segons el vostre servidor.</string>
-  <string name="settings_enter_password">Introduïu la contrasenya:</string>
   <string name="settings_certificate_install">Instal·la un certificat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Límit de temps dels esdeveniments passats</string>
@@ -424,6 +405,4 @@
   <string name="sync_invalid_task">S\'ha rebut una tasca no vàlida del servidor</string>
   <string name="sync_invalid_resources_ignoring">S\'ha ignorat un o més recursos no vàlids</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Seguretat de la connexió</string>
-  <string name="trust_certificate_unknown_certificate_found">El DAVx⁵ ha trobat un certificat desconegut. Voleu confiar-hi?</string>
 </resources>

@@ -24,8 +24,6 @@
   <string name="intro_slogan1">您的資料，您的選擇</string>
   <string name="intro_slogan2">權力在握</string>
   <string name="intro_battery_title">定期同步間隔</string>
-  <string name="intro_battery_not_whitelisted">停用（不建議）</string>
-  <string name="intro_battery_whitelisted">啟用（建議）</string>
   <string name="intro_battery_text">為了定期進行同步，必須允許 %s 在背景運行，否則 Android 可能會隨時暫停同步。</string>
   <string name="intro_battery_dont_show">我不需要定期同步間隔*</string>
   <string name="intro_autostart_title">%s 相容性</string>
@@ -47,7 +45,6 @@
   <string name="about_libraries">函式庫</string>
   <string name="about_version">版本號 %1$s（%2$d）</string>
   <string name="about_build_date">編譯於 %s</string>
-  <string name="about_flavor_info">本功能僅在Google Play上面發行的程式上可用。</string>
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">無法創建事項記錄文檔</string>
@@ -55,7 +52,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同步器</string>
   <string name="navigation_drawer_about">關於我們 / 授權條款</string>
   <string name="navigation_drawer_beta_feedback">為測試版本給回饋意見</string>
-  <string name="install_email_client">請安裝一個email程式</string>
   <string name="install_browser">請安裝一個瀏覽器程式</string>
   <string name="navigation_drawer_settings">設定</string>
   <string name="navigation_drawer_news_updates">新聞 &amp; 更新</string>
@@ -65,8 +61,6 @@
   <string name="navigation_drawer_faq">常見問答</string>
   <string name="navigation_drawer_privacy_policy">隱私權政策</string>
   <string name="account_list_empty">歡迎使用 DAVx⁵!\n\n您現在可以新增 CalDAV/CardDAV 帳號</string>
-  <string name="accounts_global_sync_disabled">操作系統的自動同步被關閉了</string>
-  <string name="accounts_global_sync_enable">啟用</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">未發現遠端服務</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">無法更新清單</string>
@@ -98,10 +92,6 @@
   <string name="account_carddav">CardDAV聯絡人檔案</string>
   <string name="account_caldav">CalDav行事曆檔案</string>
   <string name="account_webcal">Webcal網際網絡行事曆</string>
-  <string name="account_no_address_books">（目前）沒有通訊錄</string>
-  <string name="account_no_calendars">（目前）沒有行事曆</string>
-  <string name="account_no_webcals">（目前）沒有行事曆訂閲</string>
-  <string name="account_swipe_down">下拉可從伺服器獲取最新清單</string>
   <string name="account_synchronize_now">立即同步</string>
   <string name="account_settings">帳號設定</string>
   <string name="account_rename">重新命名帳號</string>
@@ -116,8 +106,6 @@
   <string name="account_calendar">行事曆</string>
   <string name="account_task_list">待辦事項</string>
   <string name="account_only_personal">只顯示個人</string>
-  <string name="account_create_new_address_book">建立新的通訊錄</string>
-  <string name="account_create_new_calendar">建立新行事曆</string>
   <string name="account_no_webcal_handler_found">未找到支援Webcal的APP</string>
   <string name="account_install_icsx5">安裝ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -146,7 +134,6 @@
   <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服務。</string>
   <string name="login_view_logs">顯示詳細訊息</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">設定: %s</string>
   <string name="settings_sync">同步設定</string>
   <string name="settings_sync_interval_contacts">聯絡人同步間隔</string>
   <string name="settings_sync_summary_manually">只手動同步</string>
@@ -172,10 +159,8 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">管理</string>
   <string name="settings_authentication">認證</string>
   <string name="settings_username">使用者帳號</string>
-  <string name="settings_enter_username">輸入帳號名稱:</string>
   <string name="settings_password">密碼</string>
   <string name="settings_password_summary">您在伺服器上使用中的密碼</string>
-  <string name="settings_enter_password">輸入密碼：</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">過去活動的時間限制</string>
   <string name="settings_sync_time_range_past_none">將會同步所有活動</string>
@@ -243,6 +228,4 @@
   <string name="sync_invalid_task">收到了無效的任務</string>
   <string name="sync_invalid_resources_ignoring">略過了一個或多個無效的資料</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: 連線安全性</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ 發現未知的憑證，您要信任它嗎?</string>
 </resources>

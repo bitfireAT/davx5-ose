@@ -26,8 +26,6 @@
   <string name="intro_slogan1">Ваши подаци. Ваш избор.</string>
   <string name="intro_slogan2">Преузмите контролу.</string>
   <string name="intro_battery_title">Регуларни интервали синхронизације</string>
-  <string name="intro_battery_not_whitelisted">Онемогућено (није препоручено)</string>
-  <string name="intro_battery_whitelisted">Омогућено (препоручено)</string>
   <string name="intro_battery_text">За синхронизацију у регуларним интервалима, %s мора бити дозвољено да се извршава у позадини. У супротном, Андроид може зауставити синхронизацију у било ком тренутку.</string>
   <string name="intro_battery_dont_show">Не требају ми регуларни интервали синхронизације.*</string>
   <string name="intro_autostart_title">%s компатибилност</string>
@@ -62,8 +60,6 @@
   <string name="permissions_notification_title">Дозволе за обавештења</string>
   <string name="permissions_notification_status_off">Обавештења су онемогућена (није препоручено)</string>
   <string name="permissions_notification_status_on">Обавештења су омогућена</string>
-  <string name="permissions_jtx_status_off">Без синхронизације задатака, вести, белешки</string>
-  <string name="permissions_jtx_status_on">Могућа је синхронизација задатака, вести, белешки</string>
   <string name="permissions_opentasks_title">Дозволе за OpenTasks</string>
   <string name="permissions_tasksorg_title">Дозволе за задатке</string>
   <string name="permissions_tasks_status_off">Без синхронизације задатака</string>
@@ -90,7 +86,6 @@
   <string name="about_version">Издање %1$s (%2$d)</string>
   <string name="about_build_date">Компилован %s</string>
   <string name="about_license_info_no_warranty">Овај програм НЕМА НИКАКВЕ ГАРАНЦИЈЕ. Бесплатан је софтвер којег можете слободно да делите под одређеним условима.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Захвалница: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Није се могла направити датотека записа</string>
   <string name="logging_notification_text">Сада се записују све %s активности</string>
@@ -100,7 +95,6 @@
   <string name="navigation_drawer_subtitle">КалДАВ/КардДАВ адаптер синхронизације</string>
   <string name="navigation_drawer_about">О програму/лиценца</string>
   <string name="navigation_drawer_beta_feedback">Повратне информације бета издања</string>
-  <string name="install_email_client">Молим вас инсталирајте клијент е-поште</string>
   <string name="install_browser">Молим вас инсталирајте прегледач интернета</string>
   <string name="navigation_drawer_settings">Поставке</string>
   <string name="navigation_drawer_news_updates">Новости и ажурирања</string>
@@ -114,8 +108,6 @@
   <string name="account_list_no_notification_permission">Обавештења су онемогућена. Нећете бити обавештени о проблемима са синхронизацијом.</string>
   <string name="account_list_manage_storage">Управљајте складиштем</string>
   <string name="account_list_empty">Добро дошли у ДАВдроид!\n\nМожете сада да додате КалДАВ/КардДАВ налог.</string>
-  <string name="accounts_global_sync_disabled">Синхронизација је системски искључена</string>
-  <string name="accounts_global_sync_enable">Укључи</string>
   <string name="accounts_sync_all">Синхронизуј све налоге</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Откривање услуге није успело</string>
@@ -162,15 +154,10 @@
   <string name="app_settings_reset_hints_success">Сви савети ће поново бити приказани</string>
   <string name="app_settings_integration">Интеграција</string>
   <string name="app_settings_tasks_provider">Апликација за задатке</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Синхронизовање са %s</string>
   <!--AccountActivity-->
   <string name="account_carddav">КардДАВ</string>
   <string name="account_caldav">КалДАВ</string>
   <string name="account_webcal">Вебкал</string>
-  <string name="account_no_address_books">Нема именика (још увек).</string>
-  <string name="account_no_calendars">Нема календара (још увек).</string>
-  <string name="account_no_webcals">Нема претплата на календаре (још увек).</string>
-  <string name="account_swipe_down">Повуците на доле да би сте освежили списак са сервера.</string>
   <string name="account_synchronize_now">Синхронизуј одмах</string>
   <string name="account_settings">Поставке налога</string>
   <string name="account_rename">Преименуј налог</string>
@@ -186,8 +173,6 @@
   <string name="account_task_list">листа задатака</string>
   <string name="account_journal">журнал</string>
   <string name="account_only_personal">Прикажи само личне</string>
-  <string name="account_create_new_address_book">Направи нови адресар</string>
-  <string name="account_create_new_calendar">Направи нови календар</string>
   <string name="account_no_webcal_handler_found">Нема апликације за Вебкал</string>
   <string name="account_install_icsx5">Инсталирај ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -226,7 +211,6 @@
   <string name="login_username_password_wrong">Корисничко име (адреса е-поште) / лозинка је погрешна?</string>
   <string name="login_view_logs">Прикажи детаље</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Поставке: %s</string>
   <string name="settings_sync">Синхронизација</string>
   <string name="settings_sync_interval_contacts">Интервал синх. контаката</string>
   <string name="settings_sync_summary_manually">Само ручно</string>
@@ -253,10 +237,8 @@
   <string name="settings_authentication">Аутентификација</string>
   <string name="settings_oauth">Поновна аутентификација</string>
   <string name="settings_username">Корисничко име</string>
-  <string name="settings_enter_username">Унесите корисничко име:</string>
   <string name="settings_password">Лозинка</string>
   <string name="settings_password_summary">Ажурирајте лозинку за ваш сервер.</string>
-  <string name="settings_enter_password">Унесите лозинку:</string>
   <string name="settings_certificate_install">Инсталирај сертификат</string>
   <string name="settings_caldav">КалДАВ</string>
   <string name="settings_sync_time_range_past">Ограничење догађаја у прошлости</string>
@@ -318,6 +300,4 @@
   <string name="sync_error_local_storage">Грешка локалног складишта – %s</string>
   <string name="sync_error_view_item">Прикажи ставку</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">ДАВдроид: Безбедност везе</string>
-  <string name="trust_certificate_unknown_certificate_found">ДАВдроид је наишао на непознат сертификат. Желите ли да се поуздате у њега?</string>
 </resources>

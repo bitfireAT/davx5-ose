@@ -11,12 +11,6 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-aboutLibraries {
-    // This means that we have to generate the dependencies explicitly:
-    // ./gradlew --no-configuration-cache --no-build-cache -PaboutLibraries.exportPath=src/main/res/raw/ app:exportLibraryDefinitions
-    registerAndroidTasks = false
-}
-
 // Android configuration
 android {
     compileSdk = 34

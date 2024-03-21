@@ -24,8 +24,6 @@
   <string name="intro_slogan1">당신의 데이터. 당신의 선택.</string>
   <string name="intro_slogan2">관리.</string>
   <string name="intro_battery_title">정기적 동기화 주기</string>
-  <string name="intro_battery_not_whitelisted">사용 안 함(권장하지 않음)</string>
-  <string name="intro_battery_whitelisted">사용(권장)</string>
   <string name="intro_battery_text">정기적으로 동기화하려면 백그라운드에서 %s이 실행되도록 허용해야 합니다. 그렇지 않으면 Android는 언제든지 동기화를 일시 중지할 수 있습니다.</string>
   <string name="intro_battery_dont_show">나는 정기적인 동기화 주기가 필요하지 않다.*</string>
   <string name="intro_autostart_title">%s 호환성</string>
@@ -58,8 +56,6 @@
   <string name="permissions_calendar_status_off">캘린더 동기화 없음(권장하지 않음)</string>
   <string name="permissions_calendar_status_on">캘린더를 동기화 할 수 있음</string>
   <string name="permissions_jtx_title">jtx Board 권한</string>
-  <string name="permissions_jtx_status_off">동기화할 작업, 일지, 노트가 없음</string>
-  <string name="permissions_jtx_status_on">동기회 가능한 작업, 일지, 노트</string>
   <string name="permissions_opentasks_title">OpenTasks 권한</string>
   <string name="permissions_tasksorg_title">작업 권한</string>
   <string name="permissions_tasks_status_off">할일 목록 동기화 하지않음</string>
@@ -88,9 +84,7 @@
   <string name="about_version">버전 %1$s (%2$d)</string>
   <string name="about_build_date">%s에서 컴파일</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) and contributors</string>
-  <string name="about_flavor_info">이 버전은 Google Play를 통해서만 배포될 수 있습니다.</string>
   <string name="about_license_info_no_warranty">이 프로그램은 보증 없이 제공됩니다. 그것은 무료 소프트웨어이며, 특정한 조건 하에서 재배포하는 것을 환영합니다.</string>
-  <string name="about_translations_thanks"><![CDATA[<i>Thanks to:</i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">log file을 만들 수 없습니다.</string>
   <string name="logging_notification_text">이제 모든 %s 활동을 logging합니다.</string>
@@ -100,7 +94,6 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 동기화 어댑터</string>
   <string name="navigation_drawer_about">관련 / 라이센스</string>
   <string name="navigation_drawer_beta_feedback">베타 피드백</string>
-  <string name="install_email_client">이메일 클라이언트를 설치하십시오.</string>
   <string name="install_browser">웹 브라우저를 설치해 주십시오.</string>
   <string name="navigation_drawer_settings">설정</string>
   <string name="navigation_drawer_news_updates">뉴스 &amp; 업데이트</string>
@@ -113,8 +106,6 @@
   <string name="navigation_drawer_privacy_policy">개인 정보 보호 정책</string>
   <string name="account_list_empty">DAVx⁵에 오신 것을 환영 합니다!/n/n
 당신은  CalDAV/CardDAV 계정을 지금 추가 할 수 있습니다.</string>
-  <string name="accounts_global_sync_disabled">시스템 전체 자동 동기화가 비활성화됩니다.</string>
-  <string name="accounts_global_sync_enable">활성</string>
   <string name="accounts_sync_all">모든 계정 동기화</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">서비스 검색 실패</string>
@@ -164,16 +155,11 @@
   <string name="app_settings_reset_hints_success">모든 힌트가 다시 표기</string>
   <string name="app_settings_integration">통합</string>
   <string name="app_settings_tasks_provider">테스크 앱</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">%s과 동기화</string>
   <string name="app_settings_tasks_provider_none">호환되는 작업 앱을 찾을 수 없습니다.</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">주소록이 없다. (yet)</string>
-  <string name="account_no_calendars">캘린더가 없다.(yet)</string>
-  <string name="account_no_webcals">구독하는 캘린더가 없습니다. (yet)</string>
-  <string name="account_swipe_down">서버에서 목록을 새로 고치려면 아래로 스와이프하세요.</string>
   <string name="account_synchronize_now">동기화</string>
   <string name="account_settings">계정 설정</string>
   <string name="account_rename">계정 이름 바꾸기</string>
@@ -189,8 +175,6 @@
   <string name="account_task_list">할일 목록</string>
   <string name="account_journal">일지</string>
   <string name="account_only_personal">개인만 표시</string>
-  <string name="account_create_new_address_book">새 주소록 만들기</string>
-  <string name="account_create_new_calendar">새 캘린더 작성</string>
   <string name="account_no_webcal_handler_found">Webcal 지원 앱을 찾을 수 없습니다.</string>
   <string name="account_install_icsx5">ICSx⁵를 설치합니다.</string>
   <!--AddAccountActivity-->
@@ -226,7 +210,6 @@
   <string name="login_username_password_wrong">사용자 이름 (email address) / 비밀번호 가 잘못되었습니까?</string>
   <string name="login_view_logs">자세히</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">설정: %s</string>
   <string name="settings_sync">동기화</string>
   <string name="settings_sync_interval_contacts">주기적 연락처 동기화 </string>
   <string name="settings_sync_summary_manually">직접 선택</string>
@@ -253,10 +236,8 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">관리</string>
   <string name="settings_authentication">인증</string>
   <string name="settings_username">사용자 이름</string>
-  <string name="settings_enter_username">사용자 이름 입력:</string>
   <string name="settings_password">비밀번호</string>
   <string name="settings_password_summary">귀하의 서버에  비밀번호 업데이트.</string>
-  <string name="settings_enter_password">비밀번호를 입력:</string>
   <string name="settings_certificate_install">인증서 설치</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">지난 이벤트 시간 제한</string>
@@ -371,6 +352,4 @@
   <string name="sync_invalid_task">서버에서 잘못된 작업을 수신했습니다.</string>
   <string name="sync_invalid_resources_ignoring">하나 이상의 잘못된 리소스 무시</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx²: 연결 보안</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx®에서 알 수 없는 인증서를 발견했습니다. 신뢰할 수 있습니까?</string>
 </resources>

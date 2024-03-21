@@ -26,8 +26,6 @@
   <string name="intro_slogan1">Dữ liệu của bạn. Lựa chọn của bạn.</string>
   <string name="intro_slogan2">Giành quyền kiểm soát.</string>
   <string name="intro_battery_title">Khoảng thời gian thông thường giữa mỗi lần đồng bộ</string>
-  <string name="intro_battery_not_whitelisted">Tắt (không được khuyến nghị)</string>
-  <string name="intro_battery_whitelisted">Bật (được khuyến nghị)</string>
   <string name="intro_battery_text">Để đồng bộ hoá tại những khoảng thời gian thông thường, %s phải được cho phép chạy trong nền. Nếu không, Android có thể sẽ tạm dừng đồng bộ hoá bất cứ lúc nào.</string>
   <string name="intro_battery_dont_show">Tôi không cần khoảng thời gian đồng bộ thông thường.*</string>
   <string name="intro_autostart_title">Sự tương thích với %s</string>
@@ -60,8 +58,6 @@
   <string name="permissions_calendar_status_off">Không đồng bộ lịch (không được khuyến nghị)</string>
   <string name="permissions_calendar_status_on">Có thể đồng bộ lịch</string>
   <string name="permissions_jtx_title">Quyền của jtx Board</string>
-  <string name="permissions_jtx_status_off">Không đồng bộ công việc, nhật ký, ghi chú</string>
-  <string name="permissions_jtx_status_on">Có thể đồng bộ công việc, nhật ký, ghi chú</string>
   <string name="permissions_opentasks_title">Quyền OpenTasks</string>
   <string name="permissions_tasksorg_title">Quyền Tasks</string>
   <string name="permissions_tasks_status_off">Không đồng bộ công việc</string>
@@ -90,9 +86,7 @@
   <string name="about_version">Phiên bản %1$s (%2$d)</string>
   <string name="about_build_date">Biên dịch vào %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) và những người đóng góp</string>
-  <string name="about_flavor_info">Phiên bản này chỉ đủ điều kiện để phân phối qua Google Play.</string>
   <string name="about_license_info_no_warranty">Chương trình này KHÔNG CÓ SỰ ĐẢM BẢO NÀO. Nó là phần mềm tự do, và bạn có thể tuỳ ý phân phối lại nó dưới các điều kiện cụ thể. </string>
-  <string name="about_translations_thanks"><![CDATA[<i>Nhờ có: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Không thể tạo tệp nhật ký</string>
   <string name="logging_notification_text">Bây giờ đang ghi lại tất cả %s hoạt động</string>
@@ -102,7 +96,6 @@
   <string name="navigation_drawer_subtitle">Đồng bộ CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Giới thiệu / Giấy phép</string>
   <string name="navigation_drawer_beta_feedback">Phản hồi về bản beta</string>
-  <string name="install_email_client">Vui lòng cài đặt một ứng dụng email khách</string>
   <string name="install_browser">Vui lòng cài đặt một trình duyệt web</string>
   <string name="navigation_drawer_settings">Cài đặt</string>
   <string name="navigation_drawer_news_updates">Tin tức &amp; cập nhật</string>
@@ -114,8 +107,6 @@
   <string name="navigation_drawer_community">Cộng đồng</string>
   <string name="navigation_drawer_privacy_policy">Chính sách riêng tư</string>
   <string name="account_list_empty">Chào mừng đến DAVx⁵!\n\nBạn có thể thêm một tài khoản CalDAV/CardDAV ngay.</string>
-  <string name="accounts_global_sync_disabled">Đồng bộ hoá tự động trên toàn hệ thống bị tắt</string>
-  <string name="accounts_global_sync_enable">Bật</string>
   <string name="accounts_sync_all">Đồng bộ tất cả tài khoản</string>
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Dò tìm dịch vụ thất bại</string>
@@ -165,16 +156,11 @@
   <string name="app_settings_reset_hints_success">Tất cả gợi ý sẽ được hiện lại</string>
   <string name="app_settings_integration">Tích hợp</string>
   <string name="app_settings_tasks_provider">Ứng dụng công việc</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Đang đồng bộ hoá bằng %s</string>
   <string name="app_settings_tasks_provider_none">Không tìm thấy ứng dụng công việc tương thích</string>
   <!--AccountActivity-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_no_address_books">Chưa có sổ địa chỉ nào.</string>
-  <string name="account_no_calendars">Chưa có lịch nào.</string>
-  <string name="account_no_webcals">Chưa có lượt đăng ký lịch nào.</string>
-  <string name="account_swipe_down">Vuốt xuống để làm mới danh sách từ máy chủ.</string>
   <string name="account_synchronize_now">Đồng bộ hoá ngay</string>
   <string name="account_settings">Cài đặt tài khoản</string>
   <string name="account_rename">Đổi tên tài khoản</string>
@@ -190,8 +176,6 @@
   <string name="account_task_list">danh sách công việc</string>
   <string name="account_journal">nhật ký</string>
   <string name="account_only_personal">Chỉ hiện cá nhân</string>
-  <string name="account_create_new_address_book">Tạo sổ địa chỉ mới</string>
-  <string name="account_create_new_calendar">Tạo lịch mới</string>
   <string name="account_no_webcal_handler_found">Không tìm thấy ứng dụng nào có khả năng xử lý Webcal</string>
   <string name="account_install_icsx5">Cài đặt ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -227,7 +211,6 @@
   <string name="login_username_password_wrong">Tên người dùng (địa chỉ email) / mật khẩu bị sai?</string>
   <string name="login_view_logs">Hiện chi tiết</string>
   <!--AccountSettingsActivity-->
-  <string name="settings_title">Cài đặt: %s</string>
   <string name="settings_sync">Đồng bộ hoá</string>
   <string name="settings_sync_interval_contacts">Khoảng thời gian giữa mỗi lần đồng bộ danh bạ</string>
   <string name="settings_sync_summary_manually">Chỉ thủ công</string>
@@ -254,10 +237,8 @@
   <string name="settings_sync_wifi_only_ssids_permissions_action">Quản lý</string>
   <string name="settings_authentication">Xác thực</string>
   <string name="settings_username">Tên người dùng</string>
-  <string name="settings_enter_username">Nhập tên người dùng:</string>
   <string name="settings_password">Mật khẩu</string>
   <string name="settings_password_summary">Cập nhật mật khẩu theo như máy chủ của bạn.</string>
-  <string name="settings_enter_password">Nhập mật khẩu:</string>
   <string name="settings_certificate_install">Cài đặt chứng chỉ</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Giới hạn thời gian cho sự kiện trong quá khứ</string>
@@ -374,6 +355,4 @@
   <string name="sync_invalid_task">Đã nhận công việc không hợp lệ từ máy chủ</string>
   <string name="sync_invalid_resources_ignoring">Đang bỏ qua một hoặc nhiều tài nguyên không hợp lệ</string>
   <!--cert4android-->
-  <string name="certificate_notification_connection_security">DAVx⁵: Sự bảo mật của kết nối</string>
-  <string name="trust_certificate_unknown_certificate_found">DAVx⁵ đã gặp một chứng chỉ không xác định. Bạn có muốn tin tưởng nó không?</string>
 </resources>
