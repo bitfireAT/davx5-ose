@@ -37,8 +37,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.CloudOff
-import androidx.compose.material.icons.filled.Help
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -96,7 +96,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
                                         .withStatParams("WifiPermissionsActivity")
                                         .build().toString())
                                 }) {
-                                    Icon(Icons.Default.Help, stringResource(R.string.help))
+                                    Icon(Icons.AutoMirrored.Default.Help, stringResource(R.string.help))
                                 }
                             }
                         )
