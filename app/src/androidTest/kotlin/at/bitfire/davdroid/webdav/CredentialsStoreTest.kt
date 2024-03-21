@@ -16,8 +16,8 @@ class CredentialsStoreTest {
 
     @Test
     fun testSetGetDelete() {
-        store.setCredentials(0, Credentials(userName = "myname", password = "12345"))
-        assertEquals(Credentials(userName = "myname", password = "12345"), store.getCredentials(0))
+        store.setCredentials(0, Credentials(username = "myname", password = "12345"))
+        assertEquals(Credentials(username = "myname", password = "12345"), store.getCredentials(0))
 
         store.setCredentials(0, null)
         assertNull(store.getCredentials(0))

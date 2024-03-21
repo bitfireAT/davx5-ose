@@ -1,7 +1,6 @@
 package at.bitfire.davdroid.ui.composable
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -21,7 +20,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.R
 
 @Composable
@@ -29,6 +27,9 @@ fun PasswordTextField(
     password: String,
     labelText: String,
     onPasswordChange: (String) -> Unit,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isError: Boolean = false
 ) {
@@ -40,8 +41,9 @@ fun PasswordTextField(
         isError = isError,
         singleLine = true,
         enabled = enabled,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 if (passwordVisible)
@@ -50,9 +52,7 @@ fun PasswordTextField(
                     Icon(Icons.Default.Visibility, stringResource(R.string.login_password_show))
             }
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
+        modifier = modifier
     )
 }
 

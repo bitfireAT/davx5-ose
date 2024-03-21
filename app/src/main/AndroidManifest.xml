@@ -113,9 +113,10 @@
             android:parentActivityName=".ui.AppSettingsActivity" />
 
         <activity
-            android:name=".ui.setup.LoginActivity"
-            android:label="@string/login_title"
+            android:name=".ui.setup.LoginActivity2"
             android:parentActivityName=".ui.AccountsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

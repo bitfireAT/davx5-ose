@@ -781,7 +781,7 @@ class DebugInfoActivity : AppCompatActivity() {
 
                 val credentials = accountSettings.credentials()
                 val authStr = mutableListOf<String>()
-                if (credentials.userName != null)
+                if (credentials.username != null)
                     authStr += "user name"
                 if (credentials.password != null)
                     authStr += "password"

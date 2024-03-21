@@ -256,7 +256,7 @@
     <string name="login_login">Login</string>
     <string name="login_create_account">Create account</string>
     <string name="login_account_name">Account name</string>
-    <string name="login_account_avoid_apostrophe">Use of apostrophes (\'), have been reported to cause problems on some devices.</string>
+    <string name="login_account_avoid_apostrophe">Usage of apostrophes (\') seems to cause problems on some devices.</string>
     <string name="login_account_name_info">Use your email address as account name because Android will use the account name as ORGANIZER field for events you create. You can\'t have two accounts with the same name.</string>
     <string name="login_account_contact_group_method">Contact group method:</string>
     <string name="login_account_name_required">Account name required</string>

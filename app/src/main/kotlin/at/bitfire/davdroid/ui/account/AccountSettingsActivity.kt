@@ -402,12 +402,12 @@ class AccountSettingsActivity: AppCompatActivity() {
                 )
 
             } else {                                    // username/password
-                if (credentials.userName != null) {
+                if (credentials.username != null) {
                     var showUsernameDialog by remember { mutableStateOf(false) }
                     Setting(
                         icon = Icons.Default.AccountCircle,
                         name = stringResource(R.string.settings_username),
-                        summary = credentials.userName,
+                        summary = credentials.username,
                         onClick = {
                             showUsernameDialog = true
                         }
@@ -415,9 +415,9 @@ class AccountSettingsActivity: AppCompatActivity() {
                     if (showUsernameDialog)
                         EditTextInputDialog(
                             title = stringResource(R.string.settings_username),
-                            initialValue = credentials.userName ?: "",
+                            initialValue = credentials.username ?: "",
                             onValueEntered = { newValue ->
-                                onUpdateCredentials(credentials.copy(userName = newValue))
+                                onUpdateCredentials(credentials.copy(username = newValue))
                             },
                             onDismiss = { showUsernameDialog = false }
                         )
@@ -492,7 +492,7 @@ class AccountSettingsActivity: AppCompatActivity() {
     @Preview
     fun AuthenticationSettings_Preview_UsernamePassword() {
         AuthenticationSettings(
-            credentials = Credentials(userName = "user", password = "password")
+            credentials = Credentials(username = "user", password = "password")
         )
     }
 
@@ -500,7 +500,7 @@ class AccountSettingsActivity: AppCompatActivity() {
     @Preview
     fun AuthenticationSettings_Preview_UsernamePassword_ClientCertificate() {
         AuthenticationSettings(
-            credentials = Credentials(userName = "user", password = "password", certificateAlias = "alias")
+            credentials = Credentials(username = "user", password = "password", certificateAlias = "alias")
         )
     }
 

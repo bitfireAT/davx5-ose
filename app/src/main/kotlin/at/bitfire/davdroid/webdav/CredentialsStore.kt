@@ -51,7 +51,7 @@ class CredentialsStore(context: Context) {
         val edit = prefs.edit()
         if (credentials != null)
             edit.putBoolean(keyName(mountId, HAS_CREDENTIALS), true)
-                .putString(keyName(mountId, USER_NAME), credentials.userName)
+                .putString(keyName(mountId, USER_NAME), credentials.username)
                 .putString(keyName(mountId, PASSWORD), credentials.password)
                 .putString(keyName(mountId, CERTIFICATE_ALIAS), credentials.certificateAlias)
         else
