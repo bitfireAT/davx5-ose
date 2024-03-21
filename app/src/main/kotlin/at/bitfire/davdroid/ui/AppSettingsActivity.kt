@@ -284,45 +284,47 @@ class AppSettingsActivity: AppCompatActivity() {
                 onDismiss = { showProxyTypeInputDialog = false }
             )
 
-        var showProxyHostNameInputDialog by remember { mutableStateOf(false) }
-        Setting(
-            name = stringResource(R.string.app_settings_proxy_host),
-            summary = proxyHostName
-        ) {
-            showProxyHostNameInputDialog = true
-        }
-        if (showProxyHostNameInputDialog)
-            EditTextInputDialog(
-                title = stringResource(R.string.app_settings_proxy_host),
-                initialValue = proxyHostName,
-                keyboardType = KeyboardType.Uri,
-                onValueEntered = onProxyHostNameUpdated,
-                onDismiss = { showProxyHostNameInputDialog = false }
-            )
+        if (proxyType !in listOf(Settings.PROXY_TYPE_SYSTEM, Settings.PROXY_TYPE_NONE)) {
+            var showProxyHostNameInputDialog by remember { mutableStateOf(false) }
+            Setting(
+                name = stringResource(R.string.app_settings_proxy_host),
+                summary = proxyHostName
+            ) {
+                showProxyHostNameInputDialog = true
+            }
+            if (showProxyHostNameInputDialog)
+                EditTextInputDialog(
+                    title = stringResource(R.string.app_settings_proxy_host),
+                    initialValue = proxyHostName,
+                    keyboardType = KeyboardType.Uri,
+                    onValueEntered = onProxyHostNameUpdated,
+                    onDismiss = { showProxyHostNameInputDialog = false }
+                )
 
-        var showProxyPortInputDialog by remember { mutableStateOf(false) }
-        Setting(
-            name = stringResource(R.string.app_settings_proxy_port),
-            summary = proxyPort?.toString()
-        ) {
-            showProxyPortInputDialog = true
+            var showProxyPortInputDialog by remember { mutableStateOf(false) }
+            Setting(
+                name = stringResource(R.string.app_settings_proxy_port),
+                summary = proxyPort?.toString()
+            ) {
+                showProxyPortInputDialog = true
+            }
+            if (showProxyPortInputDialog)
+                EditTextInputDialog(
+                    title = stringResource(R.string.app_settings_proxy_port),
+                    initialValue = proxyPort?.toString(),
+                    keyboardType = KeyboardType.Number,
+                    onValueEntered = {
+                        try {
+                            val newPort = it.toInt()
+                            if (newPort in 1..65535)
+                                onProxyPortUpdated(newPort)
+                        } catch (_: NumberFormatException) {
+                            // user entered invalid port number
+                        }
+                    },
+                    onDismiss = { showProxyPortInputDialog = false }
+                )
         }
-        if (showProxyPortInputDialog)
-            EditTextInputDialog(
-                title = stringResource(R.string.app_settings_proxy_port),
-                initialValue = proxyPort?.toString(),
-                keyboardType = KeyboardType.Number,
-                onValueEntered = {
-                    try {
-                        val newPort = it.toInt()
-                        if (newPort in 1..65535)
-                            onProxyPortUpdated(newPort)
-                    } catch(_: NumberFormatException) {
-                        // user entered invalid port number
-                    }
-                },
-                onDismiss = { showProxyPortInputDialog = false }
-            )
     }
 
     @Composable
