@@ -4,35 +4,82 @@
 
 package at.bitfire.davdroid.ui
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.view.*
-import android.view.animation.AnimationUtils
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarRate
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.ActivityEarnBadgesBinding
-import at.bitfire.davdroid.databinding.BoughtBadgeItemBinding
-import at.bitfire.davdroid.databinding.BuyBadgeItemBinding
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.SettingsManager
-import com.android.billingclient.api.*
-import com.google.android.material.snackbar.Snackbar
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.ConsumeResult
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.ProductDetailsResponseListener
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesResponseListener
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
+import com.android.billingclient.api.acknowledgePurchase
+import com.android.billingclient.api.consumePurchase
+import com.android.billingclient.api.queryPurchasesAsync
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,7 +88,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.Closeable
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.logging.Level
 import javax.inject.Inject
 
@@ -65,7 +113,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         private const val ENERGY_BOOSTER = "energy_booster.2023"
         private const val DAVX5_DECADE = "davx5_decade"
 
-        private val BADGES = mapOf(
+        private val BADGE_ICONS = mapOf(
             HELPING_HANDS to R.drawable.ic_badge_life_buoy,
             A_COFFEE_FOR_YOU to R.drawable.ic_badge_coffee,
             LOYAL_FOSS_BACKER to R.drawable.ic_badge_medal,
@@ -75,17 +123,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             ENERGY_BOOSTER to R.drawable.ic_badge_energy_booster,
             DAVX5_DECADE to R.drawable.ic_badge_davx5_decade
         )
-        private val BADGES_ANIMATIONS = mapOf(
-            HELPING_HANDS to R.anim.spin,
-            A_COFFEE_FOR_YOU to R.anim.lift,
-            LOYAL_FOSS_BACKER to R.anim.pulsate,
-            PART_OF_THE_JOURNEY to R.anim.rock,
-            NINTH_ANNIVERSARY to R.anim.drop_in,
-            ONEUP_EXTRALIFE to R.anim.bounce,
-            ENERGY_BOOSTER to R.anim.drop_in,
-            DAVX5_DECADE to R.anim.pulsate
-        )
-        val PRODUCT_IDS = BADGES.keys.toList()
+        val PRODUCT_IDS = BADGE_ICONS.keys.toList()
 
         /**
          * Determines whether we should show a rating prompt to the user depending on whether
@@ -112,77 +150,36 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
     @Inject lateinit var settingsManager: SettingsManager
 
-    private lateinit var binding: ActivityEarnBadgesBinding
     val model by viewModels<Model>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityEarnBadgesBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Show rating API dialog one week after the app has been installed
         if (shouldShowRatingRequest(this, settingsManager))
             showRatingRequest(ReviewManagerFactory.create(this))
 
-        // Bought badges adapter
-        val boughtProductsAdapter = BoughtBadgesAdapter()
-        binding.boughtBadgesList.apply {
-            layoutManager = GridLayoutManager(context, 5)
-            adapter = boughtProductsAdapter
-        }
+        setContent {
+            AppTheme {
+                val uriHandler = LocalUriHandler.current
 
-        // Buy badges adapter
-        val badgesAdapter = BuyBadgeAdapter(model, this)
-        binding.buyBadgesList.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = badgesAdapter
-        }
-
-        // Observe bought products and purchases
-        model.boughtBadges.observe(this) { boughtBadges ->
-            if (boughtBadges.isEmpty()) {
-                binding.boughtBadgesList.visibility = View.GONE
-                binding.boughtBadgesTitle.visibility = View.GONE
-            } else {
-                binding.boughtBadgesList.visibility = View.VISIBLE
-                binding.boughtBadgesTitle.visibility = View.VISIBLE
-                val count = model.boughtBadges.value!!.size
-                binding.boughtBadgesTitle.text = resources.getQuantityString(R.plurals.you_earned_badges, count, count)
-
-                // Update view
-                Logger.log.log(Level.INFO, "Adding bought products", boughtBadges)
-                boughtProductsAdapter.update(boughtBadges)
-                binding.boughtBadgesList.scheduleLayoutAnimation() // triggers badge drop-in animation
-            }
-        }
-
-        // Observe products available to buy
-        model.availableBadges.observe(this) { badges ->
-            if (badges.isEmpty()) {
-                binding.buyBadgesList.visibility = View.GONE
-                binding.availableBadgesEmpty.visibility = View.VISIBLE
-            } else {
-                binding.buyBadgesList.visibility = View.VISIBLE
-                binding.availableBadgesEmpty.visibility = View.GONE
-                
-                // Update view
-                Logger.log.log(Level.INFO,
-                    "BuyBadgesAdapter: Adding badges",
-                    badges.map{
-                        "\n${it.productDetails}, ${it.count}, ${it.yearBought}"
-                    }
+                val availableBadges by model.availableBadges.observeAsState(emptyList())
+                val boughtBadges by model.boughtBadges.observeAsState(emptyList())
+                val errorMessage by model.errorMessage.observeAsState()
+                EarnBadges(
+                    availableBadges,
+                    boughtBadges,
+                    errorMessage,
+                    onBuyBadge = { badge -> model.buyBadge(this, badge) },
+                    onStartRating = { uriHandler.openUri(
+                        Uri.parse("market://details?id=$packageName")
+                        .buildUpon()
+                        .withStatParams("EarnBadgesActivity")
+                        .build().toString()
+                    ) },
+                    onNavUp = ::onNavigateUp
                 )
-                badgesAdapter.update(badges)
-            }
-        }
-
-        // Show Snack bar when something goes wrong
-        model.errorMessage.observe(this) { errorMessage ->
-            if (errorMessage != null) {
-                Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG).show()
-                model.errorMessage.value = null
             }
         }
     }
@@ -204,133 +201,6 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             manager.launchReviewFlow(this, reviewInfo)
         }
     }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_earn_badges, menu)
-        return true
-    }
-
-    fun startRating(item: MenuItem) {
-        if (!UiUtils.launchUri(this, Uri.parse("market://details?id=$packageName"))) {
-            // no store installed, open Google Play website instead
-            UiUtils.launchUri(
-                this,
-                Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
-            )
-        }
-    }
-
-    /**
-     * Populates and updates RecyclerView showing buy-able products (badges)
-     */
-    class BoughtBadgesAdapter: RecyclerView.Adapter<BoughtBadgesAdapter.ViewHolder>() {
-
-        private var badges: MutableList<Badge> = mutableListOf()
-
-        class ViewHolder(val boughtBadgeItemBinding: BoughtBadgeItemBinding) :
-            RecyclerView.ViewHolder(boughtBadgeItemBinding.root)
-
-        @SuppressLint("NotifyDataSetChanged")
-        fun update(badge: List<Badge>) {
-            badges.clear()
-            badges.addAll(badge)
-            notifyDataSetChanged()
-        }
-
-        // Create new buy badge views
-        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-            val boughtProductItemBinding = BoughtBadgeItemBinding.inflate(
-                LayoutInflater.from(viewGroup.context),
-                viewGroup,
-                false
-            )
-            return ViewHolder(boughtProductItemBinding)
-        }
-
-        // Replace the contents of a view
-        override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-            val badge = badges[position]
-
-            // Animation
-            val iconImageView = viewHolder.boughtBadgeItemBinding.icon
-            iconImageView.setOnClickListener {
-                AnimationUtils.loadAnimation(iconImageView.context, BADGES_ANIMATIONS[badge.productDetails.productId]!!).also { animation ->
-                    iconImageView.startAnimation(animation)
-                }
-            }
-
-            // Data bindings
-            viewHolder.boughtBadgeItemBinding.apply {
-                info.text = badge.yearBought
-                icon.setBackgroundResource(BADGES[badge.productDetails.productId]!!)
-            }
-        }
-        override fun getItemCount() = badges.size
-    }
-
-    /**
-     * Populates and updates RecyclerView showing buy-able products (badges)
-     */
-    class BuyBadgeAdapter(
-        private var model: Model,
-        private var activity: Activity
-        ): RecyclerView.Adapter<BuyBadgeAdapter.ViewHolder>() {
-
-        private var badges: MutableList<Badge> = mutableListOf()
-
-        class ViewHolder(val buyBadgeItemBinding: BuyBadgeItemBinding) :
-            RecyclerView.ViewHolder(buyBadgeItemBinding.root)
-
-        @SuppressLint("NotifyDataSetChanged")
-        fun update(badges: List<Badge>) {
-            this.badges.clear()
-            this.badges.addAll(badges)
-            notifyDataSetChanged()
-        }
-
-        // Create new buy badge views
-        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-            val buyBadgeItemBinding = BuyBadgeItemBinding.inflate(
-                LayoutInflater.from(viewGroup.context),
-                viewGroup,
-                false)
-            return ViewHolder(buyBadgeItemBinding)
-        }
-
-        // Bind view
-        override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-            val badge = badges[position]
-
-            // Buy a badge when clicking the buyBadge button
-            viewHolder.buyBadgeItemBinding.button.setOnClickListener {
-                Logger.log.info("Trying to buy a badge...")
-                model.buyBadge(activity, badge)
-            }
-
-            // Data bindings
-            viewHolder.buyBadgeItemBinding.apply {
-                title.text = badge.name
-                description.text = badge.description
-                button.text = badge.price
-
-                // Badge icon
-                val badgeDrawable: Drawable = AppCompatResources.getDrawable(activity, BADGES[badge.productDetails.productId]!!)!!
-                icon.setImageDrawable(badgeDrawable)
-
-                // buy button
-                button.isEnabled = !badge.purchased
-                if (badge.purchased) {
-                    button.setBackgroundColor(ContextCompat.getColor(activity, R.color.grey500))
-                    button.text = button.context.getString(R.string.button_buy_badge_bought)
-                    val heart = AppCompatResources.getDrawable(activity, R.drawable.ic_heart)
-                    button.setCompoundDrawablesWithIntrinsicBounds(heart, null, null, null)
-                }
-            }
-        }
-
-        override fun getItemCount() = badges.size
-    }
-
 
     /**
      * A Badge type object
@@ -689,6 +559,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
          * Consumes a purchased item, so it will be available for purchasing again.
          * Used for testing - don't remove.
          */
+        @Suppress("unused")
         private suspend fun consumePurchase(purchase: Purchase, runAfter: (billingResult: ConsumeResult) -> Unit) {
             Logger.log.info("Trying to consume purchase with token: ${purchase.purchaseToken}")
             val consumeParams = ConsumeParams.newBuilder()
@@ -744,4 +615,189 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
     class BillingException(msg: String) : Exception(msg)
 
+    @Composable
+    fun EarnBadges(
+        availableBadges: List<Badge>,
+        boughtBadges: List<Badge>,
+        errorMessage: String?,
+        onBuyBadge: (badge: Badge) -> Unit = {},
+        onStartRating: () -> Unit = {},
+        onNavUp: () -> Unit = {}
+    ) {
+        // Show snackbar when some network operation fails
+        val snackbarHostState = remember { SnackbarHostState() }
+        LaunchedEffect(errorMessage != null) {
+            errorMessage?.let {
+                snackbarHostState.showSnackbar(errorMessage, duration = SnackbarDuration.Long)
+                model.errorMessage.value = null
+            }
+        }
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    navigationIcon = { IconButton(onClick = onNavUp) {
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
+                    }},
+                    title = { Text(
+                        stringResource(R.string.earn_badges),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    ) },
+                    actions = {
+                        IconButton(onClick = onStartRating) {
+                            Icon(Icons.Default.StarRate, stringResource(R.string.nav_rate_us))
+                        }
+                    }
+                )
+            },
+            snackbarHost = {
+                SnackbarHost(snackbarHostState)
+            },
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+
+                if (boughtBadges.isNotEmpty()) {
+                    TextHeading(pluralStringResource(R.plurals.you_earned_badges, boughtBadges.size, boughtBadges.size))
+                    NonlazyGrid(columns = 4, itemCount = boughtBadges.size) {
+                        BoughtBadgeListItem(boughtBadges[it])
+                    }
+                }
+
+                TextHeading(stringResource(R.string.available_badges))
+                if (availableBadges.isEmpty())
+                    TextBody(stringResource(R.string.available_badges_empty))
+                availableBadges.forEach { badge ->
+                    BuyBadgeListItem(badge, onBuyBadge)
+                }
+
+                TextHeading(stringResource(R.string.what_are_badges_title))
+                TextBody(stringResource(R.string.what_are_badges_body))
+
+                TextHeading(stringResource(R.string.why_badges_title))
+                TextBody(stringResource(R.string.why_badges_body))
+            }
+        }
+    }
+
+    @Composable
+    fun BoughtBadgeListItem(badge: Badge) {
+        IconButton(
+            onClick = { /* could start an animation */ },
+            modifier = Modifier.padding(8.dp)
+            ) {
+            Card { Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    painterResource(BADGE_ICONS[badge.productDetails.productId]!!),
+                    contentDescription = badge.productDetails.productId,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(35.dp)
+                )
+                Text(badge.yearBought ?: "?", color = Color.Gray, fontSize = 14.sp, maxLines = 1)
+            }}
+        }
+    }
+
+    @Composable
+    fun BuyBadgeListItem(
+        badge: Badge,
+        onBuyBadge: (badge: Badge) -> Unit,
+    ) {
+        Card (
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+            ) {
+                Icon(
+                    painterResource(BADGE_ICONS[badge.productDetails.productId]!!),
+                    contentDescription = badge.productDetails.productId,
+                    Modifier.size(30.dp),
+                    tint = Color.DarkGray
+                )
+                Column (
+                    modifier = Modifier
+                        .weight(3f, true)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text(badge.name, color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Text(badge.description.replace("\n", ""), color = Color.Gray, fontSize = 12.sp, lineHeight = 14.sp)
+                }
+                Button(
+                    onClick = { onBuyBadge(badge) },
+                    enabled = !badge.purchased
+                ) {
+                    Icon(
+                        imageVector = if (!badge.purchased) Icons.Default.Star else Icons.Default.Favorite,
+                        contentDescription = null,
+                        tint = if (!badge.purchased) Color.White else Color.DarkGray,
+                        modifier = Modifier.size(20.dp),
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    if (!badge.purchased)
+                        Text(badge.price ?: stringResource(R.string.button_buy_badge_free), color = Color.White)
+                    else
+                        Text(stringResource(R.string.button_buy_badge_bought), color = Color.DarkGray)
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun TextHeading(text: String) = Text(
+        text,
+        style = MaterialTheme.typography.h6,
+        modifier = Modifier.padding(top = 20.dp, bottom = 16.dp)
+    )
+
+    @Composable
+    fun TextBody(text: String) = Text(
+        text,
+        style = MaterialTheme.typography.body1,
+        modifier = Modifier.padding(bottom = 16.dp)
+    )
+
+    @Composable
+    fun NonlazyGrid(
+        columns: Int,
+        itemCount: Int,
+        modifier: Modifier = Modifier,
+        content: @Composable() (Int) -> Unit
+    ) {
+        Column(modifier = modifier) {
+            var rows = (itemCount / columns)
+            if (itemCount.mod(columns) > 0)
+                rows += 1
+            for (rowId in 0 until rows) {
+                val firstIndex = rowId * columns
+                Row {
+                    for (columnId in 0 until columns) {
+                        val index = firstIndex + columnId
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        ) {
+                            if (index < itemCount) {
+                                content(index)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

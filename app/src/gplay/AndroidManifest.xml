@@ -5,8 +5,8 @@
 
         <activity
             android:name="at.bitfire.davdroid.ui.EarnBadgesActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:label="@string/earn_badges"
             android:parentActivityName=".ui.account.AccountActivity"/>
 
         <!-- AppAuth login flow redirect -->
