@@ -3,6 +3,7 @@ package at.bitfire.davdroid.ui.setup
 import android.accounts.Account
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -102,102 +103,104 @@ fun AccountDetailsPage_Content(
         nextLabel = stringResource(R.string.login_create_account),
         onNext = onCreateAccount
     ) {
-        var expanded by remember { mutableStateOf(false) }
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = it }
-        ) {
-            OutlinedTextField(
-                value = accountName,
-                onValueChange = onUpdateAccountName,
-                label = { Text(stringResource(R.string.login_account_name)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email
-                ),
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(
-                        expanded = expanded
-                    )
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            ExposedDropdownMenu(
+        Column(Modifier.padding(8.dp)) {
+            var expanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onExpandedChange = { expanded = it }
             ) {
-                if (suggestedAccountNames != null)
-                    for (name in suggestedAccountNames)
-                        Text(
-                            name,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                                .clickable {
-                                    onUpdateAccountName(name)
-                                    expanded = false
-                                }
+                OutlinedTextField(
+                    value = accountName,
+                    onValueChange = onUpdateAccountName,
+                    label = { Text(stringResource(R.string.login_account_name)) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email
+                    ),
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = expanded
                         )
-            }
-        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-        // apostrophe warning
-        if (accountName.contains('\'') || accountName.contains('"'))
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    if (suggestedAccountNames != null)
+                        for (name in suggestedAccountNames)
+                            Text(
+                                name,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                                    .clickable {
+                                        onUpdateAccountName(name)
+                                        expanded = false
+                                    }
+                            )
+                }
+            }
+
+            // apostrophe warning
+            if (accountName.contains('\'') || accountName.contains('"'))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = null,
+                        modifier = Modifier.padding(top = 8.dp, end = 8.dp, bottom = 8.dp)
+                    )
+                    Text(
+                        stringResource(R.string.login_account_avoid_apostrophe),
+                        style = MaterialTheme.typography.body1
+                    )
+                }
+
+            // email address info
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Icon(
-                    Icons.Default.Warning,
+                    Icons.Default.Email,
                     contentDescription = null,
                     modifier = Modifier.padding(top = 8.dp, end = 8.dp, bottom = 8.dp)
                 )
                 Text(
-                    stringResource(R.string.login_account_avoid_apostrophe),
+                    stringResource(R.string.login_account_name_info),
                     style = MaterialTheme.typography.body1
                 )
             }
 
-        // email address info
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Icon(
-                Icons.Default.Email,
-                contentDescription = null,
-                modifier = Modifier.padding(top = 8.dp, end = 8.dp, bottom = 8.dp)
-            )
-            Text(
-                stringResource(R.string.login_account_name_info),
-                style = MaterialTheme.typography.body1
-            )
-        }
-
-        // group type selector
-        if (showGroupMethod) {
-            Text(
-                stringResource(R.string.login_account_contact_group_method),
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-            var groupMethod by remember { mutableStateOf(GroupMethod.GROUP_VCARDS) }
-            val groupMethodNames = stringArrayResource(R.array.settings_contact_group_method_entries)
-            val groupMethodValues = stringArrayResource(R.array.settings_contact_group_method_values).map { GroupMethod.valueOf(it) }
-            for ((name, method) in groupMethodNames.zip(groupMethodValues)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = groupMethod == method,
-                        onClick = { groupMethod = method }
-                    )
-                    Text(
-                        name,
-                        style = MaterialTheme.typography.body1,
-                        modifier = Modifier
-                            .padding(vertical = 4.dp)
-                            .clickable(onClick = { groupMethod = method })
-                    )
+            // group type selector
+            if (showGroupMethod) {
+                Text(
+                    stringResource(R.string.login_account_contact_group_method),
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+                var groupMethod by remember { mutableStateOf(GroupMethod.GROUP_VCARDS) }
+                val groupMethodNames = stringArrayResource(R.array.settings_contact_group_method_entries)
+                val groupMethodValues = stringArrayResource(R.array.settings_contact_group_method_values).map { GroupMethod.valueOf(it) }
+                for ((name, method) in groupMethodNames.zip(groupMethodValues)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(
+                            selected = groupMethod == method,
+                            onClick = { groupMethod = method }
+                        )
+                        Text(
+                            name,
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier
+                                .padding(vertical = 4.dp)
+                                .clickable(onClick = { groupMethod = method })
+                        )
+                    }
                 }
             }
         }

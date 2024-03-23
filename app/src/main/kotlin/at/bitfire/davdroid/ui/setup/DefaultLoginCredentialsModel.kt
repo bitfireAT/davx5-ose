@@ -104,13 +104,13 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
         }
 
         // no login data from the Intent, let's look up the extras
-        givenUrl ?: intent.getStringExtra(LoginActivity.EXTRA_URL)
+        givenUrl ?: intent.getStringExtra(LoginActivity2.EXTRA_URL)
 
         // always prefer username/password from the extras
-        if (intent.hasExtra(LoginActivity.EXTRA_USERNAME))
-            givenUsername = intent.getStringExtra(LoginActivity.EXTRA_USERNAME)
-        if (intent.hasExtra(LoginActivity.EXTRA_PASSWORD))
-            givenPassword = intent.getStringExtra(LoginActivity.EXTRA_PASSWORD)
+        if (intent.hasExtra(LoginActivity2.EXTRA_USERNAME))
+            givenUsername = intent.getStringExtra(LoginActivity2.EXTRA_USERNAME)
+        if (intent.hasExtra(LoginActivity2.EXTRA_PASSWORD))
+            givenPassword = intent.getStringExtra(LoginActivity2.EXTRA_PASSWORD)
 
         if (givenUrl != null) {
             loginWithUrlAndUsername.value = true

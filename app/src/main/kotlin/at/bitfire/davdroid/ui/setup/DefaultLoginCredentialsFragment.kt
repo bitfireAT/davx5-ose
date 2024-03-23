@@ -70,8 +70,8 @@ class DefaultLoginCredentialsFragment : Fragment() {
             if (validate()) {
                 val nextFragment =
                     when {
-                        model.loginGoogle.value == true -> GoogleLoginFragment()
-                        model.loginNextcloud.value == true -> NextcloudLoginFlowFragment()
+                        //model.loginGoogle.value == true -> GoogleLoginFragment()
+                        //model.loginNextcloud.value == true -> NextcloudLoginFlowFragment()
                         else -> DetectConfigurationFragment()
                     }
 

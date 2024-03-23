@@ -63,7 +63,6 @@ import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
@@ -76,6 +75,7 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
@@ -401,7 +401,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     }
                 )
 
-            } else {                                    // username/password
+            } else { // username/password
                 if (credentials.username != null) {
                     var showUsernameDialog by remember { mutableStateOf(false) }
                     Setting(
