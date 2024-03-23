@@ -57,7 +57,7 @@ class LoginModel2 @Inject constructor(
         val job = viewModelScope.launch(Dispatchers.IO) {
             try {
                 val configuration = runInterruptible {
-                    DavResourceFinder(context, loginInfo.baseUri, loginInfo.credentials).use { finder ->
+                    DavResourceFinder(context, loginInfo.baseUri!!, loginInfo.credentials).use { finder ->
                         finder.findInitialConfiguration()
                     }
                 }

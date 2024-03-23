@@ -5,7 +5,7 @@ import at.bitfire.vcard4android.GroupMethod
 import java.net.URI
 
 data class LoginInfo(
-    val baseUri: URI,
+    val baseUri: URI? = null,
     val credentials: Credentials? = null,
 
     val suggestedAccountName: String? = null,
