@@ -48,10 +48,6 @@ class LoginModel2 @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        Logger.log.info("LoginModel2 cleared")
-    }
-
 
     val foundConfig = MutableLiveData<DavResourceFinder.Configuration>()
 

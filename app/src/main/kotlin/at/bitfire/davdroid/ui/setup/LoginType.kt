@@ -4,16 +4,24 @@ import androidx.compose.runtime.Composable
 
 interface LoginType {
 
-    fun isGeneric(): Boolean
-    fun getOrder(): Int?
-    fun getName(): String
+    val title: String
 
+    /** Whether this login type is shown in the generic section and expanded with [SelectorContent] as soon as it is selected. */
+    val isGeneric: Boolean
+
+    /** Order within the login type selection (high numbers first, `null` last). Login types with same order number are
+     * sorted alphabetically (locale-dependent). */
+    val order: Int?
+
+    /**
+     * Appears when the login type is [isGeneric] and selected.
+     */
     @Composable
-    fun LoginForm(
-        initialLoginInfo: LoginInfo?,
-        updateCanContinue: (Boolean) -> Unit,
-        updateLoginInfo: (LoginInfo) -> Unit,
-        onLogin: () -> Unit
-    )
+    fun SelectorContent()
+
+    /**
+     * If [isGeneric]: whether the
+     */
+    fun canContinue(): Boolean
 
 }

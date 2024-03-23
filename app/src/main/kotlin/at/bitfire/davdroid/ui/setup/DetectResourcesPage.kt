@@ -1,6 +1,5 @@
 package at.bitfire.davdroid.ui.setup
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -29,14 +29,14 @@ import at.bitfire.davdroid.ui.DebugInfoActivity
 fun DetectResourcesPage(
     loginInfo: LoginInfo,
     onSuccess: (DavResourceFinder.Configuration) -> Unit,
-    onBack: () -> Unit,
     model: LoginModel2 = viewModel()
 ) {
     val cancellationSignal = remember { CancellationSignal() }
-    BackHandler(onBack = {
-        cancellationSignal.cancel()
-        onBack()
-    })
+    DisposableEffect(Unit) {
+        onDispose {
+            cancellationSignal.cancel()
+        }
+    }
 
     LaunchedEffect(loginInfo) {
         model.detectResources(loginInfo, cancellationSignal)

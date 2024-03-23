@@ -2,6 +2,7 @@ package at.bitfire.davdroid.ui.setup
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -31,7 +32,6 @@ import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.account.AccountActivity
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginActivity2: AppCompatActivity() {
@@ -42,112 +42,106 @@ class LoginActivity2: AppCompatActivity() {
         ACCOUNT_DETAILS
     }
 
-    @Inject
-    lateinit var loginTypes: Set<@JvmSuppressWildcards LoginType>
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             AppTheme {
-                Login()
-            }
-        }
-    }
-
-
-    @Composable
-    fun Login() {
-        val uriHandler = LocalUriHandler.current
-
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    navigationIcon = {
-                        IconButton(onClick = { onSupportNavigateUp() }) {
-                            Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
-                        }
-                    },
-                    title = {
-                        Text(stringResource(R.string.login_title))
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            // show tested-with page
-                            uriHandler.openUri(
-                                Constants.HOMEPAGE_URL.buildUpon()
-                                    .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
-                                    .withStatParams("LoginActivity")
-                                    .build().toString()
-                            )
-                        }) {
-                            Icon(Icons.AutoMirrored.Default.Help, stringResource(R.string.help))
-                        }
-                    }
+                LoginScreen(
+                    onBack = { onSupportNavigateUp() },
+                    onFinish = { finish() }
                 )
             }
-        ) { padding ->
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                var phase by remember { mutableStateOf(Phase.TYPE_AND_CREDENTIALS) }
-                var loginInfo by remember { mutableStateOf<LoginInfo?>(null) }
-                var foundConfig by remember { mutableStateOf<DavResourceFinder.Configuration?>(null) }
-
-                when (phase) {
-                    Phase.TYPE_AND_CREDENTIALS ->
-                        LoginTypeAndCredentialsPage(
-                            genericLoginTypes = loginTypes
-                                .filter { it.isGeneric() }
-                                .sortedWith { a, b ->
-                                    val aOrder = a.getOrder() ?: 0
-                                    val bOrder = b.getOrder() ?: 0
-                                    if (aOrder != bOrder)
-                                        aOrder.compareTo(bOrder)
-                                    else
-                                        a.getName().compareTo(b.getName(), ignoreCase = true)
-                                },
-                            initialLoginInfo = loginInfo,
-                            onLogin = {
-                                loginInfo = it
-                                phase = Phase.DETECT_RESOURCES
-                            }
-                        )
-
-                    Phase.DETECT_RESOURCES ->
-                        loginInfo?.let {
-                            DetectResourcesPage(
-                                loginInfo = it,
-                                onSuccess = {
-                                    foundConfig = it
-                                    phase = Phase.ACCOUNT_DETAILS
-                                },
-                                onBack = { phase = Phase.TYPE_AND_CREDENTIALS }
-                            )
-                        }
-
-                    Phase.ACCOUNT_DETAILS ->
-                        foundConfig?.let {
-                            val context = LocalContext.current
-                            AccountDetailsPage(
-                                foundConfig = it,
-                                onBack = { phase = Phase.TYPE_AND_CREDENTIALS },
-                                onAccountCreated = { account ->
-                                    finish()
-
-                                    val intent = Intent(context, AccountActivity::class.java)
-                                    intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
-                                    context.startActivity(intent)
-                                }
-                            )
-                        }
-
-                }
-            }
         }
     }
 
+}
+
+@Composable
+fun LoginScreen(
+    onBack: () -> Unit = {},
+    onFinish: () -> Unit = {}
+) {
+    val uriHandler = LocalUriHandler.current
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
+                    }
+                },
+                title = {
+                    Text(stringResource(R.string.login_title))
+                },
+                actions = {
+                    IconButton(onClick = {
+                        // show tested-with page
+                        uriHandler.openUri(
+                            Constants.HOMEPAGE_URL.buildUpon()
+                                .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
+                                .withStatParams("LoginActivity")
+                                .build().toString()
+                        )
+                    }) {
+                        Icon(Icons.AutoMirrored.Default.Help, stringResource(R.string.help))
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            var phase by remember { mutableStateOf(LoginActivity2.Phase.TYPE_AND_CREDENTIALS) }
+            var loginInfo by remember { mutableStateOf<LoginInfo?>(null) }
+            var foundConfig by remember { mutableStateOf<DavResourceFinder.Configuration?>(null) }
+
+            when (phase) {
+                LoginActivity2.Phase.TYPE_AND_CREDENTIALS ->
+                    StandardLoginTypeAndCredentialsPage(
+                        initialLoginInfo = loginInfo,
+                        onLogin = {
+                            loginInfo = it
+                            phase = LoginActivity2.Phase.DETECT_RESOURCES
+                        }
+                    )
+
+                LoginActivity2.Phase.DETECT_RESOURCES ->
+                    loginInfo?.let {
+                        BackHandler(
+                            onBack = { phase = LoginActivity2.Phase.TYPE_AND_CREDENTIALS }
+                        )
+
+                        DetectResourcesPage(
+                            loginInfo = it,
+                            onSuccess = {
+                                foundConfig = it
+                                phase = LoginActivity2.Phase.ACCOUNT_DETAILS
+                            }
+                        )
+                    }
+
+                LoginActivity2.Phase.ACCOUNT_DETAILS ->
+                    foundConfig?.let {
+                        val context = LocalContext.current
+                        AccountDetailsPage(
+                            foundConfig = it,
+                            onBack = { phase = LoginActivity2.Phase.TYPE_AND_CREDENTIALS },
+                            onAccountCreated = { account ->
+                                onFinish()
+
+                                val intent = Intent(context, AccountActivity::class.java)
+                                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+                                context.startActivity(intent)
+                            }
+                        )
+                    }
+
+            }
+        }
+    }
 }
