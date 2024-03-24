@@ -5,21 +5,13 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.text.Editable
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Filter
 import android.widget.RadioGroup
 import androidx.annotation.MainThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import at.bitfire.davdroid.R
-import java.io.InputStreamReader
-import java.util.regex.Pattern
 
 class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
 
@@ -122,7 +114,7 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
     }
 
 
-    class LoginUrlAdapter(context: Context): ArrayAdapter<String>(context, R.layout.text_list_item, android.R.id.text1) {
+    /*class LoginUrlAdapter(context: Context): ArrayAdapter<String>(context, R.layout.text_list_item, android.R.id.text1) {
 
         /**
          * list of known host names/domains (without https://), like "example.com" or "carddav.example.com"
@@ -165,6 +157,6 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
             }
         }
 
-    }
+    }*/
 
 }

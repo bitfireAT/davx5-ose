@@ -5,18 +5,11 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
-import android.content.Intent
-import android.os.Bundle
 import android.provider.CalendarContract
 import android.text.Editable
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -26,22 +19,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.LoginAccountDetailsBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.AccountUtils
-import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.vcard4android.GroupMethod
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +49,7 @@ class AccountDetailsFragment : Fragment() {
     val model by viewModels<Model>()
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    /*override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = LoginAccountDetailsBinding.inflate(inflater, container, false)
         v.lifecycleOwner = viewLifecycleOwner
         v.details = model
@@ -150,7 +140,7 @@ class AccountDetailsFragment : Fragment() {
         }
 
         return v.root
-    }
+    }*/
 
 
     @HiltViewModel
