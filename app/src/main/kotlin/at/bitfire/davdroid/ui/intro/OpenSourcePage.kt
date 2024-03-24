@@ -20,6 +20,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -66,8 +68,11 @@ class OpenSourcePage : IntroPage {
 
     @Composable
     private fun Page(model: Model = viewModel()) {
+        val dontShow by produceState(false) {
+            value = model.dontShow
+        }
         PageContent(
-            dontShow = model.dontShow,
+            dontShow = dontShow,
             onChangeDontShow = {
                 model.dontShow = it
             }

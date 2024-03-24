@@ -67,17 +67,19 @@ fun DetectResourcesPage_InProgress() {
             color = MaterialTheme.colors.secondary,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp))
+                .padding(bottom = 8.dp))
 
-        Text(
-            stringResource(R.string.login_configuration_detection),
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        Text(
-            stringResource(R.string.login_querying_server),
-            style = MaterialTheme.typography.body1
-        )
+        Column(Modifier.padding(8.dp)) {
+            Text(
+                stringResource(R.string.login_configuration_detection),
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Text(
+                stringResource(R.string.login_querying_server),
+                style = MaterialTheme.typography.body1
+            )
+        }
     }
 }
 

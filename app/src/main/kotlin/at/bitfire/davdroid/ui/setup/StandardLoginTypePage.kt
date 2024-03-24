@@ -28,29 +28,31 @@ fun StandardLoginTypePage(
         nextEnabled = true,
         onNext = onContinue
     ) {
-        Text(
-            stringResource(R.string.login_generic_login),
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-        )
-        for (type in genericLoginTypes)
-            LoginTypeSelector(
-                title = stringResource(type.title),
-                selected = type == selectedLoginType,
-                onSelect = { onSelectLoginType(type) },
+        Column(Modifier.padding(8.dp)) {
+            Text(
+                stringResource(R.string.login_generic_login),
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(vertical = 8.dp)
             )
+            for (type in genericLoginTypes)
+                LoginTypeSelector(
+                    title = stringResource(type.title),
+                    selected = type == selectedLoginType,
+                    onSelect = { onSelectLoginType(type) },
+                )
 
-        Text(
-            stringResource(R.string.login_provider_login),
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-        )
-        for (type in specificLoginTypes)
-            LoginTypeSelector(
-                title = stringResource(type.title),
-                selected = type == selectedLoginType,
-                onSelect = { onSelectLoginType(type) },
+            Text(
+                stringResource(R.string.login_provider_login),
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
             )
+            for (type in specificLoginTypes)
+                LoginTypeSelector(
+                    title = stringResource(type.title),
+                    selected = type == selectedLoginType,
+                    onSelect = { onSelectLoginType(type) },
+                )
+        }
     }
 }
 

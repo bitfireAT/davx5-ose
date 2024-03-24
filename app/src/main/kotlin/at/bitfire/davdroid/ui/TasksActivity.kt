@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -55,6 +53,7 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.RadioWithSwitch
+import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -230,17 +229,7 @@ fun TasksCard(
                             stringResource(R.string.intro_tasks_tasks_org_info),
                             HtmlCompat.FROM_HTML_MODE_COMPACT
                         ).toAnnotatedString()
-
-                        val uriHandler = LocalUriHandler.current
-                        ClickableText(
-                            text = summary,
-                            onClick = { index ->
-                                // Get the tapped position, and check if there's any link
-                                summary.getUrlAnnotations(index, index).firstOrNull()?.item?.url?.let { url ->
-                                    uriHandler.openUri(url)
-                                }
-                            }
-                        )
+                        ClickableTextWithLink(summary)
                     },
                     isSelected = tasksOrgSelected,
                     isToggled = tasksOrgInstalled,

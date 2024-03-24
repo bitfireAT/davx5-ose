@@ -12,8 +12,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +28,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.MailTo
 import androidx.core.text.HtmlCompat
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
@@ -39,13 +39,14 @@ import at.bitfire.davdroid.ui.composable.PasswordTextField
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import java.net.URI
 
-class LoginTypeUrl : LoginType {
+class LoginTypeEmail : LoginType {
 
-    override val title
-        get() = R.string.login_type_url
+    override val title: Int
+        get() = R.string.login_type_email
 
     override val helpUrl: Uri?
         get() = null
+
 
     @Composable
     override fun Content(
@@ -54,7 +55,7 @@ class LoginTypeUrl : LoginType {
         onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
         onDetectResources: () -> Unit
     ) {
-        LoginTypeUrl_Content(
+        LoginTypeEmail_Content(
             loginInfo = loginInfo,
             onUpdateLoginInfo = onUpdateLoginInfo,
             onLogin = onDetectResources
@@ -63,106 +64,71 @@ class LoginTypeUrl : LoginType {
 
 }
 
+
 @Composable
-fun LoginTypeUrl_Content(
+fun LoginTypeEmail_Content(
     loginInfo: LoginInfo,
     onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit = {},
     onLogin: () -> Unit = {}
 ) {
-    var baseUrl by remember { mutableStateOf(
-        loginInfo.baseUri?.takeIf {
-            it.scheme.equals("http", ignoreCase = true) ||
-            it.scheme.equals("https", ignoreCase = true)
-        }?.toString() ?: ""
-    ) }
-    var username by remember { mutableStateOf(loginInfo.credentials?.username ?: "") }
+    var email by remember { mutableStateOf(loginInfo.credentials?.username ?: "") }
     var password by remember { mutableStateOf(loginInfo.credentials?.password ?: "") }
 
-    val newLoginInfo = LoginInfo(
-        baseUri = try {
-            URI(
-                if (baseUrl.startsWith("http://", ignoreCase = true) || baseUrl.startsWith("https://", ignoreCase = true))
-                    baseUrl
-                else
-                    "https://$baseUrl"
-            )
-        } catch (_: Exception) {
-            null
-        },
-        credentials = Credentials(
-            username = username,
-            password = password
-        )
-    )
-    onUpdateLoginInfo(newLoginInfo)
+    onUpdateLoginInfo(LoginInfo(
+        baseUri = URI(MailTo.MAILTO_SCHEME, email, null),
+        credentials = Credentials(username = email, password = password)
+    ))
+    val ok = email.contains('@') && password.isNotEmpty()
 
-    var ok by remember { mutableStateOf(false) }
-    ok = newLoginInfo.baseUri != null && (
-            newLoginInfo.baseUri.scheme.equals("http", ignoreCase = true) ||
-            newLoginInfo.baseUri.scheme.equals("https",ignoreCase = true)
-        ) && newLoginInfo.credentials != null &&
-        newLoginInfo.credentials.username?.isNotEmpty() == true &&
-        newLoginInfo.credentials.password?.isNotEmpty() == true
-
-    val focusRequester = remember { FocusRequester() }
     Assistant(
         nextLabel = stringResource(R.string.login_login),
         nextEnabled = ok,
-        onNext = onLogin
+        onNext = {
+            if (ok)
+                onLogin()
+        }
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(Modifier.padding(8.dp)) {
             Text(
-                stringResource(R.string.login_type_url),
+                stringResource(R.string.login_type_email),
                 style = MaterialTheme.typography.h5,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             )
 
+            val focusRequester = remember { FocusRequester() }
             OutlinedTextField(
-                value = baseUrl,
-                onValueChange = { baseUrl = it },
-                label = { Text(stringResource(R.string.login_base_url)) },
-                placeholder = { Text("dav.example.com/path") },
+                value = email,
+                onValueChange = { email = it },
+                label = { Text(stringResource(R.string.login_email_address)) },
                 singleLine = true,
                 leadingIcon = {
-                    Icon(Icons.Default.Folder, null)
+                    Icon(Icons.Default.Email, null)
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Uri,
+                    keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
             )
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
 
             val manualUrl = Constants.MANUAL_URL.buildUpon()
                 .appendPath(Constants.MANUAL_PATH_ACCOUNTS_COLLECTIONS)
                 .fragment(Constants.MANUAL_FRAGMENT_SERVICE_DISCOVERY)
                 .build()
-            val urlInfo = HtmlCompat.fromHtml(stringResource(R.string.login_base_url_info, manualUrl), HtmlCompat.FROM_HTML_MODE_COMPACT)
+            val emailInfo = HtmlCompat.fromHtml(stringResource(R.string.login_email_address_info, manualUrl), HtmlCompat.FROM_HTML_MODE_COMPACT)
             ClickableTextWithLink(
-                urlInfo.toAnnotatedString(),
+                emailInfo.toAnnotatedString(),
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp, bottom = 16.dp)
-            )
-
-            OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text(stringResource(R.string.login_user_name)) },
-                singleLine = true,
-                leadingIcon = {
-                    Icon(Icons.Default.AccountCircle, null)
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth()
             )
 
             PasswordTextField(
@@ -184,14 +150,11 @@ fun LoginTypeUrl_Content(
             )
         }
     }
-
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
 }
+
 
 @Composable
 @Preview
-fun LoginTypeUrl_Content_Preview() {
-    LoginTypeUrl_Content(LoginInfo())
+fun LoginTypeEmail_Content_Preview() {
+    LoginTypeEmail_Content(LoginInfo())
 }

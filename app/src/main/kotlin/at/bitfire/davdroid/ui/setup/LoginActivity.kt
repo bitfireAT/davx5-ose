@@ -73,7 +73,9 @@ class LoginActivity: AppCompatActivity() {
     }
 
     private val genericLoginTypes = listOf(
-        LoginTypeUrl()
+        LoginTypeUrl(),
+        LoginTypeEmail(),
+        LoginTypeAdvanced()
     )
     private val specificLoginTypes = listOf(
         LoginTypeGoogle(),

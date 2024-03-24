@@ -1,5 +1,6 @@
 package at.bitfire.davdroid.ui.setup
 
+import android.accounts.AccountManager
 import android.app.Application
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -53,8 +53,8 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
@@ -65,6 +65,7 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.setup.LoginTypeGoogle.Companion.GOOGLE_POLICY_URL
+import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -167,7 +168,7 @@ class LoginTypeGoogle : LoginType {
         }
 
         GoogleLoginScreen(
-            defaultEmail = loginInfo.credentials?.username,
+            defaultEmail = loginInfo.credentials?.username ?: model.findGoogleAccount(),
             onLogin = { accountEmail, clientId ->
                 onUpdateLoginInfo(
                     LoginInfo(
@@ -206,9 +207,9 @@ class LoginTypeGoogle : LoginType {
 
     @HiltViewModel
     class Model @Inject constructor(
-        application: Application,
+        val context: Application,
         val authService: AuthorizationService
-    ) : AndroidViewModel(application) {
+    ) : ViewModel() {
 
         val credentials = MutableLiveData<Credentials>()
 
@@ -224,6 +225,14 @@ class LoginTypeGoogle : LoginType {
                     credentials.postValue(Credentials(authState = authState))
                 }
             }
+        }
+
+        fun findGoogleAccount(): String? {
+            val accountManager = AccountManager.get(context)
+            return accountManager
+                .getAccountsByType("com.google")
+                .map { it.name }
+                .firstOrNull()
         }
 
         override fun onCleared() {
@@ -279,12 +288,13 @@ fun GoogleLoginScreen(
             }
         }
 
-        val email = rememberSaveable { mutableStateOf(defaultEmail ?: "") }
-        val userClientId = rememberSaveable { mutableStateOf("") }
+        var email by rememberSaveable { mutableStateOf(defaultEmail ?: "") }
+        var userClientId by rememberSaveable { mutableStateOf("") }
         var emailError: String? by rememberSaveable { mutableStateOf(null) }
+
         fun login() {
-            val userEmail: String? = StringUtils.trimToNull(email.value.trim())
-            val clientId: String? = StringUtils.trimToNull(userClientId.value.trim())
+            val userEmail: String? = StringUtils.trimToNull(email.trim())
+            val clientId: String? = StringUtils.trimToNull(userClientId.trim())
             if (userEmail.isNullOrBlank()) {
                 emailError = context.getString(R.string.login_email_address_error)
                 return
@@ -302,9 +312,9 @@ fun GoogleLoginScreen(
 
         val focusRequester = remember { FocusRequester() }
         OutlinedTextField(
-            email.value,
+            email,
             singleLine = true,
-            onValueChange = { emailError = null; email.value = it },
+            onValueChange = { emailError = null; email = it },
             leadingIcon = {
                 Icon(Icons.Default.Email, null)
             },
@@ -321,14 +331,15 @@ fun GoogleLoginScreen(
                 .focusRequester(focusRequester)
         )
         LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+            if (email.isEmpty())
+                focusRequester.requestFocus()
         }
 
         OutlinedTextField(
-            userClientId.value,
+            userClientId,
             singleLine = true,
             onValueChange = { clientId ->
-                userClientId.value = clientId
+                userClientId = clientId
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
@@ -377,28 +388,18 @@ fun GoogleLoginScreen(
                 privacyPolicyUrl.toString()
             ), 0
         ).toAnnotatedString()
-        ClickableText(
+        ClickableTextWithLink(
             privacyPolicyNote,
-            style = MaterialTheme.typography.body2,
-            onClick = { position ->
-                privacyPolicyNote.getUrlAnnotations(position, position).firstOrNull()?.let {
-                    uriHandler.openUri(it.item.url)
-                }
-            }
+            style = MaterialTheme.typography.body2
         )
 
         val limitedUseNote = HtmlCompat.fromHtml(
             stringResource(R.string.login_google_client_limited_use, context.getString(R.string.app_name), GOOGLE_POLICY_URL), 0
         ).toAnnotatedString()
-        ClickableText(
+        ClickableTextWithLink(
             limitedUseNote,
             style = MaterialTheme.typography.body2,
-            modifier = Modifier.padding(top = 12.dp),
-            onClick = { position ->
-                limitedUseNote.getUrlAnnotations(position, position).firstOrNull()?.let {
-                    uriHandler.openUri(it.item.url)
-                }
-            }
+            modifier = Modifier.padding(top = 12.dp)
         )
     }
 }
