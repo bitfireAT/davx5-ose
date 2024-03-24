@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -54,6 +55,8 @@ class LoginTypeUrl : LoginType {
         onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
         onDetectResources: () -> Unit
     ) {
+        val model: LoginModel = viewModel()
+
         LoginTypeUrl_Content(
             loginInfo = loginInfo,
             onUpdateLoginInfo = onUpdateLoginInfo,

@@ -1,5 +1,6 @@
 package at.bitfire.davdroid.ui.composable
 
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -48,6 +49,7 @@ fun PasswordTextField(
         isError = isError,
         singleLine = true,
         enabled = enabled,
+        modifier = modifier.focusGroup(),
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),

@@ -7,8 +7,6 @@ package at.bitfire.davdroid.ui.setup
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
-import android.text.Editable
-import android.widget.RadioGroup
 import androidx.annotation.MainThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -38,27 +36,6 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
 
     val loginUseUsernamePassword = MutableLiveData(false)
     val loginUseClientCertificate = MutableLiveData(false)
-
-
-    fun clearUrlError(s: Editable) {
-        if (s.toString() != "https://") {
-            baseUrlError.value = null
-        }
-    }
-
-    fun clearUsernameError(s: Editable) {
-        usernameError.value = null
-    }
-
-    fun clearPasswordError(s: Editable) {
-        passwordError.value = null
-    }
-
-    fun clearErrors(group: RadioGroup, checkedId: Int) {
-        usernameError.value = null
-        passwordError.value = null
-        baseUrlError.value = null
-    }
 
     @MainThread
     fun initialize(intent: Intent) {
@@ -112,51 +89,5 @@ class DefaultLoginCredentialsModel(app: Application): AndroidViewModel(app) {
         username.value = givenUsername
         password.value = givenPassword
     }
-
-
-    /*class LoginUrlAdapter(context: Context): ArrayAdapter<String>(context, R.layout.text_list_item, android.R.id.text1) {
-
-        /**
-         * list of known host names/domains (without https://), like "example.com" or "carddav.example.com"
-         */
-        val knownUrls = mutableListOf<String>()
-
-        init {
-            InputStreamReader(context.assets.open("known-base-urls.txt")).use { reader ->
-                knownUrls.addAll(reader.readLines())
-            }
-        }
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val v = super.getView(position, convertView, parent)
-            v.findViewById<View>(android.R.id.text2).visibility = View.GONE
-            return v
-        }
-
-        override fun getFilter(): Filter = object: Filter() {
-            override fun performFiltering(constraint: CharSequence): FilterResults {
-                val str = constraint.removePrefix("https://").toString()
-                val results = if (str.isEmpty())
-                    knownUrls
-                else {
-                    val regex = Pattern.compile("(\\.|\\b)" + Pattern.quote(str))
-                    knownUrls.filter { url ->
-                        regex.matcher(url).find()
-                    }.map { url -> "https://$url" }
-                }
-                return FilterResults().apply {
-                    values = results
-                    count = results.size
-                }
-            }
-            override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-                clear()
-                (results.values as List<String>?)?.let { suggestions ->
-                    addAll(suggestions)
-                }
-            }
-        }
-
-    }*/
 
 }
