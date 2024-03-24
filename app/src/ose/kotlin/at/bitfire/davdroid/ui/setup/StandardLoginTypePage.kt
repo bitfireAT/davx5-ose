@@ -11,14 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.Assistant
 
 @Composable
 fun StandardLoginTypePage(
-    genericLoginTypes: Iterable<LoginType>,
-    specificLoginTypes: Iterable<LoginType>,
     selectedLoginType: LoginType,
     onSelectLoginType: (LoginType) -> Unit,
     onContinue: () -> Unit = {}
@@ -34,7 +33,7 @@ fun StandardLoginTypePage(
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-            for (type in genericLoginTypes)
+            for (type in StandardLoginTypesProvider.genericLoginTypes)
                 LoginTypeSelector(
                     title = stringResource(type.title),
                     selected = type == selectedLoginType,
@@ -46,7 +45,7 @@ fun StandardLoginTypePage(
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
             )
-            for (type in specificLoginTypes)
+            for (type in StandardLoginTypesProvider.specificLoginTypes)
                 LoginTypeSelector(
                     title = stringResource(type.title),
                     selected = type == selectedLoginType,
@@ -79,4 +78,14 @@ fun LoginTypeSelector(
             )
         }
     }
+}
+
+
+@Composable
+@Preview
+fun LoginScreen_Preview() {
+    LoginScreen(
+        loginTypesProvider = StandardLoginTypesProvider(),
+        initialLoginType = LoginTypeUrl
+    )
 }

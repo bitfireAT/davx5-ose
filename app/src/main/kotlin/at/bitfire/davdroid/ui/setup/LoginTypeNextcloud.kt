@@ -323,7 +323,11 @@ fun NextcloudLoginScreen(
     val newLoginInfo = LoginInfo(
         baseUri = try {
             URI(
-                if (entryUrl.matches(Regex("^https?://"))) entryUrl else "https://$entryUrl"
+                if (entryUrl.startsWith("http://", ignoreCase = true) ||
+                    entryUrl.startsWith("https://", ignoreCase = true))
+                    entryUrl
+                else
+                    "https://$entryUrl"
             )
         } catch (_: Exception) {
             null
