@@ -213,8 +213,8 @@
   <string name="login_nextcloud_login_with_nextcloud">Accedi con Nextcloud</string>
   <string name="login_configuration_detection">Rilevazione configurazione</string>
   <string name="login_querying_server">Attendere, invio richiesta al server…</string>
-  <string name="login_no_caldav_carddav">Impossibile trovare servizi CalDAV o CardDAV.</string>
-  <string name="login_username_password_wrong">Nome utente (indirizzo email) / password sbagliata?</string>
+  <string name="login_no_service">Impossibile trovare servizi CalDAV o CardDAV.</string>
+  <string name="login_check_credentials">Nome utente (indirizzo email) / password sbagliata?</string>
   <string name="login_view_logs">Visualizza dettagli</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sincronizzazione</string>

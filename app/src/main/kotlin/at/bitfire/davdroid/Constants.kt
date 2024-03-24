@@ -22,6 +22,8 @@ object Constants {
     const val HOMEPAGE_PATH_TESTED_SERVICES = "tested-with"
 
     val MANUAL_URL = "https://manual.davx5.com".toUri()
+    const val MANUAL_PATH_ACCOUNTS_COLLECTIONS = "accounts_collections.html"
+    const val MANUAL_FRAGMENT_SERVICE_DISCOVERY = "how-does-service-discovery-work"
     const val MANUAL_PATH_WEBDAV_MOUNTS = "webdav_mounts.html"
 
     val COMMUNITY_URL = "https://github.com/bitfireAT/davx5-ose/discussions".toUri()

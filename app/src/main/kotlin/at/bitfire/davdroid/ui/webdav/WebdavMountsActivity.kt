@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.FloatingActionButton
@@ -68,6 +67,7 @@ import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
+import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
@@ -206,15 +206,10 @@ class WebdavMountsActivity: AppCompatActivity() {
                 ),
                 0
             ).toAnnotatedString()
-            ClickableText(
+            ClickableTextWithLink(
                 text = text,
                 style = MaterialTheme.typography.body1,
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { position ->
-                    text.getUrlAnnotations(position, position + 1)
-                        .firstOrNull()
-                        ?.let { uriHandler.openUri(it.item.url) }
-                }
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }

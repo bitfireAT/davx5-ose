@@ -111,7 +111,7 @@
   <string name="login_account_not_created">Kontonavnet kan ikke opprettes</string>
   <string name="login_configuration_detection">Oppdagelse av oppsett</string>
   <string name="login_querying_server">Vent, spør tjener…</string>
-  <string name="login_no_caldav_carddav">Fant ikke CalDAV eller CardDAV-tjeneste.</string>
+  <string name="login_no_service">Fant ikke CalDAV eller CardDAV-tjeneste.</string>
   <string name="login_view_logs">Vis fler detaljer</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synkronisering</string>

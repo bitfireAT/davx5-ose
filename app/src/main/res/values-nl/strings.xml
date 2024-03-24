@@ -245,8 +245,8 @@
   <string name="login_nextcloud_login_flow_no_login_data">Kan inlog-URL niet verkrijgen</string>
   <string name="login_configuration_detection">Configuratie detecteren</string>
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
-  <string name="login_no_caldav_carddav">Geen CalDAV- of CardDAV-service gevonden.</string>
-  <string name="login_username_password_wrong">Is gebruikersnaam (e-mailadres) / wachtwoord verkeerd?</string>
+  <string name="login_no_service">Geen CalDAV- of CardDAV-service gevonden.</string>
+  <string name="login_check_credentials">Is gebruikersnaam (e-mailadres) / wachtwoord verkeerd?</string>
   <string name="login_view_logs">Details weergeven</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronisatie</string>

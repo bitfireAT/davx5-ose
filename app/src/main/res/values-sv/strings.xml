@@ -241,8 +241,8 @@
   <string name="login_nextcloud_login_flow_no_login_data">Kunde inte hämta login-data</string>
   <string name="login_configuration_detection">Konfigurationsdetektering</string>
   <string name="login_querying_server">Vänligen vänta, frågar efter server...</string>
-  <string name="login_no_caldav_carddav">Det gick inte att hitta CalDAV eller CardDAV-tjänsten.</string>
-  <string name="login_username_password_wrong">Användarnamn (e-postadress) / lösenord är fel?</string>
+  <string name="login_no_service">Det gick inte att hitta CalDAV eller CardDAV-tjänsten.</string>
+  <string name="login_check_credentials">Användarnamn (e-postadress) / lösenord är fel?</string>
   <string name="login_view_logs">Visa detaljer</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synkronisering</string>

@@ -249,8 +249,8 @@
   <string name="login_nextcloud_login_flow_no_login_data">Anmeldedaten konnten nicht abgerufen werden</string>
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
-  <string name="login_no_caldav_carddav">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>
-  <string name="login_username_password_wrong">Benutzername (Email-Adresse) / Passwort falsch?</string>
+  <string name="login_no_service">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>
+  <string name="login_check_credentials">Benutzername (Email-Adresse) / Passwort falsch?</string>
   <string name="login_view_logs">Details anzeigen</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronisierung</string>

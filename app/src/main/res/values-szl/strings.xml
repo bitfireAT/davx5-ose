@@ -121,7 +121,7 @@
   <string name="login_account_not_created">Kōnto niy mogło być stworzōne</string>
   <string name="login_configuration_detection">Wykrywanie kōnfiguracyje</string>
   <string name="login_querying_server">Czekej, ôdpytowanie serwera…</string>
-  <string name="login_no_caldav_carddav">Niy idzie znojść usugi CalDAV abo CardDAV.</string>
+  <string name="login_no_service">Niy idzie znojść usugi CalDAV abo CardDAV.</string>
   <string name="login_view_logs">Pokoż informacyje</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchrōnizacyjo</string>

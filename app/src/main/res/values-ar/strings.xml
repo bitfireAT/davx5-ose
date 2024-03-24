@@ -138,7 +138,7 @@
   <string name="login_account_not_created">لم نتمكن من إنشاء الحساب</string>
   <string name="login_configuration_detection">اكتشاف الضبط</string>
   <string name="login_querying_server">يجري استعلام الخادم … يرجى الانتظار</string>
-  <string name="login_no_caldav_carddav">لم نجِد خدمة CalDAV أو CardDAV.</string>
+  <string name="login_no_service">لم نجِد خدمة CalDAV أو CardDAV.</string>
   <string name="login_view_logs">عرض التفاصيل</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">المزامنة</string>

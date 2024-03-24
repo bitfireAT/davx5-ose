@@ -207,8 +207,8 @@
   <string name="login_install_certificate">Cài đặt chứng chỉ</string>
   <string name="login_configuration_detection">Dò tìm thiết lập</string>
   <string name="login_querying_server">Vui lòng đợi, đang truy vấn máy chủ…</string>
-  <string name="login_no_caldav_carddav">Không thể tìm dịch vụ CalDAV hoặc CardDAV.</string>
-  <string name="login_username_password_wrong">Tên người dùng (địa chỉ email) / mật khẩu bị sai?</string>
+  <string name="login_no_service">Không thể tìm dịch vụ CalDAV hoặc CardDAV.</string>
+  <string name="login_check_credentials">Tên người dùng (địa chỉ email) / mật khẩu bị sai?</string>
   <string name="login_view_logs">Hiện chi tiết</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Đồng bộ hoá</string>

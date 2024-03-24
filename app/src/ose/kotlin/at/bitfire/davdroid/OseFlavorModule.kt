@@ -11,6 +11,8 @@ import at.bitfire.davdroid.ui.OseAccountsDrawerHandler
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage
 import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
+import at.bitfire.davdroid.ui.setup.LoginTypesProvider
+import at.bitfire.davdroid.ui.setup.StandardLoginTypesProvider
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -29,6 +31,9 @@ interface OseFlavorModules {
 
         @Binds
         fun appLicenseInfoProvider(impl: OpenSourceLicenseInfoProvider): AboutActivity.AppLicenseInfoProvider
+
+        @Binds
+        fun loginTypesProvider(impl: StandardLoginTypesProvider): LoginTypesProvider
     }
 
     @Module

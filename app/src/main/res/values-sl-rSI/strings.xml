@@ -116,7 +116,7 @@
   <string name="login_account_not_created">Računa ni bilo mogoče ustvariti</string>
   <string name="login_configuration_detection">Zaznava konfiguracije</string>
   <string name="login_querying_server">Prosim počakajte, povezava s strežnikom je v teku…</string>
-  <string name="login_no_caldav_carddav">CalDAV ali CardDAV storitve ni bilo mogoče najti.</string>
+  <string name="login_no_service">CalDAV ali CardDAV storitve ni bilo mogoče najti.</string>
   <string name="login_view_logs">Pokaži podrobnosti</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sinhronizacija</string>

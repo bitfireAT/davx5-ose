@@ -207,8 +207,8 @@
   <string name="login_install_certificate">Instalar certificado</string>
   <string name="login_configuration_detection">Detectar configuración</string>
   <string name="login_querying_server">Por favor espera, consultando al servidor…</string>
-  <string name="login_no_caldav_carddav">No se pudo encontrar el servicio CalDAV o CardDAV.</string>
-  <string name="login_username_password_wrong">¿Nombre de usuario (dirección de correo electrónico) / contraseña incorrecta?</string>
+  <string name="login_no_service">No se pudo encontrar el servicio CalDAV o CardDAV.</string>
+  <string name="login_check_credentials">¿Nombre de usuario (dirección de correo electrónico) / contraseña incorrecta?</string>
   <string name="login_view_logs">Mostrar detalles</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sincronización</string>

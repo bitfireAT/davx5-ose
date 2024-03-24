@@ -58,7 +58,7 @@ import java.util.logging.Logger
 class DavResourceFinder(
     val context: Context,
     private val baseURI: URI,
-    credentials: Credentials? = null
+    private val credentials: Credentials? = null
 ): AutoCloseable {
 
     enum class Service(val wellKnownName: String) {
@@ -124,9 +124,10 @@ class DavResourceFinder(
         }
 
         return Configuration(
-                cardDavConfig, calDavConfig,
-                encountered401,
-                logBuffer.toString()
+            cardDAV = cardDavConfig,
+            calDAV = calDavConfig,
+            encountered401 = encountered401,
+            logs = logBuffer.toString()
         )
     }
 

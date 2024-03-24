@@ -68,7 +68,7 @@
   <string name="login_account_not_created">Hesap yaratılamadı</string>
   <string name="login_configuration_detection">Konfigürasyon keşfi</string>
   <string name="login_querying_server">Lütfen bekle, sunucu sorgulanıyor…</string>
-  <string name="login_no_caldav_carddav">CalDAV veya CardDAV servisi bulunamadı.</string>
+  <string name="login_no_service">CalDAV veya CardDAV servisi bulunamadı.</string>
   <string name="login_view_logs">Detayları göster</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Senkronizasyon</string>

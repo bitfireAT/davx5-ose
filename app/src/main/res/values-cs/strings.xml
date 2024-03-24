@@ -241,8 +241,8 @@
   <string name="login_nextcloud_login_flow_no_login_data">Nelze získat přihlašovací data</string>
   <string name="login_configuration_detection">Zjišťování nastavení</string>
   <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru…</string>
-  <string name="login_no_caldav_carddav">Nedaří se nalézt službu CalDAV nebo CardDAV.</string>
-  <string name="login_username_password_wrong">Nesprávné uživatelské jméno (e-mailová adresa) nebo heslo?</string>
+  <string name="login_no_service">Nedaří se nalézt službu CalDAV nebo CardDAV.</string>
+  <string name="login_check_credentials">Nesprávné uživatelské jméno (e-mailová adresa) nebo heslo?</string>
   <string name="login_view_logs">Zobrazit podrobnosti</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronizace</string>

@@ -1,22 +1,14 @@
-/***************************************************************************************************
- * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
-
 package at.bitfire.davdroid.ui.setup
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuProvider
-import androidx.fragment.app.Fragment
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.ui.UiUtils
+import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.ui.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.net.URI
 import javax.inject.Inject
 
 /**
@@ -24,7 +16,7 @@ import javax.inject.Inject
  * Fields for server/user data can be pre-filled with extras in the Intent.
  */
 @AndroidEntryPoint
-class LoginActivity: AppCompatActivity() {
+class LoginActivity @Inject constructor(): AppCompatActivity() {
 
     companion object {
 
@@ -45,51 +37,91 @@ class LoginActivity: AppCompatActivity() {
          */
         const val EXTRA_PASSWORD = "password"
 
+        /**
+         * When set, Nextcloud Login Flow will be used.
+         */
+        const val EXTRA_LOGIN_FLOW = "loginFlow"
+
+
+        fun loginInfoFromIntent(intent: Intent): LoginInfo {
+            var givenUri: String? = null
+            var givenUsername: String? = null
+            var givenPassword: String? = null
+
+            // extract URI and optionally username/password from Intent data
+            intent.data?.normalizeScheme()?.let { uri ->
+                // We've got initial login data from the Intent.
+                // We can't use uri.buildUpon() because this keeps the user info (it's readable, but not writable).
+                val realScheme = when (uri.scheme) {
+                    "caldav", "carddav" -> "http"
+                    "caldavs", "carddavs", "davx5" -> "https"
+                    "http", "https" -> uri.scheme
+                    else -> null
+                }
+                if (realScheme != null) {
+                    val realUri = Uri.Builder()
+                        .scheme(realScheme)
+                        .authority(uri.host)
+                        .path(uri.path)
+                        .query(uri.query)
+                    givenUri = realUri.build().toString()
+
+                    // extract user info
+                    uri.userInfo?.split(':')?.let { userInfo ->
+                        givenUsername = userInfo.getOrNull(0)
+                        givenPassword = userInfo.getOrNull(1)
+                    }
+                }
+            }
+
+            if (givenUri == null)
+                givenUri = intent.getStringExtra(EXTRA_URL)
+
+            // always prefer username/password from the extras
+            if (intent.hasExtra(EXTRA_USERNAME))
+                givenUsername = intent.getStringExtra(EXTRA_USERNAME)
+            if (intent.hasExtra(EXTRA_PASSWORD))
+                givenPassword = intent.getStringExtra(EXTRA_PASSWORD)
+
+            return LoginInfo(
+                baseUri = try {
+                    URI(givenUri)
+                } catch (_: Exception) {
+                    null
+                },
+                credentials = Credentials(
+                    username = givenUsername,
+                    password = givenPassword
+                )
+            )
+        }
+
     }
 
+    enum class Phase {
+        LOGIN_TYPE,
+        LOGIN_DETAILS,
+        DETECT_RESOURCES,
+        ACCOUNT_DETAILS
+    }
+
+
     @Inject
-    lateinit var loginFragmentFactories: Map<Int, @JvmSuppressWildcards LoginFragmentFactory>
+    lateinit var loginTypesProvider: LoginTypesProvider
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        addMenuProvider(object: MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.activity_login, menu)
+        setContent {
+            AppTheme {
+                LoginScreen(
+                    loginTypesProvider = loginTypesProvider,
+                    initialLoginInfo = loginInfoFromIntent(intent),
+                    initialLoginType = loginTypesProvider.intentToInitialLoginType(intent),
+                    onFinish = { finish() }
+                )
             }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                if (menuItem.itemId == R.id.help) {
-                    UiUtils.launchUri(this@LoginActivity,
-                        Constants.HOMEPAGE_URL.buildUpon()
-                            .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
-                            .withStatParams("LoginActivity")
-                            .build())
-                    return true
-                }
-
-                return false
-            }
-        })
-
-        if (savedInstanceState == null) {
-            // first call, add first login fragment
-            val factories = loginFragmentFactories      // get factories from hilt
-                .toSortedMap()                          // sort by Int key
-                .values.reversed()                      // take reverse-sorted values (because high priority numbers shall be processed first)
-            var fragment: Fragment? = null
-            for (factory in factories) {
-                Logger.log.info("Login fragment factory: $factory")
-                fragment = fragment ?: factory.getFragment(intent)
-            }
-
-            if (fragment != null) {
-                supportFragmentManager.beginTransaction()
-                        .replace(android.R.id.content, fragment)
-                        .commit()
-            } else
-                Logger.log.severe("Couldn't create LoginFragment")
         }
     }
 

@@ -187,8 +187,8 @@
   <string name="login_install_certificate">Εγκατάσταση πιστοποιητικού</string>
   <string name="login_configuration_detection">Ανίχνευση ρυθμίσεων</string>
   <string name="login_querying_server">Περιμένετε, γίνεται ερώτημα στο διακομιστή...</string>
-  <string name="login_no_caldav_carddav">Αδυναμία εύρεσης υπηρεσίας CalDAV ή CardDAV.</string>
-  <string name="login_username_password_wrong">Λάθος ονομασία χρήστη (διεύθυνση ηλ. ταχυδρομείου) / συνθηματικού</string>
+  <string name="login_no_service">Αδυναμία εύρεσης υπηρεσίας CalDAV ή CardDAV.</string>
+  <string name="login_check_credentials">Λάθος ονομασία χρήστη (διεύθυνση ηλ. ταχυδρομείου) / συνθηματικού</string>
   <string name="login_view_logs">Εμφάνιση λεπτομερειών</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Συγχρονισμός</string>

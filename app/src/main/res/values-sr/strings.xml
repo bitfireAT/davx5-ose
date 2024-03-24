@@ -207,8 +207,8 @@
   <string name="login_google_client_id">ИД клијента (опционо)</string>
   <string name="login_configuration_detection">Откривање конфигурације</string>
   <string name="login_querying_server">Сачекајте, шаљем упит серверу…</string>
-  <string name="login_no_caldav_carddav">Не могох да нађем КалДАВ или КардДАВ услугу.</string>
-  <string name="login_username_password_wrong">Корисничко име (адреса е-поште) / лозинка је погрешна?</string>
+  <string name="login_no_service">Не могох да нађем КалДАВ или КардДАВ услугу.</string>
+  <string name="login_check_credentials">Корисничко име (адреса е-поште) / лозинка је погрешна?</string>
   <string name="login_view_logs">Прикажи детаље</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Синхронизација</string>

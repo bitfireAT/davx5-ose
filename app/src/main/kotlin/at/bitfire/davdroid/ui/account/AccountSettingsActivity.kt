@@ -63,7 +63,6 @@ import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
@@ -76,6 +75,7 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
@@ -401,13 +401,13 @@ class AccountSettingsActivity: AppCompatActivity() {
                     }
                 )
 
-            } else {                                    // username/password
-                if (credentials.userName != null) {
+            } else { // username/password
+                if (credentials.username != null) {
                     var showUsernameDialog by remember { mutableStateOf(false) }
                     Setting(
                         icon = Icons.Default.AccountCircle,
                         name = stringResource(R.string.settings_username),
-                        summary = credentials.userName,
+                        summary = credentials.username,
                         onClick = {
                             showUsernameDialog = true
                         }
@@ -415,9 +415,9 @@ class AccountSettingsActivity: AppCompatActivity() {
                     if (showUsernameDialog)
                         EditTextInputDialog(
                             title = stringResource(R.string.settings_username),
-                            initialValue = credentials.userName ?: "",
+                            initialValue = credentials.username ?: "",
                             onValueEntered = { newValue ->
-                                onUpdateCredentials(credentials.copy(userName = newValue))
+                                onUpdateCredentials(credentials.copy(username = newValue))
                             },
                             onDismiss = { showUsernameDialog = false }
                         )
@@ -492,7 +492,7 @@ class AccountSettingsActivity: AppCompatActivity() {
     @Preview
     fun AuthenticationSettings_Preview_UsernamePassword() {
         AuthenticationSettings(
-            credentials = Credentials(userName = "user", password = "password")
+            credentials = Credentials(username = "user", password = "password")
         )
     }
 
@@ -500,7 +500,7 @@ class AccountSettingsActivity: AppCompatActivity() {
     @Preview
     fun AuthenticationSettings_Preview_UsernamePassword_ClientCertificate() {
         AuthenticationSettings(
-            credentials = Credentials(userName = "user", password = "password", certificateAlias = "alias")
+            credentials = Credentials(username = "user", password = "password", certificateAlias = "alias")
         )
     }
 

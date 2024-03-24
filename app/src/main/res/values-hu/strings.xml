@@ -241,8 +241,8 @@
   <string name="login_nextcloud_login_flow_no_login_data">A bejelentkezési adatok megkeresése nem sikerült</string>
   <string name="login_configuration_detection">A konfiguráció felderítése</string>
   <string name="login_querying_server">Kérjük, várjon, a szerver lekérdezése…</string>
-  <string name="login_no_caldav_carddav">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
-  <string name="login_username_password_wrong">Felhasználónév (e-mail cím) vagy jelszó hibás?</string>
+  <string name="login_no_service">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
+  <string name="login_check_credentials">Felhasználónév (e-mail cím) vagy jelszó hibás?</string>
   <string name="login_view_logs">Részletek mutatása</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Szinkronizálás</string>

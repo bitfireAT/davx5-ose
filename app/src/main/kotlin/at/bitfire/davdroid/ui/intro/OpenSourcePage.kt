@@ -21,9 +21,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -32,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
@@ -71,13 +68,13 @@ class OpenSourcePage : IntroPage {
 
     @Composable
     private fun Page(model: Model = viewModel()) {
-        var dontShow by remember { mutableStateOf(model.dontShow.get()) }
-
+        val dontShow by produceState(false) {
+            value = model.dontShow
+        }
         PageContent(
             dontShow = dontShow,
             onChangeDontShow = {
-                model.dontShow.set(it)
-                dontShow = it
+                model.dontShow = it
             }
         )
     }
@@ -152,16 +149,15 @@ class OpenSourcePage : IntroPage {
             const val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"
         }
 
-        val dontShow = object: ObservableBoolean() {
-            override fun set(dontShowAgain: Boolean) {
+        var dontShow: Boolean
+            get() = settings.containsKey(SETTING_NEXT_DONATION_POPUP)
+            set(dontShowAgain) {
                 if (dontShowAgain) {
                     val nextReminder = System.currentTimeMillis() + 90*86400000L     // 90 days (~ 3 months)
                     settings.putLong(SETTING_NEXT_DONATION_POPUP, nextReminder)
                 } else
                     settings.remove(SETTING_NEXT_DONATION_POPUP)
-                super.set(dontShowAgain)
             }
-        }
 
     }
 

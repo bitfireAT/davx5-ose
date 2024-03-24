@@ -245,8 +245,8 @@
   <string name="login_nextcloud_login_flow_no_login_data">No s\'han pogut obtenir les dades d\'inici de sessió</string>
   <string name="login_configuration_detection">Detecció de la configuració</string>
   <string name="login_querying_server">Espereu, s\'està consultant el servidor…</string>
-  <string name="login_no_caldav_carddav">No s\'ha pogut trobar cap servei CalDAV o CardDAV.</string>
-  <string name="login_username_password_wrong">Nom d\'usuari (adreça de correu) / contrasenya incorrectes?</string>
+  <string name="login_no_service">No s\'ha pogut trobar cap servei CalDAV o CardDAV.</string>
+  <string name="login_check_credentials">Nom d\'usuari (adreça de correu) / contrasenya incorrectes?</string>
   <string name="login_view_logs">Mostra els detalls</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sincronització</string>

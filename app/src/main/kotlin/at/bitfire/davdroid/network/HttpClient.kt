@@ -167,8 +167,8 @@ class HttpClient private constructor(
         }
 
         fun addAuthentication(host: String?, credentials: Credentials, insecurePreemptive: Boolean = false, authStateCallback: BearerAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
-            if (credentials.userName != null && credentials.password != null) {
-                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.userName, credentials.password, insecurePreemptive)
+            if (credentials.username != null && credentials.password != null) {
+                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.username, credentials.password, insecurePreemptive)
                 orig.addNetworkInterceptor(authHandler)
                     .authenticator(authHandler)
             }

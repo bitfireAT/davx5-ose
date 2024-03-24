@@ -176,8 +176,8 @@
   <string name="login_install_certificate">Instaliraj certifikat</string>
   <string name="login_configuration_detection">Detektiranje konfiguracije</string>
   <string name="login_querying_server">Pričekajte, postavljanje upita poslužitelju...</string>
-  <string name="login_no_caldav_carddav">Nije moguće pronaći CalDAV ili CardDAV uslugu.</string>
-  <string name="login_username_password_wrong">Korisničko ime (adresa e-pošte) / lozinka pogrešni?</string>
+  <string name="login_no_service">Nije moguće pronaći CalDAV ili CardDAV uslugu.</string>
+  <string name="login_check_credentials">Korisničko ime (adresa e-pošte) / lozinka pogrešni?</string>
   <string name="login_view_logs">Prikaži detalje</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sinkronizacija</string>

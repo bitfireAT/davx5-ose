@@ -13,7 +13,6 @@ import androidx.work.Configuration
 import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
@@ -22,7 +21,6 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.setup.LoginModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
@@ -41,7 +39,6 @@ import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.net.URI
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -98,7 +95,6 @@ class RefreshCollectionsWorkerTest {
     var mockServer =  MockWebServer()
 
     lateinit var client: HttpClient
-    lateinit var loginModel: LoginModel
 
     @Before
     fun mockServerSetup() {
@@ -106,13 +102,7 @@ class RefreshCollectionsWorkerTest {
         mockServer.dispatcher = TestDispatcher()
         mockServer.start()
 
-        loginModel = LoginModel()
-        loginModel.baseURI = URI.create("/")
-        loginModel.credentials = Credentials("mock", "12345")
-
-        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext)
-            .addAuthentication(null, loginModel.credentials!!)
-            .build()
+        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build()
 
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }

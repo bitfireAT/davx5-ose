@@ -257,8 +257,8 @@
   <string name="login_nextcloud_login_flow_no_login_data">ログイン情報を入手できませんでした</string>
   <string name="login_configuration_detection">設定の検出</string>
   <string name="login_querying_server">しばらくお待ちください。サーバーに問い合わせ中…</string>
-  <string name="login_no_caldav_carddav">CalDAV または CardDAV サービスが見つかりませんでした。</string>
-  <string name="login_username_password_wrong">ユーザー名 (メールアドレス) / パスワード が間違っていませんか？</string>
+  <string name="login_no_service">CalDAV または CardDAV サービスが見つかりませんでした。</string>
+  <string name="login_check_credentials">ユーザー名 (メールアドレス) / パスワード が間違っていませんか？</string>
   <string name="login_view_logs">詳細を表示</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">同期</string>

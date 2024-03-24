@@ -119,8 +119,8 @@ class AccountSettings(
             bundle.putString(KEY_SETTINGS_VERSION, CURRENT_VERSION.toString())
 
             if (credentials != null) {
-                if (credentials.userName != null)
-                    bundle.putString(KEY_USERNAME, credentials.userName)
+                if (credentials.username != null)
+                    bundle.putString(KEY_USERNAME, credentials.username)
 
                 if (credentials.certificateAlias != null)
                     bundle.putString(KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
@@ -193,7 +193,7 @@ class AccountSettings(
 
     fun credentials(credentials: Credentials) {
         // Basic/Digest auth
-        accountManager.setAndVerifyUserData(account, KEY_USERNAME, credentials.userName)
+        accountManager.setAndVerifyUserData(account, KEY_USERNAME, credentials.username)
         accountManager.setPassword(account, credentials.password)
 
         // client certificate
