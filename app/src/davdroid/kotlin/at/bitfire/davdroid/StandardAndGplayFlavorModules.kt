@@ -4,13 +4,25 @@
 
 package at.bitfire.davdroid
 
+import at.bitfire.davdroid.ui.AboutActivity
+import at.bitfire.davdroid.ui.AccountsDrawerHandler
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
+import at.bitfire.davdroid.ui.setup.LoginTypesProvider
+import at.bitfire.davdroid.ui.setup.StandardLoginTypesProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.components.SingletonComponent
 
 interface StandardAndGplayFlavorModules {
+
+    @Module
+    @InstallIn(ActivityComponent::class)
+    interface ForActivities {
+        @Binds
+        fun loginTypesProvider(impl: StandardLoginTypesProvider): LoginTypesProvider
+    }
 
     @Module
     @InstallIn(SingletonComponent::class)
