@@ -45,7 +45,7 @@ fun AccountDetailsPage(
     foundConfig: DavResourceFinder.Configuration,
     onBack: () -> Unit,
     onAccountCreated: (Account) -> Unit,
-    model: LoginModel2 = viewModel()
+    model: LoginModel = viewModel()
 ) {
     var accountName by remember { mutableStateOf(foundConfig.calDAV?.emails?.firstOrNull() ?: "") }
     val forcedGroupMethod by model.forcedGroupMethod.observeAsState()
@@ -60,10 +60,10 @@ fun AccountDetailsPage(
     if (showExceptionInfo)
         resultOrNull?.let { result ->
             when (result) {
-                is LoginModel2.CreateAccountResult.Success -> {
+                is LoginModel.CreateAccountResult.Success -> {
                     onAccountCreated(result.account)
                 }
-                is LoginModel2.CreateAccountResult.Error -> {
+                is LoginModel.CreateAccountResult.Error -> {
                     if (result.exception != null)
                         ExceptionInfoDialog(
                             result.exception,

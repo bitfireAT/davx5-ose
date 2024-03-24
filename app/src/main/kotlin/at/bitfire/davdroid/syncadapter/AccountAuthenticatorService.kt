@@ -11,7 +11,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import at.bitfire.davdroid.ui.setup.LoginActivity2
+import at.bitfire.davdroid.ui.setup.LoginActivity
 
 
 /**
@@ -34,7 +34,7 @@ class AccountAuthenticatorService: Service() {
     ): AbstractAccountAuthenticator(context) {
 
         override fun addAccount(response: AccountAuthenticatorResponse?, accountType: String?, authTokenType: String?, requiredFeatures: Array<String>?, options: Bundle?): Bundle {
-            val intent = Intent(context, LoginActivity2::class.java)
+            val intent = Intent(context, LoginActivity::class.java)
             intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
             val bundle = Bundle(1)
             bundle.putParcelable(AccountManager.KEY_INTENT, intent)

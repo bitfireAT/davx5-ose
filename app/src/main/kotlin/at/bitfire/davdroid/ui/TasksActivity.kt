@@ -51,11 +51,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.RadioWithSwitch
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -283,6 +283,7 @@ fun TasksCard(
                     )
                     Text(
                         text = stringResource(R.string.intro_tasks_dont_show),
+                        style = MaterialTheme.typography.body2,
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { model.setShowAgain(!showAgain) }

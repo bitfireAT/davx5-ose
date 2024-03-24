@@ -89,7 +89,7 @@ import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.intro.IntroActivity
-import at.bitfire.davdroid.ui.setup.LoginActivity2
+import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -282,7 +282,7 @@ class AccountsActivity: AppCompatActivity() {
         val show by model.showAddAccount.observeAsState()
         if (show == true)
             FloatingActionButton(onClick = {
-                startActivity(Intent(this@AccountsActivity, LoginActivity2::class.java))
+                startActivity(Intent(this@AccountsActivity, LoginActivity::class.java))
             }) {
                 Icon(
                     Icons.Filled.Add,

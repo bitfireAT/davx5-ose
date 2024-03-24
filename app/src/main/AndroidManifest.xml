@@ -113,7 +113,7 @@
             android:parentActivityName=".ui.AppSettingsActivity" />
 
         <activity
-            android:name=".ui.setup.LoginActivity2"
+            android:name=".ui.setup.LoginActivity"
             android:parentActivityName=".ui.AccountsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize"

@@ -7,14 +7,12 @@ package at.bitfire.davdroid.webdav
 import android.content.Context
 import android.security.NetworkSecurityPolicy
 import androidx.test.platform.app.InstrumentationRegistry
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.ui.setup.LoginModel
+import at.bitfire.davdroid.network.HttpClient
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.CookieJar
@@ -28,7 +26,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.net.URI
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -49,7 +46,6 @@ class DavDocumentsProviderTest {
     private var mockServer =  MockWebServer()
 
     private lateinit var client: HttpClient
-    private lateinit var loginModel: LoginModel
 
     companion object {
         private const val PATH_WEBDAV_ROOT = "/webdav"
@@ -61,13 +57,7 @@ class DavDocumentsProviderTest {
         mockServer.dispatcher = TestDispatcher()
         mockServer.start()
 
-        loginModel = LoginModel()
-        loginModel.baseURI = URI.create("/")
-        loginModel.credentials = Credentials("mock", "12345")
-
-        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext)
-            .addAuthentication(null, loginModel.credentials!!)
-            .build()
+        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build()
 
         // mock server delivers HTTP without encryption
         assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)

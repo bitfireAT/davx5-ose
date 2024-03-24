@@ -1,7 +1,6 @@
 package at.bitfire.davdroid.ui.setup
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.LinearProgressIndicator
@@ -29,7 +28,7 @@ import at.bitfire.davdroid.ui.DebugInfoActivity
 fun DetectResourcesPage(
     loginInfo: LoginInfo,
     onSuccess: (DavResourceFinder.Configuration) -> Unit,
-    model: LoginModel2 = viewModel()
+    model: LoginModel = viewModel()
 ) {
     val cancellationSignal = remember { CancellationSignal() }
     DisposableEffect(Unit) {
@@ -63,14 +62,21 @@ fun DetectResourcesPage(
 @Composable
 @Preview
 fun DetectResourcesPage_InProgress() {
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxWidth()) {
         LinearProgressIndicator(
             color = MaterialTheme.colors.secondary,
-            modifier = Modifier.fillMaxWidth()
-        )
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp))
+
         Text(
             stringResource(R.string.login_configuration_detection),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+            style = MaterialTheme.typography.h5,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Text(
+            stringResource(R.string.login_querying_server),
+            style = MaterialTheme.typography.body1
         )
     }
 }

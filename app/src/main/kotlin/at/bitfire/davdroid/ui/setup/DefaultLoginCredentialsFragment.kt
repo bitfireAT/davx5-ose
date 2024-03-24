@@ -4,28 +4,9 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.content.Intent
-import android.net.MailTo
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.Credentials
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntKey
-import dagger.multibindings.IntoMap
-import java.net.URI
-import java.net.URISyntaxException
-import javax.inject.Inject
 
 class DefaultLoginCredentialsFragment : Fragment() {
-
-    val loginModel by activityViewModels<LoginModel>()
-    val model by viewModels<DefaultLoginCredentialsModel>()
-
 
     /*override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = LoginCredentialsFragmentBinding.inflate(inflater, container, false)
@@ -76,7 +57,7 @@ class DefaultLoginCredentialsFragment : Fragment() {
         return v.root
     }*/
 
-    private fun validate(): Boolean {
+    /*private fun validate(): Boolean {
         var valid = false
 
         fun validateUrl() {
@@ -201,22 +182,6 @@ class DefaultLoginCredentialsFragment : Fragment() {
         }
 
         return valid
-    }
-
-
-    class Factory @Inject constructor() : LoginFragmentFactory {
-
-        override fun getFragment(intent: Intent) = DefaultLoginCredentialsFragment()
-
-    }
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    abstract class DefaultLoginCredentialsFragmentModule {
-        @Binds
-        @IntoMap
-        @IntKey(/* priority */ 10)
-        abstract fun factory(impl: Factory): LoginFragmentFactory
-    }
+    }*/
 
 }

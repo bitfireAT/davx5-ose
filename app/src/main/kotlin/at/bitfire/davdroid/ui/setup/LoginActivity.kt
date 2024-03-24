@@ -42,7 +42,7 @@ import dagger.hilt.android.AndroidEntryPoint
  * Fields for server/user data can be pre-filled with extras in the Intent.
  */
 @AndroidEntryPoint
-class LoginActivity2: AppCompatActivity() {
+class LoginActivity: AppCompatActivity() {
 
     companion object {
 
