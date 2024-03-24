@@ -96,8 +96,8 @@ fun LoginTypeUrl_Content(
     )
     onUpdateLoginInfo(newLoginInfo)
 
-    var ok by remember { mutableStateOf(false) }
-    ok = newLoginInfo.baseUri != null && (
+    val ok =
+        newLoginInfo.baseUri != null && (
             newLoginInfo.baseUri.scheme.equals("http", ignoreCase = true) ||
             newLoginInfo.baseUri.scheme.equals("https",ignoreCase = true)
         ) && newLoginInfo.credentials != null &&

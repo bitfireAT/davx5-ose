@@ -38,7 +38,7 @@ fun StandardLoginTypePage(
                 LoginTypeSelector(
                     title = stringResource(type.title),
                     selected = type == selectedLoginType,
-                    onSelect = { onSelectLoginType(type) },
+                    onSelect = { onSelectLoginType(type) }
                 )
 
             Text(
@@ -50,7 +50,7 @@ fun StandardLoginTypePage(
                 LoginTypeSelector(
                     title = stringResource(type.title),
                     selected = type == selectedLoginType,
-                    onSelect = { onSelectLoginType(type) },
+                    onSelect = { onSelectLoginType(type) }
                 )
         }
     }

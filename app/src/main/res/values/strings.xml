@@ -16,6 +16,7 @@
     <string name="manage_accounts">Manage accounts</string>
     <string name="navigate_up">Navigate up</string>
     <string name="no_internet_sync_scheduled">No Internet, scheduling sync</string>
+    <string name="optional_label">* optional</string>
     <string name="options_menu">Options menu</string>
     <string name="share">Share</string>
     <string name="sync_started">Synchronization started</string>
@@ -251,11 +252,10 @@
     <string name="login_password">Password</string>
     <string name="login_password_hide">Hide password</string>
     <string name="login_password_show">Show password</string>
-    <string name="login_password_required">Password required</string>
+    <string name="login_password_optional">Password*</string>
     <string name="login_type_url">Login with URL and user name</string>
-    <string name="login_url_must_be_http_or_https">URL must begin with http(s)://</string>
     <string name="login_user_name">User name</string>
-    <string name="login_user_name_required">User name required</string>
+    <string name="login_user_name_optional">User name*</string>
     <string name="login_base_url">Base URL</string>
     <string name="login_base_url_info"><![CDATA[The base URL will be checked directly, but <a href="%s">services are also discovered</a> using DNS records and well-known URLs.]]></string>
     <string name="login_select_certificate">Select certificate</string>
@@ -267,9 +267,9 @@
     <string name="login_account_name_required">Account name required</string>
     <string name="login_account_name_already_taken">Account name already taken</string>
     <string name="login_account_not_created">Account could not be created</string>
-    <string name="login_type_advanced">Advanced login (special use cases)</string>
-    <string name="login_use_username_password">Use username/password</string>
-    <string name="login_use_client_certificate">Use client certificate</string>
+    <string name="login_type_advanced">Advanced login</string>
+    <string name="login_no_client_certificate_optional">No client certificate*</string>
+    <string name="login_client_certificate_selected">Client certificate: %s</string>
     <string name="login_no_certificate_found">No certificate found</string>
     <string name="login_install_certificate">Install certificate</string>
     <string name="login_type_google">Google Contacts / Calendar</string>
