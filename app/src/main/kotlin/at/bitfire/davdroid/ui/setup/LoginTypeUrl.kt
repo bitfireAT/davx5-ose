@@ -30,7 +30,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -40,7 +39,7 @@ import at.bitfire.davdroid.ui.composable.PasswordTextField
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import java.net.URI
 
-class LoginTypeUrl : LoginType {
+object LoginTypeUrl : LoginType {
 
     override val title
         get() = R.string.login_type_url
@@ -55,8 +54,6 @@ class LoginTypeUrl : LoginType {
         onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
         onDetectResources: () -> Unit
     ) {
-        val model: LoginModel = viewModel()
-
         LoginTypeUrl_Content(
             loginInfo = loginInfo,
             onUpdateLoginInfo = onUpdateLoginInfo,

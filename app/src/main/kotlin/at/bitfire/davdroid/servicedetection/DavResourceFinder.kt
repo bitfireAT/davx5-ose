@@ -124,10 +124,10 @@ class DavResourceFinder(
         }
 
         return Configuration(
-            credentials,
-            cardDavConfig, calDavConfig,
-            encountered401,
-            logBuffer.toString()
+            cardDAV = cardDavConfig,
+            calDAV = calDavConfig,
+            encountered401 = encountered401,
+            logs = logBuffer.toString()
         )
     }
 
@@ -464,8 +464,6 @@ class DavResourceFinder(
     // data classes
 
     class Configuration(
-        val credentials: Credentials?,
-
         val cardDAV: ServiceInfo?,
         val calDAV: ServiceInfo?,
 

@@ -216,8 +216,8 @@
   <string name="login_install_certificate">نصب گواهی</string>
   <string name="login_configuration_detection">تشخیص پیکربندی</string>
   <string name="login_querying_server">لطفا صبر کنید، پرس و جو سرور ...</string>
-  <string name="login_no_caldav_carddav">سرویس CalDAV یا CardDAV پیدا نشد.</string>
-  <string name="login_username_password_wrong">نام کاربری (آدرس ایمیل) / رمز عبور اشتباه است؟</string>
+  <string name="login_no_service">سرویس CalDAV یا CardDAV پیدا نشد.</string>
+  <string name="login_check_credentials">نام کاربری (آدرس ایمیل) / رمز عبور اشتباه است؟</string>
   <string name="login_view_logs">نمایش جزئیات</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">همگام سازی</string>

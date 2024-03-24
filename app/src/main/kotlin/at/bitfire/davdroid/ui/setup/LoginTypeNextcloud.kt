@@ -61,6 +61,8 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import at.bitfire.davdroid.ui.composable.Assistant
+import at.bitfire.davdroid.ui.setup.LoginTypeNextcloud.LOGIN_FLOW_V1_PATH
+import at.bitfire.davdroid.ui.setup.LoginTypeNextcloud.LOGIN_FLOW_V2_PATH
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -78,19 +80,7 @@ import java.net.URI
 import java.util.logging.Level
 import javax.inject.Inject
 
-class LoginTypeNextcloud : LoginType {
-
-    companion object {
-
-        const val LOGIN_FLOW_V1_PATH = "index.php/login/flow"
-        const val LOGIN_FLOW_V2_PATH = "index.php/login/v2"
-
-        /** Path to DAV endpoint (e.g. `/remote.php/dav`). Will be appended to the
-         *  server URL returned by Login Flow without further processing. */
-        //const val EXTRA_DAV_PATH = "davPath"
-        const val DAV_PATH_DEFAULT = "/remote.php/dav"
-
-    }
+object LoginTypeNextcloud : LoginType {
 
     override val title: Int
         get() = R.string.login_type_nextcloud
@@ -103,7 +93,12 @@ class LoginTypeNextcloud : LoginType {
             .build()
 
 
-    // TODO accept EXTRA_DAV_PATH from embedding activity
+    const val LOGIN_FLOW_V1_PATH = "index.php/login/flow"
+    const val LOGIN_FLOW_V2_PATH = "index.php/login/v2"
+
+    /** Path to DAV endpoint (e.g. `/remote.php/dav`). Will be appended to the
+     *  server URL returned by Login Flow without further processing. */
+    const val DAV_PATH = "/remote.php/dav"
 
 
     @Composable
@@ -119,8 +114,7 @@ class LoginTypeNextcloud : LoginType {
         val model = viewModel<Model>()
 
         val checkResultCallback = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val davPath = DAV_PATH_DEFAULT
-            model.checkResult(davPath)
+            model.checkResult()
         }
 
         val loginUrl by model.loginUrl.observeAsState()
@@ -263,7 +257,7 @@ class LoginTypeNextcloud : LoginType {
          * model is cleared (saved state).
          */
         @UiThread
-        fun checkResult(davPath: String?) {
+        fun checkResult() {
             val pollUrl = pollUrl ?: return
             val token = token ?: return
 
@@ -274,10 +268,7 @@ class LoginTypeNextcloud : LoginType {
                     val loginName = json.getString("loginName")
                     val appPassword = json.getString("appPassword")
 
-                    val baseUri = if (davPath != null)
-                        URI.create(serverUrl + davPath)
-                    else
-                        URI.create(serverUrl)
+                    val baseUri = URI.create(serverUrl + DAV_PATH)
 
                     loginInfo.postValue(LoginInfo(
                         baseUri = baseUri,

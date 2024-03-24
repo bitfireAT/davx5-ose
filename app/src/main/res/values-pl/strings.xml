@@ -239,8 +239,8 @@
   <string name="login_nextcloud_login_flow_no_login_data">Nie udało się uzyskać danych logowania</string>
   <string name="login_configuration_detection">Wykrywanie konfiguracji</string>
   <string name="login_querying_server">Proszę czekać, odpytywanie serwera…</string>
-  <string name="login_no_caldav_carddav">Nie można znaleźć usługi CalDAV lub CardDAV.</string>
-  <string name="login_username_password_wrong">Błędna nazwa użytkownika (adres e-mail)/hasło?</string>
+  <string name="login_no_service">Nie można znaleźć usługi CalDAV lub CardDAV.</string>
+  <string name="login_check_credentials">Błędna nazwa użytkownika (adres e-mail)/hasło?</string>
   <string name="login_view_logs">Pokaż szczegóły</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronizacja</string>

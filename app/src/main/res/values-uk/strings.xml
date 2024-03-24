@@ -149,8 +149,8 @@
   <string name="login_install_certificate">Встановити сертифікат</string>
   <string name="login_configuration_detection">Виявлення конфігурації</string>
   <string name="login_querying_server">Будь ласка, зачекайте, запит до серверу…</string>
-  <string name="login_no_caldav_carddav">Не вдалося знайти  CalDAV чи CardDAV сервіс.</string>
-  <string name="login_username_password_wrong">Невірне імʼя користувача (електронна адреса)/пароль?</string>
+  <string name="login_no_service">Не вдалося знайти  CalDAV чи CardDAV сервіс.</string>
+  <string name="login_check_credentials">Невірне імʼя користувача (електронна адреса)/пароль?</string>
   <string name="login_view_logs">Показати деталі</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Синхронізація</string>

@@ -245,8 +245,8 @@
   <string name="login_nextcloud_login_flow_no_login_data">Данните за вход не могат да бъдат получени</string>
   <string name="login_configuration_detection">Откриване на настройки</string>
   <string name="login_querying_server">Изчакайте, запитване на сървъра…</string>
-  <string name="login_no_caldav_carddav">Не са открити услуги на CalDAV или CardDAV.</string>
-  <string name="login_username_password_wrong">Грешно потребителско име или парола?</string>
+  <string name="login_no_service">Не са открити услуги на CalDAV или CardDAV.</string>
+  <string name="login_check_credentials">Грешно потребителско име или парола?</string>
   <string name="login_view_logs">Подробности</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Синхронизация</string>

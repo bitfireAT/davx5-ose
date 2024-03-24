@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 import org.apache.commons.lang3.StringUtils
 import java.net.URI
 
-class LoginTypeAdvanced : LoginType {
+object LoginTypeAdvanced : LoginType {
 
     override val title: Int
         get() = R.string.login_type_advanced

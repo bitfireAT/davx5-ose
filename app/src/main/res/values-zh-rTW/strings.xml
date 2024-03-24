@@ -131,7 +131,7 @@
   <string name="login_account_not_created">無法建立帳號</string>
   <string name="login_configuration_detection">設定錯誤</string>
   <string name="login_querying_server">請稍待，正在詢問伺服器…</string>
-  <string name="login_no_caldav_carddav">找不到 CalDAV 或 CardDAV 服務。</string>
+  <string name="login_no_service">找不到 CalDAV 或 CardDAV 服務。</string>
   <string name="login_view_logs">顯示詳細訊息</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">同步設定</string>

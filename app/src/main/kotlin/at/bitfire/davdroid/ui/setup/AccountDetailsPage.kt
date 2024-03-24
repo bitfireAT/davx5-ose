@@ -42,14 +42,12 @@ import at.bitfire.vcard4android.GroupMethod
 
 @Composable
 fun AccountDetailsPage(
+    loginInfo: LoginInfo,
     foundConfig: DavResourceFinder.Configuration,
     onBack: () -> Unit,
     onAccountCreated: (Account) -> Unit,
     model: LoginModel = viewModel()
 ) {
-    var accountName by remember { mutableStateOf(foundConfig.calDAV?.emails?.firstOrNull() ?: "") }
-    val forcedGroupMethod by model.forcedGroupMethod.observeAsState()
-
     BackHandler(onBack = onBack)
 
     val resultOrNull by model.createAccountResult.observeAsState()
@@ -76,17 +74,26 @@ fun AccountDetailsPage(
             }
         }
 
+    val suggestedAccountNames = foundConfig.calDAV?.emails ?: emptyList()
+    var accountName by remember { mutableStateOf(suggestedAccountNames.firstOrNull() ?: "") }
+
+    val forcedGroupMethod by model.forcedGroupMethod.observeAsState()
+    var groupMethod by remember { mutableStateOf(forcedGroupMethod ?: loginInfo.suggestedGroupMethod) }
     AccountDetailsPage_Content(
-        suggestedAccountNames = foundConfig.calDAV?.emails,
+        suggestedAccountNames = suggestedAccountNames,
         accountName = accountName,
         onUpdateAccountName = { accountName = it },
         onCreateAccount = {
             model.createAccount(
+                credentials = loginInfo.credentials,
                 foundConfig = foundConfig,
-                name = accountName
+                name = accountName,
+                groupMethod = groupMethod
             )
         },
-        showGroupMethod = forcedGroupMethod == null
+        groupMethod = groupMethod,
+        groupMethodReadOnly = forcedGroupMethod != null,
+        onUpdateGroupMethod = { groupMethod = it }
     )
 }
 
@@ -96,7 +103,9 @@ fun AccountDetailsPage_Content(
     suggestedAccountNames: List<String>?,
     accountName: String,
     onUpdateAccountName: (String) -> Unit = {},
-    showGroupMethod: Boolean = true,
+    groupMethod: GroupMethod,
+    groupMethodReadOnly: Boolean,
+    onUpdateGroupMethod: (GroupMethod) -> Unit = {},
     onCreateAccount: () -> Unit = {}
 ) {
     Assistant(
@@ -178,29 +187,29 @@ fun AccountDetailsPage_Content(
             }
 
             // group type selector
-            if (showGroupMethod) {
-                Text(
-                    stringResource(R.string.login_account_contact_group_method),
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-                var groupMethod by remember { mutableStateOf(GroupMethod.GROUP_VCARDS) }
-                val groupMethodNames = stringArrayResource(R.array.settings_contact_group_method_entries)
-                val groupMethodValues = stringArrayResource(R.array.settings_contact_group_method_values).map { GroupMethod.valueOf(it) }
-                for ((name, method) in groupMethodNames.zip(groupMethodValues)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(
-                            selected = groupMethod == method,
-                            onClick = { groupMethod = method }
-                        )
-                        Text(
-                            name,
-                            style = MaterialTheme.typography.body1,
-                            modifier = Modifier
-                                .padding(vertical = 4.dp)
-                                .clickable(onClick = { groupMethod = method })
-                        )
-                    }
+            Text(
+                stringResource(R.string.login_account_contact_group_method),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+            val groupMethodNames = stringArrayResource(R.array.settings_contact_group_method_entries)
+            val groupMethodValues = stringArrayResource(R.array.settings_contact_group_method_values).map { GroupMethod.valueOf(it) }
+            for ((name, method) in groupMethodNames.zip(groupMethodValues)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = groupMethod == method,
+                        enabled = !groupMethodReadOnly,
+                        onClick = { onUpdateGroupMethod(method) }
+                    )
+
+                    var modifier = Modifier.padding(vertical = 4.dp)
+                    if (!groupMethodReadOnly)
+                        modifier = modifier.clickable(onClick = { onUpdateGroupMethod(method) })
+                    Text(
+                        name,
+                        style = MaterialTheme.typography.body1,
+                        modifier = modifier
+                    )
                 }
             }
         }
@@ -212,7 +221,9 @@ fun AccountDetailsPage_Content(
 fun AccountDetailsPage_Content_Preview() {
     AccountDetailsPage_Content(
         suggestedAccountNames = listOf("name1", "name2@example.com"),
-        accountName = "account@example.com"
+        accountName = "account@example.com",
+        groupMethod = GroupMethod.GROUP_VCARDS,
+        groupMethodReadOnly = false
     )
 }
 
@@ -221,6 +232,8 @@ fun AccountDetailsPage_Content_Preview() {
 fun AccountDetailsPage_Content_Preview_With_Apostrophe() {
     AccountDetailsPage_Content(
         suggestedAccountNames = listOf("name1", "name2@example.com"),
-        accountName = "account'example.com"
+        accountName = "account'example.com",
+        groupMethod = GroupMethod.CATEGORIES,
+        groupMethodReadOnly = true
     )
 }

@@ -236,8 +236,8 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="login_nextcloud_login_flow_no_login_data">Kunne ikke hente login-data</string>
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
-  <string name="login_no_caldav_carddav">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
-  <string name="login_username_password_wrong">Brugernavn (e-mail adresse) / adgangskode forkert?</string>
+  <string name="login_no_service">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
+  <string name="login_check_credentials">Brugernavn (e-mail adresse) / adgangskode forkert?</string>
   <string name="login_view_logs">Vis detaljer</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synkronisering</string>

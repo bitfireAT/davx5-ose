@@ -32,10 +32,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.account.AccountActivity
 import dagger.hilt.android.AndroidEntryPoint
+import java.net.URI
 
 /**
  * Activity to initially connect to a server and create an account.
@@ -63,6 +65,65 @@ class LoginActivity: AppCompatActivity() {
          */
         const val EXTRA_PASSWORD = "password"
 
+        /**
+         * When set, Nextcloud Login Flow will be used.
+         */
+        const val EXTRA_LOGIN_FLOW = "loginFlow"
+
+
+        fun loginInfoFromIntent(intent: Intent): LoginInfo {
+            var givenUri: String? = null
+            var givenUsername: String? = null
+            var givenPassword: String? = null
+
+            // extract URI and optionally username/password from Intent data
+            intent.data?.normalizeScheme()?.let { uri ->
+                // We've got initial login data from the Intent.
+                // We can't use uri.buildUpon() because this keeps the user info (it's readable, but not writable).
+                val realScheme = when (uri.scheme) {
+                    "caldav", "carddav" -> "http"
+                    "caldavs", "carddavs", "davx5" -> "https"
+                    "http", "https" -> uri.scheme
+                    else -> null
+                }
+                if (realScheme != null) {
+                    val realUri = Uri.Builder()
+                        .scheme(realScheme)
+                        .authority(uri.host)
+                        .path(uri.path)
+                        .query(uri.query)
+                    givenUri = realUri.build().toString()
+
+                    // extract user info
+                    uri.userInfo?.split(':')?.let { userInfo ->
+                        givenUsername = userInfo.getOrNull(0)
+                        givenPassword = userInfo.getOrNull(1)
+                    }
+                }
+            }
+
+            if (givenUri == null)
+                givenUri = intent.getStringExtra(EXTRA_URL)
+
+            // always prefer username/password from the extras
+            if (intent.hasExtra(EXTRA_USERNAME))
+                givenUsername = intent.getStringExtra(EXTRA_USERNAME)
+            if (intent.hasExtra(EXTRA_PASSWORD))
+                givenPassword = intent.getStringExtra(EXTRA_PASSWORD)
+
+            return LoginInfo(
+                baseUri = try {
+                    URI(givenUri)
+                } catch (_: Exception) {
+                    null
+                },
+                credentials = Credentials(
+                    username = givenUsername,
+                    password = givenPassword
+                )
+            )
+        }
+
     }
 
     enum class Phase {
@@ -73,13 +134,13 @@ class LoginActivity: AppCompatActivity() {
     }
 
     private val genericLoginTypes = listOf(
-        LoginTypeUrl(),
-        LoginTypeEmail(),
-        LoginTypeAdvanced()
+        LoginTypeUrl,
+        LoginTypeEmail,
+        LoginTypeAdvanced
     )
     private val specificLoginTypes = listOf(
-        LoginTypeGoogle(),
-        LoginTypeNextcloud()
+        LoginTypeGoogle,
+        LoginTypeNextcloud
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,7 +148,15 @@ class LoginActivity: AppCompatActivity() {
 
         setContent {
             AppTheme {
+                val initialLoginType =
+                    if (intent.hasExtra(EXTRA_LOGIN_FLOW))
+                        LoginTypeNextcloud
+                    else
+                        LoginTypeUrl
+
                 LoginScreen(
+                    initialLoginInfo = loginInfoFromIntent(intent),
+                    initialLoginType = initialLoginType,
                     onFinish = { finish() }
                 )
             }
@@ -97,12 +166,19 @@ class LoginActivity: AppCompatActivity() {
     @Composable
     @Preview
     fun LoginScreen(
+        initialLoginInfo: LoginInfo = LoginInfo(),
+        initialLoginType: LoginType = genericLoginTypes.first(),
         onFinish: () -> Unit = {}
     ) {
         val uriHandler = LocalUriHandler.current
 
-        var phase: Phase by remember { mutableStateOf(Phase.LOGIN_TYPE) }
-        var selectedLoginType: LoginType by remember { mutableStateOf(genericLoginTypes.first()) }
+        val initialPhase =
+            if (initialLoginInfo.baseUri != null)
+                Phase.LOGIN_DETAILS
+            else
+                Phase.LOGIN_TYPE
+        var phase: Phase by remember { mutableStateOf(initialPhase) }
+        var selectedLoginType: LoginType by remember { mutableStateOf(initialLoginType) }
 
         val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
@@ -146,7 +222,7 @@ class LoginActivity: AppCompatActivity() {
                 .fillMaxSize()
                 .padding(padding)
             ) {
-                var loginInfo by remember { mutableStateOf(LoginInfo()) }
+                var loginInfo by remember { mutableStateOf(initialLoginInfo) }
                 var foundConfig by remember { mutableStateOf<DavResourceFinder.Configuration?>(null) }
 
                 when (phase) {
@@ -194,6 +270,7 @@ class LoginActivity: AppCompatActivity() {
                         foundConfig?.let {
                             val context = LocalContext.current
                             AccountDetailsPage(
+                                loginInfo = loginInfo,
                                 foundConfig = it,
                                 onBack = { phase = Phase.LOGIN_TYPE },
                                 onAccountCreated = { account ->

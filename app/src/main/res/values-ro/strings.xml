@@ -245,8 +245,8 @@
   <string name="login_nextcloud_login_flow_no_login_data">Nu s-au putut obține datele de conectare</string>
   <string name="login_configuration_detection">Detectarea configurației</string>
   <string name="login_querying_server">Se interoghează serverul…</string>
-  <string name="login_no_caldav_carddav">Nu s-a putut găsi serviciul CalDAV sau CardDAV.</string>
-  <string name="login_username_password_wrong">Nume de utilizator (adresă de e-mail)/parolă greșită?</string>
+  <string name="login_no_service">Nu s-a putut găsi serviciul CalDAV sau CardDAV.</string>
+  <string name="login_check_credentials">Nume de utilizator (adresă de e-mail)/parolă greșită?</string>
   <string name="login_view_logs">Afișează detaliile</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sincronizare</string>

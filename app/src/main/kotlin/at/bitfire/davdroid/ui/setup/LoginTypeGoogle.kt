@@ -64,7 +64,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
-import at.bitfire.davdroid.ui.setup.LoginTypeGoogle.Companion.GOOGLE_POLICY_URL
+import at.bitfire.davdroid.ui.setup.LoginTypeGoogle.GOOGLE_POLICY_URL
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -82,54 +82,7 @@ import java.net.URI
 import java.util.logging.Level
 import javax.inject.Inject
 
-class LoginTypeGoogle : LoginType {
-
-    companion object {
-
-        // Google API Services User Data Policy
-        const val GOOGLE_POLICY_URL =
-            "https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes"
-
-        // Support site
-        val URI_TESTED_WITH_GOOGLE: Uri =
-            Constants.HOMEPAGE_URL.buildUpon()
-                .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
-                .appendPath("google")
-                .build()
-
-        // davx5integration@gmail.com (for davx5-ose)
-        private const val CLIENT_ID = "1069050168830-eg09u4tk1cmboobevhm4k3bj1m4fav9i.apps.googleusercontent.com"
-
-        val SCOPES = arrayOf(
-            "https://www.googleapis.com/auth/calendar",     // CalDAV
-            "https://www.googleapis.com/auth/carddav"       // CardDAV
-        )
-
-        private val serviceConfig = AuthorizationServiceConfiguration(
-            Uri.parse("https://accounts.google.com/o/oauth2/v2/auth"),
-            Uri.parse("https://oauth2.googleapis.com/token")
-        )
-
-        fun authRequestBuilder(clientId: String?) =
-            AuthorizationRequest.Builder(
-                serviceConfig,
-                clientId ?: CLIENT_ID,
-                ResponseTypeValues.CODE,
-                Uri.parse(BuildConfig.APPLICATION_ID + ":/oauth2/redirect")
-            )
-
-        /**
-         * Gets the Google CalDAV/CardDAV base URI. See https://developers.google.com/calendar/caldav/v2/guide;
-         * _calid_ of the primary calendar is the account name.
-         *
-         * This URL allows CardDAV (over well-known URLs) and CalDAV detection including calendar-homesets and secondary
-         * calendars.
-         */
-        fun googleBaseUri(googleAccount: String): URI =
-            URI("https", "apidata.googleusercontent.com", "/caldav/v2/$googleAccount/user", null)
-
-    }
-
+object LoginTypeGoogle : LoginType {
 
     override val title: Int
         get() = R.string.login_type_google
@@ -140,6 +93,49 @@ class LoginTypeGoogle : LoginType {
             .appendPath("google")
             .withStatParams("LoginTypeGoogle")
             .build()
+
+
+    // Google API Services User Data Policy
+    const val GOOGLE_POLICY_URL =
+        "https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes"
+
+    // Support site
+    val URI_TESTED_WITH_GOOGLE: Uri =
+        Constants.HOMEPAGE_URL.buildUpon()
+            .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
+            .appendPath("google")
+            .build()
+
+    // davx5integration@gmail.com (for davx5-ose)
+    private const val CLIENT_ID = "1069050168830-eg09u4tk1cmboobevhm4k3bj1m4fav9i.apps.googleusercontent.com"
+
+    val SCOPES = arrayOf(
+        "https://www.googleapis.com/auth/calendar",     // CalDAV
+        "https://www.googleapis.com/auth/carddav"       // CardDAV
+    )
+
+    private val serviceConfig = AuthorizationServiceConfiguration(
+        Uri.parse("https://accounts.google.com/o/oauth2/v2/auth"),
+        Uri.parse("https://oauth2.googleapis.com/token")
+    )
+
+    fun authRequestBuilder(clientId: String?) =
+        AuthorizationRequest.Builder(
+            serviceConfig,
+            clientId ?: CLIENT_ID,
+            ResponseTypeValues.CODE,
+            Uri.parse(BuildConfig.APPLICATION_ID + ":/oauth2/redirect")
+        )
+
+    /**
+     * Gets the Google CalDAV/CardDAV base URI. See https://developers.google.com/calendar/caldav/v2/guide;
+     * _calid_ of the primary calendar is the account name.
+     *
+     * This URL allows CardDAV (over well-known URLs) and CalDAV detection including calendar-homesets and secondary
+     * calendars.
+     */
+    fun googleBaseUri(googleAccount: String): URI =
+        URI("https", "apidata.googleusercontent.com", "/caldav/v2/$googleAccount/user", null)
 
 
     @Composable

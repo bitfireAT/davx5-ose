@@ -81,12 +81,14 @@ class LoginModel @Inject constructor(
     val createAccountResult = MutableLiveData<CreateAccountResult>()
 
     fun createAccount(
+        credentials: Credentials?,
         foundConfig: DavResourceFinder.Configuration,
-        name: String
+        name: String,
+        groupMethod: GroupMethod
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                if (createAccount(name, foundConfig.credentials, foundConfig, GroupMethod.GROUP_VCARDS))
+                if (createAccount(name, credentials, foundConfig, groupMethod))
                     createAccountResult.postValue(CreateAccountResult.Success(Account(name, context.getString(R.string.account_type))))
                 else
                     createAccountResult.postValue(CreateAccountResult.Error(null))

@@ -39,7 +39,7 @@ import at.bitfire.davdroid.ui.composable.PasswordTextField
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import java.net.URI
 
-class LoginTypeEmail : LoginType {
+object LoginTypeEmail : LoginType {
 
     override val title: Int
         get() = R.string.login_type_email

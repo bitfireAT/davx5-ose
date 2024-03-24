@@ -206,8 +206,8 @@
   <string name="login_install_certificate">인증서 설치</string>
   <string name="login_configuration_detection">구성 탐색</string>
   <string name="login_querying_server">잠시 기다려 주십시오. 서버를 쿼리하고 있습니다...</string>
-  <string name="login_no_caldav_carddav">CalDAV 또는 CardDAV 서비스를 찾을 수 없습니다.</string>
-  <string name="login_username_password_wrong">사용자 이름 (email address) / 비밀번호 가 잘못되었습니까?</string>
+  <string name="login_no_service">CalDAV 또는 CardDAV 서비스를 찾을 수 없습니다.</string>
+  <string name="login_check_credentials">사용자 이름 (email address) / 비밀번호 가 잘못되었습니까?</string>
   <string name="login_view_logs">자세히</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">동기화</string>
