@@ -104,6 +104,7 @@ class SettingsManager internal constructor(
     /*** SETTINGS ACCESS ***/
 
     fun containsKey(key: String) = providers.any { it.contains(key) }
+    fun containsKeyLive(key: String) = SettingLiveData { containsKey(key) }
 
     private fun<T> getValue(key: String, reader: (SettingsProvider) -> T?): T? {
         Logger.log.fine("Looking up setting $key")

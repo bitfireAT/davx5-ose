@@ -106,7 +106,8 @@ object LoginTypeNextcloud : LoginType {
         snackbarHostState: SnackbarHostState,
         loginInfo: LoginInfo,
         onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
-        onDetectResources: () -> Unit
+        onDetectResources: () -> Unit,
+        onFinish: () -> Unit
     ) {
         val context = LocalContext.current
         val locale = Locale.current
@@ -393,7 +394,8 @@ fun NextcloudLoginScreen(
                     singleLine = true
                 )
                 LaunchedEffect(Unit) {
-                    focusRequester.requestFocus()
+                    if (loginInfo.baseUri == null)
+                        focusRequester.requestFocus()
                 }
 
                 if (error != null)

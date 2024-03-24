@@ -17,6 +17,7 @@ interface LoginType {
         loginInfo: LoginInfo,
         onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
         onDetectResources: () -> Unit,
+        onFinish: () -> Unit
     )
 
 }

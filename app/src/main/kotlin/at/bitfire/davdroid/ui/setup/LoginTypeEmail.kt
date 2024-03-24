@@ -53,7 +53,8 @@ object LoginTypeEmail : LoginType {
         snackbarHostState: SnackbarHostState,
         loginInfo: LoginInfo,
         onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
-        onDetectResources: () -> Unit
+        onDetectResources: () -> Unit,
+        onFinish: () -> Unit
     ) {
         LoginTypeEmail_Content(
             loginInfo = loginInfo,

@@ -144,6 +144,7 @@ object LoginTypeGoogle : LoginType {
         loginInfo: LoginInfo,
         onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
         onDetectResources: () -> Unit,
+        onFinish: () -> Unit
     ) {
         val context = LocalContext.current
         val scope = rememberCoroutineScope()

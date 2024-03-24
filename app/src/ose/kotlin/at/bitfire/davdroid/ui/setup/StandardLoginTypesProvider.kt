@@ -28,7 +28,14 @@ class StandardLoginTypesProvider @Inject constructor() : LoginTypesProvider {
             LoginTypeUrl
 
     @Composable
-    override fun LoginTypePage(selectedLoginType: LoginType, onSelectLoginType: (LoginType) -> Unit, onContinue: () -> Unit) {
+    override fun LoginTypePage(
+        selectedLoginType: LoginType,
+        onSelectLoginType: (LoginType) -> Unit,
+        loginInfo: LoginInfo,
+        onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
+        onContinue: () -> Unit,
+        onFinish: () -> Unit
+    ) {
         StandardLoginTypePage(
             selectedLoginType = selectedLoginType,
             onSelectLoginType = onSelectLoginType,

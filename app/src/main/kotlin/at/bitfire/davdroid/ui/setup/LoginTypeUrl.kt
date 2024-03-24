@@ -52,7 +52,8 @@ object LoginTypeUrl : LoginType {
         snackbarHostState: SnackbarHostState,
         loginInfo: LoginInfo,
         onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
-        onDetectResources: () -> Unit
+        onDetectResources: () -> Unit,
+        onFinish: () -> Unit
     ) {
         LoginTypeUrl_Content(
             loginInfo = loginInfo,

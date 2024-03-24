@@ -13,7 +13,10 @@ interface LoginTypesProvider {
     fun LoginTypePage(
         selectedLoginType: LoginType,
         onSelectLoginType: (LoginType) -> Unit,
-        onContinue: () -> Unit
+        loginInfo: LoginInfo,
+        onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
+        onContinue: () -> Unit,
+        onFinish: () -> Unit
     )
 
 }

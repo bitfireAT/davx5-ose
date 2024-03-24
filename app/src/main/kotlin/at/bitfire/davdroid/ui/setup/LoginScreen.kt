@@ -99,9 +99,12 @@ fun LoginScreen(
                     loginTypesProvider.LoginTypePage(
                         selectedLoginType = selectedLoginType,
                         onSelectLoginType = { selectedLoginType = it },
+                        loginInfo = loginInfo,
+                        onUpdateLoginInfo = { loginInfo = it },
                         onContinue = {
                             phase = LoginActivity.Phase.LOGIN_DETAILS
-                        }
+                        },
+                        onFinish = onFinish
                     )
 
                 LoginActivity.Phase.LOGIN_DETAILS -> {
@@ -115,7 +118,8 @@ fun LoginScreen(
                         onUpdateLoginInfo = { loginInfo = it },
                         onDetectResources = {
                             phase = LoginActivity.Phase.DETECT_RESOURCES
-                        }
+                        },
+                        onFinish = onFinish
                     )
                 }
 
