@@ -1,10 +1,21 @@
 package at.bitfire.davdroid.ui
 
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
@@ -14,6 +25,7 @@ private val grey200 = Color(0xffeeeeee)
 private val red700 = Color(0xffd32f2f)
 
 val primaryGreen = Color(0xff7cb342)
+val primaryDarkGreen = Color(0xff4b830d)
 val onPrimaryGreen = Color(0xfffafafa)
 val secondaryOrange = Color(0xffff6d00)
 val secondaryLightOrange = Color(0xffff9e40)
@@ -36,12 +48,39 @@ private val colorsLight = Colors(
 )
 
 @Composable
-fun AppTheme(content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalUriHandler provides SafeAndroidUriHandler(LocalContext.current)) {
-        MaterialTheme(
-            colors = colorsLight
+fun AppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+    val context = LocalContext.current
+
+    val colors = if (darkTheme) {
+        // TODO: Should use dark theme
+        colorsLight
+    } else {
+        colorsLight
+    }
+
+    LaunchedEffect(context, colors) {
+        (context as? AppCompatActivity)?.enableEdgeToEdge(
+            navigationBarStyle = SystemBarStyle.dark(
+                scrim = Color.Black.toArgb()
+            ),
+            statusBarStyle = SystemBarStyle.dark(
+                scrim = primaryDarkGreen.toArgb()
+            )
+        )
+    }
+
+    CompositionLocalProvider(LocalUriHandler provides SafeAndroidUriHandler(context)) {
+        Box(
+            modifier = Modifier
+                .imePadding()
+                .navigationBarsPadding()
+                .statusBarsPadding()
         ) {
-            content()
+            MaterialTheme(
+                colors = colors
+            ) {
+                content()
+            }
         }
     }
 }
