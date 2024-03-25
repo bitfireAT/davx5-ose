@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primaryColor">#7cb342</color>
+
     <color name="accounts_background_blue">#2196f3</color>
     <color name="accounts_background_teal">#80deea</color>
     <color name="accounts_background_light">#f2f2f2</color>
     <color name="accounts_background_white">#fff</color>
-    <color name="accounts_background_grey">@color/grey500</color>
+    <color name="accounts_background_grey">#9e9e9e</color>
 </resources>
