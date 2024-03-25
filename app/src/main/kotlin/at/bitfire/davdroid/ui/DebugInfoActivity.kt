@@ -83,6 +83,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.BaseSyncWorker
+import at.bitfire.davdroid.ui.composable.BasicTopAppBar
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
@@ -197,6 +198,12 @@ class DebugInfoActivity : AppCompatActivity() {
                     },
                     snackbarHost = {
                         SnackbarHost(hostState = snackbarHostState)
+                    },
+                    topBar = {
+                        BasicTopAppBar(
+                            titleStringRes = R.string.debug_info_title,
+                            parentActivity = AppSettingsActivity::class
+                        )
                     }
                 ) { paddingValues ->
                     val error by model.error.observeAsState()
