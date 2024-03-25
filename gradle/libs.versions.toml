@@ -96,7 +96,6 @@ commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
-compose-accompanist-themeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "compose-accompanist" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-material = { module = "androidx.compose.material:material" }
 compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
