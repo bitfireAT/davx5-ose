@@ -41,6 +41,10 @@
 
     <style name="AppTheme.Base" parent="Theme.MaterialComponents.DayNight"/>
     <style name="AppTheme" parent="AppTheme.Base">
+        <!-- Do not show actionbar anywhere -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
         <!-- see https://github.com/material-components/material-components-android/blob/master/docs/theming/Color.md for component color names -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>       <!-- additionally required for AppCompatActivity -->
@@ -57,11 +61,6 @@
         <item name="android:textColorSecondary">@color/secondaryTextColor</item>
 
         <item name="android:colorBackground">@color/backgroundColor</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
     </style>
 
 
