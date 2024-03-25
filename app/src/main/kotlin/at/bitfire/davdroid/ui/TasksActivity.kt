@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui
 
+import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,12 +22,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -51,6 +54,7 @@ import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
+import at.bitfire.davdroid.ui.composable.BasicTopAppBar
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.RadioWithSwitch
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
@@ -144,7 +148,6 @@ class TasksActivity: AppCompatActivity() {
 }
 
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun TasksCard(
     modifier: Modifier = Modifier,
@@ -188,7 +191,13 @@ fun TasksCard(
 
     Scaffold(
         modifier = modifier,
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            (context as? Activity)?.BasicTopAppBar(
+                titleStringRes = R.string.intro_tasks_title,
+                parentActivity = AppSettingsActivity::class
+            )
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
