@@ -20,6 +20,7 @@
     <string name="options_menu">Options menu</string>
     <string name="share">Share</string>
     <string name="sync_started">Synchronization started</string>
+    <string name="back">Go Back</string>
 
     <string name="database_destructive_migration_title">Database corrupted</string>
     <string name="database_destructive_migration_text">All accounts have been removed locally.</string>
