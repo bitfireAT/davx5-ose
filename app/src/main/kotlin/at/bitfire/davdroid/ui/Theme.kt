@@ -8,7 +8,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
-import com.google.accompanist.themeadapter.material.MdcTheme
 
 private val grey100 = Color(0xfff5f5f5)
 private val grey200 = Color(0xffeeeeee)
