@@ -10,12 +10,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -29,7 +28,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
@@ -63,7 +61,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -75,13 +73,13 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.composable.ActionCard
+import at.bitfire.davdroid.util.TaskUtils
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dagger.hilt.android.AndroidEntryPoint
@@ -703,29 +701,22 @@ fun ServiceTab(
 
     Column {
         // progress indicator
-        val progressAlpha by animateFloatAsState(
-            when (progress) {
-                AccountActivity.Progress.Active -> 1f
-                AccountActivity.Progress.Pending -> 0.5f
-                AccountActivity.Progress.Idle -> 0f
-            },
-            label = "progressAlpha"
-        )
+        val progressAlpha = progressAlpha(progress)
         when (progress) {
             AccountActivity.Progress.Active -> LinearProgressIndicator(
                 color = MaterialTheme.colors.secondary,
                 modifier = Modifier
-                    .graphicsLayer(alpha = progressAlpha)
+                    .alpha(progressAlpha)
                     .fillMaxWidth()
             )
-            AccountActivity.Progress.Pending -> LinearProgressIndicator(
+            AccountActivity.Progress.Pending,
+            AccountActivity.Progress.Idle -> LinearProgressIndicator(
                 color = MaterialTheme.colors.secondary,
                 progress = 1f,
                 modifier = Modifier
-                    .graphicsLayer(alpha = progressAlpha)
+                    .alpha(progressAlpha)
                     .fillMaxWidth()
             )
-            AccountActivity.Progress.Idle -> Spacer(Modifier.height(ProgressIndicatorDefaults.StrokeWidth))
         }
 
         // permissions warning
@@ -752,4 +743,18 @@ fun ServiceTab(
                 modifier = Modifier.weight(1f)
             )
     }
+}
+
+@Composable
+fun progressAlpha(progress: AccountActivity.Progress): Float {
+    val progressAlpha by animateFloatAsState(
+        when (progress) {
+            AccountActivity.Progress.Active -> 1f
+            AccountActivity.Progress.Pending -> 0.5f
+            AccountActivity.Progress.Idle -> 0f
+        },
+        label = "progressAlpha",
+        animationSpec = tween(500)
+    )
+    return progressAlpha
 }

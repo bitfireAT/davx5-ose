@@ -23,10 +23,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -39,10 +37,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.IconToggleButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -67,6 +63,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -87,6 +84,7 @@ import at.bitfire.davdroid.syncadapter.BaseSyncWorker
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.ui.account.progressAlpha
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
@@ -220,7 +218,7 @@ class AccountsActivity: AppCompatActivity() {
 
                             // account list
                             AccountList(
-                                accounts = accounts ?: emptyList(),
+                                accounts = accounts ?: emptyMap(),
                                 onClickAccount = { account ->
                                     val activity = this@AccountsActivity
                                     val intent = Intent(activity, AccountActivity::class.java)
@@ -253,28 +251,6 @@ class AccountsActivity: AppCompatActivity() {
         // handle "Sync all" intent from launcher shortcut
         if (savedInstanceState == null && intent.action == Intent.ACTION_SYNC)
             model.syncAllAccounts()
-    }
-
-    @Composable
-    private fun snackbarHost(
-        snackbarHostState: SnackbarHostState,
-        scope: CoroutineScope
-    ): @Composable (SnackbarHostState) -> Unit = {
-        SnackbarHost(snackbarHostState)
-        model.syncEnqueued.observeAsState().value?.let { enqueued ->
-            if (enqueued)
-                scope.launch {
-                    val msg = getString(
-                        if (warnings.networkAvailable.value == true)
-                            R.string.sync_started
-                        else
-                            R.string.no_internet_sync_scheduled
-                    )
-                    snackbarHostState.showSnackbar(msg)
-                }
-            // reset feedback
-            model.syncEnqueued.value = null
-        }
     }
 
     @Composable
@@ -330,28 +306,20 @@ class AccountsActivity: AppCompatActivity() {
     }
 
 
-    data class AccountInfo(
-        val account: Account,
-        val isRefreshing: Boolean,
-        val isSyncing: Boolean
-    )
-
     @HiltViewModel
     class Model @Inject constructor(
         application: Application,
         val db: AppDatabase
     ): AndroidViewModel(application), OnAccountsUpdateListener {
 
-        val syncEnqueued = MutableLiveData<Boolean>()
-
         val accountManager = AccountManager.get(application)
         private val accountType = application.getString(R.string.account_type)
 
         val workManager = WorkManager.getInstance(application)
-        val runningWorkers = workManager.getWorkInfosLiveData(WorkQuery.fromStates(WorkInfo.State.RUNNING))
+        val runningWorkers = workManager.getWorkInfosLiveData(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
 
         val accounts = MutableLiveData<Set<Account>>()
-        val accountInfos = object: MediatorLiveData<List<AccountInfo>>() {
+        val accountInfos = object: MediatorLiveData<Map<Account, AccountActivity.Progress>>() {
             var myAccounts: Set<Account> = emptySet()
             var workInfos: List<WorkInfo> = emptyList()
             init {
@@ -368,23 +336,28 @@ class AccountsActivity: AppCompatActivity() {
                 val authorities = SyncUtils.syncAuthorities(application)
                 val collator = Collator.getInstance()
                 postValue(myAccounts
-                    .toList()
                     .sortedWith { a, b -> collator.compare(a.name, b.name) }
-                    .map { account ->
+                    .associateWith { account ->
                         val services = db.serviceDao().getIdsByAccount(account.name)
-                        AccountInfo(
-                            account = account,
-                            isRefreshing = workInfos.any { info ->
-                                services.any { serviceId ->
-                                    info.tags.contains(RefreshCollectionsWorker.workerName(serviceId))
+                        when {
+                            workInfos.any { info ->
+                                info.state == WorkInfo.State.RUNNING && (
+                                    services.any { serviceId ->
+                                        info.tags.contains(RefreshCollectionsWorker.workerName(serviceId))
+                                    } || authorities.any { authority ->
+                                        info.tags.contains(BaseSyncWorker.commonTag(account, authority))
+                                    }
+                                )
+                            } -> AccountActivity.Progress.Active
+
+                            workInfos.any { info ->
+                                info.state == WorkInfo.State.ENQUEUED && authorities.any { authority ->
+                                    info.tags.contains(OneTimeSyncWorker.workerName(account, authority))
                                 }
-                            },
-                            isSyncing = workInfos.any { info ->
-                                authorities.any { authority ->
-                                    info.tags.contains(BaseSyncWorker.commonTag(account, authority))
-                                }
-                            }
-                        )
+                            } -> AccountActivity.Progress.Pending
+
+                            else -> AccountActivity.Progress.Idle
+                        }
                     })
             }
         }
@@ -409,8 +382,6 @@ class AccountsActivity: AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= 25)
                 context.getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
 
-            syncEnqueued.value = true
-
             // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
             for (account in allAccounts())
                 OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
@@ -429,7 +400,7 @@ class AccountsActivity: AppCompatActivity() {
 
 @Composable
 fun AccountList(
-    accounts: List<AccountsActivity.AccountInfo>,
+    accounts: Map<Account, AccountActivity.Progress>,
     modifier: Modifier = Modifier,
     onClickAccount: (Account) -> Unit = {}
 ) {
@@ -449,23 +420,35 @@ fun AccountList(
             )
         }
     else
-        for (account in accounts)
+        for ((account, progress) in accounts)
             Card(
                 backgroundColor = MaterialTheme.colors.secondaryVariant,
                 contentColor = MaterialTheme.colors.onSecondary,
                 modifier = Modifier
-                    .clickable { onClickAccount(account.account) }
+                    .clickable { onClickAccount(account) }
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
                 Column {
-                    if (account.isRefreshing || account.isSyncing)
-                        LinearProgressIndicator(
-                            color = MaterialTheme.colors.onSecondary,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    else
-                        Spacer(Modifier.height(ProgressIndicatorDefaults.StrokeWidth))
+                    val progressAlpha = progressAlpha(progress)
+                    when (progress) {
+                        AccountActivity.Progress.Active ->
+                            LinearProgressIndicator(
+                                color = MaterialTheme.colors.onSecondary,
+                                modifier = Modifier
+                                    .alpha(progressAlpha)
+                                    .fillMaxWidth()
+                            )
+                        AccountActivity.Progress.Pending,
+                        AccountActivity.Progress.Idle ->
+                            LinearProgressIndicator(
+                                progress = 1f,
+                                color = MaterialTheme.colors.onSecondary,
+                                modifier = Modifier
+                                    .alpha(progressAlpha)
+                                    .fillMaxWidth()
+                            )
+                    }
 
                     Column(Modifier.padding(8.dp)) {
                         Icon(
@@ -477,7 +460,7 @@ fun AccountList(
                         )
 
                         Text(
-                            text = account.account.name,
+                            text = account.name,
                             style = MaterialTheme.typography.h5,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
@@ -493,31 +476,31 @@ fun AccountList(
 @Composable
 @Preview
 fun AccountList_Preview_Idle() {
-    AccountList(listOf(
-        AccountsActivity.AccountInfo(
-            Account("Account Name", "test"),
-            isRefreshing = false,
-            isSyncing = false
-        )
+    AccountList(mapOf(
+        Account("Account Name", "test") to AccountActivity.Progress.Idle
     ))
 }
 
 @Composable
 @Preview
-fun AccountList_Preview_IsSyncing() {
-    AccountList(listOf(
-        AccountsActivity.AccountInfo(
-            Account("Account Name", "test"),
-            isRefreshing = false,
-            isSyncing = true
-        )
+fun AccountList_Preview_SyncPending() {
+    AccountList(mapOf(
+        Account("Account Name", "test") to AccountActivity.Progress.Pending
+    ))
+}
+
+@Composable
+@Preview
+fun AccountList_Preview_Syncing() {
+    AccountList(mapOf(
+        Account("Account Name", "test") to AccountActivity.Progress.Active
     ))
 }
 
 @Composable
 @Preview
 fun AccountList_Preview_Empty() {
-    AccountList(listOf())
+    AccountList(emptyMap())
 }
 
 
