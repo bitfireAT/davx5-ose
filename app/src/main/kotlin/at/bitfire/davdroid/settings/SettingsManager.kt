@@ -178,6 +178,8 @@ class SettingsManager internal constructor(
     inner class SettingLiveData<T>(
         val getValueOrNull: () -> T?
     ): LiveData<T>(), OnChangeListener {
+        private var hasValue = false
+
         override fun onActive() {
             addOnChangeListener(this)
             update()
@@ -194,7 +196,7 @@ class SettingsManager internal constructor(
         @Synchronized
         private fun update() {
             val newValue = getValueOrNull()
-            if (value != newValue)
+            if (!hasValue || value != newValue)
                 postValue(newValue)
         }
     }
