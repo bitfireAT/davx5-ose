@@ -16,8 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -38,8 +36,6 @@ fun PasswordTextField(
     isError: Boolean = false
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
-
-    LocalFocusManager.current.moveFocus(FocusDirection.Down)
 
     OutlinedTextField(
         value = password,
