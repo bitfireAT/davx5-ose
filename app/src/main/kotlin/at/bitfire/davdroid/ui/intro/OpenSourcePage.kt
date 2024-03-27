@@ -21,7 +21,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -68,13 +68,11 @@ class OpenSourcePage : IntroPage {
 
     @Composable
     private fun Page(model: Model = viewModel()) {
-        val dontShow by produceState(false) {
-            value = model.dontShow
-        }
+        val dontShow by model.dontShow.observeAsState(false)
         PageContent(
             dontShow = dontShow,
             onChangeDontShow = {
-                model.dontShow = it
+                model.setDontShow(it)
             }
         )
     }
@@ -149,15 +147,14 @@ class OpenSourcePage : IntroPage {
             const val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"
         }
 
-        var dontShow: Boolean
-            get() = settings.containsKey(SETTING_NEXT_DONATION_POPUP)
-            set(dontShowAgain) {
-                if (dontShowAgain) {
-                    val nextReminder = System.currentTimeMillis() + 90*86400000L     // 90 days (~ 3 months)
-                    settings.putLong(SETTING_NEXT_DONATION_POPUP, nextReminder)
-                } else
-                    settings.remove(SETTING_NEXT_DONATION_POPUP)
-            }
+        val dontShow = settings.containsKeyLive(SETTING_NEXT_DONATION_POPUP)
+        fun setDontShow(dontShowAgain: Boolean) {
+            if (dontShowAgain) {
+                val nextReminder = System.currentTimeMillis() + 90*86400000L     // 90 days (~ 3 months)
+                settings.putLong(SETTING_NEXT_DONATION_POPUP, nextReminder)
+            } else
+                settings.remove(SETTING_NEXT_DONATION_POPUP)
+        }
 
     }
 
