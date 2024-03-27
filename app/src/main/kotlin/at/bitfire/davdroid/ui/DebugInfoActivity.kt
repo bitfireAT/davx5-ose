@@ -92,15 +92,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okhttp3.HttpUrl
-import org.apache.commons.io.ByteOrderMark
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
-import org.apache.commons.lang3.StringUtils
-import org.apache.commons.lang3.exception.ExceptionUtils
-import org.dmfs.tasks.contract.TaskContract
 import java.io.File
 import java.io.IOError
 import java.io.IOException
@@ -111,6 +102,15 @@ import java.util.logging.Level
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.HttpUrl
+import org.apache.commons.io.ByteOrderMark
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
+import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.exception.ExceptionUtils
+import org.dmfs.tasks.contract.TaskContract
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
@@ -201,8 +201,7 @@ class DebugInfoActivity : AppCompatActivity() {
                     },
                     topBar = {
                         BasicTopAppBar(
-                            titleStringRes = R.string.debug_info_title,
-                            parentActivity = AppSettingsActivity::class
+                            titleStringRes = R.string.debug_info_title
                         )
                     }
                 ) { paddingValues ->

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui
 
-import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -22,14 +21,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -41,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.MutableLiveData
@@ -62,9 +58,9 @@ import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class TasksActivity: AppCompatActivity() {
@@ -75,7 +71,7 @@ class TasksActivity: AppCompatActivity() {
 
         setContent {
             AppTheme {
-                TasksCard(model = model)
+                TasksCard(model = model, onSupportNavigateUp = ::onSupportNavigateUp)
             }
         }
     }
@@ -151,7 +147,8 @@ class TasksActivity: AppCompatActivity() {
 @Composable
 fun TasksCard(
     modifier: Modifier = Modifier,
-    model: TasksActivity.Model = viewModel()
+    model: TasksActivity.Model = viewModel(),
+    onSupportNavigateUp: () -> Unit
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -193,9 +190,9 @@ fun TasksCard(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            (context as? Activity)?.BasicTopAppBar(
+            BasicTopAppBar(
                 titleStringRes = R.string.intro_tasks_title,
-                parentActivity = AppSettingsActivity::class
+                onSupportNavigateUp = onSupportNavigateUp
             )
         }
     ) { paddingValues ->

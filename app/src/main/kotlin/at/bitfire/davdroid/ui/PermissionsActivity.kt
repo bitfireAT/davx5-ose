@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui
 
 import android.Manifest
-import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
@@ -25,7 +24,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -61,8 +59,7 @@ class PermissionsActivity: AppCompatActivity() {
                 Scaffold(
                     topBar = {
                         BasicTopAppBar(
-                            titleStringRes = R.string.app_settings_security_app_permissions,
-                            parentActivity = AppSettingsActivity::class
+                            titleStringRes = R.string.app_settings_security_app_permissions
                         )
                     }
                 ) { paddingValues ->
