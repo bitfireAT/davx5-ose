@@ -100,7 +100,7 @@ fun AccountDetailsPage(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AccountDetailsPage_Content(
-    suggestedAccountNames: List<String>?,
+    suggestedAccountNames: List<String>,
     accountName: String,
     onUpdateAccountName: (String) -> Unit = {},
     groupMethod: GroupMethod,
@@ -127,18 +127,19 @@ fun AccountDetailsPage_Content(
                         keyboardType = KeyboardType.Email
                     ),
                     trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = expanded
-                        )
+                        if (suggestedAccountNames.isNotEmpty())
+                            ExposedDropdownMenuDefaults.TrailingIcon(
+                                expanded = expanded
+                            )
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    if (suggestedAccountNames != null)
+                if (suggestedAccountNames.isNotEmpty())
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
                         for (name in suggestedAccountNames)
                             Text(
                                 name,
@@ -150,7 +151,7 @@ fun AccountDetailsPage_Content(
                                         expanded = false
                                     }
                             )
-                }
+                    }
             }
 
             // apostrophe warning
