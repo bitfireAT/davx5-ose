@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primaryColor">#7cb342</color>
+    <color name="primaryLightColor">#aee571</color>
+    <color name="primaryDarkColor">#4b830d</color>
 
     <color name="accounts_background_blue">#2196f3</color>
     <color name="accounts_background_teal">#80deea</color>

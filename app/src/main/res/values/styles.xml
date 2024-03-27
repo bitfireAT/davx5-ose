@@ -8,6 +8,15 @@
 
 <resources>
 
+    <!-- app theme -->
+
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- see https://github.com/material-components/material-components-android/blob/master/docs/theming/Color.md for component color names -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>       <!-- additionally required for AppCompatActivity -->
+        <item name="colorPrimaryVariant">@color/primaryLightColor</item>
+    </style>
+
     <!-- stepper (wizard) -->
 
     <style name="stepper_nav_bar">
