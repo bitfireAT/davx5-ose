@@ -1,8 +1,5 @@
 package at.bitfire.davdroid.ui
 
-import androidx.activity.SystemBarStyle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.imePadding
@@ -12,10 +9,8 @@ import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
@@ -67,22 +62,9 @@ private val colorsLight = Colors(
 
 @Composable
 fun AppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val context = LocalContext.current
-
     val colors = if (darkTheme) colorsDark else colorsLight
 
-    LaunchedEffect(context, colors) {
-        (context as? AppCompatActivity)?.enableEdgeToEdge(
-            navigationBarStyle = SystemBarStyle.dark(
-                scrim = Color.Black.toArgb()
-            ),
-            statusBarStyle = SystemBarStyle.dark(
-                scrim = primaryDarkGreen.toArgb()
-            )
-        )
-    }
-
-    CompositionLocalProvider(LocalUriHandler provides SafeAndroidUriHandler(context)) {
+    CompositionLocalProvider(LocalUriHandler provides SafeAndroidUriHandler(LocalContext.current)) {
         Box(
             modifier = Modifier
                 .imePadding()
