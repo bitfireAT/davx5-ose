@@ -15,13 +15,13 @@ import at.bitfire.davdroid.R
 @Composable
 fun BasicTopAppBar(
     @StringRes titleStringRes: Int,
-    onSupportNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit
 ) {
     TopAppBar(
         title = { Text(stringResource(titleStringRes)) },
         navigationIcon = {
             IconButton(
-                onClick = onSupportNavigateUp
+                onClick = onNavigateUp
             ) {
                 Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
             }
@@ -31,5 +31,8 @@ fun BasicTopAppBar(
 
 @Composable
 fun AppCompatActivity.BasicTopAppBar(@StringRes titleStringRes: Int) {
-    BasicTopAppBar(titleStringRes, ::onSupportNavigateUp)
+    BasicTopAppBar(
+        titleStringRes = titleStringRes,
+        onNavigateUp = ::onSupportNavigateUp
+    )
 }

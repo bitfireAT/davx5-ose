@@ -10,9 +10,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,7 +24,6 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -58,20 +57,30 @@ import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TasksActivity: AppCompatActivity() {
-    val model: Model by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             AppTheme {
-                TasksCard(model = model, onSupportNavigateUp = ::onSupportNavigateUp)
+                Scaffold(
+                    topBar = {
+                        BasicTopAppBar(
+                            titleStringRes = R.string.intro_tasks_title,
+                            onNavigateUp = ::onSupportNavigateUp
+                        )
+                    }
+                ) { paddingValues ->
+                    Box(Modifier.padding(paddingValues)) {
+                        TasksCard()
+                    }
+                }
             }
         }
     }
@@ -146,9 +155,7 @@ class TasksActivity: AppCompatActivity() {
 
 @Composable
 fun TasksCard(
-    modifier: Modifier = Modifier,
-    model: TasksActivity.Model = viewModel(),
-    onSupportNavigateUp: (() -> Unit)?
+    model: TasksActivity.Model = viewModel()
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -186,118 +193,105 @@ fun TasksCard(
             model.selectProvider(provider)
     }
 
-    Scaffold(
-        modifier = modifier,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            onSupportNavigateUp?.let {
-                BasicTopAppBar(
-                    titleStringRes = R.string.intro_tasks_title,
-                    onSupportNavigateUp = onSupportNavigateUp
-                )
-            }
-        }
-    ) { paddingValues ->
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(8.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        CardWithImage(
+            image = painterResource(R.drawable.intro_tasks),
+            imageAlignment = BiasAlignment(0f, .1f),
+            title = stringResource(R.string.intro_tasks_title),
+            message = stringResource(R.string.intro_tasks_text1),
             modifier = Modifier
-                .fillMaxHeight()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp)
         ) {
-            CardWithImage(
-                image = painterResource(R.drawable.intro_tasks),
-                imageAlignment = BiasAlignment(0f, .1f),
-                title = stringResource(R.string.intro_tasks_title),
-                message = stringResource(R.string.intro_tasks_text1),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp)
-            ) {
-                RadioWithSwitch(
-                    title = stringResource(R.string.intro_tasks_jtx),
-                    summary = {
-                        Text(stringResource(R.string.intro_tasks_jtx_info))
-                    },
-                    isSelected = jtxSelected,
-                    isToggled = jtxInstalled,
-                    enabled = jtxInstalled,
-                    onSelected = { onProviderSelected(TaskProvider.ProviderName.JtxBoard) },
-                    onToggled = { toggled ->
-                        if (toggled) installApp(TaskProvider.ProviderName.JtxBoard.packageName)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp)
-                )
-
-                RadioWithSwitch(
-                    title = stringResource(R.string.intro_tasks_tasks_org),
-                    summary = {
-                        val summary = HtmlCompat.fromHtml(
-                            stringResource(R.string.intro_tasks_tasks_org_info),
-                            HtmlCompat.FROM_HTML_MODE_COMPACT
-                        ).toAnnotatedString()
-                        ClickableTextWithLink(summary)
-                    },
-                    isSelected = tasksOrgSelected,
-                    isToggled = tasksOrgInstalled,
-                    enabled = tasksOrgInstalled,
-                    onSelected = { onProviderSelected(TaskProvider.ProviderName.TasksOrg) },
-                    onToggled = { toggled ->
-                        if (toggled) installApp(TaskProvider.ProviderName.TasksOrg.packageName)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp)
-                )
-
-                RadioWithSwitch(
-                    title = stringResource(R.string.intro_tasks_opentasks),
-                    summary = {
-                        Text(stringResource(R.string.intro_tasks_opentasks_info))
-                    },
-                    isSelected = openTasksSelected,
-                    isToggled = openTasksInstalled,
-                    enabled = openTasksInstalled,
-                    onSelected = { onProviderSelected(TaskProvider.ProviderName.OpenTasks) },
-                    onToggled = { toggled ->
-                        if (toggled) installApp(TaskProvider.ProviderName.OpenTasks.packageName)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp)
-                )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp)
-                ) {
-                    Checkbox(
-                        checked = !showAgain,
-                        onCheckedChange = { model.setShowAgain(!it) }
-                    )
-                    Text(
-                        text = stringResource(R.string.intro_tasks_dont_show),
-                        style = MaterialTheme.typography.body2,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { model.setShowAgain(!showAgain) }
-                    )
-                }
-            }
-
-            Text(
-                text = stringResource(
-                    R.string.intro_leave_unchecked,
-                    stringResource(R.string.app_settings_reset_hints)
-                ),
-                style = MaterialTheme.typography.caption,
+            RadioWithSwitch(
+                title = stringResource(R.string.intro_tasks_jtx),
+                summary = {
+                    Text(stringResource(R.string.intro_tasks_jtx_info))
+                },
+                isSelected = jtxSelected,
+                isToggled = jtxInstalled,
+                enabled = jtxInstalled,
+                onSelected = { onProviderSelected(TaskProvider.ProviderName.JtxBoard) },
+                onToggled = { toggled ->
+                    if (toggled) installApp(TaskProvider.ProviderName.JtxBoard.packageName)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .padding(vertical = 12.dp)
             )
+
+            RadioWithSwitch(
+                title = stringResource(R.string.intro_tasks_tasks_org),
+                summary = {
+                    val summary = HtmlCompat.fromHtml(
+                        stringResource(R.string.intro_tasks_tasks_org_info),
+                        HtmlCompat.FROM_HTML_MODE_COMPACT
+                    ).toAnnotatedString()
+                    ClickableTextWithLink(summary)
+                },
+                isSelected = tasksOrgSelected,
+                isToggled = tasksOrgInstalled,
+                enabled = tasksOrgInstalled,
+                onSelected = { onProviderSelected(TaskProvider.ProviderName.TasksOrg) },
+                onToggled = { toggled ->
+                    if (toggled) installApp(TaskProvider.ProviderName.TasksOrg.packageName)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp)
+            )
+
+            RadioWithSwitch(
+                title = stringResource(R.string.intro_tasks_opentasks),
+                summary = {
+                    Text(stringResource(R.string.intro_tasks_opentasks_info))
+                },
+                isSelected = openTasksSelected,
+                isToggled = openTasksInstalled,
+                enabled = openTasksInstalled,
+                onSelected = { onProviderSelected(TaskProvider.ProviderName.OpenTasks) },
+                onToggled = { toggled ->
+                    if (toggled) installApp(TaskProvider.ProviderName.OpenTasks.packageName)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp)
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp)
+            ) {
+                Checkbox(
+                    checked = !showAgain,
+                    onCheckedChange = { model.setShowAgain(!it) }
+                )
+                Text(
+                    text = stringResource(R.string.intro_tasks_dont_show),
+                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { model.setShowAgain(!showAgain) }
+                )
+            }
         }
+
+        Text(
+            text = stringResource(
+                R.string.intro_leave_unchecked,
+                stringResource(R.string.app_settings_reset_hints)
+            ),
+            style = MaterialTheme.typography.body2,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+        )
     }
 }
