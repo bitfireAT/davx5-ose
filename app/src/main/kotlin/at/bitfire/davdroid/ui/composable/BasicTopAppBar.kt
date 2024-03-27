@@ -27,7 +27,7 @@ fun Activity.BasicTopAppBar(@StringRes titleStringRes: Int, parentActivity: KCla
                     startActivity(Intent(this, parentActivity.java))
                 }
             ) {
-                Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
+                Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
             }
         }
     )
