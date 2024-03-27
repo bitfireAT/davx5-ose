@@ -22,9 +22,9 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.syncadapter.BaseSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
