@@ -27,7 +27,7 @@ private val grey1000 = Color(0xff121212)
 private val red700 = Color(0xffd32f2f)
 
 val primaryGreen = Color(0xff7cb342)
-val primaryDarkGreen = Color(0xff4b830d)
+val primaryDarkGreen = Color(0xff000000)
 val onPrimaryGreen = Color(0xfffafafa)
 val secondaryOrange = Color(0xffff6d00)
 val secondaryLightOrange = Color(0xffff9e40)
