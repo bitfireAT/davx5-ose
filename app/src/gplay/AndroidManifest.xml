@@ -5,7 +5,6 @@
 
         <activity
             android:name="at.bitfire.davdroid.ui.EarnBadgesActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
             android:parentActivityName=".ui.account.AccountActivity"/>
 
