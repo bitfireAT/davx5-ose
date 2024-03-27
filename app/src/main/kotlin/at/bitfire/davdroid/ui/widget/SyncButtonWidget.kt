@@ -27,8 +27,8 @@ import androidx.glance.text.TextDefaults
 import androidx.glance.unit.ColorProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
-import at.bitfire.davdroid.ui.onPrimaryGreen
-import at.bitfire.davdroid.ui.primaryGreen
+import at.bitfire.davdroid.ui.ThemeColors.onPrimary
+import at.bitfire.davdroid.ui.ThemeColors.primary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,7 +48,7 @@ class SyncButtonWidget : GlanceAppWidget() {
         Row(
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .background(primaryGreen)
+                .background(primary)
                 .cornerRadius(16.dp)
                 .padding(4.dp)
                 .clickable {
@@ -62,7 +62,7 @@ class SyncButtonWidget : GlanceAppWidget() {
                 modifier = GlanceModifier
                     .padding(vertical = 8.dp, horizontal = 8.dp)
                     .size(32.dp),
-                colorFilter = ColorFilter.tint(ColorProvider(onPrimaryGreen))
+                colorFilter = ColorFilter.tint(ColorProvider(onPrimary))
             )
             Text(
                 text = context.getString(R.string.widget_sync_all),
@@ -70,7 +70,7 @@ class SyncButtonWidget : GlanceAppWidget() {
                     .defaultWeight()
                     .padding(end = 8.dp),
                 style = TextDefaults.defaultTextStyle.copy(
-                    color = ColorProvider(onPrimaryGreen),
+                    color = ColorProvider(onPrimary),
                     fontSize = 16.sp
                 )
             )

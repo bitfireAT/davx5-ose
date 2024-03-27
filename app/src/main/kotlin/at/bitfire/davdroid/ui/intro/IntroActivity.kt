@@ -27,7 +27,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.AndroidViewModel
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.AppTheme
-import at.bitfire.davdroid.ui.primaryDarkGreen
+import at.bitfire.davdroid.ui.ThemeColors
 import com.github.appintro.AppIntro2
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -73,7 +73,7 @@ class IntroActivity : AppIntro2() {
             })
         }
 
-        setBarColor(primaryDarkGreen.toArgb())
+        setBarColor(ThemeColors.primaryDark.toArgb())
         isSkipButtonEnabled = false
 
         onBackPressedDispatcher.addCallback(this) {
