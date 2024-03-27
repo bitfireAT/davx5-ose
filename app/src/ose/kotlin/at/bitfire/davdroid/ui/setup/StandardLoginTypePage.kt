@@ -66,6 +66,7 @@ fun LoginTypeSelector(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .clickable(onClick = onSelect)
+                .padding(bottom = 4.dp)
         ) {
             RadioButton(
                 selected = selected,
