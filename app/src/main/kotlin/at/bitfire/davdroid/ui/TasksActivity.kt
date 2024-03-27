@@ -148,7 +148,7 @@ class TasksActivity: AppCompatActivity() {
 fun TasksCard(
     modifier: Modifier = Modifier,
     model: TasksActivity.Model = viewModel(),
-    onSupportNavigateUp: () -> Unit
+    onSupportNavigateUp: (() -> Unit)?
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -190,10 +190,12 @@ fun TasksCard(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            BasicTopAppBar(
-                titleStringRes = R.string.intro_tasks_title,
-                onSupportNavigateUp = onSupportNavigateUp
-            )
+            onSupportNavigateUp?.let {
+                BasicTopAppBar(
+                    titleStringRes = R.string.intro_tasks_title,
+                    onSupportNavigateUp = onSupportNavigateUp
+                )
+            }
         }
     ) { paddingValues ->
         Column(

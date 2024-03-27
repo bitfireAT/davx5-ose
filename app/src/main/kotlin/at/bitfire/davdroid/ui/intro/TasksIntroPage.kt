@@ -5,9 +5,7 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.TasksActivity
@@ -37,12 +35,9 @@ class TasksIntroPage : IntroPage {
 
     @Composable
     override fun ComposePage() {
-        val context = LocalContext.current
         TasksCard(
             model = viewModel<TasksActivity.Model>(),
-            onSupportNavigateUp = {
-                (context as? AppCompatActivity)?.onSupportNavigateUp()
-            }
+            onSupportNavigateUp = null
         )
     }
 
