@@ -15,8 +15,8 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl

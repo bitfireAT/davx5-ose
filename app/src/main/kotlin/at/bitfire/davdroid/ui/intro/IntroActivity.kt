@@ -18,16 +18,16 @@ import androidx.annotation.WorkerThread
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.dimensionResource
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.AndroidViewModel
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.ThemeColors
 import com.github.appintro.AppIntro2
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -73,7 +73,7 @@ class IntroActivity : AppIntro2() {
             })
         }
 
-        setBarColor(ResourcesCompat.getColor(resources, R.color.primaryDarkColor, null))
+        setBarColor(ThemeColors.primaryDark.toArgb())
         isSkipButtonEnabled = false
 
         onBackPressedDispatcher.addCallback(this) {

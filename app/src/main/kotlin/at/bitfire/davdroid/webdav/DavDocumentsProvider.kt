@@ -20,7 +20,10 @@ import android.os.Build
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import android.os.storage.StorageManager
-import android.provider.DocumentsContract.*
+import android.provider.DocumentsContract.Document
+import android.provider.DocumentsContract.Root
+import android.provider.DocumentsContract.buildChildDocumentsUri
+import android.provider.DocumentsContract.buildRootsUri
 import android.provider.DocumentsProvider
 import android.webkit.MimeTypeMap
 import androidx.annotation.WorkerThread
@@ -29,7 +32,6 @@ import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.dav4jvm.property.*
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GetContentLength
@@ -68,7 +70,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.net.HttpURLConnection
-import java.util.concurrent.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 
 /**

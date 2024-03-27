@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,6 +40,7 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.composable.BasicTopAppBar
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
@@ -54,7 +56,15 @@ class PermissionsActivity: AppCompatActivity() {
 
         setContent {
             AppTheme {
-                PermissionsContent(model)
+                Scaffold(
+                    topBar = {
+                        BasicTopAppBar(
+                            titleStringRes = R.string.app_settings_security_app_permissions
+                        )
+                    }
+                ) { paddingValues ->
+                    PermissionsContent(modifier = Modifier.padding(paddingValues), model)
+                }
             }
         }
     }
@@ -107,7 +117,10 @@ class PermissionsActivity: AppCompatActivity() {
 
 
 @Composable
-fun PermissionsContent(model: PermissionsActivity.Model = viewModel()) {
+fun PermissionsContent(
+    modifier: Modifier = Modifier,
+    model: PermissionsActivity.Model = viewModel()
+) {
     val context = LocalContext.current
 
     val keepPermissions by model.needKeepPermissions.observeAsState()
@@ -116,7 +129,7 @@ fun PermissionsContent(model: PermissionsActivity.Model = viewModel()) {
     val jtxAvailable by model.jtxAvailable.observeAsState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {

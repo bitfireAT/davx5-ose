@@ -24,7 +24,6 @@ import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import ezvcard.Ezvcard
-import org.apache.commons.lang3.StringUtils
 import java.io.FileNotFoundException
 import java.util.UUID
 

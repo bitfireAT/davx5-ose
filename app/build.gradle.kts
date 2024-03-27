@@ -162,7 +162,6 @@ dependencies {
 
     // Jetpack Compose
     implementation(libs.compose.accompanist.permissions)
-    implementation(libs.compose.accompanist.themeAdapter)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.material)
     implementation(libs.compose.materialIconsExtended)
