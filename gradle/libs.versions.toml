@@ -36,10 +36,10 @@ commons-lang = "3.14.0"
 commons-io = "2.8.0"
 commons-text = "1.11.0"
 compose-accompanist = "0.34.0"
-compose-bom = "2024.02.02"
+compose-bom = "2024.03.00"
 # Keep this in sync with Kotlin version:
 # https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-compose-compiler = "1.5.8"
+compose-compiler = "1.5.11"
 # don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
 dnsjava = "2.1.9"
 glance = "1.0.0"
@@ -47,11 +47,11 @@ hilt = "2.51"
 jaredrummler-colorpicker = "1.1.0"
 #  keep in sync with * app/build.gradle.kts composeOptions.kotlinCompilerExtensionVersion
 #                    * com.google.devtools.ksp at the end of this file
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 kotlinx-coroutines = "1.8.0"
 # see https://github.com/google/ksp/releases for version numbers
-ksp = "1.9.22-1.0.17"
-mikepenz-aboutLibraries = "11.1.0"
+ksp = "1.9.23-1.0.19"
+mikepenz-aboutLibraries = "11.1.1"
 nsk90-kstatemachine = "0.27.0"
 mockk = "1.13.10"
 okhttp = "4.12.0"
