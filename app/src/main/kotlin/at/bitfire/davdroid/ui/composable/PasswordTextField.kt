@@ -30,7 +30,7 @@ import at.bitfire.davdroid.R
 @Composable
 fun PasswordTextField(
     password: String,
-    labelText: String,
+    labelText: String?,
     onPasswordChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -44,7 +44,7 @@ fun PasswordTextField(
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,
-        label = { Text(labelText) },
+        label = { if (labelText != null) Text(labelText) },
         leadingIcon = leadingIcon,
         isError = isError,
         singleLine = true,

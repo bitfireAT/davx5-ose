@@ -415,7 +415,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     if (showUsernameDialog)
                         EditTextInputDialog(
                             title = stringResource(R.string.settings_username),
-                            initialValue = credentials.username ?: "",
+                            initialValue = credentials.username,
                             onValueEntered = { newValue ->
                                 onUpdateCredentials(credentials.copy(username = newValue))
                             },
@@ -436,7 +436,9 @@ class AccountSettingsActivity: AppCompatActivity() {
                     if (showPasswordDialog)
                         EditTextInputDialog(
                             title = stringResource(R.string.settings_password),
-                            initialValue = credentials.password,
+                            inputLabel = stringResource(R.string.settings_new_password),
+                            initialValue = null, // Do not show the existing password
+                            passwordField = true,
                             onValueEntered = { newValue ->
                                 onUpdateCredentials(credentials.copy(password = newValue))
                             },
