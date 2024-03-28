@@ -339,6 +339,7 @@
     <string name="settings_oauth_summary">Perform OAuth login again</string>
     <string name="settings_username">User name</string>
     <string name="settings_password">Password</string>
+    <string name="settings_new_password">New Password</string>
     <string name="settings_password_summary">Update the password according to your server.</string>
     <string name="settings_certificate_alias">Client certificate</string>
     <string name="settings_certificate_alias_empty">No certificate available or selected</string>

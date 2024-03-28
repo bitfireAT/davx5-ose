@@ -435,8 +435,8 @@ class AccountSettingsActivity: AppCompatActivity() {
                     )
                     if (showPasswordDialog)
                         EditTextInputDialog(
-                            title = stringResource(R.string.settings_password),
-                            initialValue = credentials.password,
+                            title = stringResource(R.string.settings_new_password),
+                            initialValue = null, // Do not show the existing password
                             onValueEntered = { newValue ->
                                 onUpdateCredentials(credentials.copy(password = newValue))
                             },
