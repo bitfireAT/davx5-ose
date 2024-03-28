@@ -42,7 +42,9 @@ import androidx.compose.ui.window.Dialog
 fun EditTextInputDialog(
     title: String,
     initialValue: String? = null,
-    keyboardType: KeyboardType = KeyboardType.Text,
+    inputLabel: String? = null,
+    passwordField: Boolean = false,
+    keyboardType: KeyboardType = if (passwordField) KeyboardType.Password else KeyboardType.Text,
     onValueEntered: (String) -> Unit = {},
     onDismiss: () -> Unit = {},
 ) {
@@ -62,22 +64,31 @@ fun EditTextInputDialog(
         },
         text = {
             val focusRequester = remember { FocusRequester() }
-            TextField(
-                value = textValue,
-                onValueChange = { textValue = it },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = keyboardType,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        onValueEntered(textValue.text)
-                        onDismiss()
-                    }
-                ),
-                modifier = Modifier.focusRequester(focusRequester)
-            )
+            if (passwordField)
+                PasswordTextField(
+                    password = textValue.text,
+                    labelText = inputLabel,
+                    onPasswordChange = { textValue = TextFieldValue(it) },
+                    modifier = Modifier.focusRequester(focusRequester)
+                )
+            else
+                TextField(
+                    label = { inputLabel?.let { Text(it) } },
+                    value = textValue,
+                    onValueChange = { textValue = it },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = keyboardType,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            onValueEntered(textValue.text)
+                            onDismiss()
+                        }
+                    ),
+                    modifier = Modifier.focusRequester(focusRequester)
+                )
             LaunchedEffect(Unit) {
                 focusRequester.requestFocus()
             }
@@ -108,7 +119,18 @@ fun EditTextInputDialog(
 fun EditTextInputDialog_Preview() {
     EditTextInputDialog(
         title = "Enter Some Text",
+        inputLabel = "Some Label",
         initialValue = "initial value"
+    )
+}
+
+@Composable
+@Preview
+fun EditTextInputDialog_Preview_Password() {
+    EditTextInputDialog(
+        title = "New Password",
+        passwordField = true,
+        initialValue = "some password"
     )
 }
 
