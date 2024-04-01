@@ -43,7 +43,7 @@ compose-compiler = "1.5.11"
 # don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
 dnsjava = "2.1.9"
 glance = "1.0.0"
-hilt = "2.51"
+hilt = "2.51.1"
 #  keep in sync with * app/build.gradle.kts composeOptions.kotlinCompilerExtensionVersion
 #                    * com.google.devtools.ksp at the end of this file
 kotlin = "1.9.23"
