@@ -33,7 +33,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.ui.widget.ExceptionInfoDialog
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @Composable
 fun DeleteCollectionDialog(
@@ -58,17 +58,18 @@ fun DeleteCollectionDialog(
     }
 
     Dialog(
-        properties = DialogProperties(dismissOnClickOutside =
-            result != null ||       // finished with error message
-            !started                // not started
-        ),
+        properties = DialogProperties(
+            dismissOnClickOutside =
+                result != null ||       // finished with error message
+                !started                // not started
+            ),
         onDismissRequest = ::dismiss
     ) {
         Card {
             DeleteCollectionDialog_Content(
                 collection = collection,
                 started = started,
-                result = result,
+                result = result?.getOrNull(),
                 onDeleteCollection = {
                     started = true
                     model.deleteCollection(collection)
@@ -83,7 +84,7 @@ fun DeleteCollectionDialog(
 fun DeleteCollectionDialog_Content(
     collection: Collection,
     started: Boolean,
-    result: Optional<Exception>?,
+    result: Exception?,
     onDeleteCollection: () -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
@@ -100,14 +101,11 @@ fun DeleteCollectionDialog_Content(
         )
 
         when {
-            result != null -> {
-                val exception = result.get()
-                ExceptionInfoDialog(
-                    exception = exception,
-                    remoteResource = collection.url,
-                    onDismiss = onCancel
-                )
-            }
+            result != null -> ExceptionInfoDialog(
+                exception = result,
+                remoteResource = collection.url,
+                onDismiss = onCancel
+            )
 
             started -> {
                 LinearProgressIndicator(
@@ -202,6 +200,6 @@ fun DeleteCollectionDialog_Preview_Error() {
             url = "https://example.com/calendar".toHttpUrl(),
         ),
         started = true,
-        result = Optional.of(Exception("Test error"))
+        result = Exception("Test error")
     )
 }
