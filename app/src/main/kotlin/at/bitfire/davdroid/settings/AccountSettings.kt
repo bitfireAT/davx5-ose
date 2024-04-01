@@ -141,16 +141,18 @@ class AccountSettings(
     val account: Account
 
     init {
-        when (argAccount.type) {
+        account = when (argAccount.type) {
             context.getString(R.string.account_type_address_book) -> {
                 /* argAccount is an address book account, which is not a main account. However settings are
-                   stored in the main account, so resolve and use the main account instead. */
-                account = LocalAddressBook.mainAccount(context, argAccount)
+                       stored in the main account, so resolve and use the main account instead. */
+                LocalAddressBook.mainAccount(context, argAccount) ?: throw IllegalArgumentException("Main account of $argAccount not found")
             }
+
             context.getString(R.string.account_type) ->
-                account = argAccount
+                argAccount
+
             else ->
-                throw IllegalArgumentException("Account type not supported")
+                throw IllegalArgumentException("Account type ${argAccount.type} not supported")
         }
 
         // synchronize because account migration must only be run one time

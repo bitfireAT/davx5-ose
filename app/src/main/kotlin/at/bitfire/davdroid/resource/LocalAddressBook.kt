@@ -128,19 +128,22 @@ open class LocalAddressBook(
          * Finds and returns the main account of the given address book's account (sub-account)
          *
          * @param account the address book account to find the main account for
-         * @return the associated main account
-         * @throws IllegalArgumentException if the given account is not a address book account or does not have a main account
+         *
+         * @return the associated main account, `null` if none can be found (e.g. when main account has been deleted)
+         *
+         * @throws IllegalArgumentException when [account] is not an address book account
          */
-        fun mainAccount(context: Context, account: Account): Account =
+        fun mainAccount(context: Context, account: Account): Account? =
             if (account.type == context.getString(R.string.account_type_address_book)) {
                 val manager = AccountManager.get(context)
                 val accountName = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
                 val accountType = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
-                if (accountName == null || accountType == null)
-                    throw IllegalArgumentException("Address book account does not have a main account")
-                Account(accountName, accountType)
+                if (accountName != null && accountType != null)
+                    Account(accountName, accountType)
+                else
+                    null
             } else
-                throw IllegalArgumentException("Account is not an address book account")
+                throw IllegalArgumentException("$account is not an address book account")
 
     }
 
@@ -157,7 +160,7 @@ open class LocalAddressBook(
      * but if it is enabled, [findDirty] will find dirty [LocalContact]s and [LocalGroup]s.
      */
     open val groupMethod: GroupMethod by lazy {
-        val accountSettings = AccountSettings(context, mainAccount)
+        val accountSettings = AccountSettings(context, requireMainAccount())
         accountSettings.getGroupMethod()
     }
     val includeGroups
@@ -169,7 +172,7 @@ open class LocalAddressBook(
      *
      * @throws IllegalArgumentException when [account] is not an address book account or when no main account is assigned
      */
-    open var mainAccount: Account
+    open var mainAccount: Account?
         get() {
             _mainAccount?.let { return it }
 
@@ -178,6 +181,9 @@ open class LocalAddressBook(
             return result
         }
         set(newMainAccount) {
+            if (newMainAccount == null)
+                throw IllegalArgumentException("Main account must not be null")
+
             AccountManager.get(context).let { accountManager ->
                 accountManager.setAndVerifyUserData(account, USER_DATA_MAIN_ACCOUNT_NAME, newMainAccount.name)
                 accountManager.setAndVerifyUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE, newMainAccount.type)
@@ -185,6 +191,8 @@ open class LocalAddressBook(
 
             _mainAccount = newMainAccount
         }
+    fun requireMainAccount(): Account =
+        mainAccount ?: throw IllegalArgumentException("No main account assigned to address book $account")
 
     var url: String
         get() = AccountManager.get(context).getUserData(account, USER_DATA_URL)
@@ -236,7 +244,7 @@ open class LocalAddressBook(
      * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
      */
     fun update(info: Collection, forceReadOnly: Boolean) {
-        val newAccountName = accountName(mainAccount, info)
+        val newAccountName = accountName(requireMainAccount(), info)
 
         if (account.name != newAccountName) {
             // no need to re-assign contacts to new account, because they will be deleted by contacts provider in any case

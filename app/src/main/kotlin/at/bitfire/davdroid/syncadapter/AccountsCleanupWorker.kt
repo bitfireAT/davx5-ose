@@ -75,8 +75,9 @@ class AccountsCleanupWorker @AssistedInject constructor(
             .map { addressBookAccount -> LocalAddressBook(context, addressBookAccount, null) }
         for (addressBook in addressBooks) {
             try {
-                if (!mainAccountNames.contains(addressBook.mainAccount.name))
-                // the main account for this address book doesn't exist anymore
+                val mainAccount = addressBook.mainAccount
+                if (mainAccount == null || !mainAccountNames.contains(mainAccount.name))
+                    // the main account for this address book doesn't exist anymore
                     addressBook.delete()
             } catch(e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't delete address book account", e)
