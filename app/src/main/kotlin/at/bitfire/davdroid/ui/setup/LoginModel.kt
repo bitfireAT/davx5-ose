@@ -5,12 +5,15 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.app.Application
 import android.content.ContentResolver
 import android.provider.CalendarContract
 import androidx.core.os.CancellationSignal
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.InvalidAccountException
@@ -74,6 +77,15 @@ class LoginModel @Inject constructor(
         cancellationSignal.setOnCancelListener {
             job.cancel()
         }
+    }
+
+
+    fun accountExists(accountName: String): LiveData<Boolean> = liveData {
+        val accountType = context.getString(R.string.account_type)
+        val exists = AccountManager.get(context)
+            .getAccountsByType(accountType)
+            .contains(Account(accountName, accountType))
+        emit(exists)
     }
 
 
