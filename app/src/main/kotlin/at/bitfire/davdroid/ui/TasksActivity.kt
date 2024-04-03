@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.MutableLiveData
@@ -57,9 +58,9 @@ import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class TasksActivity: AppCompatActivity() {
@@ -193,6 +194,52 @@ fun TasksCard(
             model.selectProvider(provider)
     }
 
+    TasksCardContent(
+        jtxSelected,
+        jtxInstalled,
+        tasksOrgSelected,
+        tasksOrgInstalled,
+        openTasksSelected,
+        openTasksInstalled,
+        showAgain,
+        model::setShowAgain,
+        ::onProviderSelected,
+        ::installApp
+    )
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun TasksCardContent_Preview() {
+    AppTheme {
+        TasksCardContent(
+            jtxSelected = true,
+            jtxInstalled = true,
+            tasksOrgSelected = false,
+            tasksOrgInstalled = false,
+            openTasksSelected = false,
+            openTasksInstalled = false,
+            showAgain = true,
+            onSetShowAgain = {},
+            onProviderSelected = {},
+            installApp = {}
+        )
+    }
+}
+
+@Composable
+fun TasksCardContent(
+    jtxSelected: Boolean,
+    jtxInstalled: Boolean,
+    tasksOrgSelected: Boolean,
+    tasksOrgInstalled: Boolean,
+    openTasksSelected: Boolean,
+    openTasksInstalled: Boolean,
+    showAgain: Boolean,
+    onSetShowAgain: (Boolean) -> Unit,
+    onProviderSelected: (TaskProvider.ProviderName) -> Unit,
+    installApp: (String) -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -271,14 +318,14 @@ fun TasksCard(
             ) {
                 Checkbox(
                     checked = !showAgain,
-                    onCheckedChange = { model.setShowAgain(!it) }
+                    onCheckedChange = { onSetShowAgain(!it) }
                 )
                 Text(
                     text = stringResource(R.string.intro_tasks_dont_show),
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { model.setShowAgain(!showAgain) }
+                        .clickable { onSetShowAgain(!showAgain) }
                 )
             }
         }
