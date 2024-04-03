@@ -82,9 +82,13 @@ class LoginModel @Inject constructor(
 
     fun accountExists(accountName: String): LiveData<Boolean> = liveData {
         val accountType = context.getString(R.string.account_type)
-        val exists = AccountManager.get(context)
-            .getAccountsByType(accountType)
-            .contains(Account(accountName, accountType))
+        val exists =
+            if (accountName.isEmpty())
+                false
+            else
+                AccountManager.get(context)
+                    .getAccountsByType(accountType)
+                    .contains(Account(accountName, accountType))
         emit(exists)
     }
 
