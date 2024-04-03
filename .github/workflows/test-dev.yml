@@ -45,7 +45,7 @@ jobs:
 
   test_on_emulator:
     name: Tests with emulator
-    runs-on: ubuntu-latest-4-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
