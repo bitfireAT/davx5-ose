@@ -251,9 +251,7 @@ object LoginTypeNextcloud : LoginType {
 
             // send POST request and process JSON reply
             try {
-                val json = withContext(Dispatchers.IO) {
-                    postForJson(v2Url, "".toRequestBody())
-                }
+                val json = postForJson(v2Url, "".toRequestBody())
 
                 // login URL
                 loginUrl = json.getString("login")
@@ -288,9 +286,8 @@ object LoginTypeNextcloud : LoginType {
             val token = token ?: return@launch
 
             try {
-                val json = withContext(Dispatchers.IO) {
-                    postForJson(pollUrl, "token=$token".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
-                }
+                inProgress = true
+                val json = postForJson(pollUrl, "token=$token".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
                 val serverUrl = json.getString("server")
                 val loginName = json.getString("loginName")
                 val appPassword = json.getString("appPassword")
@@ -305,6 +302,8 @@ object LoginTypeNextcloud : LoginType {
             } catch (e: Exception) {
                 Logger.log.log(Level.WARNING, "Polling login URL failed", e)
                 error = context.getString(R.string.login_nextcloud_login_flow_no_login_data)
+            } finally {
+                inProgress = false
             }
         }
 
@@ -315,7 +314,7 @@ object LoginTypeNextcloud : LoginType {
 
 
         @WorkerThread
-        private suspend fun postForJson(url: HttpUrl, requestBody: RequestBody): JSONObject {
+        private suspend fun postForJson(url: HttpUrl, requestBody: RequestBody): JSONObject = withContext(Dispatchers.IO) {
             val postRq = Request.Builder()
                 .url(url)
                 .post(requestBody)
@@ -333,7 +332,7 @@ object LoginTypeNextcloud : LoginType {
                     throw DavException("Invalid Login Flow response (not JSON)")
 
                 // decode JSON
-                return JSONObject(body.string())
+                return@withContext JSONObject(body.string())
             }
 
             throw DavException("Invalid Login Flow response (no body)")
