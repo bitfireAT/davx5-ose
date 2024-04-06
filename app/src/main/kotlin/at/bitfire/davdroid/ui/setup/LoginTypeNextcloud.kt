@@ -63,6 +63,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import at.bitfire.davdroid.ui.composable.Assistant
+import at.bitfire.davdroid.ui.setup.LoginTypeNextcloud.DAV_PATH
 import at.bitfire.davdroid.ui.setup.LoginTypeNextcloud.LOGIN_FLOW_V1_PATH
 import at.bitfire.davdroid.ui.setup.LoginTypeNextcloud.LOGIN_FLOW_V2_PATH
 import at.bitfire.vcard4android.GroupMethod
@@ -107,7 +108,7 @@ object LoginTypeNextcloud : LoginType {
     @Composable
     override fun Content(
         snackbarHostState: SnackbarHostState,
-        loginInfo: LoginInfo,
+        loginInfo: LoginInfo,       // initial login info, may contain entry URL
         onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
         onDetectResources: () -> Unit,
         onFinish: () -> Unit
@@ -115,15 +116,17 @@ object LoginTypeNextcloud : LoginType {
         val context = LocalContext.current
         val locale = Locale.current
         val scope = rememberCoroutineScope()
-        val model = viewModel<Model>()
 
-        val checkResultCallback = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            model.checkResult()
+        val model = viewModel<Model>()
+        val onLaunchLoginFlow: (HttpUrl) -> Unit = { entryUrl ->
+            model.startLoginFlow(entryUrl)
         }
 
-        val loginUrl = model.loginUrl
-        LaunchedEffect(loginUrl) {
-            loginUrl?.toUri()?.let { loginUri ->
+        val checkResultCallback = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            model.onReturnFromBrowser()
+        }
+        LaunchedEffect(model.loginUrl) {
+            model.loginUrl?.toUri()?.let { loginUri ->
                 if (haveCustomTabs(context)) {
                     // Custom Tabs are available
                     @Suppress("DEPRECATION")
@@ -136,13 +139,15 @@ object LoginTypeNextcloud : LoginType {
                         bundleOf("Accept-Language" to locale.toLanguageTag())
                     )
                     checkResultCallback.launch(browser.intent)
+                    model.loginFlowStarted()
                 } else {
                     // fallback: launch normal browser
                     val browser = Intent(Intent.ACTION_VIEW, loginUri)
                     browser.addCategory(Intent.CATEGORY_BROWSABLE)
-                    if (browser.resolveActivity(context.packageManager) != null)
+                    if (browser.resolveActivity(context.packageManager) != null) {
                         checkResultCallback.launch(browser)
-                    else
+                        model.loginFlowStarted()
+                    } else
                         scope.launch {
                             snackbarHostState.showSnackbar(context.getString(R.string.install_browser))
                         }
@@ -150,11 +155,14 @@ object LoginTypeNextcloud : LoginType {
             }
         }
 
+        // continue to detecting resources when resultLoginInfo is set in model
         val resultLoginInfo = model.loginInfo
         LaunchedEffect(resultLoginInfo) {
-            resultLoginInfo?.let {
-                onUpdateLoginInfo(it)
+            if (resultLoginInfo != null) {
+                onUpdateLoginInfo(resultLoginInfo)
                 onDetectResources()
+
+                model.resourceDetectionStarted()
             }
         }
 
@@ -163,9 +171,7 @@ object LoginTypeNextcloud : LoginType {
             onUpdateLoginInfo = onUpdateLoginInfo,
             inProgress = model.inProgress,
             error = model.error,
-            onLaunchLoginFlow = { entryUrl ->
-                model.start(entryUrl)
-            }
+            onLaunchLoginFlow = onLaunchLoginFlow
         )
     }
 
@@ -189,10 +195,15 @@ object LoginTypeNextcloud : LoginType {
         private val httpClient = HttpClient.Builder(context)
             .setForeground(true)
             .build()
+
+        /** When set, UI will start Login Flow will be started with this URI. */
+        var loginUrl by mutableStateOf<String?>(null)
+
+        // UI state
         var inProgress by mutableStateOf(false)
         var error by mutableStateOf<String?>(null)
 
-        var loginUrl by mutableStateOf<String?>(null)
+        // Login flow state
         private var pollUrl: HttpUrl?
             get() = state.get<String>(STATE_POLL_URL)?.toHttpUrlOrNull()
             set(value) {
@@ -204,6 +215,7 @@ object LoginTypeNextcloud : LoginType {
                 state[STATE_TOKEN] = value
             }
 
+        /** When set, UI will continue to detecting resources with the given login info */
         var loginInfo by mutableStateOf<LoginInfo?>(null)
 
 
@@ -219,10 +231,12 @@ object LoginTypeNextcloud : LoginType {
          * or another URL which is treated as Nextcloud root URL. In this case, [LOGIN_FLOW_V2_PATH] is appended.
          */
         @UiThread
-        fun start(entryUrl: HttpUrl) = viewModelScope.launch {
+        fun startLoginFlow(entryUrl: HttpUrl) = viewModelScope.launch {
             inProgress = true
-
             error = null
+
+            // reset login state
+            loginUrl = null
             pollUrl = null
             token = null
 
@@ -257,6 +271,11 @@ object LoginTypeNextcloud : LoginType {
             }
         }
 
+        fun loginFlowStarted() {
+            // Login Flow has been started in browser by UI, should not be started again
+            loginUrl = null
+        }
+
         /**
          * Called when the custom tab / browser activity is finished. If memory is low, our
          * [LoginTypeNextcloud] and its model have been cleared in the meanwhile. So if
@@ -264,7 +283,7 @@ object LoginTypeNextcloud : LoginType {
          * model is cleared (saved state).
          */
         @UiThread
-        fun checkResult() = viewModelScope.launch {
+        fun onReturnFromBrowser() = viewModelScope.launch {
             val pollUrl = pollUrl ?: return@launch
             val token = token ?: return@launch
 
@@ -288,6 +307,12 @@ object LoginTypeNextcloud : LoginType {
                 error = context.getString(R.string.login_nextcloud_login_flow_no_login_data)
             }
         }
+
+        fun resourceDetectionStarted() {
+            // resource detection has been started, should not be started again
+            loginInfo = null
+        }
+
 
         @WorkerThread
         private suspend fun postForJson(url: HttpUrl, requestBody: RequestBody): JSONObject {
@@ -327,7 +352,8 @@ fun NextcloudLoginScreen(
     error: String? = null,
     onLaunchLoginFlow: (entryUrl: HttpUrl) -> Unit
 ) {
-    var entryUrl by remember { mutableStateOf(loginInfo.baseUri?.toString() ?: "") }
+    val initialEntryUrl = loginInfo.baseUri?.toString()?.removeSuffix(DAV_PATH)
+    var entryUrl by remember { mutableStateOf(initialEntryUrl ?: "") }
 
     val newLoginInfo = LoginInfo(
         baseUri = try {
