@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
@@ -96,8 +97,9 @@ fun AccountDetailsPage(
     val suggestedAccountNames = foundConfig.calDAV?.emails ?: emptyList()
     var accountName by remember { mutableStateOf(suggestedAccountNames.firstOrNull() ?: "") }
 
-    val forcedGroupMethod by model.forcedGroupMethod.observeAsState()
-    var groupMethod by remember { mutableStateOf(forcedGroupMethod ?: loginInfo.suggestedGroupMethod) }
+    var groupMethod by remember { mutableStateOf(loginInfo.suggestedGroupMethod) }
+    val forcedGroupMethod by model.forcedGroupMethod.collectAsStateWithLifecycle(null)
+    forcedGroupMethod?.let { groupMethod = it }
     AccountDetailsPage_Content(
         suggestedAccountNames = suggestedAccountNames,
         accountName = accountName,

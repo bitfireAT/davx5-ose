@@ -14,7 +14,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
@@ -33,6 +32,7 @@ import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import java.util.logging.Level
@@ -45,7 +45,7 @@ class LoginModel @Inject constructor(
     val settingsManager: SettingsManager
 ): ViewModel() {
 
-    val forcedGroupMethod = settingsManager.getStringLive(AccountSettings.KEY_CONTACT_GROUP_METHOD).map { methodName ->
+    val forcedGroupMethod = settingsManager.getStringFlow(AccountSettings.KEY_CONTACT_GROUP_METHOD).map { methodName ->
         methodName?.let {
             try {
                 GroupMethod.valueOf(it)

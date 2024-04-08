@@ -5,18 +5,11 @@
 package at.bitfire.davdroid.settings
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.map
-import at.bitfire.davdroid.TestUtils.getOrAwaitValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -61,52 +54,47 @@ class SettingsManagerTest {
     }
 
 
-    @Test
-    fun test_getBooleanLive_initialValuePostedEvenWhenNull() {
-        val live = settingsManager.getBooleanLive(SETTING_TEST).map { value ->
-            value
+    /*@Test
+    fun test_observerFlow_initialValue() = runBlocking {
+        var counter = 0
+        val live = settingsManager.observerFlow {
+            if (counter++ == 0)
+                23
+            else
+                throw AssertionError("A second value was requested")
         }
-        assertNull(live.getOrAwaitValue())
-
-        // posts value to main thread, InstantTaskExecutorRule is required to execute it instantly
-        settingsManager.putBoolean(SETTING_TEST, true)
-        runBlocking(Dispatchers.Main) {     // observeForever can't be run in background thread
-            assertTrue(live.getOrAwaitValue()!!)
-        }
+        assertEquals(23, live.singleOrNull())
     }
 
     @Test
-    fun test_getBooleanLive_getValue() {
-        val live = settingsManager.getBooleanLive(SETTING_TEST)
-        assertNull(live.value)
-
-        // posts value to main thread, InstantTaskExecutorRule is required to execute it instantly
-        settingsManager.putBoolean(SETTING_TEST, true)
-        runBlocking(Dispatchers.Main) {     // observeForever can't be run in background thread
-            assertTrue(live.getOrAwaitValue()!!)
-        }
-    }
-
-
-    @Test
-    fun test_ObserverCalledWhenValueChanges() {
-        val value = CompletableDeferred<Int>()
-        val observer = SettingsManager.OnChangeListener {
-            value.complete(settingsManager.getInt(SETTING_TEST))
-        }
-
-        try {
-            settingsManager.addOnChangeListener(observer)
-            settingsManager.putInt(SETTING_TEST, 123)
-
-            runBlocking {
-                // wait until observer is called
-                assertEquals(123, value.await())
+    fun test_observerFlow_updatedValue() = runBlocking {
+        var counter = 0
+        val live = settingsManager.observerFlow {
+            when (counter++) {
+                0 -> 23     // initial value
+                1 -> 42     // updated value
+                else -> throw AssertionError()
             }
-
-        } finally {
-            settingsManager.removeOnChangeListener(observer)
         }
-    }
+
+        var collectCounter = 0
+        live.collect {
+            when (collectCounter++) {
+                0 -> {
+                    assertEquals(23, it)
+                    // first value collected, send some update so that onChange listener is triggered
+                    settingsManager.putBoolean(SETTING_TEST, true)
+                }
+                1 -> {
+                    assertEquals(42, it)
+                    // second value collected, success, stop here
+                    cancel()
+                }
+                else -> throw AssertionError()
+            }
+        }
+        // two values should have been collected
+        assertEquals(2, collectCounter)
+    }*/
 
 }

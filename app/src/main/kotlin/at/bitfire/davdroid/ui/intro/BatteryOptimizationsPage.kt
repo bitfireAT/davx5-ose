@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.Constants
@@ -102,7 +103,7 @@ class BatteryOptimizationsPage: IntroPage {
             model.checkBatteryOptimizations()
         }
 
-        val hintBatteryOptimizations by model.hintBatteryOptimizations.observeAsState()
+        val hintBatteryOptimizations by model.hintBatteryOptimizations.collectAsStateWithLifecycle(false)
         val shouldBeExempted by model.shouldBeExempted.observeAsState(false)
         val isExempted by model.isExempted.observeAsState(false)
         LaunchedEffect(shouldBeExempted, isExempted) {
@@ -110,7 +111,7 @@ class BatteryOptimizationsPage: IntroPage {
                 ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
         }
 
-        val hintAutostartPermission by model.hintAutostartPermission.observeAsState()
+        val hintAutostartPermission by model.hintAutostartPermission.collectAsStateWithLifecycle(false)
         BatteryOptimizationsContent(
             dontShowBattery = hintBatteryOptimizations == false,
             onChangeDontShowBattery = {
@@ -178,14 +179,14 @@ class BatteryOptimizationsPage: IntroPage {
 
         val shouldBeExempted = MutableLiveData<Boolean>()
         val isExempted = MutableLiveData<Boolean>()
-        val hintBatteryOptimizations = settings.getBooleanLive(HINT_BATTERY_OPTIMIZATIONS)
+        val hintBatteryOptimizations = settings.getBooleanFlow(HINT_BATTERY_OPTIMIZATIONS)
         private val batteryOptimizationsReceiver = object: BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 checkBatteryOptimizations()
             }
         }
 
-        val hintAutostartPermission = settings.getBooleanLive(HINT_AUTOSTART_PERMISSION)
+        val hintAutostartPermission = settings.getBooleanFlow(HINT_AUTOSTART_PERMISSION)
 
         init {
             val intentFilter = IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED)
