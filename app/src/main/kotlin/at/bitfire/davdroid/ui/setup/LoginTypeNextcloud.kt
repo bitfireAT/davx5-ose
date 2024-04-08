@@ -139,14 +139,12 @@ object LoginTypeNextcloud : LoginType {
                         bundleOf("Accept-Language" to locale.toLanguageTag())
                     )
                     checkResultCallback.launch(browser.intent)
-                    model.loginFlowStarted()
                 } else {
                     // fallback: launch normal browser
                     val browser = Intent(Intent.ACTION_VIEW, loginUri)
                     browser.addCategory(Intent.CATEGORY_BROWSABLE)
                     if (browser.resolveActivity(context.packageManager) != null) {
                         checkResultCallback.launch(browser)
-                        model.loginFlowStarted()
                     } else
                         scope.launch {
                             snackbarHostState.showSnackbar(context.getString(R.string.install_browser))
@@ -199,7 +197,7 @@ object LoginTypeNextcloud : LoginType {
         /** When set, UI will start Login Flow will be started with this URI. */
         var loginUrl by mutableStateOf<String?>(null)
 
-        // UI state
+        // model state
         var inProgress by mutableStateOf(false)
         var error by mutableStateOf<String?>(null)
 
@@ -269,11 +267,6 @@ object LoginTypeNextcloud : LoginType {
             }
         }
 
-        fun loginFlowStarted() {
-            // Login Flow has been started in browser by UI, should not be started again
-            loginUrl = null
-        }
-
         /**
          * Called when the custom tab / browser activity is finished. If memory is low, our
          * [LoginTypeNextcloud] and its model have been cleared in the meanwhile. So if
@@ -282,6 +275,9 @@ object LoginTypeNextcloud : LoginType {
          */
         @UiThread
         fun onReturnFromBrowser() = viewModelScope.launch {
+            // Login Flow has been started in browser by UI, should not be started again
+            loginUrl = null
+
             val pollUrl = pollUrl ?: return@launch
             val token = token ?: return@launch
 
