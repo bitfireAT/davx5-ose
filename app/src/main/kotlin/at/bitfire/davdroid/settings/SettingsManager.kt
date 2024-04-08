@@ -109,6 +109,8 @@ class SettingsManager internal constructor(
      *
      * - always emits the initial value of the setting, and then
      * - emits the new value whenever the setting changes.
+     *
+     * @param getValue   used to determine the current value of the setting
      */
     @VisibleForTesting
     internal fun<T> observerFlow(getValue: () -> T): Flow<T> = callbackFlow {

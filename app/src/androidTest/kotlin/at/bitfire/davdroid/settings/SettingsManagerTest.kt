@@ -7,6 +7,10 @@ package at.bitfire.davdroid.settings
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -54,7 +58,7 @@ class SettingsManagerTest {
     }
 
 
-    /*@Test
+    @Test
     fun test_observerFlow_initialValue() = runBlocking {
         var counter = 0
         val live = settingsManager.observerFlow {
@@ -63,7 +67,7 @@ class SettingsManagerTest {
             else
                 throw AssertionError("A second value was requested")
         }
-        assertEquals(23, live.singleOrNull())
+        assertEquals(23, live.first())
     }
 
     @Test
@@ -71,30 +75,19 @@ class SettingsManagerTest {
         var counter = 0
         val live = settingsManager.observerFlow {
             when (counter++) {
-                0 -> 23     // initial value
+                0 -> {
+                    // update some setting so that we will be called a second time
+                    settingsManager.putBoolean(SETTING_TEST, true)
+                    // and emit initial value
+                    23
+                }
                 1 -> 42     // updated value
                 else -> throw AssertionError()
             }
         }
 
-        var collectCounter = 0
-        live.collect {
-            when (collectCounter++) {
-                0 -> {
-                    assertEquals(23, it)
-                    // first value collected, send some update so that onChange listener is triggered
-                    settingsManager.putBoolean(SETTING_TEST, true)
-                }
-                1 -> {
-                    assertEquals(42, it)
-                    // second value collected, success, stop here
-                    cancel()
-                }
-                else -> throw AssertionError()
-            }
-        }
-        // two values should have been collected
-        assertEquals(2, collectCounter)
-    }*/
+        val result = live.take(2).toList()
+        assertEquals(listOf(23, 42), result)
+    }
 
 }
