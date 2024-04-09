@@ -104,7 +104,7 @@ class PermissionsActivity: AppCompatActivity() {
 
             // auto-reset permissions
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                needKeepPermissions.postValue(pm.isAutoRevokeWhitelisted)
+                needKeepPermissions.value = pm.isAutoRevokeWhitelisted
             }
 
             openTasksAvailable.value = pm.resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null
