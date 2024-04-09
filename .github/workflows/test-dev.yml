@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  is_main_branch: ${{ github.ref == 'refs/heads/dev-ose' }}
+  is_main_branch: ${{ github.ref == 'refs/heads/main-ose' }}
 
 jobs:
   test:
@@ -39,7 +39,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           key: app_build-tests-without-emulator
-          restore-keys: app_build-tests-without-emulator-   # restore cache from dev branch
+          restore-keys: app_build-tests-without-emulator-   # restore cache from main branch
           path: |
             .gradle/configuration-cache
             app/build
@@ -74,7 +74,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           key: app_build-tests-with-emulator
-          restore-keys: app_build-tests-with-emulator-   # restore cache from dev branch
+          restore-keys: app_build-tests-with-emulator-   # restore cache from main branch
           path: |
             .gradle/configuration-cache
             app/build
