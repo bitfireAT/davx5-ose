@@ -25,8 +25,8 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -34,7 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.PackageChangedReceiver
@@ -45,6 +44,7 @@ import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.logging.Level
 
 class PermissionsActivity: AppCompatActivity() {
@@ -77,11 +77,11 @@ class PermissionsActivity: AppCompatActivity() {
 
     class Model(app: Application): AndroidViewModel(app) {
 
-        val needKeepPermissions = MutableLiveData<Boolean>()
+        val needKeepPermissions = MutableStateFlow(false)
 
-        val openTasksAvailable = MutableLiveData<Boolean>()
-        val tasksOrgAvailable = MutableLiveData<Boolean>()
-        val jtxAvailable = MutableLiveData<Boolean>()
+        val openTasksAvailable = MutableStateFlow(false)
+        val tasksOrgAvailable = MutableStateFlow(false)
+        val jtxAvailable = MutableStateFlow(false)
 
         private val tasksWatcher = object: PackageChangedReceiver(app) {
             override fun onPackageChanged() {
@@ -123,10 +123,10 @@ fun PermissionsContent(
 ) {
     val context = LocalContext.current
 
-    val keepPermissions by model.needKeepPermissions.observeAsState()
-    val openTasksAvailable by model.openTasksAvailable.observeAsState()
-    val tasksOrgAvailable by model.tasksOrgAvailable.observeAsState()
-    val jtxAvailable by model.jtxAvailable.observeAsState()
+    val keepPermissions by model.needKeepPermissions.collectAsState()
+    val openTasksAvailable by model.openTasksAvailable.collectAsState()
+    val tasksOrgAvailable by model.tasksOrgAvailable.collectAsState()
+    val jtxAvailable by model.jtxAvailable.collectAsState()
 
     Column(
         modifier = modifier
