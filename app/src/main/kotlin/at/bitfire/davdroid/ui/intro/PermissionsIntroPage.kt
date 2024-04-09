@@ -6,12 +6,12 @@ package at.bitfire.davdroid.ui.intro
 
 import android.app.Application
 import androidx.compose.runtime.Composable
+import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.PermissionsContent
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
 import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
 import at.bitfire.ical4android.TaskProvider
-
 class PermissionsIntroPage: IntroPage {
 
     override fun getShowPolicy(application: Application): IntroPage.ShowPolicy {
@@ -29,6 +29,11 @@ class PermissionsIntroPage: IntroPage {
     @Composable
     override fun ComposePage() {
         PermissionsContent()
+    }
+
+    // Check whether permissions have changed after user comes back from settings app
+    override fun onResume(application: Application) {
+        PermissionsActivity.Model(application).checkPermissions()
     }
 
 }

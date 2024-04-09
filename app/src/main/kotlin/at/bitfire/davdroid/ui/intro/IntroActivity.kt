@@ -120,6 +120,12 @@ class IntroActivity : AppIntro2() {
                 }
             }
 
+        // For on resume actions of intro pages
+        override fun onResume() {
+            super.onResume()
+            activity?.application?.let { page.onResume(it) }
+        }
+
     }
 
 
