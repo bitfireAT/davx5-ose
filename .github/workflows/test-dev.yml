@@ -8,6 +8,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  is_main_branch: ${{ github.ref == 'refs/heads/dev-ose' }}
+
 jobs:
   test:
     name: Tests without emulator
@@ -21,9 +24,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
+          cache-write-only: ${{ env.is_main_branch }}     # otherwise build cache will grow larger and larger
 
       - name: Create app/build and gradle configuration cache
-        if: ${{ github.ref == 'refs/heads/dev-ose' }}
+        if: ${{ env.is_main_branch }}
         uses: actions/cache@v4
         with:
           key: app_build-tests-without-emulator-${{ github.run_id }}
@@ -31,7 +35,7 @@ jobs:
             .gradle/configuration-cache
             app/build
       - name: Use app/build and gradle configuration cache
-        if: ${{ github.ref != 'refs/heads/dev-ose' }}
+        if: ${{ env.is_main_branch }}
         uses: actions/cache/restore@v4
         with:
           key: app_build-tests-without-emulator
@@ -55,9 +59,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
+          cache-write-only: ${{ env.is_main_branch }}     # otherwise build cache will grow larger and larger
 
       - name: Create app/build and gradle configuration cache
-        if: ${{ github.ref == 'refs/heads/dev-ose' }}
+        if: ${{ env.is_main_branch }}
         uses: actions/cache@v4
         with:
           key: app_build-tests-without-emulator-${{ github.run_id }}
@@ -65,7 +70,7 @@ jobs:
             .gradle/configuration-cache
             app/build
       - name: Use app/build and gradle configuration cache
-        if: ${{ github.ref != 'refs/heads/dev-ose' }}
+        if: ${{ env.is_main_branch }}
         uses: actions/cache/restore@v4
         with:
           key: app_build-tests-without-emulator
