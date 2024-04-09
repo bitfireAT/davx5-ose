@@ -35,7 +35,7 @@ jobs:
             .gradle/configuration-cache
             app/build
       - name: Use app/build and gradle configuration cache
-        if: ${{ env.is_main_branch }}
+        if: ${{ !env.is_main_branch }}
         uses: actions/cache/restore@v4
         with:
           key: app_build-tests-without-emulator
@@ -65,16 +65,16 @@ jobs:
         if: ${{ env.is_main_branch }}
         uses: actions/cache@v4
         with:
-          key: app_build-tests-without-emulator-${{ github.run_id }}
+          key: app_build-tests-with-emulator-${{ github.run_id }}
           path: |
             .gradle/configuration-cache
             app/build
       - name: Use app/build and gradle configuration cache
-        if: ${{ env.is_main_branch }}
+        if: ${{ !env.is_main_branch }}
         uses: actions/cache/restore@v4
         with:
-          key: app_build-tests-without-emulator
-          restore-keys: app_build-tests-without-emulator-   # restore cache from dev branch
+          key: app_build-tests-with-emulator
+          restore-keys: app_build-tests-with-emulator-   # restore cache from dev branch
           path: |
             .gradle/configuration-cache
             app/build
