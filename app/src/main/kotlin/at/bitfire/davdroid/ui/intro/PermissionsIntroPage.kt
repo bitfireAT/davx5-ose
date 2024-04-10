@@ -31,8 +31,10 @@ class PermissionsIntroPage: IntroPage {
 
     @Composable
     override fun ComposePage() {
-        model = viewModel()
-        model?.let { model -> PermissionsContent(model = model) }
+        val newModel: PermissionsActivity.Model = viewModel()
+        model = newModel
+
+        PermissionsContent(model = newModel)
     }
 
     // Check whether permissions have changed after user comes back from settings app
