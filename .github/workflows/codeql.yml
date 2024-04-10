@@ -41,7 +41,8 @@ jobs:
     - name: Use incremental build cache
       uses: actions/cache/restore@v4
       with:
-        key: app_build-tests-without-emulator
+        key: incremental-build-tests
+        restore-keys: incremental-build-tests   # restore cache from main branch
         path: app/build
 
     # Initializes the CodeQL tools for scanning.
