@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -103,7 +105,7 @@ class TasksActivity: AppCompatActivity() {
 
         }
 
-        val showAgain = settings.getBooleanLive(HINT_OPENTASKS_NOT_INSTALLED)
+        val showAgain = settings.getBooleanFlow(HINT_OPENTASKS_NOT_INSTALLED)
         fun setShowAgain(showAgain: Boolean) {
             if (showAgain)
                 settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
@@ -111,7 +113,7 @@ class TasksActivity: AppCompatActivity() {
                 settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
         }
 
-        val currentProvider = TaskUtils.currentProviderLive(context)
+        val currentProvider = TaskUtils.currentProviderFlow(context, viewModelScope).asLiveData()
         val jtxSelected = currentProvider.map { it == TaskProvider.ProviderName.JtxBoard }
         val tasksOrgSelected = currentProvider.map { it == TaskProvider.ProviderName.TasksOrg }
         val openTasksSelected = currentProvider.map { it == TaskProvider.ProviderName.OpenTasks }
@@ -171,7 +173,7 @@ fun TasksCard(
     val openTasksInstalled by model.openTasksInstalled.observeAsState(false)
     val openTasksSelected by model.openTasksSelected.observeAsState(false)
 
-    val showAgain = model.showAgain.observeAsState().value ?: true
+    val showAgain = model.showAgain.collectAsStateWithLifecycle(null).value ?: false
 
     fun installApp(packageName: String) {
         val uri = Uri.parse("market://details?id=$packageName&referrer=" +

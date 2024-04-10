@@ -57,6 +57,8 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.preference.PreferenceManager
 import at.bitfire.cert4android.CustomCertStore
@@ -149,16 +151,16 @@ class AppSettingsActivity: AppCompatActivity() {
                     )
 
                     AppSettings_Connection(
-                        proxyType = model.settings.getIntLive(Settings.PROXY_TYPE).observeAsState().value ?: Settings.PROXY_TYPE_NONE,
+                        proxyType = model.settings.getIntFlow(Settings.PROXY_TYPE).collectAsStateWithLifecycle(null).value ?: Settings.PROXY_TYPE_NONE,
                         onProxyTypeUpdated = { model.settings.putInt(Settings.PROXY_TYPE, it) },
-                        proxyHostName = model.settings.getStringLive(Settings.PROXY_HOST).observeAsState(null).value,
+                        proxyHostName = model.settings.getStringFlow(Settings.PROXY_HOST).collectAsStateWithLifecycle(null).value,
                         onProxyHostNameUpdated = { model.settings.putString(Settings.PROXY_HOST, it) },
-                        proxyPort = model.settings.getIntLive(Settings.PROXY_PORT).observeAsState(null).value,
+                        proxyPort = model.settings.getIntFlow(Settings.PROXY_PORT).collectAsStateWithLifecycle(null).value,
                         onProxyPortUpdated = { model.settings.putInt(Settings.PROXY_PORT, it) }
                     )
 
                     AppSettings_Security(
-                        distrustSystemCerts = model.settings.getBooleanLive(Settings.DISTRUST_SYSTEM_CERTIFICATES).observeAsState().value ?: false,
+                        distrustSystemCerts = model.settings.getBooleanFlow(Settings.DISTRUST_SYSTEM_CERTIFICATES).collectAsStateWithLifecycle(null).value ?: false,
                         onDistrustSystemCertsUpdated = { model.settings.putBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES, it) },
                         onResetCertificates = {
                             model.resetCertificates()
@@ -170,7 +172,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     )
 
                     AppSettings_UserInterface(
-                        theme = model.settings.getIntLive(Settings.PREFERRED_THEME).observeAsState().value ?: Settings.PREFERRED_THEME_DEFAULT,
+                        theme = model.settings.getIntFlow(Settings.PREFERRED_THEME).collectAsStateWithLifecycle(null).value ?: Settings.PREFERRED_THEME_DEFAULT,
                         onThemeSelected = {
                             model.settings.putInt(Settings.PREFERRED_THEME, it)
                             UiUtils.updateTheme(context)
@@ -184,7 +186,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     )
 
                     AppSettings_Integration(
-                        taskProvider = TaskUtils.currentProviderLive(context).observeAsState().value
+                        taskProvider = TaskUtils.currentProviderFlow(context, lifecycleScope).collectAsStateWithLifecycle().value
                     )
                 }
             }

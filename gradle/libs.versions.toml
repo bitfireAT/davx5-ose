@@ -15,6 +15,7 @@ androidx-constraintLayout = "2.1.4"
 androidx-core = "1.12.0"
 androidx-fragment = "1.6.2"
 androidx-hilt = "1.2.0"
+androidx-lifecycle = "2.7.0"
 androidx-paging = "3.2.1"
 androidx-preference = "1.2.1"
 androidx-security = "1.1.0-alpha06"
@@ -23,20 +24,19 @@ androidx-test-core = "1.5.0"
 androidx-test-runner = "1.5.2"
 androidx-test-rules = "1.5.0"
 androidx-test-junit = "1.1.5"
-androidx-viewmodel = "2.7.0"
 androidx-work = "2.9.0"
 appIntro = "7.0.0-beta02"
-bitfire-cert4android = "f0964cb"
-bitfire-dav4jvm = "f428759"
+bitfire-cert4android = "f1cc9b9ca3"
+bitfire-dav4jvm = "92f5f3d23c"
 bitfire-ical4android = "f10bd57dac"
-bitfire-vcard4android = "03ef99a"
+bitfire-vcard4android = "adf00bd98a"
 commons-collections = "4.4"
 commons-lang = "3.14.0"
 # don't update until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/130]
 commons-io = "2.8.0"
 commons-text = "1.11.0"
 compose-accompanist = "0.34.0"
-compose-bom = "2024.03.00"
+compose-bom = "2024.04.00"
 # Keep this in sync with Kotlin version:
 # https://developer.android.com/jetpack/androidx/releases/compose-kotlin
 compose-compiler = "1.5.11"
@@ -72,8 +72,9 @@ androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-cor
 androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx-fragment" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
-androidx-lifecycle-viewmodel-base = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-viewmodel" }
-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-viewmodel" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-base = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-paging = { module = "androidx.paging:paging-runtime-ktx", version.ref = "androidx-paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }

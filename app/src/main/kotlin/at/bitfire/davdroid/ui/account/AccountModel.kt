@@ -23,6 +23,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
@@ -134,7 +135,7 @@ class AccountModel @AssistedInject constructor(
     )
     val addressBooksPager = CollectionPager(db, cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
 
-    private val tasksProvider = TaskUtils.currentProviderLive(context)
+    private val tasksProvider = TaskUtils.currentProviderFlow(context, viewModelScope)
     val calDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CALDAV)
     val bindableCalendarHomesets = calDavSvc.switchMap { svc ->
         if (svc != null)
@@ -150,7 +151,7 @@ class AccountModel @AssistedInject constructor(
             return@switchMap null
         RefreshCollectionsWorker.exists(context, RefreshCollectionsWorker.workerName(svc.id))
     }
-    val calDavSyncPending = tasksProvider.switchMap { tasks ->
+    val calDavSyncPending = tasksProvider.asLiveData().switchMap { tasks ->
         BaseSyncWorker.exists(
             context,
             listOf(WorkInfo.State.ENQUEUED),
@@ -162,7 +163,7 @@ class AccountModel @AssistedInject constructor(
             }
         )
     }
-    val calDavSyncing = tasksProvider.switchMap { tasks ->
+    val calDavSyncing = tasksProvider.asLiveData().switchMap { tasks ->
         BaseSyncWorker.exists(
             context,
             listOf(WorkInfo.State.RUNNING),

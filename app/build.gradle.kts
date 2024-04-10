@@ -17,8 +17,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 403160002
-        versionName = "4.3.16-beta.1"
+        versionCode = 403160003
+        versionName = "4.3.16-beta.2"
 
         buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
 
@@ -149,6 +149,7 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.base)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.paging)
