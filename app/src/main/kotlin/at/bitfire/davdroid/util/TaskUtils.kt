@@ -15,8 +15,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Service
@@ -34,6 +32,11 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 object TaskUtils {
 
@@ -57,16 +60,16 @@ object TaskUtils {
     /**
      * Returns the currently selected tasks provider (if it's still available = installed).
      *
-     * @return the currently selected tasks provider, or null if none is available
+     * @return flow with the currently selected tasks provider
      */
-    fun currentProviderLive(context: Context): LiveData<ProviderName?> {
+    fun currentProviderFlow(context: Context, externalScope: CoroutineScope): StateFlow<ProviderName?> {
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
-        return settingsManager.getStringLive(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
+        return settingsManager.getStringFlow(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
             if (preferred != null)
                 preferredAuthorityToProviderName(preferred, context.packageManager)
             else
                 null
-        }
+        }.stateIn(scope = externalScope, started = SharingStarted.WhileSubscribed(), initialValue = null)
     }
 
     private fun preferredAuthorityToProviderName(

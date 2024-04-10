@@ -21,7 +21,6 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -31,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
@@ -68,7 +68,7 @@ class OpenSourcePage : IntroPage {
 
     @Composable
     private fun Page(model: Model = viewModel()) {
-        val dontShow by model.dontShow.observeAsState(false)
+        val dontShow by model.dontShow.collectAsStateWithLifecycle(false)
         PageContent(
             dontShow = dontShow,
             onChangeDontShow = {
@@ -147,7 +147,8 @@ class OpenSourcePage : IntroPage {
             const val SETTING_NEXT_DONATION_POPUP = "time_nextDonationPopup"
         }
 
-        val dontShow = settings.containsKeyLive(SETTING_NEXT_DONATION_POPUP)
+        val dontShow = settings.containsKeyFlow(SETTING_NEXT_DONATION_POPUP)
+
         fun setDontShow(dontShowAgain: Boolean) {
             if (dontShowAgain) {
                 val nextReminder = System.currentTimeMillis() + 90*86400000L     // 90 days (~ 3 months)

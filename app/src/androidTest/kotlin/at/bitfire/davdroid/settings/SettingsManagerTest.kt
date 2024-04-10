@@ -5,18 +5,15 @@
 package at.bitfire.davdroid.settings
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.map
-import at.bitfire.davdroid.TestUtils.getOrAwaitValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -62,51 +59,35 @@ class SettingsManagerTest {
 
 
     @Test
-    fun test_getBooleanLive_initialValuePostedEvenWhenNull() {
-        val live = settingsManager.getBooleanLive(SETTING_TEST).map { value ->
-            value
+    fun test_observerFlow_initialValue() = runBlocking {
+        var counter = 0
+        val live = settingsManager.observerFlow {
+            if (counter++ == 0)
+                23
+            else
+                throw AssertionError("A second value was requested")
         }
-        assertNull(live.getOrAwaitValue())
-
-        // posts value to main thread, InstantTaskExecutorRule is required to execute it instantly
-        settingsManager.putBoolean(SETTING_TEST, true)
-        runBlocking(Dispatchers.Main) {     // observeForever can't be run in background thread
-            assertTrue(live.getOrAwaitValue()!!)
-        }
+        assertEquals(23, live.first())
     }
 
     @Test
-    fun test_getBooleanLive_getValue() {
-        val live = settingsManager.getBooleanLive(SETTING_TEST)
-        assertNull(live.value)
-
-        // posts value to main thread, InstantTaskExecutorRule is required to execute it instantly
-        settingsManager.putBoolean(SETTING_TEST, true)
-        runBlocking(Dispatchers.Main) {     // observeForever can't be run in background thread
-            assertTrue(live.getOrAwaitValue()!!)
-        }
-    }
-
-
-    @Test
-    fun test_ObserverCalledWhenValueChanges() {
-        val value = CompletableDeferred<Int>()
-        val observer = SettingsManager.OnChangeListener {
-            value.complete(settingsManager.getInt(SETTING_TEST))
-        }
-
-        try {
-            settingsManager.addOnChangeListener(observer)
-            settingsManager.putInt(SETTING_TEST, 123)
-
-            runBlocking {
-                // wait until observer is called
-                assertEquals(123, value.await())
+    fun test_observerFlow_updatedValue() = runBlocking {
+        var counter = 0
+        val live = settingsManager.observerFlow {
+            when (counter++) {
+                0 -> {
+                    // update some setting so that we will be called a second time
+                    settingsManager.putBoolean(SETTING_TEST, true)
+                    // and emit initial value
+                    23
+                }
+                1 -> 42     // updated value
+                else -> throw AssertionError()
             }
-
-        } finally {
-            settingsManager.removeOnChangeListener(observer)
         }
+
+        val result = live.take(2).toList()
+        assertEquals(listOf(23, 42), result)
     }
 
 }
