@@ -209,7 +209,7 @@ class AccountsActivity: AppCompatActivity() {
                                     if (intent.resolveActivity(packageManager) != null)
                                         startActivity(intent)
                                 },
-                                lowStorageWarning = warnings.storageLow.observeAsState().value == true,
+                                lowStorageWarning = warnings.storageLow.collectAsStateWithLifecycle().value,
                                 onManageStorage = {
                                     val intent = Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
                                     if (intent.resolveActivity(packageManager) != null)

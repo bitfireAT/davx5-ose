@@ -25,8 +25,6 @@ import kotlin.system.exitProcess
 class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provider {
 
     @Inject lateinit var accountsUpdatedListener: AccountsUpdatedListener
-    @Inject lateinit var storageLowReceiver: StorageLowReceiver
-
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
     override val workManagerConfiguration: Configuration
@@ -59,15 +57,12 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
                                  // some current activity and causes an IllegalStateException in rare cases
 
         // don't block UI for some background checks
+        @OptIn(DelicateCoroutinesApi::class)
         thread {
             // watch for account changes/deletions
             accountsUpdatedListener.listen()
 
-            // watch storage because low storage means sync framework stops local content update notifications
-            storageLowReceiver.listen()
-
             // watch installed/removed tasks apps over whole app lifetime and update sync settings accordingly
-            @OptIn(DelicateCoroutinesApi::class)
             TasksWatcher.watchInstalledTaskApps(this, GlobalScope)
 
             // create/update app shortcuts

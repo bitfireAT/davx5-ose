@@ -128,8 +128,6 @@ class TasksActivity: AppCompatActivity() {
                     checkTasksApps()
                 }
             }
-
-            checkTasksApps()
         }
 
         private fun checkTasksApps() {

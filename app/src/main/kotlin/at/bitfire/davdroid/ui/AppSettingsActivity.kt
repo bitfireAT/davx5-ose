@@ -6,8 +6,6 @@ package at.bitfire.davdroid.ui
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
@@ -59,6 +57,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.preference.PreferenceManager
 import at.bitfire.cert4android.CustomCertStore
@@ -76,9 +75,13 @@ import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.TaskUtils
+import at.bitfire.davdroid.util.broadcastReceiverFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -136,7 +139,7 @@ class AppSettingsActivity: AppCompatActivity() {
                     AppSettings_Debugging(
                         verboseLogging = model.getPrefBoolean(Logger.LOG_TO_FILE).observeAsState().value ?: false,
                         onUpdateVerboseLogging = { model.putPrefBoolean(Logger.LOG_TO_FILE, it) },
-                        batterySavingExempted = model.getBatterySavingExempted().observeAsState(false).value,
+                        batterySavingExempted = model.batterySavingExempted.collectAsStateWithLifecycle().value,
                         onExemptFromBatterySaving = {
                             startActivity(Intent(
                                 android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
@@ -494,29 +497,10 @@ class AppSettingsActivity: AppCompatActivity() {
 
         private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-        fun getBatterySavingExempted(): LiveData<Boolean> = object : LiveData<Boolean>() {
-            val receiver = object: BroadcastReceiver() {
-                override fun onReceive(context: Context, intent: Intent) {
-                    update()
-                }
-            }
-
-            override fun onActive() {
-                context.registerReceiver(receiver, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED))
-                update()
-            }
-
-            override fun onInactive() {
-                context.unregisterReceiver(receiver)
-            }
-
-            private fun update() {
-                context.getSystemService<PowerManager>()?.let { powerManager ->
-                    val exempted = powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
-                    postValue(exempted)
-                }
-            }
-        }
+        private val powerManager = context.getSystemService<PowerManager>()!!
+        val batterySavingExempted = broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED))
+            .map { powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
         fun getPrefBoolean(keyToObserve: String): LiveData<Boolean?> =
             object : LiveData<Boolean?>(), SharedPreferences.OnSharedPreferenceChangeListener {

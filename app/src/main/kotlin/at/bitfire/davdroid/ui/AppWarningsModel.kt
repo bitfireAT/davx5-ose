@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui
 
 import android.app.Application
 import android.content.ContentResolver
+import android.content.Intent
 import android.content.IntentFilter
 import android.content.SyncStatusObserver
 import android.net.ConnectivityManager
@@ -17,7 +18,6 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.StorageLowReceiver
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,12 +39,23 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class AppWarningsModel @Inject constructor(
-    val context: Application,
-    storageLowReceiver: StorageLowReceiver
+    val context: Application
 ): ViewModel(), SyncStatusObserver {
 
     /** whether storage is low (prevents sync framework from running synchronization) */
-    val storageLow = storageLowReceiver.storageLow
+    val storageLow =
+        broadcastReceiverFlow(
+            context = context,
+            filter = IntentFilter().apply {
+                addAction(Intent.ACTION_DEVICE_STORAGE_LOW)
+                addAction(Intent.ACTION_DEVICE_STORAGE_OK)
+            }
+        ).map { intent ->
+            when (intent.action) {
+                Intent.ACTION_DEVICE_STORAGE_LOW -> true
+                else -> false
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     /** whether global sync is disabled (sync framework won't run automatic synchronization in this case) */
     val globalSyncDisabled = MutableLiveData<Boolean>()
@@ -56,14 +67,22 @@ class AppWarningsModel @Inject constructor(
 
     private val powerManager = context.getSystemService<PowerManager>()!!
     /** whether battery saver is active */
-    val batterySaverActive = broadcastReceiverFlow(context, IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED))
-        .map { powerManager.isPowerSaveMode }
+    val batterySaverActive =
+        broadcastReceiverFlow(
+            context = context,
+            filter = IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED),
+            immediate = true
+        ).map { powerManager.isPowerSaveMode }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     private val connectivityManager = context.getSystemService<ConnectivityManager>()!!
     /** whether data saver is restricting background synchronization ([ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED]) */
-    val dataSaverEnabled = broadcastReceiverFlow(context, IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED))
-        .map { connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED }
+    val dataSaverEnabled =
+        broadcastReceiverFlow(
+            context = context,
+            filter = IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED),
+            immediate = true
+        ).map { connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     init {

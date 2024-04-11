@@ -89,8 +89,6 @@ class PermissionsActivity: AppCompatActivity() {
                     checkPermissions()
                 }
             }
-
-            checkPermissions()
         }
 
         @MainThread
