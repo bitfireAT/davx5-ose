@@ -7,6 +7,7 @@ package at.bitfire.davdroid
 import android.content.Context
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.TaskUtils
+import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,19 +17,17 @@ import kotlinx.coroutines.launch
  * Watches whether a tasks app has been installed or uninstalled and updates
  * the selected tasks app and task sync settings accordingly.
  */
-class TasksWatcher private constructor(
-    context: Context
-): PackageChangedReceiver(context) {
+object TasksWatcher {
 
-    companion object {
-
-        fun watch(context: Context) {
-            TasksWatcher(context).register(true)
+    fun watchInstalledTaskApps(context: Context, externalScope: CoroutineScope) {
+        externalScope.launch {
+            packageChangedFlow(context).collect {
+                onPackageChanged(context)
+            }
         }
-
     }
 
-    override fun onPackageChanged() {
+    private fun onPackageChanged(context: Context) {
         CoroutineScope(Dispatchers.Default).launch {
             val currentProvider = TaskUtils.currentProvider(context)
             Logger.log.info("App launched or package (un)installed; current tasks provider = $currentProvider")

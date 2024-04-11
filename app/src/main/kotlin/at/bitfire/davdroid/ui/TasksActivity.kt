@@ -47,7 +47,6 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
@@ -56,6 +55,7 @@ import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.RadioWithSwitch
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.davdroid.util.TaskUtils
+import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -122,20 +122,20 @@ class TasksActivity: AppCompatActivity() {
         val tasksOrgInstalled = MutableLiveData<Boolean>()
         val openTasksInstalled = MutableLiveData<Boolean>()
 
-        private val pkgChangedReceiver = object: PackageChangedReceiver(context) {
-            override fun onPackageChanged() {
-                jtxInstalled.postValue(isInstalled(TaskProvider.ProviderName.JtxBoard.packageName))
-                tasksOrgInstalled.postValue(isInstalled(TaskProvider.ProviderName.TasksOrg.packageName))
-                openTasksInstalled.postValue(isInstalled(TaskProvider.ProviderName.OpenTasks.packageName))
-            }
-        }
-
         init {
-            pkgChangedReceiver.register(true)
+            viewModelScope.launch {
+                packageChangedFlow(context).collect {
+                    checkTasksApps()
+                }
+            }
+
+            checkTasksApps()
         }
 
-        override fun onCleared() {
-            pkgChangedReceiver.close()
+        private fun checkTasksApps() {
+            jtxInstalled.postValue(isInstalled(TaskProvider.ProviderName.JtxBoard.packageName))
+            tasksOrgInstalled.postValue(isInstalled(TaskProvider.ProviderName.TasksOrg.packageName))
+            openTasksInstalled.postValue(isInstalled(TaskProvider.ProviderName.OpenTasks.packageName))
         }
 
         private fun isInstalled(packageName: String): Boolean =

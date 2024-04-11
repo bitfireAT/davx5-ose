@@ -73,6 +73,7 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -196,13 +197,13 @@ class AccountsActivity: AppCompatActivity() {
                                     if (intent.resolveActivity(packageManager) != null)
                                         startActivity(intent)
                                 },
-                                dataSaverActive = warnings.dataSaverEnabled.observeAsState().value == true,
+                                dataSaverActive = warnings.dataSaverEnabled.collectAsStateWithLifecycle().value,
                                 onManageDataSaver = {
                                     val intent = Intent(Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS, Uri.parse("package:$packageName"))
                                     if (intent.resolveActivity(packageManager) != null)
                                         startActivity(intent)
                                 },
-                                batterySaverActive = warnings.batterySaverActive.observeAsState().value == true,
+                                batterySaverActive = warnings.batterySaverActive.collectAsStateWithLifecycle().value,
                                 onManageBatterySaver = {
                                     val intent = Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS)
                                     if (intent.resolveActivity(packageManager) != null)

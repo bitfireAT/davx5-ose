@@ -35,15 +35,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.composable.BasicTopAppBar
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
+import kotlinx.coroutines.launch
 import java.util.logging.Level
 
 class PermissionsActivity: AppCompatActivity() {
@@ -81,19 +83,14 @@ class PermissionsActivity: AppCompatActivity() {
         var tasksOrgAvailable by mutableStateOf(false)
         var jtxAvailable by mutableStateOf(false)
 
-        private val tasksWatcher = object: PackageChangedReceiver(app) {
-            override fun onPackageChanged() {
-                checkPermissions()
-            }
-        }
-
         init {
-            tasksWatcher.register()
-            checkPermissions()
-        }
+            viewModelScope.launch {
+                packageChangedFlow(app).collect {
+                    checkPermissions()
+                }
+            }
 
-        override fun onCleared() {
-            tasksWatcher.close()
+            checkPermissions()
         }
 
         @MainThread

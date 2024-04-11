@@ -14,6 +14,8 @@ import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import java.util.logging.Level
 import javax.inject.Inject
 import kotlin.concurrent.thread
@@ -64,8 +66,9 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
             // watch storage because low storage means sync framework stops local content update notifications
             storageLowReceiver.listen()
 
-            // watch installed/removed tasks apps and update sync settings accordingly
-            TasksWatcher.watch(this)
+            // watch installed/removed tasks apps over whole app lifetime and update sync settings accordingly
+            @OptIn(DelicateCoroutinesApi::class)
+            TasksWatcher.watchInstalledTaskApps(this, GlobalScope)
 
             // create/update app shortcuts
             UiUtils.updateShortcuts(this)
