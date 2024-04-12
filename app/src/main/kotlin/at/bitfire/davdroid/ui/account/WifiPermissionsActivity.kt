@@ -7,8 +7,6 @@ package at.bitfire.davdroid.ui.account
 import android.Manifest
 import android.accounts.Account
 import android.app.Application
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.LocationManager
@@ -16,7 +14,6 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -40,7 +37,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -50,16 +46,21 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -109,7 +110,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
                                     packageManager.backgroundPermissionOptionLabel.toString()
                                 else
                                     stringResource(R.string.wifi_permissions_background_location_permission_label),
-                            locationServiceEnabled = model.isLocationEnabled.observeAsState(false).value
+                            locationServiceEnabled = model.locationEnabled.collectAsStateWithLifecycle().value
                         )
                     }
                 }
@@ -129,9 +130,10 @@ class WifiPermissionsActivity: AppCompatActivity() {
         backgroundPermissionOptionLabel: String,
         locationServiceEnabled: Boolean
     ) {
-        Column(Modifier
-            .padding(8.dp)
-            .verticalScroll(rememberScrollState())) {
+        Column(
+            Modifier
+                .padding(8.dp)
+                .verticalScroll(rememberScrollState())) {
             Text(
                 stringResource(R.string.wifi_permissions_intro),
                 style = MaterialTheme.typography.body1
@@ -264,30 +266,11 @@ class WifiPermissionsActivity: AppCompatActivity() {
         context: Application
     ): ViewModel() {
 
-        val isLocationEnabled: LiveData<Boolean> = object: LiveData<Boolean>() {
-            val locationChangedReceiver = object: BroadcastReceiver() {
-                override fun onReceive(context: Context, intent: Intent) {
-                    update()
-                }
-            }
+        private val locationManager = context.getSystemService<LocationManager>()!!
 
-            override fun onActive() {
-                context.registerReceiver(locationChangedReceiver, IntentFilter(LocationManager.MODE_CHANGED_ACTION))
-                update()
-            }
-
-            override fun onInactive() {
-                context.unregisterReceiver(locationChangedReceiver)
-            }
-
-            @MainThread
-            fun update() {
-                context.getSystemService<LocationManager>()?.let { locationManager ->
-                    val locationEnabled = LocationManagerCompat.isLocationEnabled(locationManager)
-                    value = locationEnabled
-                }
-            }
-        }
+        val locationEnabled = broadcastReceiverFlow(context, IntentFilter(LocationManager.MODE_CHANGED_ACTION))
+            .map { LocationManagerCompat.isLocationEnabled(locationManager) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     }
 

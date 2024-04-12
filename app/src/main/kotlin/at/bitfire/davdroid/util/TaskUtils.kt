@@ -134,7 +134,7 @@ object TaskUtils {
      * Called
      *
      * - when a user explicitly selects another task app, or
-     * - when there previously was no (usable) tasks app and [at.bitfire.davdroid.TasksWatcher] detected a new one.
+     * - when there previously was no (usable) tasks app and [at.bitfire.davdroid.TasksAppWatcher] detected a new one.
      */
     fun selectProvider(context: Context, selectedProvider: ProviderName?) {
         Logger.log.info("Selecting tasks app: $selectedProvider")
