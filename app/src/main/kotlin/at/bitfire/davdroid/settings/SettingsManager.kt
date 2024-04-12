@@ -154,6 +154,7 @@ class SettingsManager internal constructor(
     fun getBooleanOrNull(key: String): Boolean? = getValue(key) { provider -> provider.getBoolean(key) }
     fun getBoolean(key: String): Boolean = getBooleanOrNull(key) ?: throw NoSuchPropertyException(key)
     fun getBooleanFlow(key: String): Flow<Boolean?> = observerFlow { getBooleanOrNull(key) }
+    fun getBooleanFlow(key: String, defaultValue: Boolean): Flow<Boolean> = observerFlow { getBooleanOrNull(key) ?: defaultValue }
 
     fun getIntOrNull(key: String): Int? = getValue(key) { provider -> provider.getInt(key) }
     fun getInt(key: String): Int = getIntOrNull(key) ?: throw NoSuchPropertyException(key)

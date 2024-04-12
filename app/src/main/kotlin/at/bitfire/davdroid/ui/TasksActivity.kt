@@ -104,7 +104,7 @@ class TasksActivity: AppCompatActivity() {
 
         }
 
-        val showAgain = settings.getBooleanFlow(HINT_OPENTASKS_NOT_INSTALLED)
+        val showAgain = settings.getBooleanFlow(HINT_OPENTASKS_NOT_INSTALLED, true)
         fun setShowAgain(showAgain: Boolean) {
             if (showAgain)
                 settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
@@ -166,7 +166,7 @@ fun TasksCard(
     val openTasksInstalled = model.openTasksInstalled
     val openTasksSelected by model.openTasksSelected.collectAsStateWithLifecycle(false)
 
-    val showAgain = model.showAgain.collectAsStateWithLifecycle(null).value ?: false
+    val showAgain by model.showAgain.collectAsStateWithLifecycle(true)
 
     fun installApp(packageName: String) {
         val uri = Uri.parse("market://details?id=$packageName&referrer=" +
