@@ -21,7 +21,6 @@ import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsClient
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
@@ -30,6 +29,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -129,10 +129,9 @@ object UiUtils {
     @OptIn(ExperimentalTextApi::class)
     @Composable
     fun Spanned.toAnnotatedString() = buildAnnotatedString {
-        val style = LocalTextStyle.current.toSpanStyle()
-        pushStyle(style)
         val spanned = this@toAnnotatedString
         append(spanned.toString())
+
         for (span in getSpans<Any>(0, spanned.length)) {
             val start = getSpanStart(span)
             val end = getSpanEnd(span)
@@ -140,11 +139,11 @@ object UiUtils {
                 is StyleSpan ->
                     when (span.style) {
                         Typeface.BOLD -> addStyle(
-                            style.copy(fontWeight = FontWeight.Bold),
+                            SpanStyle(fontWeight = FontWeight.Bold),
                             start = start, end = end
                         )
                         Typeface.ITALIC -> addStyle(
-                            style.copy(fontStyle = FontStyle.Italic),
+                            SpanStyle(fontStyle = FontStyle.Italic),
                             start = start, end = end
                         )
                     }
@@ -154,7 +153,7 @@ object UiUtils {
                         start = start, end = end
                     )
                     addStyle(
-                        style.copy(
+                        SpanStyle(
                             textDecoration = TextDecoration.Underline,
                             color = MaterialTheme.colors.secondary
                         ),
