@@ -10,6 +10,15 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
+/**
+ * Creates a flow that emits the respective [Intent] when a broadcast is received.
+ *
+ * @param context the context to register the receiver with
+ * @param filter  specifies which broadcasts shall be received
+ * @param immediate if `true`, send an empty [Intent] as first value
+ *
+ * @return cold flow of [Intent]s
+ */
 @SuppressLint("UnspecifiedRegisterReceiverFlag")
 fun broadcastReceiverFlow(context: Context, filter: IntentFilter, immediate: Boolean = true): Flow<Intent> = callbackFlow {
     val receiver = object: BroadcastReceiver() {
@@ -35,6 +44,14 @@ fun broadcastReceiverFlow(context: Context, filter: IntentFilter, immediate: Boo
     }
 }
 
+/**
+ * Creates a flow that emits the Intent when a package is added, changed or removed.
+ *
+ * @param context the context to register the receiver with
+ * @param immediate if `true`, send an empty [Intent] as first value
+ *
+ * @return cold flow of [Intent]s
+ */
 fun packageChangedFlow(context: Context, immediate: Boolean = true): Flow<Intent> {
     val filter = IntentFilter(Intent.ACTION_PACKAGE_ADDED).apply {
         addAction(Intent.ACTION_PACKAGE_CHANGED)
