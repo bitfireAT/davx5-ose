@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: '22 10 * * 1'
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: codeql-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
