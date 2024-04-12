@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.widget
 
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -23,7 +24,7 @@ fun ClickableTextWithLink(
 
     ClickableText(
         text = text,
-        style = style,
+        style = style.copy(color = LocalContentColor.current),
         modifier = modifier
     ) { index ->
         // Get the tapped position, and check if there's any link
