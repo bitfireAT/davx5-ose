@@ -11,10 +11,11 @@
     <!-- app theme -->
 
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- see https://github.com/material-components/material-components-android/blob/master/docs/theming/Color.md for component color names -->
+        <!-- These non-Compose theme variables are required for AppIntro as long it doesn't support Compose: -->
         <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryDark">@color/primaryDarkColor</item>       <!-- additionally required for AppCompatActivity -->
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorPrimaryVariant">@color/primaryLightColor</item>
+        <item name="android:colorBackground">@android:color/white</item>
     </style>
 
     <!-- stepper (wizard) -->
