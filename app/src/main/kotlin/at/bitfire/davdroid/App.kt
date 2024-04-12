@@ -63,7 +63,7 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
             accountsUpdatedListener.listen()
 
             // watch installed/removed tasks apps over whole app lifetime and update sync settings accordingly
-            TasksWatcher.watchInstalledTaskApps(this, GlobalScope)
+            TasksAppWatcher.watchInstalledTaskApps(this, GlobalScope)
 
             // create/update app shortcuts
             UiUtils.updateShortcuts(this)
