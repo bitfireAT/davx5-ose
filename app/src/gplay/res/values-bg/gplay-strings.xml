@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    </resources>
+    <string name="navigation_drawer_support_project">Подкрепи проекта</string>
+    <string name="nav_rate_us">Оценки в Google Play</string>
+    <string name="button_buy_badge_bought">Благодаря!</string>
+    <string name="network_problems">Проблеми с мрежата, моля опитайте по-късно.</string>
+</resources>
