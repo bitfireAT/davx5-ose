@@ -189,36 +189,28 @@
   <string name="account_install_icsx5">ICSx⁵ را نصب کنید</string>
   <!--AddAccountActivity-->
   <string name="login_title">افزودن حساب</string>
+  <string name="login_login">وارد شدن</string>
   <string name="login_type_email">با آدرس ایمیل وارد شوید</string>
   <string name="login_email_address">آدرس پست الکترونیکی</string>
   <string name="login_email_address_error">آدرس ایمیل معتبر لازم است</string>
   <string name="login_password">گذرواژه</string>
-  <string name="login_password_required">گذرواژه مورد نیاز است</string>
   <string name="login_type_url">با URL و نام کاربری وارد شوید</string>
-  <string name="login_url_must_be_http_or_https">URL باید با http (ها) شروع شود: //</string>
   <string name="login_user_name">نام کاربری</string>
-  <string name="login_user_name_required">نام کاربری مورد نیاز است</string>
   <string name="login_base_url">آدرس پایه</string>
   <string name="login_select_certificate">گواهی را انتخاب کنید</string>
-  <string name="login_login">وارد شدن</string>
   <string name="login_create_account">ساخت حساب</string>
   <string name="login_account_name">عنوان حساب</string>
-  <string name="login_account_avoid_apostrophe">گزارش شده، استفاده از علامت (\') باعث بوجود آمدن مشکل در برخی دستگاه ها می شود.</string>
   <string name="login_account_name_info">از آدرس ایمیل خود به عنوان نام حساب استفاده کنید زیرا Android از نام حساب به عنوان قسمت ORGANIZER برای رویدادهایی که ایجاد می کنید استفاده خواهد کرد. نمی توانید دو حساب با یک نام داشته باشید.</string>
   <string name="login_account_contact_group_method">روش گروه تماس:</string>
   <string name="login_account_name_required">نام حساب لازم است</string>
   <string name="login_account_name_already_taken">نام حساب قبلاً گرفته شده است</string>
   <string name="login_account_not_created">حساب ایجاد نشد</string>
-  <string name="login_type_advanced">ورود پیشرفته (موارد استفاده خاص)</string>
-  <string name="login_use_username_password">از نام کاربری / رمز عبور استفاده کنید</string>
-  <string name="login_use_client_certificate">از گواهی مشتری استفاده کنید</string>
   <string name="login_no_certificate_found">گواهی یافت نشد</string>
   <string name="login_install_certificate">نصب گواهی</string>
   <string name="login_configuration_detection">تشخیص پیکربندی</string>
   <string name="login_querying_server">لطفا صبر کنید، پرس و جو سرور ...</string>
   <string name="login_no_service">سرویس CalDAV یا CardDAV پیدا نشد.</string>
-  <string name="login_check_credentials">نام کاربری (آدرس ایمیل) / رمز عبور اشتباه است؟</string>
-  <string name="login_view_logs">نمایش جزئیات</string>
+  <string name="login_view_logs">دیدن رویدادها</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">همگام سازی</string>
   <string name="settings_sync_interval_contacts">همگام سازی مخاطبین </string>
@@ -279,7 +271,6 @@
   <!--collection management-->
   <string name="create_addressbook">ایجاد دفترچه آدرس</string>
   <string name="create_calendar">تقویم ایجاد کنید</string>
-  <string name="create_calendar_time_zone">منطقه زمانی</string>
   <string name="create_calendar_type">ورودی های احتمالی تقویم</string>
   <string name="create_calendar_type_vevent">رویدادها</string>
   <string name="create_calendar_type_vtodo">فعالیت ها</string>
@@ -354,5 +345,7 @@
   <string name="sync_invalid_event">رویداد نامعتبر از سرور دریافت شد</string>
   <string name="sync_invalid_task">کار نامعتبر از سرور دریافت شد</string>
   <string name="sync_invalid_resources_ignoring">نادیده گرفتن یک یا چند منبع نامعتبر</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">همگام سازی همه حساب‌ها</string>
   <!--cert4android-->
 </resources>

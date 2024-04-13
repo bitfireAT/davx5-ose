@@ -180,36 +180,28 @@
   <string name="account_install_icsx5">Cài đặt ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Thêm tài khoản</string>
+  <string name="login_login">Đăng nhập</string>
   <string name="login_type_email">Đăng nhập bằng địa chỉ email</string>
   <string name="login_email_address">Địa chỉ email</string>
   <string name="login_email_address_error">Yêu cầu địa chỉ email hợp lệ</string>
   <string name="login_password">Mật khẩu</string>
-  <string name="login_password_required">Yêu cầu mật khẩu</string>
   <string name="login_type_url">Đăng nhập bằng URL và tên người dùng</string>
-  <string name="login_url_must_be_http_or_https">URL phải bắt đầu bằng http(s)://</string>
   <string name="login_user_name">Tên người dùng</string>
-  <string name="login_user_name_required">Yêu cầu tên người dùng</string>
   <string name="login_base_url">URL cơ sở</string>
   <string name="login_select_certificate">Chọn chứng chỉ</string>
-  <string name="login_login">Đăng nhập</string>
   <string name="login_create_account">Tạo tài khoản</string>
   <string name="login_account_name">Tên tài khoản</string>
-  <string name="login_account_avoid_apostrophe">Việc sử dụng dấu nháy đơn đã được báo cáo là gây ra vấn đề ở một số thiết bị.</string>
   <string name="login_account_name_info">Sử dụng địa chỉ email của bạn làm tên tài khoản vì Android sẽ sử dụng tên tài khoản làm trường ORGANIZER cho các sự kiện bạn tạo. Bạn không thể có hai tài khoản với cùng một tên.</string>
   <string name="login_account_contact_group_method">Phương pháp nhóm danh bạ:</string>
   <string name="login_account_name_required">Yêu cầu tên tài khoản</string>
   <string name="login_account_name_already_taken">Tên tài khoản đã được sử dụng</string>
   <string name="login_account_not_created">Không thể tạo tài khoản</string>
-  <string name="login_type_advanced">Đăng nhập nâng cao (trường hợp sử dụng đặc biệt)</string>
-  <string name="login_use_username_password">Sử dụng tên người dùng/mật khẩu</string>
-  <string name="login_use_client_certificate">Sử dụng chứng chỉ khách</string>
   <string name="login_no_certificate_found">Không tìm thấy chứng chỉ nào</string>
   <string name="login_install_certificate">Cài đặt chứng chỉ</string>
   <string name="login_configuration_detection">Dò tìm thiết lập</string>
   <string name="login_querying_server">Vui lòng đợi, đang truy vấn máy chủ…</string>
   <string name="login_no_service">Không thể tìm dịch vụ CalDAV hoặc CardDAV.</string>
-  <string name="login_check_credentials">Tên người dùng (địa chỉ email) / mật khẩu bị sai?</string>
-  <string name="login_view_logs">Hiện chi tiết</string>
+  <string name="login_view_logs">Xem nhật ký</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Đồng bộ hoá</string>
   <string name="settings_sync_interval_contacts">Khoảng thời gian giữa mỗi lần đồng bộ danh bạ</string>
@@ -268,7 +260,6 @@
   <!--collection management-->
   <string name="create_addressbook">Tạo sổ địa chỉ</string>
   <string name="create_calendar">Tạo lịch</string>
-  <string name="create_calendar_time_zone">Múi giờ</string>
   <string name="create_calendar_type">Các mục của lịch có thể có</string>
   <string name="create_calendar_type_vevent">Sự kiện</string>
   <string name="create_calendar_type_vtodo">Công việc</string>
@@ -354,5 +345,7 @@
   <string name="sync_invalid_event">Đã nhận sự kiện không hợp lệ từ máy chủ</string>
   <string name="sync_invalid_task">Đã nhận công việc không hợp lệ từ máy chủ</string>
   <string name="sync_invalid_resources_ignoring">Đang bỏ qua một hoặc nhiều tài nguyên không hợp lệ</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">Đồng bộ tất cả tài khoản</string>
   <!--cert4android-->
 </resources>

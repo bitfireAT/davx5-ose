@@ -110,18 +110,15 @@
   <string name="account_install_icsx5">安裝ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">新增帳號</string>
+  <string name="login_login">登入</string>
   <string name="login_type_email">用 Email 地址登入</string>
   <string name="login_email_address">Email 地址</string>
   <string name="login_email_address_error">請輸入有效的 Email 地址</string>
   <string name="login_password">密碼</string>
-  <string name="login_password_required">必須填寫密碼</string>
   <string name="login_type_url">用網址和帳號登入</string>
-  <string name="login_url_must_be_http_or_https">網址開頭必須是 http(s)://</string>
   <string name="login_user_name">使用者帳號</string>
-  <string name="login_user_name_required">必須填寫使用者帳號</string>
   <string name="login_base_url">根 URL</string>
   <string name="login_select_certificate">點選憑證</string>
-  <string name="login_login">登入</string>
   <string name="login_create_account">新建帳號</string>
   <string name="login_account_name">帳號名稱</string>
   <string name="login_account_name_info">使用 Email 地址當作裝置上的帳號顯示名稱，因為當您在行事曆創建活動時，Android 會把帳號顯示名稱放到｢活動發起人」欄位。兩個帳號不能有相同的名稱。</string>
@@ -132,7 +129,6 @@
   <string name="login_configuration_detection">設定錯誤</string>
   <string name="login_querying_server">請稍待，正在詢問伺服器…</string>
   <string name="login_no_service">找不到 CalDAV 或 CardDAV 服務。</string>
-  <string name="login_view_logs">顯示詳細訊息</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">同步設定</string>
   <string name="settings_sync_interval_contacts">聯絡人同步間隔</string>
@@ -185,7 +181,6 @@
   <!--collection management-->
   <string name="create_addressbook">建立通訊錄</string>
   <string name="create_calendar">建立行事曆</string>
-  <string name="create_calendar_time_zone">時區</string>
   <string name="create_calendar_type">可使用的行事曆項目</string>
   <string name="create_calendar_type_vevent">活動</string>
   <string name="create_calendar_type_vtodo">事務</string>
@@ -227,5 +222,6 @@
   <string name="sync_invalid_event">收到了無效的事件</string>
   <string name="sync_invalid_task">收到了無效的任務</string>
   <string name="sync_invalid_resources_ignoring">略過了一個或多個無效的資料</string>
+  <!--widgets-->
   <!--cert4android-->
 </resources>

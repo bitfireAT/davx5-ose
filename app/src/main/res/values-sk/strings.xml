@@ -84,18 +84,15 @@
   <string name="account_install_icsx5">Nainštalovať ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Pridať účet</string>
+  <string name="login_login">Prihlásiť sa</string>
   <string name="login_type_email">Prihlásiť sa e-mailovou adresou</string>
   <string name="login_email_address">E-mailová adresa</string>
   <string name="login_email_address_error">Vyžaduje sa platná e-mailová adresa</string>
   <string name="login_password">Heslo</string>
-  <string name="login_password_required">Vyžaduje sa heslo</string>
   <string name="login_type_url">Prihlásiť sa s použitím URL a používateľského mena</string>
-  <string name="login_url_must_be_http_or_https">URL musí začínať s http(s)://</string>
   <string name="login_user_name">Používateľské meno</string>
-  <string name="login_user_name_required">Vyžaduje sa používateľské meno</string>
   <string name="login_base_url">Základné URL</string>
   <string name="login_select_certificate">Zvoliť certifikát</string>
-  <string name="login_login">Prihlásiť sa</string>
   <string name="login_create_account">Vytvoriť používateľský účet</string>
   <string name="login_account_name">Meno používateľského účtu</string>
   <string name="login_account_name_info">Použite vašu e-mailovú adresu ako meno používateľského účtu pretože Android používa meno účtu v poli ORGANIZÁTOR pre udalosti ktoré vytvoríte. Nie je možné mať dva používateľské účty s rovnakým menom.</string>
@@ -106,7 +103,6 @@
   <string name="login_configuration_detection">Zisťuje sa konfigurácia</string>
   <string name="login_querying_server">Čakajte, prosím, zasiela sa dopyt na server...</string>
   <string name="login_no_service">Nie je možné nájsť služby CalDAV ani CardDAV.</string>
-  <string name="login_view_logs">Zobraziť podrobnosti</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronizácia</string>
   <string name="settings_sync_interval_contacts">Synchr. interval pre kontakty</string>
@@ -164,7 +160,6 @@
   <!--collection management-->
   <string name="create_addressbook">Vytvoriť adresár</string>
   <string name="create_calendar">Vytvoriť kalendár</string>
-  <string name="create_calendar_time_zone">Časová zóna</string>
   <string name="create_calendar_type">Možné kalendárové položky</string>
   <string name="create_calendar_type_vevent">Udalosti</string>
   <string name="create_calendar_type_vtodo">Úlohy</string>
@@ -206,5 +201,6 @@
   <string name="sync_invalid_event">Udalosť prijatá zo servera nie je platná</string>
   <string name="sync_invalid_task">Úloha prijatá zo servera nie je platná</string>
   <string name="sync_invalid_resources_ignoring">Ignoruje sa jeden alebo viac neplatných zdrojov</string>
+  <!--widgets-->
   <!--cert4android-->
 </resources>

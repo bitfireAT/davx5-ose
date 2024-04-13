@@ -179,36 +179,28 @@
   <string name="account_install_icsx5">ICSx⁵를 설치합니다.</string>
   <!--AddAccountActivity-->
   <string name="login_title">계정 추가</string>
+  <string name="login_login">로그인</string>
   <string name="login_type_email">이메일 주소로 로그인</string>
   <string name="login_email_address">이메일 주소</string>
   <string name="login_email_address_error">올바른 이메일 주소가 필요합니다.</string>
   <string name="login_password">비밀번호</string>
-  <string name="login_password_required">비밀번호가 필요합니다.</string>
   <string name="login_type_url">로그인 URL 과 사용자이름</string>
-  <string name="login_url_must_be_http_or_https">URL은 반드시 http(s)://로 시작되어야 합니다.</string>
   <string name="login_user_name">사용자 이름</string>
-  <string name="login_user_name_required">사용자 이름이 필요합니다.</string>
   <string name="login_base_url">기본 URL</string>
   <string name="login_select_certificate">인증서 선택</string>
-  <string name="login_login">로그인</string>
   <string name="login_create_account">계정 생성</string>
   <string name="login_account_name">계정 이름</string>
-  <string name="login_account_avoid_apostrophe">따옴표(\')를 사용하면 일부 장치에서 문제가 발생하는 것으로 보고되었습니다.</string>
   <string name="login_account_name_info">Android는 사용자가 만든 이벤트에 대해 계정 이름을 ORGANGER 필드로 사용하므로 전자 메일 주소를 계정 이름으로 사용합니다. 이름이 같은 두 개의 계정을 가질 수 없습니다.</string>
   <string name="login_account_contact_group_method">연락처 분류 방법:</string>
   <string name="login_account_name_required">계정 이름 필요</string>
   <string name="login_account_name_already_taken">계정 이름이 이미 사용되었습니다.</string>
   <string name="login_account_not_created">계정을 만들 수 없습니다.</string>
-  <string name="login_type_advanced">Advanced 로그인 (special use cases)</string>
-  <string name="login_use_username_password">사용자 이름/비밀번호 사용</string>
-  <string name="login_use_client_certificate">클라이언트 인증서 사용</string>
   <string name="login_no_certificate_found">인증서를 찾을 수 없음</string>
   <string name="login_install_certificate">인증서 설치</string>
   <string name="login_configuration_detection">구성 탐색</string>
   <string name="login_querying_server">잠시 기다려 주십시오. 서버를 쿼리하고 있습니다...</string>
   <string name="login_no_service">CalDAV 또는 CardDAV 서비스를 찾을 수 없습니다.</string>
-  <string name="login_check_credentials">사용자 이름 (email address) / 비밀번호 가 잘못되었습니까?</string>
-  <string name="login_view_logs">자세히</string>
+  <string name="login_view_logs">logs 보기</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">동기화</string>
   <string name="settings_sync_interval_contacts">주기적 연락처 동기화 </string>
@@ -267,7 +259,6 @@
   <!--collection management-->
   <string name="create_addressbook">주소록 생성</string>
   <string name="create_calendar">캘린더 생성</string>
-  <string name="create_calendar_time_zone">시간대 </string>
   <string name="create_calendar_type">가능한 캘린더 항목</string>
   <string name="create_calendar_type_vevent">이벤트</string>
   <string name="create_calendar_type_vtodo">할일 목록</string>
@@ -351,5 +342,7 @@
   <string name="sync_invalid_event">서버에서 잘못된 이벤트를 수신했습니다.</string>
   <string name="sync_invalid_task">서버에서 잘못된 작업을 수신했습니다.</string>
   <string name="sync_invalid_resources_ignoring">하나 이상의 잘못된 리소스 무시</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">모든 계정 동기화</string>
   <!--cert4android-->
 </resources>

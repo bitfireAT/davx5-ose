@@ -10,10 +10,10 @@
   <string name="help">Axuda</string>
   <string name="manage_accounts">Xestionar contas</string>
   <string name="navigate_up">Ir arriba</string>
-  <string name="no_internet_sync_scheduled">Non hai conexión, programando a sincr</string>
+  <string name="optional_label">* optativo</string>
   <string name="options_menu">Menú de opcións</string>
   <string name="share">Compartir</string>
-  <string name="sync_started">Comezou a sincronización</string>
+  <string name="sync_started">Sincronización iniciada/en agarda</string>
   <string name="database_destructive_migration_title">Base de datos estragada</string>
   <string name="database_destructive_migration_text">Elimináronse todas as contas de xeito local</string>
   <string name="notification_channel_debugging">Depurando</string>
@@ -86,6 +86,7 @@
   <string name="wifi_permissions_background_location_permission">Permiso de localización en segundo plano</string>
   <string name="wifi_permissions_background_location_permission_label">Permitir en todo momento</string>
   <string name="wifi_permissions_background_location_permission_on">Permiso de localización establecido como: %s</string>
+  <string name="wifi_permissions_background_location_permission_off">O permiso de localización non é: %s</string>
   <string name="wifi_permissions_background_location_disclaimer">%s utiliza o permiso de Localización só para determinar o SSID da WiFi para contas restrinxidas a uns SSIDs. Esto acontecerá incluso cando a app está en segundo plano. Non se recollen datos de localización, nin se gardan, procesan ou envían a ningún sitio.</string>
   <string name="wifi_permissions_location_enabled">Localización sempre activada</string>
   <string name="wifi_permissions_location_enabled_on">Servizo de localización activado</string>
@@ -210,31 +211,36 @@
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Engadir conta</string>
+  <string name="login_generic_login">Acceso xenérico</string>
+  <string name="login_provider_login">Acceso específico do provedor</string>
+  <string name="login_continue">Continuar</string>
+  <string name="login_login">Conectar</string>
   <string name="login_type_email">Conectar con enderezo de correo-e</string>
   <string name="login_email_address">Enderezo de correo-e</string>
   <string name="login_email_address_error">Requíre un enderezo de correo válido</string>
+  <string name="login_email_address_info"><![CDATA[O dominio do correo úsase como URL base. Descúbrense os <a href="%s">Servizos
+</a> usando rexistros DNS de URLs tipo well-known.]]></string>
   <string name="login_password">Contrasinal</string>
   <string name="login_password_hide">Agochar contrasinal</string>
   <string name="login_password_show">Mostrar contrasinal</string>
-  <string name="login_password_required">Require contrasinal</string>
+  <string name="login_password_optional">Contrasinal*</string>
   <string name="login_type_url">Conectar con URL e nome de usuaria</string>
-  <string name="login_url_must_be_http_or_https">URL debe comezar con http(s)://</string>
   <string name="login_user_name">Nome de usuaria</string>
-  <string name="login_user_name_required">Require nome de usuaria</string>
+  <string name="login_user_name_optional">Identificador*</string>
   <string name="login_base_url">URL base</string>
+  <string name="login_base_url_info"><![CDATA[O URL base compróbase directamente, mais os <a href="%s">servizos tamén se atopan</a> usando rexistros DNS e URLs tipo well-known.]]></string>
   <string name="login_select_certificate">Escoller certificado</string>
-  <string name="login_login">Conectar</string>
   <string name="login_create_account">Crear conta</string>
   <string name="login_account_name">Nome da conta</string>
-  <string name="login_account_avoid_apostrophe">O uso de apóstrofes (\') pode causar problemas nalgúns dispositivos, según nos informan.</string>
+  <string name="login_account_avoid_apostrophe">O uso de apóstrofes (\') semella que causa problemas nalgúns dispositivos.</string>
   <string name="login_account_name_info">Utiliza o teu enderezo de correo electrónico como nome de conta xa que Android utilizará o nome da conta como campo ORGANIZADOR para os eventos que cree. Non poderás ter dúas contas co mesmo nome.</string>
   <string name="login_account_contact_group_method">Método para agrupar contacto:</string>
   <string name="login_account_name_required">Nome de conta requerido</string>
   <string name="login_account_name_already_taken">O nome de conta xa está a ser utilizado</string>
   <string name="login_account_not_created">Non se creou a conta</string>
-  <string name="login_type_advanced">Conexión avanzada (casos especiais)</string>
-  <string name="login_use_username_password">Usar nome de usuaria/contrasinal</string>
-  <string name="login_use_client_certificate">Usar certificado cliente</string>
+  <string name="login_type_advanced">Acceso avanzado</string>
+  <string name="login_no_client_certificate_optional">Sen certificado cliente*</string>
+  <string name="login_client_certificate_selected">Certificado cliente: %s</string>
   <string name="login_no_certificate_found">Non se atopa certificado</string>
   <string name="login_install_certificate">Instalar certificado</string>
   <string name="login_type_google">Contactos / Calendario de Google</string>
@@ -248,7 +254,6 @@
   <string name="login_oauth_couldnt_obtain_auth_code">Non se puido obter o código de autorización</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Acceder con Nextcloud</string>
-  <string name="login_nextcloud_login_flow">Acceso Asistido</string>
   <string name="login_nextcloud_login_flow_text">Accederás usando Nextcloud nun navegador Web.</string>
   <string name="login_nextcloud_login_flow_server_address">Enderezo do servidor Nextcloud</string>
   <string name="login_nextcloud_login_flow_sign_in">Acceder</string>
@@ -257,8 +262,11 @@
   <string name="login_configuration_detection">Detección da configuración</string>
   <string name="login_querying_server">Agarda por favor, consultando o servidor…</string>
   <string name="login_no_service">Non se atopou servizo CalDAV ou CardDAV.</string>
-  <string name="login_check_credentials">¿Usuaria (enderezo email) / contrasinal incorrectos?</string>
-  <string name="login_view_logs">Mostrar detalles</string>
+  <string name="login_no_service_info">O URL base non parece ser accesible. Non se puido detectar o URL do servizo CalDAV/CardDAV.</string>
+  <string name="login_see_tested_services"><![CDATA[Le as instruccións do teu provedor de servizos e <a href="%s">a nosa lista de servizos comprobados</a> e os seus URLs base.</a>]]></string>
+  <string name="login_check_credentials">Ademais comproba ben a autenticación (normalmente identificador e contrasinal).</string>
+  <string name="login_logs_available">Tes dispoñible máis información técnica nos rexistros.</string>
+  <string name="login_view_logs">Ver rexistros</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sincronización</string>
   <string name="settings_sync_interval_contacts">Intervalo de sincr. contactos</string>
@@ -292,6 +300,7 @@
   <string name="settings_oauth_summary">Intentar acceder con OAuth outra vez</string>
   <string name="settings_username">Nome de usuaria</string>
   <string name="settings_password">Contrasinal</string>
+  <string name="settings_new_password">Novo contrasinal</string>
   <string name="settings_password_summary">Actualizar o contrasinal de acordo ao teu servidor.</string>
   <string name="settings_certificate_alias">Certificado do cliente</string>
   <string name="settings_certificate_alias_empty">Sen certificado dispoñible ou seleccionado</string>
@@ -326,7 +335,7 @@
   <!--collection management-->
   <string name="create_addressbook">Crear libreta de enderezos</string>
   <string name="create_calendar">Crear calendario</string>
-  <string name="create_calendar_time_zone">Fuso horario</string>
+  <string name="create_calendar_time_zone">Zona horaria por defecto</string>
   <string name="create_calendar_type">Entradas posibles no calendario</string>
   <string name="create_calendar_type_vevent">Eventos</string>
   <string name="create_calendar_type_vtodo">Tarefas</string>
@@ -417,5 +426,8 @@
   <string name="sync_invalid_event">Recibido evento non válido desde o servidor</string>
   <string name="sync_invalid_task">Recibida tarefa non válida desde o servidor</string>
   <string name="sync_invalid_resources_ignoring">Ignorando un ou varios recursos non válidos</string>
+  <!--widgets-->
+  <string name="widget_sync_all">Sincr todo</string>
+  <string name="widget_sync_all_accounts">Sincroniza todas as contas</string>
   <!--cert4android-->
 </resources>

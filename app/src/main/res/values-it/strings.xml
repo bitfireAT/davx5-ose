@@ -10,7 +10,6 @@
   <string name="help">Aiuto</string>
   <string name="manage_accounts">Gestione account</string>
   <string name="share">Condividi</string>
-  <string name="sync_started">Sincronizzazione iniziata</string>
   <string name="database_destructive_migration_title">Database danneggiato</string>
   <string name="database_destructive_migration_text">Tutti gli account sono stati rimossi localmente.</string>
   <string name="notification_channel_debugging">Debugging</string>
@@ -181,29 +180,22 @@
   <string name="account_install_icsx5">Installa ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Aggiungi account</string>
+  <string name="login_login">Login</string>
   <string name="login_type_email">Accedi con indirizzo email</string>
   <string name="login_email_address">Indirizzo email</string>
   <string name="login_email_address_error">È necessario un indirizzo email valido</string>
   <string name="login_password">Password</string>
-  <string name="login_password_required">Password richiesta</string>
   <string name="login_type_url">Accedi con URL e nome utente</string>
-  <string name="login_url_must_be_http_or_https">L\'URL deve iniziare con http(s)://</string>
   <string name="login_user_name">Nome utente</string>
-  <string name="login_user_name_required">Nome utente richiesto</string>
   <string name="login_base_url">Base URL</string>
   <string name="login_select_certificate">Seleziona certificato</string>
-  <string name="login_login">Login</string>
   <string name="login_create_account">Crea account</string>
   <string name="login_account_name">Nome account</string>
-  <string name="login_account_avoid_apostrophe">L\'utilizzo di apostrofi (\') potrebbe causare problemi su alcuni dispositivi.</string>
   <string name="login_account_name_info">Inserisci il tuo indirizzo email come nome dell\'account in quanto Android userà il nome dell\'account nel campo ORGANIZER degli eventi creati. Non è possibile avere due account con nome uguale.</string>
   <string name="login_account_contact_group_method">Metodo del contact group:</string>
   <string name="login_account_name_required">Richiesto il nome dell\'account</string>
   <string name="login_account_name_already_taken">Nome account già usato</string>
   <string name="login_account_not_created">L\'account non può essere creato</string>
-  <string name="login_type_advanced">Login avanzato (utilizzo per casi speciali)</string>
-  <string name="login_use_username_password">Utilizza il nome utente/password</string>
-  <string name="login_use_client_certificate">Usa il certificato del client</string>
   <string name="login_no_certificate_found">Nessun certificato trovato</string>
   <string name="login_install_certificate">Installa il certificato</string>
   <string name="login_type_google">Contatti Google / Calendario</string>
@@ -214,8 +206,7 @@
   <string name="login_configuration_detection">Rilevazione configurazione</string>
   <string name="login_querying_server">Attendere, invio richiesta al server…</string>
   <string name="login_no_service">Impossibile trovare servizi CalDAV o CardDAV.</string>
-  <string name="login_check_credentials">Nome utente (indirizzo email) / password sbagliata?</string>
-  <string name="login_view_logs">Visualizza dettagli</string>
+  <string name="login_view_logs">Vedi i registri</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sincronizzazione</string>
   <string name="settings_sync_interval_contacts">Intervallo sincr. Contatti</string>
@@ -282,7 +273,6 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <!--collection management-->
   <string name="create_addressbook">Crea rubrica</string>
   <string name="create_calendar">Crea calendario</string>
-  <string name="create_calendar_time_zone">Fuso orario</string>
   <string name="create_calendar_type">Possibili voci del calendario</string>
   <string name="create_calendar_type_vevent">Eventi</string>
   <string name="create_calendar_type_vtodo">Attività</string>
@@ -366,5 +356,7 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="sync_invalid_event">Evento non valido ricevuto dal server</string>
   <string name="sync_invalid_task">Attività non valida ricevuta dal server</string>
   <string name="sync_invalid_resources_ignoring">Una o più risorse non valide ignorate</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">Sincronizzazione di tutti gli account</string>
   <!--cert4android-->
 </resources>
