@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -269,82 +268,80 @@ abstract class BaseSyncWorker(
             extras.add(ContentResolver.SYNC_EXTRAS_UPLOAD)
 
         // acquire ContentProviderClient of authority to be synced
-        val provider: ContentProviderClient? =
-            try {
-                applicationContext.contentResolver.acquireContentProviderClient(authority)
-            } catch (e: SecurityException) {
-                Logger.log.log(Level.WARNING, "Missing permissions to acquire ContentProviderClient for $authority", e)
-                null
+        try {
+            applicationContext.contentResolver.acquireContentProviderClient(authority)
+        } catch (e: SecurityException) {
+            Logger.log.log(Level.WARNING, "Missing permissions to acquire ContentProviderClient for $authority", e)
+            null
+        }.use { provider ->
+            if (provider == null) {
+                Logger.log.warning("Couldn't acquire ContentProviderClient for $authority")
+                return@withContext Result.failure()
             }
-        if (provider == null) {
-            Logger.log.warning("Couldn't acquire ContentProviderClient for $authority")
-            return@withContext Result.failure()
-        }
 
-        val result = SyncResult()
-        provider.use {
+            val result = SyncResult()
             // Start syncing. We still use the sync adapter framework's SyncResult to pass the sync results, but this
             // is only for legacy reasons and can be replaced by an own result class in the future.
             runInterruptible {
                 syncer.onPerformSync(account, extras.toTypedArray(), authority, provider, result)
             }
-        }
 
-        // Check for errors
-        if (result.hasError()) {
-            val syncResult = Data.Builder()
-                .putString("syncresult", result.toString())
-                .putString("syncResultStats", result.stats.toString())
-                .build()
+            // Check for errors
+            if (result.hasError()) {
+                val syncResult = Data.Builder()
+                    .putString("syncresult", result.toString())
+                    .putString("syncResultStats", result.stats.toString())
+                    .build()
 
-            val softErrorNotificationTag = account.type + "-" + account.name + "-" + authority
+                val softErrorNotificationTag = account.type + "-" + account.name + "-" + authority
 
-            // On soft errors the sync is retried a few times before considered failed
-            if (result.hasSoftError()) {
-                Logger.log.warning("Soft error while syncing: result=$result, stats=${result.stats}")
-                if (runAttemptCount < MAX_RUN_ATTEMPTS) {
-                    val blockDuration = result.delayUntil - System.currentTimeMillis()/1000
-                    Logger.log.warning("Waiting for $blockDuration seconds, before retrying ...")
+                // On soft errors the sync is retried a few times before considered failed
+                if (result.hasSoftError()) {
+                    Logger.log.warning("Soft error while syncing: result=$result, stats=${result.stats}")
+                    if (runAttemptCount < MAX_RUN_ATTEMPTS) {
+                        val blockDuration = result.delayUntil - System.currentTimeMillis() / 1000
+                        Logger.log.warning("Waiting for $blockDuration seconds, before retrying ...")
 
-                    // We block the SyncWorker here so that it won't be started by the sync framework immediately again.
-                    // This should be replaced by proper work scheduling as soon as we don't depend on the sync framework anymore.
-                    if (blockDuration > 0)
-                        delay(blockDuration*1000)
+                        // We block the SyncWorker here so that it won't be started by the sync framework immediately again.
+                        // This should be replaced by proper work scheduling as soon as we don't depend on the sync framework anymore.
+                        if (blockDuration > 0)
+                            delay(blockDuration * 1000)
 
-                    Logger.log.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
-                    return@withContext Result.retry()
+                        Logger.log.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
+                        return@withContext Result.retry()
+                    }
+
+                    Logger.log.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
+
+                    notificationManager.notifyIfPossible(
+                        softErrorNotificationTag,
+                        NotificationUtils.NOTIFY_SYNC_ERROR,
+                        NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_SYNC_IO_ERRORS)
+                            .setSmallIcon(R.drawable.ic_sync_problem_notify)
+                            .setContentTitle(account.name)
+                            .setContentText(applicationContext.getString(R.string.sync_error_retry_limit_reached))
+                            .setSubText(account.name)
+                            .setOnlyAlertOnce(true)
+                            .setPriority(NotificationCompat.PRIORITY_MIN)
+                            .setCategory(NotificationCompat.CATEGORY_ERROR)
+                            .build()
+                    )
+
+                    return@withContext Result.failure(syncResult)
                 }
 
-                Logger.log.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
-
-                notificationManager.notifyIfPossible(
+                // If no soft error found, dismiss sync error notification
+                notificationManager.cancel(
                     softErrorNotificationTag,
-                    NotificationUtils.NOTIFY_SYNC_ERROR,
-                    NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_SYNC_IO_ERRORS)
-                        .setSmallIcon(R.drawable.ic_sync_problem_notify)
-                        .setContentTitle(account.name)
-                        .setContentText(applicationContext.getString(R.string.sync_error_retry_limit_reached))
-                        .setSubText(account.name)
-                        .setOnlyAlertOnce(true)
-                        .setPriority(NotificationCompat.PRIORITY_MIN)
-                        .setCategory(NotificationCompat.CATEGORY_ERROR)
-                        .build()
+                    NotificationUtils.NOTIFY_SYNC_ERROR
                 )
 
-                return@withContext Result.failure(syncResult)
-            }
-
-            // If no soft error found, dismiss sync error notification
-            notificationManager.cancel(
-                softErrorNotificationTag,
-                NotificationUtils.NOTIFY_SYNC_ERROR
-            )
-
-            // On a hard error - fail with an error message
-            // Note: SyncManager should have notified the user
-            if (result.hasHardError()) {
-                Logger.log.warning("Hard error while syncing: result=$result, stats=${result.stats}")
-                return@withContext Result.failure(syncResult)
+                // On a hard error - fail with an error message
+                // Note: SyncManager should have notified the user
+                if (result.hasHardError()) {
+                    Logger.log.warning("Hard error while syncing: result=$result, stats=${result.stats}")
+                    return@withContext Result.failure(syncResult)
+                }
             }
         }
 

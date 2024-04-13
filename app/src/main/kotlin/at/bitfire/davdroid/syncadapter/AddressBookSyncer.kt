@@ -97,8 +97,7 @@ class AddressBookSyncer(
             return false
         }
 
-        val contactsProvider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)
-        try {
+        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY).use { contactsProvider ->
             if (contactsProvider == null) {
                 Logger.log.severe("Couldn't access contacts provider")
                 syncResult.databaseError = true
@@ -132,8 +131,6 @@ class AddressBookSyncer(
                 Logger.log.log(Level.INFO, "Adding local address book", info)
                 LocalAddressBook.create(context, contactsProvider, account, info, forceAllReadOnly)
             }
-        } finally {
-            contactsProvider?.close()
         }
 
         return true
