@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.ViewModel
@@ -168,30 +169,71 @@ fun TasksCard(
 
     val showAgain by model.showAgain.collectAsStateWithLifecycle(true)
 
-    fun installApp(packageName: String) {
-        val uri = Uri.parse("market://details?id=$packageName&referrer=" +
-                Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID))
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        if (intent.resolveActivity(context.packageManager) != null)
-            context.startActivity(intent)
-        else
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = context.getString(R.string.intro_tasks_no_app_store),
-                    duration = SnackbarDuration.Long
-                )
-            }
-    }
+    TasksCardContent(
+        jtxSelected = jtxSelected,
+        jtxInstalled = jtxInstalled,
+        tasksOrgSelected = tasksOrgSelected,
+        tasksOrgInstalled = tasksOrgInstalled,
+        openTasksSelected = openTasksSelected,
+        openTasksInstalled = openTasksInstalled,
+        showAgain = showAgain,
+        onSetShowAgain = model::setShowAgain,
+        onProviderSelected = { provider ->
+            if (model.currentProvider.value != provider)
+                model.selectProvider(provider)
+        },
+        installApp = { packageName ->
+            val uri = Uri.parse("market://details?id=$packageName&referrer=" +
+                    Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID))
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            if (intent.resolveActivity(context.packageManager) != null)
+                context.startActivity(intent)
+            else
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.intro_tasks_no_app_store),
+                        duration = SnackbarDuration.Long
+                    )
+                }
+        }
+    )
+}
 
-    fun onProviderSelected(provider: TaskProvider.ProviderName) {
-        if (model.currentProvider.value != provider)
-            model.selectProvider(provider)
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun TasksCardContent_Preview() {
+    AppTheme {
+        TasksCardContent(
+            jtxSelected = true,
+            jtxInstalled = true,
+            tasksOrgSelected = false,
+            tasksOrgInstalled = false,
+            openTasksSelected = false,
+            openTasksInstalled = false,
+            showAgain = true,
+            onSetShowAgain = {},
+            onProviderSelected = {},
+            installApp = {}
+        )
     }
+}
 
+@Composable
+fun TasksCardContent(
+    jtxSelected: Boolean,
+    jtxInstalled: Boolean,
+    tasksOrgSelected: Boolean,
+    tasksOrgInstalled: Boolean,
+    openTasksSelected: Boolean,
+    openTasksInstalled: Boolean,
+    showAgain: Boolean,
+    onSetShowAgain: (Boolean) -> Unit,
+    onProviderSelected: (TaskProvider.ProviderName) -> Unit,
+    installApp: (String) -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(8.dp)
             .verticalScroll(rememberScrollState())
     ) {
         CardWithImage(
@@ -199,9 +241,7 @@ fun TasksCard(
             imageAlignment = BiasAlignment(0f, .1f),
             title = stringResource(R.string.intro_tasks_title),
             message = stringResource(R.string.intro_tasks_text1),
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
             RadioWithSwitch(
                 title = stringResource(R.string.intro_tasks_jtx),
@@ -266,14 +306,14 @@ fun TasksCard(
             ) {
                 Checkbox(
                     checked = !showAgain,
-                    onCheckedChange = { model.setShowAgain(!it) }
+                    onCheckedChange = { onSetShowAgain(!it) }
                 )
                 Text(
                     text = stringResource(R.string.intro_tasks_dont_show),
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { model.setShowAgain(!showAgain) }
+                        .clickable { onSetShowAgain(!showAgain) }
                 )
             }
         }

@@ -37,7 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -250,16 +249,16 @@ private fun BatteryOptimizationsContent(
     onChangeDontShowAutostart: (Boolean) -> Unit,
     manufacturerWarning: Boolean
 ) {
-    val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(8.dp)
     ) {
-        Card {
+        Card(
+            modifier = Modifier.padding(8.dp)
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -314,7 +313,8 @@ private fun BatteryOptimizationsContent(
         }
         if (manufacturerWarning) {
             Card(
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -374,7 +374,9 @@ private fun BatteryOptimizationsContent(
                 stringResource(R.string.app_settings_reset_hints)
             ),
             style = MaterialTheme.typography.body2,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .padding(horizontal = 16.dp)
         )
         Spacer(modifier = Modifier.height(90.dp))
     }
