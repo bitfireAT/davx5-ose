@@ -168,7 +168,6 @@ fun PermissionsCardContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(8.dp)
             .verticalScroll(rememberScrollState())
     ) {
         CardWithImage(
@@ -178,9 +177,7 @@ fun PermissionsCardContent(
                 stringResource(R.string.app_name)
             ),
             image = painterResource(R.drawable.intro_permissions),
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
             if (keepPermissions != null) {
                 PermissionSwitchRow(

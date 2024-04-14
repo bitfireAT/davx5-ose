@@ -254,13 +254,10 @@ private fun BatteryOptimizationsContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Card(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -317,8 +314,7 @@ private fun BatteryOptimizationsContent(
         if (manufacturerWarning) {
             Card(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp)
+                    .padding(8.dp)
             ) {
                 Column(
                     modifier = Modifier

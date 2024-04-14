@@ -58,10 +58,10 @@ import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TasksActivity: AppCompatActivity() {
@@ -238,7 +238,6 @@ fun TasksCardContent(
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(8.dp)
             .verticalScroll(rememberScrollState())
     ) {
         CardWithImage(
@@ -246,9 +245,7 @@ fun TasksCardContent(
             imageAlignment = BiasAlignment(0f, .1f),
             title = stringResource(R.string.intro_tasks_title),
             message = stringResource(R.string.intro_tasks_text1),
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
             RadioWithSwitch(
                 title = stringResource(R.string.intro_tasks_jtx),
