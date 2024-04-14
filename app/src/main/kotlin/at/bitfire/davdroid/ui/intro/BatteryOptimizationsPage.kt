@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui.intro
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -45,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.Constants
@@ -55,14 +56,16 @@ import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.launch
+import org.apache.commons.text.WordUtils
 import java.util.Locale
 import javax.inject.Inject
-import org.apache.commons.text.WordUtils
 
 class BatteryOptimizationsPage: IntroPage {
 
@@ -101,7 +104,7 @@ class BatteryOptimizationsPage: IntroPage {
             model.checkBatteryOptimizations()
         }
 
-        val hintBatteryOptimizations by model.hintBatteryOptimizations.observeAsState()
+        val hintBatteryOptimizations by model.hintBatteryOptimizations.collectAsStateWithLifecycle(false)
         val shouldBeExempted by model.shouldBeExempted.observeAsState(false)
         val isExempted by model.isExempted.observeAsState(false)
         LaunchedEffect(shouldBeExempted, isExempted) {
@@ -109,7 +112,7 @@ class BatteryOptimizationsPage: IntroPage {
                 ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
         }
 
-        val hintAutostartPermission by model.hintAutostartPermission.observeAsState()
+        val hintAutostartPermission by model.hintAutostartPermission.collectAsStateWithLifecycle(false)
         BatteryOptimizationsContent(
             dontShowBattery = hintBatteryOptimizations == false,
             onChangeDontShowBattery = {
@@ -177,24 +180,16 @@ class BatteryOptimizationsPage: IntroPage {
 
         val shouldBeExempted = MutableLiveData<Boolean>()
         val isExempted = MutableLiveData<Boolean>()
-        val hintBatteryOptimizations = settings.getBooleanLive(HINT_BATTERY_OPTIMIZATIONS)
-        private val batteryOptimizationsReceiver = object: BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                checkBatteryOptimizations()
-            }
-        }
+        val hintBatteryOptimizations = settings.getBooleanFlow(HINT_BATTERY_OPTIMIZATIONS)
 
-        val hintAutostartPermission = settings.getBooleanLive(HINT_AUTOSTART_PERMISSION)
+        val hintAutostartPermission = settings.getBooleanFlow(HINT_AUTOSTART_PERMISSION)
 
         init {
-            val intentFilter = IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED)
-            context.registerReceiver(batteryOptimizationsReceiver, intentFilter)
-
-            checkBatteryOptimizations()
-        }
-
-        override fun onCleared() {
-            context.unregisterReceiver(batteryOptimizationsReceiver)
+            viewModelScope.launch {
+                broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED)).collect {
+                    checkBatteryOptimizations()
+                }
+            }
         }
 
         fun checkBatteryOptimizations() {

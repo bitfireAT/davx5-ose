@@ -145,6 +145,7 @@ fun LoginScreen(
                     foundConfig?.let {
                         val context = LocalContext.current
                         AccountDetailsPage(
+                            snackbarHostState = snackbarHostState,
                             loginInfo = loginInfo,
                             foundConfig = it,
                             onBack = { phase = LoginActivity.Phase.LOGIN_TYPE },

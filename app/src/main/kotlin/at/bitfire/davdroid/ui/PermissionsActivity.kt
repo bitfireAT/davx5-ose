@@ -26,7 +26,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -35,17 +36,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.composable.BasicTopAppBar
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
+import kotlinx.coroutines.launch
 import java.util.logging.Level
 
 class PermissionsActivity: AppCompatActivity() {
@@ -78,25 +79,17 @@ class PermissionsActivity: AppCompatActivity() {
 
     class Model(app: Application): AndroidViewModel(app) {
 
-        val needKeepPermissions = MutableLiveData<Boolean>()
-
-        val openTasksAvailable = MutableLiveData<Boolean>()
-        val tasksOrgAvailable = MutableLiveData<Boolean>()
-        val jtxAvailable = MutableLiveData<Boolean>()
-
-        private val tasksWatcher = object: PackageChangedReceiver(app) {
-            override fun onPackageChanged() {
-                checkPermissions()
-            }
-        }
+        var needKeepPermissions by mutableStateOf(false)
+        var openTasksAvailable by mutableStateOf(false)
+        var tasksOrgAvailable by mutableStateOf(false)
+        var jtxAvailable by mutableStateOf(false)
 
         init {
-            tasksWatcher.register()
-            checkPermissions()
-        }
-
-        override fun onCleared() {
-            tasksWatcher.close()
+            viewModelScope.launch {
+                packageChangedFlow(app).collect {
+                    checkPermissions()
+                }
+            }
         }
 
         @MainThread
@@ -105,12 +98,12 @@ class PermissionsActivity: AppCompatActivity() {
 
             // auto-reset permissions
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                needKeepPermissions.value = pm.isAutoRevokeWhitelisted
+                needKeepPermissions = pm.isAutoRevokeWhitelisted
             }
 
-            openTasksAvailable.value = pm.resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null
-            tasksOrgAvailable.value = pm.resolveContentProvider(TaskProvider.ProviderName.TasksOrg.authority, 0) != null
-            jtxAvailable.value = pm.resolveContentProvider(TaskProvider.ProviderName.JtxBoard.authority, 0) != null
+            openTasksAvailable = pm.resolveContentProvider(TaskProvider.ProviderName.OpenTasks.authority, 0) != null
+            tasksOrgAvailable = pm.resolveContentProvider(TaskProvider.ProviderName.TasksOrg.authority, 0) != null
+            jtxAvailable = pm.resolveContentProvider(TaskProvider.ProviderName.JtxBoard.authority, 0) != null
         }
     }
 
@@ -120,17 +113,12 @@ class PermissionsActivity: AppCompatActivity() {
 @Composable
 fun PermissionsContent(
     modifier: Modifier = Modifier,
-    model: PermissionsActivity.Model = viewModel()
+    model: PermissionsActivity.Model
 ) {
     val context = LocalContext.current
 
-    val keepPermissions by model.needKeepPermissions.observeAsState()
-    val openTasksAvailable by model.openTasksAvailable.observeAsState()
-    val tasksOrgAvailable by model.tasksOrgAvailable.observeAsState()
-    val jtxAvailable by model.jtxAvailable.observeAsState()
-
     PermissionsCardContent(
-        keepPermissions,
+        keepPermissions = model.needKeepPermissions,
         onKeepPermissionsRequested = {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val intent = Intent(
@@ -145,10 +133,10 @@ fun PermissionsContent(
                 }
             }
         },
-        openTasksAvailable,
-        tasksOrgAvailable,
-        jtxAvailable,
-        modifier
+        openTasksAvailable = model.openTasksAvailable,
+        tasksOrgAvailable = model.tasksOrgAvailable,
+        jtxAvailable = model.jtxAvailable,
+        modifier = modifier
     )
 }
 

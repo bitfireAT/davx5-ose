@@ -19,6 +19,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.RadioButton
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -29,23 +30,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.widget.ExceptionInfoDialog
 import at.bitfire.vcard4android.GroupMethod
+import kotlinx.coroutines.launch
 
 @Composable
 fun AccountDetailsPage(
+    snackbarHostState: SnackbarHostState,
     loginInfo: LoginInfo,
     foundConfig: DavResourceFinder.Configuration,
     onBack: () -> Unit,
@@ -53,6 +59,9 @@ fun AccountDetailsPage(
     model: LoginModel = viewModel()
 ) {
     BackHandler(onBack = onBack)
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val resultOrNull by model.createAccountResult.observeAsState()
     var showExceptionInfo by remember { mutableStateOf(false) }
@@ -73,19 +82,28 @@ fun AccountDetailsPage(
                                 model.createAccountResult.value = null
                             }
                         )
-                    // TODO else
-                }
+                    else
+                        scope.launch {
+                            snackbarHostState.showSnackbar(context.getString(R.string.login_account_not_created))
+                        }
+                    }
+                else -> {}
             }
+
+            // reset result
+            model.createAccountResult.value = null
         }
 
     val suggestedAccountNames = foundConfig.calDAV?.emails ?: emptyList()
     var accountName by remember { mutableStateOf(suggestedAccountNames.firstOrNull() ?: "") }
 
-    val forcedGroupMethod by model.forcedGroupMethod.observeAsState()
-    var groupMethod by remember { mutableStateOf(forcedGroupMethod ?: loginInfo.suggestedGroupMethod) }
+    var groupMethod by remember { mutableStateOf(loginInfo.suggestedGroupMethod) }
+    val forcedGroupMethod by model.forcedGroupMethod.collectAsStateWithLifecycle(null)
+    forcedGroupMethod?.let { groupMethod = it }
     AccountDetailsPage_Content(
         suggestedAccountNames = suggestedAccountNames,
         accountName = accountName,
+        accountNameAlreadyExists = model.accountExists(accountName).observeAsState(false).value,
         onUpdateAccountName = { accountName = it },
         onCreateAccount = {
             model.createAccount(
@@ -106,6 +124,7 @@ fun AccountDetailsPage(
 fun AccountDetailsPage_Content(
     suggestedAccountNames: List<String>,
     accountName: String,
+    accountNameAlreadyExists: Boolean,
     onUpdateAccountName: (String) -> Unit = {},
     groupMethod: GroupMethod,
     groupMethodReadOnly: Boolean,
@@ -114,7 +133,8 @@ fun AccountDetailsPage_Content(
 ) {
     Assistant(
         nextLabel = stringResource(R.string.login_create_account),
-        onNext = onCreateAccount
+        onNext = onCreateAccount,
+        nextEnabled = accountName.isNotBlank() && !accountNameAlreadyExists
     ) {
         Column(Modifier.padding(8.dp)) {
             var expanded by remember { mutableStateOf(false) }
@@ -122,10 +142,15 @@ fun AccountDetailsPage_Content(
                 expanded = expanded,
                 onExpandedChange = { expanded = it }
             ) {
+                val accountNameLabel = if (accountNameAlreadyExists)
+                    stringResource(R.string.login_account_name_already_taken)
+                else
+                    stringResource(R.string.login_account_name)
                 OutlinedTextField(
                     value = accountName,
                     onValueChange = onUpdateAccountName,
-                    label = { Text(stringResource(R.string.login_account_name)) },
+                    label = { Text(accountNameLabel) },
+                    isError = accountNameAlreadyExists,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email
@@ -227,6 +252,7 @@ fun AccountDetailsPage_Content_Preview() {
     AccountDetailsPage_Content(
         suggestedAccountNames = listOf("name1", "name2@example.com"),
         accountName = "account@example.com",
+        accountNameAlreadyExists = false,
         groupMethod = GroupMethod.GROUP_VCARDS,
         groupMethodReadOnly = false
     )
@@ -238,6 +264,7 @@ fun AccountDetailsPage_Content_Preview_With_Apostrophe() {
     AccountDetailsPage_Content(
         suggestedAccountNames = listOf("name1", "name2@example.com"),
         accountName = "account'example.com",
+        accountNameAlreadyExists = true,
         groupMethod = GroupMethod.CATEGORIES,
         groupMethodReadOnly = true
     )

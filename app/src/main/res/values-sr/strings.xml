@@ -177,29 +177,22 @@
   <string name="account_install_icsx5">Инсталирај ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Додај налог</string>
+  <string name="login_login">Пријава</string>
   <string name="login_type_email">Пријавите се адресом е-поште</string>
   <string name="login_email_address">Адреса е-поште</string>
   <string name="login_email_address_error">Исправна адреса е-поште је обавезна</string>
   <string name="login_password">Лозинка</string>
-  <string name="login_password_required">Лозинка је обавезна</string>
   <string name="login_type_url">Пријавите се УРЛ-ом и корисничким именом</string>
-  <string name="login_url_must_be_http_or_https">УРЛ мора започињати са http(s)://</string>
   <string name="login_user_name">Корисничко име</string>
-  <string name="login_user_name_required">Корисничко име је обавезно</string>
   <string name="login_base_url">Корени УРЛ</string>
   <string name="login_select_certificate">Изабери сертификат</string>
-  <string name="login_login">Пријава</string>
   <string name="login_create_account">Направи налог</string>
   <string name="login_account_name">Назив налога</string>
-  <string name="login_account_avoid_apostrophe">Коришћење апострофа (\'), је регистровано да изазива проблеме на неким уређајима.</string>
   <string name="login_account_name_info">Користите вашу е-адресу за назив налога јер Андроид користи назив налога за поље ОРГАНИЗАТОР за догађаје које направите. Не можете имати два налога истог назива.</string>
   <string name="login_account_contact_group_method">Режим група контаката:</string>
   <string name="login_account_name_required">Назив налога је обавезан</string>
   <string name="login_account_name_already_taken">Назив налога је већ заузет</string>
   <string name="login_account_not_created">Не могох направити налог</string>
-  <string name="login_type_advanced">Напредна пријава (посебни случајеви)</string>
-  <string name="login_use_username_password">Користи корисничко име/лозинку</string>
-  <string name="login_use_client_certificate">Користи сертификат клијента</string>
   <string name="login_no_certificate_found">Сертификат није пронађен</string>
   <string name="login_install_certificate">Инсталирај сертификат</string>
   <string name="login_type_google">Гугл контакти / календар</string>
@@ -208,8 +201,7 @@
   <string name="login_configuration_detection">Откривање конфигурације</string>
   <string name="login_querying_server">Сачекајте, шаљем упит серверу…</string>
   <string name="login_no_service">Не могох да нађем КалДАВ или КардДАВ услугу.</string>
-  <string name="login_check_credentials">Корисничко име (адреса е-поште) / лозинка је погрешна?</string>
-  <string name="login_view_logs">Прикажи детаље</string>
+  <string name="login_view_logs">Прикажи записе</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Синхронизација</string>
   <string name="settings_sync_interval_contacts">Интервал синх. контаката</string>
@@ -259,7 +251,6 @@
   <!--collection management-->
   <string name="create_addressbook">Направи адресар</string>
   <string name="create_calendar">Направи календар</string>
-  <string name="create_calendar_time_zone">Временска зона</string>
   <string name="create_calendar_type_vevent">Догађаји</string>
   <string name="create_calendar_type_vtodo">Задаци</string>
   <string name="create_collection_color">Боја</string>
@@ -299,5 +290,7 @@
   <string name="sync_error_http_dav">Грешка ХТТП сервера – %s</string>
   <string name="sync_error_local_storage">Грешка локалног складишта – %s</string>
   <string name="sync_error_view_item">Прикажи ставку</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">Синхронизуј све налоге</string>
   <!--cert4android-->
 </resources>

@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -16,6 +17,8 @@ import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
 import at.bitfire.dav4jvm.property.caldav.Source
 import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
 import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
+import at.bitfire.dav4jvm.property.push.PushTransports
+import at.bitfire.dav4jvm.property.push.Topic
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
@@ -25,16 +28,16 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.StringUtils
 
 @Entity(tableName = "collection",
-        foreignKeys = [
-            ForeignKey(entity = Service::class, parentColumns = arrayOf("id"), childColumns = arrayOf("serviceId"), onDelete = ForeignKey.CASCADE),
-            ForeignKey(entity = HomeSet::class, parentColumns = arrayOf("id"), childColumns = arrayOf("homeSetId"), onDelete = ForeignKey.SET_NULL),
-            ForeignKey(entity = Principal::class, parentColumns = arrayOf("id"), childColumns = arrayOf("ownerId"), onDelete = ForeignKey.SET_NULL)
-        ],
-        indices = [
-            Index("serviceId","type"),
-            Index("homeSetId","type"),
-            Index("url")
-        ]
+    foreignKeys = [
+        ForeignKey(entity = Service::class, parentColumns = arrayOf("id"), childColumns = arrayOf("serviceId"), onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = HomeSet::class, parentColumns = arrayOf("id"), childColumns = arrayOf("homeSetId"), onDelete = ForeignKey.SET_NULL),
+        ForeignKey(entity = Principal::class, parentColumns = arrayOf("id"), childColumns = arrayOf("ownerId"), onDelete = ForeignKey.SET_NULL)
+    ],
+    indices = [
+        Index("serviceId","type"),
+        Index("homeSetId","type"),
+        Index("url")
+    ]
 )
 data class Collection(
     @PrimaryKey(autoGenerate = true)
@@ -93,7 +96,20 @@ data class Collection(
     var source: HttpUrl? = null,
 
     /** whether this collection has been selected for synchronization */
-    var sync: Boolean = false
+    var sync: Boolean = false,
+
+    /** WebDAV-Push topic */
+    var pushTopic: String? = null,
+
+    /** WebDAV-Push: whether this collection supports the Web Push Transport */
+    @ColumnInfo(defaultValue = "0")
+    var supportsWebPush: Boolean = false,
+
+    /** WebDAV-Push subscription URL */
+    var pushSubscription: String? = null,
+
+    /** when the [pushSubscription] was created/updated (used to determine whether we need to re-subscribe) */
+    var pushSubscriptionCreated: Long? = null
 
 ) {
 
@@ -167,19 +183,28 @@ data class Collection(
                 }
             }
 
+            // WebDAV-Push
+            var supportsWebPush = false
+            dav[PushTransports::class.java]?.let { pushTransports ->
+                supportsWebPush = pushTransports.hasWebPush()
+            }
+            val pushTopic = dav[Topic::class.java]?.topic
+
             return Collection(
-                    type = type,
-                    url = url,
-                    privWriteContent = privWriteContent,
-                    privUnbind = privUnbind,
-                    displayName = displayName,
-                    description = description,
-                    color = color,
-                    timezone = timezone,
-                    supportsVEVENT = supportsVEVENT,
-                    supportsVTODO = supportsVTODO,
-                    supportsVJOURNAL = supportsVJOURNAL,
-                    source = source
+                type = type,
+                url = url,
+                privWriteContent = privWriteContent,
+                privUnbind = privUnbind,
+                displayName = displayName,
+                description = description,
+                color = color,
+                timezone = timezone,
+                supportsVEVENT = supportsVEVENT,
+                supportsVTODO = supportsVTODO,
+                supportsVJOURNAL = supportsVJOURNAL,
+                source = source,
+                supportsWebPush = supportsWebPush,
+                pushTopic = pushTopic
             )
         }
 

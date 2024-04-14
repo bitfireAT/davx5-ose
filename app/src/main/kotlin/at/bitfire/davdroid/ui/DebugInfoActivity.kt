@@ -7,7 +7,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Application
 import android.app.usage.UsageStatsManager
-import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
@@ -834,20 +833,15 @@ class DebugInfoActivity : AppCompatActivity() {
             val table = TextTable("Authority", "isSyncable", "syncAutomatically", "Interval", "Entries")
             for (info in infos) {
                 var nrEntries = "—"
-                var client: ContentProviderClient? = null
                 if (info.countUri != null)
                     try {
-                        client = context.contentResolver.acquireContentProviderClient(info.authority)
-                        if (client != null)
+                        context.contentResolver.acquireContentProviderClient(info.authority)?.use { client ->
                             client.query(info.countUri, null, null, null, null)?.use { cursor ->
                                 nrEntries = "${cursor.count} ${info.countStr}"
                             }
-                        else
-                            nrEntries = "n/a"
+                        }
                     } catch (e: Exception) {
                         nrEntries = e.toString()
-                    } finally {
-                        client?.close()
                     }
                 val accountSettings = AccountSettings(context, account)
                 table.addLine(

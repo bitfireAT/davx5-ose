@@ -115,18 +115,15 @@
   <string name="account_install_icsx5">Namesti ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Dodaj račun</string>
+  <string name="login_login">Prijava</string>
   <string name="login_type_email">Prijava z email naslovom</string>
   <string name="login_email_address">Email naslov</string>
   <string name="login_email_address_error">Potreben je veljaven email naslov</string>
   <string name="login_password">Geslo</string>
-  <string name="login_password_required">Zahtevano je geslo</string>
   <string name="login_type_url">Prijava z URL in uporabniškim imenom</string>
-  <string name="login_url_must_be_http_or_https">URL se mora začeti s http(s)://</string>
   <string name="login_user_name">Uporabniško ime</string>
-  <string name="login_user_name_required">Zahtevano je uporabniško ime</string>
   <string name="login_base_url">URL osnova</string>
   <string name="login_select_certificate">Izberi certifikat</string>
-  <string name="login_login">Prijava</string>
   <string name="login_create_account">Ustvari račun</string>
   <string name="login_account_name">Ime računa</string>
   <string name="login_account_name_info">Uporabi email naslov kot ime računa, ker bo Android uporabil to ime računa kot organizacijsko povelj za dogodke, ki jih ustvariš. Dveh računov z istim imenom ni mogoče imeti.</string>
@@ -137,7 +134,6 @@
   <string name="login_configuration_detection">Zaznava konfiguracije</string>
   <string name="login_querying_server">Prosim počakajte, povezava s strežnikom je v teku...</string>
   <string name="login_no_service">CalDAV ali CardDAV storitve ni bilo mogoče najti.</string>
-  <string name="login_view_logs">Pokaži podrobnosti</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sinhronizacija</string>
   <string name="settings_sync_interval_contacts">Kontakti interval sinhronizacije</string>
@@ -182,7 +178,6 @@
   <!--collection management-->
   <string name="create_addressbook">Ustvari imenik</string>
   <string name="create_calendar">Ustvari koledar</string>
-  <string name="create_calendar_time_zone">Časovna zona</string>
   <string name="create_calendar_type">Mogoči koledarski vnosi</string>
   <string name="create_calendar_type_vevent">Dogodki</string>
   <string name="create_calendar_type_vtodo">Naloge</string>
@@ -224,5 +219,6 @@
   <string name="sync_invalid_event">S strežnika so bili prejeti neveljavni dogodki</string>
   <string name="sync_invalid_task">S strežnika so bili prejeti neveljavni dogodki</string>
   <string name="sync_invalid_resources_ignoring">Eden ali več neveljavnih virov bo ignoriranih</string>
+  <!--widgets-->
   <!--cert4android-->
 </resources>

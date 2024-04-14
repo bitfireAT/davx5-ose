@@ -400,10 +400,14 @@
     <string name="delete_collection_data_shall_be_deleted">These data shall be deleted from the server.</string>
     <string name="collection_force_read_only">Force read-only</string>
     <string name="collection_properties">Properties</string>
-    <string name="collection_properties_sync_time">Last synced:</string>
+    <string name="collection_properties_sync_time">Last synced</string>
     <string name="collection_properties_sync_time_never">Never synced</string>
-    <string name="collection_properties_url">Address (URL):</string>
-    <string name="collection_properties_owner">Owner:</string>
+    <string name="collection_properties_url">Address (URL)</string>
+    <string name="collection_properties_owner">Owner</string>
+    <string name="collection_properties_push_support">Push support</string>
+    <string name="collection_properties_push_support_web_push">Yes (over Web Push)</string>
+    <string name="collection_properties_push_subscribed_at">Subscribed at %s</string>
+    <string name="collection_properties_push_subscribed_never">Not yet subscribed</string>
 
     <!-- debugging and DebugInfoActivity -->
     <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>

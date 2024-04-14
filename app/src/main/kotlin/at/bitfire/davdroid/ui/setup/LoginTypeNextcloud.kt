@@ -32,7 +32,6 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,7 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -65,12 +63,15 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import at.bitfire.davdroid.ui.composable.Assistant
+import at.bitfire.davdroid.ui.setup.LoginTypeNextcloud.DAV_PATH
 import at.bitfire.davdroid.ui.setup.LoginTypeNextcloud.LOGIN_FLOW_V1_PATH
 import at.bitfire.davdroid.ui.setup.LoginTypeNextcloud.LOGIN_FLOW_V2_PATH
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -96,7 +97,6 @@ object LoginTypeNextcloud : LoginType {
             .withStatParams("LoginTypeNextcloud")
             .build()
 
-
     const val LOGIN_FLOW_V1_PATH = "index.php/login/flow"
     const val LOGIN_FLOW_V2_PATH = "index.php/login/v2"
 
@@ -108,7 +108,7 @@ object LoginTypeNextcloud : LoginType {
     @Composable
     override fun Content(
         snackbarHostState: SnackbarHostState,
-        loginInfo: LoginInfo,
+        loginInfo: LoginInfo,       // initial login info, may contain entry URL
         onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
         onDetectResources: () -> Unit,
         onFinish: () -> Unit
@@ -116,15 +116,17 @@ object LoginTypeNextcloud : LoginType {
         val context = LocalContext.current
         val locale = Locale.current
         val scope = rememberCoroutineScope()
-        val model = viewModel<Model>()
 
-        val checkResultCallback = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            model.checkResult()
+        val model = viewModel<Model>()
+        val onLaunchLoginFlow: (HttpUrl) -> Unit = { entryUrl ->
+            model.startLoginFlow(entryUrl)
         }
 
-        val loginUrl by model.loginUrl.observeAsState()
-        LaunchedEffect(loginUrl) {
-            loginUrl?.toUri()?.let { loginUri ->
+        val checkResultCallback = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            model.onReturnFromBrowser()
+        }
+        LaunchedEffect(model.loginUrl) {
+            model.loginUrl?.toUri()?.let { loginUri ->
                 if (haveCustomTabs(context)) {
                     // Custom Tabs are available
                     @Suppress("DEPRECATION")
@@ -141,9 +143,9 @@ object LoginTypeNextcloud : LoginType {
                     // fallback: launch normal browser
                     val browser = Intent(Intent.ACTION_VIEW, loginUri)
                     browser.addCategory(Intent.CATEGORY_BROWSABLE)
-                    if (browser.resolveActivity(context.packageManager) != null)
+                    if (browser.resolveActivity(context.packageManager) != null) {
                         checkResultCallback.launch(browser)
-                    else
+                    } else
                         scope.launch {
                             snackbarHostState.showSnackbar(context.getString(R.string.install_browser))
                         }
@@ -151,22 +153,23 @@ object LoginTypeNextcloud : LoginType {
             }
         }
 
-        val resultLoginInfo by model.loginInfo.observeAsState()
+        // continue to detecting resources when resultLoginInfo is set in model
+        val resultLoginInfo = model.loginInfo
         LaunchedEffect(resultLoginInfo) {
-            resultLoginInfo?.let {
-                onUpdateLoginInfo(it)
+            if (resultLoginInfo != null) {
+                onUpdateLoginInfo(resultLoginInfo)
                 onDetectResources()
+
+                model.resourceDetectionStarted()
             }
         }
 
         NextcloudLoginScreen(
             loginInfo = loginInfo,
             onUpdateLoginInfo = onUpdateLoginInfo,
-            inProgress = model.inProgress.observeAsState(false).value,
-            error = model.error.observeAsState().value,
-            onLaunchLoginFlow = { entryUrl ->
-                model.start(entryUrl)
-            }
+            inProgress = model.inProgress,
+            error = model.error,
+            onLaunchLoginFlow = onLaunchLoginFlow
         )
     }
 
@@ -187,14 +190,18 @@ object LoginTypeNextcloud : LoginType {
             const val STATE_TOKEN = "token"
         }
 
-        val loginUrl = MutableLiveData<String>()
-        val error = MutableLiveData<String>()
-
         private val httpClient = HttpClient.Builder(context)
             .setForeground(true)
             .build()
-        val inProgress = MutableLiveData(false)
 
+        /** When set, UI will start Login Flow will be started with this URI. */
+        var loginUrl by mutableStateOf<String?>(null)
+
+        // model state
+        var inProgress by mutableStateOf(false)
+        var error by mutableStateOf<String?>(null)
+
+        // Login flow state
         private var pollUrl: HttpUrl?
             get() = state.get<String>(STATE_POLL_URL)?.toHttpUrlOrNull()
             set(value) {
@@ -206,7 +213,9 @@ object LoginTypeNextcloud : LoginType {
                 state[STATE_TOKEN] = value
             }
 
-        val loginInfo = MutableLiveData<LoginInfo>()
+        /** When set, UI will continue to detecting resources with the given login info */
+        var loginInfo by mutableStateOf<LoginInfo?>(null)
+
 
         override fun onCleared() {
             httpClient.close()
@@ -220,13 +229,18 @@ object LoginTypeNextcloud : LoginType {
          * or another URL which is treated as Nextcloud root URL. In this case, [LOGIN_FLOW_V2_PATH] is appended.
          */
         @UiThread
-        fun start(entryUrl: HttpUrl) {
-            inProgress.value = true
-            error.value = null
+        fun startLoginFlow(entryUrl: HttpUrl) = viewModelScope.launch {
+            inProgress = true
+            error = null
+
+            // reset login state
+            loginUrl = null
+            pollUrl = null
+            token = null
 
             var entryUrlStr = entryUrl.toString()
             if (entryUrlStr.endsWith(LOGIN_FLOW_V1_PATH))
-            // got Login Flow v1 URL, rewrite to v2
+                // got Login Flow v1 URL, rewrite to v2
                 entryUrlStr = entryUrlStr.removeSuffix(LOGIN_FLOW_V1_PATH)
 
             val v2Url = entryUrlStr.toHttpUrl().newBuilder()
@@ -234,66 +248,76 @@ object LoginTypeNextcloud : LoginType {
                 .build()
 
             // send POST request and process JSON reply
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    val json = postForJson(v2Url, "".toRequestBody())
+            try {
+                val json = postForJson(v2Url, "".toRequestBody())
 
-                    // login URL
-                    loginUrl.postValue(json.getString("login"))
+                // login URL
+                loginUrl = json.getString("login")
 
-                    // poll URL and token
-                    json.getJSONObject("poll").let { poll ->
-                        pollUrl = poll.getString("endpoint").toHttpUrl()
-                        token = poll.getString("token")
-                    }
-                } catch (e: Exception) {
-                    Logger.log.log(Level.WARNING, "Couldn't obtain login URL", e)
-                    error.postValue(context.getString(R.string.login_nextcloud_login_flow_no_login_url))
-                } finally {
-                    inProgress.postValue(false)
+                // poll URL and token
+                json.getJSONObject("poll").let { poll ->
+                    pollUrl = poll.getString("endpoint").toHttpUrl()
+                    token = poll.getString("token")
                 }
+            } catch (e: Exception) {
+                Logger.log.log(Level.WARNING, "Couldn't obtain login URL", e)
+                error = context.getString(R.string.login_nextcloud_login_flow_no_login_url)
+            } finally {
+                inProgress = false
             }
         }
 
         /**
          * Called when the custom tab / browser activity is finished. If memory is low, our
-         * [NextcloudLoginFlowFragment] and its model have been cleared in the meanwhile. So if
+         * [LoginTypeNextcloud] and its model have been cleared in the meanwhile. So if
          * we need certain data from the model, we have to make sure that these data are retained when the
          * model is cleared (saved state).
          */
         @UiThread
-        fun checkResult() {
-            val pollUrl = pollUrl ?: return
-            val token = token ?: return
+        fun onReturnFromBrowser() = viewModelScope.launch {
+            // Login Flow has been started in browser by UI, should not be started again
+            loginUrl = null
 
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    val json = postForJson(pollUrl, "token=$token".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
-                    val serverUrl = json.getString("server")
-                    val loginName = json.getString("loginName")
-                    val appPassword = json.getString("appPassword")
+            val pollUrl = pollUrl ?: return@launch
+            val token = token ?: return@launch
 
-                    val baseUri = URI.create(serverUrl + DAV_PATH)
+            try {
+                inProgress = true
+                val json = postForJson(pollUrl, "token=$token".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
+                val serverUrl = json.getString("server")
+                val loginName = json.getString("loginName")
+                val appPassword = json.getString("appPassword")
 
-                    loginInfo.postValue(LoginInfo(
-                        baseUri = baseUri,
-                        credentials = Credentials(loginName, appPassword),
-                        suggestedGroupMethod = GroupMethod.CATEGORIES
-                    ))
-                } catch (e: Exception) {
-                    Logger.log.log(Level.WARNING, "Polling login URL failed", e)
-                    error.postValue(context.getString(R.string.login_nextcloud_login_flow_no_login_data))
-                }
+                val baseUri = URI.create(serverUrl + DAV_PATH)
+
+                loginInfo = LoginInfo(
+                    baseUri = baseUri,
+                    credentials = Credentials(loginName, appPassword),
+                    suggestedGroupMethod = GroupMethod.CATEGORIES
+                )
+            } catch (e: Exception) {
+                Logger.log.log(Level.WARNING, "Polling login URL failed", e)
+                error = context.getString(R.string.login_nextcloud_login_flow_no_login_data)
+            } finally {
+                inProgress = false
             }
         }
 
+        fun resourceDetectionStarted() {
+            // resource detection has been started, should not be started again
+            loginInfo = null
+        }
+
+
         @WorkerThread
-        private fun postForJson(url: HttpUrl, requestBody: RequestBody): JSONObject {
+        private suspend fun postForJson(url: HttpUrl, requestBody: RequestBody): JSONObject = withContext(Dispatchers.IO) {
             val postRq = Request.Builder()
                 .url(url)
                 .post(requestBody)
                 .build()
-            val response = httpClient.okHttpClient.newCall(postRq).execute()
+            val response = runInterruptible {
+                httpClient.okHttpClient.newCall(postRq).execute()
+            }
 
             if (response.code != HttpURLConnection.HTTP_OK)
                 throw HttpException(response)
@@ -304,7 +328,7 @@ object LoginTypeNextcloud : LoginType {
                     throw DavException("Invalid Login Flow response (not JSON)")
 
                 // decode JSON
-                return JSONObject(body.string())
+                return@withContext JSONObject(body.string())
             }
 
             throw DavException("Invalid Login Flow response (no body)")
@@ -323,7 +347,8 @@ fun NextcloudLoginScreen(
     error: String? = null,
     onLaunchLoginFlow: (entryUrl: HttpUrl) -> Unit
 ) {
-    var entryUrl by remember { mutableStateOf(loginInfo.baseUri?.toString() ?: "") }
+    val initialEntryUrl = loginInfo.baseUri?.toString()?.removeSuffix(DAV_PATH)
+    var entryUrl by remember { mutableStateOf(initialEntryUrl ?: "") }
 
     val newLoginInfo = LoginInfo(
         baseUri = try {

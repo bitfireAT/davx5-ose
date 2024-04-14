@@ -100,18 +100,15 @@
   <string name="account_install_icsx5">Zainstaluj ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Przidej kōnto</string>
+  <string name="login_login">Wloguj</string>
   <string name="login_type_email">Logowanie ze pōmocōm adresy e-mail</string>
   <string name="login_email_address">Adresa e-mail</string>
   <string name="login_email_address_error">Wymogano noleżno adresa e-mail</string>
   <string name="login_password">Hasło</string>
-  <string name="login_password_required">Wymogane hasło</string>
   <string name="login_type_url">Logowanie ze pōmocōm adresy URL i miana używocza</string>
-  <string name="login_url_must_be_http_or_https">URL musi zaczynać sie ôd http(s)://</string>
   <string name="login_user_name">Miano używocza</string>
-  <string name="login_user_name_required">Wymogane miano używocza</string>
   <string name="login_base_url">Bazowy URL</string>
   <string name="login_select_certificate">Ôbier certyfikat</string>
-  <string name="login_login">Wloguj</string>
   <string name="login_create_account">Stwōrz kōnto</string>
   <string name="login_account_name">Miano kōnta</string>
   <string name="login_account_name_info">Użyj swojij adresy e-mail za miano kōnta, bo Android bydzie używoł miana kōnta za pola ÔRGANIZATŌR dlo zdarzyń, co je stworzisz. Niy możesz posiadać dwōch kōnt ze takim samym mianym.</string>
@@ -122,7 +119,6 @@
   <string name="login_configuration_detection">Wykrywanie kōnfiguracyje</string>
   <string name="login_querying_server">Czekej, ôdpytowanie serwera…</string>
   <string name="login_no_service">Niy idzie znojść usugi CalDAV abo CardDAV.</string>
-  <string name="login_view_logs">Pokoż informacyje</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchrōnizacyjo</string>
   <string name="settings_sync_interval_contacts">Frekwyncyjo synchrōnizacyje kōntaktōw</string>
@@ -178,7 +174,6 @@
   <!--collection management-->
   <string name="create_addressbook">Stwōrz ksiōnżka adresowo</string>
   <string name="create_calendar">Stwōrz kalyndorz</string>
-  <string name="create_calendar_time_zone">Strefa czasowo</string>
   <string name="create_calendar_type">Możliwe wpisy kalyndorza</string>
   <string name="create_calendar_type_vevent">Zdarzynia</string>
   <string name="create_calendar_type_vtodo">Zadania</string>
@@ -220,5 +215,6 @@
   <string name="sync_invalid_event">Dostane zdarzynie ze serwera je niynoleżne</string>
   <string name="sync_invalid_task">Dostane zadanie ze serwera je niynoleżne</string>
   <string name="sync_invalid_resources_ignoring">Ignorowanie jednego abo wiyncyj niynoleżnych zasobōw</string>
+  <!--widgets-->
   <!--cert4android-->
 </resources>

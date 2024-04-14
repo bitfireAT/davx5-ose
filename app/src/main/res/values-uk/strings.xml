@@ -124,18 +124,15 @@
   <string name="account_install_icsx5">Встановити ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Додати запис</string>
+  <string name="login_login">Увійти</string>
   <string name="login_type_email">Увійти за допомогою електронної пошти</string>
   <string name="login_email_address">Адреса пошти</string>
   <string name="login_email_address_error">Потребує валідну електронну адресу</string>
   <string name="login_password">Пароль</string>
-  <string name="login_password_required">Потребує пароль</string>
   <string name="login_type_url">Увійти за допомогою URL та імені користувача</string>
-  <string name="login_url_must_be_http_or_https">URL адреса повинна починатися з http(s)://</string>
   <string name="login_user_name">Ім\'я користувача</string>
-  <string name="login_user_name_required">Потребує ім\'я користувача</string>
   <string name="login_base_url">Базовий URL</string>
   <string name="login_select_certificate">Обрати сертифікат</string>
-  <string name="login_login">Увійти</string>
   <string name="login_create_account">Створити запис</string>
   <string name="login_account_name">Назва запису</string>
   <string name="login_account_name_info">Використовуйте вашу електронну адресу як ім\'я облікового запису, так як Android буде використовувати ім\'я облікового запису в полі ORGANIZER для подій, які ви створюватимете. Ви не можете мати два облікових записи з однаковими іменами.</string>
@@ -143,15 +140,11 @@
   <string name="login_account_name_required">Потребує назви облікового запису</string>
   <string name="login_account_name_already_taken">Ім\'я запису вже зайняте</string>
   <string name="login_account_not_created">Обліковий запис не може бути створений</string>
-  <string name="login_use_username_password">Викор. імʼя користувача/пароль</string>
-  <string name="login_use_client_certificate">Викор. сертифікат клієнта</string>
   <string name="login_no_certificate_found">Не знайдено сертифікат</string>
   <string name="login_install_certificate">Встановити сертифікат</string>
   <string name="login_configuration_detection">Виявлення конфігурації</string>
   <string name="login_querying_server">Будь ласка, зачекайте, запит до серверу…</string>
   <string name="login_no_service">Не вдалося знайти  CalDAV чи CardDAV сервіс.</string>
-  <string name="login_check_credentials">Невірне імʼя користувача (електронна адреса)/пароль?</string>
-  <string name="login_view_logs">Показати деталі</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Синхронізація</string>
   <string name="settings_sync_interval_contacts">Інтервал синхронізації контактів</string>
@@ -211,7 +204,6 @@
   <!--collection management-->
   <string name="create_addressbook">Створити адресну книгу</string>
   <string name="create_calendar">Створити календар</string>
-  <string name="create_calendar_time_zone">Часовий пояс</string>
   <string name="create_calendar_type">Можливі записи календаря</string>
   <string name="create_calendar_type_vevent">Події</string>
   <string name="create_calendar_type_vtodo">Завдання</string>
@@ -260,5 +252,7 @@
   <string name="sync_invalid_event">Отримано помилкову подію від сервера</string>
   <string name="sync_invalid_task">Отримано помилкове завдання від сервера</string>
   <string name="sync_invalid_resources_ignoring">Ігнорування одного або більше хибних джерел</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">Синхронізувати всі обліківки</string>
   <!--cert4android-->
 </resources>

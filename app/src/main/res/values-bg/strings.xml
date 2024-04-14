@@ -10,9 +10,7 @@
   <string name="help">Помощ</string>
   <string name="manage_accounts">Управление на регистрации</string>
   <string name="navigate_up">Придвижване нагоре</string>
-  <string name="no_internet_sync_scheduled">Няма връзка с интернет, насрочено е синхронизиране за по-късно</string>
   <string name="share">Споделяне</string>
-  <string name="sync_started">Синхронизирането е започнало</string>
   <string name="database_destructive_migration_title">Повредено хранилище</string>
   <string name="database_destructive_migration_text">Всички местни профили са премахнати.</string>
   <string name="notification_channel_debugging">Отстраняване на дефекти</string>
@@ -199,31 +197,24 @@
   <string name="account_install_icsx5">Инсталиране на ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Нова регистрация</string>
+  <string name="login_login">Напред</string>
   <string name="login_type_email">Вход с електронна поща</string>
   <string name="login_email_address">Електронна поща</string>
   <string name="login_email_address_error">Необходим е действителен електронен адрес</string>
   <string name="login_password">Парола</string>
   <string name="login_password_hide">Скриване на паролата</string>
   <string name="login_password_show">Показване на паролата</string>
-  <string name="login_password_required">Необходима е парола</string>
   <string name="login_type_url">Вход с адрес и потребителско име</string>
-  <string name="login_url_must_be_http_or_https">Адресът трябва да започва с http(s)://</string>
   <string name="login_user_name">Потребителско име</string>
-  <string name="login_user_name_required">Необходимо е потребителско име</string>
   <string name="login_base_url">Основен адрес</string>
   <string name="login_select_certificate">Избери сертификат</string>
-  <string name="login_login">Напред</string>
   <string name="login_create_account">Създаване на регистрация</string>
   <string name="login_account_name">Име на регистрация</string>
-  <string name="login_account_avoid_apostrophe">Използването на апострофи (\') води до проблеми при някои устройства.</string>
   <string name="login_account_name_info">Използвайте адрес за електронна поща вместо име, защото Android ще го използва като адрес на организатора на събитията, които създавате. Не може да има две регистрации с еднакво име.</string>
   <string name="login_account_contact_group_method">Метод за съхранение на групи от контакти:</string>
   <string name="login_account_name_required">Изисква се име на регистрацията</string>
   <string name="login_account_name_already_taken">Това име на регистрация вече се използва</string>
   <string name="login_account_not_created">Регистрацията не е създадена</string>
-  <string name="login_type_advanced">Вход за напреднали потребители (специални случаи)</string>
-  <string name="login_use_username_password">С потребителско име/парола</string>
-  <string name="login_use_client_certificate">Със сертификат за удостоверяване</string>
   <string name="login_no_certificate_found">Не е намерен сертификат</string>
   <string name="login_install_certificate">Инсталиране на сертификат</string>
   <string name="login_type_google">Google Contacts / Calendar</string>
@@ -237,7 +228,6 @@
   <string name="login_oauth_couldnt_obtain_auth_code">Не може да бъде получен код за упълномощаване</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Вход с Nextcloud</string>
-  <string name="login_nextcloud_login_flow">Стъпки за влизане</string>
   <string name="login_nextcloud_login_flow_text">По този начин ще се стартират стъпките за влизане в Nextcloud чрез мрежов четец.</string>
   <string name="login_nextcloud_login_flow_server_address">Адрес на сървъра на Nextcloud</string>
   <string name="login_nextcloud_login_flow_sign_in">Вход</string>
@@ -246,8 +236,7 @@
   <string name="login_configuration_detection">Откриване на настройки</string>
   <string name="login_querying_server">Изчакайте, запитване на сървъра…</string>
   <string name="login_no_service">Не са открити услуги на CalDAV или CardDAV.</string>
-  <string name="login_check_credentials">Грешно потребителско име или парола?</string>
-  <string name="login_view_logs">Подробности</string>
+  <string name="login_view_logs">Преглед</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Синхронизация</string>
   <string name="settings_sync_interval_contacts">Интервал на синхронизиране на контактите</string>
@@ -313,7 +302,6 @@
   <!--collection management-->
   <string name="create_addressbook">Създаване на адресник</string>
   <string name="create_calendar">Създаване на календар</string>
-  <string name="create_calendar_time_zone">Часови пояс</string>
   <string name="create_calendar_type">Възможни компоненти в календара</string>
   <string name="create_calendar_type_vevent">Събития</string>
   <string name="create_calendar_type_vtodo">Задачи</string>
@@ -404,5 +392,7 @@
   <string name="sync_invalid_event">Получено е недействително събитие от сървъра</string>
   <string name="sync_invalid_task">Получен е недействителен файл от сървъра</string>
   <string name="sync_invalid_resources_ignoring">Пренебрегване на сбъркани данни</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">Синхронизиране на всички профили</string>
   <!--cert4android-->
 </resources>

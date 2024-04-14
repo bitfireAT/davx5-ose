@@ -150,18 +150,15 @@
   <string name="account_install_icsx5">Instaliraj ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Dodaj račun</string>
+  <string name="login_login">Prijava</string>
   <string name="login_type_email">Prijavi se sa adresom e-pošte</string>
   <string name="login_email_address">Adresa e-pošte</string>
   <string name="login_email_address_error">Potrebna je valjana adresa e-pošte</string>
   <string name="login_password">Lozinka</string>
-  <string name="login_password_required">Lozinka je potrebna</string>
   <string name="login_type_url">Prijava sa URL-om i korisničkim imenom</string>
-  <string name="login_url_must_be_http_or_https">URL mora započeti sa http(s)://</string>
   <string name="login_user_name">Korisničko ime</string>
-  <string name="login_user_name_required">Korisničko ime je potrebno</string>
   <string name="login_base_url">Osnovni URL</string>
   <string name="login_select_certificate">Odaberi certifikat</string>
-  <string name="login_login">Prijava</string>
   <string name="login_create_account">Kreiraj račun</string>
   <string name="login_account_name">Naziv računa</string>
   <string name="login_account_name_info">Koristite svoju adresu e-pošte kao naziv računa jer Android će koristiti naziv računa kao ORGANIZER polje za događaje koje kreirate. Nije moguće imati dva računa sa istim imenom.</string>
@@ -169,16 +166,12 @@
   <string name="login_account_name_required">Potreban je naziv računa</string>
   <string name="login_account_name_already_taken">Naziv računa se već koristi</string>
   <string name="login_account_not_created">Nije moguće napraviti račun</string>
-  <string name="login_type_advanced">Napredna prijava (posebne namjene)</string>
-  <string name="login_use_username_password">Koristi korisničko ime/lozinka</string>
-  <string name="login_use_client_certificate">Koristi klijentski certifikat</string>
   <string name="login_no_certificate_found">Certifikat nije pronađen</string>
   <string name="login_install_certificate">Instaliraj certifikat</string>
   <string name="login_configuration_detection">Detektiranje konfiguracije</string>
   <string name="login_querying_server">Pričekajte, postavljanje upita poslužitelju...</string>
   <string name="login_no_service">Nije moguće pronaći CalDAV ili CardDAV uslugu.</string>
-  <string name="login_check_credentials">Korisničko ime (adresa e-pošte) / lozinka pogrešni?</string>
-  <string name="login_view_logs">Prikaži detalje</string>
+  <string name="login_view_logs">Pregledaj logove</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Sinkronizacija</string>
   <string name="settings_sync_interval_contacts">Interval sinkr. kontakata</string>
@@ -241,7 +234,6 @@
   <!--collection management-->
   <string name="create_addressbook">Kreiraj adresar</string>
   <string name="create_calendar">Kreiraj kalendar</string>
-  <string name="create_calendar_time_zone">Vremenska zona</string>
   <string name="create_calendar_type">Mogući unosi u kalendar</string>
   <string name="create_calendar_type_vevent">Događaji</string>
   <string name="create_calendar_type_vtodo">Zadatci</string>
@@ -304,5 +296,7 @@
   <string name="sync_invalid_event">Primljen je nevažeći dogđaj sa poslužitelja</string>
   <string name="sync_invalid_task">Primljen je nevažeći zadatak sa poslužitelja</string>
   <string name="sync_invalid_resources_ignoring">Zanemarivanje jednog ili više nevaljanih resursa</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">Sinkroniziraj sve račune</string>
   <!--cert4android-->
 </resources>

@@ -656,7 +656,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                             if (!getETag.weak)
                                 resource.eTag = resource.eTag
                         }
-                        resource.lastModified = response[GetLastModified::class.java]?.lastModified?.toInstant()?.toEpochMilli()
+                        resource.lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli()
                         resource.size = response[GetContentLength::class.java]?.contentLength
 
                         val privs = response[CurrentUserPrivilegeSet::class.java]

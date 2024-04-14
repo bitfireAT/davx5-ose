@@ -10,10 +10,10 @@
   <string name="help">ヘルプ</string>
   <string name="manage_accounts">アカウントの管理</string>
   <string name="navigate_up">上に移動</string>
-  <string name="no_internet_sync_scheduled">インターネット接続がありません。同期を待機しています</string>
+  <string name="optional_label">* オプション</string>
   <string name="options_menu">オプションメニュー</string>
   <string name="share">共有</string>
-  <string name="sync_started">同期を開始しました</string>
+  <string name="sync_started">同期中/待機中</string>
   <string name="database_destructive_migration_title">データベースが破損しています</string>
   <string name="database_destructive_migration_text">すべてのアカウントがローカルから削除されました</string>
   <string name="notification_channel_debugging">デバッグ中</string>
@@ -203,7 +203,7 @@
   <string name="account_calendar">カレンダー</string>
   <string name="account_task_list">タスクリスト</string>
   <string name="account_journal">ジャーナル</string>
-  <string name="account_only_personal">プライベートのみ表示</string>
+  <string name="account_only_personal">プライベートのみ表示する</string>
   <string name="account_refresh_collections">コレクションを再読み込み</string>
   <string name="account_refreshing_collections">コレクションリストを再読み込みしています</string>
   <string name="account_webcal_external_app">Webcal の購読は外部アプリで同期できます。</string>
@@ -211,31 +211,34 @@
   <string name="account_install_icsx5">ICSx⁵ をインストール</string>
   <!--AddAccountActivity-->
   <string name="login_title">アカウントを追加</string>
+  <string name="login_provider_login">プロバイダー固有の方法でログイン</string>
+  <string name="login_continue">続行</string>
+  <string name="login_login">ログイン</string>
   <string name="login_type_email">メールアドレスでログイン</string>
   <string name="login_email_address">メールアドレス</string>
   <string name="login_email_address_error">有効なメールアドレスが必要です</string>
+  <string name="login_email_address_info"><![CDATA[メールアドレスのドメインをベース URL とします。DNS レコードと well-known URL を使用して<a href="%s">サービスを検出</a>します。]]></string>
   <string name="login_password">パスワード</string>
   <string name="login_password_hide">パスワードを非表示</string>
   <string name="login_password_show">パスワードを表示</string>
-  <string name="login_password_required">パスワードが必要です</string>
+  <string name="login_password_optional">パスワード*</string>
   <string name="login_type_url">URL とユーザー名でログイン</string>
-  <string name="login_url_must_be_http_or_https">URL は http(s):// で始まる必要があります</string>
   <string name="login_user_name">ユーザー名</string>
-  <string name="login_user_name_required">ユーザー名が必要です</string>
+  <string name="login_user_name_optional">ユーザー名*</string>
   <string name="login_base_url">ベース URL</string>
+  <string name="login_base_url_info"><![CDATA[ベース URL は直接確認します。ただし、<a href="%s">サービスの検出</a>には DNS レコードと well-known URL も使用します。]]></string>
   <string name="login_select_certificate">証明書を選択</string>
-  <string name="login_login">ログイン</string>
   <string name="login_create_account">アカウントを作成</string>
   <string name="login_account_name">アカウント名</string>
-  <string name="login_account_avoid_apostrophe">アポストロフィー (\') の使用によりいくつかのデバイスでエラーが発生することが報告されています。</string>
+  <string name="login_account_avoid_apostrophe">アポストロフィー「\'」を使用すると一部のデバイスで問題が発生します。</string>
   <string name="login_account_name_info">Android はあなたが作成した予定の ORGANIZER フィールドにアカウント名を使用するので、アカウント名としてメールアドレスを使用してください。同じ名前のアカウントを 2 つ持つことはできません。</string>
   <string name="login_account_contact_group_method">連絡先グループ方法:</string>
   <string name="login_account_name_required">アカウント名が必要です</string>
   <string name="login_account_name_already_taken">アカウント名はすでに取得されています</string>
   <string name="login_account_not_created">アカウントを作成できません</string>
-  <string name="login_type_advanced">高度なログイン (特別な場合)</string>
-  <string name="login_use_username_password">ユーザー名/パスワードを使用</string>
-  <string name="login_use_client_certificate">クライアント証明書を使用</string>
+  <string name="login_type_advanced">高度なログイン</string>
+  <string name="login_no_client_certificate_optional">クライアント証明書なし*</string>
+  <string name="login_client_certificate_selected">クライアント証明書: %s</string>
   <string name="login_no_certificate_found">証明書が見つかりませんでした</string>
   <string name="login_install_certificate">証明書をインストール</string>
   <string name="login_type_google">Google コンタクト / カレンダー</string>
@@ -249,7 +252,6 @@
   <string name="login_oauth_couldnt_obtain_auth_code">認証コードを取得できませんでした</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Nextcloud でログイン</string>
-  <string name="login_nextcloud_login_flow">ログインフロー</string>
   <string name="login_nextcloud_login_flow_text">ウェブブラウザーでのログインフローが開始されます。</string>
   <string name="login_nextcloud_login_flow_server_address">Nextcloud サーバーアドレス</string>
   <string name="login_nextcloud_login_flow_sign_in">サインイン</string>
@@ -258,8 +260,11 @@
   <string name="login_configuration_detection">設定の検出</string>
   <string name="login_querying_server">しばらくお待ちください。サーバーに問い合わせ中…</string>
   <string name="login_no_service">CalDAV または CardDAV サービスが見つかりませんでした。</string>
-  <string name="login_check_credentials">ユーザー名 (メールアドレス) / パスワード が間違っていませんか？</string>
-  <string name="login_view_logs">詳細を表示</string>
+  <string name="login_no_service_info">ベース URL から CalDAV/CardDAV URL に到達できなかったため、サービス検出に失敗しました。</string>
+  <string name="login_see_tested_services"><![CDATA[サービスプロバイダーのマニュアルや<a href="%s">テスト済みサービス一覧</a>、ベース URL</a> をご確認ください。]]></string>
+  <string name="login_check_credentials">認証情報 (ほとんどの場合はユーザー名とパスワード) もご確認ください。</string>
+  <string name="login_logs_available">さらに詳細な技術情報はログで確認できます。</string>
+  <string name="login_view_logs">ログを表示</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">同期</string>
   <string name="settings_sync_interval_contacts">連絡先の同期間隔</string>
@@ -293,6 +298,7 @@
   <string name="settings_oauth_summary">もう一度 OAuth ログインを実行</string>
   <string name="settings_username">ユーザー名</string>
   <string name="settings_password">パスワード</string>
+  <string name="settings_new_password">新しいパスワード</string>
   <string name="settings_password_summary">ご利用のサーバーに従ってパスワードを更新します。</string>
   <string name="settings_certificate_alias">クライアント証明書</string>
   <string name="settings_certificate_alias_empty">クライアント証明書が使用できないか、選択されていません</string>
@@ -325,7 +331,7 @@
   <!--collection management-->
   <string name="create_addressbook">アドレス帳を作成</string>
   <string name="create_calendar">カレンダーを作成</string>
-  <string name="create_calendar_time_zone">タイムゾーン</string>
+  <string name="create_calendar_time_zone">デフォルトのタイムゾーン</string>
   <string name="create_calendar_type">可能なカレンダーエントリー</string>
   <string name="create_calendar_type_vevent">予定</string>
   <string name="create_calendar_type_vtodo">タスク</string>
@@ -416,5 +422,8 @@
   <string name="sync_invalid_event">サーバーから無効な予定を受信しました</string>
   <string name="sync_invalid_task">サーバーから無効なタスクを受信しました</string>
   <string name="sync_invalid_resources_ignoring">1 件または複数の無効なリソースを無視します</string>
+  <!--widgets-->
+  <string name="widget_sync_all">すべて同期</string>
+  <string name="widget_sync_all_accounts">すべてのアカウントを同期</string>
   <!--cert4android-->
 </resources>
