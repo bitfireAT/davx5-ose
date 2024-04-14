@@ -169,37 +169,33 @@ fun TasksCard(
 
     val showAgain by model.showAgain.collectAsStateWithLifecycle(true)
 
-    fun installApp(packageName: String) {
-        val uri = Uri.parse("market://details?id=$packageName&referrer=" +
-                Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID))
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        if (intent.resolveActivity(context.packageManager) != null)
-            context.startActivity(intent)
-        else
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = context.getString(R.string.intro_tasks_no_app_store),
-                    duration = SnackbarDuration.Long
-                )
-            }
-    }
-
-    fun onProviderSelected(provider: TaskProvider.ProviderName) {
-        if (model.currentProvider.value != provider)
-            model.selectProvider(provider)
-    }
-
     TasksCardContent(
-        jtxSelected,
-        jtxInstalled,
-        tasksOrgSelected,
-        tasksOrgInstalled,
-        openTasksSelected,
-        openTasksInstalled,
-        showAgain,
-        model::setShowAgain,
-        ::onProviderSelected,
-        ::installApp
+        jtxSelected = jtxSelected,
+        jtxInstalled = jtxInstalled,
+        tasksOrgSelected = tasksOrgSelected,
+        tasksOrgInstalled = tasksOrgInstalled,
+        openTasksSelected = openTasksSelected,
+        openTasksInstalled = openTasksInstalled,
+        showAgain = showAgain,
+        onSetShowAgain = model::setShowAgain,
+        onProviderSelected = { provider ->
+            if (model.currentProvider.value != provider)
+                model.selectProvider(provider)
+        },
+        installApp = { packageName ->
+            val uri = Uri.parse("market://details?id=$packageName&referrer=" +
+                    Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID))
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            if (intent.resolveActivity(context.packageManager) != null)
+                context.startActivity(intent)
+            else
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.intro_tasks_no_app_store),
+                        duration = SnackbarDuration.Long
+                    )
+                }
+        }
     )
 }
 
