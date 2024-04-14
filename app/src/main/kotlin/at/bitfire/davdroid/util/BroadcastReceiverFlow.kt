@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.log.Logger
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -15,14 +16,22 @@ import kotlinx.coroutines.flow.callbackFlow
  *
  * @param context the context to register the receiver with
  * @param filter  specifies which broadcasts shall be received
+ * @param flags   flags to pass to [Context.registerReceiver] (usually [ContextCompat.RECEIVER_EXPORTED] or
+ * [ContextCompat.RECEIVER_NOT_EXPORTED]; `null` if only system broadcasts are received)
  * @param immediate if `true`, send an empty [Intent] as first value
  *
  * @return cold flow of [Intent]s
  */
 @SuppressLint("UnspecifiedRegisterReceiverFlag")
-fun broadcastReceiverFlow(context: Context, filter: IntentFilter, immediate: Boolean = true): Flow<Intent> = callbackFlow {
+fun broadcastReceiverFlow(
+    context: Context,
+    filter: IntentFilter,
+    flags: Int? = null,
+    immediate: Boolean = true
+): Flow<Intent> = callbackFlow {
     val receiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
+            Logger.log.fine("broadcastReceiverFlow received $intent")
             trySend(intent)
         }
     }
@@ -30,8 +39,11 @@ fun broadcastReceiverFlow(context: Context, filter: IntentFilter, immediate: Boo
     // register receiver
     var filterDump = filter.toString()
     filter.dump({ filterDump = it }, "")
-    Logger.log.fine("Registering broadcast receiver for $filterDump")
-    context.registerReceiver(receiver, filter)
+    Logger.log.fine("Registering broadcast receiver for $filterDump (flags=$flags)")
+    if (flags != null)
+        ContextCompat.registerReceiver(context, receiver, filter, flags)
+    else
+        context.registerReceiver(receiver, filter)
 
     // send empty Intent as first value, if requested
     if (immediate)
@@ -58,5 +70,5 @@ fun packageChangedFlow(context: Context, immediate: Boolean = true): Flow<Intent
         addAction(Intent.ACTION_PACKAGE_REMOVED)
         addDataScheme("package")
     }
-    return broadcastReceiverFlow(context, filter, immediate)
+    return broadcastReceiverFlow(context = context, filter = filter, immediate = immediate)
 }
