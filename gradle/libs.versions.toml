@@ -56,6 +56,7 @@ mockk = "1.13.10"
 okhttp = "4.12.0"
 openid-appauth = "0.11.1"
 room = "2.6.1"
+material3Android = "1.2.1"
 
 [libraries]
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugaring" }
@@ -98,6 +99,7 @@ commons-text = { module = "org.apache.commons:commons-text", version.ref = "comm
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-material = { module = "androidx.compose.material:material" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3-android" }
 compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }

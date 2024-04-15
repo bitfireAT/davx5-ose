@@ -31,8 +31,8 @@ import androidx.glance.text.TextDefaults
 import androidx.glance.unit.ColorProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
-import at.bitfire.davdroid.ui.ThemeColors.onPrimary
-import at.bitfire.davdroid.ui.ThemeColors.primary
+import at.bitfire.davdroid.ui.M2Colors.onPrimary
+import at.bitfire.davdroid.ui.M2Colors.primary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

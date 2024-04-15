@@ -10,7 +10,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M2Theme
 import dagger.hilt.android.AndroidEntryPoint
 import java.net.URI
 import javax.inject.Inject
@@ -118,7 +118,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
+            M2Theme {
                 LoginScreen(
                     loginTypesProvider = loginTypesProvider,
                     initialLoginInfo = loginInfoFromIntent(intent),

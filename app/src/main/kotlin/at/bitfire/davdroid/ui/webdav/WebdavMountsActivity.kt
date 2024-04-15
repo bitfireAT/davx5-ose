@@ -65,7 +65,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M2Theme
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.davdroid.util.DavUtils
@@ -104,7 +104,7 @@ class WebdavMountsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
+            M2Theme {
                 val mountInfos by model.mountInfos.observeAsState(emptyList())
                 WebdavMountsContent(mountInfos)
             }
@@ -328,7 +328,7 @@ class WebdavMountsActivity: AppCompatActivity() {
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun WebdavMountsContent_Preview() {
-        AppTheme {
+        M2Theme {
             WebdavMountsContent(emptyList())
         }
     }
@@ -336,7 +336,7 @@ class WebdavMountsActivity: AppCompatActivity() {
     @Preview(showBackground = true)
     @Composable
     fun WebdavMountsItem_Preview() {
-        AppTheme {
+        M2Theme {
             WebdavMountsItem(
                 info = MountInfo(
                     mount = WebDavMount(

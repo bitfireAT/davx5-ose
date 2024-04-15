@@ -26,8 +26,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.AndroidViewModel
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.ui.AppTheme
-import at.bitfire.davdroid.ui.ThemeColors
+import at.bitfire.davdroid.ui.M2Theme
+import at.bitfire.davdroid.ui.M2Colors
 import com.github.appintro.AppIntro2
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -73,7 +73,7 @@ class IntroActivity : AppIntro2() {
             })
         }
 
-        setBarColor(ThemeColors.primaryDark.toArgb())
+        setBarColor(M2Colors.primaryDark.toArgb())
         isSkipButtonEnabled = false
 
         onBackPressedDispatcher.addCallback(this) {
@@ -112,7 +112,7 @@ class IntroActivity : AppIntro2() {
             ComposeView(requireActivity()).apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
-                    AppTheme {
+                    M2Theme {
                         Box(Modifier.padding(bottom = dimensionResource(com.github.appintro.R.dimen.appintro2_bottombar_height))) {
                             page.ComposePage()
                         }

@@ -92,7 +92,7 @@ class AboutActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
+            M2Theme {
                 val uriHandler = LocalUriHandler.current
 
                 Scaffold(

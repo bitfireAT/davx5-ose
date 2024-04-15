@@ -96,7 +96,7 @@ class AppSettingsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
+            M2Theme {
                 AppSettings()
             }
         }

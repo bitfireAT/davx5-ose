@@ -57,7 +57,7 @@ class PermissionsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
+            M2Theme {
                 Scaffold(
                     topBar = {
                         BasicTopAppBar(
@@ -143,7 +143,7 @@ fun PermissionsContent(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PermissionsCard_Preview() {
-    AppTheme {
+    M2Theme {
         PermissionsCardContent(
             keepPermissions = true,
             onKeepPermissionsRequested = {},

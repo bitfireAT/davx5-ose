@@ -80,7 +80,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M2Theme
 import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.util.TaskUtils
@@ -133,7 +133,7 @@ class AccountActivity : AppCompatActivity() {
         }
 
         setContent {
-            AppTheme {
+            M2Theme {
                 val cardDavSvc by model.cardDavSvc.observeAsState()
                 val canCreateAddressBook by model.canCreateAddressBook.observeAsState(false)
                 val cardDavRefreshing by model.cardDavRefreshing.observeAsState(false)
