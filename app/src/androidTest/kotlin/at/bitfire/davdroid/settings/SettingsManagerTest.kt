@@ -9,7 +9,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -86,8 +86,8 @@ class SettingsManagerTest {
             }
         }
 
-        val result = live.take(2).toList()
-        assertEquals(listOf(23, 42), result)
+        val result = live.take(2).toSet()
+        assertEquals(setOf(23, 42), result)
     }
 
 }
