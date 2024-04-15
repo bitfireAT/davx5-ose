@@ -93,7 +93,7 @@ class AboutActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            M2Theme {
+            AppTheme {
                 val uriHandler = LocalUriHandler.current
 
                 Scaffold(
@@ -276,7 +276,7 @@ fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) 
 
         Text(
             stringResource(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -284,14 +284,14 @@ fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) 
         val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
         Text(
             stringResource(R.string.about_build_date, dateFormatter.format(buildTime)),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
 
         Text(
             stringResource(R.string.about_copyright),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -300,17 +300,17 @@ fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) 
 
         Text(
             stringResource(R.string.about_license_info_no_warranty),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(top = 8.dp)
         )
 
         PixelBoxes(
             arrayOf(Color(0xFFFCF434), Color.White, Color(0xFF9C59D1), Color.Black),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(8.dp)
+                .padding(16.dp)
         )
 
         licenseInfoProvider?.LicenseInfo()
@@ -345,7 +345,7 @@ fun TranslatorsGallery(
                 translation.translators
                     .sortedWith { a, b -> collator.compare(a, b) }
                     .joinToString(" · "),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
