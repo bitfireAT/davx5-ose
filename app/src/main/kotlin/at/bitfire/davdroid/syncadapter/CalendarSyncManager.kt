@@ -203,6 +203,13 @@ class CalendarSyncManager(
             return
         }
 
+        // remove all alerts if the user has disabled them
+        if (localCollection.ignoreAlerts == true) {
+            for (event in events) {
+                event.alarms.clear()
+            }
+        }
+
         if (events.size == 1) {
             val event = events.first()
 
@@ -216,11 +223,6 @@ class CalendarSyncManager(
                 }
                 Logger.log.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
                 event.alarms += alarm
-            }
-
-            // remove all alerts if the user has disabled them
-            if (localCollection.ignoreAlerts == true) {
-                event.alarms.clear()
             }
 
             // update local event, if it exists
