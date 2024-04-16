@@ -16,7 +16,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.produceState
@@ -108,8 +107,12 @@ object PermissionUtils {
 
         val context = LocalContext.current
 
-        val locationAvailable = MutableStateFlow(false)
+        val locationAvailable = MutableStateFlow(
+            // Android <9 doesn't require active location services, otherwise set initial state to false
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.P
+        )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // Only if Android >= 9, we need to check for location services, so add listener
             fun updateState(context: Context) {
                 val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
                 val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -135,11 +138,6 @@ object PermissionUtils {
                 updateState(context)
 
                 onDispose { context.unregisterReceiver(br) }
-            }
-        } else {
-            LaunchedEffect(Unit) {
-                // Android <9 doesn't require active location services
-                locationAvailable.tryEmit(true)
             }
         }
 
