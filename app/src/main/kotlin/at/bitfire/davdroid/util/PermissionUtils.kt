@@ -110,10 +110,29 @@ object PermissionUtils {
 
         val locationAvailable = MutableStateFlow(false)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val br = LocationProviderChangedReceiver(context, locationAvailable)
+            fun updateState(context: Context) {
+                val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+                locationAvailable.tryEmit(isGpsEnabled || isNetworkEnabled)
+            }
+
+            val br = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent?) {
+                    intent?.action?.let { act ->
+                        if (act.matches("android.location.PROVIDERS_CHANGED".toRegex())) {
+                            updateState(context)
+                        }
+                    }
+                }
+            }
             DisposableEffect(Unit) {
                 val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
                 context.registerReceiver(br, filter)
+
+                // Update the initial state
+                updateState(context)
 
                 onDispose { context.unregisterReceiver(br) }
             }
@@ -135,42 +154,6 @@ object PermissionUtils {
             val granted = permissions.allPermissionsGranted
             val location = locationAvailable.value
             value = granted && location
-        }
-    }
-
-    /**
-     * Used by [canAccessWifiSsidLive] to listen for location provider changes.
-     *
-     * State will be true either if GPS is enabled or if network location is enabled.
-     *
-     * @param context The context to use for setting the initial state. Afterwards the receiver will
-     * use its own Context.
-     * @param state The state to update with the current location provider state.
-     */
-    internal class LocationProviderChangedReceiver(
-        context: Context,
-        val state: MutableStateFlow<Boolean>
-    ) : BroadcastReceiver() {
-
-        private var isGpsEnabled: Boolean = false
-        private var isNetworkEnabled: Boolean = false
-
-        init { updateState(context) }
-
-        private fun updateState(context: Context) {
-            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-
-            state.tryEmit(isGpsEnabled || isNetworkEnabled)
-        }
-
-        override fun onReceive(context: Context, intent: Intent) {
-            intent.action?.let { act ->
-                if (act.matches("android.location.PROVIDERS_CHANGED".toRegex())) {
-                    updateState(context)
-                }
-            }
         }
     }
 
