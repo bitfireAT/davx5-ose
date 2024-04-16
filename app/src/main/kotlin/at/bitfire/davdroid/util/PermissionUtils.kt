@@ -6,12 +6,23 @@ package at.bitfire.davdroid.util
 
 import android.Manifest
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -23,6 +34,9 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.PermissionsActivity
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.flow.MutableStateFlow
 
 object PermissionUtils {
 
@@ -71,6 +85,80 @@ object PermissionUtils {
 
         return  havePermissions(context, WIFI_SSID_PERMISSIONS) &&
                 locationAvailable
+    }
+
+    /**
+     * Checks whether all conditions to access the current WiFi's SSID are met:
+     *
+     * 1. location permissions ([WIFI_SSID_PERMISSIONS]) granted (Android 8.1+)
+     * 2. location enabled (Android 9+)
+     *
+     * @return *true* if SSID can be obtained; *false* if the SSID will be <unknown> or something like that
+     */
+    @Composable
+    @ExperimentalPermissionsApi
+    fun canAccessWifiSsidLive(): State<Boolean> {
+        // If preview, cannot access WiFi SSID
+        if (LocalInspectionMode.current)
+            return remember { derivedStateOf { false } }
+
+        // before Android 8.1, SSIDs are always readable
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1)
+            return remember { derivedStateOf { true } }
+
+        val context = LocalContext.current
+
+        val locationAvailable = MutableStateFlow(false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val br = LocationProviderChangedReceiver(locationAvailable)
+            DisposableEffect(Unit) {
+                val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
+                context.registerReceiver(br, filter)
+
+                onDispose { context.unregisterReceiver(br) }
+            }
+        } else {
+            LaunchedEffect(Unit) {
+                // Android <9 doesn't require active location services
+                locationAvailable.tryEmit(true)
+            }
+        }
+
+        val permissions = rememberMultiplePermissionsState(
+            permissions = WIFI_SSID_PERMISSIONS.toList()
+        )
+        return produceState(
+            initialValue = false,
+            permissions.allPermissionsGranted,
+            locationAvailable
+        ) {
+            val granted = permissions.allPermissionsGranted
+            val location = locationAvailable.value
+            value = granted && location
+        }
+    }
+
+    /**
+     * Used by [canAccessWifiSsidLive] to listen for location provider changes.
+     */
+    internal class LocationProviderChangedReceiver(
+        val state: MutableStateFlow<Boolean>
+    ) : BroadcastReceiver() {
+
+        private var isGpsEnabled: Boolean = false
+        private var isNetworkEnabled: Boolean = false
+
+        override fun onReceive(context: Context, intent: Intent) {
+            intent.action?.let { act ->
+                if (act.matches("android.location.PROVIDERS_CHANGED".toRegex())) {
+                    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                    isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                    isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+                    state.tryEmit(isGpsEnabled || isNetworkEnabled)
+                }
+            }
+        }
     }
 
     /**
