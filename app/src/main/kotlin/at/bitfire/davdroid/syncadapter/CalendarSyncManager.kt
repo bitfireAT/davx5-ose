@@ -30,6 +30,12 @@ import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.util.DateUtils
+import java.io.ByteArrayOutputStream
+import java.io.Reader
+import java.io.StringReader
+import java.time.Duration
+import java.time.ZonedDateTime
+import java.util.logging.Level
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.property.Action
@@ -38,12 +44,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.commons.io.FileUtils
-import java.io.ByteArrayOutputStream
-import java.io.Reader
-import java.io.StringReader
-import java.time.Duration
-import java.time.ZonedDateTime
-import java.util.logging.Level
 
 /**
  * Synchronization manager for CalDAV collections; handles events (VEVENT)
@@ -216,6 +216,11 @@ class CalendarSyncManager(
                 }
                 Logger.log.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
                 event.alarms += alarm
+            }
+
+            // remove all alerts if the user has disabled them
+            if (localCollection.ignoreAlerts == true) {
+                event.alarms.clear()
             }
 
             // update local event, if it exists

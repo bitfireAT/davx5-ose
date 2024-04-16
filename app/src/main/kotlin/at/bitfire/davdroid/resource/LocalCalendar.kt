@@ -34,6 +34,8 @@ class LocalCalendar private constructor(
 
         private const val COLUMN_SYNC_STATE = Calendars.CAL_SYNC1
 
+        private const val COLUMN_IGNORE_ALERTS = Calendars.CAL_SYNC2
+
         fun create(account: Account, provider: ContentProviderClient, info: Collection): Uri {
             val values = valuesFromCollectionInfo(info, true)
 
@@ -44,6 +46,8 @@ class LocalCalendar private constructor(
             // Email address for scheduling. Used by the calendar provider to determine whether the
             // user is ORGANIZER/ATTENDEE for a certain event.
             values.put(Calendars.OWNER_ACCOUNT, account.name)
+
+            values.put(COLUMN_IGNORE_ALERTS, info.ignoreAlerts)
 
             // flag as visible & synchronizable at creation, might be changed by user at any time
             values.put(Calendars.VISIBLE, 1)
@@ -77,6 +81,8 @@ class LocalCalendar private constructor(
                 }
             }
 
+            values.put(COLUMN_IGNORE_ALERTS, info.ignoreAlerts)
+
             // add base values for Calendars
             values.putAll(calendarBaseValues)
 
@@ -105,6 +111,19 @@ class LocalCalendar private constructor(
         set(state) {
             val values = ContentValues(1)
             values.put(COLUMN_SYNC_STATE, state.toString())
+            provider.update(calendarSyncURI(), values, null, null)
+        }
+
+    var ignoreAlerts: Boolean?
+        get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_IGNORE_ALERTS), null, null, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.getInt(0) == 1
+            else
+                null
+        }
+        set(state) {
+            val values = ContentValues(1)
+            values.put(COLUMN_IGNORE_ALERTS, state)
             provider.update(calendarSyncURI(), values, null, null)
         }
 
