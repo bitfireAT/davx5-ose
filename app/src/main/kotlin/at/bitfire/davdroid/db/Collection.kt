@@ -77,6 +77,9 @@ data class Collection(
     // CalDAV only
     var color: Int? = null,
 
+    /** Whether event alerts should be ignored. Only available on CalDAV */
+    var ignoreAlerts: Boolean? = null,
+
     /** timezone definition (full VTIMEZONE) - not a TZID! **/
     var timezone: String? = null,
 

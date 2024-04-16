@@ -57,13 +57,13 @@ import at.bitfire.ical4android.util.DateUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import java.io.StringWriter
+import java.util.Optional
+import java.util.logging.Level
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import net.fortuna.ical4j.model.Calendar
-import java.io.StringWriter
-import java.util.Optional
-import java.util.logging.Level
 
 class AccountModel @AssistedInject constructor(
     val context: Application,
@@ -558,6 +558,10 @@ class AccountModel @AssistedInject constructor(
 
     fun setCollectionForceReadOnly(id: Long, forceReadOnly: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         db.collectionDao().updateForceReadOnly(id, forceReadOnly)
+    }
+
+    fun setCollectionIgnoreAlerts(id: Long, ignoreAlerts: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        db.collectionDao().updateIgnoreAlerts(id, ignoreAlerts)
     }
 
 

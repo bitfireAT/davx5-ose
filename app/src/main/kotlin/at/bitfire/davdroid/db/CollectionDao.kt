@@ -75,6 +75,9 @@ interface CollectionDao {
     @Query("UPDATE collection SET forceReadOnly=:forceReadOnly WHERE id=:id")
     fun updateForceReadOnly(id: Long, forceReadOnly: Boolean)
 
+    @Query("UPDATE collection SET ignoreAlerts=:ignoreAlerts WHERE id=:id")
+    fun updateIgnoreAlerts(id: Long, ignoreAlerts: Boolean)
+
     @Query("UPDATE collection SET sync=:sync WHERE id=:id")
     fun updateSync(id: Long, sync: Boolean)
 

@@ -87,8 +87,8 @@ import at.bitfire.davdroid.util.TaskUtils
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AccountActivity : AppCompatActivity() {
@@ -187,6 +187,9 @@ class AccountActivity : AppCompatActivity() {
                     onChangeForceReadOnly = { id, forceReadOnly ->
                         model.setCollectionForceReadOnly(id, forceReadOnly)
                     },
+                    onChangeIgnoreAlerts =  { id, ignoreAlerts ->
+                        model.setCollectionIgnoreAlerts(id, ignoreAlerts)
+                    },
                     onSubscribe = { item ->
                         installIcsx5 = !subscribeWebcal(item)
                     },
@@ -266,6 +269,7 @@ fun AccountOverview(
     subscriptions: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit = { _, _ -> },
+    onChangeIgnoreAlerts: (collectionId: Long, ignoreAlerts: Boolean) -> Unit = { _, _ -> },
     onSubscribe: (Collection) -> Unit = {},
     installIcsx5: Boolean = false,
     onRefreshCollections: () -> Unit = {},
@@ -443,7 +447,8 @@ fun AccountOverview(
                                     progress = calDavProgress,
                                     collections = calendars,
                                     onUpdateCollectionSync = onUpdateCollectionSync,
-                                    onChangeForceReadOnly = onChangeForceReadOnly
+                                    onChangeForceReadOnly = onChangeForceReadOnly,
+                                    onChangeIgnoreAlerts = onChangeIgnoreAlerts
                                 )
                             }
 
@@ -699,6 +704,7 @@ fun ServiceTab(
     collections: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit = { _, _ -> },
+    onChangeIgnoreAlerts: (collectionId: Long, ignoreAlerts: Boolean) -> Unit = { _, _ -> },
     onSubscribe: (Collection) -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -744,6 +750,7 @@ fun ServiceTab(
                 onChangeSync = onUpdateCollectionSync,
                 onChangeForceReadOnly = onChangeForceReadOnly,
                 onSubscribe = onSubscribe,
+                onChangeIgnoreAlerts = onChangeIgnoreAlerts,
                 modifier = Modifier.weight(1f)
             )
     }

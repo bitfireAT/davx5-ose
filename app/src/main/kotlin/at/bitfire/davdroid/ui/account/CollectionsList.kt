@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -58,6 +59,7 @@ fun CollectionsList(
     collections: LazyPagingItems<Collection>,
     onChangeSync: (collectionId: Long, sync: Boolean) -> Unit,
     onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit,
+    onChangeIgnoreAlerts: (collectionId: Long, ignoreAlerts: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     onSubscribe: (collection: Collection) -> Unit = {}
 ) {
@@ -86,6 +88,10 @@ fun CollectionsList(
                         },
                         onChangeForceReadOnly = { forceReadOnly ->
                             onChangeForceReadOnly(item.id, forceReadOnly)
+                        },
+                        supportsIgnoreAlerts = item.type == Collection.TYPE_CALENDAR,
+                        onChangeIgnoreAlerts = { ignoreAlerts ->
+                            onChangeIgnoreAlerts(item.id, ignoreAlerts)
                         }
                     )
             }
@@ -98,7 +104,9 @@ fun CollectionsList(
 fun CollectionList_Item(
     collection: Collection,
     onChangeSync: (sync: Boolean) -> Unit = {},
-    onChangeForceReadOnly: (forceReadOnly: Boolean) -> Unit = {}
+    onChangeForceReadOnly: (forceReadOnly: Boolean) -> Unit = {},
+    supportsIgnoreAlerts: Boolean = false,
+    onChangeIgnoreAlerts: (ignoreAlerts: Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -122,7 +130,8 @@ fun CollectionList_Item(
             modifier = Modifier
                 .padding(horizontal = 4.dp)
                 .semantics {
-                    contentDescription = context.getString(R.string.account_synchronize_this_collection)
+                    contentDescription =
+                        context.getString(R.string.account_synchronize_this_collection)
                 }
         )
 
@@ -172,6 +181,35 @@ fun CollectionList_Item(
                 expanded = showOverflow,
                 onDismissRequest = { showOverflow = false }
             ) {
+                // Ignore alerts (only supported by caldav, obviously)
+                if (supportsIgnoreAlerts) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onChangeIgnoreAlerts(
+                                if (collection.ignoreAlerts == true) false else true
+                            )
+                            showOverflow = false
+                        }
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.collection_ignore_alerts),
+                                modifier = Modifier.weight(1f)
+                            )
+                            Checkbox(
+                                checked = collection.ignoreAlerts == true,
+                                onCheckedChange = { ignoreAlerts ->
+                                    onChangeIgnoreAlerts(ignoreAlerts)
+                                    showOverflow = false
+                                }
+                            )
+                        }
+                    }
+                }
+
                 // force read-only (only show for collections that are modifiable on the server)
                 if (collection.privWriteContent)
                     DropdownMenuItem(
@@ -180,8 +218,14 @@ fun CollectionList_Item(
                             showOverflow = false
                         }
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(stringResource(R.string.collection_force_read_only))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.collection_force_read_only),
+                                modifier = Modifier.weight(1f)
+                            )
                             Checkbox(
                                 checked = collection.readOnly(),
                                 onCheckedChange = { forceReadOnly ->
