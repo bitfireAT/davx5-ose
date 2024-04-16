@@ -50,17 +50,14 @@
   <string name="account_read_only">salt-okunur</string>
   <!--AddAccountActivity-->
   <string name="login_title">Hesap ekle</string>
+  <string name="login_login">Giriş</string>
   <string name="login_type_email">Eposta adresi ile giriş yap</string>
   <string name="login_email_address">Eposta adresi</string>
   <string name="login_email_address_error">Geçerli eposta adresi zorunludur</string>
   <string name="login_password">Parola</string>
-  <string name="login_password_required">Parola zorunludur</string>
   <string name="login_type_url">URL ve kullanıcı adı ile giriş yap</string>
-  <string name="login_url_must_be_http_or_https">URL http(s):// ile başlamalıdır</string>
   <string name="login_user_name">Kullanıcı adı</string>
-  <string name="login_user_name_required">Kullanıcı adı zorunludur</string>
   <string name="login_base_url">Baz URL</string>
-  <string name="login_login">Giriş</string>
   <string name="login_create_account">Hesap yarat</string>
   <string name="login_account_name">Hesap adı</string>
   <string name="login_account_name_info">Hesap ismi olarak e-posta adresini kullan çünkü Android hesap ismini yarattığın olaylarda DÜZENLEYEN alanında kullanacaktır. Aynı isimde iki faklı hesabın olamaz.</string>
@@ -69,7 +66,7 @@
   <string name="login_configuration_detection">Konfigürasyon keşfi</string>
   <string name="login_querying_server">Lütfen bekle, sunucu sorgulanıyor…</string>
   <string name="login_no_service">CalDAV veya CardDAV servisi bulunamadı.</string>
-  <string name="login_view_logs">Detayları göster</string>
+  <string name="login_view_logs">Jurnallere bak</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Senkronizasyon</string>
   <string name="settings_sync_interval_contacts">Kişiler senk. aralığı</string>
@@ -115,5 +112,6 @@
   <!--sync-->
   <string name="sync_error_permissions">DAVx⁵ izinleri</string>
   <string name="sync_error_permissions_text">Ek izinler zorunludur</string>
+  <!--widgets-->
   <!--cert4android-->
 </resources>

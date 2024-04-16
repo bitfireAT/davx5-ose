@@ -10,9 +10,8 @@
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
   <string name="navigate_up">Navigovat nahoru</string>
-  <string name="no_internet_sync_scheduled">Bez internetu, plánování synchronizace</string>
+  <string name="options_menu">Menu možností</string>
   <string name="share">Sdílet</string>
-  <string name="sync_started">Synchronizace spuštěna</string>
   <string name="database_destructive_migration_title">Databáze rozbitá</string>
   <string name="database_destructive_migration_text">Všechny účty byly lokálně odebrány.</string>
   <string name="notification_channel_debugging">Ladění</string>
@@ -84,6 +83,8 @@
   <string name="wifi_permissions_location_permission_off">Oprávnění pro přístup k poloze odepřeno</string>
   <string name="wifi_permissions_background_location_permission">Oprávnění pro přístup k poloze na pozadí</string>
   <string name="wifi_permissions_background_location_permission_label">Povolit napořád</string>
+  <string name="wifi_permissions_background_location_permission_on">Stav oprávnění polohy je: %s</string>
+  <string name="wifi_permissions_background_location_permission_off">Stav oprávnění polohy není: %s</string>
   <string name="wifi_permissions_background_location_disclaimer">%s používá oprávnění k přístupu k poloze pouze pro zjišťování názvu (SSID) WiFi sítě, ke které jste právě připojení a to pro účely účtů, omezených právě na dané SSID. Toto se děje i když je aplikace spuštěná na pozadí. Žádná data o poloze nejsou shromažďována, ukládána, zpracovávána ani nikam odesílána.</string>
   <string name="wifi_permissions_location_enabled">Určování polohy vždy zapnuté</string>
   <string name="wifi_permissions_location_enabled_on">Služba určování polohy je zapnutá</string>
@@ -113,12 +114,16 @@
   <string name="navigation_drawer_manual">Příručka</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">Komunita</string>
+  <string name="navigation_drawer_support_project">Podpořit projekt</string>
+  <string name="navigation_drawer_contribute">Jak přispět</string>
   <string name="navigation_drawer_privacy_policy">Ochrana soukromí</string>
   <string name="account_list_no_notification_permission">Upozornění vypnuta. Nebudete upozorněni na chyby při synchronizaci.</string>
   <string name="account_list_no_internet">Bez ověřeného připojení k internetu. Synchronizace nemusí běžet.</string>
   <string name="account_list_manage_connections">Spravovat spojení</string>
   <string name="account_list_datasaver_enabled">Spořič dat povolen. Synchronizace na pozadí je omezena.</string>
   <string name="account_list_manage_datasaver">Spravovat spořič dat</string>
+  <string name="account_list_battery_saver_enabled">Spořič baterie je povolen. Synchronizace může být omezena.</string>
+  <string name="account_list_manage_battery_saver">Spravovat spořič baterie</string>
   <string name="account_list_low_storage">Málo volného místa v úložišti. Android nebude synchronizovat místní změny okamžitě, ale při další běžné synchronizaci.</string>
   <string name="account_list_manage_storage">Spravovat úložiště</string>
   <string name="account_list_empty">Vítejte v aplikaci DAVx⁵!\n\nNyní můžete přidat CalDAV/CardDAV účet.</string>
@@ -138,6 +143,8 @@
   <string name="app_settings_logging_on">Zaznamenávání událostí je aktivní</string>
   <string name="app_settings_logging_off">Zaznamenávání událostí je vypnuté</string>
   <string name="app_settings_battery_optimization">Optimalizace akumulátoru</string>
+  <string name="app_settings_battery_optimization_exempted">Aplikace je vyjmuta (doporučeno)</string>
+  <string name="app_settings_battery_optimization_optimized">Omezení baterie platí (nedoporučeno)</string>
   <string name="app_settings_connection">Připojení</string>
   <string name="app_settings_proxy">Typ proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -176,9 +183,13 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_missing_permissions">Jsou nezbytná další oprávnění pro synchronizaci těchto sad.</string>
+  <string name="account_manage_permissions">Spravovat oprávnění</string>
   <string name="account_synchronize_now">Synchronizovat nyní</string>
   <string name="account_settings">Nastavení účtu</string>
   <string name="account_rename">Přejmenovat účet</string>
+  <string name="account_rename_new_name_description">Neuložená místní data mohou být ztracena. Po přejmenování je vyžadována nová synchronizace.</string>
+  <string name="account_rename_new_name">Název nového účtu</string>
   <string name="account_rename_rename">Přejmenovat</string>
   <string name="account_rename_exists_already">Tento název účtu už je používán někým jiným</string>
   <string name="account_rename_couldnt_rename">Účet se nedaří přejmenovat</string>
@@ -191,35 +202,31 @@
   <string name="account_task_list">seznam úkolů</string>
   <string name="account_journal">žurnál</string>
   <string name="account_only_personal">Zobrazit pouze osobní</string>
+  <string name="account_refresh_collections">Obnovit sady</string>
+  <string name="account_refreshing_collections">Obnovování seznamu sad</string>
+  <string name="account_webcal_external_app">Odběry webcal mohou být synchronizovány externími aplikacemi.</string>
   <string name="account_no_webcal_handler_found">Nenalezena žádná aplikace, která by umožňovala webcal</string>
   <string name="account_install_icsx5">Nainstalovat ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Přidat účet</string>
+  <string name="login_login">Přihlášení</string>
   <string name="login_type_email">Přihlášení se e-mailovou adresou</string>
   <string name="login_email_address">E-mailová adresa</string>
   <string name="login_email_address_error">Vyžadován platný e-mail</string>
   <string name="login_password">Heslo</string>
   <string name="login_password_hide">Skrýt heslo</string>
   <string name="login_password_show">Zobrazit heslo</string>
-  <string name="login_password_required">Vyžadováno heslo</string>
   <string name="login_type_url">Přihlášení s URL a uživatelským jménem</string>
-  <string name="login_url_must_be_http_or_https">Je třeba, aby URL začínalo na http(s)://</string>
   <string name="login_user_name">Uživatelské jméno</string>
-  <string name="login_user_name_required">Vyžadováno uživatelské jméno</string>
   <string name="login_base_url">Základ URL</string>
   <string name="login_select_certificate">Vybrat certifikát</string>
-  <string name="login_login">Přihlášení</string>
   <string name="login_create_account">Vytvořit účet</string>
   <string name="login_account_name">Název účtu</string>
-  <string name="login_account_avoid_apostrophe">Použití apostrofů (\') bylo u některých zařízení hlášeno jako problematické.</string>
   <string name="login_account_name_info">Pro jméno účtu použijte svou e-mailovou adresu, protože Android bude brát jméno účtu jako údaj pro ORGANIZÁTORA vytvořených událostí. Nelze mít dva účty stejného jména.</string>
   <string name="login_account_contact_group_method">Metoda seskupování kontaktů:</string>
   <string name="login_account_name_required">Je třeba zadat název pro účet</string>
   <string name="login_account_name_already_taken">Tento název účtu už je používán někým jiným</string>
   <string name="login_account_not_created">Účet nelze vytvořit</string>
-  <string name="login_type_advanced">Pokročilé přihlašování (zvláštní případy použití)</string>
-  <string name="login_use_username_password">Použít uživatelské jméno / heslo</string>
-  <string name="login_use_client_certificate">Použít klientský certifikát</string>
   <string name="login_no_certificate_found">Nenalezen žádný certifikát</string>
   <string name="login_install_certificate">Instalovat certifikát</string>
   <string name="login_type_google">Google kontakty/kalendář</string>
@@ -233,7 +240,6 @@
   <string name="login_oauth_couldnt_obtain_auth_code">Nelze získat autorizační kód</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Přihlásit pomocí Nextcloud</string>
-  <string name="login_nextcloud_login_flow">Tok přihlášení</string>
   <string name="login_nextcloud_login_flow_text">Toto spustí Nextcloud přihlášení ve webovém prohlížeči.</string>
   <string name="login_nextcloud_login_flow_server_address">Adresa Nextcloud serveru</string>
   <string name="login_nextcloud_login_flow_sign_in">Přihlásit se</string>
@@ -242,8 +248,7 @@
   <string name="login_configuration_detection">Zjišťování nastavení</string>
   <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru…</string>
   <string name="login_no_service">Nedaří se nalézt službu CalDAV nebo CardDAV.</string>
-  <string name="login_check_credentials">Nesprávné uživatelské jméno (e-mailová adresa) nebo heslo?</string>
-  <string name="login_view_logs">Zobrazit podrobnosti</string>
+  <string name="login_view_logs">Zobrazit záznamy událostí</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronizace</string>
   <string name="settings_sync_interval_contacts">Interval synchronizace kontaktů</string>
@@ -278,6 +283,8 @@
   <string name="settings_username">Uživatelské jméno</string>
   <string name="settings_password">Heslo</string>
   <string name="settings_password_summary">Aktualizovat heslo dle svého serveru.</string>
+  <string name="settings_certificate_alias">Certifikát klienta</string>
+  <string name="settings_certificate_alias_empty">Certifikát není vybrán nebo k dispozici </string>
   <string name="settings_certificate_install">Instalovat certifikát</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Časový limit pro staré události</string>
@@ -313,7 +320,6 @@
   <!--collection management-->
   <string name="create_addressbook">Vytvořit adresář</string>
   <string name="create_calendar">Vytvořit kalendář</string>
-  <string name="create_calendar_time_zone">Časová zóna</string>
   <string name="create_calendar_type">Možné položky kalendáře</string>
   <string name="create_calendar_type_vevent">Události</string>
   <string name="create_calendar_type_vtodo">Úkoly</string>
@@ -323,6 +329,7 @@
   <string name="create_collection_display_name">Nadpis</string>
   <string name="create_collection_display_name_required">Nadpis je vyžadován</string>
   <string name="create_collection_description">Popis</string>
+  <string name="create_collection_description_optional">Popis (volitelný)</string>
   <string name="create_collection_optional">volitelné</string>
   <string name="create_collection_home_set">Umístění úložiště</string>
   <string name="create_collection_home_set_required">Je třeba zadat umístění na úložišti</string>
@@ -377,6 +384,7 @@
   <string name="webdav_add_mount_display_name">Zobrazovaný název</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Neplatná URL</string>
+  <string name="webdav_add_mount_authentication">Ověření (volitelné)</string>
   <string name="webdav_add_mount_username">Uživatelské jméno</string>
   <string name="webdav_add_mount_password">Heslo</string>
   <string name="webdav_add_mount_add">Přidat připojení (mount)</string>
@@ -402,5 +410,7 @@
   <string name="sync_invalid_event">Ze serveru obdržena neplatná událost</string>
   <string name="sync_invalid_task">Ze serveru obdržen neplatný úkol</string>
   <string name="sync_invalid_resources_ignoring">Ignoruje se jeden či více neplatný prostředků</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">Synchronizovat všechny účty</string>
   <!--cert4android-->
 </resources>

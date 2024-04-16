@@ -35,4 +35,9 @@ interface IntroPage {
     @Composable
     fun ComposePage()
 
+    /**
+     * Called when the user leaves and re-enters the app intro
+     */
+    fun onResume(application: Application) {}
+
 }

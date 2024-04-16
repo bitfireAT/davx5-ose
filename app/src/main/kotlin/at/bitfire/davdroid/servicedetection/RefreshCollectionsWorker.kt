@@ -39,6 +39,8 @@ import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
 import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
+import at.bitfire.dav4jvm.property.push.PushTransports
+import at.bitfire.dav4jvm.property.push.Topic
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GroupMembership
@@ -111,7 +113,10 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             Owner.NAME,
             AddressbookDescription.NAME, SupportedAddressData.NAME,
             CalendarDescription.NAME, CalendarColor.NAME, SupportedCalendarComponentSet.NAME,
-            Source.NAME
+            Source.NAME,
+            // WebDAV Push
+            PushTransports.NAME,
+            Topic.NAME
         )
 
         // Principal properties to ask the server

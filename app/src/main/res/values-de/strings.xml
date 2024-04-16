@@ -10,9 +10,8 @@
   <string name="help">Hilfe</string>
   <string name="manage_accounts">Konten verwalten</string>
   <string name="navigate_up">Aufwärts navigieren</string>
-  <string name="no_internet_sync_scheduled">Kein Internet, Synchronisierung wird geplant</string>
+  <string name="optional_label">* optional</string>
   <string name="share">Teilen</string>
-  <string name="sync_started">Synchronisierung gestartet</string>
   <string name="database_destructive_migration_title">Datenbank beschädigt</string>
   <string name="database_destructive_migration_text">Alle Accounts wurden lokal entfernt.</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
@@ -179,6 +178,7 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_missing_permissions">Für die Synchronisierung dieser Ordner sind zusätzliche Berechtigungen erforderlich.</string>
   <string name="account_manage_permissions">Berechtigungen verwalten</string>
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
   <string name="account_settings">Konto-Einstellungen</string>
@@ -199,35 +199,37 @@
   <string name="account_only_personal">Nur eigene anzeigen</string>
   <string name="account_refresh_collections">Ordner aktualisieren</string>
   <string name="account_refreshing_collections">Ordnerliste aktualisieren</string>
+  <string name="account_webcal_external_app">Webcal-Abonnements können mit externen Apps synchronisiert werden.</string>
   <string name="account_no_webcal_handler_found">Keine Webcal-App gefunden</string>
   <string name="account_install_icsx5">ICSx⁵ installieren</string>
   <!--AddAccountActivity-->
   <string name="login_title">Konto hinzufügen</string>
+  <string name="login_generic_login">Allgemeine Anmeldung</string>
+  <string name="login_provider_login">Provider-spezifische Anmeldung</string>
+  <string name="login_continue">Fortfahren</string>
+  <string name="login_login">Anmelden</string>
   <string name="login_type_email">Mit E-Mail-Adresse anmelden</string>
   <string name="login_email_address">E-Mail-Adresse</string>
   <string name="login_email_address_error">Gültige E-Mail-Adresse benötigt</string>
   <string name="login_password">Passwort</string>
   <string name="login_password_hide">Passwort ausblenden</string>
   <string name="login_password_show">Passwort anzeigen</string>
-  <string name="login_password_required">Passwort wird benötigt</string>
+  <string name="login_password_optional">Passwort*</string>
   <string name="login_type_url">Mit URL und Benutzername anmelden</string>
-  <string name="login_url_must_be_http_or_https">URL muss mit http(s):// beginnen</string>
   <string name="login_user_name">Benutzername</string>
-  <string name="login_user_name_required">Benutzername wird benötigt</string>
+  <string name="login_user_name_optional">Benutzername*</string>
   <string name="login_base_url">Basis-URL</string>
   <string name="login_select_certificate">Zertifikat auswählen</string>
-  <string name="login_login">Anmelden</string>
   <string name="login_create_account">Konto anlegen</string>
   <string name="login_account_name">Kontoname</string>
-  <string name="login_account_avoid_apostrophe">Auf manchen Geräten führt die Verwendung von einfachen Anführungszeichen (\') zu Problemen.</string>
   <string name="login_account_name_info">Verwenden Sie Ihre E-Mail-Adresse als Kontonamen, da Android den Kontonamen als ORGANIZER einsetzt. Es kann allerdings keine zwei Konten mit dem gleichen Namen geben.</string>
   <string name="login_account_contact_group_method">Kontaktgruppen-Methode:</string>
   <string name="login_account_name_required">Kontoname wird benötigt</string>
   <string name="login_account_name_already_taken">Kontoname bereits verwendet</string>
   <string name="login_account_not_created">Konto konnte nicht angelegt werden</string>
-  <string name="login_type_advanced">Erweiterter Login (für spezielle Anwendungsfälle)</string>
-  <string name="login_use_username_password">Name/Passwort benutzen</string>
-  <string name="login_use_client_certificate">Client-Zertifikat benutzen</string>
+  <string name="login_type_advanced">Erweiterte Anmeldung</string>
+  <string name="login_no_client_certificate_optional">Kein Client-Zertifikat*</string>
+  <string name="login_client_certificate_selected">Client-Zertifikat: %s</string>
   <string name="login_no_certificate_found">Kein Zertifikat gefunden</string>
   <string name="login_install_certificate">Zertifikat installieren </string>
   <string name="login_type_google">Google-Kontakte / -Kalender</string>
@@ -241,7 +243,6 @@
   <string name="login_oauth_couldnt_obtain_auth_code">Authentifizierungscode konnte nicht abgerufen werden</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Mit Nextcloud anmelden</string>
-  <string name="login_nextcloud_login_flow">Anmeldevorgang</string>
   <string name="login_nextcloud_login_flow_text">Dadurch wird der Nextcloud-Anmeldevorgang in einem Webbrowser gestartet.</string>
   <string name="login_nextcloud_login_flow_server_address">Nextcloud-Serveradresse</string>
   <string name="login_nextcloud_login_flow_sign_in">Anmeldung</string>
@@ -250,8 +251,7 @@
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
   <string name="login_no_service">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>
-  <string name="login_check_credentials">Benutzername (Email-Adresse) / Passwort falsch?</string>
-  <string name="login_view_logs">Details anzeigen</string>
+  <string name="login_view_logs">Logs anzeigen</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronisierung</string>
   <string name="settings_sync_interval_contacts">Häufigkeit der Kontakte-Synchronisierung</string>
@@ -285,6 +285,7 @@
   <string name="settings_oauth_summary">Erneut mit OAuth anmelden</string>
   <string name="settings_username">Benutzername</string>
   <string name="settings_password">Passwort</string>
+  <string name="settings_new_password">Neues Passwort</string>
   <string name="settings_password_summary">Aktualisieren Sie Ihr Passwort gemäß den Server-Einstellungen.</string>
   <string name="settings_certificate_alias">Client-Zertifikat</string>
   <string name="settings_certificate_alias_empty">Kein Zertifikat verfügbar oder ausgewählt</string>
@@ -319,7 +320,7 @@
   <!--collection management-->
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_calendar">Kalender anlegen</string>
-  <string name="create_calendar_time_zone">Zeitzone</string>
+  <string name="create_calendar_time_zone">Standardzeitzone</string>
   <string name="create_calendar_type">Mögliche Kalendereinträge</string>
   <string name="create_calendar_type_vevent">Termine</string>
   <string name="create_calendar_type_vtodo">Aufgaben</string>
@@ -410,5 +411,8 @@
   <string name="sync_invalid_event">Ungültigen Termin vom Server erhalten</string>
   <string name="sync_invalid_task">Ungültige Aufgabe vom Server erhalten</string>
   <string name="sync_invalid_resources_ignoring">Eine/mehrere ungültige Ressourcen ignoriert</string>
+  <!--widgets-->
+  <string name="widget_sync_all">Alles synchronisieren</string>
+  <string name="widget_sync_all_accounts">Alle Konten synchronisieren</string>
   <!--cert4android-->
 </resources>

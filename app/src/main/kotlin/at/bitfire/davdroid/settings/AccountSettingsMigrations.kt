@@ -41,13 +41,13 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import java.io.ByteArrayInputStream
+import java.io.ObjectInputStream
+import java.util.logging.Level
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.property.Url
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.dmfs.tasks.contract.TaskContract
-import java.io.ByteArrayInputStream
-import java.io.ObjectInputStream
-import java.util.logging.Level
 
 class AccountSettingsMigrations(
     val context: Context,
@@ -285,13 +285,11 @@ class AccountSettingsMigrations(
             provider.client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
         }
 
-        @SuppressLint("Recycle")
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-            context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+            context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
                 provider.update(
                     CalendarContract.Calendars.CONTENT_URI.asSyncAdapter(account),
                     AndroidCalendar.calendarBaseValues, null, null)
-                provider.close()
             }
     }
 
@@ -355,9 +353,9 @@ class AccountSettingsMigrations(
     }
 
     @Suppress("unused")
-    @SuppressLint("Recycle", "ParcelClassLoader")
+    @SuppressLint("ParcelClassLoader")
     private fun update_5_6() {
-        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { provider ->
+        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
             val parcel = Parcel.obtain()
             try {
                 // don't run syncs during the migration
@@ -408,7 +406,6 @@ class AccountSettingsMigrations(
                 throw ContactsStorageException("Couldn't migrate contacts to new address book", e)
             } finally {
                 parcel.recycle()
-                provider.close()
             }
         }
 

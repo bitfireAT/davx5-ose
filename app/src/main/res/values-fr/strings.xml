@@ -10,7 +10,6 @@
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
   <string name="share">Partager</string>
-  <string name="sync_started">La synchronisation a débuté</string>
   <string name="database_destructive_migration_title">Base de données corrompue</string>
   <string name="database_destructive_migration_text">Tous les comptes ont été supprimés localement.</string>
   <string name="notification_channel_debugging">Débogage</string>
@@ -196,31 +195,24 @@
   <string name="account_install_icsx5">Installer ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Ajouter un compte</string>
+  <string name="login_login">Se connecter</string>
   <string name="login_type_email">Connexion avec une adresse email</string>
   <string name="login_email_address">Adresse mail</string>
   <string name="login_email_address_error">Une adresse e-mail valide est requise</string>
   <string name="login_password">Mot de passe</string>
   <string name="login_password_hide">Cacher le mot de passe</string>
   <string name="login_password_show">Montrer le mot de passe</string>
-  <string name="login_password_required">Mot de passe requis</string>
   <string name="login_type_url">Connexion avec une URL et un nom d\'utilisateur</string>
-  <string name="login_url_must_be_http_or_https">L\'URL doit commencer par http(s)://</string>
   <string name="login_user_name">Nom d\'utilisateur</string>
-  <string name="login_user_name_required">Nom d\'utilisateur requis</string>
   <string name="login_base_url">URL de base</string>
   <string name="login_select_certificate">Choisir le certificat</string>
-  <string name="login_login">Se connecter</string>
   <string name="login_create_account">Créer un compte</string>
   <string name="login_account_name">Nom du compte</string>
-  <string name="login_account_avoid_apostrophe">L\'utilisation d\'apostrophes (\') est connue pour causer des problèmes sur certains appareils.</string>
   <string name="login_account_name_info">Utilisez votre adresse e-mail comme nom de compte car Android utilisera ce nom en tant que champ ORGANISATEUR pour les événements que vous créerez. Vous ne pouvez pas avoir deux comptes avec le même nom.</string>
   <string name="login_account_contact_group_method">Méthode pour les contacts de type groupe :</string>
   <string name="login_account_name_required">Nom du compte requis</string>
   <string name="login_account_name_already_taken">Le nom du compte est déjà pris</string>
   <string name="login_account_not_created">Le compte n\'a pas pu être créé</string>
-  <string name="login_type_advanced">Connexion avancée (cas particuliers)</string>
-  <string name="login_use_username_password">Utiliser le nom d\'utilisateur/mot de passe</string>
-  <string name="login_use_client_certificate">Utiliser le certificat du client</string>
   <string name="login_no_certificate_found">Aucun certificat trouvé</string>
   <string name="login_install_certificate">Installer un certificat</string>
   <string name="login_type_google">Google Contacts / Agenda</string>
@@ -240,8 +232,7 @@
   <string name="login_configuration_detection">Détection de la configuration</string>
   <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur …</string>
   <string name="login_no_service">Aucun accès possible au service CalDAV ou CardDAV.</string>
-  <string name="login_check_credentials">Nom d\'utilisateur (courriel) / mot de passe incorrect ?</string>
-  <string name="login_view_logs">Afficher les détails</string>
+  <string name="login_view_logs">Voir les logs</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronisation</string>
   <string name="settings_sync_interval_contacts">Intervalle de synchronisation des carnets d\'adresses</string>
@@ -304,7 +295,6 @@
   <!--collection management-->
   <string name="create_addressbook">Créer un carnet d\'adresses</string>
   <string name="create_calendar">Créer un calendrier</string>
-  <string name="create_calendar_time_zone">Fuseau horaire</string>
   <string name="create_calendar_type">Entrées possibles de calendrier</string>
   <string name="create_calendar_type_vevent">Événements</string>
   <string name="create_calendar_type_vtodo">Tâches</string>
@@ -392,5 +382,7 @@
   <string name="sync_invalid_event">Reçu un événement invalide du serveur</string>
   <string name="sync_invalid_task">Reçu une tâche invalide du serveur</string>
   <string name="sync_invalid_resources_ignoring">Ignorer une ou plusieurs ressources non valides</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">Synchroniser tous les comptes</string>
   <!--cert4android-->
 </resources>

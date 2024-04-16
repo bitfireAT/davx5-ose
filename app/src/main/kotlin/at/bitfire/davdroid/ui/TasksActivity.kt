@@ -28,24 +28,24 @@ import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.PackageChangedReceiver
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
@@ -54,10 +54,12 @@ import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.RadioWithSwitch
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.davdroid.util.TaskUtils
+import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -103,7 +105,7 @@ class TasksActivity: AppCompatActivity() {
 
         }
 
-        val showAgain = settings.getBooleanLive(HINT_OPENTASKS_NOT_INSTALLED)
+        val showAgain = settings.getBooleanFlow(HINT_OPENTASKS_NOT_INSTALLED, true)
         fun setShowAgain(showAgain: Boolean) {
             if (showAgain)
                 settings.remove(HINT_OPENTASKS_NOT_INSTALLED)
@@ -111,29 +113,23 @@ class TasksActivity: AppCompatActivity() {
                 settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
         }
 
-        val currentProvider = TaskUtils.currentProviderLive(context)
+        val currentProvider = TaskUtils.currentProviderFlow(context, viewModelScope)
         val jtxSelected = currentProvider.map { it == TaskProvider.ProviderName.JtxBoard }
         val tasksOrgSelected = currentProvider.map { it == TaskProvider.ProviderName.TasksOrg }
         val openTasksSelected = currentProvider.map { it == TaskProvider.ProviderName.OpenTasks }
 
-        val jtxInstalled = MutableLiveData<Boolean>()
-        val tasksOrgInstalled = MutableLiveData<Boolean>()
-        val openTasksInstalled = MutableLiveData<Boolean>()
-
-        private val pkgChangedReceiver = object: PackageChangedReceiver(context) {
-            override fun onPackageChanged() {
-                jtxInstalled.postValue(isInstalled(TaskProvider.ProviderName.JtxBoard.packageName))
-                tasksOrgInstalled.postValue(isInstalled(TaskProvider.ProviderName.TasksOrg.packageName))
-                openTasksInstalled.postValue(isInstalled(TaskProvider.ProviderName.OpenTasks.packageName))
-            }
-        }
+        var jtxInstalled by mutableStateOf(false)
+        var tasksOrgInstalled by mutableStateOf(false)
+        var openTasksInstalled by mutableStateOf(false)
 
         init {
-            pkgChangedReceiver.register(true)
-        }
-
-        override fun onCleared() {
-            pkgChangedReceiver.close()
+            viewModelScope.launch {
+                packageChangedFlow(context).collect {
+                    jtxInstalled = isInstalled(TaskProvider.ProviderName.JtxBoard.packageName)
+                    tasksOrgInstalled = isInstalled(TaskProvider.ProviderName.TasksOrg.packageName)
+                    openTasksInstalled = isInstalled(TaskProvider.ProviderName.OpenTasks.packageName)
+                }
+            }
         }
 
         private fun isInstalled(packageName: String): Boolean =
@@ -162,41 +158,82 @@ fun TasksCard(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val jtxInstalled by model.jtxInstalled.observeAsState(false)
-    val jtxSelected by model.jtxSelected.observeAsState(false)
+    val jtxInstalled = model.jtxInstalled
+    val jtxSelected by model.jtxSelected.collectAsStateWithLifecycle(false)
 
-    val tasksOrgInstalled by model.tasksOrgInstalled.observeAsState(false)
-    val tasksOrgSelected by model.tasksOrgSelected.observeAsState(false)
+    val tasksOrgInstalled = model.tasksOrgInstalled
+    val tasksOrgSelected by model.tasksOrgSelected.collectAsStateWithLifecycle(false)
 
-    val openTasksInstalled by model.openTasksInstalled.observeAsState(false)
-    val openTasksSelected by model.openTasksSelected.observeAsState(false)
+    val openTasksInstalled = model.openTasksInstalled
+    val openTasksSelected by model.openTasksSelected.collectAsStateWithLifecycle(false)
 
-    val showAgain = model.showAgain.observeAsState().value ?: true
+    val showAgain by model.showAgain.collectAsStateWithLifecycle(true)
 
-    fun installApp(packageName: String) {
-        val uri = Uri.parse("market://details?id=$packageName&referrer=" +
-                Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID))
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        if (intent.resolveActivity(context.packageManager) != null)
-            context.startActivity(intent)
-        else
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = context.getString(R.string.intro_tasks_no_app_store),
-                    duration = SnackbarDuration.Long
-                )
-            }
+    TasksCardContent(
+        jtxSelected = jtxSelected,
+        jtxInstalled = jtxInstalled,
+        tasksOrgSelected = tasksOrgSelected,
+        tasksOrgInstalled = tasksOrgInstalled,
+        openTasksSelected = openTasksSelected,
+        openTasksInstalled = openTasksInstalled,
+        showAgain = showAgain,
+        onSetShowAgain = model::setShowAgain,
+        onProviderSelected = { provider ->
+            if (model.currentProvider.value != provider)
+                model.selectProvider(provider)
+        },
+        installApp = { packageName ->
+            val uri = Uri.parse("market://details?id=$packageName&referrer=" +
+                    Uri.encode("utm_source=" + BuildConfig.APPLICATION_ID))
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            if (intent.resolveActivity(context.packageManager) != null)
+                context.startActivity(intent)
+            else
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.intro_tasks_no_app_store),
+                        duration = SnackbarDuration.Long
+                    )
+                }
+        }
+    )
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun TasksCardContent_Preview() {
+    AppTheme {
+        TasksCardContent(
+            jtxSelected = true,
+            jtxInstalled = true,
+            tasksOrgSelected = false,
+            tasksOrgInstalled = false,
+            openTasksSelected = false,
+            openTasksInstalled = false,
+            showAgain = true,
+            onSetShowAgain = {},
+            onProviderSelected = {},
+            installApp = {}
+        )
     }
+}
 
-    fun onProviderSelected(provider: TaskProvider.ProviderName) {
-        if (model.currentProvider.value != provider)
-            model.selectProvider(provider)
-    }
-
+@Composable
+fun TasksCardContent(
+    jtxSelected: Boolean,
+    jtxInstalled: Boolean,
+    tasksOrgSelected: Boolean,
+    tasksOrgInstalled: Boolean,
+    openTasksSelected: Boolean,
+    openTasksInstalled: Boolean,
+    showAgain: Boolean,
+    onSetShowAgain: (Boolean) -> Unit,
+    onProviderSelected: (TaskProvider.ProviderName) -> Unit,
+    installApp: (String) -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(8.dp)
             .verticalScroll(rememberScrollState())
     ) {
         CardWithImage(
@@ -204,9 +241,7 @@ fun TasksCard(
             imageAlignment = BiasAlignment(0f, .1f),
             title = stringResource(R.string.intro_tasks_title),
             message = stringResource(R.string.intro_tasks_text1),
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
             RadioWithSwitch(
                 title = stringResource(R.string.intro_tasks_jtx),
@@ -271,14 +306,14 @@ fun TasksCard(
             ) {
                 Checkbox(
                     checked = !showAgain,
-                    onCheckedChange = { model.setShowAgain(!it) }
+                    onCheckedChange = { onSetShowAgain(!it) }
                 )
                 Text(
                     text = stringResource(R.string.intro_tasks_dont_show),
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { model.setShowAgain(!showAgain) }
+                        .clickable { onSetShowAgain(!showAgain) }
                 )
             }
         }

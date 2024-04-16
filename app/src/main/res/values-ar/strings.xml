@@ -10,9 +10,7 @@
   <string name="help">مساعدة</string>
   <string name="manage_accounts">إدارة الحسابات</string>
   <string name="navigate_up">العودة</string>
-  <string name="no_internet_sync_scheduled">لا اتصال، تُجَدول المزامنة</string>
   <string name="share">شارك</string>
-  <string name="sync_started">بدأت المزامنة</string>
   <string name="database_destructive_migration_title">عطبت قاعدة البيانات</string>
   <string name="database_destructive_migration_text">أزيلت الحسابات المحلية كلها</string>
   <string name="notification_channel_debugging">تصحيح العلل</string>
@@ -117,18 +115,15 @@
   <string name="account_install_icsx5">تثبيت ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">إضافة حساب</string>
+  <string name="login_login">تسجيل الدخول</string>
   <string name="login_type_email">تسجيل الدخول بعنوان البريد</string>
   <string name="login_email_address">عنوان البريد الإلكتروني</string>
   <string name="login_email_address_error">مطلوب عنوان بريد إلكتروني صالح</string>
   <string name="login_password">كلمة المرور</string>
-  <string name="login_password_required">كلمة المرور مطلوبة</string>
   <string name="login_type_url">تسجيل الدخول بعنوان URL واسم مستخدم</string>
-  <string name="login_url_must_be_http_or_https">يجب أن يبدأ عنوان URL بـ http(s)://</string>
   <string name="login_user_name">اسم المستخدم</string>
-  <string name="login_user_name_required">اسم المستخدم مطلوب</string>
   <string name="login_base_url">URL الأساس</string>
   <string name="login_select_certificate">اختيار الشهادة</string>
-  <string name="login_login">تسجيل الدخول</string>
   <string name="login_create_account">إنشاء حساب</string>
   <string name="login_account_name">اسم الحساب</string>
   <string name="login_account_name_info">استخدم عنوان بريدك الإلكتروني اسماً للحساب لأن آندرويد يستخدم اسم الحساب في حقل المنظّم ORGANIZER للأحداث التي تنشئها.  لايمكن أن تمتلك حسابين بالاسم نفسه.</string>
@@ -139,7 +134,6 @@
   <string name="login_configuration_detection">اكتشاف الضبط</string>
   <string name="login_querying_server">يجري استعلام الخادم … يرجى الانتظار</string>
   <string name="login_no_service">لم نجِد خدمة CalDAV أو CardDAV.</string>
-  <string name="login_view_logs">عرض التفاصيل</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">المزامنة</string>
   <string name="settings_sync_interval_contacts">مدة مزامنة جهات الاتصال</string>
@@ -186,7 +180,6 @@
   <!--collection management-->
   <string name="create_addressbook">إنشاء دفتر عناوين</string>
   <string name="create_calendar">إنشاء تقويم</string>
-  <string name="create_calendar_time_zone">المنطقة الزمنية</string>
   <string name="create_calendar_type">المدخلات المحتملة للتقويم</string>
   <string name="create_calendar_type_vevent">أحداث</string>
   <string name="create_calendar_type_vtodo">مهام</string>
@@ -228,5 +221,6 @@
   <string name="sync_invalid_event">استلام حدث غير صالح من الخادم</string>
   <string name="sync_invalid_task">استلام مهمة غير صالحة من الخادم</string>
   <string name="sync_invalid_resources_ignoring">جرى تجاهل مورد غير صالح واحد أو أكثر</string>
+  <!--widgets-->
   <!--cert4android-->
 </resources>
