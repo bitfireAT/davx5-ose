@@ -8,7 +8,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import at.bitfire.davdroid.ui.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -18,14 +17,12 @@ class WebdavMountsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
-                WebdavMountsScreen(
-                    onAddWebdavMount = {
-                        startActivity(Intent(this, AddWebdavMountActivity::class.java))
-                    },
-                    onFinish = { finish() }
-                )
-            }
+            WebdavMountsScreen(
+                onAddWebdavMount = {
+                    startActivity(Intent(this, AddWebdavMountActivity::class.java))
+                },
+                onNavUp = { onSupportNavigateUp() }
+            )
         }
     }
 

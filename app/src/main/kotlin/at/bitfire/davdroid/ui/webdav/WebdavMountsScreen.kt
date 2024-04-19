@@ -65,6 +65,7 @@ import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.db.WebDavMountWithRootDocument
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.davdroid.util.DavUtils
@@ -74,23 +75,25 @@ import org.apache.commons.io.FileUtils
 @Composable
 fun WebdavMountsScreen(
     onAddWebdavMount: () -> Unit,
-    onFinish: () -> Unit,
+    onNavUp: () -> Unit,
     model: WebdavMountsModel = viewModel()
 ) {
     val mountInfos by model.mountInfos.collectAsStateWithLifecycle(emptyList())
 
-    WebdavMountsList(
-        mountInfos = mountInfos,
-        refreshingQuota = model.refreshingQuota,
-        onRefreshQuota = {
-            model.refreshQuota()
-        },
-        onAddMount = onAddWebdavMount,
-        onRemoveMount = { mount ->
-            model.remove(mount)
-        },
-        onFinish = onFinish
-    )
+    AppTheme {
+        WebdavMountsList(
+            mountInfos = mountInfos,
+            refreshingQuota = model.refreshingQuota,
+            onRefreshQuota = {
+                model.refreshQuota()
+            },
+            onAddMount = onAddWebdavMount,
+            onRemoveMount = { mount ->
+                model.remove(mount)
+            },
+            onNavUp = onNavUp
+        )
+    }
 }
 
 @Composable
@@ -101,7 +104,7 @@ fun WebdavMountsList(
     onRefreshQuota: () -> Unit = {},
     onAddMount: () -> Unit = {},
     onRemoveMount: (WebDavMount) -> Unit = {},
-    onFinish: () -> Unit = {}
+    onNavUp: () -> Unit = {}
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -119,7 +122,7 @@ fun WebdavMountsList(
             TopAppBar(
                 navigationIcon = {
                     IconButton(
-                        onClick = onFinish
+                        onClick = onNavUp
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
