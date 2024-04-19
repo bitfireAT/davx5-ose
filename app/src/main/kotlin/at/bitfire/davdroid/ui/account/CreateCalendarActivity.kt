@@ -62,7 +62,7 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M2Theme
 import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.widget.CalendarColorPickerDialog
 import at.bitfire.davdroid.ui.widget.ExceptionInfoDialog
@@ -104,7 +104,7 @@ class CreateCalendarActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
+            M2Theme {
                 var displayName by remember { mutableStateOf("") }
                 var color by remember { mutableIntStateOf(Constants.DAVDROID_GREEN_RGBA) }
                 var description by remember { mutableStateOf("") }

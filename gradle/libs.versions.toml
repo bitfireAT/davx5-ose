@@ -98,6 +98,7 @@ commons-text = { module = "org.apache.commons:commons-text", version.ref = "comm
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-material = { module = "androidx.compose.material:material" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
@@ -111,7 +112,7 @@ hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", vers
 junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-mikepenz-aboutLibraries = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "mikepenz-aboutLibraries" }
+mikepenz-aboutLibraries = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "mikepenz-aboutLibraries" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 nsk90-kstatemachine = { module = "io.github.nsk90:kstatemachine-jvm", version.ref = "nsk90-kstatemachine" }
 okhttp-base = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }

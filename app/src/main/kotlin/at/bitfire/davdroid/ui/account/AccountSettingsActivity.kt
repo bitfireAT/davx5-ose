@@ -67,7 +67,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.Syncer
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M2Theme
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.EditTextInputDialog
 import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
@@ -117,7 +117,7 @@ class AccountSettingsActivity: AppCompatActivity() {
         title = account.name
 
         setContent {
-            AppTheme {
+            M2Theme {
                 val uriHandler = LocalUriHandler.current
 
                 val snackbarHostState = remember { SnackbarHostState() }

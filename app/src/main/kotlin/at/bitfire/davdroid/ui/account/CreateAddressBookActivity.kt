@@ -46,7 +46,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M2Theme
 import at.bitfire.davdroid.ui.widget.ExceptionInfoDialog
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -78,7 +78,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
+            M2Theme {
                 var displayName by remember { mutableStateOf("") }
                 var description by remember { mutableStateOf("") }
                 var homeSet by remember { mutableStateOf<HomeSet?>(null) }

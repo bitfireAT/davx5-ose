@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
@@ -13,15 +13,31 @@ import androidx.compose.ui.platform.LocalUriHandler
 import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
 
 @Composable
-fun AppTheme(content: @Composable () -> Unit) {
+fun M2Theme(content: @Composable () -> Unit) {
     val colors = if (isSystemInDarkTheme())
-        ThemeColors.dark
+        M2Colors.dark
     else
-        ThemeColors.light
+        M2Colors.light
 
     CompositionLocalProvider(LocalUriHandler provides SafeAndroidUriHandler(LocalContext.current)) {
-        MaterialTheme(colors = colors) {
+        androidx.compose.material.MaterialTheme(colors = colors) {
             content()
         }
     }
+}
+
+@Composable
+fun AppTheme(
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    val colors = if (!useDarkTheme)
+        M3ColorScheme.LightColors
+    else
+        M3ColorScheme.DarkColors
+
+    MaterialTheme(
+        colorScheme = colors,
+        content = content
+    )
 }

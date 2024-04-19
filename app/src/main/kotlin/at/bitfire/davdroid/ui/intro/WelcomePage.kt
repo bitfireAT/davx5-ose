@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.ThemeColors.primaryDark
+import at.bitfire.davdroid.ui.M2Colors.primaryDark
 
 class WelcomePage: IntroPage {
 

@@ -59,7 +59,7 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M2Theme
 import at.bitfire.davdroid.ui.composable.PasswordTextField
 import at.bitfire.davdroid.webdav.CredentialsStore
 import at.bitfire.davdroid.webdav.DavDocumentsProvider
@@ -93,7 +93,7 @@ class AddWebdavMountActivity : AppCompatActivity() {
             val username by model.userName.observeAsState(initial = "")
             val password by model.password.observeAsState(initial = "")
 
-            AppTheme {
+            M2Theme {
                 Layout(
                     isLoading = isLoading,
                     error = error,
@@ -303,7 +303,7 @@ class AddWebdavMountActivity : AppCompatActivity() {
     @Preview
     @Composable
     fun Layout_Preview() {
-        AppTheme {
+        M2Theme {
             Layout()
         }
     }

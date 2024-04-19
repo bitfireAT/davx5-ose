@@ -141,7 +141,7 @@ class AccountsActivity: AppCompatActivity() {
 
             val accounts by model.accountInfos.observeAsState()
 
-            AppTheme {
+            M2Theme {
                 Scaffold(
                     scaffoldState = scaffoldState,
                     drawerContent = {

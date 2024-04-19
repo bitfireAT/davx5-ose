@@ -70,7 +70,7 @@ class TasksActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
+            M2Theme {
                 Scaffold(
                     topBar = {
                         BasicTopAppBar(
@@ -202,7 +202,7 @@ fun TasksCard(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun TasksCardContent_Preview() {
-    AppTheme {
+    M2Theme {
         TasksCardContent(
             jtxSelected = true,
             jtxInstalled = true,

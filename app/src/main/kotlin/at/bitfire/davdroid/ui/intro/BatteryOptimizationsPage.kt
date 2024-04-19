@@ -52,7 +52,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M2Theme
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
 import at.bitfire.davdroid.util.PermissionUtils
@@ -224,7 +224,7 @@ class BatteryOptimizationsPage: IntroPage {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun BatteryOptimizationsContent_Preview() {
-    AppTheme {
+    M2Theme {
         BatteryOptimizationsContent(
             dontShowBattery = true,
             onChangeDontShowBattery = {},
