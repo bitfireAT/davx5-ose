@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
 import android.content.Context
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,9 +23,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
@@ -246,66 +248,75 @@ class LoginScreenModel @AssistedInject constructor(
             else
                 null
         }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     // backing field that is combined with dynamic content for the resulting UI State
-    private var _accountDetailsUiState by mutableStateOf(AccountDetailsUiState())
-    val accountDetailsUiState by derivedStateOf {
-        val method = forcedGroupMethod.value
-
+    private var _accountDetailsUiState = MutableStateFlow(AccountDetailsUiState())
+    val accountDetailsUiState = combine(_accountDetailsUiState, forcedGroupMethod) { uiState, method ->
         // set group type to read-only if group method is forced
-        var combinedState = _accountDetailsUiState.copy(groupMethodReadOnly = method != null)
+        var combinedState = uiState.copy(groupMethodReadOnly = method != null)
 
         // apply forced group method, if applicable
         if (method != null)
             combinedState = combinedState.copy(groupMethod = method)
 
         combinedState
-    }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, _accountDetailsUiState.value)
 
     fun updateAccountName(accountName: String) {
-        _accountDetailsUiState = _accountDetailsUiState.copy(
-            accountName = accountName,
-            accountNameExists = accountRepository.exists(accountName)
-        )
+        _accountDetailsUiState.update { currentState ->
+            currentState.copy(
+                accountName = accountName,
+                accountNameExists = accountRepository.exists(accountName)
+            )
+        }
     }
 
     fun updateAccountNameAndEmails(accountName: String, emails: Set<String>) {
-        _accountDetailsUiState = _accountDetailsUiState.copy(
-            accountName = accountName,
-            accountNameExists = accountRepository.exists(accountName),
-            suggestedAccountNames = emails
-        )
+        _accountDetailsUiState.update { currentState ->
+            currentState.copy(
+                accountName = accountName,
+                accountNameExists = accountRepository.exists(accountName),
+                suggestedAccountNames = emails
+            )
+        }
     }
 
     fun updateGroupMethod(groupMethod: GroupMethod) {
-        _accountDetailsUiState = _accountDetailsUiState.copy(groupMethod = groupMethod)
+        _accountDetailsUiState.update { currentState ->
+            currentState.copy(groupMethod = groupMethod)
+        }
     }
 
     fun resetCouldNotCreateAccount() {
-        _accountDetailsUiState = _accountDetailsUiState.copy(couldNotCreateAccount = false)
+        _accountDetailsUiState.update { currentState ->
+            currentState.copy(couldNotCreateAccount = false)
+        }
     }
 
     fun createAccount() {
-        _accountDetailsUiState = _accountDetailsUiState.copy(creatingAccount = true)
+        _accountDetailsUiState.update { currentState ->
+            currentState.copy(creatingAccount = true)
+        }
+
         viewModelScope.launch {
             val account = withContext(Dispatchers.Default) {
                 accountRepository.create(
-                    accountDetailsUiState.accountName,
+                    accountDetailsUiState.value.accountName,
                     loginInfo.credentials,
                     foundConfig!!,
-                    accountDetailsUiState.groupMethod
+                    accountDetailsUiState.value.groupMethod
                 )
             }
 
-            _accountDetailsUiState =
+            _accountDetailsUiState.update { currentState ->
                 if (account != null)
-                    accountDetailsUiState.copy(createdAccount = account)
+                    currentState.copy(createdAccount = account)
                 else
-                    accountDetailsUiState.copy(
+                    currentState.copy(
                         creatingAccount = false,
                         couldNotCreateAccount = true
                     )
+            }
         }
     }
 
