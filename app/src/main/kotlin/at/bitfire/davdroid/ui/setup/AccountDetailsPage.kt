@@ -14,6 +14,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -38,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.Assistant
@@ -96,15 +99,17 @@ fun AccountDetailsPageContent(
     ) {
         Column(Modifier.padding(8.dp)) {
             if (creatingAccount)
-                LinearProgressIndicator(Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp))
+                LinearProgressIndicator(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp))
 
             var expanded by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = it }
             ) {
+                val offerDropdown = suggestedAccountNames.isNotEmpty()
                 OutlinedTextField(
                     value = accountName,
                     onValueChange = onUpdateAccountName,
@@ -119,32 +124,27 @@ fun AccountDetailsPageContent(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email
                     ),
-                    trailingIcon = {
-                        if (suggestedAccountNames.isNotEmpty())
-                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = expanded
-                            )
-                    },
+                    trailingIcon = if (offerDropdown) {
+                        { ExposedDropdownMenuDefaults.TrailingIcon(expanded) }
+                    } else null,
                     modifier = Modifier
-                        .fillMaxWidth()
                         .menuAnchor()
+                        .fillMaxWidth()
                 )
 
-                if (suggestedAccountNames.isNotEmpty())
-                    ExposedDropdownMenu(
+                if (offerDropdown)
+                    DropdownMenu(   // ExposedDropdownMenu takes focus away from the text field when expanded
                         expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        onDismissRequest = { expanded = false },
+                        properties = PopupProperties(focusable = false)     // prevent focus from being taken away
                     ) {
                         for (name in suggestedAccountNames)
-                            Text(
-                                name,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                                    .clickable {
-                                        onUpdateAccountName(name)
-                                        expanded = false
-                                    }
+                            DropdownMenuItem(
+                                text = { Text(name) },
+                                onClick = {
+                                    onUpdateAccountName(name)
+                                    expanded = false
+                                }
                             )
                     }
             }
