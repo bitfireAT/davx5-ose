@@ -258,6 +258,10 @@ class LoginScreenModel @Inject constructor(
         _accountDetailsUiState = _accountDetailsUiState.copy(groupMethod = groupMethod)
     }
 
+    fun resetCouldNotCreateAccount() {
+        _accountDetailsUiState = _accountDetailsUiState.copy(couldNotCreateAccount = false)
+    }
+
     fun createAccount() {
         _accountDetailsUiState = _accountDetailsUiState.copy(creatingAccount = true)
         viewModelScope.launch {

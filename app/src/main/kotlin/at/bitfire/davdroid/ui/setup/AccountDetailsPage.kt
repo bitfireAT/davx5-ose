@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,8 +55,10 @@ fun AccountDetailsPage(
 
     val context = LocalContext.current
     LaunchedEffect(uiState.couldNotCreateAccount) {
-        if (uiState.couldNotCreateAccount)
+        if (uiState.couldNotCreateAccount) {
             snackbarHostState.showSnackbar(context.getString(R.string.login_account_not_created))
+            model.resetCouldNotCreateAccount()
+        }
     }
 
     AccountDetailsPageContent(
