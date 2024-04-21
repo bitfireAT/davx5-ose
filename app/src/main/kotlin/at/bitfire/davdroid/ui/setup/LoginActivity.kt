@@ -113,7 +113,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
 
         setContent {
             LoginScreen(
-                onNavUp = { onNavigateUp() },
+                onNavUp = { onSupportNavigateUp() },
                 onFinish = { newAccount ->
                     finish()
 
