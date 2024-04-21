@@ -13,13 +13,14 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 
 interface StandardAndGplayFlavorModules {
 
     @Module
-    @InstallIn(ActivityComponent::class)
-    interface ForActivities {
+    @InstallIn(ViewModelComponent::class)
+    interface ForViewModels {
         @Binds
         fun loginTypesProvider(impl: StandardLoginTypesProvider): LoginTypesProvider
     }
