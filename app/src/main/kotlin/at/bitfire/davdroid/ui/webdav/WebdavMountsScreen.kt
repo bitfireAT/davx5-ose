@@ -20,15 +20,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -42,13 +38,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -64,7 +64,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.db.WebDavMountWithRootDocument
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
@@ -97,7 +96,7 @@ fun WebdavMountsScreen(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 fun WebdavMountsList(
     mountInfos: List<WebDavMountWithRootDocument>,
     refreshingQuota: Boolean = false,
@@ -108,14 +107,17 @@ fun WebdavMountsList(
 ) {
     val uriHandler = LocalUriHandler.current
 
-    Logger.log.info("refreshingQuota: $refreshingQuota")
-
-    val refreshState = rememberPullRefreshState(
-        refreshing = refreshingQuota,
-        onRefresh = {
+    val refreshState = rememberPullToRefreshState()
+    LaunchedEffect(refreshState.isRefreshing) {
+        if (refreshState.isRefreshing &&!refreshingQuota)
             onRefreshQuota()
-        }
-    )
+    }
+    LaunchedEffect(refreshingQuota) {
+        if (refreshingQuota)
+            refreshState.startRefresh()
+        else
+            refreshState.endRefresh()
+    }
 
     Scaffold(
         topBar = {
@@ -154,13 +156,13 @@ fun WebdavMountsList(
                     contentDescription = stringResource(R.string.webdav_add_mount_add)
                 )
             }
-        }
+        },
+        modifier = Modifier.nestedScroll(refreshState.nestedScrollConnection)
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .pullRefresh(refreshState),
+                .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
             if (mountInfos.isEmpty())
@@ -180,8 +182,7 @@ fun WebdavMountsList(
                     }
                 }
 
-            PullRefreshIndicator(
-                refreshing = refreshingQuota,
+            PullToRefreshContainer(
                 state = refreshState,
                 modifier = Modifier.align(Alignment.TopCenter)
             )

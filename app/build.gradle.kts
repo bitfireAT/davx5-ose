@@ -156,7 +156,6 @@ dependencies {
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.security)
-    implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.work.base)
     implementation(libs.android.flexbox)
     implementation(libs.android.material)
