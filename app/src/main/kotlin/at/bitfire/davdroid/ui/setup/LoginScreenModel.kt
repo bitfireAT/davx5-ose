@@ -79,10 +79,7 @@ class LoginScreenModel @Inject constructor(
                     ?: loginInfo.credentials?.username
                     ?: loginInfo.baseUri?.host
                     ?: ""
-                _accountDetailsUiState = _accountDetailsUiState.copy(
-                    accountName = initialAccountName,
-                    suggestedAccountNames = emails,
-                )
+                updateAccountNameAndEmails(initialAccountName, emails)
                 page = Page.AccountDetails
             }
 
@@ -246,6 +243,14 @@ class LoginScreenModel @Inject constructor(
         _accountDetailsUiState = _accountDetailsUiState.copy(
             accountName = accountName,
             accountNameExists = accountRepository.exists(accountName)
+        )
+    }
+
+    fun updateAccountNameAndEmails(accountName: String, emails: Set<String>) {
+        _accountDetailsUiState = _accountDetailsUiState.copy(
+            accountName = accountName,
+            accountNameExists = accountRepository.exists(accountName),
+            suggestedAccountNames = emails
         )
     }
 
