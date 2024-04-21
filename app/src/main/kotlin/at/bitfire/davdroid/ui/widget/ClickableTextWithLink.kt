@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.widget
 
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.LocalContentColor
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler

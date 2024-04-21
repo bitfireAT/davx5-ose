@@ -21,7 +21,7 @@ import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsClient
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -155,7 +155,7 @@ object UiUtils {
                     addStyle(
                         SpanStyle(
                             textDecoration = TextDecoration.Underline,
-                            color = MaterialTheme.colors.secondary
+                            color = MaterialTheme.colorScheme.primary
                         ),
                         start = start, end = end
                     )

@@ -13,14 +13,16 @@ interface LoginTypesProvider {
 
     fun intentToInitialLoginType(intent: Intent): LoginType
 
+    /** Whether the [LoginTypePage] may be non-interactive. This causes it to be skipped in back navigation. */
+    val maybeNonInteractive: Boolean
+        get() = false
+
     @Composable
     fun LoginTypePage(
         selectedLoginType: LoginType,
         onSelectLoginType: (LoginType) -> Unit,
-        loginInfo: LoginInfo,
-        onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
-        onContinue: () -> Unit,
-        onFinish: () -> Unit
+        setInitialLoginInfo: (LoginInfo) -> Unit,
+        onContinue: () -> Unit
     )
 
 }

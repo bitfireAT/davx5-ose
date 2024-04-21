@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.net.Uri
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 
 interface LoginType {
@@ -16,12 +16,10 @@ interface LoginType {
     val helpUrl: Uri?
 
     @Composable
-    fun Content(
+    fun LoginScreen(
         snackbarHostState: SnackbarHostState,
-        loginInfo: LoginInfo,
-        onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
-        onDetectResources: () -> Unit,
-        onFinish: () -> Unit
+        initialLoginInfo: LoginInfo,
+        onLogin: (LoginInfo) -> Unit
     )
 
 }

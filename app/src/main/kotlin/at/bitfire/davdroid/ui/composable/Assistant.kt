@@ -8,16 +8,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun Assistant(
@@ -27,26 +31,31 @@ fun Assistant(
     content: @Composable () -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
-        Column(Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .weight(1f)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .weight(1f)) {
             content()
         }
 
-        Surface(Modifier
-            .fillMaxWidth()
-            .imePadding()) {
-            if (nextLabel != null)
-                TextButton(
-                    enabled = nextEnabled,
-                    onClick = onNext,
-                    modifier = Modifier
-                        .wrapContentSize(Alignment.CenterEnd)
-                ) {
-                    Text(nextLabel.uppercase())
-                }
-        }
+        BottomAppBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding(),
+            actions = {
+                if (nextLabel != null)
+                    Button(
+                        enabled = nextEnabled,
+                        onClick = onNext,
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .wrapContentSize(Alignment.CenterEnd)
+                    ) {
+                        Text(nextLabel)
+                    }
+            }
+        )
     }
 }
 

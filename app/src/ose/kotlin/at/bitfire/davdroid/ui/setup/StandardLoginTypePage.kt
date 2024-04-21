@@ -8,9 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.RadioButton
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +24,7 @@ import at.bitfire.davdroid.ui.composable.Assistant
 fun StandardLoginTypePage(
     selectedLoginType: LoginType,
     onSelectLoginType: (LoginType) -> Unit,
+    setInitialLoginInfo: (LoginInfo) -> Unit,
     onContinue: () -> Unit = {}
 ) {
     Assistant(
@@ -34,7 +35,7 @@ fun StandardLoginTypePage(
         Column(Modifier.padding(8.dp)) {
             Text(
                 stringResource(R.string.login_generic_login),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
             for (type in StandardLoginTypesProvider.genericLoginTypes)
@@ -46,7 +47,7 @@ fun StandardLoginTypePage(
 
             Text(
                 stringResource(R.string.login_provider_login),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
             )
             for (type in StandardLoginTypesProvider.specificLoginTypes)
@@ -78,7 +79,7 @@ fun LoginTypeSelector(
             )
             Text(
                 title,
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -89,8 +90,8 @@ fun LoginTypeSelector(
 @Composable
 @Preview
 fun LoginScreen_Preview() {
-    LoginScreen(
+    /*LoginScreen(
         loginTypesProvider = StandardLoginTypesProvider(),
         initialLoginType = LoginTypeUrl
-    )
+    )*/
 }

@@ -7,10 +7,10 @@ package at.bitfire.davdroid.ui.composable
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -44,7 +44,7 @@ fun PasswordTextField(
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,
-        label = { if (labelText != null) Text(labelText) },
+        label = labelText?.let { { Text(it) } },
         leadingIcon = leadingIcon,
         isError = isError,
         singleLine = true,
@@ -54,7 +54,10 @@ fun PasswordTextField(
         keyboardActions = keyboardActions,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
-            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+            IconButton(
+                enabled = enabled,
+                onClick = { passwordVisible = !passwordVisible }
+            ) {
                 if (passwordVisible)
                     Icon(Icons.Default.VisibilityOff, stringResource(R.string.login_password_hide))
                 else

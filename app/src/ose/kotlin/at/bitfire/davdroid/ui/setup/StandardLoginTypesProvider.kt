@@ -12,37 +12,36 @@ class StandardLoginTypesProvider @Inject constructor() : LoginTypesProvider {
 
     companion object {
         val genericLoginTypes = listOf(
-            LoginTypeUrl,
-            LoginTypeEmail,
-            LoginTypeAdvanced
+            UrlLogin,
+            EmailLogin,
+            AdvancedLogin
         )
 
         val specificLoginTypes = listOf(
-            LoginTypeGoogle,
-            LoginTypeNextcloud
+            GoogleLogin,
+            NextcloudLogin
         )
     }
 
-    override val defaultLoginType = LoginTypeUrl
+    override val defaultLoginType = UrlLogin
 
     override fun intentToInitialLoginType(intent: Intent) =
         if (intent.hasExtra(LoginActivity.EXTRA_LOGIN_FLOW))
-            LoginTypeNextcloud
+            NextcloudLogin
         else
-            LoginTypeUrl
+            UrlLogin
 
     @Composable
     override fun LoginTypePage(
         selectedLoginType: LoginType,
         onSelectLoginType: (LoginType) -> Unit,
-        loginInfo: LoginInfo,
-        onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
-        onContinue: () -> Unit,
-        onFinish: () -> Unit
+        setInitialLoginInfo: (LoginInfo) -> Unit,
+        onContinue: () -> Unit
     ) {
         StandardLoginTypePage(
             selectedLoginType = selectedLoginType,
             onSelectLoginType = onSelectLoginType,
+            setInitialLoginInfo = setInitialLoginInfo,
             onContinue = onContinue
         )
     }

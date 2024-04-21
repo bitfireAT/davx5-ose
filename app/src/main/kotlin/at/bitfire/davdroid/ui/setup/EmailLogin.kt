@@ -10,20 +10,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Password
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -32,18 +29,16 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.MailTo
 import androidx.core.text.HtmlCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.PasswordTextField
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
-import java.net.URI
 
-object LoginTypeEmail : LoginType {
+object EmailLogin : LoginType {
 
     override val title: Int
         get() = R.string.login_type_email
@@ -53,17 +48,24 @@ object LoginTypeEmail : LoginType {
 
 
     @Composable
-    override fun Content(
+    override fun LoginScreen(
         snackbarHostState: SnackbarHostState,
-        loginInfo: LoginInfo,
-        onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit,
-        onDetectResources: () -> Unit,
-        onFinish: () -> Unit
+        initialLoginInfo: LoginInfo,
+        onLogin: (LoginInfo) -> Unit
     ) {
-        LoginTypeEmail_Content(
-            loginInfo = loginInfo,
-            onUpdateLoginInfo = onUpdateLoginInfo,
-            onLogin = onDetectResources
+        val model = viewModel<EmailLoginModel>()
+        LaunchedEffect(initialLoginInfo) {
+            model.initialize(initialLoginInfo)
+        }
+
+        val uiState = model.uiState
+        EmailLoginScreen(
+            email = uiState.email,
+            onSetEmail = model::setEmail,
+            password = uiState.password,
+            onSetPassword = model::setPassword,
+            canContinue = uiState.canContinue,
+            onLogin = { onLogin(uiState.asLoginInfo()) }
         )
     }
 
@@ -71,32 +73,23 @@ object LoginTypeEmail : LoginType {
 
 
 @Composable
-fun LoginTypeEmail_Content(
-    loginInfo: LoginInfo,
-    onUpdateLoginInfo: (newLoginInfo: LoginInfo) -> Unit = {},
+fun EmailLoginScreen(
+    email: String,
+    onSetEmail: (String) -> Unit = {},
+    password: String,
+    onSetPassword: (String) -> Unit = {},
+    canContinue: Boolean,
     onLogin: () -> Unit = {}
 ) {
-    var email by remember { mutableStateOf(loginInfo.credentials?.username ?: "") }
-    var password by remember { mutableStateOf(loginInfo.credentials?.password ?: "") }
-
-    onUpdateLoginInfo(LoginInfo(
-        baseUri = URI(MailTo.MAILTO_SCHEME, email, null),
-        credentials = Credentials(username = email, password = password)
-    ))
-    val ok = email.contains('@') && password.isNotEmpty()
-
     Assistant(
         nextLabel = stringResource(R.string.login_login),
-        nextEnabled = ok,
-        onNext = {
-            if (ok)
-                onLogin()
-        }
+        nextEnabled = canContinue,
+        onNext = onLogin
     ) {
         Column(Modifier.padding(8.dp)) {
             Text(
                 stringResource(R.string.login_type_email),
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
@@ -105,7 +98,7 @@ fun LoginTypeEmail_Content(
             val focusRequester = remember { FocusRequester() }
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = onSetEmail,
                 label = { Text(stringResource(R.string.login_email_address)) },
                 singleLine = true,
                 leadingIcon = {
@@ -130,7 +123,7 @@ fun LoginTypeEmail_Content(
             val emailInfo = HtmlCompat.fromHtml(stringResource(R.string.login_email_address_info, manualUrl), HtmlCompat.FROM_HTML_MODE_COMPACT)
             ClickableTextWithLink(
                 emailInfo.toAnnotatedString(),
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp, bottom = 16.dp)
@@ -138,7 +131,7 @@ fun LoginTypeEmail_Content(
 
             PasswordTextField(
                 password = password,
-                onPasswordChange = { password = it },
+                onPasswordChange = onSetPassword,
                 labelText = stringResource(R.string.login_password),
                 leadingIcon = {
                     Icon(Icons.Default.Password, null)
@@ -147,10 +140,9 @@ fun LoginTypeEmail_Content(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions(onDone = {
-                    if (ok)
-                        onLogin()
-                }),
+                keyboardActions = KeyboardActions(
+                    onDone = { onLogin() }
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -160,6 +152,10 @@ fun LoginTypeEmail_Content(
 
 @Composable
 @Preview
-fun LoginTypeEmail_Content_Preview() {
-    LoginTypeEmail_Content(LoginInfo())
+fun EmailLoginScreen_Preview() {
+    EmailLoginScreen(
+        email = "test@example.com",
+        password = "",
+        canContinue = false
+    )
 }

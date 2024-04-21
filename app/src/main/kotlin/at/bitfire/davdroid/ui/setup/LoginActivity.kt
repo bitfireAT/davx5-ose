@@ -8,9 +8,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.ui.M2Theme
+import at.bitfire.davdroid.ui.account.AccountActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.net.URI
 import javax.inject.Inject
@@ -102,30 +103,28 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
 
     }
 
-    enum class Phase {
-        LOGIN_TYPE,
-        LOGIN_DETAILS,
-        DETECT_RESOURCES,
-        ACCOUNT_DETAILS
-    }
-
-
-    @Inject
-    lateinit var loginTypesProvider: LoginTypesProvider
-
+    val model: LoginScreenModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // start with login info from Intent
+        model.updateLoginInfo(loginInfoFromIntent(intent))
+
         setContent {
-            M2Theme {
-                LoginScreen(
-                    loginTypesProvider = loginTypesProvider,
-                    initialLoginInfo = loginInfoFromIntent(intent),
-                    initialLoginType = loginTypesProvider.intentToInitialLoginType(intent),
-                    onFinish = { finish() }
-                )
-            }
+            LoginScreen(
+                onNavUp = { onNavigateUp() },
+                onFinish = { newAccount ->
+                    finish()
+
+                    if (newAccount != null) {
+                        val intent = Intent(this, AccountActivity::class.java)
+                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
+                        startActivity(intent)
+                    }
+                },
+                model = model
+            )
         }
     }
 

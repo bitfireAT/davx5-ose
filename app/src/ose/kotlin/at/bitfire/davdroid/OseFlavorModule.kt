@@ -18,6 +18,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 
@@ -28,7 +29,11 @@ interface OseFlavorModules {
     interface ForActivities {
         @Binds
         fun accountsDrawerHandler(impl: OseAccountsDrawerHandler): AccountsDrawerHandler
+    }
 
+    @Module
+    @InstallIn(ViewModelComponent::class)
+    interface ForViewModels {
         @Binds
         fun appLicenseInfoProvider(impl: OpenSourceLicenseInfoProvider): AboutActivity.AppLicenseInfoProvider
 
