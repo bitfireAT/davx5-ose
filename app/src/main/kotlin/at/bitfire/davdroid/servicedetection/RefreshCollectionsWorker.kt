@@ -75,7 +75,7 @@ import kotlin.collections.*
 
 /**
  * Refreshes list of home sets and their respective collections of a service type (CardDAV or CalDAV).
- * Called from UI, when user wants to refresh all collections of a service ([at.bitfire.davdroid.ui.account.CollectionsFragment]).
+ * Called from UI, when user wants to refresh all collections of a service.
  *
  * Input data:
  *
@@ -180,10 +180,17 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     }
 
     val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
-    val service = db.serviceDao().get(serviceId) ?: throw IllegalArgumentException("Service #$serviceId not found")
-    val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
+    val service = db.serviceDao().get(serviceId)
+    val account = service?.let { service ->
+        Account(service.accountName, applicationContext.getString(R.string.account_type))
+    }
 
     override suspend fun doWork(): Result {
+        if (service == null || account == null) {
+            Logger.log.warning("Missing service or account with service ID: $serviceId")
+            return Result.failure()
+        }
+
         try {
             Logger.log.info("Refreshing ${service.type} collections of service #$service")
 
@@ -269,7 +276,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             .setContentTitle(applicationContext.getString(R.string.refresh_collections_worker_refresh_failed))
             .setContentText(contentText)
             .setContentIntent(PendingIntent.getActivity(applicationContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-            .setSubText(account.name)
+            .setSubText(account?.name)
             .setCategory(NotificationCompat.CATEGORY_ERROR)
             .build()
         NotificationManagerCompat.from(applicationContext)
