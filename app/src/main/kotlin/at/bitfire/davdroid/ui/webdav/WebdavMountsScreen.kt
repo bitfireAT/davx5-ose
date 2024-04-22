@@ -80,7 +80,7 @@ fun WebdavMountsScreen(
     val mountInfos by model.mountInfos.collectAsStateWithLifecycle(emptyList())
 
     AppTheme {
-        WebdavMountsList(
+        WebdavMountsScreen(
             mountInfos = mountInfos,
             refreshingQuota = model.refreshingQuota,
             onRefreshQuota = {
@@ -97,7 +97,7 @@ fun WebdavMountsScreen(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun WebdavMountsList(
+fun WebdavMountsScreen(
     mountInfos: List<WebDavMountWithRootDocument>,
     refreshingQuota: Boolean = false,
     onRefreshQuota: () -> Unit = {},
@@ -344,8 +344,8 @@ fun WebdavMountsItem(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun WebdavMountsList_Preview_Empty() {
-    WebdavMountsList(
+fun WebdavMountsScreen_Preview_Empty() {
+    WebdavMountsScreen(
         mountInfos = emptyList(),
         refreshingQuota = true
     )

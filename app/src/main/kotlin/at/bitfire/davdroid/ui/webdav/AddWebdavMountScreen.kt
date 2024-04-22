@@ -4,18 +4,16 @@
 
 package at.bitfire.davdroid.ui.webdav
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,64 +28,79 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.PasswordTextField
+import at.bitfire.davdroid.ui.composable.SelectClientCertificateCard
 
 @Composable
-fun AddWebDavMountScreen(
+fun AddWebdavMountScreen(
     onNavUp: () -> Unit = {},
-    model: AddWebDavMountModel = viewModel()
+    onFinish: () -> Unit = {},
+    model: AddWebdavMountModel = viewModel()
 ) {
-    val uiState by model.uiState
+    val uiState = model.uiState
+
+    if (uiState.success) {
+        onFinish()
+        return
+    }
+
     AppTheme {
-        AddWebDavMountForm(
+        AddWebDavMountScreen(
+            isLoading = uiState.isLoading,
+            error = uiState.error,
+            onResetError = model::resetError,
             displayName = uiState.displayName,
+            onSetDisplayName = model::setDisplayName,
             url = uiState.url,
+            onSetUrl = model::setUrl,
             username = uiState.username,
+            onSetUsername = model::setUsername,
             password = uiState.password,
+            onSetPassword = model::setPassword,
+            certificateAlias = uiState.certificateAlias,
+            onSetCertificateAlias = model::setCertificateAlias,
+            canContinue = uiState.canContinue,
+            onAddMount = { model.addMount() },
             onNavUp = onNavUp
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
-fun AddWebDavMountForm(
-    isLoading: Boolean = false,
-    error: String? = null,
-    onErrorClearRequested: () -> Unit = {},
-    displayName: String = "",
-    onDisplayNameChange: (String) -> Unit = {},
-    displayNameError: String? = null,
-    url: String = "",
-    onUrlChange: (String) -> Unit = {},
-    urlError: String? = null,
-    username: String = "",
-    onUsernameChange: (String) -> Unit = {},
-    password: String = "",
-    onPasswordChange: (String) -> Unit = {},
+@OptIn(ExperimentalMaterial3Api::class)
+fun AddWebDavMountScreen(
+    isLoading: Boolean,
+    error: String?,
+    onResetError: () -> Unit = {},
+    displayName: String,
+    onSetDisplayName: (String) -> Unit = {},
+    url: String,
+    onSetUrl: (String) -> Unit = {},
+    username: String,
+    onSetUsername: (String) -> Unit = {},
+    password: String,
+    onSetPassword: (String) -> Unit = {},
+    certificateAlias: String?,
+    onSetCertificateAlias: (String) -> Unit = {},
+    canContinue: Boolean,
+    onAddMount: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(error) {
         if (error != null) {
-            snackbarHostState.showSnackbar(
-                message = error
-            )
-            onErrorClearRequested()
+            snackbarHostState.showSnackbar(error)
+            onResetError()
         }
     }
 
@@ -102,8 +115,8 @@ fun AddWebDavMountForm(
                 title = { Text(stringResource(R.string.webdav_add_mount_title)) },
                 actions = {
                     TextButton(
-                        enabled = !isLoading,
-                        onClick = { /* ::validate */ }
+                        enabled = canContinue && !isLoading,
+                        onClick = { onAddMount() }
                     ) {
                         Text(
                             text = stringResource(R.string.save)
@@ -123,117 +136,90 @@ fun AddWebDavMountForm(
             if (isLoading)
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
-            Form(
-                displayName,
-                onDisplayNameChange,
-                displayNameError,
-                url,
-                onUrlChange,
-                urlError,
-                username,
-                onUsernameChange,
-                password,
-                onPasswordChange
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                OutlinedTextField(
+                    label = { Text(stringResource(R.string.webdav_add_mount_url)) },
+                    leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null) },
+                    value = url,
+                    onValueChange = onSetUrl,
+                    singleLine = true,
+                    readOnly = isLoading,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Uri
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+
+                OutlinedTextField(
+                    label = { Text(stringResource(R.string.webdav_add_mount_display_name)) },
+                    value = displayName,
+                    onValueChange = onSetDisplayName,
+                    singleLine = true,
+                    readOnly = isLoading,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
+
+                Text(
+                    text = stringResource(R.string.webdav_add_mount_authentication),
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+                OutlinedTextField(
+                    label = { Text(stringResource(R.string.login_user_name)) },
+                    value = username,
+                    onValueChange = onSetUsername,
+                    singleLine = true,
+                    readOnly = isLoading,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+                PasswordTextField(
+                    password = password,
+                    onPasswordChange = onSetPassword,
+                    labelText = stringResource(R.string.login_password),
+                    readOnly = isLoading,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+                SelectClientCertificateCard(
+                    snackbarHostState = snackbarHostState,
+                    enabled = !isLoading,
+                    chosenAlias = certificateAlias,
+                    onAliasChosen = onSetCertificateAlias
+                )
+            }
         }
     }
 }
 
 @Composable
-fun Form(
-    displayName: String,
-    onDisplayNameChange: (String) -> Unit,
-    displayNameError: String?,
-    url: String,
-    onUrlChange: (String) -> Unit,
-    urlError: String?,
-    username: String,
-    onUsernameChange: (String) -> Unit,
-    password: String,
-    onPasswordChange: (String) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        FormField(
-            displayName,
-            onDisplayNameChange,
-            displayNameError,
-            R.string.webdav_add_mount_display_name
-        )
-        FormField(
-            url,
-            onUrlChange,
-            urlError,
-            R.string.webdav_add_mount_url,
-            trailingIcon = {
-                val uriHandler = LocalUriHandler.current
-                IconButton(
-                    onClick = {
-                        uriHandler.openUri(
-                            Constants.HOMEPAGE_URL.buildUpon()
-                                .appendPath(Constants.HOMEPAGE_PATH_TESTED_SERVICES)
-                                .withStatParams("AddWebdavMountActivity")
-                                .build().toString()
-                        )
-                    }
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.Help, stringResource(R.string.help))
-                }
-            }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = stringResource(R.string.webdav_add_mount_authentication),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        )
-        FormField(
-            username,
-            onUsernameChange,
-            null,
-            R.string.webdav_add_mount_username
-        )
-
-        PasswordTextField(
-            password = password,
-            onPasswordChange = onPasswordChange,
-            labelText = stringResource(R.string.webdav_add_mount_password)
-        )
-    }
-}
-
-@Composable
-fun FormField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    error: String?,
-    @StringRes label: Int,
-    trailingIcon: @Composable () -> Unit = {}
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        label = { Text(stringResource(label)) },
-        singleLine = true,
-        isError = error != null,
-        trailingIcon = trailingIcon
-    )
-    if (error != null) {
-        Text(
-            text = error,
-            modifier = Modifier.fillMaxWidth(),
-            style = MaterialTheme.typography.bodyMedium.copy(
-                //color = MaterialTheme.colors.error
-            )
+@Preview
+fun AddWebDavMountScreen_Preview() {
+    AppTheme {
+        AddWebDavMountScreen(
+            isLoading = true,
+            error = null,
+            displayName = "Test",
+            url = "https://example.com",
+            username = "user",
+            password = "password",
+            certificateAlias = null,
+            canContinue = true
         )
     }
 }

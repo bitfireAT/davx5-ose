@@ -16,8 +16,9 @@ class AddWebdavMountActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AddWebDavMountScreen(
-                onNavUp = { onSupportNavigateUp() }
+            AddWebdavMountScreen(
+                onNavUp = { onSupportNavigateUp() },
+                onFinish = { finish() }
             )
         }
     }
