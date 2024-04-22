@@ -75,7 +75,7 @@ import kotlin.collections.*
 
 /**
  * Refreshes list of home sets and their respective collections of a service type (CardDAV or CalDAV).
- * Called from UI, when user wants to refresh all collections of a service ([at.bitfire.davdroid.ui.account.CollectionsFragment]).
+ * Called from UI, when user wants to refresh all collections of a service.
  *
  * Input data:
  *
