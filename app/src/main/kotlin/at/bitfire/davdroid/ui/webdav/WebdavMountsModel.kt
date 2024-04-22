@@ -58,7 +58,7 @@ class WebdavMountsModel @Inject constructor(
         refreshingQuota = true
 
         viewModelScope.launch {
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
                 val resolver = context.contentResolver
                 mountDao.getAll().forEach { mount ->
                     documentDao.getOrCreateRoot(mount).let { root ->

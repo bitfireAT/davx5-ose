@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -109,14 +111,10 @@ fun WebdavMountsScreen(
 
     val refreshState = rememberPullToRefreshState()
     LaunchedEffect(refreshState.isRefreshing) {
-        if (refreshState.isRefreshing &&!refreshingQuota)
+        if (refreshState.isRefreshing) {
             onRefreshQuota()
-    }
-    LaunchedEffect(refreshingQuota) {
-        if (refreshingQuota)
-            refreshState.startRefresh()
-        else
             refreshState.endRefresh()
+        }
     }
 
     Scaffold(
@@ -149,7 +147,7 @@ fun WebdavMountsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onAddMount,
+                onClick = onAddMount
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
@@ -162,25 +160,34 @@ fun WebdavMountsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
+                .padding(paddingValues)
         ) {
             if (mountInfos.isEmpty())
                 HintText()
-            else
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp)
-                ) {
-                    items(mountInfos, key = { it.mount.id }, contentType = { "mount" }) {
-                        WebdavMountsItem(
-                            info = it,
-                            onRemoveMount = onRemoveMount
-                        )
+            else {
+                Column {
+                    if (refreshingQuota)
+                        LinearProgressIndicator(Modifier
+                            .fillMaxWidth()
+                            .height(4.dp))
+                    else
+                        Spacer(Modifier.height(4.dp))
+
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp)
+                    ) {
+                        items(mountInfos, key = { it.mount.id }, contentType = { "mount" }) {
+                            WebdavMountsItem(
+                                info = it,
+                                onRemoveMount = onRemoveMount
+                            )
+                        }
                     }
                 }
+            }
 
             PullToRefreshContainer(
                 state = refreshState,
@@ -194,7 +201,8 @@ fun WebdavMountsScreen(
 fun HintText() {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
+            .wrapContentSize(align = Alignment.Center)
             .padding(horizontal = 16.dp)
     ) {
         Text(
@@ -279,10 +287,10 @@ fun WebdavMountsItem(
                 val quotaTotal = quotaUsed + quotaAvailable
                 val progress = quotaUsed.toFloat() / quotaTotal
                 LinearProgressIndicator(
-                    progress = progress,
+                    progress = { progress },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 8.dp),
                 )
                 Text(
                     text = stringResource(
@@ -342,17 +350,61 @@ fun WebdavMountsItem(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
+@Preview
 fun WebdavMountsScreen_Preview_Empty() {
     WebdavMountsScreen(
         mountInfos = emptyList(),
+        refreshingQuota = false
+    )
+}
+
+@Composable
+@Preview
+fun WebdavMountsScreen_Preview_TwoMounts() {
+    WebdavMountsScreen(
+        mountInfos = listOf(
+            WebDavMountWithRootDocument(
+                mount = WebDavMount(
+                    id = 0,
+                    name = "Preview Webdav Mount 1",
+                    url = HttpUrl.Builder()
+                        .scheme("https")
+                        .host("example.com")
+                        .build()
+                ),
+                rootDocument = WebDavDocument(
+                    mountId = 0,
+                    parentId = null,
+                    name = "Root",
+                    quotaAvailable = 1024 * 1024 * 1024,
+                    quotaUsed = 512 * 1024 * 1024
+                )
+            ),
+            WebDavMountWithRootDocument(
+                mount = WebDavMount(
+                    id = 1,
+                    name = "Preview Webdav Mount 2",
+                    url = HttpUrl.Builder()
+                        .scheme("https")
+                        .host("example.com")
+                        .build()
+                ),
+                rootDocument = WebDavDocument(
+                    mountId = 1,
+                    parentId = null,
+                    name = "Root",
+                    quotaAvailable = 1024 * 1024 * 1024,
+                    quotaUsed = 512 * 1024 * 1024
+                )
+            )
+        ),
         refreshingQuota = true
     )
 }
 
-@Preview(showBackground = true)
 @Composable
+@Preview
 fun WebdavMountsItem_Preview() {
     WebdavMountsItem(
         info = WebDavMountWithRootDocument(
@@ -376,6 +428,6 @@ fun WebdavMountsItem_Preview() {
 }
 
 
-private fun webdavMountsHelpUrl(): Uri = Constants.MANUAL_URL.buildUpon()
+fun webdavMountsHelpUrl(): Uri = Constants.MANUAL_URL.buildUpon()
     .appendPath(Constants.MANUAL_PATH_WEBDAV_MOUNTS)
     .build()

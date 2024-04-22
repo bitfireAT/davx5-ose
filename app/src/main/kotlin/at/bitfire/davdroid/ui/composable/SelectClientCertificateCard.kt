@@ -30,12 +30,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun SelectClientCertificateCard(
     snackbarHostState: SnackbarHostState,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     suggestedAlias: String? = null,
     chosenAlias: String?,
     onAliasChosen: (String) -> Unit = {}
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = modifier) {
         Column(Modifier.padding(8.dp)) {
             Text(
                 if (!chosenAlias.isNullOrEmpty())
