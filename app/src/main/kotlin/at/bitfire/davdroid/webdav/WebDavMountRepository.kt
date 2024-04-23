@@ -6,6 +6,7 @@ package at.bitfire.davdroid.webdav
 
 import android.app.Application
 import android.provider.DocumentsContract
+import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -105,7 +106,8 @@ class WebDavMountRepository @Inject constructor(
 
     // helpers
 
-    private suspend fun hasWebDav(
+    @VisibleForTesting
+    internal suspend fun hasWebDav(
         url: HttpUrl,
         credentials: Credentials?
     ): Boolean = withContext(Dispatchers.IO) {
