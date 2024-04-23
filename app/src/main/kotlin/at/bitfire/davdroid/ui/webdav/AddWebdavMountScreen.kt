@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -31,8 +32,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -146,6 +150,7 @@ fun AddWebDavMountScreen(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
+                val focusRequester = remember { FocusRequester() }
                 OutlinedTextField(
                     label = { Text(stringResource(R.string.webdav_add_mount_url)) },
                     leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null) },
@@ -159,7 +164,11 @@ fun AddWebDavMountScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
+                        .focusRequester(focusRequester)
                 )
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
 
                 OutlinedTextField(
                     label = { Text(stringResource(R.string.webdav_add_mount_display_name)) },
@@ -197,6 +206,12 @@ fun AddWebDavMountScreen(
                     onPasswordChange = onSetPassword,
                     labelText = stringResource(R.string.login_password),
                     readOnly = isLoading,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { onAddMount() }
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
