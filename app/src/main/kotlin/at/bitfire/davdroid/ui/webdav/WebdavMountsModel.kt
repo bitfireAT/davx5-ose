@@ -37,7 +37,7 @@ class WebdavMountsModel @Inject constructor(
     }
 
     /**
-     * Queries every root document of the currently known mounts, causing the quota values to be updated in the database.
+     * Refreshes quota of all mounts (causes progress bar to be shown during refresh).
      */
     fun refreshQuota() {
         if (refreshingQuota)
@@ -51,7 +51,7 @@ class WebdavMountsModel @Inject constructor(
     }
 
     /**
-     * Removes the mountpoint (deleting connection information)
+     * Removes the mountpoint locally (= deletes connection information).
      */
     fun remove(mount: WebDavMount) {
         viewModelScope.launch {
