@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 interface WebDavMountDao {
 
     @Delete
-    fun delete(mount: WebDavMount)
+    suspend fun deleteAsync(mount: WebDavMount)
 
     @Query("SELECT * FROM webdav_mount ORDER BY name, url")
     fun getAll(): List<WebDavMount>

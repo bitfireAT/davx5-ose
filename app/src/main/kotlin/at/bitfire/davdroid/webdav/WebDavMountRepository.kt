@@ -65,6 +65,17 @@ class WebDavMountRepository @Inject constructor(
         true
     }
 
+    suspend fun delete(mount: WebDavMount) {
+        // remove mount from database
+        mountDao.deleteAsync(mount)
+
+        // remove credentials, too
+        CredentialsStore(context).setCredentials(mount.id, null)
+
+        // notify content URI listeners
+        DavDocumentsProvider.notifyMountsChanged(context)
+    }
+
     fun getAllFlow() = mountDao.getAllFlow()
 
     fun getAllWithRootFlow() = mountDao.getAllWithRootDocumentFlow()

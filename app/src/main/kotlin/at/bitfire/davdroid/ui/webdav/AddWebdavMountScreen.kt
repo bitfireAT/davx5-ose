@@ -154,11 +154,13 @@ fun AddWebDavMountScreen(
                 OutlinedTextField(
                     label = { Text(stringResource(R.string.webdav_add_mount_url)) },
                     leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null) },
+                    placeholder = { Text("dav.example.com") },
                     value = url,
                     onValueChange = onSetUrl,
                     singleLine = true,
                     readOnly = isLoading,
                     keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Uri
                     ),
                     modifier = Modifier
@@ -176,6 +178,7 @@ fun AddWebDavMountScreen(
                     onValueChange = onSetDisplayName,
                     singleLine = true,
                     readOnly = isLoading,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
@@ -195,6 +198,7 @@ fun AddWebDavMountScreen(
                     singleLine = true,
                     readOnly = isLoading,
                     keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Email
                     ),
                     modifier = Modifier
