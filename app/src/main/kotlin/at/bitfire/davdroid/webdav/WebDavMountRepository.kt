@@ -1,12 +1,19 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
 package at.bitfire.davdroid.webdav
 
 import android.app.Application
+import android.provider.DocumentsContract
 import at.bitfire.dav4jvm.DavResource
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.network.HttpClient
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
@@ -17,6 +24,12 @@ class WebDavMountRepository @Inject constructor(
     val context: Application,
     val db: AppDatabase
 ) {
+
+    private val mountDao = db.webDavMountDao()
+    private val documentDao = db.webDavDocumentDao()
+
+    /** authority of our WebDAV document provider ([DavDocumentsProvider]) */
+    private val authority = context.getString(R.string.webdav_authority)
 
     /**
      * Checks whether an HTTP endpoint supports WebDAV and if it does, adds it as a new WebDAV mount.
@@ -52,6 +65,35 @@ class WebDavMountRepository @Inject constructor(
         true
     }
 
+    fun getAllFlow() = mountDao.getAllFlow()
+
+    fun getAllWithRootFlow() = mountDao.getAllWithRootDocumentFlow()
+
+    suspend fun refreshAllQuota() {
+        val resolver = context.contentResolver
+
+        withContext(Dispatchers.Default) {
+            // query root document of each mount to refresh quota
+            mountDao.getAll().forEach { mount ->
+                documentDao.getOrCreateRoot(mount).let { root ->
+                    var loading = true
+                    while (loading) {
+                        val rootDocumentUri = DocumentsContract.buildChildDocumentsUri(authority, root.id.toString())
+                        resolver.query(rootDocumentUri, null, null, null, null)?.use { cursor ->
+                            loading = cursor.extras.getBoolean(DocumentsContract.EXTRA_LOADING)
+                        }
+
+                        if (loading)        // still loading, wait a bit
+                            delay(100)
+                    }
+                }
+            }
+        }
+    }
+
+
+    // helpers
+
     private suspend fun hasWebDav(
         url: HttpUrl,
         credentials: Credentials?
@@ -73,7 +115,5 @@ class WebDavMountRepository @Inject constructor(
 
         supported
     }
-
-
 
 }

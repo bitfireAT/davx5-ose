@@ -23,7 +23,7 @@ import javax.inject.Inject
 class AddWebdavMountModel @Inject constructor(
     val context: Application,
     val db: AppDatabase,
-    val mountRepository: WebDavMountRepository
+    private val mountRepository: WebDavMountRepository
 ): ViewModel() {
 
     data class UiState(
