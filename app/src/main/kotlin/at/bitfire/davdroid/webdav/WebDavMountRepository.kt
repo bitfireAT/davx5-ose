@@ -18,29 +18,41 @@ class WebDavMountRepository @Inject constructor(
     val db: AppDatabase
 ) {
 
+    /**
+     * Checks whether an HTTP endpoint supports WebDAV and if it does, adds it as a new WebDAV mount.
+     *
+     * @param url         URL of the HTTP endpoint
+     * @param displayName display name of the mount
+     * @param credentials credentials to use for the mount
+     *
+     * @return `true` if the mount was added successfully, `false` if the endpoint doesn't support WebDAV
+     */
     suspend fun addMount(
         url: HttpUrl,
         displayName: String,
         credentials: Credentials?
-    ) {
-        withContext(Dispatchers.IO) {
-            // create in database
-            val mount = WebDavMount(
-                url = url,
-                name = displayName
-            )
-            val id = db.webDavMountDao().insert(mount)
+    ): Boolean = withContext(Dispatchers.IO) {
+        if (!hasWebDav(url, credentials))
+            return@withContext false
 
-            // store credentials
-            val credentialsStore = CredentialsStore(context)
-            credentialsStore.setCredentials(id, credentials)
+        // create in database
+        val mount = WebDavMount(
+            url = url,
+            name = displayName
+        )
+        val id = db.webDavMountDao().insert(mount)
 
-            // notify content URI listeners
-            DavDocumentsProvider.notifyMountsChanged(context)
-        }
+        // store credentials
+        val credentialsStore = CredentialsStore(context)
+        credentialsStore.setCredentials(id, credentials)
+
+        // notify content URI listeners
+        DavDocumentsProvider.notifyMountsChanged(context)
+
+        true
     }
 
-    suspend fun hasWebDav(
+    private suspend fun hasWebDav(
         url: HttpUrl,
         credentials: Credentials?
     ): Boolean = withContext(Dispatchers.IO) {
@@ -61,5 +73,7 @@ class WebDavMountRepository @Inject constructor(
 
         supported
     }
+
+
 
 }
