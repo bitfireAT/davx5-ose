@@ -31,16 +31,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material.icons.rounded.BugReport
@@ -238,13 +238,13 @@ class DebugInfoActivity : AppCompatActivity() {
         ) {
             if (debugInfo == null)
                 item {
-                    LinearProgressIndicator(color = MaterialTheme.colors.secondary)
+                    LinearProgressIndicator(color = MaterialTheme.colorScheme.secondary)
                 }
 
             if (debugInfo != null) {
                 if (zipProgress)
                     item {
-                        LinearProgressIndicator(color = MaterialTheme.colors.secondary)
+                        LinearProgressIndicator(color = MaterialTheme.colorScheme.secondary)
                     }
 
                 item {
@@ -331,7 +331,7 @@ class DebugInfoActivity : AppCompatActivity() {
                     remoteResource?.let {
                         Text(
                             text = stringResource(R.string.debug_info_involved_remote),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
                             text = it,
@@ -342,7 +342,7 @@ class DebugInfoActivity : AppCompatActivity() {
                     localResource?.let {
                         Text(
                             text = stringResource(R.string.debug_info_involved_local),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
                             text = it,
