@@ -17,7 +17,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -31,11 +30,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun SelectClientCertificateCard(
     snackbarHostState: SnackbarHostState,
-    suggestedAlias: String?,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    suggestedAlias: String? = null,
     chosenAlias: String?,
     onAliasChosen: (String) -> Unit = {}
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = modifier) {
         Column(Modifier.padding(8.dp)) {
             Text(
                 if (!chosenAlias.isNullOrEmpty())
@@ -49,6 +50,7 @@ fun SelectClientCertificateCard(
             val activity = LocalContext.current as? Activity
             val scope = rememberCoroutineScope()
             OutlinedButton(
+                enabled = enabled,
                 onClick = {
                     if (activity != null)
                         KeyChain.choosePrivateKeyAlias(activity, { alias ->

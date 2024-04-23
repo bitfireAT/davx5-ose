@@ -7,13 +7,13 @@ package at.bitfire.davdroid.ui.composable
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +37,7 @@ fun PasswordTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     enabled: Boolean = true,
+    readOnly: Boolean = false,
     isError: Boolean = false
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
@@ -49,6 +50,7 @@ fun PasswordTextField(
         isError = isError,
         singleLine = true,
         enabled = enabled,
+        readOnly = readOnly,
         modifier = modifier.focusGroup(),
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
