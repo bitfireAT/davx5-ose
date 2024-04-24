@@ -25,16 +25,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
-import androidx.compose.material.Checkbox
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -42,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
@@ -62,10 +62,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.launch
-import org.apache.commons.text.WordUtils
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.launch
+import org.apache.commons.text.WordUtils
 
 class BatteryOptimizationsPage: IntroPage {
 
@@ -270,7 +270,7 @@ private fun BatteryOptimizationsContent(
                 ) {
                     Text(
                         text = stringResource(R.string.intro_battery_title),
-                        style = MaterialTheme.typography.h6,
+                        style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.weight(1f)
                     )
                     Switch(
@@ -289,7 +289,7 @@ private fun BatteryOptimizationsContent(
                         R.string.intro_battery_text,
                         stringResource(R.string.app_name)
                     ),
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(top = 12.dp)
                 )
                 AnimatedVisibility(visible = !isExempted) {
@@ -303,7 +303,7 @@ private fun BatteryOptimizationsContent(
                         )
                         Text(
                             text = stringResource(R.string.intro_battery_dont_show),
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .clickable { onChangeDontShowBattery(!dontShowBattery) }
                         )
@@ -326,12 +326,12 @@ private fun BatteryOptimizationsContent(
                             R.string.intro_autostart_title,
                             WordUtils.capitalize(Build.MANUFACTURER)
                         ),
-                        style = MaterialTheme.typography.h6,
+                        style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
                         text = stringResource(R.string.intro_autostart_text),
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(top = 12.dp)
                     )
                     OutlinedButton(
@@ -360,7 +360,7 @@ private fun BatteryOptimizationsContent(
                         )
                         Text(
                             text = stringResource(R.string.intro_autostart_dont_show),
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .clickable { onChangeDontShowAutostart(!dontShowAutostart) }
                         )
@@ -373,7 +373,7 @@ private fun BatteryOptimizationsContent(
                 R.string.intro_leave_unchecked,
                 stringResource(R.string.app_settings_reset_hints)
             ),
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .padding(top = 8.dp)
                 .padding(horizontal = 16.dp)
