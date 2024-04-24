@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
@@ -51,16 +52,19 @@ fun DebugInfoScreen(
     val localResource by model.localResource.observeAsState()
     val remoteResource by model.remoteResource.observeAsState()
     val logFile by model.logFile.observeAsState()
+    val error by model.error.observeAsState()
 
     AppTheme {
         DebugInfoScreen(
-            model,
+            error,
+            onResetError = { model.error.value = null },
             debugInfo,
             zipProgress,
             modelCause,
             localResource,
             remoteResource,
             logFile,
+            onGenerateZip = { model.generateZip() },
             onShareFile = { onShareFile(it) },
             onViewFile = { onViewFile(it) },
             onNavUp
@@ -70,13 +74,15 @@ fun DebugInfoScreen(
 
 @Composable
 fun DebugInfoScreen(
-    model: DebugInfoModel,
+    error: String?,
+    onResetError: () -> Unit,
     debugInfo: File?,
     zipProgress: Boolean,
     modelCause: Throwable?,
     localResource: String?,
     remoteResource: String?,
     logFile: File?,
+    onGenerateZip: () -> Unit,
     onShareFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
     onNavUp: () -> Unit
@@ -87,7 +93,7 @@ fun DebugInfoScreen(
         floatingActionButton = {
             if (debugInfo != null && !zipProgress) {
                 FloatingActionButton(
-                    onClick = model::generateZip
+                    onClick = onGenerateZip
                 ) {
                     Icon(Icons.Rounded.Share, stringResource(R.string.share))
                 }
@@ -103,15 +109,14 @@ fun DebugInfoScreen(
             )
         }
     ) { paddingValues ->
-        val error by model.error.observeAsState()
+
         LaunchedEffect(error) {
             error?.let {
                 snackbarHostState.showSnackbar(
                     message = it,
                     duration = SnackbarDuration.Long
                 )
-
-                model.error.value = null
+                onResetError()
             }
         }
 
@@ -142,7 +147,7 @@ fun DebugInfoScreen(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         TextButton(
-                            onClick = model::generateZip,
+                            onClick = onGenerateZip,
                             enabled = !zipProgress
                         ) {
                             Text(
@@ -256,4 +261,23 @@ fun DebugInfoScreen(
             }
         }
     }
+}
+
+@Composable
+@Preview
+fun DebugInfoScreen_Preview() {
+    DebugInfoScreen(
+        error = "Some error",
+        onResetError = {},
+        debugInfo = null,
+        zipProgress = false,
+        modelCause = Exception("Some super strange and random throwable."),
+        localResource = "local-resource-string",
+        remoteResource = "remote-resource-string",
+        logFile = null,
+        onGenerateZip = {},
+        onShareFile = {},
+        onViewFile = {},
+        onNavUp = {},
+    )
 }
