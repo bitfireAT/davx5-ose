@@ -58,15 +58,33 @@ fun DebugInfoScreen(
         DebugInfoScreen(
             error,
             onResetError = { model.error.value = null },
-            debugInfo,
+            debugInfo != null,
             zipProgress,
-            modelCause,
+            modelCause != null,
+            modelCauseTitle = when (modelCause) {
+                is HttpException -> stringResource(if ((modelCause as HttpException).code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
+                is DavException -> stringResource(R.string.debug_info_webdav_error)
+                is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
+                else -> modelCause?.let { it::class.java.simpleName }
+            } ?: "",
+            modelCauseSubtitle = modelCause?.localizedMessage,
+            modelCauseMessage = stringResource(
+                if (modelCause is HttpException)
+                    when {
+                        (modelCause as HttpException).code == 403 -> R.string.debug_info_http_403_description
+                        (modelCause as HttpException).code == 404 -> R.string.debug_info_http_404_description
+                        (modelCause as HttpException).code / 100 == 5 -> R.string.debug_info_http_5xx_description
+                        else -> R.string.debug_info_unexpected_error
+                    }
+                else
+                    R.string.debug_info_unexpected_error
+            ),
             localResource,
             remoteResource,
-            logFile,
+            logFile != null,
             onGenerateZip = { model.generateZip() },
-            onShareFile = { onShareFile(it) },
-            onViewFile = { onViewFile(it) },
+            onShareLogsFile = { logFile?.let { onShareFile(it) } },
+            onViewDebugFile = { debugInfo?.let { onViewFile(it) } },
             onNavUp
         )
     }
@@ -76,22 +94,25 @@ fun DebugInfoScreen(
 fun DebugInfoScreen(
     error: String?,
     onResetError: () -> Unit,
-    debugInfo: File?,
+    showDebugInfo: Boolean,
     zipProgress: Boolean,
-    modelCause: Throwable?,
+    showModelCause: Boolean,
+    modelCauseTitle: String,
+    modelCauseSubtitle: String?,
+    modelCauseMessage: String?,
     localResource: String?,
     remoteResource: String?,
-    logFile: File?,
+    hasLogFile: Boolean,
     onGenerateZip: () -> Unit,
-    onShareFile: (File) -> Unit,
-    onViewFile: (File) -> Unit,
+    onShareLogsFile: () -> Unit,
+    onViewDebugFile: () -> Unit,
     onNavUp: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         floatingActionButton = {
-            if (debugInfo != null && !zipProgress) {
+            if (showDebugInfo && !zipProgress) {
                 FloatingActionButton(
                     onClick = onGenerateZip
                 ) {
@@ -125,12 +146,12 @@ fun DebugInfoScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (debugInfo == null)
+            if (!showDebugInfo)
                 item {
                     LinearProgressIndicator(color = MaterialTheme.colorScheme.secondary)
                 }
 
-            if (debugInfo != null) {
+            if (showDebugInfo) {
                 if (zipProgress)
                     item {
                         LinearProgressIndicator(color = MaterialTheme.colorScheme.secondary)
@@ -157,33 +178,18 @@ fun DebugInfoScreen(
                     }
                 }
             }
-            modelCause?.let { cause ->
+            if (showModelCause) {
                 item {
                     CardWithImage(
-                        title = when (cause) {
-                            is HttpException -> stringResource(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
-                            is DavException -> stringResource(R.string.debug_info_webdav_error)
-                            is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
-                            else -> cause::class.java.simpleName
-                        },
-                        subtitle = cause.localizedMessage,
-                        message = stringResource(
-                            if (cause is HttpException)
-                                when {
-                                    cause.code == 403 -> R.string.debug_info_http_403_description
-                                    cause.code == 404 -> R.string.debug_info_http_404_description
-                                    cause.code / 100 == 5 -> R.string.debug_info_http_5xx_description
-                                    else -> R.string.debug_info_unexpected_error
-                                }
-                            else
-                                R.string.debug_info_unexpected_error
-                        ),
+                        title = modelCauseTitle,
+                        subtitle = modelCauseSubtitle,
+                        message = modelCauseMessage,
                         icon = Icons.Rounded.Info,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         TextButton(
-                            enabled = debugInfo != null,
-                            onClick = { onViewFile(debugInfo!!) }
+                            enabled = showDebugInfo,
+                            onClick = onViewDebugFile
                         ) {
                             Text(
                                 stringResource(R.string.debug_info_view_details).uppercase()
@@ -192,7 +198,7 @@ fun DebugInfoScreen(
                     }
                 }
             }
-            debugInfo?.let { info ->
+            if(showDebugInfo) {
                 item {
                     CardWithImage(
                         title = stringResource(R.string.debug_info_title),
@@ -201,7 +207,7 @@ fun DebugInfoScreen(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         TextButton(
-                            onClick = { onViewFile(info) }
+                            onClick = onViewDebugFile
                         ) {
                             Text(
                                 stringResource(R.string.debug_info_view_details).uppercase()
@@ -241,7 +247,7 @@ fun DebugInfoScreen(
                     }
                 }
             }
-            logFile?.let { logs ->
+            if (hasLogFile) {
                 item {
                     CardWithImage(
                         title = stringResource(R.string.debug_info_logs_caption),
@@ -250,7 +256,7 @@ fun DebugInfoScreen(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         TextButton(
-                            onClick = { onShareFile(logs) }
+                            onClick = onShareLogsFile
                         ) {
                             Text(
                                 stringResource(R.string.debug_info_logs_view).uppercase()
@@ -266,18 +272,23 @@ fun DebugInfoScreen(
 @Composable
 @Preview
 fun DebugInfoScreen_Preview() {
-    DebugInfoScreen(
-        error = "Some error",
-        onResetError = {},
-        debugInfo = null,
-        zipProgress = false,
-        modelCause = Exception("Some super strange and random throwable."),
-        localResource = "local-resource-string",
-        remoteResource = "remote-resource-string",
-        logFile = null,
-        onGenerateZip = {},
-        onShareFile = {},
-        onViewFile = {},
-        onNavUp = {},
-    )
+    AppTheme {
+        DebugInfoScreen(
+            error = "Some error",
+            onResetError = {},
+            showDebugInfo = true,
+            zipProgress = false,
+            showModelCause = true,
+            modelCauseTitle = "ModelCauseTitle",
+            modelCauseSubtitle = "ModelCauseSubtitle",
+            modelCauseMessage = "ModelCauseMessage",
+            localResource = "local-resource-string",
+            remoteResource = "remote-resource-string",
+            hasLogFile = true,
+            onGenerateZip = {},
+            onShareLogsFile = {},
+            onViewDebugFile = {},
+            onNavUp = {},
+        )
+    }
 }
