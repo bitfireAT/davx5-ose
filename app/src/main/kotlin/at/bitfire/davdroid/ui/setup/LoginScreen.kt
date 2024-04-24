@@ -101,7 +101,7 @@ fun LoginScreenContent(
 
                 when (page) {
                     LoginScreenModel.Page.LoginType ->
-                        LoginTypePage()
+                        LoginTypePage(snackbarHostState = snackbarHostState)
 
                     LoginScreenModel.Page.LoginDetails ->
                         LoginDetailsPage(snackbarHostState = snackbarHostState)

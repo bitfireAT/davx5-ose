@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.content.Intent
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 
 interface LoginTypesProvider {
@@ -19,6 +20,7 @@ interface LoginTypesProvider {
 
     @Composable
     fun LoginTypePage(
+        snackbarHostState: SnackbarHostState,
         selectedLoginType: LoginType,
         onSelectLoginType: (LoginType) -> Unit,
         setInitialLoginInfo: (LoginInfo) -> Unit,
