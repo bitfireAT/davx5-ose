@@ -59,7 +59,7 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.A
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.DebugInfoActivity
+import at.bitfire.davdroid.ui.DebugInfoModel
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
@@ -240,7 +240,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         } catch(e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
-            val debugIntent = DebugInfoActivity.IntentBuilder(applicationContext)
+            val debugIntent = DebugInfoModel.IntentBuilder(applicationContext)
                 .withCause(e)
                 .withAccount(account)
                 .build()

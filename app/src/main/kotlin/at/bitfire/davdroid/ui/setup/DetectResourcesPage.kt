@@ -30,7 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.DebugInfoActivity
+import at.bitfire.davdroid.ui.DebugInfoModel
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 
@@ -148,7 +148,7 @@ fun DetectResourcesPageContent_NothingFound(
                     val context = LocalContext.current
                     Button(
                         onClick = {
-                            val intent = DebugInfoActivity.IntentBuilder(context)
+                            val intent = DebugInfoModel.IntentBuilder(context)
                                 .withLogs(logs)
                                 .build()
                             context.startActivity(intent)

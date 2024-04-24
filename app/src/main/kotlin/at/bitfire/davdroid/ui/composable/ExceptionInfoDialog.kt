@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.DebugInfoActivity
+import at.bitfire.davdroid.ui.DebugInfoModel
 import okhttp3.HttpUrl
 import java.io.IOException
 
@@ -68,7 +68,7 @@ fun ExceptionInfoDialog(
         dismissButton = {
             TextButton(
                 onClick = {
-                    val intent = DebugInfoActivity.IntentBuilder(context).withCause(exception)
+                    val intent = DebugInfoModel.IntentBuilder(context).withCause(exception)
                     if (account != null)
                         intent.withAccount(account)
                     if (remoteResource != null)

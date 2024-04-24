@@ -40,7 +40,7 @@ import java.io.IOException
 
 @Composable
 fun DebugInfoScreen(
-    model: DebugInfoActivity.ReportModel,
+    model: DebugInfoModel,
     onShareFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
     onNavUp: () -> Unit
@@ -70,7 +70,7 @@ fun DebugInfoScreen(
 
 @Composable
 fun DebugInfoScreen(
-    model: DebugInfoActivity.ReportModel,
+    model: DebugInfoModel,
     debugInfo: File?,
     zipProgress: Boolean,
     modelCause: Throwable?,
