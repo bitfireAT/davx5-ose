@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.content.Intent
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import javax.inject.Inject
 
@@ -33,6 +34,7 @@ class StandardLoginTypesProvider @Inject constructor() : LoginTypesProvider {
 
     @Composable
     override fun LoginTypePage(
+        snackbarHostState: SnackbarHostState,
         selectedLoginType: LoginType,
         onSelectLoginType: (LoginType) -> Unit,
         setInitialLoginInfo: (LoginInfo) -> Unit,
