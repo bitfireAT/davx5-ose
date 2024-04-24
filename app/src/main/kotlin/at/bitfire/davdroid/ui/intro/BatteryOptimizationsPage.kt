@@ -105,8 +105,8 @@ class BatteryOptimizationsPage: IntroPage {
         }
 
         val hintBatteryOptimizations by model.hintBatteryOptimizations.collectAsStateWithLifecycle(false)
-        val shouldBeExempted by model.shouldBeExempted.observeAsState(false)
-        val isExempted by model.isExempted.observeAsState(false)
+        val shouldBeExempted = model.shouldBeExempted
+        val isExempted = model.isExempted
         LaunchedEffect(shouldBeExempted, isExempted) {
             if (shouldBeExempted && !isExempted)
                 ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
@@ -115,16 +115,12 @@ class BatteryOptimizationsPage: IntroPage {
         val hintAutostartPermission by model.hintAutostartPermission.collectAsStateWithLifecycle(false)
         BatteryOptimizationsContent(
             dontShowBattery = hintBatteryOptimizations == false,
-            onChangeDontShowBattery = {
-                model.settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, !it)
-            },
+            onChangeDontShowBattery = model::updateHintBatteryOptimizations,
             isExempted = isExempted,
             shouldBeExempted = shouldBeExempted,
-            onChangeShouldBeExempted = model.shouldBeExempted::postValue,
+            onChangeShouldBeExempted = model::updateShouldBeExempted,
             dontShowAutostart = hintAutostartPermission == false,
-            onChangeDontShowAutostart = {
-                model.settings.putBoolean(HINT_AUTOSTART_PERMISSION, !it)
-            },
+            onChangeDontShowAutostart = model::updateHintAutostartPermission,
             manufacturerWarning = Model.manufacturerWarning
         )
     }
@@ -133,7 +129,7 @@ class BatteryOptimizationsPage: IntroPage {
     @HiltViewModel
     class Model @Inject constructor(
         val context: Application,
-        val settings: SettingsManager
+        private val settings: SettingsManager
     ): ViewModel() {
 
         companion object {
@@ -178,8 +174,11 @@ class BatteryOptimizationsPage: IntroPage {
                 context.getSystemService<PowerManager>()!!.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
         }
 
-        val shouldBeExempted = MutableLiveData<Boolean>()
-        val isExempted = MutableLiveData<Boolean>()
+        var shouldBeExempted by mutableStateOf(true)
+            private set
+        var isExempted by mutableStateOf(false)
+            private set
+
         val hintBatteryOptimizations = settings.getBooleanFlow(HINT_BATTERY_OPTIMIZATIONS)
 
         val hintAutostartPermission = settings.getBooleanFlow(HINT_AUTOSTART_PERMISSION)
@@ -194,12 +193,24 @@ class BatteryOptimizationsPage: IntroPage {
 
         fun checkBatteryOptimizations() {
             val exempted = isExempted(context)
-            isExempted.value = exempted
-            shouldBeExempted.value = exempted
+            isExempted = exempted
+            shouldBeExempted = exempted
 
             // if DAVx5 is whitelisted, always show a reminder as soon as it's not whitelisted anymore
             if (exempted)
                 settings.remove(HINT_BATTERY_OPTIMIZATIONS)
+        }
+
+        fun updateShouldBeExempted(value: Boolean) {
+            shouldBeExempted = value
+        }
+
+        fun updateHintBatteryOptimizations(value: Boolean) {
+            settings.putBoolean(HINT_BATTERY_OPTIMIZATIONS, value)
+        }
+
+        fun updateHintAutostartPermission(value: Boolean) {
+            settings.putBoolean(HINT_AUTOSTART_PERMISSION, value)
         }
 
     }
