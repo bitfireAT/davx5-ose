@@ -23,6 +23,9 @@ interface ServiceDao {
     @Query("SELECT id FROM service WHERE accountName=:accountName")
     fun getIdsByAccount(accountName: String): List<Long>
 
+    @Query("SELECT id FROM service WHERE accountName=:accountName")
+    suspend fun getIdsByAccountAsync(accountName: String): List<Long>
+
     @Query("SELECT id FROM service WHERE accountName=:accountName AND type=:type")
     fun getIdByAccountAndType(accountName: String, type: String): LiveData<Long>
 

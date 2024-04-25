@@ -6,6 +6,7 @@ package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.accounts.OnAccountsUpdateListener
 import android.app.Application
 import android.content.ContentResolver
 import android.provider.CalendarContract
@@ -23,6 +24,8 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.vcard4android.GroupMethod
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 import java.util.logging.Level
 import javax.inject.Inject
 
@@ -39,7 +42,7 @@ class AccountRepository @Inject constructor(
 ) {
 
     val accountType = context.getString(R.string.account_type)
-
+    val accountManager = AccountManager.get(context)
 
     /**
      * Creates a new main account with discovered services and enables periodic syncs with
@@ -142,8 +145,20 @@ class AccountRepository @Inject constructor(
         if (accountName.isEmpty())
             false
         else
-            AccountManager.get(context)
+            accountManager
                 .getAccountsByType(accountType)
                 .contains(Account(accountName, accountType))
+
+
+    fun getAllFlow() = callbackFlow<Set<Account>> {
+        val listener = OnAccountsUpdateListener { accounts ->
+            trySend(accounts.filter { it.type == accountType }.toSet())
+        }
+        accountManager.addOnAccountsUpdatedListener(listener, null, true)
+
+        awaitClose {
+            accountManager.removeOnAccountsUpdatedListener(listener)
+        }
+    }
 
 }
