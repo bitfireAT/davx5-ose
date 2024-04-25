@@ -20,8 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
@@ -46,34 +44,35 @@ fun DebugInfoScreen(
     onViewFile: (File) -> Unit,
     onNavUp: () -> Unit
 ) {
-    val debugInfo by model.debugInfo.observeAsState()
-    val zipProgress by model.zipProgress.observeAsState(false)
-    val modelCause by model.cause.observeAsState()
-    val localResource by model.localResource.observeAsState()
-    val remoteResource by model.remoteResource.observeAsState()
-    val logFile by model.logFile.observeAsState()
-    val error by model.error.observeAsState()
+    val uiState = model.uiState
+    val cause = uiState.cause
+    val debugInfo = uiState.debugInfo
+    val zipProgress = uiState.zipProgress
+    val localResource = uiState.localResource
+    val remoteResource = uiState.remoteResource
+    val logFile = uiState.logFile
+    val error = uiState.error
 
     AppTheme {
         DebugInfoScreen(
             error,
-            onResetError = { model.error.value = null },
+            onResetError = model::resetError,
             debugInfo != null,
             zipProgress,
-            modelCause != null,
-            modelCauseTitle = when (modelCause) {
-                is HttpException -> stringResource(if ((modelCause as HttpException).code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
+            cause != null,
+            modelCauseTitle = when (cause) {
+                is HttpException -> stringResource(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
                 is DavException -> stringResource(R.string.debug_info_webdav_error)
                 is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
-                else -> modelCause?.let { it::class.java.simpleName }
+                else -> cause?.let { it::class.java.simpleName }
             } ?: "",
-            modelCauseSubtitle = modelCause?.localizedMessage,
+            modelCauseSubtitle = cause?.localizedMessage,
             modelCauseMessage = stringResource(
-                if (modelCause is HttpException)
+                if (cause is HttpException)
                     when {
-                        (modelCause as HttpException).code == 403 -> R.string.debug_info_http_403_description
-                        (modelCause as HttpException).code == 404 -> R.string.debug_info_http_404_description
-                        (modelCause as HttpException).code / 100 == 5 -> R.string.debug_info_http_5xx_description
+                        cause.code == 403 -> R.string.debug_info_http_403_description
+                        cause.code == 404 -> R.string.debug_info_http_404_description
+                        cause.code / 100 == 5 -> R.string.debug_info_http_5xx_description
                         else -> R.string.debug_info_unexpected_error
                     }
                 else

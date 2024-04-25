@@ -25,6 +25,9 @@ import android.os.StatFs
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.text.format.DateUtils
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -68,9 +71,9 @@ import java.util.logging.Level
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import javax.inject.Inject
-import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
+import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
 class DebugInfoModel @AssistedInject constructor (
     val context: Application,
@@ -110,16 +113,25 @@ class DebugInfoModel @AssistedInject constructor (
     @Inject
     lateinit var settings: SettingsManager
 
-    val cause = MutableLiveData<Throwable>()
-    var logFile = MutableLiveData<File>()
-    val localResource = MutableLiveData<String>()
-    val remoteResource = MutableLiveData<String>()
-    val debugInfo = MutableLiveData<File>()
+    data class UiState(
+        val cause: Throwable? = null,
+        val logFile: File? = null,
+        val localResource: String? = null,
+        val remoteResource: String? = null,
+        val debugInfo: File? = null,
+        val zipProgress: Boolean = false,
+        val error: String? = null
+    )
+
+    var uiState by mutableStateOf(UiState())
+        private set
+
+    fun resetError() {
+        uiState = uiState.copy(error = null)
+    }
 
     // feedback for UI
-    val zipProgress = MutableLiveData(false)
     val zipFile = MutableLiveData<File>()
-    val error = MutableLiveData<String>()
 
     init {
         // create debug info directory
@@ -134,22 +146,22 @@ class DebugInfoModel @AssistedInject constructor (
                     file.writer().buffered().use { writer ->
                         IOUtils.copy(StringReader(logsText), writer)
                     }
-                    logFile.postValue(file)
+                    uiState = uiState.copy(logFile = file)
                 } else
                     Logger.log.warning("Can't write logs to $file")
             } else Logger.getDebugLogFile()?.let { debugLogFile ->
                 if (debugLogFile.isFile && debugLogFile.canRead())
-                    logFile.postValue(debugLogFile)
+                    uiState = uiState.copy(logFile = debugLogFile)
             }
 
             val throwable = extras?.getSerializable(EXTRA_CAUSE) as? Throwable
-            cause.postValue(throwable)
+            uiState = uiState.copy(cause = throwable)
 
             val local = extras?.getString(EXTRA_LOCAL_RESOURCE)
-            localResource.postValue(local)
+            uiState = uiState.copy(localResource = local)
 
             val remote = extras?.getString(EXTRA_REMOTE_RESOURCE)
-            remoteResource.postValue(remote)
+            uiState = uiState.copy(remoteResource = remote)
 
             generateDebugInfo(
                 extras?.getParcelable(EXTRA_ACCOUNT),
@@ -413,18 +425,18 @@ class DebugInfoModel @AssistedInject constructor (
             writer.append("--- END DEBUG INFO ---\n")
             writer.toString()
         }
-        debugInfo.postValue(debugInfoFile)
+        uiState = uiState.copy(debugInfo = debugInfoFile)
     }
 
     fun generateZip() {
         try {
-            zipProgress.postValue(true)
+            uiState = uiState.copy(zipProgress = true)
 
             val file = File(Logger.debugDir(), "davx5-debug.zip")
             Logger.log.fine("Writing debug info to ${file.absolutePath}")
             ZipOutputStream(file.outputStream().buffered()).use { zip ->
                 zip.setLevel(9)
-                debugInfo.value?.let { debugInfo ->
+                uiState.debugInfo?.let { debugInfo ->
                     zip.putNextEntry(ZipEntry("debug-info.txt"))
                     debugInfo.inputStream().use {
                         IOUtils.copy(it, zip)
@@ -432,7 +444,7 @@ class DebugInfoModel @AssistedInject constructor (
                     zip.closeEntry()
                 }
 
-                val logs = logFile.value
+                val logs = uiState.logFile
                 if (logs != null) {
                     // verbose logs available
                     zip.putNextEntry(ZipEntry(logs.name))
@@ -457,9 +469,9 @@ class DebugInfoModel @AssistedInject constructor (
             zipFile.postValue(file)
         } catch (e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't generate debug info ZIP", e)
-            error.postValue(e.localizedMessage)
+            uiState = uiState.copy(error = e.localizedMessage)
         } finally {
-            zipProgress.postValue(false)
+            uiState = uiState.copy(zipProgress = false)
         }
     }
 
