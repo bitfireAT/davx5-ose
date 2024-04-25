@@ -2,6 +2,9 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import android.app.Application
+import android.content.pm.ShortcutManager
+import android.os.Build
+import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -15,14 +18,14 @@ import at.bitfire.davdroid.syncadapter.SyncUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import java.text.Collator
 import javax.inject.Inject
 
 @HiltViewModel
 class AccountsModel @Inject constructor(
     val context: Application,
-    accountRepository: AccountRepository,
+    val accountRepository: AccountRepository,
     private val db: AppDatabase
 ): ViewModel() {
 
@@ -35,18 +38,25 @@ class AccountsModel @Inject constructor(
         Idle
     }
 
+    enum class FABStyle {
+        WithText,
+        Standard,
+        None
+    }
+
     data class AccountInfo(
         val name: Account,
         val progress: Progress
     )
 
-    val showAddAccount: Flow<Boolean> =
-        flowOf(true)
-
-
-    // needed to calculate UI state
-
     private val accounts = accountRepository.getAllFlow()
+    val showAddAccount: Flow<FABStyle> = accounts.map {
+        if (it.isEmpty())
+            FABStyle.WithText
+        else
+            FABStyle.Standard
+    }
+    val showSyncAll: Flow<Boolean> = accounts.map { it.isNotEmpty() }
 
     private val workManager = WorkManager.getInstance(context)
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
@@ -67,7 +77,7 @@ class AccountsModel @Inject constructor(
                                 } || authorities.any { authority ->
                                     info.tags.contains(BaseSyncWorker.commonTag(account, authority))
                                 }
-                                )
+                            )
                     } -> Progress.Active
 
                     workInfos.any { info ->
@@ -87,18 +97,12 @@ class AccountsModel @Inject constructor(
     // actions
 
     fun syncAllAccounts() {
-        /*if (Build.VERSION.SDK_INT >= 25)
+        if (Build.VERSION.SDK_INT >= 25)
             context.getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
 
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
-        for (account in allAccounts())
-            OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)*/
+        for (account in accountRepository.getAll())
+            OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
     }
-
-
-    // helpers
-
-    /*private fun allAccounts() =
-        AccountManager.get(context).getAccountsByType(accountType)*/
 
 }

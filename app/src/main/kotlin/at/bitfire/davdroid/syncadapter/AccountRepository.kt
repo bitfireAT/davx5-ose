@@ -150,6 +150,8 @@ class AccountRepository @Inject constructor(
                 .contains(Account(accountName, accountType))
 
 
+    fun getAll() = accountManager.getAccountsByType(accountType)
+
     fun getAllFlow() = callbackFlow<Set<Account>> {
         val listener = OnAccountsUpdateListener { accounts ->
             trySend(accounts.filter { it.type == accountType }.toSet())

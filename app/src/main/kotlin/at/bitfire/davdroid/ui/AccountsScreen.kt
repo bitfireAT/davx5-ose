@@ -1,8 +1,6 @@
 package at.bitfire.davdroid.ui
 
-import android.Manifest
 import android.accounts.Account
-import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -25,8 +23,10 @@ import androidx.compose.material.icons.filled.SignalCellularOff
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,14 +40,18 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -58,11 +62,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.progressAlpha
 import at.bitfire.davdroid.ui.composable.ActionCard
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AccountsScreen(
     accountsDrawerHandler: AccountsDrawerHandler,
@@ -72,10 +73,37 @@ fun AccountsScreen(
     model: AccountsModel = viewModel(),
     warnings: AppWarningsModel = viewModel()
 ) {
-    val scope = rememberCoroutineScope()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val snackbarHostState = remember { SnackbarHostState() }
+    val accounts by model.accountInfos.collectAsStateWithLifecycle(emptyList())
+    val showSyncAll by model.showSyncAll.collectAsStateWithLifecycle(true)
+    val showAddAccount by model.showAddAccount.collectAsStateWithLifecycle(AccountsModel.FABStyle.Standard)
 
+    AccountsScreen(
+        accountsDrawerHandler = accountsDrawerHandler,
+        accounts = accounts,
+        showSyncAll = showSyncAll,
+        onSyncAll = { model.syncAllAccounts() },
+        showAddAccount = showAddAccount,
+        onAddAccount = onAddAccount,
+        onShowAccount = onShowAccount,
+        onFinish = onFinish
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AccountsScreen(
+    accountsDrawerHandler: AccountsDrawerHandler,
+    accounts: List<AccountsModel.AccountInfo>,
+    showSyncAll: Boolean = true,
+    onSyncAll: () -> Unit = {},
+    showAddAccount: AccountsModel.FABStyle = AccountsModel.FABStyle.Standard,
+    onAddAccount: () -> Unit = {},
+    onShowAccount: (Account) -> Unit = {},
+    onFinish: () -> Unit = {}
+) {
+    val scope = rememberCoroutineScope()
+
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     BackHandler {
         scope.launch {
             if (drawerState.isOpen)
@@ -85,13 +113,17 @@ fun AccountsScreen(
         }
     }
 
-    /*val refreshing by remember { mutableStateOf(false) }
-    val pullRefreshState = rememberPullRefreshState(refreshing, onRefresh = {
-        model.syncAllAccounts()
-    })*/
+    val refreshState = rememberPullToRefreshState(
+        enabled = { showSyncAll }
+    )
+    LaunchedEffect(refreshState.isRefreshing) {
+        if (refreshState.isRefreshing) {
+            onSyncAll()
+            refreshState.endRefresh()
+        }
+    }
 
-    val accounts by model.accountInfos.collectAsStateWithLifecycle(emptyList())
-
+    val snackbarHostState = remember { SnackbarHostState() }
     AppTheme {
         Scaffold(
             topBar = {
@@ -115,25 +147,26 @@ fun AccountsScreen(
                         Text(stringResource(R.string.app_name))
                     },
                     actions = {
-                        //if (accountsNotEmpty) {
-                            IconButton(onClick = { model.syncAllAccounts() }) {
+                        if (showSyncAll)
+                            IconButton(onClick = onSyncAll) {
                                 Icon(
                                     Icons.Default.Sync,
                                     contentDescription = stringResource(R.string.accounts_sync_all)
                                 )
                             }
-                        //}
                     }
                 )
             },
             floatingActionButton = {
-                val show by model.showAddAccount.collectAsStateWithLifecycle(true)
-                if (show == true)
+                if (showAddAccount == AccountsModel.FABStyle.WithText)
+                    ExtendedFloatingActionButton(
+                        text = { Text(stringResource(R.string.login_create_account)) },
+                        icon = { Icon(Icons.Filled.Add, stringResource(R.string.login_create_account)) },
+                        onClick = onAddAccount
+                    )
+                else if (showAddAccount == AccountsModel.FABStyle.Standard)
                     FloatingActionButton(onClick = onAddAccount) {
-                        Icon(
-                            Icons.Filled.Add,
-                            stringResource(R.string.login_create_account)
-                        )
+                        Icon(Icons.Filled.Add, stringResource(R.string.login_create_account))
                     }
             },
             snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -157,10 +190,7 @@ fun AccountsScreen(
                     Box(
                         Modifier
                             .fillMaxSize()
-                            /*.pullRefresh(
-                            state = pullRefreshState,
-                            enabled = accounts?.isNotEmpty() == true
-                        )*/
+                            .nestedScroll(refreshState.nestedScrollConnection)
                             .verticalScroll(rememberScrollState())
                     ) {
                         // background image
@@ -173,11 +203,11 @@ fun AccountsScreen(
                         )
 
                         Column {
-                            val notificationsPermissionState =
+                            /*val notificationsPermissionState =
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                                     rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
                                 else
-                                    null
+                                    null*/
 
                             // Warnings show as action cards
                             /*SyncWarnings(
@@ -224,13 +254,48 @@ fun AccountsScreen(
                         }
 
                         // indicate when the user pulls down
-                        /*PullRefreshIndicator(refreshing, pullRefreshState,
-                            modifier = Modifier.align(Alignment.TopCenter))*/
+                        PullToRefreshContainer(
+                            modifier = Modifier.align(Alignment.TopCenter),
+                            state = refreshState
+                        )
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+@Preview
+fun AccountsScreen_Preview_Empty() {
+    AccountsScreen(
+        accountsDrawerHandler = object: AccountsDrawerHandler() {
+            @Composable
+            override fun MenuEntries(snackbarHostState: SnackbarHostState) {
+                Text("Menu entries")
+            }
+        },
+        accounts = emptyList()
+    )
+}
+
+@Composable
+@Preview
+fun AccountsScreen_Preview_OneAccount() {
+    AccountsScreen(
+        accountsDrawerHandler = object: AccountsDrawerHandler() {
+            @Composable
+            override fun MenuEntries(snackbarHostState: SnackbarHostState) {
+                Text("Menu entries")
+            }
+        },
+        accounts = listOf(
+            AccountsModel.AccountInfo(
+                Account("Account Name", "test"),
+                AccountsModel.Progress.Idle
+            )
+        )
+    )
 }
 
 @Composable
@@ -257,8 +322,10 @@ fun AccountList(
         else
             for ((account, progress) in accounts)
                 Card(
-                    /*backgroundColor = MaterialTheme.colors.secondaryVariant,
-                    contentColor = MaterialTheme.colors.onSecondary,*/
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    ),
+                    elevation = CardDefaults.cardElevation(1.dp),
                     modifier = Modifier
                         .clickable { onClickAccount(account) }
                         .fillMaxWidth()
@@ -311,12 +378,14 @@ fun AccountList(
 @Composable
 @Preview
 fun AccountList_Preview_Idle() {
-    AccountList(listOf(
-        AccountsModel.AccountInfo(
-            Account("Account Name", "test"),
-            AccountsModel.Progress.Idle
+    AccountList(
+        listOf(
+            AccountsModel.AccountInfo(
+                Account("Account Name", "test"),
+                AccountsModel.Progress.Idle
+            )
         )
-    ))
+    )
 }
 
 @Composable
@@ -339,12 +408,6 @@ fun AccountList_Preview_Syncing() {
             AccountsModel.Progress.Active
         )
     ))
-}
-
-@Composable
-@Preview
-fun AccountList_Preview_Empty() {
-    AccountList(emptyList())
 }
 
 
