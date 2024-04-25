@@ -44,26 +44,12 @@ class DebugInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model.zipFile.observe(this) { zipFile ->
-            if (zipFile == null) return@observe
-
-            // ZIP file is ready
-            shareFile(
-                zipFile,
-                subject = "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info",
-                text = getString(R.string.debug_info_attached),
-                type = "*/*",    // application/zip won't show all apps that can manage binary files, like ShareViaHttp
-            )
-
-            // only share ZIP file once
-            model.zipFile.value = null
-        }
-
         setContent { 
             M2Theme {
                 DebugInfoScreen(
                     model,
                     onShareFile = { shareFile(it) },
+                    onShareZipFile = { onShareZipFile(it) },
                     onViewFile = { viewFile(it) },
                     onNavUp = { onNavigateUp() }
                 )
@@ -71,6 +57,18 @@ class DebugInfoActivity : AppCompatActivity() {
         }
     }
 
+    private fun onShareZipFile(file: File) {
+        shareFile(
+            file,
+            "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info",
+            getString(R.string.debug_info_attached),
+            "*/*",    // application/zip won't show all apps that can manage binary files, like ShareViaHttp
+        )
+    }
+
+    /**
+     * Starts an activity passing sharing intent along
+     */
     private fun shareFile(
         file: File,
         subject: String? = null,
@@ -90,6 +88,9 @@ class DebugInfoActivity : AppCompatActivity() {
             .startChooser()
     }
 
+    /**
+     * Starts an activity passing file viewer intent along
+     */
     private fun viewFile(
         file: File,
         title: String? = null

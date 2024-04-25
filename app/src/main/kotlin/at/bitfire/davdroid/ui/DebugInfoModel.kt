@@ -33,7 +33,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
@@ -115,11 +114,12 @@ class DebugInfoModel @AssistedInject constructor (
 
     data class UiState(
         val cause: Throwable? = null,
-        val logFile: File? = null,
         val localResource: String? = null,
         val remoteResource: String? = null,
+        val logFile: File? = null,
         val debugInfo: File? = null,
-        val zipProgress: Boolean = false,
+        val zipFile: File? = null,
+        val zipInProgress: Boolean = false,
         val error: String? = null
     )
 
@@ -130,14 +130,15 @@ class DebugInfoModel @AssistedInject constructor (
         uiState = uiState.copy(error = null)
     }
 
-    // feedback for UI
-    val zipFile = MutableLiveData<File>()
+    fun resetZipFile() {
+        uiState = uiState.copy(zipFile = null)
+    }
 
     init {
         // create debug info directory
         val debugDir = Logger.debugDir() ?: throw IOException("Couldn't create debug info directory")
 
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.Main) {
             // create log file from EXTRA_LOGS or log file
             val logsText = extras?.getString(EXTRA_LOGS)
             if (logsText != null) {
@@ -430,7 +431,7 @@ class DebugInfoModel @AssistedInject constructor (
 
     fun generateZip() {
         try {
-            uiState = uiState.copy(zipProgress = true)
+            uiState = uiState.copy(zipInProgress = true)
 
             val file = File(Logger.debugDir(), "davx5-debug.zip")
             Logger.log.fine("Writing debug info to ${file.absolutePath}")
@@ -466,12 +467,12 @@ class DebugInfoModel @AssistedInject constructor (
             }
 
             // success, show ZIP file
-            zipFile.postValue(file)
+            uiState = uiState.copy(zipFile = file)
         } catch (e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't generate debug info ZIP", e)
             uiState = uiState.copy(error = e.localizedMessage)
         } finally {
-            uiState = uiState.copy(zipProgress = false)
+            uiState = uiState.copy(zipInProgress = false)
         }
     }
 

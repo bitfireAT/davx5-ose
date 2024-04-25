@@ -41,24 +41,34 @@ import java.io.IOException
 fun DebugInfoScreen(
     model: DebugInfoModel,
     onShareFile: (File) -> Unit,
+    onShareZipFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
     onNavUp: () -> Unit
 ) {
     val uiState = model.uiState
     val cause = uiState.cause
     val debugInfo = uiState.debugInfo
-    val zipProgress = uiState.zipProgress
+    val zipInProgress = uiState.zipInProgress
+    val zipFile = uiState.zipFile
     val localResource = uiState.localResource
     val remoteResource = uiState.remoteResource
     val logFile = uiState.logFile
     val error = uiState.error
+
+    // Share zip file card, once successfully generated
+    LaunchedEffect(zipFile) {
+        zipFile?.let { file ->
+            onShareZipFile(file)
+            model.resetZipFile()
+        }
+    }
 
     AppTheme {
         DebugInfoScreen(
             error,
             onResetError = model::resetError,
             debugInfo != null,
-            zipProgress,
+            zipInProgress,
             cause != null,
             modelCauseTitle = when (cause) {
                 is HttpException -> stringResource(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
@@ -81,7 +91,7 @@ fun DebugInfoScreen(
             localResource,
             remoteResource,
             logFile != null,
-            onGenerateZip = { model.generateZip() },
+            onShareZip = { model.generateZip() },
             onShareLogsFile = { logFile?.let { onShareFile(it) } },
             onViewDebugFile = { debugInfo?.let { onViewFile(it) } },
             onNavUp
@@ -102,7 +112,7 @@ fun DebugInfoScreen(
     localResource: String?,
     remoteResource: String?,
     hasLogFile: Boolean,
-    onGenerateZip: () -> Unit,
+    onShareZip: () -> Unit,
     onShareLogsFile: () -> Unit,
     onViewDebugFile: () -> Unit,
     onNavUp: () -> Unit
@@ -113,7 +123,7 @@ fun DebugInfoScreen(
         floatingActionButton = {
             if (showDebugInfo && !zipProgress) {
                 FloatingActionButton(
-                    onClick = onGenerateZip
+                    onClick = onShareZip
                 ) {
                     Icon(Icons.Rounded.Share, stringResource(R.string.share))
                 }
@@ -167,7 +177,7 @@ fun DebugInfoScreen(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         TextButton(
-                            onClick = onGenerateZip,
+                            onClick = onShareZip,
                             enabled = !zipProgress
                         ) {
                             Text(
@@ -284,7 +294,7 @@ fun DebugInfoScreen_Preview() {
             localResource = "local-resource-string",
             remoteResource = "remote-resource-string",
             hasLogFile = true,
-            onGenerateZip = {},
+            onShareZip = {},
             onShareLogsFile = {},
             onViewDebugFile = {},
             onNavUp = {},
