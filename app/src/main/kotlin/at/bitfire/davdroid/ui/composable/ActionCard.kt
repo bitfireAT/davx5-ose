@@ -8,14 +8,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.NotificationAdd
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +32,6 @@ fun ActionCard(
     content: @Composable () -> Unit
 ) {
     Card(Modifier
-        .padding(horizontal = 8.dp, vertical = 4.dp)
         .fillMaxWidth()
         .then(modifier)
     ) {
@@ -40,12 +39,15 @@ fun ActionCard(
             .padding(top = 8.dp, start = 8.dp, end = 8.dp)
             .fillMaxWidth(),
         ) {
-            ProvideTextStyle(MaterialTheme.typography.body1) {
+            ProvideTextStyle(MaterialTheme.typography.bodyLarge) {
                 if (icon != null)
-                    Row {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Icon(icon, "", Modifier
                             .align(Alignment.CenterVertically)
-                            .padding(end = 8.dp))
+                            .padding(8.dp))
                         content()
                     }
                 else
@@ -53,11 +55,11 @@ fun ActionCard(
             }
 
             if (actionText != null)
-                TextButton(onClick = onAction) {
-                    Text(
-                        actionText.uppercase(),
-                        style = MaterialTheme.typography.button
-                    )
+                OutlinedButton(
+                    onClick = onAction,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
+                    Text(actionText)
                 }
         }
     }

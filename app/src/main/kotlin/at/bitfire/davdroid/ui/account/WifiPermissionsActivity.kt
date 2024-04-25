@@ -268,7 +268,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
 
         private val locationManager = context.getSystemService<LocationManager>()!!
 
-        val locationEnabled = broadcastReceiverFlow(context, IntentFilter(LocationManager.MODE_CHANGED_ACTION))
+        val locationEnabled = broadcastReceiverFlow(context, IntentFilter(LocationManager.MODE_CHANGED_ACTION), immediate = true)
             .map { LocationManagerCompat.isLocationEnabled(locationManager) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 

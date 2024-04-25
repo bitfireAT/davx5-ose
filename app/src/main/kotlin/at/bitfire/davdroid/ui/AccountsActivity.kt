@@ -59,6 +59,9 @@ class AccountsActivity: AppCompatActivity() {
                     val intent = Intent(this, AccountActivity::class.java)
                     intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
                     startActivity(intent)
+                },
+                onManagePermissions = {
+                    startActivity(Intent(this, PermissionsActivity::class.java))
                 }
             )
         }

@@ -27,7 +27,7 @@ fun broadcastReceiverFlow(
     context: Context,
     filter: IntentFilter,
     flags: Int? = null,
-    immediate: Boolean = true
+    immediate: Boolean
 ): Flow<Intent> = callbackFlow {
     val receiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {

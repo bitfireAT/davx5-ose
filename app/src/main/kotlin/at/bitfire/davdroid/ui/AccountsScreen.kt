@@ -1,6 +1,11 @@
 package at.bitfire.davdroid.ui
 
+import android.Manifest
 import android.accounts.Account
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -29,13 +34,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -52,6 +57,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -59,19 +66,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.progressAlpha
 import at.bitfire.davdroid.ui.composable.ActionCard
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 
 @Composable
 fun AccountsScreen(
     accountsDrawerHandler: AccountsDrawerHandler,
-    onAddAccount: () -> Unit = {},
-    onShowAccount: (Account) -> Unit = {},
-    onFinish: () -> Unit = {},
-    model: AccountsModel = viewModel(),
-    warnings: AppWarningsModel = viewModel()
+    onAddAccount: () -> Unit,
+    onShowAccount: (Account) -> Unit,
+    onManagePermissions: () -> Unit,
+    model: AccountsModel = viewModel()
 ) {
     val accounts by model.accountInfos.collectAsStateWithLifecycle(emptyList())
     val showSyncAll by model.showSyncAll.collectAsStateWithLifecycle(true)
@@ -85,11 +95,15 @@ fun AccountsScreen(
         showAddAccount = showAddAccount,
         onAddAccount = onAddAccount,
         onShowAccount = onShowAccount,
-        onFinish = onFinish
+        onManagePermissions = onManagePermissions,
+        internetUnavailable = !model.networkAvailable.collectAsStateWithLifecycle(false).value,
+        batterySaverActive = model.batterySaverActive.collectAsStateWithLifecycle(false).value,
+        dataSaverActive = model.dataSaverEnabled.collectAsStateWithLifecycle(false).value,
+        storageLow = model.storageLow.collectAsStateWithLifecycle(false).value
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AccountsScreen(
     accountsDrawerHandler: AccountsDrawerHandler,
@@ -99,17 +113,18 @@ fun AccountsScreen(
     showAddAccount: AccountsModel.FABStyle = AccountsModel.FABStyle.Standard,
     onAddAccount: () -> Unit = {},
     onShowAccount: (Account) -> Unit = {},
-    onFinish: () -> Unit = {}
+    onManagePermissions: () -> Unit = {},
+    internetUnavailable: Boolean = false,
+    batterySaverActive: Boolean = false,
+    dataSaverActive: Boolean = false,
+    storageLow: Boolean = false
 ) {
     val scope = rememberCoroutineScope()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    BackHandler {
+    BackHandler(drawerState.isOpen) {
         scope.launch {
-            if (drawerState.isOpen)
-                drawerState.close()
-            else
-                onFinish()
+            drawerState.close()
         }
     }
 
@@ -145,29 +160,33 @@ fun AccountsScreen(
                     },
                     title = {
                         Text(stringResource(R.string.app_name))
-                    },
-                    actions = {
-                        if (showSyncAll)
-                            IconButton(onClick = onSyncAll) {
-                                Icon(
-                                    Icons.Default.Sync,
-                                    contentDescription = stringResource(R.string.accounts_sync_all)
-                                )
-                            }
                     }
                 )
             },
             floatingActionButton = {
-                if (showAddAccount == AccountsModel.FABStyle.WithText)
-                    ExtendedFloatingActionButton(
-                        text = { Text(stringResource(R.string.login_create_account)) },
-                        icon = { Icon(Icons.Filled.Add, stringResource(R.string.login_create_account)) },
-                        onClick = onAddAccount
-                    )
-                else if (showAddAccount == AccountsModel.FABStyle.Standard)
-                    FloatingActionButton(onClick = onAddAccount) {
-                        Icon(Icons.Filled.Add, stringResource(R.string.login_create_account))
-                    }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (showSyncAll)
+                        SmallFloatingActionButton(
+                            onClick = onSyncAll,
+                            modifier = Modifier.padding(bottom = 24.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Sync,
+                                contentDescription = stringResource(R.string.accounts_sync_all)
+                            )
+                        }
+
+                    if (showAddAccount == AccountsModel.FABStyle.WithText)
+                        ExtendedFloatingActionButton(
+                            text = { Text(stringResource(R.string.login_create_account)) },
+                            icon = { Icon(Icons.Filled.Add, stringResource(R.string.login_create_account)) },
+                            onClick = onAddAccount
+                        )
+                    else if (showAddAccount == AccountsModel.FABStyle.Standard)
+                        FloatingActionButton(onClick = onAddAccount) {
+                            Icon(Icons.Filled.Add, stringResource(R.string.login_create_account))
+                        }
+                }
             },
             snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { padding ->
@@ -203,43 +222,45 @@ fun AccountsScreen(
                         )
 
                         Column {
-                            /*val notificationsPermissionState =
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                            val notificationsPermissionState =
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !LocalInspectionMode.current)
                                     rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
                                 else
-                                    null*/
+                                    null
 
                             // Warnings show as action cards
-                            /*SyncWarnings(
+                            val context = LocalContext.current
+                            SyncWarnings(
                                 notificationsWarning = notificationsPermissionState?.status?.isGranted == false,
-                                onClickPermissions = {
-                                    startActivity(Intent(this@AccountsActivity, PermissionsActivity::class.java))
-                                },
-                                internetWarning = warnings.networkAvailable.observeAsState().value == false,
+                                onManagePermissions = onManagePermissions,
+                                internetWarning = internetUnavailable,
                                 onManageConnections = {
                                     val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
-                                    if (intent.resolveActivity(packageManager) != null)
-                                        startActivity(intent)
+                                    if (intent.resolveActivity(context.packageManager) != null)
+                                        context.startActivity(intent)
                                 },
-                                dataSaverActive = warnings.dataSaverEnabled.collectAsStateWithLifecycle().value,
-                                onManageDataSaver = {
-                                    val intent = Intent(Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS, Uri.parse("package:$packageName"))
-                                    if (intent.resolveActivity(packageManager) != null)
-                                        startActivity(intent)
-                                },
-                                batterySaverActive = warnings.batterySaverActive.collectAsStateWithLifecycle().value,
+                                batterySaverActive = batterySaverActive,
                                 onManageBatterySaver = {
                                     val intent = Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS)
-                                    if (intent.resolveActivity(packageManager) != null)
-                                        startActivity(intent)
+                                    if (intent.resolveActivity(context.packageManager) != null)
+                                        context.startActivity(intent)
                                 },
-                                lowStorageWarning = warnings.storageLow.collectAsStateWithLifecycle().value,
+                                dataSaverActive = dataSaverActive,
+                                onManageDataSaver = {
+                                    val intent = Intent(
+                                        /* action = */ Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
+                                        /* uri = */ Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                                    )
+                                    if (intent.resolveActivity(context.packageManager) != null)
+                                        context.startActivity(intent)
+                                },
+                                lowStorageWarning = storageLow,
                                 onManageStorage = {
                                     val intent = Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
-                                    if (intent.resolveActivity(packageManager) != null)
-                                        startActivity(intent)
+                                    if (intent.resolveActivity(context.packageManager) != null)
+                                        context.startActivity(intent)
                                 }
-                            )*/
+                            )
 
                             // account list
                             AccountList(
@@ -329,7 +350,7 @@ fun AccountList(
                     modifier = Modifier
                         .clickable { onClickAccount(account) }
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(vertical = 4.dp)
                 ) {
                     Column {
                         val progressAlpha = progressAlpha(progress)
@@ -413,23 +434,24 @@ fun AccountList_Preview_Syncing() {
 
 @Composable
 fun SyncWarnings(
-    notificationsWarning: Boolean,
-    onClickPermissions: () -> Unit = {},
-    internetWarning: Boolean,
+    notificationsWarning: Boolean = true,
+    onManagePermissions: () -> Unit = {},
+    internetWarning: Boolean = true,
     onManageConnections: () -> Unit = {},
-    batterySaverActive: Boolean,
+    batterySaverActive: Boolean = true,
     onManageBatterySaver: () -> Unit = {},
-    dataSaverActive: Boolean,
+    dataSaverActive: Boolean = true,
     onManageDataSaver: () -> Unit = {},
-    lowStorageWarning: Boolean,
+    lowStorageWarning: Boolean = true,
     onManageStorage: () -> Unit = {}
 ) {
-    Column(Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+    Column(Modifier.padding(horizontal = 8.dp)) {
         if (notificationsWarning)
             ActionCard(
                 icon = Icons.Default.NotificationsOff,
                 actionText = stringResource(R.string.account_manage_permissions),
-                onAction = onClickPermissions
+                onAction = onManagePermissions,
+                modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text(stringResource(R.string.account_list_no_notification_permission))
             }
@@ -438,7 +460,8 @@ fun SyncWarnings(
             ActionCard(
                 icon = Icons.Default.SignalCellularOff,
                 actionText = stringResource(R.string.account_list_manage_connections),
-                onAction = onManageConnections
+                onAction = onManageConnections,
+                modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text(stringResource(R.string.account_list_no_internet))
             }
@@ -447,7 +470,8 @@ fun SyncWarnings(
             ActionCard(
                 icon = Icons.Default.BatterySaver,
                 actionText = stringResource(R.string.account_list_manage_battery_saver),
-                onAction = onManageBatterySaver
+                onAction = onManageBatterySaver,
+                modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text(stringResource(R.string.account_list_battery_saver_enabled))
             }
@@ -456,7 +480,8 @@ fun SyncWarnings(
             ActionCard(
                 icon = Icons.Default.DataSaverOn,
                 actionText = stringResource(R.string.account_list_manage_datasaver),
-                onAction = onManageDataSaver
+                onAction = onManageDataSaver,
+                modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text(stringResource(R.string.account_list_datasaver_enabled))
             }
@@ -465,7 +490,8 @@ fun SyncWarnings(
             ActionCard(
                 icon = Icons.Default.Storage,
                 actionText = stringResource(R.string.account_list_manage_storage),
-                onAction = onManageStorage
+                onAction = onManageStorage,
+                modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text(stringResource(R.string.account_list_low_storage))
             }
