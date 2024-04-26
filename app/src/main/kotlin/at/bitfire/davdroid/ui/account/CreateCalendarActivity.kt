@@ -58,6 +58,7 @@ import androidx.core.app.TaskStackBuilder
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
@@ -148,7 +149,7 @@ class CreateCalendarActivity: AppCompatActivity() {
                     }
                 }
 
-                val homeSets by accountModel.bindableCalendarHomesets.observeAsState()
+                val homeSets by accountModel.bindableCalendarHomesets.collectAsStateWithLifecycle(null)
 
                 Scaffold(
                     topBar = {
@@ -171,9 +172,10 @@ class CreateCalendarActivity: AppCompatActivity() {
                         )
                     }
                 ) { padding ->
-                    Column(Modifier
-                        .padding(padding)
-                        .verticalScroll(rememberScrollState())
+                    Column(
+                        Modifier
+                            .padding(padding)
+                            .verticalScroll(rememberScrollState())
                     ) {
                         if (isCreating)
                             LinearProgressIndicator(
@@ -237,9 +239,10 @@ class CreateCalendarActivity: AppCompatActivity() {
         homeSets: List<HomeSet>,
         onHomeSetSelected: (HomeSet) -> Unit = {}
     ) {
-        Column(Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val focusRequester = remember { FocusRequester() }

@@ -11,6 +11,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HomeSetDao {
@@ -26,6 +27,9 @@ interface HomeSetDao {
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND privBind")
     fun getBindableByService(serviceId: Long): List<HomeSet>
+
+    @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND privBind")
+    fun getBindableByServiceFlow(serviceId: Long): Flow<List<HomeSet>>
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND privBind")
     fun getLiveBindableByService(serviceId: Long): LiveData<List<HomeSet>>

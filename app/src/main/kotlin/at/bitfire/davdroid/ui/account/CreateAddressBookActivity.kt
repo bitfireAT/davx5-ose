@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.TaskStackBuilder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.M2Theme
@@ -112,7 +113,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
                     }
                 }
 
-                val homeSets by model.bindableAddressBookHomesets.observeAsState()
+                val homeSets by model.bindableAddressBookHomesets.collectAsStateWithLifecycle(null)
 
                 Scaffold(
                     topBar = {
@@ -186,9 +187,10 @@ class CreateAddressBookActivity: AppCompatActivity() {
         onHomeSetSelected: (HomeSet) -> Unit = {},
         onCreateCollection: () -> Unit = {}
     ) {
-        Column(Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
         ) {
             val focusRequester = remember { FocusRequester() }
             OutlinedTextField(

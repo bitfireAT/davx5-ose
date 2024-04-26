@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -64,30 +66,30 @@ class AccountActivity : AppCompatActivity() {
         }
 
         setContent {
-            val cardDavSvc by model.cardDavSvc.observeAsState()
-            val canCreateAddressBook by model.canCreateAddressBook.observeAsState(false)
-            val cardDavRefreshing by model.cardDavRefreshing.observeAsState(false)
-            val cardDavSyncPending by model.cardDavSyncPending.observeAsState(false)
-            val cardDavSyncing by model.cardDavSyncing.observeAsState(false)
+            val cardDavSvc by model.cardDavSvc.collectAsStateWithLifecycle(null)
+            val canCreateAddressBook by model.canCreateAddressBook.collectAsStateWithLifecycle(false)
+            val cardDavRefreshing by model.cardDavRefreshing.collectAsStateWithLifecycle(false)
+            val cardDavSyncPending by model.cardDavSyncPending.collectAsStateWithLifecycle(false)
+            val cardDavSyncing by model.cardDavSyncing.collectAsStateWithLifecycle(false)
             val cardDavProgress: AccountProgress = when {
                 cardDavRefreshing || cardDavSyncing -> AccountProgress.Active
                 cardDavSyncPending -> AccountProgress.Pending
                 else -> AccountProgress.Idle
             }
-            val addressBooks by model.addressBooksPager.observeAsState()
+            val addressBooks by model.addressBooksPager.collectAsState(null)
 
-            val calDavSvc by model.calDavSvc.observeAsState()
-            val canCreateCalendar by model.canCreateCalendar.observeAsState(false)
-            val calDavRefreshing by model.calDavRefreshing.observeAsState(false)
-            val calDavSyncPending by model.calDavSyncPending.observeAsState(false)
-            val calDavSyncing by model.calDavSyncing.observeAsState(false)
+            val calDavSvc by model.calDavSvc.collectAsStateWithLifecycle(null)
+            val canCreateCalendar by model.canCreateCalendar.collectAsStateWithLifecycle(false)
+            val calDavRefreshing by model.calDavRefreshing.collectAsStateWithLifecycle(false)
+            val calDavSyncPending by model.calDavSyncPending.collectAsStateWithLifecycle(false)
+            val calDavSyncing by model.calDavSyncing.collectAsStateWithLifecycle(false)
             val calDavProgress: AccountProgress = when {
                 calDavRefreshing || calDavSyncing -> AccountProgress.Active
                 calDavSyncPending -> AccountProgress.Pending
                 else -> AccountProgress.Idle
             }
-            val calendars by model.calendarsPager.observeAsState()
-            val subscriptions by model.webcalPager.observeAsState()
+            val calendars by model.calendarsPager.collectAsStateWithLifecycle(null)
+            val subscriptions by model.webcalPager.collectAsStateWithLifecycle(null)
 
             var installIcsx5 by remember { mutableStateOf(false) }
 

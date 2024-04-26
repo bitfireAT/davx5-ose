@@ -67,6 +67,7 @@ import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import at.bitfire.davdroid.util.DavUtils.parent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -173,8 +174,16 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          * @return boolean      true if worker with matching state was found
          */
         fun exists(context: Context, workerName: String, workState: WorkInfo.State = WorkInfo.State.RUNNING) =
-            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName).map {
-                workInfoList -> workInfoList.any { workInfo -> workInfo.state == workState }
+            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName).map { workInfoList ->
+                workInfoList.any { workInfo -> workInfo.state == workState }
+            }
+
+        /**
+         * Same as [exists], but returns a Flow.
+         */
+        fun existsFlow(context: Context, workerName: String, workState: WorkInfo.State = WorkInfo.State.RUNNING) =
+            WorkManager.getInstance(context).getWorkInfosForUniqueWorkFlow(workerName).map { workInfoList ->
+                workInfoList.any { workInfo -> workInfo.state == workState }
             }
 
     }

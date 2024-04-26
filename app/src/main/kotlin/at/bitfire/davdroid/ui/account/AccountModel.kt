@@ -20,16 +20,12 @@ import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.work.WorkInfo
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.property.caldav.NS_APPLE_ICAL
@@ -41,9 +37,9 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
-import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -60,6 +56,8 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.fortuna.ical4j.model.Calendar
 import java.io.StringWriter
@@ -68,7 +66,12 @@ import java.util.logging.Level
 
 class AccountModel @AssistedInject constructor(
     val context: Application,
-    val db: AppDatabase,
+    private val db: AppDatabase,
+    serviceRepository: DavServiceRepository,
+    getBindableHomesetsFromServiceUseCase: GetBindableHomeSetsFromServiceUseCase,
+    isServiceRefreshingUseCase: IsServiceRefreshingUseCase,
+    existsSyncWorkerUseCase: ExistsSyncWorkerUseCase,
+    getServiceCollectionPagerUseCase: GetServiceCollectionPagerUseCase,
     @Assisted val account: Account
 ): ViewModel(), OnAccountsUpdateListener {
 
@@ -100,79 +103,48 @@ class AccountModel @AssistedInject constructor(
         refreshSettingsSignal.postValue(Unit)
     }
 
-    val accountManager: AccountManager = AccountManager.get(context)
+    private val accountManager: AccountManager = AccountManager.get(context)
 
-    val cardDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CARDDAV)
-    val bindableAddressBookHomesets = cardDavSvc.switchMap { svc ->
-        if (svc != null)
-            db.homeSetDao().getLiveBindableByService(svc.id)
-        else
-            MutableLiveData(emptyList())
-    }
+    val cardDavSvc = serviceRepository.getCardDavServiceFlow(account.name)
+    val bindableAddressBookHomesets = getBindableHomesetsFromServiceUseCase(cardDavSvc)
     val canCreateAddressBook = bindableAddressBookHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
-    val cardDavRefreshing = cardDavSvc.switchMap { svc ->
-        if (svc == null)
-            return@switchMap null
-        RefreshCollectionsWorker.exists(context, RefreshCollectionsWorker.workerName(svc.id))
-    }
-    val cardDavSyncPending = BaseSyncWorker.exists(
-        context,
-        listOf(WorkInfo.State.ENQUEUED),
-        account,
-        listOf(context.getString(R.string.address_books_authority)),
-        whichTag = { account, authority ->
-            // we are only interested in pending OneTimeSyncWorkers because there's always a pending PeriodicSyncWorker
-            OneTimeSyncWorker.workerName(account, authority)
-        }
+    val cardDavRefreshing = isServiceRefreshingUseCase(cardDavSvc)
+    val cardDavSyncPending = existsSyncWorkerUseCase(
+        account = account,
+        authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority))),
+        requestedState = ExistsSyncWorkerUseCase.RequestedState.PENDING
     )
-    val cardDavSyncing = BaseSyncWorker.exists(
-        context,
-        listOf(WorkInfo.State.RUNNING),
-        account,
-        listOf(context.getString(R.string.address_books_authority))
+    val cardDavSyncing = existsSyncWorkerUseCase(
+        account = account,
+        authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority))),
+        requestedState = ExistsSyncWorkerUseCase.RequestedState.RUNNING
     )
-    val addressBooksPager = CollectionPager(db, cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
+    val addressBooksPager = getServiceCollectionPagerUseCase(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal.asFlow())
 
-    private val tasksProvider = TaskUtils.currentProviderFlow(context, viewModelScope)
-    val calDavSvc = db.serviceDao().getLiveByAccountAndType(account.name, Service.TYPE_CALDAV)
-    val bindableCalendarHomesets = calDavSvc.switchMap { svc ->
-        if (svc != null)
-            db.homeSetDao().getLiveBindableByService(svc.id)
-        else
-            MutableLiveData(emptyList())
-    }
+    val calDavSvc = serviceRepository.getCalDavServiceFlow(account.name)
+    val bindableCalendarHomesets = getBindableHomesetsFromServiceUseCase(calDavSvc)
     val canCreateCalendar = bindableCalendarHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
-    val calDavRefreshing = calDavSvc.switchMap { svc ->
-        if (svc == null)
-            return@switchMap null
-        RefreshCollectionsWorker.exists(context, RefreshCollectionsWorker.workerName(svc.id))
+    val calDavRefreshing = isServiceRefreshingUseCase(calDavSvc)
+    private val tasksProvider = TaskUtils.currentProviderFlow(context, viewModelScope)
+    private val calDavAuthorities = tasksProvider.map { tasks ->
+        listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority)
     }
-    val calDavSyncPending = tasksProvider.asLiveData().switchMap { tasks ->
-        BaseSyncWorker.exists(
-            context,
-            listOf(WorkInfo.State.ENQUEUED),
-            account,
-            listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority),
-            whichTag = { account, authority ->
-                // we are only interested in pending OneTimeSyncWorkers because there's always a pending PeriodicSyncWorker
-                OneTimeSyncWorker.workerName(account, authority)
-            }
-        )
-    }
-    val calDavSyncing = tasksProvider.asLiveData().switchMap { tasks ->
-        BaseSyncWorker.exists(
-            context,
-            listOf(WorkInfo.State.RUNNING),
-            account,
-            listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority)
-        )
-    }
-    val calendarsPager = CollectionPager(db, calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
-    val webcalPager = CollectionPager(db, calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
+    val calDavSyncPending = existsSyncWorkerUseCase(
+        account = account,
+        authoritiesFlow = calDavAuthorities,
+        requestedState = ExistsSyncWorkerUseCase.RequestedState.PENDING
+    )
+    val calDavSyncing = existsSyncWorkerUseCase(
+        account = account,
+        authoritiesFlow = calDavAuthorities,
+        requestedState = ExistsSyncWorkerUseCase.RequestedState.RUNNING
+    )
+    val calendarsPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal.asFlow())
+    val webcalPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal.asFlow())
 
     val renameAccountError = MutableLiveData<String>()
 
@@ -608,44 +580,6 @@ class AccountModel @AssistedInject constructor(
             Logger.log.warning("Application name not found for authority: $authority")
             authority
         }
-    }
-
-
-    class CollectionPager(
-        val db: AppDatabase,
-        service: LiveData<Service?>,
-        private val collectionType: String,
-        showOnlyPersonal: LiveData<AccountSettings.ShowOnlyPersonal>
-    ) : MediatorLiveData<Pager<Int, Collection>?>() {
-
-        var _serviceId: Long? = null
-        var _onlyPersonal: Boolean? = null
-
-        init {
-            addSource(service) {
-                _serviceId = it?.id
-                calculate()
-            }
-            addSource(showOnlyPersonal) {
-                _onlyPersonal = it.onlyPersonal
-                calculate()
-            }
-        }
-
-        fun calculate() {
-            val serviceId = _serviceId ?: return
-            val onlyPersonal = _onlyPersonal ?: return
-            value = Pager(
-                config = PagingConfig(PAGER_SIZE),
-                pagingSourceFactory = {
-                    if (onlyPersonal)
-                        db.collectionDao().pagePersonalByServiceAndType(serviceId, collectionType)
-                    else
-                        db.collectionDao().pageByServiceAndType(serviceId, collectionType)
-                }
-            )
-        }
-
     }
 
 }

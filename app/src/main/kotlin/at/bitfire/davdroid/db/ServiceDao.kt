@@ -10,12 +10,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ServiceDao {
 
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndType(accountName: String, type: String): Service?
+
+    @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
+    fun getByAccountAndTypeFlow(accountName: String, type: String): Flow<Service?>
 
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getLiveByAccountAndType(accountName: String, type: String): LiveData<Service?>
