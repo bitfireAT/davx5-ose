@@ -40,7 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -166,9 +165,10 @@ fun AccountsScreen(
             floatingActionButton = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     if (showSyncAll)
-                        SmallFloatingActionButton(
-                            onClick = onSyncAll,
-                            modifier = Modifier.padding(bottom = 24.dp)
+                        FloatingActionButton(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            onClick = onSyncAll
                         ) {
                             Icon(
                                 Icons.Default.Sync,
@@ -183,7 +183,10 @@ fun AccountsScreen(
                             onClick = onAddAccount
                         )
                     else if (showAddAccount == AccountsModel.FABStyle.Standard)
-                        FloatingActionButton(onClick = onAddAccount) {
+                        FloatingActionButton(
+                            onClick = onAddAccount,
+                            modifier = Modifier.padding(top = 24.dp)
+                        ) {
                             Icon(Icons.Filled.Add, stringResource(R.string.login_create_account))
                         }
                 }
@@ -344,7 +347,8 @@ fun AccountList(
             for ((account, progress) in accounts)
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                     ),
                     elevation = CardDefaults.cardElevation(1.dp),
                     modifier = Modifier
