@@ -18,21 +18,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Checkbox
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.icons.outlined.Task
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -120,7 +120,7 @@ fun CollectionList_Item(
             checked = collection.sync,
             onCheckedChange = onChangeSync,
             modifier = Modifier
-                .padding(horizontal = 4.dp)
+                .padding(horizontal = 8.dp)
                 .semantics {
                     contentDescription = context.getString(R.string.account_synchronize_this_collection)
                 }
@@ -131,12 +131,12 @@ fun CollectionList_Item(
         ) {
             Text(
                 collection.title(),
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.bodyLarge
             )
             collection.description?.let { description ->
                 Text(
                     description,
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
@@ -175,13 +175,7 @@ fun CollectionList_Item(
                 // force read-only (only show for collections that are modifiable on the server)
                 if (collection.privWriteContent)
                     DropdownMenuItem(
-                        onClick = {
-                            onChangeForceReadOnly(!collection.forceReadOnly)
-                            showOverflow = false
-                        }
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(stringResource(R.string.collection_force_read_only))
+                        leadingIcon = {
                             Checkbox(
                                 checked = collection.readOnly(),
                                 onCheckedChange = { forceReadOnly ->
@@ -189,25 +183,38 @@ fun CollectionList_Item(
                                     showOverflow = false
                                 }
                             )
+                        },
+                        text = {
+                            Text(stringResource(R.string.collection_force_read_only))
+                        },
+                        onClick = {
+                            onChangeForceReadOnly(!collection.forceReadOnly)
+                            showOverflow = false
                         }
-                    }
+                    )
 
                 // show properties
-                DropdownMenuItem(onClick = {
-                    showPropertiesDialog = true
-                    showOverflow = false
-                }) {
-                    Text(stringResource(R.string.collection_properties))
-                }
+                DropdownMenuItem(
+                    text = {
+                        Text(stringResource(R.string.collection_properties))
+                    },
+                    onClick = {
+                        showPropertiesDialog = true
+                        showOverflow = false
+                    }
+                )
 
                 // delete collection (only show when required privilege is available)
                 if (collection.privUnbind)
-                    DropdownMenuItem(onClick = {
-                        showDeleteCollectionDialog = true
-                        showOverflow = false
-                    }) {
-                        Text(stringResource(R.string.delete_collection))
-                    }
+                    DropdownMenuItem(
+                        text = {
+                            Text(stringResource(R.string.delete_collection))
+                        },
+                        onClick = {
+                            showDeleteCollectionDialog = true
+                            showOverflow = false
+                        }
+                    )
             }
 
             if (showDeleteCollectionDialog)
@@ -266,18 +273,18 @@ fun CollectionList_Subscription(
         ) {
             Text(
                 item.title(),
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.bodyLarge
             )
             item.description?.let { description ->
                 Text(
                     description,
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
 
         TextButton(onClick = onSubscribe) {
-            Text("Subscribe".uppercase())
+            Text("Subscribe")
         }
     }
 

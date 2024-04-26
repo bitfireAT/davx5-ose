@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -58,27 +58,27 @@ fun CollectionPropertiesContent(
 
     Column(Modifier.padding(16.dp)) {
         // URL
-        Text(stringResource(R.string.collection_properties_url), style = MaterialTheme.typography.h5)
+        Text(stringResource(R.string.collection_properties_url), style = MaterialTheme.typography.titleSmall)
         SelectionContainer {
             Text(
                 collection.url.toString(),
-                style = MaterialTheme.typography.body2.copy(fontFamily = FontFamily.Monospace),
+                style = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
         // Owner
         if (owner != null) {
-            Text(stringResource(R.string.collection_properties_owner), style = MaterialTheme.typography.h5)
+            Text(stringResource(R.string.collection_properties_owner), style = MaterialTheme.typography.titleSmall)
             Text(
                 text = owner,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
         // Last synced (for all applicable authorities)
-        Text(stringResource(R.string.collection_properties_sync_time), style = MaterialTheme.typography.h5)
+        Text(stringResource(R.string.collection_properties_sync_time), style = MaterialTheme.typography.titleSmall)
         if (lastSynced.isEmpty())
             Text(
                 stringResource(R.string.collection_properties_sync_time_never),
@@ -88,7 +88,7 @@ fun CollectionPropertiesContent(
             for ((app, timestamp) in lastSynced.entries) {
                 Text(
                     text = app,
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
 
                 val timeStr = DateUtils.getRelativeDateTimeString(
@@ -96,7 +96,7 @@ fun CollectionPropertiesContent(
                 ).toString()
                 Text(
                     text = timeStr,
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
@@ -106,12 +106,11 @@ fun CollectionPropertiesContent(
             collection.pushTopic?.let { topic ->
                 Text(
                     stringResource(R.string.collection_properties_push_support),
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.titleSmall
                 )
                 Text(
                     stringResource(R.string.collection_properties_push_support_web_push),
-                    style = MaterialTheme.typography.body2,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 
@@ -124,7 +123,7 @@ fun CollectionPropertiesContent(
                 } ?: stringResource(R.string.collection_properties_push_subscribed_never)
             Text(
                 text = subscribedStr,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }

@@ -22,6 +22,7 @@ import at.bitfire.davdroid.syncadapter.AccountRepository
 import at.bitfire.davdroid.syncadapter.BaseSyncWorker
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
+import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.awaitClose
@@ -41,13 +42,6 @@ class AccountsModel @Inject constructor(
 
     // UI state
 
-    /** Tri-state enum to represent active / pending / idle status */
-    enum class Progress {
-        Active,     // syncing or refreshing
-        Pending,    // sync pending
-        Idle
-    }
-
     enum class FABStyle {
         WithText,
         Standard,
@@ -56,7 +50,7 @@ class AccountsModel @Inject constructor(
 
     data class AccountInfo(
         val name: Account,
-        val progress: Progress
+        val progress: AccountProgress
     )
 
     private val accounts = accountRepository.getAllFlow()
@@ -88,15 +82,15 @@ class AccountsModel @Inject constructor(
                                     info.tags.contains(BaseSyncWorker.commonTag(account, authority))
                                 }
                             )
-                    } -> Progress.Active
+                    } -> AccountProgress.Active
 
                     workInfos.any { info ->
                         info.state == WorkInfo.State.ENQUEUED && authorities.any { authority ->
                             info.tags.contains(OneTimeSyncWorker.workerName(account, authority))
                         }
-                    } -> Progress.Pending
+                    } -> AccountProgress.Pending
 
-                    else -> Progress.Idle
+                    else -> AccountProgress.Idle
                 }
 
                 AccountInfo(account, progress)
