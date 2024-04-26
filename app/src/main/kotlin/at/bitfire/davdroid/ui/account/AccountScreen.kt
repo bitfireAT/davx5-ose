@@ -78,6 +78,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountOverview(
     account: Account,
+    invalidAccount: Boolean = false,
     showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
     onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit = {},
     hasCardDav: Boolean,
@@ -100,10 +101,14 @@ fun AccountOverview(
     onAccountSettings: () -> Unit = {},
     onRenameAccount: (newName: String) -> Unit = {},
     onDeleteAccount: () -> Unit = {},
-    onNavUp: () -> Unit = {}
+    onNavUp: () -> Unit = {},
+    onFinish: () -> Unit = {}
 ) {
     AppTheme {
         val context = LocalContext.current
+
+        if (invalidAccount)
+            onFinish()
 
         val pullRefreshState = rememberPullToRefreshState()
 

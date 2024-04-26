@@ -18,7 +18,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.syncadapter.AccountRepository
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.syncadapter.BaseSyncWorker
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils

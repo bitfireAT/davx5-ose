@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.syncadapter
+package at.bitfire.davdroid.repository
 
 import android.accounts.Account
 import android.accounts.AccountManager
@@ -22,10 +22,13 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.vcard4android.GroupMethod
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import javax.inject.Inject
 
@@ -41,8 +44,8 @@ class AccountRepository @Inject constructor(
     val settingsManager: SettingsManager
 ) {
 
-    val accountType = context.getString(R.string.account_type)
-    val accountManager = AccountManager.get(context)
+    private val accountType = context.getString(R.string.account_type)
+    private val accountManager = AccountManager.get(context)
 
     /**
      * Creates a new main account with discovered services and enables periodic syncs with
@@ -56,7 +59,7 @@ class AccountRepository @Inject constructor(
      * @return account if account creation was successful; null otherwise (for instance because an account with this name already exists)
      */
     fun create(accountName: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): Account? {
-        val account = Account(accountName, context.getString(R.string.account_type))
+        val account = account(accountName)
 
         // create Android account
         val userData = AccountSettings.initialUserData(credentials)
@@ -120,6 +123,46 @@ class AccountRepository @Inject constructor(
         return account
     }
 
+    suspend fun delete(accountName: String): Boolean {
+        val future = accountManager.removeAccount(account(accountName), null, null, null)
+        return try {
+            withContext(Dispatchers.Default) {
+                // blocks calling thread
+                future.result
+            }
+            true
+        } catch (e: Exception) {
+            Logger.log.log(Level.WARNING, "Couldn't remove account $accountName", e)
+            false
+        }
+    }
+
+    fun exists(accountName: String): Boolean =
+        if (accountName.isEmpty())
+            false
+        else
+            accountManager
+                .getAccountsByType(accountType)
+                .contains(Account(accountName, accountType))
+
+    fun getAll() = accountManager.getAccountsByType(accountType)
+
+    fun getAllFlow() = callbackFlow<Set<Account>> {
+        val listener = OnAccountsUpdateListener { accounts ->
+            trySend(accounts.filter { it.type == accountType }.toSet())
+        }
+        accountManager.addOnAccountsUpdatedListener(listener, null, true)
+
+        awaitClose {
+            accountManager.removeOnAccountsUpdatedListener(listener)
+        }
+    }
+
+
+    // helpers
+
+    private fun account(accountName: String) = Account(accountName, accountType)
+
     private fun insertService(accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
         // insert service
         val service = Service(0, accountName, type, info.principal)
@@ -138,29 +181,6 @@ class AccountRepository @Inject constructor(
         }
 
         return serviceId
-    }
-
-
-    fun exists(accountName: String): Boolean =
-        if (accountName.isEmpty())
-            false
-        else
-            accountManager
-                .getAccountsByType(accountType)
-                .contains(Account(accountName, accountType))
-
-
-    fun getAll() = accountManager.getAccountsByType(accountType)
-
-    fun getAllFlow() = callbackFlow<Set<Account>> {
-        val listener = OnAccountsUpdateListener { accounts ->
-            trySend(accounts.filter { it.type == accountType }.toSet())
-        }
-        accountManager.addOnAccountsUpdatedListener(listener, null, true)
-
-        awaitClose {
-            accountManager.removeOnAccountsUpdatedListener(listener)
-        }
     }
 
 }

@@ -7,13 +7,10 @@ package at.bitfire.davdroid.ui.account
 import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.accounts.OnAccountsUpdateListener
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ContentResolver
 import android.content.pm.PackageManager
-import android.os.Handler
-import android.os.Looper
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.MainThread
@@ -39,6 +36,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -67,25 +65,24 @@ import java.util.logging.Level
 class AccountModel @AssistedInject constructor(
     val context: Application,
     private val db: AppDatabase,
+    private val accountRepository: AccountRepository,
     serviceRepository: DavServiceRepository,
     getBindableHomesetsFromServiceUseCase: GetBindableHomeSetsFromServiceUseCase,
     isServiceRefreshingUseCase: IsServiceRefreshingUseCase,
     existsSyncWorkerUseCase: ExistsSyncWorkerUseCase,
     getServiceCollectionPagerUseCase: GetServiceCollectionPagerUseCase,
     @Assisted val account: Account
-): ViewModel(), OnAccountsUpdateListener {
+): ViewModel() {
 
     @AssistedFactory
     interface Factory {
         fun create(account: Account): AccountModel
     }
 
-    companion object {
-        const val PAGER_SIZE = 20
+    /** whether the account is invalid and the screen shall be closed */
+    val invalidAccount = accountRepository.getAllFlow().map { accounts ->
+        !accounts.contains(account)
     }
-
-    /** whether the account is invalid and the AccountActivity shall be closed */
-    val invalid = MutableLiveData<Boolean>()
 
     private val settings = AccountSettings(context, account)
     private val refreshSettingsSignal = MutableLiveData(Unit)
@@ -149,21 +146,6 @@ class AccountModel @AssistedInject constructor(
     val renameAccountError = MutableLiveData<String>()
 
 
-    init {
-        accountManager.addOnAccountsUpdatedListener(this, null, true)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        accountManager.removeOnAccountsUpdatedListener(this)
-    }
-
-    override fun onAccountsUpdated(accounts: Array<out Account>) {
-        if (!accounts.contains(account))
-            invalid.postValue(true)
-    }
-
-
     // actions
 
     /**
@@ -179,7 +161,6 @@ class AccountModel @AssistedInject constructor(
             AccountSettings(context, oldAccount)
         } catch (e: InvalidAccountException) {
             renameAccountError.postValue(context.getString(R.string.account_invalid))
-            invalid.postValue(true)
             return
         }
 
@@ -219,11 +200,8 @@ class AccountModel @AssistedInject constructor(
                             AccountsCleanupWorker.unlockAccountsCleanup()
                         }
                     } else
-                // release AccountsCleanupWorker mutex now
+                    // release AccountsCleanupWorker mutex now
                     AccountsCleanupWorker.unlockAccountsCleanup()
-
-                // close AccountActivity with old name
-                invalid.postValue(true)
             }, null)
         } catch (e: Exception) {
             Logger.log.log(Level.WARNING, "Couldn't rename account", e)
@@ -306,17 +284,9 @@ class AccountModel @AssistedInject constructor(
 
     /** Deletes the account from the system (won't touch collections on the server). */
     fun deleteAccount() {
-        val accountManager = AccountManager.get(context)
-        accountManager.removeAccount(account, null, { future ->
-            try {
-                if (future.result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT))
-                    Handler(Looper.getMainLooper()).post {
-                        invalid.postValue(true)
-                    }
-            } catch(e: Exception) {
-                Logger.log.log(Level.SEVERE, "Couldn't remove account", e)
-            }
-        }, null)
+        viewModelScope.launch {
+            accountRepository.delete(account.name)
+        }
     }
 
 

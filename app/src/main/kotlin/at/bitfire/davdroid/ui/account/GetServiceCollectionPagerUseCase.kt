@@ -32,7 +32,7 @@ class GetServiceCollectionPagerUseCase @Inject constructor(
                 return@combine null
 
             Pager(
-                config = PagingConfig(AccountModel.PAGER_SIZE),
+                config = PagingConfig(PAGER_SIZE),
                 pagingSourceFactory = {
                     if (onlyPersonal?.onlyPersonal == true)
                         db.collectionDao().pagePersonalByServiceAndType(service.id, collectionType)

@@ -7,7 +7,6 @@ package at.bitfire.davdroid.ui.account
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.repository.DavServiceRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -15,8 +14,7 @@ import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 class GetBindableHomeSetsFromServiceUseCase @Inject constructor(
-    private val serviceRepository: DavServiceRepository,
-    private val db: AppDatabase
+    db: AppDatabase
 ) {
 
     private val homeSetDao = db.homeSetDao()

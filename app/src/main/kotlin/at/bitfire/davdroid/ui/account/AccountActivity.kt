@@ -53,11 +53,6 @@ class AccountActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model.invalid.observe(this) { invalid ->
-            if (invalid)
-                // account does not exist anymore
-                finish()
-        }
         model.renameAccountError.observe(this) { error ->
             if (error != null) {
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show()
@@ -66,6 +61,7 @@ class AccountActivity : AppCompatActivity() {
         }
 
         setContent {
+            val invalidAccount by model.invalidAccount.collectAsStateWithLifecycle(false)
             val cardDavSvc by model.cardDavSvc.collectAsStateWithLifecycle(null)
             val canCreateAddressBook by model.canCreateAddressBook.collectAsStateWithLifecycle(false)
             val cardDavRefreshing by model.cardDavRefreshing.collectAsStateWithLifecycle(false)
@@ -95,6 +91,7 @@ class AccountActivity : AppCompatActivity() {
 
             AccountOverview(
                 account = model.account,
+                invalidAccount = invalidAccount,
                 showOnlyPersonal =
                     model.showOnlyPersonal.observeAsState(
                         AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = true)
@@ -145,7 +142,8 @@ class AccountActivity : AppCompatActivity() {
                 onDeleteAccount = {
                     model.deleteAccount()
                 },
-                onNavUp = ::onSupportNavigateUp
+                onNavUp = ::onSupportNavigateUp,
+                onFinish = ::finish
             )
         }
     }
