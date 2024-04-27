@@ -9,6 +9,9 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -40,6 +43,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -53,9 +57,8 @@ class AccountModel @AssistedInject constructor(
     private val db: AppDatabase,
     private val accountRepository: AccountRepository,
     serviceRepository: DavServiceRepository,
+    accountProgressUseCase: AccountProgressUseCase,
     getBindableHomesetsFromServiceUseCase: GetBindableHomeSetsFromServiceUseCase,
-    isServiceRefreshingUseCase: IsServiceRefreshingUseCase,
-    existsSyncWorkerUseCase: ExistsSyncWorkerUseCase,
     getServiceCollectionPagerUseCase: GetServiceCollectionPagerUseCase,
     @Assisted val account: Account
 ): ViewModel() {
@@ -91,16 +94,10 @@ class AccountModel @AssistedInject constructor(
     val canCreateAddressBook = bindableAddressBookHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
-    val cardDavRefreshing = isServiceRefreshingUseCase(cardDavSvc)
-    val cardDavSyncPending = existsSyncWorkerUseCase(
+    val cardDavProgress: Flow<AccountProgress> = accountProgressUseCase(
         account = account,
-        authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority))),
-        requestedState = ExistsSyncWorkerUseCase.RequestedState.PENDING
-    )
-    val cardDavSyncing = existsSyncWorkerUseCase(
-        account = account,
-        authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority))),
-        requestedState = ExistsSyncWorkerUseCase.RequestedState.RUNNING
+        serviceFlow = cardDavSvc,
+        authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority)))
     )
     val addressBooksPager = getServiceCollectionPagerUseCase(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal.asFlow())
 
@@ -109,25 +106,25 @@ class AccountModel @AssistedInject constructor(
     val canCreateCalendar = bindableCalendarHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
-    val calDavRefreshing = isServiceRefreshingUseCase(calDavSvc)
     private val tasksProvider = TaskUtils.currentProviderFlow(context, viewModelScope)
     private val calDavAuthorities = tasksProvider.map { tasks ->
         listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority)
     }
-    val calDavSyncPending = existsSyncWorkerUseCase(
+    val calDavProgress = accountProgressUseCase(
         account = account,
-        authoritiesFlow = calDavAuthorities,
-        requestedState = ExistsSyncWorkerUseCase.RequestedState.PENDING
-    )
-    val calDavSyncing = existsSyncWorkerUseCase(
-        account = account,
-        authoritiesFlow = calDavAuthorities,
-        requestedState = ExistsSyncWorkerUseCase.RequestedState.RUNNING
+        serviceFlow = calDavSvc,
+        authoritiesFlow = calDavAuthorities
     )
     val calendarsPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal.asFlow())
     val webcalPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal.asFlow())
 
-    val renameAccountError = MutableLiveData<String>()
+    var error by mutableStateOf<String?>(null)
+        private set
+
+
+    fun resetError() {
+        error = null
+    }
 
 
     // actions
@@ -147,7 +144,7 @@ class AccountModel @AssistedInject constructor(
                 OneTimeSyncWorker.enqueueAllAuthorities(context, newAccount, manual = true)
             } catch (e: Exception) {
                 Logger.log.log(Level.SEVERE, "Couldn't rename account", e)
-                renameAccountError.postValue(e.message)
+                error = e.localizedMessage
             }
         }
     }

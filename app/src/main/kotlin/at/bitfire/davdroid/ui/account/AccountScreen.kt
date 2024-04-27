@@ -32,7 +32,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
@@ -52,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -78,18 +78,18 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountOverview(
     account: Account,
+    error: String? = null,
+    resetError: () -> Unit = {},
     invalidAccount: Boolean = false,
     showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
     onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit = {},
     hasCardDav: Boolean,
     canCreateAddressBook: Boolean,
     cardDavProgress: AccountProgress,
-    cardDavRefreshing: Boolean,
     addressBooks: LazyPagingItems<Collection>?,
     hasCalDav: Boolean,
     canCreateCalendar: Boolean,
     calDavProgress: AccountProgress,
-    calDavRefreshing: Boolean,
     calendars: LazyPagingItems<Collection>?,
     subscriptions: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
@@ -106,11 +106,27 @@ fun AccountOverview(
 ) {
     AppTheme {
         val context = LocalContext.current
+        val scope = rememberCoroutineScope()
 
         if (invalidAccount)
             onFinish()
 
         val pullRefreshState = rememberPullToRefreshState()
+        LaunchedEffect(pullRefreshState.isRefreshing) {
+            if (pullRefreshState.isRefreshing) {
+                onSync()
+                pullRefreshState.endRefresh()
+            }
+        }
+
+        val snackbarHostState = remember { SnackbarHostState() }
+        LaunchedEffect(error) {
+            if (error != null)
+                scope.launch {
+                    snackbarHostState.showSnackbar(error)
+                    resetError()
+                }
+        }
 
         // tabs calculation
         var nextIdx = -1
@@ -124,15 +140,6 @@ fun AccountOverview(
                     (if (idxCalDav != null) 1 else 0) +
                     (if (idxWebcal != null) 1 else 0)
         val pagerState = rememberPagerState(pageCount = { nrPages })
-
-        // snackbar
-        val snackbarHostState = remember { SnackbarHostState() }
-        AccountOverview_SnackbarContent(
-            snackbarHostState = snackbarHostState,
-            currentPageIsCardDav = pagerState.currentPage == idxCardDav,
-            cardDavRefreshing = cardDavRefreshing,
-            calDavRefreshing = calDavRefreshing
-        )
 
         Scaffold(
             topBar = {
@@ -195,144 +202,142 @@ fun AccountOverview(
             },
             snackbarHost = {
                 SnackbarHost(snackbarHostState)
-            },
-            //modifier = Modifier.pullRefresh(pullRefreshState)
+            }
         ) { padding ->
-            Column {
-                if (nrPages > 0) {
-                    val scope = rememberCoroutineScope()
-
-                    TabRow(
-                        selectedTabIndex = pagerState.currentPage,
-                        modifier = Modifier.padding(padding)
-                    ) {
-                        if (idxCardDav != null)
-                            Tab(
-                                selected = pagerState.currentPage == idxCardDav,
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxCardDav)
+            Box(Modifier
+                .padding(padding)
+                .nestedScroll(pullRefreshState.nestedScrollConnection)
+            ) {
+                Column {
+                    if (nrPages > 0) {
+                        TabRow(selectedTabIndex = pagerState.currentPage) {
+                            if (idxCardDav != null)
+                                Tab(
+                                    selected = pagerState.currentPage == idxCardDav,
+                                    onClick = {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idxCardDav)
+                                        }
                                     }
-                                }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_carddav).uppercase(),
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-
-                        if (idxCalDav != null) {
-                            Tab(
-                                selected = pagerState.currentPage == idxCalDav,
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxCalDav)
-                                    }
-                                }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_caldav).uppercase(),
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
-
-                        if (idxWebcal != null) {
-                            Tab(
-                                selected = pagerState.currentPage == idxWebcal,
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.scrollToPage(idxWebcal)
-                                    }
-                                }
-                            ) {
-                                Text(
-                                    stringResource(R.string.account_webcal).uppercase(),
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
-                    }
-
-                    HorizontalPager(
-                        pagerState,
-                        verticalAlignment = Alignment.Top,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    ) { index ->
-                        Box {
-                            when (index) {
-                                idxCardDav ->
-                                    ServiceTab(
-                                        requiredPermissions = listOf(Manifest.permission.WRITE_CONTACTS),
-                                        progress = cardDavProgress,
-                                        collections = addressBooks,
-                                        onUpdateCollectionSync = onUpdateCollectionSync,
-                                        onChangeForceReadOnly = onChangeForceReadOnly
-                                    )
-
-                                idxCalDav -> {
-                                    val permissions = mutableListOf(Manifest.permission.WRITE_CALENDAR)
-                                    TaskUtils.currentProvider(context)?.let { tasksProvider ->
-                                        permissions += tasksProvider.permissions
-                                    }
-                                    ServiceTab(
-                                        requiredPermissions = permissions,
-                                        progress = calDavProgress,
-                                        collections = calendars,
-                                        onUpdateCollectionSync = onUpdateCollectionSync,
-                                        onChangeForceReadOnly = onChangeForceReadOnly
+                                ) {
+                                    Text(
+                                        stringResource(R.string.account_carddav).uppercase(),
+                                        modifier = Modifier.padding(8.dp)
                                     )
                                 }
 
-                                idxWebcal -> {
-                                    Column {
-                                        if (installIcsx5)
-                                            ActionCard(
-                                                icon = Icons.Default.Event,
-                                                actionText = stringResource(R.string.account_install_icsx5),
-                                                onAction = {
-                                                    val installIntent = Intent(
-                                                        Intent.ACTION_VIEW,
-                                                        Uri.parse("market://details?id=at.bitfire.icsdroid")
-                                                    )
-                                                    if (context.packageManager.resolveActivity(
-                                                            installIntent,
-                                                            0
-                                                        ) != null
-                                                    )
-                                                        context.startActivity(installIntent)
-                                                },
-                                                modifier = Modifier.padding(top = 8.dp)
-                                            ) {
-                                                Text(stringResource(R.string.account_no_webcal_handler_found))
-                                            }
-                                        else
-                                            Text(
-                                                stringResource(R.string.account_webcal_external_app),
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)
-                                            )
+                            if (idxCalDav != null) {
+                                Tab(
+                                    selected = pagerState.currentPage == idxCalDav,
+                                    onClick = {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idxCalDav)
+                                        }
+                                    }
+                                ) {
+                                    Text(
+                                        stringResource(R.string.account_caldav).uppercase(),
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                }
+                            }
 
+                            if (idxWebcal != null) {
+                                Tab(
+                                    selected = pagerState.currentPage == idxWebcal,
+                                    onClick = {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idxWebcal)
+                                        }
+                                    }
+                                ) {
+                                    Text(
+                                        stringResource(R.string.account_webcal).uppercase(),
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        HorizontalPager(
+                            pagerState,
+                            verticalAlignment = Alignment.Top,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        ) { index ->
+                            Box {
+                                when (index) {
+                                    idxCardDav ->
                                         ServiceTab(
-                                            requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
+                                            requiredPermissions = listOf(Manifest.permission.WRITE_CONTACTS),
+                                            progress = cardDavProgress,
+                                            collections = addressBooks,
+                                            onUpdateCollectionSync = onUpdateCollectionSync,
+                                            onChangeForceReadOnly = onChangeForceReadOnly
+                                        )
+
+                                    idxCalDav -> {
+                                        val permissions = mutableListOf(Manifest.permission.WRITE_CALENDAR)
+                                        TaskUtils.currentProvider(context)?.let { tasksProvider ->
+                                            permissions += tasksProvider.permissions
+                                        }
+                                        ServiceTab(
+                                            requiredPermissions = permissions,
                                             progress = calDavProgress,
-                                            collections = subscriptions,
-                                            onSubscribe = onSubscribe
+                                            collections = calendars,
+                                            onUpdateCollectionSync = onUpdateCollectionSync,
+                                            onChangeForceReadOnly = onChangeForceReadOnly
                                         )
                                     }
+
+                                    idxWebcal -> {
+                                        Column {
+                                            if (installIcsx5)
+                                                ActionCard(
+                                                    icon = Icons.Default.Event,
+                                                    actionText = stringResource(R.string.account_install_icsx5),
+                                                    onAction = {
+                                                        val installIntent = Intent(
+                                                            Intent.ACTION_VIEW,
+                                                            Uri.parse("market://details?id=at.bitfire.icsdroid")
+                                                        )
+                                                        if (context.packageManager.resolveActivity(
+                                                                installIntent,
+                                                                0
+                                                            ) != null
+                                                        )
+                                                            context.startActivity(installIntent)
+                                                    },
+                                                    modifier = Modifier.padding(top = 8.dp)
+                                                ) {
+                                                    Text(stringResource(R.string.account_no_webcal_handler_found))
+                                                }
+                                            else
+                                                Text(
+                                                    stringResource(R.string.account_webcal_external_app),
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)
+                                                )
+
+                                            ServiceTab(
+                                                requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
+                                                progress = calDavProgress,
+                                                collections = subscriptions,
+                                                onSubscribe = onSubscribe
+                                            )
+                                        }
+                                    }
                                 }
                             }
-
-                            if (pullRefreshState.isRefreshing)
-                                PullToRefreshContainer(
-                                    state = pullRefreshState,
-                                    modifier = Modifier.align(Alignment.TopCenter)
-                                )
                         }
                     }
                 }
+
+                PullToRefreshContainer(
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
             }
         }
     }
@@ -347,12 +352,10 @@ fun AccountOverview_CardDAV_CalDAV() {
         hasCardDav = true,
         canCreateAddressBook = false,
         cardDavProgress = AccountProgress.Active,
-        cardDavRefreshing = false,
         addressBooks = null,
         hasCalDav = true,
         canCreateCalendar = true,
         calDavProgress = AccountProgress.Pending,
-        calDavRefreshing = false,
         calendars = null,
         subscriptions = null
     )
@@ -511,30 +514,6 @@ fun AccountOverview_Actions(
             onConfirm = onDeleteAccount,
             onDismiss = { showDeleteAccountDialog = false }
         )
-}
-
-@Composable
-fun AccountOverview_SnackbarContent(
-    snackbarHostState: SnackbarHostState,
-    currentPageIsCardDav: Boolean,
-    cardDavRefreshing: Boolean,
-    calDavRefreshing: Boolean
-) {
-    val context = LocalContext.current
-
-    // show snackbar when refreshing collection list
-    val currentTabRefreshing =
-        if (currentPageIsCardDav)
-            cardDavRefreshing
-        else
-            calDavRefreshing
-    LaunchedEffect(currentTabRefreshing) {
-        if (currentTabRefreshing)
-            snackbarHostState.showSnackbar(
-                context.getString(R.string.account_refreshing_collections),
-                duration = SnackbarDuration.Indefinite
-            )
-    }
 }
 
 @Composable

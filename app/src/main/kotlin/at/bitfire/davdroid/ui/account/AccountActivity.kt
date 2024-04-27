@@ -9,7 +9,6 @@ import android.accounts.Account
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -53,37 +52,16 @@ class AccountActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model.renameAccountError.observe(this) { error ->
-            if (error != null) {
-                Toast.makeText(this, error, Toast.LENGTH_LONG).show()
-                model.renameAccountError.value = null
-            }
-        }
-
         setContent {
             val invalidAccount by model.invalidAccount.collectAsStateWithLifecycle(false)
             val cardDavSvc by model.cardDavSvc.collectAsStateWithLifecycle(null)
             val canCreateAddressBook by model.canCreateAddressBook.collectAsStateWithLifecycle(false)
-            val cardDavRefreshing by model.cardDavRefreshing.collectAsStateWithLifecycle(false)
-            val cardDavSyncPending by model.cardDavSyncPending.collectAsStateWithLifecycle(false)
-            val cardDavSyncing by model.cardDavSyncing.collectAsStateWithLifecycle(false)
-            val cardDavProgress: AccountProgress = when {
-                cardDavRefreshing || cardDavSyncing -> AccountProgress.Active
-                cardDavSyncPending -> AccountProgress.Pending
-                else -> AccountProgress.Idle
-            }
+            val cardDavProgress by model.cardDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle)
             val addressBooks by model.addressBooksPager.collectAsState(null)
 
             val calDavSvc by model.calDavSvc.collectAsStateWithLifecycle(null)
             val canCreateCalendar by model.canCreateCalendar.collectAsStateWithLifecycle(false)
-            val calDavRefreshing by model.calDavRefreshing.collectAsStateWithLifecycle(false)
-            val calDavSyncPending by model.calDavSyncPending.collectAsStateWithLifecycle(false)
-            val calDavSyncing by model.calDavSyncing.collectAsStateWithLifecycle(false)
-            val calDavProgress: AccountProgress = when {
-                calDavRefreshing || calDavSyncing -> AccountProgress.Active
-                calDavSyncPending -> AccountProgress.Pending
-                else -> AccountProgress.Idle
-            }
+            val calDavProgress by model.calDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle)
             val calendars by model.calendarsPager.collectAsStateWithLifecycle(null)
             val subscriptions by model.webcalPager.collectAsStateWithLifecycle(null)
 
@@ -91,6 +69,8 @@ class AccountActivity : AppCompatActivity() {
 
             AccountOverview(
                 account = model.account,
+                error = model.error,
+                resetError = model::resetError,
                 invalidAccount = invalidAccount,
                 showOnlyPersonal =
                     model.showOnlyPersonal.observeAsState(
@@ -102,12 +82,10 @@ class AccountActivity : AppCompatActivity() {
                 hasCardDav = cardDavSvc != null,
                 canCreateAddressBook = canCreateAddressBook,
                 cardDavProgress = cardDavProgress,
-                cardDavRefreshing = cardDavRefreshing,
                 addressBooks = addressBooks?.flow?.collectAsLazyPagingItems(),
                 hasCalDav = calDavSvc != null,
                 canCreateCalendar = canCreateCalendar,
                 calDavProgress = calDavProgress,
-                calDavRefreshing = calDavRefreshing,
                 calendars = calendars?.flow?.collectAsLazyPagingItems(),
                 subscriptions = subscriptions?.flow?.collectAsLazyPagingItems(),
                 onUpdateCollectionSync = { collectionId, sync ->
