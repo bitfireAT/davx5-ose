@@ -354,7 +354,7 @@ fun AccountList(
                     modifier = Modifier
                         .clickable { onClickAccount(account) }
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp)
+                        .padding(bottom = 16.dp)
                 ) {
                     Column {
                         val progressAlpha = progress.rememberAlpha()

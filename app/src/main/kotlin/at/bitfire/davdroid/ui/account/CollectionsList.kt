@@ -10,42 +10,37 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.EventNote
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.RemoveCircle
+import androidx.compose.material.icons.filled.Task
 import androidx.compose.material.icons.filled.Today
-import androidx.compose.material.icons.outlined.Task
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
@@ -58,13 +53,12 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 fun CollectionsList(
     collections: LazyPagingItems<Collection>,
     onChangeSync: (collectionId: Long, sync: Boolean) -> Unit,
-    onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     onSubscribe: (collection: Collection) -> Unit = {}
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
         modifier = modifier
     ) {
         items(
@@ -73,21 +67,14 @@ fun CollectionsList(
         ) { index ->
             collections[index]?.let { item ->
                 if (item.type == Collection.TYPE_WEBCAL)
-                    CollectionList_Subscription(
+                    CollectionsList_Item_Webcal(
                         item,
-                        onSubscribe = {
-                            onSubscribe(item)
-                        }
+                        onSubscribe = { onSubscribe(item) }
                     )
                 else
-                    CollectionList_Item(
+                    CollectionsList_Item_Standard(
                         item,
-                        onChangeSync = { sync ->
-                            onChangeSync(item.id, sync)
-                        },
-                        onChangeForceReadOnly = { forceReadOnly ->
-                            onChangeForceReadOnly(item.id, forceReadOnly)
-                        }
+                        onChangeSync = { onChangeSync(item.id, it) }
                     )
             }
         }
@@ -102,71 +89,64 @@ fun CollectionsList(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CollectionList_Item(
-    collection: Collection,
-    onChangeSync: (sync: Boolean) -> Unit = {},
-    onChangeForceReadOnly: (forceReadOnly: Boolean) -> Unit = {}
+    color: Color? = null,
+    title: String,
+    description: String? = null,
+    addressBook: Boolean = false,
+    calendar: Boolean = false,
+    todoList: Boolean = false,
+    journal: Boolean = false,
+    readOnly: Boolean = false,
+    syncControl: @Composable () -> Unit
 ) {
-    val context = LocalContext.current
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.height(IntrinsicSize.Min)
+    OutlinedCard(
+        elevation = CardDefaults.cardElevation(1.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        if (collection.type == Collection.TYPE_CALENDAR) {
-            val color = collection.color?.let { Color(it) } ?: Color.Transparent
-            Box(
-                Modifier
-                    .background(color)
-                    .fillMaxHeight()
-                    .width(4.dp)
-            )
-        }
+        Box {
+            Column {
+                if (color != null)
+                    Box(
+                        Modifier
+                            .background(color)
+                            .fillMaxWidth()
+                            .height(8.dp)
+                    )
 
-        Switch(
-            checked = collection.sync,
-            onCheckedChange = onChangeSync,
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .semantics {
-                    contentDescription = context.getString(R.string.account_synchronize_this_collection)
+                Column(Modifier.padding(8.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(title, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
+
+                            if (description != null)
+                                Text(description, style = MaterialTheme.typography.bodyMedium)
+                        }
+
+                        syncControl()
+                    }
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier
+                    ) {
+                        if (addressBook)
+                            CollectionList_Item_Chip(Icons.Default.Contacts, stringResource(R.string.account_contacts))
+
+                        if (calendar)
+                            CollectionList_Item_Chip(Icons.Default.Today, stringResource(R.string.account_calendar))
+                        if (todoList)
+                            CollectionList_Item_Chip(Icons.Default.Task, stringResource(R.string.account_task_list))
+                        if (journal)
+                            CollectionList_Item_Chip(Icons.AutoMirrored.Default.EventNote, stringResource(R.string.account_journal))
+
+                        if (readOnly)
+                            CollectionList_Item_Chip(Icons.Default.RemoveCircle, stringResource(R.string.account_read_only))
+                    }
                 }
-        )
-
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                collection.title(),
-                style = MaterialTheme.typography.bodyLarge
-            )
-            collection.description?.let { description ->
-                Text(
-                    description,
-                    style = MaterialTheme.typography.bodyMedium
-                )
             }
         }
+    }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 8.dp)
-        ) {
-            FlowRow(
-                verticalArrangement = Arrangement.Center,
-                horizontalArrangement = Arrangement.End,
-                maxItemsInEachRow = 2,
-                modifier = Modifier.fillMaxHeight()
-            ) {
-                if (collection.readOnly())
-                    Icon(Icons.Default.RemoveCircle, stringResource(R.string.account_read_only))
-                if (collection.supportsVEVENT == true)
-                    Icon(Icons.Default.Today, stringResource(R.string.account_calendar))
-                if (collection.supportsVTODO == true)
-                    Icon(Icons.Outlined.Task, stringResource(R.string.account_task_list))
-                if (collection.supportsVJOURNAL == true)
-                    Icon(Icons.AutoMirrored.Default.EventNote, stringResource(R.string.account_journal))
-            }
-
+    /*
             var showOverflow by remember { mutableStateOf(false) }
             var showPropertiesDialog by remember { mutableStateOf(false) }
             var showDeleteCollectionDialog by remember { mutableStateOf(false) }
@@ -233,14 +213,41 @@ fun CollectionList_Item(
                     collection = collection,
                     onDismiss = { showPropertiesDialog = false }
                 )
-        }
+    }*/
+}
+
+@Composable
+fun CollectionsList_Item_Standard(
+    collection: Collection,
+    onChangeSync: (sync: Boolean) -> Unit = {}
+) {
+    CollectionList_Item(
+        color = collection.color?.let { Color(it) },
+        title = collection.title(),
+        description = collection.description,
+        addressBook = collection.type == Collection.TYPE_ADDRESSBOOK,
+        calendar = collection.supportsVEVENT == true,
+        todoList = collection.supportsVTODO == true,
+        journal = collection.supportsVJOURNAL == true,
+        readOnly = collection.readOnly()
+    ) {
+        val context = LocalContext.current
+        Switch(
+            checked = collection.sync,
+            onCheckedChange = onChangeSync,
+            modifier = Modifier
+                .padding(start = 4.dp, top = 4.dp, bottom = 4.dp)
+                .semantics {
+                    contentDescription = context.getString(R.string.account_synchronize_this_collection)
+                }
+        )
     }
 }
 
 @Composable
 @Preview
-fun CollectionsList_Item_Sample() {
-    CollectionList_Item(
+fun CollectionsList_Item_Standard_Preview() {
+    CollectionsList_Item_Standard(
         Collection(
             type = Collection.TYPE_CALENDAR,
             url = "https://example.com/caldav/sample".toHttpUrl(),
@@ -256,50 +263,30 @@ fun CollectionsList_Item_Sample() {
 }
 
 @Composable
-fun CollectionList_Subscription(
-    item: Collection,
+fun CollectionsList_Item_Webcal(
+    collection: Collection,
     onSubscribe: () -> Unit = {}
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.height(IntrinsicSize.Min)
+    CollectionList_Item(
+        color = collection.color?.let { Color(it) },
+        title = collection.title(),
+        description = collection.description,
+        calendar = true,
+        readOnly = true
     ) {
-        val color = item.color?.let { Color(it) } ?: Color.Transparent
-        Box(
-            Modifier
-                .background(color)
-                .fillMaxHeight()
-                .width(4.dp)
-        )
-
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .weight(1f)
+        OutlinedButton(
+            onClick = onSubscribe,
+            modifier = Modifier.padding(start = 4.dp)
         ) {
-            Text(
-                item.title(),
-                style = MaterialTheme.typography.bodyLarge
-            )
-            item.description?.let { description ->
-                Text(
-                    description,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
-
-        TextButton(onClick = onSubscribe) {
             Text("Subscribe")
         }
     }
-
 }
 
 @Composable
 @Preview
-fun CollectionList_Subscription_Preview() {
-    CollectionList_Subscription(
+fun CollectionList_Item_Webcal_Preview() {
+    CollectionsList_Item_Webcal(
         Collection(
             type = Collection.TYPE_WEBCAL,
             url = "https://example.com/caldav/sample".toHttpUrl(),
@@ -307,5 +294,14 @@ fun CollectionList_Subscription_Preview() {
             description = "This Sample Subscription even has some lengthy description.",
             color = 0xffff0000.toInt()
         )
+    )
+}
+
+@Composable
+fun CollectionList_Item_Chip(icon: ImageVector, text: String) {
+    SuggestionChip(
+        icon = { Icon(icon, contentDescription = text) },
+        label = { Text(text) },
+        onClick = {}
     )
 }

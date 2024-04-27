@@ -14,7 +14,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -65,17 +64,16 @@ class AccountActivity : AppCompatActivity() {
             val calendars by model.calendarsPager.collectAsStateWithLifecycle(null)
             val subscriptions by model.webcalPager.collectAsStateWithLifecycle(null)
 
-            var installIcsx5 by remember { mutableStateOf(false) }
+            var noWebcalApp by remember { mutableStateOf(false) }
 
             AccountOverview(
                 account = model.account,
                 error = model.error,
                 resetError = model::resetError,
                 invalidAccount = invalidAccount,
-                showOnlyPersonal =
-                    model.showOnlyPersonal.observeAsState(
-                        AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = true)
-                    ).value,
+                showOnlyPersonal = model.showOnlyPersonal.collectAsStateWithLifecycle(
+                    initialValue = AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = false)
+                ).value,
                 onSetShowOnlyPersonal = {
                     model.setShowOnlyPersonal(it)
                 },
@@ -95,9 +93,10 @@ class AccountActivity : AppCompatActivity() {
                     model.setCollectionForceReadOnly(id, forceReadOnly)
                 },
                 onSubscribe = { item ->
-                    installIcsx5 = !subscribeWebcal(item)
+                    noWebcalApp = !subscribeWebcal(item)
                 },
-                installIcsx5 = installIcsx5,
+                noWebcalApp = noWebcalApp,
+                resetNoWebcalApp = { noWebcalApp = false },
                 onRefreshCollections = {
                     cardDavSvc?.let { svc ->
                         RefreshCollectionsWorker.enqueue(this@AccountActivity, svc.id)

@@ -15,7 +15,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
-import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
@@ -32,8 +31,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -95,7 +96,8 @@ fun AccountOverview(
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit = { _, _ -> },
     onSubscribe: (Collection) -> Unit = {},
-    installIcsx5: Boolean = false,
+    noWebcalApp: Boolean = false,
+    resetNoWebcalApp: () -> Unit = {},
     onRefreshCollections: () -> Unit = {},
     onSync: () -> Unit = {},
     onAccountSettings: () -> Unit = {},
@@ -204,9 +206,10 @@ fun AccountOverview(
                 SnackbarHost(snackbarHostState)
             }
         ) { padding ->
-            Box(Modifier
-                .padding(padding)
-                .nestedScroll(pullRefreshState.nestedScrollConnection)
+            Box(
+                Modifier
+                    .padding(padding)
+                    .nestedScroll(pullRefreshState.nestedScrollConnection)
             ) {
                 Column {
                     if (nrPages > 0) {
@@ -292,33 +295,31 @@ fun AccountOverview(
                                     }
 
                                     idxWebcal -> {
-                                        Column {
-                                            if (installIcsx5)
-                                                ActionCard(
-                                                    icon = Icons.Default.Event,
-                                                    actionText = stringResource(R.string.account_install_icsx5),
-                                                    onAction = {
-                                                        val installIntent = Intent(
-                                                            Intent.ACTION_VIEW,
-                                                            Uri.parse("market://details?id=at.bitfire.icsdroid")
-                                                        )
-                                                        if (context.packageManager.resolveActivity(
-                                                                installIntent,
-                                                                0
-                                                            ) != null
-                                                        )
-                                                            context.startActivity(installIntent)
-                                                    },
-                                                    modifier = Modifier.padding(top = 8.dp)
+                                        LaunchedEffect(noWebcalApp) {
+                                            if (noWebcalApp) {
+                                                if (snackbarHostState.showSnackbar(
+                                                        message = context.getString(R.string.account_no_webcal_handler_found),
+                                                        actionLabel = context.getString(R.string.account_install_icsx5),
+                                                        duration = SnackbarDuration.Long
+                                                    ) == SnackbarResult.ActionPerformed
                                                 ) {
-                                                    Text(stringResource(R.string.account_no_webcal_handler_found))
+                                                    val installIntent = Intent(
+                                                        Intent.ACTION_VIEW,
+                                                        Uri.parse("market://details?id=at.bitfire.icsdroid")
+                                                    )
+                                                    if (context.packageManager.resolveActivity(installIntent, 0) != null)
+                                                        context.startActivity(installIntent)
                                                 }
-                                            else
-                                                Text(
-                                                    stringResource(R.string.account_webcal_external_app),
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)
-                                                )
+                                                resetNoWebcalApp()
+                                            }
+                                        }
+
+                                        Column {
+                                            Text(
+                                                stringResource(R.string.account_webcal_external_app),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)
+                                            )
 
                                             ServiceTab(
                                                 requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
@@ -588,7 +589,6 @@ fun ServiceTab(
             CollectionsList(
                 collections,
                 onChangeSync = onUpdateCollectionSync,
-                onChangeForceReadOnly = onChangeForceReadOnly,
                 onSubscribe = onSubscribe,
                 modifier = Modifier.weight(1f)
             )

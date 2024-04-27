@@ -83,7 +83,7 @@ class AccountModel @AssistedInject constructor(
                 }
             }
         }
-    }
+    }.asFlow()
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         settings.setShowOnlyPersonal(showOnlyPersonal)
         refreshSettingsSignal.postValue(Unit)
@@ -99,7 +99,7 @@ class AccountModel @AssistedInject constructor(
         serviceFlow = cardDavSvc,
         authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority)))
     )
-    val addressBooksPager = getServiceCollectionPagerUseCase(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal.asFlow())
+    val addressBooksPager = getServiceCollectionPagerUseCase(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
 
     val calDavSvc = serviceRepository.getCalDavServiceFlow(account.name)
     val bindableCalendarHomesets = getBindableHomesetsFromServiceUseCase(calDavSvc)
@@ -115,8 +115,8 @@ class AccountModel @AssistedInject constructor(
         serviceFlow = calDavSvc,
         authoritiesFlow = calDavAuthorities
     )
-    val calendarsPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal.asFlow())
-    val webcalPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal.asFlow())
+    val calendarsPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
+    val webcalPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
 
     var error by mutableStateOf<String?>(null)
         private set
