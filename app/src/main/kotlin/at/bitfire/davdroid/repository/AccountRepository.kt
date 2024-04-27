@@ -4,12 +4,16 @@
 
 package at.bitfire.davdroid.repository
 
+import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.app.Application
 import android.content.ContentResolver
+import android.content.pm.PackageManager
 import android.provider.CalendarContract
+import android.provider.ContactsContract
+import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -17,12 +21,17 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.AccountUtils
+import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
+import at.bitfire.davdroid.syncadapter.BaseSyncWorker
+import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.vcard4android.GroupMethod
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +50,8 @@ import javax.inject.Inject
 class AccountRepository @Inject constructor(
     val context: Application,
     val db: AppDatabase,
-    val settingsManager: SettingsManager
+    val settingsManager: SettingsManager,
+    val serviceRepository: DavServiceRepository
 ) {
 
     private val accountType = context.getString(R.string.account_type)
@@ -124,8 +134,10 @@ class AccountRepository @Inject constructor(
     }
 
     suspend fun delete(accountName: String): Boolean {
+        // remove account
         val future = accountManager.removeAccount(account(accountName), null, null, null)
         return try {
+            // wait for operation to complete
             withContext(Dispatchers.Default) {
                 // blocks calling thread
                 future.result
@@ -145,7 +157,7 @@ class AccountRepository @Inject constructor(
                 .getAccountsByType(accountType)
                 .contains(Account(accountName, accountType))
 
-    fun getAll() = accountManager.getAccountsByType(accountType)
+    fun getAll(): Array<Account> = accountManager.getAccountsByType(accountType)
 
     fun getAllFlow() = callbackFlow<Set<Account>> {
         val listener = OnAccountsUpdateListener { accounts ->
@@ -155,6 +167,112 @@ class AccountRepository @Inject constructor(
 
         awaitClose {
             accountManager.removeOnAccountsUpdatedListener(listener)
+        }
+    }
+
+    /**
+     * Renames an account.
+     *
+     * **Not**: It is highly advised to re-sync the account after renaming in order to restore
+     * a consistent state.
+     *
+     * @param oldName current name of the account
+     * @param newName new name the account shall be re named to
+     *
+     * @throws InvalidAccountException if the account does not exist
+     * @throws IllegalArgumentException if the new account name already exists
+     * @throws Exception (or sub-classes) on other errors
+     */
+    suspend fun rename(oldName: String, newName: String) {
+        val oldAccount = account(oldName)
+        val newAccount = account(newName)
+
+        // check whether new account name already exists
+        if (accountManager.getAccountsByType(context.getString(R.string.account_type)).contains(newAccount))
+            throw IllegalArgumentException("Account with name \"$newName\" already exists")
+
+        // remember sync intervals
+        val oldSettings = AccountSettings(context, oldAccount)
+        val authorities = mutableListOf(
+            context.getString(R.string.address_books_authority),
+            CalendarContract.AUTHORITY
+        )
+        val tasksProvider = TaskUtils.currentProvider(context)
+        tasksProvider?.authority?.let { authorities.add(it) }
+        val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
+
+        // rename account
+        try {
+            /* https://github.com/bitfireAT/davx5/issues/135
+            Lock accounts cleanup so that the AccountsCleanupWorker doesn't run while we rename the account
+            because this can cause problems when:
+            1. The account is renamed.
+            2. The AccountsCleanupWorker is called BEFORE the services table is updated.
+               → AccountsCleanupWorker removes the "orphaned" services because they belong to the old account which doesn't exist anymore
+            3. Now the services would be renamed, but they're not here anymore. */
+            AccountsCleanupWorker.lockAccountsCleanup()
+
+            // rename account
+            val future = accountManager.renameAccount(oldAccount, newName, null, null)
+
+            // wait for operation to complete
+            withContext(Dispatchers.Default) {
+                // blocks calling thread
+                val newNameFromApi: Account = future.result
+                if (newNameFromApi.name != newName)
+                    throw IllegalStateException("renameAccount returned ${newNameFromApi.name} instead of $newName")
+            }
+
+            // account renamed, cancel maybe running synchronization of old account
+            BaseSyncWorker.cancelAllWork(context, oldAccount)
+
+            // disable periodic syncs for old account
+            syncIntervals.forEach { (authority, _) ->
+                PeriodicSyncWorker.disable(context, oldAccount, authority)
+            }
+
+            // update account name references in database
+            serviceRepository.onAccountRenamed(oldName, newName)
+
+            // update main account of address book accounts
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+                try {
+                    context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
+                        for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
+                            val addressBook = LocalAddressBook(context, addrBookAccount, provider)
+                            if (oldAccount == addressBook.mainAccount)
+                                addressBook.mainAccount = Account(newName, oldAccount.type)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Logger.log.log(Level.SEVERE, "Couldn't update address book accounts", e)
+                    // Couldn't update address book accounts, but this is not a fatal error (will be fixed at next sync)
+                }
+
+            // calendar provider doesn't allow changing account_name of Events
+            // (all events will have to be downloaded again at next sync)
+
+            // update account_name of local tasks
+            try {
+                LocalTaskList.onRenameAccount(context, oldAccount.name, newName)
+            } catch (e: Exception) {
+                Logger.log.log(Level.WARNING, "Couldn't propagate new account name to tasks provider", e)
+                // Couldn't update task lists, but this is not a fatal error (will be fixed at next sync)
+            }
+
+            // restore sync intervals
+            val newSettings = AccountSettings(context, newAccount)
+            for ((authority, interval) in syncIntervals) {
+                if (interval == null)
+                    ContentResolver.setIsSyncable(newAccount, authority, 0)
+                else {
+                    ContentResolver.setIsSyncable(newAccount, authority, 1)
+                    newSettings.setSyncInterval(authority, interval)
+                }
+            }
+        } finally {
+            // release AccountsCleanupWorker mutex at the end of this async coroutine
+            AccountsCleanupWorker.unlockAccountsCleanup()
         }
     }
 

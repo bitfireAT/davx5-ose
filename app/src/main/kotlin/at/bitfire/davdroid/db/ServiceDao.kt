@@ -49,7 +49,7 @@ interface ServiceDao {
     fun deleteExceptAccounts(accountNames: Array<String>)
 
     @Query("UPDATE service SET accountName=:newName WHERE accountName=:oldName")
-    fun renameAccount(oldName: String, newName: String)
+    suspend fun renameAccount(oldName: String, newName: String)
 
 }
 

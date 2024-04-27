@@ -4,18 +4,11 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.Manifest
 import android.accounts.Account
-import android.accounts.AccountManager
-import android.annotation.SuppressLint
 import android.app.Application
-import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import androidx.annotation.MainThread
-import androidx.annotation.WorkerThread
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,7 +22,6 @@ import at.bitfire.dav4jvm.property.caldav.NS_APPLE_ICAL
 import at.bitfire.dav4jvm.property.caldav.NS_CALDAV
 import at.bitfire.dav4jvm.property.carddav.NS_CARDDAV
 import at.bitfire.dav4jvm.property.webdav.NS_WEBDAV
-import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -38,14 +30,9 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
-import at.bitfire.davdroid.syncadapter.BaseSyncWorker
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
-import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.util.DateUtils
@@ -53,7 +40,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -99,8 +85,6 @@ class AccountModel @AssistedInject constructor(
         settings.setShowOnlyPersonal(showOnlyPersonal)
         refreshSettingsSignal.postValue(Unit)
     }
-
-    private val accountManager: AccountManager = AccountManager.get(context)
 
     val cardDavSvc = serviceRepository.getCardDavServiceFlow(account.name)
     val bindableAddressBookHomesets = getBindableHomesetsFromServiceUseCase(cardDavSvc)
@@ -149,138 +133,24 @@ class AccountModel @AssistedInject constructor(
     // actions
 
     /**
-     * Will try to rename the [account] to given name.
+     * Renames the [account] to given name.
      *
      * @param newName new account name
      */
     fun renameAccount(newName: String) {
-        val oldAccount = account
-
-        // remember sync intervals
-        val oldSettings = try {
-            AccountSettings(context, oldAccount)
-        } catch (e: InvalidAccountException) {
-            renameAccountError.postValue(context.getString(R.string.account_invalid))
-            return
-        }
-
-        val authorities = mutableListOf(
-            context.getString(R.string.address_books_authority),
-            CalendarContract.AUTHORITY
-        )
-        tasksProvider.value?.authority?.let { authorities.add(it) }
-        val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
-
-        val accountManager = AccountManager.get(context)
-        // check whether name is already taken
-        if (accountManager.getAccountsByType(context.getString(R.string.account_type)).map { it.name }.contains(newName)) {
-            Logger.log.log(Level.WARNING, "Account with name \"$newName\" already exists")
-            renameAccountError.postValue(context.getString(R.string.account_rename_exists_already))
-            return
-        }
-
-        try {
-            /* https://github.com/bitfireAT/davx5/issues/135
-            Lock accounts cleanup so that the AccountsCleanupWorker doesn't run while we rename the account
-            because this can cause problems when:
-            1. The account is renamed.
-            2. The AccountsCleanupWorker is called BEFORE the services table is updated.
-               → AccountsCleanupWorker removes the "orphaned" services because they belong to the old account which doesn't exist anymore
-            3. Now the services would be renamed, but they're not here anymore. */
-            AccountsCleanupWorker.lockAccountsCleanup()
-
-            // Renaming account
-            accountManager.renameAccount(oldAccount, newName, @MainThread {
-                if (it.result?.name == newName /* account has new name -> success */)
-                    viewModelScope.launch(Dispatchers.Default + NonCancellable) {
-                        try {
-                            onAccountRenamed(accountManager, oldAccount, newName, syncIntervals)
-                        } finally {
-                            // release AccountsCleanupWorker mutex at the end of this async coroutine
-                            AccountsCleanupWorker.unlockAccountsCleanup()
-                        }
-                    } else
-                    // release AccountsCleanupWorker mutex now
-                    AccountsCleanupWorker.unlockAccountsCleanup()
-            }, null)
-        } catch (e: Exception) {
-            Logger.log.log(Level.WARNING, "Couldn't rename account", e)
-            renameAccountError.postValue(context.getString(R.string.account_rename_couldnt_rename))
-        }
-    }
-
-    /**
-     * Called when an account has been renamed.
-     *
-     * @param oldAccount the old account
-     * @param newName the new account
-     * @param syncIntervals map with entries of type (authority -> sync interval) of the old account
-     */
-    @SuppressLint("Recycle")
-    @WorkerThread
-    fun onAccountRenamed(accountManager: AccountManager, oldAccount: Account, newName: String, syncIntervals: List<Pair<String, Long?>>) {
-        // account has now been renamed
-        Logger.log.info("Updating account name references")
-
-        // disable periodic workers of old account
-        syncIntervals.forEach { (authority, _) ->
-            PeriodicSyncWorker.disable(context, oldAccount, authority)
-        }
-
-        // cancel maybe running synchronization
-        BaseSyncWorker.cancelAllWork(context, oldAccount)
-        /*for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)))
-            SyncWorker.cancelSync(context, addrBookAccount)*/
-
-        // update account name references in database
-        try {
-            db.serviceDao().renameAccount(oldAccount.name, newName)
-        } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't update service DB", e)
-            renameAccountError.postValue(context.getString(R.string.account_rename_couldnt_rename))
-            return
-        }
-
-        // update main account of address book accounts
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+        viewModelScope.launch {
             try {
-                context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
-                    for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-                        val addressBook = LocalAddressBook(context, addrBookAccount, provider)
-                        if (oldAccount == addressBook.mainAccount)
-                            addressBook.mainAccount = Account(newName, oldAccount.type)
-                    }
-                }
+                accountRepository.rename(account.name, newName)
+
+                // synchronize again
+                val newAccount = Account(context.getString(R.string.account_type), newName)
+                OneTimeSyncWorker.enqueueAllAuthorities(context, newAccount, manual = true)
             } catch (e: Exception) {
-                Logger.log.log(Level.SEVERE, "Couldn't update address book accounts", e)
-            }
-
-        // calendar provider doesn't allow changing account_name of Events
-        // (all events will have to be downloaded again)
-
-        // update account_name of local tasks
-        try {
-            LocalTaskList.onRenameAccount(context, oldAccount.name, newName)
-        } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't propagate new account name to tasks provider", e)
-        }
-
-        // retain sync intervals
-        val newAccount = Account(newName, oldAccount.type)
-        val newSettings = AccountSettings(context, newAccount)
-        for ((authority, interval) in syncIntervals) {
-            if (interval == null)
-                ContentResolver.setIsSyncable(newAccount, authority, 0)
-            else {
-                ContentResolver.setIsSyncable(newAccount, authority, 1)
-                newSettings.setSyncInterval(authority, interval)
+                Logger.log.log(Level.SEVERE, "Couldn't rename account", e)
+                renameAccountError.postValue(e.message)
             }
         }
-
-        // synchronize again
-        OneTimeSyncWorker.enqueueAllAuthorities(context, newAccount, manual = true)
     }
-
 
     /** Deletes the account from the system (won't touch collections on the server). */
     fun deleteAccount() {
