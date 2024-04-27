@@ -26,7 +26,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -167,20 +167,30 @@ fun AccountOverview(
                 )
             },
             floatingActionButton = {
-                Column {
-                    FloatingActionButton(
+                Column(horizontalAlignment = Alignment.End) {
+                    ExtendedFloatingActionButton(
+                        text = {
+                            Text(stringResource(R.string.account_refresh_collections))
+                        },
+                        icon = {
+                            Icon(Icons.Outlined.RuleFolder, stringResource(R.string.account_refresh_collections))
+                        },
                         onClick = onRefreshCollections,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.padding(bottom = 16.dp)
-                    ) {
-                        // Material 3: add Tooltip
-                        Icon(Icons.Outlined.RuleFolder, stringResource(R.string.account_refresh_collections))
-                    }
+                    )
 
                     if (pagerState.currentPage == idxCardDav || pagerState.currentPage == idxCalDav)
-                        FloatingActionButton(onClick = onSync) {
-                            // Material 3: add Tooltip
-                            Icon(Icons.Default.Sync, stringResource(R.string.account_synchronize_now))
-                        }
+                        ExtendedFloatingActionButton(
+                            text = {
+                                Text(stringResource(R.string.account_synchronize_now))
+                            },
+                            icon = {
+                                Icon(Icons.Default.Sync, stringResource(R.string.account_synchronize_now))
+                            },
+                            onClick = onSync
+                        )
                 }
             },
             snackbarHost = {
@@ -539,12 +549,12 @@ fun DeleteAccountDialog(
         text = { Text(stringResource(R.string.account_delete_confirmation_text)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(stringResource(android.R.string.ok).uppercase())
+                Text(stringResource(android.R.string.ok))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(android.R.string.cancel).uppercase())
+                Text(stringResource(android.R.string.cancel))
             }
         }
     )

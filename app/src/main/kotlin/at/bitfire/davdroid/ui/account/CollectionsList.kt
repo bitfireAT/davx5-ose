@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -89,6 +90,11 @@ fun CollectionsList(
                         }
                     )
             }
+        }
+
+        // make sure we can scroll down far enough so that the last item is not covered by a FAB
+        item {
+            Spacer(Modifier.height(140.dp))
         }
     }
 }
