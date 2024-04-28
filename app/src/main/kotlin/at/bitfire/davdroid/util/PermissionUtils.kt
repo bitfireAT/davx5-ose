@@ -95,7 +95,7 @@ object PermissionUtils {
      */
     @Composable
     @ExperimentalPermissionsApi
-    fun canAccessWifiSsidLive(): State<Boolean> {
+    fun canAccessWifiSsidLiveState(): State<Boolean> {
         // before Android 8.1, SSIDs are always readable
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1)
             return remember { derivedStateOf { true } }

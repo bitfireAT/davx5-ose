@@ -293,7 +293,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     onDismiss = { showWifiOnlySsidsDialog = false }
                 )
 
-            val canAccessWifiSsid by PermissionUtils.canAccessWifiSsidLive()
+            val canAccessWifiSsid by PermissionUtils.canAccessWifiSsidLiveState()
             if (onlyOnSsids != null && !canAccessWifiSsid)
                 ActionCard(
                     icon = Icons.Default.SyncProblem,
