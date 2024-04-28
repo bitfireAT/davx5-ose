@@ -57,7 +57,7 @@ class PermissionsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            M2Theme {
+            AppTheme {
                 Scaffold(
                     topBar = {
                         BasicTopAppBar(
