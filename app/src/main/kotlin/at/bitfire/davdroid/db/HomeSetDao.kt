@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.db
 
+import android.accounts.Account
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
@@ -15,6 +16,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HomeSetDao {
+
+    @Query("SELECT * FROM homeset WHERE serviceId=(SELECT id FROM service WHERE accountName=:accountName AND type=:serviceType) ORDER BY displayName, url COLLATE NOCASE")
+    fun getByAccountAndServiceTypeFlow(accountName: String, serviceType: String): Flow<List<HomeSet>>
 
     @Query("SELECT * FROM homeset WHERE id=:homesetId")
     fun getById(homesetId: Long): HomeSet

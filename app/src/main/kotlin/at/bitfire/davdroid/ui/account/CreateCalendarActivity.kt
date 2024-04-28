@@ -10,7 +10,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -66,21 +65,16 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.M2Theme
 import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.widget.CalendarColorPickerDialog
-import at.bitfire.davdroid.ui.widget.ExceptionInfoDialog
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.apache.commons.lang3.StringUtils
 import java.text.Collator
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
-import java.util.UUID
 import javax.inject.Inject
 
-@AndroidEntryPoint
-class CreateCalendarActivity: AppCompatActivity() {
+class CreateCalendarActivity: CreateCollectionActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
@@ -363,7 +357,7 @@ class CreateCalendarActivity: AppCompatActivity() {
             HomeSetSelection(
                 homeSet = homeSet,
                 homeSets = homeSets,
-                onHomeSetSelected = onHomeSetSelected
+                onSelectHomeSet = onHomeSetSelected
             )
         }
     }

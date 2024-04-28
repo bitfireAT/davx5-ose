@@ -13,6 +13,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CollectionDao {
@@ -23,6 +24,10 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE id=:id")
     fun get(id: Long): Collection?
 
+    @Query("SELECT * FROM collection WHERE id=:id")
+    fun getFlow(id: Long): Flow<Collection?>
+
+    @Deprecated("Use Flow instead")
     @Query("SELECT * FROM collection WHERE id=:id")
     fun getLive(id: Long): LiveData<Collection>
 
@@ -71,6 +76,9 @@ interface CollectionDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(collection: Collection): Long
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAsync(collection: Collection): Long
 
     @Update
     fun update(collection: Collection)

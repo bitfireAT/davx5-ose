@@ -61,7 +61,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.LazyPagingItems
@@ -89,6 +88,8 @@ import kotlinx.coroutines.launch
 fun AccountScreen(
     account: Account,
     onAccountSettings: () -> Unit,
+    onCreateAddressBook: () -> Unit,
+    onCreateCalendar: () -> Unit,
     onCollectionDetails: (Collection) -> Unit,
     onNavUp: () -> Unit,
     onFinish: () -> Unit
@@ -146,6 +147,8 @@ fun AccountScreen(
         onRefreshCollections = model::refreshCollections,
         onSync = model::sync,
         onAccountSettings = onAccountSettings,
+        onCreateAddressBook = onCreateAddressBook,
+        onCreateCalendar = onCreateCalendar,
         onRenameAccount = model::renameAccount,
         onDeleteAccount = model::deleteAccount,
         onNavUp = onNavUp,
@@ -180,6 +183,8 @@ fun AccountScreen(
     onRefreshCollections: () -> Unit = {},
     onSync: () -> Unit = {},
     onAccountSettings: () -> Unit = {},
+    onCreateAddressBook: () -> Unit = {},
+    onCreateCalendar: () -> Unit = {},
     onRenameAccount: (newName: String) -> Unit = {},
     onDeleteAccount: () -> Unit = {},
     onNavUp: () -> Unit = {},
@@ -241,7 +246,9 @@ fun AccountScreen(
                         AccountScreen_Actions(
                             accountName = accountName,
                             canCreateAddressBook = canCreateAddressBook,
+                            onCreateAddressBook = onCreateAddressBook,
                             canCreateCalendar = canCreateCalendar,
+                            onCreateCalendar = onCreateCalendar,
                             showOnlyPersonal = showOnlyPersonal,
                             onSetShowOnlyPersonal = onSetShowOnlyPersonal,
                             currentPage = pagerState.currentPage,
@@ -425,7 +432,9 @@ fun AccountScreen(
 fun AccountScreen_Actions(
     accountName: String,
     canCreateAddressBook: Boolean,
+    onCreateAddressBook: () -> Unit,
     canCreateCalendar: Boolean,
+    onCreateCalendar: () -> Unit,
     showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
     onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit,
     currentPage: Int,
@@ -468,10 +477,7 @@ fun AccountScreen_Actions(
                     Text(stringResource(R.string.create_addressbook))
                 },
                 onClick = {
-                    val intent = Intent(context, CreateAddressBookActivity::class.java)
-                    intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, accountName)
-                    context.startActivity(intent)
-
+                    onCreateAddressBook()
                     overflowOpen = false
                 }
             )
@@ -489,10 +495,7 @@ fun AccountScreen_Actions(
                     Text(stringResource(R.string.create_calendar))
                 },
                 onClick = {
-                    val intent = Intent(context, CreateCalendarActivity::class.java)
-                    intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, accountName)
-                    context.startActivity(intent)
-
+                    onCreateCalendar()
                     overflowOpen = false
                 }
             )

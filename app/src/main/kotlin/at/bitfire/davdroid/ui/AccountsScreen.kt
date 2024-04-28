@@ -370,7 +370,6 @@ fun AccountList(
                             AccountProgress.Idle ->
                                 LinearProgressIndicator(
                                     progress = 1f,
-                                    //color = MaterialTheme.colors.onSecondary,
                                     modifier = Modifier
                                         .alpha(progressAlpha)
                                         .fillMaxWidth()
@@ -383,15 +382,15 @@ fun AccountList(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .align(Alignment.CenterHorizontally)
-                                    .size(48.dp)
+                                    .size(32.dp)
                             )
 
                             Text(
                                 text = account.name,
-                                style = MaterialTheme.typography.headlineMedium,
+                                style = MaterialTheme.typography.bodyLarge,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
-                                    .padding(top = 8.dp)
+                                    .padding(top = 4.dp)
                                     .fillMaxWidth()
                             )
                         }

@@ -33,6 +33,10 @@ interface ServiceDao {
     @Query("SELECT id FROM service WHERE accountName=:accountName AND type=:type")
     fun getIdByAccountAndType(accountName: String, type: String): LiveData<Long>
 
+    data class ServiceTypeAndId(
+        @ColumnInfo(name = "type") val type: String,
+        @ColumnInfo(name = "id") val id: Long
+    )
     @Query("SELECT type, id FROM service WHERE accountName=:accountName")
     fun getServiceTypeAndIdsByAccount(accountName: String): LiveData<List<ServiceTypeAndId>>
 
@@ -52,8 +56,3 @@ interface ServiceDao {
     suspend fun renameAccount(oldName: String, newName: String)
 
 }
-
-data class ServiceTypeAndId(
-    @ColumnInfo(name = "type") val type: String,
-    @ColumnInfo(name = "id") val id: Long
-)

@@ -43,7 +43,6 @@ import java.util.logging.Level
 
 class AccountScreenModel @AssistedInject constructor(
     val context: Application,
-    private val db: AppDatabase,
     private val accountRepository: AccountRepository,
     private val collectionRepository: DavCollectionRepository,
     serviceRepository: DavServiceRepository,
