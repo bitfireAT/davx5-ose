@@ -80,9 +80,13 @@ class PermissionsActivity: AppCompatActivity() {
     class Model(app: Application): AndroidViewModel(app) {
 
         var needKeepPermissions by mutableStateOf(false)
+            private set
         var openTasksAvailable by mutableStateOf(false)
+            private set
         var tasksOrgAvailable by mutableStateOf(false)
+            private set
         var jtxAvailable by mutableStateOf(false)
+            private set
 
         init {
             viewModelScope.launch {
