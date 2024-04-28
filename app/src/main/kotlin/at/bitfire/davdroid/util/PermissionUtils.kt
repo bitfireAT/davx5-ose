@@ -90,7 +90,10 @@ object PermissionUtils {
      * 1. location permissions ([WIFI_SSID_PERMISSIONS]) granted (Android 8.1+)
      * 2. location enabled (Android 9+)
      *
-     * @return *true* if SSID can be obtained; *false* if the SSID will be <unknown> or something like that
+     * @return An state that will be:
+     * - `true` if SSID can be obtained
+     * - `false` if the SSID will be _unknown_ or something like that
+     * - `null` never, the state will always have a value
      */
     @Composable
     @ExperimentalPermissionsApi
