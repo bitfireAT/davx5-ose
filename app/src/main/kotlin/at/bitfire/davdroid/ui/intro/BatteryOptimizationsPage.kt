@@ -65,11 +65,11 @@ class BatteryOptimizationsPage: IntroPage {
 
     @Composable
     override fun ComposePage() {
-        IntroPage_FromModel()
+        BatteryOptimizationsPageContent()
     }
 
     @Composable
-    private fun IntroPage_FromModel(
+    private fun BatteryOptimizationsPageContent(
         model: Model = viewModel()
     ) {
         val ignoreBatteryOptimizationsResultLauncher = rememberLauncherForActivityResult(IgnoreBatteryOptimizationsContract) {
