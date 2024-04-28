@@ -26,8 +26,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.AndroidViewModel
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.ui.M2Theme
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.M2Colors
+import at.bitfire.davdroid.ui.M2Theme
 import com.github.appintro.AppIntro2
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -112,9 +113,12 @@ class IntroActivity : AppIntro2() {
             ComposeView(requireActivity()).apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
+                    // TODO: Remove M2 theme once all pages have been migrated to M3
                     M2Theme {
-                        Box(Modifier.padding(bottom = dimensionResource(com.github.appintro.R.dimen.appintro2_bottombar_height))) {
-                            page.ComposePage()
+                        AppTheme {
+                            Box(Modifier.padding(bottom = dimensionResource(com.github.appintro.R.dimen.appintro2_bottombar_height))) {
+                                page.ComposePage()
+                            }
                         }
                     }
                 }
