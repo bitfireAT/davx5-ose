@@ -143,7 +143,7 @@ fun PermissionsContent(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PermissionsCard_Preview() {
-    M2Theme {
+    AppTheme {
         PermissionsCardContent(
             keepPermissions = true,
             onKeepPermissionsRequested = {},
