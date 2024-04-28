@@ -115,12 +115,9 @@ object PermissionUtils {
                     context,
                     IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION),
                     null
-                ).collect { intent ->
-                    intent.action?.let { act ->
-                        if (act.matches("android.location.PROVIDERS_CHANGED".toRegex())) {
-                            locationAvailable.tryEmit(canAccessWifiSsid(context))
-                        }
-                    }
+                ).collect {
+                    // Update the state when location services change
+                    locationAvailable.tryEmit(canAccessWifiSsid(context))
                 }
             }
         }
