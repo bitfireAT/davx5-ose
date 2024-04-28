@@ -113,7 +113,7 @@ object PermissionUtils {
 
                 broadcastReceiverFlow(
                     context,
-                    IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION),
+                    IntentFilter(LocationManager.MODE_CHANGED_ACTION),
                     null
                 ).collect {
                     // Update the state when location services change
