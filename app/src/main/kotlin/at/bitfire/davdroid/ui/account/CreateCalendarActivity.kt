@@ -89,8 +89,8 @@ class CreateCalendarActivity: AppCompatActivity() {
     val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
 
     @Inject
-    lateinit var modelFactory: AccountModel.Factory
-    val accountModel by viewModels<AccountModel> {
+    lateinit var modelFactory: AccountScreenModel.Factory
+    val accountModel by viewModels<AccountScreenModel> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -115,7 +115,7 @@ class CreateCalendarActivity: AppCompatActivity() {
                 var supportVTODO by remember { mutableStateOf(false) }
                 var supportVJOURNAL by remember { mutableStateOf(false) }
 
-                var isCreating by remember { mutableStateOf(false) }
+                /*var isCreating by remember { mutableStateOf(false) }
                 accountModel.createCollectionResult.observeAsState().value?.let { result ->
                     if (result.isEmpty)
                         finish()
@@ -147,7 +147,7 @@ class CreateCalendarActivity: AppCompatActivity() {
                             )
                         }
                     }
-                }
+                }*/
 
                 val homeSets by accountModel.bindableCalendarHomesets.collectAsStateWithLifecycle(null)
 
@@ -161,13 +161,13 @@ class CreateCalendarActivity: AppCompatActivity() {
                                 }
                             },
                             actions = {
-                                val isCreateEnabled = !isCreating && displayName.isNotBlank() && homeSet != null
+                                /*val isCreateEnabled = !isCreating && displayName.isNotBlank() && homeSet != null
                                 IconButton(
                                     enabled = isCreateEnabled,
                                     onClick = { onCreateCollection() }
                                 ) {
                                     Text(stringResource(R.string.create_collection_create).uppercase())
-                                }
+                                }*/
                             }
                         )
                     }
@@ -177,7 +177,7 @@ class CreateCalendarActivity: AppCompatActivity() {
                             .padding(padding)
                             .verticalScroll(rememberScrollState())
                     ) {
-                        if (isCreating)
+                        //if (isCreating)
                             LinearProgressIndicator(
                                 color = MaterialTheme.colors.secondary,
                                 modifier = Modifier

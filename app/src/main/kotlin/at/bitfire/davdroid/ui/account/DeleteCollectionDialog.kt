@@ -35,11 +35,11 @@ import at.bitfire.davdroid.ui.widget.ExceptionInfoDialog
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import kotlin.jvm.optionals.getOrNull
 
-@Composable
+/*@Composable
 fun DeleteCollectionDialog(
     collection: Collection,
     onDismiss: () -> Unit,
-    model: AccountModel = viewModel()
+    model: AccountScreenModel = viewModel()
 ) {
     var started by remember { mutableStateOf(false) }
     val result by model.deleteCollectionResult.observeAsState()
@@ -202,4 +202,4 @@ fun DeleteCollectionDialog_Preview_Error() {
         started = true,
         result = Exception("Test error")
     )
-}
+}*/

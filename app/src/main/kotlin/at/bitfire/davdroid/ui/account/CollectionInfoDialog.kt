@@ -28,11 +28,11 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
-@Composable
+/*@Composable
 fun CollectionPropertiesDialog(
     collection: Collection,
     onDismiss: () -> Unit,
-    model: AccountModel = viewModel()
+    model: AccountScreenModel = viewModel()
 ) {
     val owner by model.getCollectionOwner(collection).observeAsState()
     val lastSynced by model.getCollectionLastSynced(collection).observeAsState(emptyMap())
@@ -147,3 +147,52 @@ fun CollectionPropertiesDialog_Sample() {
         lastSynced = emptyMap()
     )
 }
+
+    fun getCollectionOwner(collection: Collection): LiveData<String?> {
+        val id = collection.ownerId ?: return MutableLiveData(null)
+        return db.principalDao().getLive(id).map { principal ->
+            if (principal == null)
+                return@map null
+            principal.displayName ?: principal.url.toString()
+        }
+    }
+
+    fun getCollectionLastSynced(collection: Collection): LiveData<Map<String, Long>> {
+        return db.syncStatsDao().getLiveByCollectionId(collection.id).map { syncStatsList ->
+            val syncStatsMap = syncStatsList.associateBy { it.authority }
+            val interestingAuthorities = listOfNotNull(
+                ContactsContract.AUTHORITY,
+                CalendarContract.AUTHORITY,
+                TaskUtils.currentProvider(context)?.authority
+            )
+            val result = mutableMapOf<String, Long>()
+            for (authority in interestingAuthorities) {
+                val lastSync = syncStatsMap[authority]?.lastSync
+                if (lastSync != null)
+                    result[getAppNameFromAuthority(authority)] = lastSync
+            }
+            result
+        }
+    }
+
+    /**
+     * Tries to find the application name for given authority. Returns the authority if not
+     * found.
+     *
+     * @param authority authority to find the application name for (ie "at.techbee.jtx")
+     * @return the application name of authority (ie "jtx Board")
+     */
+    private fun getAppNameFromAuthority(authority: String): String {
+        val packageManager = context.packageManager
+        val packageName = packageManager.resolveContentProvider(authority, 0)?.packageName ?: authority
+        return try {
+            val appInfo = packageManager.getPackageInfo(packageName, 0).applicationInfo
+            packageManager.getApplicationLabel(appInfo).toString()
+        } catch (e: PackageManager.NameNotFoundException) {
+            Logger.log.warning("Application name not found for authority: $authority")
+            authority
+        }
+    }
+
+
+*/

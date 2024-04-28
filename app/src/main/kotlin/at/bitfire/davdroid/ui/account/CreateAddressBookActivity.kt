@@ -65,8 +65,8 @@ class CreateAddressBookActivity: AppCompatActivity() {
     val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
 
     @Inject
-    lateinit var modelFactory: AccountModel.Factory
-    val model by viewModels<AccountModel> {
+    lateinit var modelFactory: AccountScreenModel.Factory
+    val model by viewModels<AccountScreenModel> {
         object: ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -85,7 +85,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
                 var homeSet by remember { mutableStateOf<HomeSet?>(null) }
 
                 var isCreating by remember { mutableStateOf(false) }
-                model.createCollectionResult.observeAsState().value?.let { result ->
+                /*model.createCollectionResult.observeAsState().value?.let { result ->
                     if (result.isEmpty)
                         finish()
                     else
@@ -111,7 +111,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
                             )
                         }
                     }
-                }
+                }*/
 
                 val homeSets by model.bindableAddressBookHomesets.collectAsStateWithLifecycle(null)
 
@@ -128,7 +128,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
                                 val isCreateEnabled = !isCreating && displayName.isNotEmpty() && homeSet != null
                                 IconButton(
                                     enabled = isCreateEnabled,
-                                    onClick = { onCreateCollection() }
+                                    onClick = { /*onCreateCollection()*/ }
                                 ) {
                                     Text(stringResource(R.string.create_collection_create).uppercase())
                                 }
@@ -159,7 +159,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
                                 homeSet = homeSet,
                                 onHomeSetSelected = { homeSet = it },
                                 onCreateCollection = {
-                                    onCreateCollection()
+                                    //onCreateCollection()
                                 }
                             )
                         }

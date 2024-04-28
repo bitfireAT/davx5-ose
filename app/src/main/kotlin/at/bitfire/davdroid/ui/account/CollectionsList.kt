@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +48,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.log.Logger
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
@@ -54,7 +56,8 @@ fun CollectionsList(
     collections: LazyPagingItems<Collection>,
     onChangeSync: (collectionId: Long, sync: Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    onSubscribe: (collection: Collection) -> Unit = {}
+    onSubscribe: (collection: Collection) -> Unit = {},
+    onCollectionDetails: ((collection: Collection) -> Unit)? = null
 ) {
     LazyColumn(
         contentPadding = PaddingValues(8.dp),
@@ -74,7 +77,8 @@ fun CollectionsList(
                 else
                     CollectionsList_Item_Standard(
                         item,
-                        onChangeSync = { onChangeSync(item.id, it) }
+                        onChangeSync = { onChangeSync(item.id, it) },
+                        onCollectionDetails = onCollectionDetails
                     )
             }
         }
@@ -97,11 +101,16 @@ fun CollectionList_Item(
     todoList: Boolean = false,
     journal: Boolean = false,
     readOnly: Boolean = false,
+    onShowDetails: (() -> Unit)? = null,
     syncControl: @Composable () -> Unit
 ) {
+    var modifier = Modifier.fillMaxWidth()
+    if (onShowDetails != null)
+        modifier = modifier.clickable(onClick = onShowDetails)
+
     OutlinedCard(
         elevation = CardDefaults.cardElevation(1.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         Box {
             Column {
@@ -219,7 +228,8 @@ fun CollectionList_Item(
 @Composable
 fun CollectionsList_Item_Standard(
     collection: Collection,
-    onChangeSync: (sync: Boolean) -> Unit = {}
+    onChangeSync: (sync: Boolean) -> Unit = {},
+    onCollectionDetails: ((collection: Collection) -> Unit)? = null
 ) {
     CollectionList_Item(
         color = collection.color?.let { Color(it) },
@@ -229,7 +239,11 @@ fun CollectionsList_Item_Standard(
         calendar = collection.supportsVEVENT == true,
         todoList = collection.supportsVTODO == true,
         journal = collection.supportsVJOURNAL == true,
-        readOnly = collection.readOnly()
+        readOnly = collection.readOnly(),
+        onShowDetails = {
+            if (onCollectionDetails != null)
+                onCollectionDetails(collection)
+        }
     ) {
         val context = LocalContext.current
         Switch(

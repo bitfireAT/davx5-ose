@@ -12,10 +12,19 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.db.Collection
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.components.ActivityComponent
 
 @AndroidEntryPoint
 class AccountActivity : AppCompatActivity() {
+
+    @EntryPoint
+    @InstallIn(ActivityComponent::class)
+    interface AccountScreenEntryPoint {
+        fun accountModelAssistedFactory(): AccountScreenModel.Factory
+    }
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
@@ -28,78 +37,23 @@ class AccountActivity : AppCompatActivity() {
             ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
 
         setContent {
-            AccountScreen(account = account)
-        }
-
-        /*setContent {
-            val invalidAccount by model.invalidAccount.collectAsStateWithLifecycle(false)
-            val cardDavSvc by model.cardDavSvc.collectAsStateWithLifecycle(null)
-            val canCreateAddressBook by model.canCreateAddressBook.collectAsStateWithLifecycle(false)
-            val cardDavProgress by model.cardDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle)
-            val addressBooks by model.addressBooksPager.collectAsState(null)
-
-            val calDavSvc by model.calDavSvc.collectAsStateWithLifecycle(null)
-            val canCreateCalendar by model.canCreateCalendar.collectAsStateWithLifecycle(false)
-            val calDavProgress by model.calDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle)
-            val calendars by model.calendarsPager.collectAsStateWithLifecycle(null)
-            val subscriptions by model.webcalPager.collectAsStateWithLifecycle(null)
-
-            var noWebcalApp by remember { mutableStateOf(false) }
-
             AccountScreen(
-                accountName = model.account.name,
-                error = model.error,
-                resetError = model::resetError,
-                invalidAccount = invalidAccount,
-                showOnlyPersonal = model.showOnlyPersonal.collectAsStateWithLifecycle(
-                    initialValue = AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = false)
-                ).value,
-                onSetShowOnlyPersonal = {
-                    model.setShowOnlyPersonal(it)
-                },
-                hasCardDav = cardDavSvc != null,
-                canCreateAddressBook = canCreateAddressBook,
-                cardDavProgress = cardDavProgress,
-                addressBooks = addressBooks?.flow?.collectAsLazyPagingItems(),
-                hasCalDav = calDavSvc != null,
-                canCreateCalendar = canCreateCalendar,
-                calDavProgress = calDavProgress,
-                calendars = calendars?.flow?.collectAsLazyPagingItems(),
-                subscriptions = subscriptions?.flow?.collectAsLazyPagingItems(),
-                onUpdateCollectionSync = { collectionId, sync ->
-                    model.setCollectionSync(collectionId, sync)
-                },
-                onSubscribe = { item ->
-                    noWebcalApp = !subscribeWebcal(item)
-                },
-                noWebcalApp = noWebcalApp,
-                resetNoWebcalApp = { noWebcalApp = false },
-                onRefreshCollections = {
-                    cardDavSvc?.let { svc ->
-                        RefreshCollectionsWorker.enqueue(this@AccountActivity, svc.id)
-                    }
-                    calDavSvc?.let { svc ->
-                        RefreshCollectionsWorker.enqueue(this@AccountActivity, svc.id)
-                    }
-                },
-                onSync = {
-                    OneTimeSyncWorker.enqueueAllAuthorities(this, model.account, manual = true)
-                },
+                account = account,
                 onAccountSettings = {
                     val intent = Intent(this, AccountSettingsActivity::class.java)
-                    intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, model.account)
+                    intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
                     startActivity(intent, null)
                 },
-                onRenameAccount = { newName ->
-                    model.renameAccount(newName)
-                },
-                onDeleteAccount = {
-                    model.deleteAccount()
+                onCollectionDetails = { collection ->
+                    val intent = Intent(this, CollectionActivity::class.java)
+                    /*intent.putExtra(CollectionDetailsActivity.EXTRA_ACCOUNT, account)
+                    intent.putExtra(CollectionDetailsActivity.EXTRA_COLLECTION, collection)*/
+                    startActivity(intent, null)
                 },
                 onNavUp = ::onSupportNavigateUp,
                 onFinish = ::finish
             )
-        }*/
+        }
     }
 
     /**

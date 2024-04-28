@@ -35,6 +35,9 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
     fun getByServiceAndType(serviceId: Long, type: String): List<Collection>
 
+    @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_WEBCAL}'")
+    suspend fun anyWebcal(serviceId: Long): Boolean
+
     /**
      * Returns collections which
      *   - support VEVENT and/or VTODO (= supported calendar collections), or

@@ -45,6 +45,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,20 +56,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.PermissionsActivity
-import at.bitfire.davdroid.ui.account.AccountModel
+import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
+import at.bitfire.davdroid.ui.account.AccountScreenModel
 import at.bitfire.davdroid.ui.account.CollectionsList
 import at.bitfire.davdroid.ui.account.CreateAddressBookActivity
 import at.bitfire.davdroid.ui.account.CreateCalendarActivity
@@ -77,29 +82,75 @@ import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.util.TaskUtils
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.launch
-
-@EntryPoint
-@InstallIn(ActivityComponent::class)
-interface AccountScreenEntryPoint {
-    fun accountModelAssistedFactory(): AccountModel.Factory
-}
 
 @Composable
 fun AccountScreen(
-    account: Account
+    account: Account,
+    onAccountSettings: () -> Unit,
+    onCollectionDetails: (Collection) -> Unit,
+    onNavUp: () -> Unit,
+    onFinish: () -> Unit
 ) {
     val context = LocalContext.current as Activity
-    val entryPoint = EntryPointAccessors.fromActivity(context, AccountScreenEntryPoint::class.java)
-    val model = viewModel<AccountModel>(
-        factory = AccountModel.factoryFromAccount(entryPoint.accountModelAssistedFactory(), account)
+    val entryPoint = EntryPointAccessors.fromActivity(context, AccountActivity.AccountScreenEntryPoint::class.java)
+    val model = viewModel<AccountScreenModel>(
+        factory = AccountScreenModel.factoryFromAccount(entryPoint.accountModelAssistedFactory(), account)
     )
 
-    Logger.log.info("Account ${model.account}")
+    val addressBooksPager by model.addressBooksPager.collectAsState(null)
+    val calendarsPager by model.calendarsPager.collectAsState(null)
+    val subscriptionsPager by model.webcalPager.collectAsState(null)
+
+    AccountScreen(
+        accountName = account.name,
+        error = model.error,
+        onResetError = model::resetError,
+        invalidAccount = model.invalidAccount.collectAsStateWithLifecycle(false).value,
+        showOnlyPersonal = model.showOnlyPersonal.collectAsStateWithLifecycle(
+            initialValue = AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = false)
+        ).value,
+        onSetShowOnlyPersonal = model::setShowOnlyPersonal,
+        hasCardDav = model.hasCardDav.collectAsStateWithLifecycle(false).value,
+        canCreateAddressBook = model.canCreateAddressBook.collectAsStateWithLifecycle(false).value,
+        cardDavProgress = model.cardDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle).value,
+        addressBooks = addressBooksPager?.flow?.collectAsLazyPagingItems(),
+        hasCalDav = model.hasCalDav.collectAsStateWithLifecycle(initialValue = false).value,
+        canCreateCalendar = model.canCreateCalendar.collectAsStateWithLifecycle(false).value,
+        calDavProgress = model.calDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle).value,
+        calendars = calendarsPager?.flow?.collectAsLazyPagingItems(),
+        hasWebcal = model.hasWebcal.collectAsStateWithLifecycle(false).value,
+        subscriptions =  subscriptionsPager?.flow?.collectAsLazyPagingItems(),
+        onUpdateCollectionSync = model::setCollectionSync,
+        onSubscribe = { collection ->
+            // subscribe
+            var uri = Uri.parse(collection.source.toString())
+            when {
+                uri.scheme.equals("http", true) -> uri = uri.buildUpon().scheme("webcal").build()
+                uri.scheme.equals("https", true) -> uri = uri.buildUpon().scheme("webcals").build()
+            }
+
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            collection.displayName?.let { intent.putExtra("title", it) }
+            collection.color?.let { intent.putExtra("color", it) }
+
+            if (context.packageManager.resolveActivity(intent, 0) != null)
+                context.startActivity(intent)
+            else
+                model.noWebcalApp()
+        },
+        onCollectionDetails = onCollectionDetails,
+        showNoWebcalApp = model.showNoWebcalApp,
+        resetShowNoWebcalApp = model::resetShowNoWebcalApp,
+        onRefreshCollections = model::refreshCollections,
+        onSync = model::sync,
+        onAccountSettings = onAccountSettings,
+        onRenameAccount = model::renameAccount,
+        onDeleteAccount = model::deleteAccount,
+        onNavUp = onNavUp,
+        onFinish = onFinish
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -107,7 +158,7 @@ fun AccountScreen(
 fun AccountScreen(
     accountName: String,
     error: String? = null,
-    resetError: () -> Unit = {},
+    onResetError: () -> Unit = {},
     invalidAccount: Boolean = false,
     showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
     onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit = {},
@@ -119,11 +170,13 @@ fun AccountScreen(
     canCreateCalendar: Boolean,
     calDavProgress: AccountProgress,
     calendars: LazyPagingItems<Collection>?,
+    hasWebcal: Boolean,
     subscriptions: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onSubscribe: (Collection) -> Unit = {},
-    noWebcalApp: Boolean = false,
-    resetNoWebcalApp: () -> Unit = {},
+    onCollectionDetails: (Collection) -> Unit = {},
+    showNoWebcalApp: Boolean = false,
+    resetShowNoWebcalApp: () -> Unit = {},
     onRefreshCollections: () -> Unit = {},
     onSync: () -> Unit = {},
     onAccountSettings: () -> Unit = {},
@@ -152,7 +205,7 @@ fun AccountScreen(
             if (error != null)
                 scope.launch {
                     snackbarHostState.showSnackbar(error)
-                    resetError()
+                    onResetError()
                 }
         }
 
@@ -162,7 +215,7 @@ fun AccountScreen(
         @Suppress("KotlinConstantConditions")
         val idxCardDav: Int? = if (hasCardDav) ++nextIdx else null
         val idxCalDav: Int? = if (hasCalDav) ++nextIdx else null
-        val idxWebcal: Int? = if ((subscriptions?.itemCount ?: 0) > 0) ++nextIdx else null
+        val idxWebcal: Int? = if (hasWebcal) ++nextIdx else null
         val nrPages =
             (if (idxCardDav != null) 1 else 0) +
                     (if (idxCalDav != null) 1 else 0) +
@@ -250,7 +303,7 @@ fun AccountScreen(
                                     }
                                 ) {
                                     Text(
-                                        stringResource(R.string.account_carddav).uppercase(),
+                                        stringResource(R.string.account_carddav),
                                         modifier = Modifier.padding(8.dp)
                                     )
                                 }
@@ -265,7 +318,7 @@ fun AccountScreen(
                                     }
                                 ) {
                                     Text(
-                                        stringResource(R.string.account_caldav).uppercase(),
+                                        stringResource(R.string.account_caldav),
                                         modifier = Modifier.padding(8.dp)
                                     )
                                 }
@@ -281,7 +334,7 @@ fun AccountScreen(
                                     }
                                 ) {
                                     Text(
-                                        stringResource(R.string.account_webcal).uppercase(),
+                                        stringResource(R.string.account_webcal),
                                         modifier = Modifier.padding(8.dp)
                                     )
                                 }
@@ -295,63 +348,63 @@ fun AccountScreen(
                                 .fillMaxWidth()
                                 .weight(1f)
                         ) { index ->
-                            Box {
-                                when (index) {
-                                    idxCardDav ->
-                                        AccountScreen_ServiceTab(
-                                            requiredPermissions = listOf(Manifest.permission.WRITE_CONTACTS),
-                                            progress = cardDavProgress,
-                                            collections = addressBooks,
-                                            onUpdateCollectionSync = onUpdateCollectionSync
-                                        )
+                            when (index) {
+                                idxCardDav ->
+                                    AccountScreen_ServiceTab(
+                                        requiredPermissions = listOf(Manifest.permission.WRITE_CONTACTS),
+                                        progress = cardDavProgress,
+                                        collections = addressBooks,
+                                        onUpdateCollectionSync = onUpdateCollectionSync,
+                                        onCollectionDetails = onCollectionDetails
+                                    )
 
-                                    idxCalDav -> {
-                                        val permissions = mutableListOf(Manifest.permission.WRITE_CALENDAR)
-                                        TaskUtils.currentProvider(context)?.let { tasksProvider ->
-                                            permissions += tasksProvider.permissions
+                                idxCalDav -> {
+                                    val permissions = mutableListOf(Manifest.permission.WRITE_CALENDAR)
+                                    TaskUtils.currentProvider(context)?.let { tasksProvider ->
+                                        permissions += tasksProvider.permissions
+                                    }
+                                    AccountScreen_ServiceTab(
+                                        requiredPermissions = permissions,
+                                        progress = calDavProgress,
+                                        collections = calendars,
+                                        onUpdateCollectionSync = onUpdateCollectionSync,
+                                        onCollectionDetails = onCollectionDetails
+                                    )
+                                }
+
+                                idxWebcal -> {
+                                    LaunchedEffect(showNoWebcalApp) {
+                                        if (showNoWebcalApp) {
+                                            if (snackbarHostState.showSnackbar(
+                                                    message = context.getString(R.string.account_no_webcal_handler_found),
+                                                    actionLabel = context.getString(R.string.account_install_icsx5),
+                                                    duration = SnackbarDuration.Long
+                                                ) == SnackbarResult.ActionPerformed
+                                            ) {
+                                                val installIntent = Intent(
+                                                    Intent.ACTION_VIEW,
+                                                    Uri.parse("market://details?id=at.bitfire.icsdroid")
+                                                )
+                                                if (context.packageManager.resolveActivity(installIntent, 0) != null)
+                                                    context.startActivity(installIntent)
+                                            }
+                                            resetShowNoWebcalApp()
                                         }
-                                        AccountScreen_ServiceTab(
-                                            requiredPermissions = permissions,
-                                            progress = calDavProgress,
-                                            collections = calendars,
-                                            onUpdateCollectionSync = onUpdateCollectionSync
-                                        )
                                     }
 
-                                    idxWebcal -> {
-                                        LaunchedEffect(noWebcalApp) {
-                                            if (noWebcalApp) {
-                                                if (snackbarHostState.showSnackbar(
-                                                        message = context.getString(R.string.account_no_webcal_handler_found),
-                                                        actionLabel = context.getString(R.string.account_install_icsx5),
-                                                        duration = SnackbarDuration.Long
-                                                    ) == SnackbarResult.ActionPerformed
-                                                ) {
-                                                    val installIntent = Intent(
-                                                        Intent.ACTION_VIEW,
-                                                        Uri.parse("market://details?id=at.bitfire.icsdroid")
-                                                    )
-                                                    if (context.packageManager.resolveActivity(installIntent, 0) != null)
-                                                        context.startActivity(installIntent)
-                                                }
-                                                resetNoWebcalApp()
-                                            }
-                                        }
+                                    Column {
+                                        Text(
+                                            stringResource(R.string.account_webcal_external_app),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)
+                                        )
 
-                                        Column {
-                                            Text(
-                                                stringResource(R.string.account_webcal_external_app),
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)
-                                            )
-
-                                            AccountScreen_ServiceTab(
-                                                requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
-                                                progress = calDavProgress,
-                                                collections = subscriptions,
-                                                onSubscribe = onSubscribe
-                                            )
-                                        }
+                                        AccountScreen_ServiceTab(
+                                            requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
+                                            progress = calDavProgress,
+                                            collections = subscriptions,
+                                            onSubscribe = onSubscribe
+                                        )
                                     }
                                 }
                             }
@@ -366,24 +419,6 @@ fun AccountScreen(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun AccountScreen_Preview_CardDAV_CalDAV() {
-    AccountScreen(
-        accountName = "test@example.com",
-        showOnlyPersonal = AccountSettings.ShowOnlyPersonal(false, true),
-        hasCardDav = true,
-        canCreateAddressBook = false,
-        cardDavProgress = AccountProgress.Active,
-        addressBooks = null,
-        hasCalDav = true,
-        canCreateCalendar = true,
-        calDavProgress = AccountProgress.Pending,
-        calendars = null,
-        subscriptions = null
-    )
 }
 
 @Composable
@@ -541,29 +576,6 @@ fun AccountScreen_Actions(
         )
 }
 
-@Composable
-@Preview
-fun DeleteAccountDialog(
-    onConfirm: () -> Unit = {},
-    onDismiss: () -> Unit = {}
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.account_delete_confirmation_title)) },
-        text = { Text(stringResource(R.string.account_delete_confirmation_text)) },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(stringResource(android.R.string.ok))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(android.R.string.cancel))
-            }
-        }
-    )
-}
-
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AccountScreen_ServiceTab(
@@ -572,6 +584,7 @@ fun AccountScreen_ServiceTab(
     collections: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onSubscribe: (Collection) -> Unit = {},
+    onCollectionDetails: ((Collection) -> Unit)? = null
 ) {
     val context = LocalContext.current
 
@@ -594,26 +607,72 @@ fun AccountScreen_ServiceTab(
         }
 
         // permissions warning
-        val permissionsState = rememberMultiplePermissionsState(requiredPermissions)
-        if (!permissionsState.allPermissionsGranted)
-            ActionCard(
-                icon = Icons.Default.SyncProblem,
-                actionText = stringResource(R.string.account_manage_permissions),
-                onAction = {
-                    val intent = Intent(context, PermissionsActivity::class.java)
-                    context.startActivity(intent)
+        if (!LocalInspectionMode.current) {
+            val permissionsState = rememberMultiplePermissionsState(requiredPermissions)
+            if (!permissionsState.allPermissionsGranted)
+                ActionCard(
+                    icon = Icons.Default.SyncProblem,
+                    actionText = stringResource(R.string.account_manage_permissions),
+                    onAction = {
+                        val intent = Intent(context, PermissionsActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(stringResource(R.string.account_missing_permissions))
                 }
-            ) {
-                Text(stringResource(R.string.account_missing_permissions))
-            }
 
-        // collection list
-        if (collections != null)
-            CollectionsList(
-                collections,
-                onChangeSync = onUpdateCollectionSync,
-                onSubscribe = onSubscribe,
-                modifier = Modifier.weight(1f)
-            )
+            // collection list
+            if (collections != null)
+                CollectionsList(
+                    collections,
+                    onChangeSync = onUpdateCollectionSync,
+                    onSubscribe = onSubscribe,
+                    onCollectionDetails = onCollectionDetails,
+                    modifier = Modifier.weight(1f)
+                )
+        }
     }
+}
+
+@Preview
+@Composable
+fun AccountScreen_Preview() {
+    AccountScreen(
+        accountName = "test@example.com",
+        showOnlyPersonal = AccountSettings.ShowOnlyPersonal(false, true),
+        hasCardDav = true,
+        canCreateAddressBook = false,
+        cardDavProgress = AccountProgress.Active,
+        addressBooks = null,
+        hasCalDav = true,
+        canCreateCalendar = true,
+        calDavProgress = AccountProgress.Pending,
+        calendars = null,
+        hasWebcal = true,
+        subscriptions = null
+    )
+}
+
+@Composable
+@Preview
+fun DeleteAccountDialog(
+    onConfirm: () -> Unit = {},
+    onDismiss: () -> Unit = {}
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.account_delete_confirmation_title)) },
+        text = { Text(stringResource(R.string.account_delete_confirmation_text)) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(android.R.string.ok))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(android.R.string.cancel))
+            }
+        }
+    )
 }
