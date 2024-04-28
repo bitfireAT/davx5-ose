@@ -498,7 +498,7 @@ class AppSettingsActivity: AppCompatActivity() {
         private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
         private val powerManager = context.getSystemService<PowerManager>()!!
-        val batterySavingExempted = broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED))
+        val batterySavingExempted = broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED), immediate = true)
             .map { powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 

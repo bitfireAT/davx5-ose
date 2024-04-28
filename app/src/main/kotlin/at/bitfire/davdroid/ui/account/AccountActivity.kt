@@ -80,6 +80,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
+import at.bitfire.davdroid.ui.AccountsModel
 import at.bitfire.davdroid.ui.M2Theme
 import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.composable.ActionCard
@@ -109,13 +110,6 @@ class AccountActivity : AppCompatActivity() {
         }
     }
 
-    /** Tri-state enum to represent active / pending / idle status */
-    enum class Progress {
-        Active,     // syncing or refreshing
-        Pending,    // sync pending
-        Idle
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,10 +133,10 @@ class AccountActivity : AppCompatActivity() {
                 val cardDavRefreshing by model.cardDavRefreshing.observeAsState(false)
                 val cardDavSyncPending by model.cardDavSyncPending.observeAsState(false)
                 val cardDavSyncing by model.cardDavSyncing.observeAsState(false)
-                val cardDavProgress: Progress = when {
-                    cardDavRefreshing || cardDavSyncing -> Progress.Active
-                    cardDavSyncPending -> Progress.Pending
-                    else -> Progress.Idle
+                val cardDavProgress: AccountsModel.Progress = when {
+                    cardDavRefreshing || cardDavSyncing -> AccountsModel.Progress.Active
+                    cardDavSyncPending -> AccountsModel.Progress.Pending
+                    else -> AccountsModel.Progress.Idle
                 }
                 val addressBooks by model.addressBooksPager.observeAsState()
 
@@ -151,10 +145,10 @@ class AccountActivity : AppCompatActivity() {
                 val calDavRefreshing by model.calDavRefreshing.observeAsState(false)
                 val calDavSyncPending by model.calDavSyncPending.observeAsState(false)
                 val calDavSyncing by model.calDavSyncing.observeAsState(false)
-                val calDavProgress: Progress = when {
-                    calDavRefreshing || calDavSyncing -> Progress.Active
-                    calDavSyncPending -> Progress.Pending
-                    else -> Progress.Idle
+                val calDavProgress: AccountsModel.Progress = when {
+                    calDavRefreshing || calDavSyncing -> AccountsModel.Progress.Active
+                    calDavSyncPending -> AccountsModel.Progress.Pending
+                    else -> AccountsModel.Progress.Idle
                 }
                 val calendars by model.calendarsPager.observeAsState()
                 val subscriptions by model.webcalPager.observeAsState()
@@ -255,12 +249,12 @@ fun AccountOverview(
     onSetShowOnlyPersonal: (showOnlyPersonal: Boolean) -> Unit,
     hasCardDav: Boolean,
     canCreateAddressBook: Boolean,
-    cardDavProgress: AccountActivity.Progress,
+    cardDavProgress: AccountsModel.Progress,
     cardDavRefreshing: Boolean,
     addressBooks: LazyPagingItems<Collection>?,
     hasCalDav: Boolean,
     canCreateCalendar: Boolean,
-    calDavProgress: AccountActivity.Progress,
+    calDavProgress: AccountsModel.Progress,
     calDavRefreshing: Boolean,
     calendars: LazyPagingItems<Collection>?,
     subscriptions: LazyPagingItems<Collection>?,
@@ -500,12 +494,12 @@ fun AccountOverview_CardDAV_CalDAV() {
         onSetShowOnlyPersonal = {},
         hasCardDav = true,
         canCreateAddressBook = false,
-        cardDavProgress = AccountActivity.Progress.Active,
+        cardDavProgress = AccountsModel.Progress.Active,
         cardDavRefreshing = false,
         addressBooks = null,
         hasCalDav = true,
         canCreateCalendar = true,
-        calDavProgress = AccountActivity.Progress.Pending,
+        calDavProgress = AccountsModel.Progress.Pending,
         calDavRefreshing = false,
         calendars = null,
         subscriptions = null
@@ -695,7 +689,7 @@ fun DeleteAccountDialog(
 @Composable
 fun ServiceTab(
     requiredPermissions: List<String>,
-    progress: AccountActivity.Progress,
+    progress: AccountsModel.Progress,
     collections: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
     onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit = { _, _ -> },
@@ -707,14 +701,14 @@ fun ServiceTab(
         // progress indicator
         val progressAlpha = progressAlpha(progress)
         when (progress) {
-            AccountActivity.Progress.Active -> LinearProgressIndicator(
+            AccountsModel.Progress.Active -> LinearProgressIndicator(
                 color = MaterialTheme.colors.secondary,
                 modifier = Modifier
                     .alpha(progressAlpha)
                     .fillMaxWidth()
             )
-            AccountActivity.Progress.Pending,
-            AccountActivity.Progress.Idle -> LinearProgressIndicator(
+            AccountsModel.Progress.Pending,
+            AccountsModel.Progress.Idle -> LinearProgressIndicator(
                 color = MaterialTheme.colors.secondary,
                 progress = 1f,
                 modifier = Modifier
@@ -750,12 +744,12 @@ fun ServiceTab(
 }
 
 @Composable
-fun progressAlpha(progress: AccountActivity.Progress): Float {
+fun progressAlpha(progress: AccountsModel.Progress): Float {
     val progressAlpha by animateFloatAsState(
         when (progress) {
-            AccountActivity.Progress.Active -> 1f
-            AccountActivity.Progress.Pending -> 0.5f
-            AccountActivity.Progress.Idle -> 0f
+            AccountsModel.Progress.Active -> 1f
+            AccountsModel.Progress.Pending -> 0.5f
+            AccountsModel.Progress.Idle -> 0f
         },
         label = "progressAlpha",
         animationSpec = tween(500)

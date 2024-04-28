@@ -157,7 +157,7 @@ class BatteryOptimizationsPage: IntroPage {
 
         init {
             viewModelScope.launch {
-                broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED)).collect {
+                broadcastReceiverFlow(context, IntentFilter(PermissionUtils.ACTION_POWER_SAVE_WHITELIST_CHANGED), immediate = true).collect {
                     checkBatteryOptimizations()
                 }
             }
