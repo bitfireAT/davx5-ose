@@ -21,7 +21,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -97,10 +96,6 @@ object PermissionUtils {
     @Composable
     @ExperimentalPermissionsApi
     fun canAccessWifiSsidLive(): State<Boolean> {
-        // If preview, cannot access WiFi SSID
-        if (LocalInspectionMode.current)
-            return remember { derivedStateOf { false } }
-
         // before Android 8.1, SSIDs are always readable
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1)
             return remember { derivedStateOf { true } }
