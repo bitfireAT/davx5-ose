@@ -70,7 +70,7 @@ class TasksActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            M2Theme {
+            AppTheme {
                 Scaffold(
                     topBar = {
                         BasicTopAppBar(
