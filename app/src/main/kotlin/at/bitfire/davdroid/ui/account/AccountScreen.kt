@@ -1,6 +1,7 @@
 
 import android.Manifest
 import android.accounts.Account
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -58,12 +59,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.LazyPagingItems
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.PermissionsActivity
+import at.bitfire.davdroid.ui.account.AccountModel
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.account.CollectionsList
 import at.bitfire.davdroid.ui.account.CreateAddressBookActivity
@@ -73,12 +77,35 @@ import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.util.TaskUtils
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.launch
+
+@EntryPoint
+@InstallIn(ActivityComponent::class)
+interface AccountScreenEntryPoint {
+    fun accountModelAssistedFactory(): AccountModel.Factory
+}
+
+@Composable
+fun AccountScreen(
+    account: Account
+) {
+    val context = LocalContext.current as Activity
+    val entryPoint = EntryPointAccessors.fromActivity(context, AccountScreenEntryPoint::class.java)
+    val model = viewModel<AccountModel>(
+        factory = AccountModel.factoryFromAccount(entryPoint.accountModelAssistedFactory(), account)
+    )
+
+    Logger.log.info("Account ${model.account}")
+}
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun AccountOverview(
-    account: Account,
+fun AccountScreen(
+    accountName: String,
     error: String? = null,
     resetError: () -> Unit = {},
     invalidAccount: Boolean = false,
@@ -94,7 +121,6 @@ fun AccountOverview(
     calendars: LazyPagingItems<Collection>?,
     subscriptions: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
-    onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit = { _, _ -> },
     onSubscribe: (Collection) -> Unit = {},
     noWebcalApp: Boolean = false,
     resetNoWebcalApp: () -> Unit = {},
@@ -153,14 +179,14 @@ fun AccountOverview(
                     },
                     title = {
                         Text(
-                            text = account.name,
+                            text = accountName,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     },
                     actions = {
-                        AccountOverview_Actions(
-                            account = account,
+                        AccountScreen_Actions(
+                            accountName = accountName,
                             canCreateAddressBook = canCreateAddressBook,
                             canCreateCalendar = canCreateCalendar,
                             showOnlyPersonal = showOnlyPersonal,
@@ -272,12 +298,11 @@ fun AccountOverview(
                             Box {
                                 when (index) {
                                     idxCardDav ->
-                                        ServiceTab(
+                                        AccountScreen_ServiceTab(
                                             requiredPermissions = listOf(Manifest.permission.WRITE_CONTACTS),
                                             progress = cardDavProgress,
                                             collections = addressBooks,
-                                            onUpdateCollectionSync = onUpdateCollectionSync,
-                                            onChangeForceReadOnly = onChangeForceReadOnly
+                                            onUpdateCollectionSync = onUpdateCollectionSync
                                         )
 
                                     idxCalDav -> {
@@ -285,12 +310,11 @@ fun AccountOverview(
                                         TaskUtils.currentProvider(context)?.let { tasksProvider ->
                                             permissions += tasksProvider.permissions
                                         }
-                                        ServiceTab(
+                                        AccountScreen_ServiceTab(
                                             requiredPermissions = permissions,
                                             progress = calDavProgress,
                                             collections = calendars,
-                                            onUpdateCollectionSync = onUpdateCollectionSync,
-                                            onChangeForceReadOnly = onChangeForceReadOnly
+                                            onUpdateCollectionSync = onUpdateCollectionSync
                                         )
                                     }
 
@@ -321,7 +345,7 @@ fun AccountOverview(
                                                 modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)
                                             )
 
-                                            ServiceTab(
+                                            AccountScreen_ServiceTab(
                                                 requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
                                                 progress = calDavProgress,
                                                 collections = subscriptions,
@@ -346,9 +370,9 @@ fun AccountOverview(
 
 @Preview
 @Composable
-fun AccountOverview_CardDAV_CalDAV() {
-    AccountOverview(
-        account = Account("test@example.com", "test"),
+fun AccountScreen_Preview_CardDAV_CalDAV() {
+    AccountScreen(
+        accountName = "test@example.com",
         showOnlyPersonal = AccountSettings.ShowOnlyPersonal(false, true),
         hasCardDav = true,
         canCreateAddressBook = false,
@@ -363,8 +387,8 @@ fun AccountOverview_CardDAV_CalDAV() {
 }
 
 @Composable
-fun AccountOverview_Actions(
-    account: Account,
+fun AccountScreen_Actions(
+    accountName: String,
     canCreateAddressBook: Boolean,
     canCreateCalendar: Boolean,
     showOnlyPersonal: AccountSettings.ShowOnlyPersonal,
@@ -410,7 +434,7 @@ fun AccountOverview_Actions(
                 },
                 onClick = {
                     val intent = Intent(context, CreateAddressBookActivity::class.java)
-                    intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, account)
+                    intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, accountName)
                     context.startActivity(intent)
 
                     overflowOpen = false
@@ -431,7 +455,7 @@ fun AccountOverview_Actions(
                 },
                 onClick = {
                     val intent = Intent(context, CreateCalendarActivity::class.java)
-                    intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, account)
+                    intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, accountName)
                     context.startActivity(intent)
 
                     overflowOpen = false
@@ -503,7 +527,7 @@ fun AccountOverview_Actions(
     // modal dialogs
     if (showRenameAccountDialog)
         RenameAccountDialog(
-            oldName = account.name,
+            oldName = accountName,
             onRenameAccount = { newName ->
                 onRenameAccount(newName)
                 showRenameAccountDialog = false
@@ -542,12 +566,11 @@ fun DeleteAccountDialog(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ServiceTab(
+fun AccountScreen_ServiceTab(
     requiredPermissions: List<String>,
     progress: AccountProgress,
     collections: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
-    onChangeForceReadOnly: (collectionId: Long, forceReadOnly: Boolean) -> Unit = { _, _ -> },
     onSubscribe: (Collection) -> Unit = {},
 ) {
     val context = LocalContext.current

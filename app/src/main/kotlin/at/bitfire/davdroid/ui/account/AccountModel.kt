@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
@@ -32,6 +33,7 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.AccountRepository
+import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
@@ -56,6 +58,7 @@ class AccountModel @AssistedInject constructor(
     val context: Application,
     private val db: AppDatabase,
     private val accountRepository: AccountRepository,
+    private val collectionRepository: DavCollectionRepository,
     serviceRepository: DavServiceRepository,
     accountProgressUseCase: AccountProgressUseCase,
     getBindableHomesetsFromServiceUseCase: GetBindableHomeSetsFromServiceUseCase,
@@ -67,6 +70,16 @@ class AccountModel @AssistedInject constructor(
     interface Factory {
         fun create(account: Account): AccountModel
     }
+
+    companion object {
+        fun factoryFromAccount(assistedFactory: Factory, account: Account) = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return assistedFactory.create(account) as T
+            }
+        }
+    }
+
 
     /** whether the account is invalid and the screen shall be closed */
     val invalidAccount = accountRepository.getAllFlow().map { accounts ->
@@ -362,12 +375,10 @@ class AccountModel @AssistedInject constructor(
             }
     }
 
-    fun setCollectionSync(id: Long, sync: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        db.collectionDao().updateSync(id, sync)
-    }
-
-    fun setCollectionForceReadOnly(id: Long, forceReadOnly: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        db.collectionDao().updateForceReadOnly(id, forceReadOnly)
+    fun setCollectionSync(id: Long, sync: Boolean) {
+        viewModelScope.launch {
+            collectionRepository.setCollectionSync(id, sync)
+        }
     }
 
 

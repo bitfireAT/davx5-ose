@@ -76,7 +76,7 @@ interface CollectionDao {
     fun updateForceReadOnly(id: Long, forceReadOnly: Boolean)
 
     @Query("UPDATE collection SET sync=:sync WHERE id=:id")
-    fun updateSync(id: Long, sync: Boolean)
+    suspend fun updateSync(id: Long, sync: Boolean)
 
     /**
      * Tries to insert new row, but updates existing row if already present.

@@ -4,29 +4,15 @@
 
 package at.bitfire.davdroid.ui.account
 
-import AccountOverview
+import AccountScreen
 import android.accounts.Account
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountActivity : AppCompatActivity() {
@@ -35,23 +21,17 @@ class AccountActivity : AppCompatActivity() {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    @Inject
-    lateinit var modelFactory: AccountModel.Factory
-    val model by viewModels<AccountModel> {
-        val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
-            ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
-        object: ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T: ViewModel> create(modelClass: Class<T>) =
-                modelFactory.create(account) as T
-        }
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
+            ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
+
         setContent {
+            AccountScreen(account = account)
+        }
+
+        /*setContent {
             val invalidAccount by model.invalidAccount.collectAsStateWithLifecycle(false)
             val cardDavSvc by model.cardDavSvc.collectAsStateWithLifecycle(null)
             val canCreateAddressBook by model.canCreateAddressBook.collectAsStateWithLifecycle(false)
@@ -66,8 +46,8 @@ class AccountActivity : AppCompatActivity() {
 
             var noWebcalApp by remember { mutableStateOf(false) }
 
-            AccountOverview(
-                account = model.account,
+            AccountScreen(
+                accountName = model.account.name,
                 error = model.error,
                 resetError = model::resetError,
                 invalidAccount = invalidAccount,
@@ -88,9 +68,6 @@ class AccountActivity : AppCompatActivity() {
                 subscriptions = subscriptions?.flow?.collectAsLazyPagingItems(),
                 onUpdateCollectionSync = { collectionId, sync ->
                     model.setCollectionSync(collectionId, sync)
-                },
-                onChangeForceReadOnly = { id, forceReadOnly ->
-                    model.setCollectionForceReadOnly(id, forceReadOnly)
                 },
                 onSubscribe = { item ->
                     noWebcalApp = !subscribeWebcal(item)
@@ -122,7 +99,7 @@ class AccountActivity : AppCompatActivity() {
                 onNavUp = ::onSupportNavigateUp,
                 onFinish = ::finish
             )
-        }
+        }*/
     }
 
     /**
