@@ -20,12 +20,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Checkbox
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,10 +58,10 @@ import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class TasksActivity: AppCompatActivity() {
@@ -202,7 +202,7 @@ fun TasksCard(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun TasksCardContent_Preview() {
-    M2Theme {
+    AppTheme {
         TasksCardContent(
             jtxSelected = true,
             jtxInstalled = true,
@@ -310,7 +310,7 @@ fun TasksCardContent(
                 )
                 Text(
                     text = stringResource(R.string.intro_tasks_dont_show),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onSetShowAgain(!showAgain) }
@@ -323,7 +323,7 @@ fun TasksCardContent(
                 R.string.intro_leave_unchecked,
                 stringResource(R.string.app_settings_reset_hints)
             ),
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 8.dp)
