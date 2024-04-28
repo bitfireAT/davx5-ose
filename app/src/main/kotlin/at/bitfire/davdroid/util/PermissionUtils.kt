@@ -6,7 +6,6 @@ package at.bitfire.davdroid.util
 
 import android.Manifest
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -15,7 +14,7 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.produceState
@@ -108,31 +107,21 @@ object PermissionUtils {
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             // Only if Android >= 9, we need to check for location services, so add listener
-            fun updateState(context: Context) {
-                val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+            LaunchedEffect(Unit) {
+                // Update the initial state
+                locationAvailable.tryEmit(canAccessWifiSsid(context))
 
-                locationAvailable.tryEmit(isGpsEnabled || isNetworkEnabled)
-            }
-
-            val br = object : BroadcastReceiver() {
-                override fun onReceive(context: Context, intent: Intent?) {
-                    intent?.action?.let { act ->
+                broadcastReceiverFlow(
+                    context,
+                    IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION),
+                    null
+                ).collect { intent ->
+                    intent.action?.let { act ->
                         if (act.matches("android.location.PROVIDERS_CHANGED".toRegex())) {
-                            updateState(context)
+                            locationAvailable.tryEmit(canAccessWifiSsid(context))
                         }
                     }
                 }
-            }
-            DisposableEffect(Unit) {
-                val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
-                context.registerReceiver(br, filter)
-
-                // Update the initial state
-                updateState(context)
-
-                onDispose { context.unregisterReceiver(br) }
             }
         }
 
