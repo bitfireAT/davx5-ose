@@ -20,15 +20,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-class CreateCollectionModel @AssistedInject constructor(
-    val collectionRepository: DavCollectionRepository,
+class CreateAddressBookModel @AssistedInject constructor(
+    private val collectionRepository: DavCollectionRepository,
     homeSetRepository: DavHomeSetRepository,
     @Assisted val account: Account
 ): ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account): CreateCollectionModel
+        fun create(account: Account): CreateAddressBookModel
     }
 
     companion object {
@@ -42,12 +42,12 @@ class CreateCollectionModel @AssistedInject constructor(
 
 
     val addressBookHomeSets = homeSetRepository.getAddressBookHomeSetsFlow(account)
-    val calendarHomeSets = homeSetRepository.getCalendarHomeSetsFlow(account)
 
 
     // UI state
 
     data class UiState(
+        val error: Exception? = null,
         val success: Boolean = false,
 
         val displayName: String = "",
@@ -60,6 +60,10 @@ class CreateCollectionModel @AssistedInject constructor(
 
     var uiState by mutableStateOf(UiState())
         private set
+
+    fun resetError() {
+        uiState = uiState.copy(error = null)
+    }
 
     fun setDisplayName(displayName: String) {
         uiState = uiState.copy(displayName = displayName)
@@ -85,16 +89,18 @@ class CreateCollectionModel @AssistedInject constructor(
         uiState = uiState.copy(isCreating = true)
 
         createCollectionScope.launch {
-            collectionRepository.createAddressBook(
-                account = account,
-                homeSet = homeSet,
-                displayName = uiState.displayName,
-                description = uiState.description
-            )
+            uiState = try {
+                collectionRepository.createAddressBook(
+                    account = account,
+                    homeSet = homeSet,
+                    displayName = uiState.displayName,
+                    description = uiState.description
+                )
 
-            // TODO error handling
-
-            uiState = uiState.copy(isCreating = false, success = true)
+                uiState.copy(isCreating = false, success = true)
+            } catch (e: Exception) {
+                uiState.copy(isCreating = false, error = e)
+            }
         }
     }
 

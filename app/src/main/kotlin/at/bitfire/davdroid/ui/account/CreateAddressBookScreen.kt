@@ -20,13 +20,17 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -40,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import dagger.hilt.android.EntryPointAccessors
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
@@ -50,17 +55,18 @@ fun CreateAddressBookScreen(
     onFinish: () -> Unit = {}
 ) {
     val context = LocalContext.current as Activity
-    val entryPoint = EntryPointAccessors.fromActivity(context, CreateCollectionActivity.CreateCollectionEntryPoint::class.java)
-    val model = viewModel<CreateCollectionModel>(
-        factory = CreateCollectionModel.factoryFromAccount(entryPoint.createCollectionModelFactory(), account)
+    val entryPoint = EntryPointAccessors.fromActivity(context, CreateAddressBookActivity.CreateAddressBookEntryPoint::class.java)
+    val model = viewModel<CreateAddressBookModel>(
+        factory = CreateAddressBookModel.factoryFromAccount(entryPoint.createAddressBookModelAssistedFactory(), account)
     )
-
     val uiState = model.uiState
 
     if (uiState.success)
         onFinish()
 
     CreateAddressBookScreen(
+        error = uiState.error,
+        onResetError = model::resetError,
         displayName = uiState.displayName,
         onSetDisplayName = model::setDisplayName,
         description = uiState.description,
@@ -78,6 +84,8 @@ fun CreateAddressBookScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAddressBookScreen(
+    error: Exception? = null,
+    onResetError: () -> Unit = {},
     displayName: String = "",
     onSetDisplayName: (String) -> Unit = {},
     description: String = "",
@@ -91,6 +99,18 @@ fun CreateAddressBookScreen(
     onNavUp: () -> Unit = {}
 ) {
     AppTheme {
+        var showErrorDialog by remember { mutableStateOf(true) }
+        LaunchedEffect(error) {
+            if (error != null)
+                showErrorDialog = true
+        }
+        if (error != null && showErrorDialog) {
+            ExceptionInfoDialog(exception = error) {
+                showErrorDialog = false
+                onResetError()
+            }
+        }
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -103,9 +123,10 @@ fun CreateAddressBookScreen(
                 )
             }
         ) { padding ->
-            Column(Modifier
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
+            Column(
+                Modifier
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState())
             ) {
                 if (isCreating)
                     LinearProgressIndicator(
@@ -125,6 +146,7 @@ fun CreateAddressBookScreen(
                         onValueChange = onSetDisplayName,
                         label = { Text(stringResource(R.string.create_collection_display_name)) },
                         singleLine = true,
+                        enabled = !isCreating,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
@@ -141,6 +163,7 @@ fun CreateAddressBookScreen(
                         onValueChange = onSetDescription,
                         label = { Text(stringResource(R.string.create_collection_description_optional)) },
                         singleLine = true,
+                        enabled = !isCreating,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
                         ),
@@ -158,6 +181,13 @@ fun CreateAddressBookScreen(
                         homeSet = selectedHomeSet,
                         homeSets = homeSets,
                         onSelectHomeSet = onSelectHomeSet,
+                        enabled = !isCreating,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Text(
+                        stringResource(R.string.create_addressbook_maybe_not_supported),
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 

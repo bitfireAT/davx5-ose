@@ -379,12 +379,15 @@
 
     <!-- collection management -->
     <string name="create_addressbook">Create address book</string>
+    <string name="create_addressbook_maybe_not_supported">Address book creation over CardDAV may not be supported by the server.</string>
     <string name="create_calendar">Create calendar</string>
     <string name="create_calendar_time_zone">Default time zone</string>
+    <string name="create_calendar_time_zone_none">—</string>
     <string name="create_calendar_type">Possible calendar entries</string>
     <string name="create_calendar_type_vevent">Events</string>
     <string name="create_calendar_type_vtodo">Tasks</string>
     <string name="create_calendar_type_vjournal">Notes / journal</string>
+    <string name="create_calendar_maybe_not_supported">Calendar creation over CalDAV may not be supported by the server.</string>
     <string name="create_collection_color">Color</string>
     <string name="create_collection_creating">Creating collection</string>
     <string name="create_collection_display_name">Title</string>

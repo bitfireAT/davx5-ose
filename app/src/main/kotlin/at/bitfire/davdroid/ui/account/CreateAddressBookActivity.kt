@@ -8,9 +8,21 @@ import android.accounts.Account
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.components.ActivityComponent
 
-class CreateAddressBookActivity: CreateCollectionActivity() {
+@AndroidEntryPoint
+class CreateAddressBookActivity: AppCompatActivity() {
+
+    @EntryPoint
+    @InstallIn(ActivityComponent::class)
+    interface CreateAddressBookEntryPoint {
+        fun createAddressBookModelAssistedFactory(): CreateAddressBookModel.Factory
+    }
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
@@ -19,6 +31,7 @@ class CreateAddressBookActivity: CreateCollectionActivity() {
     val account by lazy {
         intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
     }
+
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,18 +42,6 @@ class CreateAddressBookActivity: CreateCollectionActivity() {
                 onNavUp = ::onSupportNavigateUp,
                 onFinish = ::finish
             )
-            /*model.createCollectionResult.observeAsState().value?.let { result ->
-                if (result.isEmpty)
-                    finish()
-                else
-                    ExceptionInfoDialog(
-                        exception = result.get(),
-                        onDismiss = {
-                            isCreating = false
-                            model.createCollectionResult.value = null
-                        }
-                    )
-            }*/
         }
     }
 

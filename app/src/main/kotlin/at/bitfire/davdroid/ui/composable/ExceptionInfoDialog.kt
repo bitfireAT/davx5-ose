@@ -2,19 +2,19 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.ui.widget
+package at.bitfire.davdroid.ui.composable
 
 import android.accounts.Account
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Error
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import okhttp3.HttpUrl
 import java.io.IOException
@@ -59,7 +60,7 @@ fun ExceptionInfoDialog(
         text = {
             Text(
                 exception::class.java.name + "\n" + exception.localizedMessage,
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.bodyLarge
             )
         },
         dismissButton = {
@@ -73,12 +74,12 @@ fun ExceptionInfoDialog(
                     context.startActivity(intent.build())
                 }
             ) {
-                Text(stringResource(R.string.exception_show_details).uppercase())
+                Text(stringResource(R.string.exception_show_details))
             }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(android.R.string.ok).uppercase())
+                Text(stringResource(android.R.string.ok))
             }
         }
     )

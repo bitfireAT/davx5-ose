@@ -19,9 +19,11 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.ical4android.util.DateUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl
 import java.io.StringWriter
 import java.util.UUID
 import javax.inject.Inject
@@ -40,59 +42,91 @@ class DavCollectionRepository @Inject constructor(
         account: Account,
         homeSet: HomeSet,
         displayName: String,
-        description: String
+        description: String?
     ) {
         val folderName = UUID.randomUUID().toString()
+        val url = homeSet.url.newBuilder()
+            .addPathSegment(folderName)
+            .addPathSegment("")     // trailing slash
+            .build()
 
-        HttpClient.Builder(context, AccountSettings(context, account))
-            .setForeground(true)
-            .build().use { httpClient ->
-                try {
-                    val url = homeSet.url.newBuilder()
-                        .addPathSegment(folderName)
-                        .addPathSegment("")     // trailing slash
-                        .build()
-                    val dav = DavResource(httpClient.okHttpClient, url)
+        // create collection on server
+        createCollection(
+            account = account,
+            url = url,
+            method = "MKCOL",
+            xmlBody = generateMkColXml(
+                addressBook = true,
+                displayName = displayName,
+                description = description
+            )
+        )
 
-                    val xml = generateMkColXml(
-                        addressBook = true,
-                        displayName = displayName,
-                        description = description
-                    )
+        // no HTTP error -> create collection locally
+        val collection = Collection(
+            serviceId = homeSet.serviceId,
+            homeSetId = homeSet.id,
+            url = url,
+            type = Collection.TYPE_ADDRESSBOOK, //if (addressBook) Collection.TYPE_ADDRESSBOOK else Collection.TYPE_CALENDAR,
+            displayName = displayName,
+            description = description
+        )
+        dao.insertAsync(collection)
+    }
 
-                    withContext(Dispatchers.IO) {
-                        runInterruptible {
-                            dav.mkCol(
-                                xmlBody = xml,
-                                method = "MKCOL"    //if (addressBook) "MKCOL" else "MKCALENDAR"
-                            ) {
-                                // success, otherwise an exception would have been thrown
-                            }
-                        }
-                    }
+    suspend fun createCalendar(
+        account: Account,
+        homeSet: HomeSet,
+        color: Int?,
+        displayName: String,
+        description: String?,
+        timeZoneId: String?,
+        supportVEVENT: Boolean,
+        supportVTODO: Boolean,
+        supportVJOURNAL: Boolean
+    ) {
+        val folderName = UUID.randomUUID().toString()
+        val url = homeSet.url.newBuilder()
+            .addPathSegment(folderName)
+            .addPathSegment("")     // trailing slash
+            .build()
 
-                    // no HTTP error -> create collection locally
-                    val collection = Collection(
-                        serviceId = homeSet.serviceId,
-                        homeSetId = homeSet.id,
-                        url = url,
-                        type = Collection.TYPE_ADDRESSBOOK, //if (addressBook) Collection.TYPE_ADDRESSBOOK else Collection.TYPE_CALENDAR,
-                        displayName = displayName,
-                        description = description
-                    )
-                    dao.insertAsync(collection)
+        // create collection on server
+        createCollection(
+            account = account,
+            url = url,
+            method = "MKCALENDAR",
+            xmlBody = generateMkColXml(
+                addressBook = false,
+                displayName = displayName,
+                description = description,
+                color = color,
+                timezoneDef = timeZoneId,
+                supportsVEVENT = supportVEVENT,
+                supportsVTODO = supportVTODO,
+                supportsVJOURNAL = supportVJOURNAL
+            )
+        )
 
-                    // trigger service detection (because the collection may actually have other properties than the ones we have inserted)
-                    RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
+        // no HTTP error -> create collection locally
+        val collection = Collection(
+            serviceId = homeSet.serviceId,
+            homeSetId = homeSet.id,
+            url = url,
+            type = Collection.TYPE_CALENDAR,
+            displayName = displayName,
+            description = description,
+            color = color,
+            timezone = timeZoneId?.let { getVTimeZone(it) },
+            supportsVEVENT = supportVEVENT,
+            supportsVTODO = supportVTODO,
+            supportsVJOURNAL = supportVJOURNAL
+        )
+        dao.insertAsync(collection)
 
-                    // post success
-                    //createCollectionResult.postValue(Optional.empty())
-                } catch (e: Exception) {
-                    //Logger.log.log(Level.SEVERE, "Couldn't create collection", e)
-                    // post error
-                    //createCollectionResult.postValue(Optional.of(e))
-                }
-            }
+        // Trigger service detection (because the collection may actually have other properties than the ones we have inserted).
+        // Some servers are known to change the supported components (VEVENT, …) after creation.
+        RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
     }
 
     suspend fun setCollectionSync(id: Long, forceReadOnly: Boolean) {
@@ -102,15 +136,32 @@ class DavCollectionRepository @Inject constructor(
 
     // helpers
 
+    private suspend fun createCollection(account: Account, url: HttpUrl, method: String, xmlBody: String) {
+        HttpClient.Builder(context, AccountSettings(context, account))
+            .setForeground(true)
+            .build().use { httpClient ->
+                withContext(Dispatchers.IO) {
+                    runInterruptible {
+                        DavResource(httpClient.okHttpClient, url).mkCol(
+                            xmlBody = xmlBody,
+                            method = method
+                        ) {
+                            // success, otherwise an exception would have been thrown
+                        }
+                    }
+                }
+            }
+    }
+
     private fun generateMkColXml(
         addressBook: Boolean,
         displayName: String?,
         description: String?,
         color: Int? = null,
         timezoneDef: String? = null,
-        supportsVEVENT: Boolean? = null,
-        supportsVTODO: Boolean? = null,
-        supportsVJOURNAL: Boolean? = null
+        supportsVEVENT: Boolean = true,
+        supportsVTODO: Boolean = true,
+        supportsVJOURNAL: Boolean = true
     ): String {
         val writer = StringWriter()
         val serializer = XmlUtils.newSerializer()
@@ -173,19 +224,20 @@ class DavCollectionRepository @Inject constructor(
                     endTag(NS_CALDAV, "calendar-timezone")
                 }
 
-                if (supportsVEVENT != null || supportsVTODO != null || supportsVJOURNAL != null) {
-                    // only if there's at least one explicitly supported calendar component set, otherwise don't include the property
-                    if (supportsVEVENT != false) {
+                if (!supportsVEVENT || !supportsVTODO || !supportsVJOURNAL) {
+                    // Only if there's at least one not explicitly supported calendar component set,
+                    // otherwise don't include the property, which means "supports everything".
+                    if (supportsVEVENT) {
                         startTag(NS_CALDAV, "comp")
                         attribute(null, "name", "VEVENT")
                         endTag(NS_CALDAV, "comp")
                     }
-                    if (supportsVTODO != false) {
+                    if (supportsVTODO) {
                         startTag(NS_CALDAV, "comp")
                         attribute(null, "name", "VTODO")
                         endTag(NS_CALDAV, "comp")
                     }
-                    if (supportsVJOURNAL != false) {
+                    if (supportsVJOURNAL) {
                         startTag(NS_CALDAV, "comp")
                         attribute(null, "name", "VJOURNAL")
                         endTag(NS_CALDAV, "comp")
@@ -203,5 +255,8 @@ class DavCollectionRepository @Inject constructor(
         }
         return writer.toString()
     }
+
+    private fun getVTimeZone(tzId: String): String? =
+        DateUtils.ical4jTimeZone(tzId)?.toString()
 
 }
