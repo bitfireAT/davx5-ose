@@ -233,8 +233,7 @@
     <string name="account_journal">journal</string>
     <string name="account_task_list">tasks</string>
     <string name="account_only_personal">Show only personal</string>
-    <string name="account_refresh_collections">Refresh collections</string>
-    <string name="account_refreshing_collections">Refreshing collection list</string>
+    <string name="account_refresh_collections">Refresh list</string>
     <string name="account_webcal_external_app">"Webcal subscriptions can be synchronized with external apps."</string>
     <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
     <string name="account_install_icsx5">Install ICSx⁵</string>

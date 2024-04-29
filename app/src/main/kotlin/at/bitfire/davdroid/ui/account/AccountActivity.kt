@@ -56,39 +56,14 @@ class AccountActivity : AppCompatActivity() {
                 },
                 onCollectionDetails = { collection ->
                     val intent = Intent(this, CollectionActivity::class.java)
-                    /*intent.putExtra(CollectionDetailsActivity.EXTRA_ACCOUNT, account)
-                    intent.putExtra(CollectionDetailsActivity.EXTRA_COLLECTION, collection)*/
+                    intent.putExtra(CollectionActivity.EXTRA_ACCOUNT, account)
+                    intent.putExtra(CollectionActivity.EXTRA_COLLECTION_ID, collection.id)
                     startActivity(intent, null)
                 },
                 onNavUp = ::onSupportNavigateUp,
                 onFinish = ::finish
             )
         }
-    }
-
-    /**
-     * Subscribes to a Webcal using a compatible app like ICSx5.
-     *
-     * @return true if a compatible Webcal app is installed, false otherwise
-     */
-    private fun subscribeWebcal(item: Collection): Boolean {
-        // subscribe
-        var uri = Uri.parse(item.source.toString())
-        when {
-            uri.scheme.equals("http", true) -> uri = uri.buildUpon().scheme("webcal").build()
-            uri.scheme.equals("https", true) -> uri = uri.buildUpon().scheme("webcals").build()
-        }
-
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        item.displayName?.let { intent.putExtra("title", it) }
-        item.color?.let { intent.putExtra("color", it) }
-
-        if (packageManager.resolveActivity(intent, 0) != null) {
-            startActivity(intent)
-            return true
-        }
-
-        return false
     }
 
 }

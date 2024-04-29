@@ -129,6 +129,8 @@ class DavCollectionRepository @Inject constructor(
         RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
     }
 
+    fun getFlow(id: Long) = dao.getFlow(id)
+
     suspend fun setCollectionSync(id: Long, forceReadOnly: Boolean) {
         dao.updateSync(id, forceReadOnly)
     }
