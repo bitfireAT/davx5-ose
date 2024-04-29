@@ -174,6 +174,11 @@ class DebugInfoModel @AssistedInject constructor (
         }
     }
 
+    /**
+     * Creates debug info and saves it to [Logger.debugDir]/[FILE_DEBUG_INFO]
+     *
+     * Note: Part of this method and all of it's helpers (listed below) should probably be extracted in the future
+     */
     private fun generateDebugInfo(syncAccount: Account?, syncAuthority: String?, cause: Throwable?, localResource: String?, remoteResource: String?) {
         val debugInfoFile = File(Logger.debugDir(), FILE_DEBUG_INFO)
         debugInfoFile.writer().buffered().use { writer ->
@@ -429,6 +434,11 @@ class DebugInfoModel @AssistedInject constructor (
         uiState = uiState.copy(debugInfo = debugInfoFile)
     }
 
+    /**
+     * Creates the ZIP file containing both [FILE_DEBUG_INFO] and [FILE_LOGS].
+     *
+     * Note: Part of this method should probably be extracted to a more suitable location
+     */
     fun generateZip() {
         try {
             uiState = uiState.copy(zipInProgress = true)
@@ -477,6 +487,11 @@ class DebugInfoModel @AssistedInject constructor (
     }
 
 
+    /**
+     * Appends relevant android account information the given writer.
+     *
+     * Note: Helper method of [generateDebugInfo].
+     */
     private fun dumpMainAccount(account: Account, writer: Writer) {
         writer.append("\n\n - Account: ${account.name}\n")
         writer.append(dumpAccount(account, AccountDumpInfo.mainAccount(context, account)))
@@ -520,6 +535,11 @@ class DebugInfoModel @AssistedInject constructor (
         writer.append('\n')
     }
 
+    /**
+     * Appends relevant address book type android account information to the given writer.
+     *
+     * Note: Helper method of [generateDebugInfo].
+     */
     private fun dumpAddressBookAccount(account: Account, accountManager: AccountManager, writer: Writer) {
         writer.append("  * Address book: ${account.name}\n")
         val table = dumpAccount(account, AccountDumpInfo.addressBookAccount(account))
@@ -528,6 +548,13 @@ class DebugInfoModel @AssistedInject constructor (
             .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n")
     }
 
+    /**
+     * Retrieves specified information from an android account
+     *
+     * Note: Helper method of [generateDebugInfo].
+     *
+     * @return the requested information
+     */
     private fun dumpAccount(account: Account, infos: Iterable<AccountDumpInfo>): String {
         val table = TextTable("Authority", "isSyncable", "syncAutomatically", "Interval", "Entries")
         for (info in infos) {
@@ -593,6 +620,11 @@ class DebugInfoModel @AssistedInject constructor (
         return table.toString()
     }
 
+    /**
+     * Convenience class to build intents
+     *
+     * Note: Used by the rest of the app. Should probably be extracted to a better location
+     */
     class IntentBuilder(context: Context) {
 
         companion object {
