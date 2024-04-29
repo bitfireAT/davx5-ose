@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.app.Application
-import android.content.Intent
 import android.provider.CalendarContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +18,6 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
@@ -182,7 +180,7 @@ class AccountScreenModel @AssistedInject constructor(
 
     fun setCollectionSync(id: Long, sync: Boolean) {
         viewModelScope.launch {
-            collectionRepository.setCollectionSync(id, sync)
+            collectionRepository.setSync(id, sync)
         }
     }
 

@@ -9,6 +9,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SyncStatsDao {
@@ -17,5 +18,6 @@ interface SyncStatsDao {
     fun insertOrReplace(syncStats: SyncStats)
 
     @Query("SELECT * FROM syncstats WHERE collectionId=:id")
-    fun getLiveByCollectionId(id: Long): LiveData<List<SyncStats>>
+    fun getByCollectionIdFlow(id: Long): Flow<List<SyncStats>>
+
 }

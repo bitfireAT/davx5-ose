@@ -84,7 +84,7 @@ interface CollectionDao {
     fun update(collection: Collection)
 
     @Query("UPDATE collection SET forceReadOnly=:forceReadOnly WHERE id=:id")
-    fun updateForceReadOnly(id: Long, forceReadOnly: Boolean)
+    suspend fun updateForceReadOnly(id: Long, forceReadOnly: Boolean)
 
     @Query("UPDATE collection SET sync=:sync WHERE id=:id")
     suspend fun updateSync(id: Long, sync: Boolean)

@@ -19,6 +19,9 @@ interface PrincipalDao {
     fun get(id: Long): Principal
 
     @Query("SELECT * FROM principal WHERE id=:id")
+    suspend fun getAsync(id: Long): Principal
+
+    @Query("SELECT * FROM principal WHERE id=:id")
     fun getLive(id: Long): LiveData<Principal?>
 
     @Query("SELECT * FROM principal WHERE serviceId=:serviceId")

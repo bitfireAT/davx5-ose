@@ -12,6 +12,7 @@ import at.bitfire.dav4jvm.property.caldav.NS_APPLE_ICAL
 import at.bitfire.dav4jvm.property.caldav.NS_CALDAV
 import at.bitfire.dav4jvm.property.carddav.NS_CARDDAV
 import at.bitfire.dav4jvm.property.webdav.NS_WEBDAV
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
@@ -33,6 +34,7 @@ class DavCollectionRepository @Inject constructor(
     db: AppDatabase
 ) {
 
+    private val serviceDao = db.serviceDao()
     private val dao = db.collectionDao()
 
     suspend fun anyWebcal(serviceId: Long) =
@@ -51,7 +53,7 @@ class DavCollectionRepository @Inject constructor(
             .build()
 
         // create collection on server
-        createCollection(
+        createOnServer(
             account = account,
             url = url,
             method = "MKCOL",
@@ -92,7 +94,7 @@ class DavCollectionRepository @Inject constructor(
             .build()
 
         // create collection on server
-        createCollection(
+        createOnServer(
             account = account,
             url = url,
             method = "MKCALENDAR",
@@ -129,16 +131,39 @@ class DavCollectionRepository @Inject constructor(
         RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
     }
 
+    /** Deletes the given collection from the server and the database. */
+    suspend fun delete(collection: Collection) {
+        val service = serviceDao.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
+        val account = Account(service.accountName, context.getString(R.string.account_type))
+
+        HttpClient.Builder(context, AccountSettings(context, account))
+            .setForeground(true)
+            .build().use { httpClient ->
+                withContext(Dispatchers.IO) {
+                    runInterruptible {
+                        DavResource(httpClient.okHttpClient, collection.url).delete() {
+                            // success, otherwise an exception would have been thrown
+                            dao.delete(collection)
+                        }
+                    }
+                }
+            }
+    }
+
     fun getFlow(id: Long) = dao.getFlow(id)
 
-    suspend fun setCollectionSync(id: Long, forceReadOnly: Boolean) {
+    suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
+        dao.updateForceReadOnly(id, forceReadOnly)
+    }
+
+    suspend fun setSync(id: Long, forceReadOnly: Boolean) {
         dao.updateSync(id, forceReadOnly)
     }
 
 
     // helpers
 
-    private suspend fun createCollection(account: Account, url: HttpUrl, method: String, xmlBody: String) {
+    private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
         HttpClient.Builder(context, AccountSettings(context, account))
             .setForeground(true)
             .build().use { httpClient ->
