@@ -6,7 +6,6 @@ package at.bitfire.davdroid
 
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.parent
-import at.bitfire.davdroid.util.lastSegment
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import org.junit.Assert.assertEquals
@@ -37,10 +36,10 @@ class DavUtilsTest {
 
     @Test
     fun testLastSegmentOfUrl() {
-        assertEquals("/", exampleURL.toHttpUrl().lastSegment())
-        assertEquals("dir", (exampleURL + "dir").toHttpUrl().lastSegment())
-        assertEquals("dir", (exampleURL + "dir/").toHttpUrl().lastSegment())
-        assertEquals("file.html", (exampleURL + "dir/file.html").toHttpUrl().lastSegment())
+        assertEquals("/", DavUtils.lastSegmentOfUrl(exampleURL.toHttpUrl()))
+        assertEquals("dir", DavUtils.lastSegmentOfUrl((exampleURL + "dir").toHttpUrl()))
+        assertEquals("dir", DavUtils.lastSegmentOfUrl((exampleURL + "dir/").toHttpUrl()))
+        assertEquals("file.html", DavUtils.lastSegmentOfUrl((exampleURL + "dir/file.html").toHttpUrl()))
     }
 
     @Test
