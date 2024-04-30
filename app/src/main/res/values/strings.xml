@@ -9,6 +9,7 @@
     <string name="account_title_address_book">DAVx⁵ Address book</string>
     <string name="address_books_authority" translatable="false">at.bitfire.davdroid.addressbooks</string>
     <string name="address_books_authority_title">Address books</string>
+    <string name="dialog_delete">Delete</string>
     <string name="dialog_remove">Remove</string>
     <string name="dialog_deny">Cancel</string>
     <string name="field_required">This field is required</string>
@@ -116,7 +117,7 @@
     <string name="logging_notification_view_share">View/share</string>
     <string name="logging_notification_disable">Disable</string>
 
-    <!-- AccountsActivity -->
+    <!-- AccountsScreen -->
     <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
     <string name="navigation_drawer_about">About / License</string>
     <string name="navigation_drawer_beta_feedback">Beta feedback</string>
@@ -209,7 +210,7 @@
     <string name="app_settings_tasks_provider">Tasks app</string>
     <string name="app_settings_tasks_provider_none">No compatible tasks app found</string>
 
-    <!-- AccountActivity -->
+    <!-- AccountScreen -->
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
     <string name="account_webcal">Webcal</string>
@@ -229,12 +230,12 @@
     <string name="account_synchronize_this_collection">synchronize this collection</string>
     <string name="account_read_only">read-only</string>
     <string name="account_calendar">calendar</string>
-    <string name="account_task_list">task list</string>
+    <string name="account_contacts">contacts</string>
     <string name="account_journal">journal</string>
+    <string name="account_task_list">tasks</string>
     <string name="account_only_personal">Show only personal</string>
-    <string name="account_refresh_collections">Refresh collections</string>
-    <string name="account_refreshing_collections">Refreshing collection list</string>
-    <string name="account_webcal_external_app">"Webcal subscriptions can be synchronized with external apps."</string>
+    <string name="account_refresh_collections">Refresh list</string>
+    <string name="account_webcal_external_app">Webcal subscriptions can be synchronized with external apps.</string>
     <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
     <string name="account_install_icsx5">Install ICSx⁵</string>
 
@@ -376,38 +377,41 @@
         <item>Groups are per-contact categories</item>
     </string-array>
 
-    <!-- collection management -->
+    <!-- CreateAddressBookScreen, CreateCalendarScreen -->
     <string name="create_addressbook">Create address book</string>
+    <string name="create_addressbook_maybe_not_supported">Address book creation over CardDAV may not be supported by the server.</string>
     <string name="create_calendar">Create calendar</string>
-    <string name="create_calendar_time_zone">Default time zone</string>
+    <string name="create_calendar_time_zone_optional">Default time zone*</string>
+    <string name="create_calendar_time_zone_none">—</string>
     <string name="create_calendar_type">Possible calendar entries</string>
     <string name="create_calendar_type_vevent">Events</string>
     <string name="create_calendar_type_vtodo">Tasks</string>
     <string name="create_calendar_type_vjournal">Notes / journal</string>
+    <string name="create_calendar_maybe_not_supported">Calendar creation over CalDAV may not be supported by the server.</string>
     <string name="create_collection_color">Color</string>
-    <string name="create_collection_creating">Creating collection</string>
     <string name="create_collection_display_name">Title</string>
-    <string name="create_collection_display_name_required">Title is required</string>
-    <string name="create_collection_description">Description</string>
-    <string name="create_collection_description_optional">Description (optional)</string>
-    <string name="create_collection_optional">optional</string>
     <string name="create_collection_home_set">Storage location</string>
-    <string name="create_collection_home_set_required">Storage location is required</string>
+    <string name="create_collection_description_optional">Description*</string>
     <string name="create_collection_create">Create</string>
-    <string name="delete_collection">Delete collection</string>
-    <string name="delete_collection_confirm_title">Are you sure?</string>
-    <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed permanently.</string>
-    <string name="delete_collection_data_shall_be_deleted">These data shall be deleted from the server.</string>
-    <string name="collection_force_read_only">Force read-only</string>
-    <string name="collection_properties">Properties</string>
-    <string name="collection_properties_sync_time">Last synced</string>
-    <string name="collection_properties_sync_time_never">Never synced</string>
-    <string name="collection_properties_url">Address (URL)</string>
-    <string name="collection_properties_owner">Owner</string>
-    <string name="collection_properties_push_support">Push support</string>
-    <string name="collection_properties_push_support_web_push">Yes (over Web Push)</string>
-    <string name="collection_properties_push_subscribed_at">Subscribed at %s</string>
-    <string name="collection_properties_push_subscribed_never">Not yet subscribed</string>
+    <string name="create_collection_optional">* optional</string>
+
+    <!-- CollectionScreen -->
+    <string name="collection_delete">Delete collection</string>
+    <string name="collection_delete_warning">This collection (%s) and all its data will be removed permanently, both locally and on the server.</string>
+    <string name="collection_synchronization">Synchronization</string>
+    <string name="collection_synchronization_on">Synchronization enabled</string>
+    <string name="collection_synchronization_off">Synchronization disabled</string>
+    <string name="collection_read_only">Read-only</string>
+    <string name="collection_read_only_by_server">Read-only (by server)</string>
+    <string name="collection_read_only_forced">Read-only (only locally)</string>
+    <string name="collection_read_write">Read/write</string>
+    <string name="collection_title">Title</string>
+    <string name="collection_description">Description</string>
+    <string name="collection_owner">Owner</string>
+    <string name="collection_push_support">Push support</string>
+    <string name="collection_push_web_push">Server advertises Push support</string>
+    <string name="collection_last_sync">Last sync (%s)</string>
+    <string name="collection_url">Address (URL)</string>
 
     <!-- debugging and DebugInfoActivity -->
     <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>

@@ -4,13 +4,13 @@
 
 package at.bitfire.davdroid.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HomeSetDao {
@@ -24,11 +24,11 @@ interface HomeSetDao {
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId")
     fun getByService(serviceId: Long): List<HomeSet>
 
-    @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND privBind")
-    fun getBindableByService(serviceId: Long): List<HomeSet>
+    @Query("SELECT * FROM homeset WHERE serviceId=(SELECT id FROM service WHERE accountName=:accountName AND type=:serviceType) AND privBind ORDER BY displayName, url COLLATE NOCASE")
+    fun getBindableByAccountAndServiceTypeFlow(accountName: String, serviceType: String): Flow<List<HomeSet>>
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND privBind")
-    fun getLiveBindableByService(serviceId: Long): LiveData<List<HomeSet>>
+    fun getBindableByServiceFlow(serviceId: Long): Flow<List<HomeSet>>
 
     @Insert
     fun insert(homeSet: HomeSet): Long

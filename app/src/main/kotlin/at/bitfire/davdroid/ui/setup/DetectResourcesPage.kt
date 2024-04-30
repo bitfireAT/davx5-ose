@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
