@@ -8,7 +8,6 @@ import android.app.Activity
 import android.os.Build
 import android.security.KeyChain
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme

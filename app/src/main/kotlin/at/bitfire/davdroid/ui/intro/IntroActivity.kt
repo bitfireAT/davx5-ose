@@ -26,8 +26,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.AndroidViewModel
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.ui.M2Theme
 import at.bitfire.davdroid.ui.M2Colors
+import at.bitfire.davdroid.ui.M2Theme
 import com.github.appintro.AppIntro2
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn

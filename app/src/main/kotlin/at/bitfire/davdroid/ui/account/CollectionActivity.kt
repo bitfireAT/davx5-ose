@@ -16,31 +16,31 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 
 @AndroidEntryPoint
-class CreateAddressBookActivity: AppCompatActivity() {
+class CollectionActivity: AppCompatActivity() {
 
     @EntryPoint
     @InstallIn(ActivityComponent::class)
-    interface CreateAddressBookEntryPoint {
-        fun createAddressBookModelAssistedFactory(): CreateAddressBookModel.Factory
+    interface CollectionEntryPoint {
+        fun collectionModelAssistedFactory(): CollectionScreenModel.Factory
     }
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
+        const val EXTRA_COLLECTION_ID = "collection_id"
     }
 
-    val account by lazy {
-        intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
-    }
+    val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT)!! }
+    val collectionId by lazy { intent.getLongExtra(EXTRA_COLLECTION_ID, -1) }
 
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CreateAddressBookScreen(
-                account = account,
-                onNavUp = ::onSupportNavigateUp,
-                onFinish = ::finish
+            CollectionScreen(
+                collectionId = collectionId,
+                onFinish = ::finish,
+                onNavUp = ::onSupportNavigateUp
             )
         }
     }
