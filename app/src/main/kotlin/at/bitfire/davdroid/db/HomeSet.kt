@@ -8,7 +8,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.lastSegment
 import okhttp3.HttpUrl
 

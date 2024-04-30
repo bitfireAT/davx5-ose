@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -20,9 +19,6 @@ interface PrincipalDao {
 
     @Query("SELECT * FROM principal WHERE id=:id")
     suspend fun getAsync(id: Long): Principal
-
-    @Query("SELECT * FROM principal WHERE id=:id")
-    fun getLive(id: Long): LiveData<Principal?>
 
     @Query("SELECT * FROM principal WHERE serviceId=:serviceId")
     fun getByService(serviceId: Long): List<Principal>

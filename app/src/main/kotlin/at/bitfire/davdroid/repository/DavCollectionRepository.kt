@@ -38,7 +38,7 @@ class DavCollectionRepository @Inject constructor(
     private val dao = db.collectionDao()
 
     suspend fun anyWebcal(serviceId: Long) =
-        dao.anyWebcal(serviceId)
+        dao.anyOfType(serviceId, Collection.TYPE_WEBCAL)
 
     suspend fun createAddressBook(
         account: Account,

@@ -84,16 +84,17 @@ abstract class BaseSyncWorker(
             "sync-$authority ${account.type}/${account.name}"
 
         /**
-         * Will tell whether >0 sync workers (both [PeriodicSyncWorker] and [OneTimeSyncWorker])
+         * Observes whether >0 sync workers (both [PeriodicSyncWorker] and [OneTimeSyncWorker])
          * exist, belonging to given account and authorities, and which are/is in the given worker state.
          *
          * @param workStates   list of states of workers to match
          * @param account      the account which the workers belong to
          * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
          * @param whichTag     function to generate tag that should be observed for given account and authority
-         * @return *true* if at least one worker with matching query was found; *false* otherwise
+         *
+         * @return flow that emits `true` if at least one worker with matching query was found; `false` otherwise
          */
-        fun existsFlow(
+        fun exists(
             context: Context,
             workStates: List<WorkInfo.State>,
             account: Account? = null,

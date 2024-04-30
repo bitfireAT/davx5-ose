@@ -10,16 +10,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.ui.AppTheme
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import java.time.ZoneId
 
 @AndroidEntryPoint
 class CreateCalendarActivity: AppCompatActivity() {

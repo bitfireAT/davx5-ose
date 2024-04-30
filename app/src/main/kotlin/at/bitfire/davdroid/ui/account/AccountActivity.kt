@@ -7,11 +7,9 @@ package at.bitfire.davdroid.ui.account
 import AccountScreen
 import android.accounts.Account
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import at.bitfire.davdroid.db.Collection
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint

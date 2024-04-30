@@ -48,7 +48,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.log.Logger
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
@@ -154,75 +153,6 @@ fun CollectionList_Item(
             }
         }
     }
-
-    /*
-            var showOverflow by remember { mutableStateOf(false) }
-            var showPropertiesDialog by remember { mutableStateOf(false) }
-            var showDeleteCollectionDialog by remember { mutableStateOf(false) }
-
-            IconButton(onClick = { showOverflow = true }) {
-                Icon(Icons.Default.MoreVert, stringResource(R.string.options_menu))
-            }
-            DropdownMenu(
-                expanded = showOverflow,
-                onDismissRequest = { showOverflow = false }
-            ) {
-                // force read-only (only show for collections that are modifiable on the server)
-                if (collection.privWriteContent)
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Checkbox(
-                                checked = collection.readOnly(),
-                                onCheckedChange = { forceReadOnly ->
-                                    onChangeForceReadOnly(forceReadOnly)
-                                    showOverflow = false
-                                }
-                            )
-                        },
-                        text = {
-                            Text(stringResource(R.string.collection_force_read_only))
-                        },
-                        onClick = {
-                            onChangeForceReadOnly(!collection.forceReadOnly)
-                            showOverflow = false
-                        }
-                    )
-
-                // show properties
-                DropdownMenuItem(
-                    text = {
-                        Text(stringResource(R.string.collection_properties))
-                    },
-                    onClick = {
-                        showPropertiesDialog = true
-                        showOverflow = false
-                    }
-                )
-
-                // delete collection (only show when required privilege is available)
-                if (collection.privUnbind)
-                    DropdownMenuItem(
-                        text = {
-                            Text(stringResource(R.string.delete_collection))
-                        },
-                        onClick = {
-                            showDeleteCollectionDialog = true
-                            showOverflow = false
-                        }
-                    )
-            }
-
-            if (showDeleteCollectionDialog)
-                DeleteCollectionDialog(
-                    collection = collection,
-                    onDismiss = { showDeleteCollectionDialog = false }
-                )
-            if (showPropertiesDialog)
-                CollectionPropertiesDialog(
-                    collection = collection,
-                    onDismiss = { showPropertiesDialog = false }
-                )
-    }*/
 }
 
 @Composable

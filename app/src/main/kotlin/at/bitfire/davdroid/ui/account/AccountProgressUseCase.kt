@@ -52,7 +52,7 @@ class AccountProgressUseCase @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncPending(account: Account, authoritiesFlow: Flow<List<String>>): Flow<Boolean> =
         authoritiesFlow.flatMapLatest { authorities ->
-            BaseSyncWorker.existsFlow(
+            BaseSyncWorker.exists(
                 context = context,
                 workStates = listOf(WorkInfo.State.ENQUEUED),
                 account = account,
@@ -67,7 +67,7 @@ class AccountProgressUseCase @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncRunning(account: Account, authoritiesFlow: Flow<List<String>>): Flow<Boolean> =
         authoritiesFlow.flatMapLatest { authorities ->
-            BaseSyncWorker.existsFlow(
+            BaseSyncWorker.exists(
                 context = context,
                 workStates = listOf(WorkInfo.State.RUNNING),
                 account = account,

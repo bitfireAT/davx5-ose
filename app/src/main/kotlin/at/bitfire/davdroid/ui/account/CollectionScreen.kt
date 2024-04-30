@@ -273,7 +273,7 @@ fun CollectionScreen(
                         }
 
                         Text(
-                            text = "URL",
+                            text = stringResource(R.string.collection_url),
                             style = MaterialTheme.typography.titleMedium
                         )
                         SelectionContainer {

@@ -411,6 +411,7 @@
     <string name="collection_push_support">Push support</string>
     <string name="collection_push_web_push">Server advertises Push support</string>
     <string name="collection_last_sync">Last sync (%s)</string>
+    <string name="collection_url">Address (URL)</string>
 
     <!-- debugging and DebugInfoActivity -->
     <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>

@@ -74,8 +74,6 @@ import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.account.AccountScreenModel
 import at.bitfire.davdroid.ui.account.CollectionsList
-import at.bitfire.davdroid.ui.account.CreateAddressBookActivity
-import at.bitfire.davdroid.ui.account.CreateCalendarActivity
 import at.bitfire.davdroid.ui.account.RenameAccountDialog
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.util.TaskUtils

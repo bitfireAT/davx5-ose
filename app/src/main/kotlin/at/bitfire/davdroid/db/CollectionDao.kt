@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.db
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
@@ -18,18 +17,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CollectionDao {
 
-    @Query("SELECT DISTINCT color FROM collection WHERE serviceId=:id")
-    fun colorsByServiceLive(id: Long): LiveData<List<Int>>
-
     @Query("SELECT * FROM collection WHERE id=:id")
     fun get(id: Long): Collection?
 
     @Query("SELECT * FROM collection WHERE id=:id")
     fun getFlow(id: Long): Flow<Collection?>
-
-    @Deprecated("Use Flow instead")
-    @Query("SELECT * FROM collection WHERE id=:id")
-    fun getLive(id: Long): LiveData<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId")
     fun getByService(serviceId: Long): List<Collection>
@@ -40,8 +32,8 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
     fun getByServiceAndType(serviceId: Long, type: String): List<Collection>
 
-    @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_WEBCAL}'")
-    suspend fun anyWebcal(serviceId: Long): Boolean
+    @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type=:type")
+    suspend fun anyOfType(serviceId: Long, type: String): Boolean
 
     /**
      * Returns collections which
