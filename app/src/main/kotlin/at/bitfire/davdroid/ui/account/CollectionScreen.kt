@@ -25,16 +25,23 @@ import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DoNotDisturbOn
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +57,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import dagger.hilt.android.EntryPointAccessors
 import java.time.Instant
 import java.time.ZoneId
@@ -77,6 +85,9 @@ fun CollectionScreen(
 
     val collection = collectionOrNull ?: return
     CollectionScreen(
+        inProgress = model.inProgress,
+        error = model.error,
+        onResetError = model::resetError,
         color = collection.color,
         sync = collection.sync,
         onSetSync = model::setSync,
@@ -97,6 +108,9 @@ fun CollectionScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionScreen(
+    inProgress: Boolean,
+    error: Exception? = null,
+    onResetError: () -> Unit = {},
     color: Int?,
     sync: Boolean,
     onSetSync: (Boolean) -> Unit = {},
@@ -114,6 +128,12 @@ fun CollectionScreen(
     onNavUp: () -> Unit = {}
 ) {
     AppTheme {
+        if (error != null)
+            ExceptionInfoDialog(
+                exception = error,
+                onDismiss = onResetError
+            )
+
         Scaffold(
             topBar = {
                 MediumTopAppBar(
@@ -130,10 +150,23 @@ fun CollectionScreen(
                         )
                     },
                     actions = {
-                        IconButton(onClick = onDelete) {
-                            // TODO CONFIRMATION!
+                        var showDeleteDialog by remember { mutableStateOf(false) }
+                        IconButton(
+                            onClick = { showDeleteDialog = true },
+                            enabled = !inProgress
+                        ) {
                             Icon(Icons.Default.DeleteForever, contentDescription = stringResource(R.string.delete_collection))
                         }
+
+                        if (showDeleteDialog)
+                            DeleteCollectionDialog(
+                                displayName = title,
+                                onDismiss = { showDeleteDialog = false },
+                                onConfirm = {
+                                    onDelete()
+                                    showDeleteDialog = false
+                                }
+                            )
                     }
                 )
             }
@@ -143,6 +176,12 @@ fun CollectionScreen(
                     .padding(padding)
                     .verticalScroll(rememberScrollState())
             ) {
+                if (inProgress)
+                    LinearProgressIndicator(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp))
+
                 if (color != null) {
                     Box(
                         Modifier
@@ -294,6 +333,7 @@ fun CollectionScreen_Entry(
 @Preview
 fun CollectionScreen_Preview() {
     CollectionScreen(
+        inProgress = true,
         color = 0xff14c0c4.toInt(),
         sync = true,
         privWriteContent = true,
@@ -310,5 +350,44 @@ fun CollectionScreen_Preview() {
             )
         ),
         supportsWebPush = true
+    )
+}
+
+
+@Composable
+fun DeleteCollectionDialog(
+    displayName: String,
+    onDismiss: () -> Unit = {},
+    onConfirm: () -> Unit = {}
+) {
+    AlertDialog(
+        icon = {
+            Icon(Icons.Default.DeleteForever, contentDescription = null)
+        },
+        title = {
+            Text(stringResource(R.string.delete_collection))
+        },
+        text = {
+            Text(stringResource(R.string.delete_collection_confirm_warning, displayName))
+        },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text("Delete")
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+        onDismissRequest = onDismiss
+    )
+}
+
+@Composable
+@Preview
+fun DeleteCollectionDialog_Preview() {
+    DeleteCollectionDialog(
+        displayName = "Some Calendar"
     )
 }

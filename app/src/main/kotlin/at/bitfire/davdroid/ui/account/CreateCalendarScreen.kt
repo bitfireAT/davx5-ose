@@ -135,17 +135,11 @@ fun CreateCalendarScreen(
     onNavUp: () -> Unit = {}
 ) {
     AppTheme {
-        var showErrorDialog by remember { mutableStateOf(true) }
-        LaunchedEffect(error) {
-            if (error != null)
-                showErrorDialog = true
-        }
-        if (error != null && showErrorDialog) {
-            ExceptionInfoDialog(exception = error) {
-                showErrorDialog = false
-                onResetError()
-            }
-        }
+        if (error != null)
+            ExceptionInfoDialog(
+                exception = error,
+                onDismiss = onResetError
+            )
 
         Scaffold(
             topBar = {

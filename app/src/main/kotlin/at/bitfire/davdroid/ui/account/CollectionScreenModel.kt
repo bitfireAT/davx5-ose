@@ -26,12 +26,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class CollectionScreenModel @AssistedInject constructor(
     @Assisted val collectionId: Long,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
-    private val syncStatsRepository: DavSyncStatsRepository
+    syncStatsRepository: DavSyncStatsRepository
 ): ViewModel() {
 
     @AssistedFactory
@@ -67,21 +66,36 @@ class CollectionScreenModel @AssistedInject constructor(
 
     val lastSynced = syncStatsRepository.getLastSyncedFlow(collectionId)
 
+    /** Whether an operation (like deleting the collection) is currently in progress */
+    var inProgress by mutableStateOf(false)
+        private set
+
+    var error by mutableStateOf<Exception?>(null)
+        private set
+
     /** Scope for operations that must not be cancelled. */
-    val noCancellationScope = CoroutineScope(SupervisorJob())
+    private val noCancellationScope = CoroutineScope(SupervisorJob())
 
     /**
      * Deletes the collection from the database and the server.
      */
     fun delete() {
         val collection = collection.value ?: return
+
+        inProgress = true
         noCancellationScope.launch {
             try {
                 collectionRepository.delete(collection)
             } catch (e: Exception) {
-                // TODO error handling
+                error = e
+            } finally {
+                inProgress = false
             }
         }
+    }
+
+    fun resetError() {
+        error = null
     }
 
     fun setForceReadOnly(forceReadOnly: Boolean) {
@@ -95,32 +109,5 @@ class CollectionScreenModel @AssistedInject constructor(
             collectionRepository.setSync(collectionId, sync)
         }
     }
-
-    /*
-
-    val deleteCollectionResult = MutableLiveData<Optional<Exception>>()
-    /** Deletes the given collection from the database and the server. */
-    fun deleteCollection(collection: Collection) = viewModelScope.launch(Dispatchers.IO) {
-        HttpClient.Builder(context, AccountSettings(context, account))
-            .setForeground(true)
-            .build().use { httpClient ->
-                try {
-                    // delete on server
-                    val davResource = DavResource(httpClient.okHttpClient, collection.url)
-                    davResource.delete(null) {}
-
-                    // delete in database
-                    db.collectionDao().delete(collection)
-
-                    // post success
-                    deleteCollectionResult.postValue(Optional.empty())
-                } catch (e: Exception) {
-                    Logger.log.log(Level.SEVERE, "Couldn't delete collection", e)
-                    // post error
-                    deleteCollectionResult.postValue(Optional.of(e))
-                }
-            }
-    }
-     */
 
 }

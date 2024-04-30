@@ -398,9 +398,7 @@
     <string name="create_collection_home_set_required">Storage location is required</string>
     <string name="create_collection_create">Create</string>
     <string name="delete_collection">Delete collection</string>
-    <string name="delete_collection_confirm_title">Are you sure?</string>
-    <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed permanently.</string>
-    <string name="delete_collection_data_shall_be_deleted">These data shall be deleted from the server.</string>
+    <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed permanently, both locally and on the server.</string>
     <string name="collection_force_read_only">Force read-only</string>
     <string name="collection_properties">Properties</string>
     <string name="collection_properties_sync_time">Last synced</string>
