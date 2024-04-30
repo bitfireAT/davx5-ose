@@ -55,8 +55,8 @@ class BatteryOptimizationsPage: IntroPage {
         // 2a. evil manufacturer AND
         // 2b. "don't show anymore" has not been clicked
         return if (
-            (!Model.isExempted(application) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
-            (Model.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
+            (!BatteryOptimizationsPageModel.isExempted(application) && settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false) ||
+            (BatteryOptimizationsPageModel.manufacturerWarning && settingsManager.getBooleanOrNull(HINT_AUTOSTART_PERMISSION) != false)
         )
             IntroPage.ShowPolicy.SHOW_ALWAYS
         else
