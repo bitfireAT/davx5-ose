@@ -49,10 +49,9 @@ fun BatteryOptimizationsPageContent(
     }
 
     val hintBatteryOptimizations by model.hintBatteryOptimizations.collectAsStateWithLifecycle(false)
-    val shouldBeExempted = model.shouldBeExempted
-    val isExempted = model.isExempted
-    LaunchedEffect(shouldBeExempted, isExempted) {
-        if (shouldBeExempted && !isExempted)
+    val uiState = model.uiState
+    LaunchedEffect(uiState) {
+        if (uiState.shouldBeExempted && !uiState.isExempted)
             ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
     }
 
@@ -60,8 +59,8 @@ fun BatteryOptimizationsPageContent(
     BatteryOptimizationsPageContent(
         dontShowBattery = hintBatteryOptimizations == false,
         onChangeDontShowBattery = model::updateHintBatteryOptimizations,
-        isExempted = isExempted,
-        shouldBeExempted = shouldBeExempted,
+        isExempted = uiState.isExempted,
+        shouldBeExempted = uiState.shouldBeExempted,
         onChangeShouldBeExempted = model::updateShouldBeExempted,
         dontShowAutostart = hintAutostartPermission == false,
         onChangeDontShowAutostart = model::updateHintAutostartPermission,

@@ -68,9 +68,12 @@ class BatteryOptimizationsPageModel @Inject constructor(
             context.getSystemService<PowerManager>()!!.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)
     }
 
-    var shouldBeExempted by mutableStateOf(true)
-        private set
-    var isExempted by mutableStateOf(false)
+    data class UiState(
+        val shouldBeExempted: Boolean = true,
+        val isExempted: Boolean = false
+    )
+
+    var uiState by mutableStateOf(UiState())
         private set
 
     val hintBatteryOptimizations = settings.getBooleanFlow(HINT_BATTERY_OPTIMIZATIONS)
@@ -87,8 +90,7 @@ class BatteryOptimizationsPageModel @Inject constructor(
 
     fun checkBatteryOptimizations() {
         val exempted = isExempted(context)
-        isExempted = exempted
-        shouldBeExempted = exempted
+        uiState = uiState.copy(shouldBeExempted = exempted, isExempted = exempted)
 
         // if DAVx5 is whitelisted, always show a reminder as soon as it's not whitelisted anymore
         if (exempted)
@@ -96,7 +98,7 @@ class BatteryOptimizationsPageModel @Inject constructor(
     }
 
     fun updateShouldBeExempted(value: Boolean) {
-        shouldBeExempted = value
+        uiState = uiState.copy(shouldBeExempted = value)
     }
 
     fun updateHintBatteryOptimizations(value: Boolean) {
