@@ -72,6 +72,7 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.TaskUtils
@@ -539,8 +540,8 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         fun resetHints() {
-            settings.remove(BatteryOptimizationsPage.Model.HINT_BATTERY_OPTIMIZATIONS)
-            settings.remove(BatteryOptimizationsPage.Model.HINT_AUTOSTART_PERMISSION)
+            settings.remove(BatteryOptimizationsPageModel.HINT_BATTERY_OPTIMIZATIONS)
+            settings.remove(BatteryOptimizationsPageModel.HINT_AUTOSTART_PERMISSION)
             settings.remove(TasksActivity.Model.HINT_OPENTASKS_NOT_INSTALLED)
             settings.remove(OpenSourcePage.Model.SETTING_NEXT_DONATION_POPUP)
         }
