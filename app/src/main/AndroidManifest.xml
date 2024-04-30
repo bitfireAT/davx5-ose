@@ -141,6 +141,9 @@
             android:exported="true">
         </activity>
         <activity
+            android:name=".ui.account.CollectionActivity"
+            android:parentActivityName=".ui.account.AccountActivity" />
+        <activity
             android:name=".ui.account.CreateAddressBookActivity"
             android:parentActivityName=".ui.account.AccountActivity" />
         <activity

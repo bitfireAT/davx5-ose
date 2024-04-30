@@ -333,7 +333,7 @@
   <!--collection management-->
   <string name="create_addressbook">Sortu helbide liburua</string>
   <string name="create_calendar">Sortu egutegia</string>
-  <string name="create_calendar_time_zone">Ordu-zona lehenetsia</string>
+  <string name="create_calendar_time_zone_optional">Ordu-zona lehenetsia</string>
   <string name="create_calendar_type">Egutegi sarrera posibleak</string>
   <string name="create_calendar_type_vevent">Gertaerak</string>
   <string name="create_calendar_type_vtodo">Zereginak</string>

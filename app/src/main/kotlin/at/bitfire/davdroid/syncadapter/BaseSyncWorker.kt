@@ -15,8 +15,6 @@ import android.provider.CalendarContract
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkInfo
@@ -34,6 +32,8 @@ import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import java.util.Collections
@@ -84,14 +84,15 @@ abstract class BaseSyncWorker(
             "sync-$authority ${account.type}/${account.name}"
 
         /**
-         * Will tell whether >0 sync workers (both [PeriodicSyncWorker] and [OneTimeSyncWorker])
+         * Observes whether >0 sync workers (both [PeriodicSyncWorker] and [OneTimeSyncWorker])
          * exist, belonging to given account and authorities, and which are/is in the given worker state.
          *
          * @param workStates   list of states of workers to match
          * @param account      the account which the workers belong to
          * @param authorities  type of sync work, ie [CalendarContract.AUTHORITY]
          * @param whichTag     function to generate tag that should be observed for given account and authority
-         * @return *true* if at least one worker with matching query was found; *false* otherwise
+         *
+         * @return flow that emits `true` if at least one worker with matching query was found; `false` otherwise
          */
         fun exists(
             context: Context,
@@ -101,15 +102,15 @@ abstract class BaseSyncWorker(
             whichTag: (account: Account, authority: String) -> String = { account, authority ->
                 commonTag(account, authority)
             }
-        ): LiveData<Boolean> {
-            val workQuery = WorkQuery.Builder
-                .fromStates(workStates)
+        ): Flow<Boolean> {
+            val workQuery = WorkQuery.Builder.fromStates(workStates)
             if (account != null && authorities != null)
                 workQuery.addTags(
                     authorities.map { authority -> whichTag(account, authority) }
                 )
             return WorkManager.getInstance(context)
-                .getWorkInfosLiveData(workQuery.build()).map { workInfoList ->
+                .getWorkInfosFlow(workQuery.build())
+                .map { workInfoList ->
                     workInfoList.isNotEmpty()
                 }
         }

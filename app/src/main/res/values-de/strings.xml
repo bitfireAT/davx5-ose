@@ -320,7 +320,7 @@
   <!--collection management-->
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_calendar">Kalender anlegen</string>
-  <string name="create_calendar_time_zone">Standardzeitzone</string>
+  <string name="create_calendar_time_zone_optional">Standardzeitzone</string>
   <string name="create_calendar_type">Mögliche Kalendereinträge</string>
   <string name="create_calendar_type_vevent">Termine</string>
   <string name="create_calendar_type_vtodo">Aufgaben</string>
