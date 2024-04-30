@@ -106,7 +106,7 @@ class BatteryOptimizationsPageModel @Inject constructor(
     }
 
     fun updateHintAutostartPermission(value: Boolean) {
-        settings.putBoolean(HINT_AUTOSTART_PERMISSION, value)
+        settings.putBoolean(HINT_AUTOSTART_PERMISSION, !value)
     }
 
 }
