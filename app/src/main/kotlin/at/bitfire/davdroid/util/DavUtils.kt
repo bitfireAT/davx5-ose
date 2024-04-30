@@ -60,7 +60,13 @@ object DavUtils {
         return String.format(Locale.ROOT, "#%06X%02X", color, alpha)
     }
 
-    @Deprecated("Use HttpUrl.lastSegment in UrlUtils")
+    @Deprecated(
+        message = "Use HttpUrl.lastSegment in UrlUtils",
+        replaceWith = ReplaceWith(
+            "url.lastSegment()",
+            "at.bitfire.davdroid.util.lastSegment"
+        )
+    )
     fun lastSegmentOfUrl(url: HttpUrl): String {
         // the list returned by HttpUrl.pathSegments() is unmodifiable, so we have to create a copy
         val segments = LinkedList(url.pathSegments)
