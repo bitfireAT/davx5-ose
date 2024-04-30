@@ -48,6 +48,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -134,6 +136,8 @@ fun CreateCalendarScreen(
     onCreate: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     AppTheme {
         if (error != null)
             ExceptionInfoDialog(
@@ -198,6 +202,9 @@ fun CreateCalendarScreen(
                                 showColorPicker = true
                             }
                             .size(48.dp)
+                            .semantics {
+                                 contentDescription = context.getString(R.string.create_collection_color)
+                            }
                         )
                         if (showColorPicker) {
                             CalendarColorPickerDialog(
@@ -214,6 +221,7 @@ fun CreateCalendarScreen(
                         value = description,
                         onValueChange = onSetDescription,
                         label = { Text(stringResource(R.string.create_collection_description_optional)) },
+                        supportingText = { Text(stringResource(R.string.create_collection_optional)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
@@ -233,9 +241,10 @@ fun CreateCalendarScreen(
                         modifier = Modifier.padding(top = 8.dp)
                     ) {
                         OutlinedTextField(
-                            label = { Text(stringResource(R.string.create_calendar_time_zone)) },
+                            label = { Text(stringResource(R.string.create_calendar_time_zone_optional)) },
                             value = timeZone ?: stringResource(R.string.create_calendar_time_zone_none),
                             onValueChange = { /* read-only */ },
+                            supportingText = { Text(stringResource(R.string.create_collection_optional)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                             readOnly = true,
                             modifier = Modifier
@@ -274,69 +283,6 @@ fun CreateCalendarScreen(
                                 )
                         }
                     }
-
-                    /*Text(
-                        stringResource(R.string.create_calendar_type),
-                        style = MaterialTheme.typography.body1,
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
-                    CheckboxRow(
-                        labelId = R.string.create_calendar_type_vevent,
-                        checked = supportVEVENT,
-                        onCheckedChange = onSupportVEVENTChange
-                    )
-                    CheckboxRow(
-                        labelId = R.string.create_calendar_type_vtodo,
-                        checked = supportVTODO,
-                        onCheckedChange = onSupportVTODOChange
-                    )
-                    CheckboxRow(
-                        labelId = R.string.create_calendar_type_vjournal,
-                        checked = supportVJOURNAL,
-                        onCheckedChange = onSupportVJOURNALChange
-                    )
-
-    @Composable
-    fun CheckboxRow(
-        @StringRes labelId: Int,
-        checked: Boolean,
-        onCheckedChange: (Boolean) -> Unit
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Checkbox(
-                checked = checked,
-                onCheckedChange = onCheckedChange
-            )
-            Text(
-                text = stringResource(labelId),
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .clickable { onCheckedChange(!checked) }
-                    .weight(1f)
-            )
-        }
-    }
-
-    @Composable
-    @Preview
-    fun CalendarForm_Preview() {
-        CalendarForm(
-            displayName = "My Calendar",
-            color = Color.Magenta.toArgb(),
-            description = "This is my calendar",
-            timeZoneId = "Europe/Vienna",
-            supportVEVENT = true,
-            supportVTODO = false,
-            supportVJOURNAL = false,
-            homeSet = null,
-            homeSets = emptyList()
-        )
-    }
-
-                    */
 
                     Text(
                         stringResource(R.string.create_calendar_type),

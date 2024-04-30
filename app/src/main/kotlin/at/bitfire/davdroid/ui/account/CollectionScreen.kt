@@ -155,7 +155,7 @@ fun CollectionScreen(
                             onClick = { showDeleteDialog = true },
                             enabled = !inProgress
                         ) {
-                            Icon(Icons.Default.DeleteForever, contentDescription = stringResource(R.string.delete_collection))
+                            Icon(Icons.Default.DeleteForever, contentDescription = stringResource(R.string.collection_delete))
                         }
 
                         if (showDeleteDialog)
@@ -193,12 +193,14 @@ fun CollectionScreen(
                 }
 
                 Column(Modifier.padding(8.dp)) {
-                    // TODO strings i18n
-
                     CollectionScreen_Entry(
                         icon = Icons.Default.Sync,
-                        title = "Synchronization",
-                        text = if (sync) "Synchronization enabled" else "Synchronization disabled",
+                        title = stringResource(R.string.collection_synchronization),
+                        text =
+                            if (sync)
+                                stringResource(R.string.collection_synchronization_on)
+                            else
+                                stringResource(R.string.collection_synchronization_off),
                         control = {
                             Switch(
                                 checked = sync,
@@ -209,11 +211,11 @@ fun CollectionScreen(
 
                     CollectionScreen_Entry(
                         icon = Icons.Default.DoNotDisturbOn,
-                        title = "Read-only",
+                        title = stringResource(R.string.collection_read_only),
                         text = when {
-                            !privWriteContent -> "Read-only on server"
-                            forceReadOnly -> "Forced read-only (client only)"
-                            else -> "Read-write"
+                            !privWriteContent -> stringResource(R.string.collection_read_only_by_server)
+                            forceReadOnly -> stringResource(R.string.collection_read_only_forced)
+                            else -> stringResource(R.string.collection_read_write)
                         },
                         control = {
                             Switch(
@@ -226,28 +228,28 @@ fun CollectionScreen(
 
                     if (displayName != null)
                         CollectionScreen_Entry(
-                            title = "Title",
+                            title = stringResource(R.string.collection_title),
                             text = title
                         )
 
                     if (description != null)
                         CollectionScreen_Entry(
-                            title = "Description",
+                            title = stringResource(R.string.collection_description),
                             text = description
                         )
 
                     if (owner != null)
                         CollectionScreen_Entry(
                             icon = Icons.Default.AccountBox,
-                            title = "Owner",
+                            title = stringResource(R.string.collection_owner),
                             text = owner
                         )
 
                     if (supportsWebPush)
                         CollectionScreen_Entry(
                             icon = Icons.Default.CloudSync,
-                            title = "Web Push",
-                            text = "Server advertises Push support"
+                            title = stringResource(R.string.collection_push_support),
+                            text = stringResource(R.string.collection_push_web_push)
                         )
 
                     Column(Modifier.padding(start = 44.dp)) {
@@ -256,7 +258,7 @@ fun CollectionScreen(
 
                             for (lastSync in lastSynced) {
                                 Text(
-                                    text = "Last synchronized (${lastSync.appName})",
+                                    text = stringResource(R.string.collection_last_sync, lastSync.appName),
                                     style = MaterialTheme.typography.titleMedium
                                 )
 
@@ -365,19 +367,19 @@ fun DeleteCollectionDialog(
             Icon(Icons.Default.DeleteForever, contentDescription = null)
         },
         title = {
-            Text(stringResource(R.string.delete_collection))
+            Text(stringResource(R.string.collection_delete))
         },
         text = {
-            Text(stringResource(R.string.delete_collection_confirm_warning, displayName))
+            Text(stringResource(R.string.collection_delete_warning, displayName))
         },
         confirmButton = {
             Button(onClick = onConfirm) {
-                Text("Delete")
+                Text(stringResource(R.string.dialog_delete))
             }
         },
         dismissButton = {
             OutlinedButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(android.R.string.cancel))
             }
         },
         onDismissRequest = onDismiss

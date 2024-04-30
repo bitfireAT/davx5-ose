@@ -156,6 +156,7 @@ fun CreateAddressBookScreen(
                         value = description,
                         onValueChange = onSetDescription,
                         label = { Text(stringResource(R.string.create_collection_description_optional)) },
+                        supportingText = { Text(stringResource(R.string.create_collection_optional)) },
                         singleLine = true,
                         enabled = !isCreating,
                         keyboardOptions = KeyboardOptions(
