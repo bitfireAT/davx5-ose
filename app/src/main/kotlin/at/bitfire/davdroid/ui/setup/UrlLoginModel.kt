@@ -10,12 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
-import dagger.hilt.android.lifecycle.HiltViewModel
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.lang3.StringUtils
-import java.net.URI
-import java.net.URISyntaxException
-import javax.inject.Inject
 
 class UrlLoginModel: ViewModel() {
 

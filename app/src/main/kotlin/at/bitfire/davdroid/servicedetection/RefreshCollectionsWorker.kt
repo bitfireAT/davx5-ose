@@ -11,7 +11,6 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
-import androidx.lifecycle.map
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
@@ -67,6 +66,7 @@ import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import at.bitfire.davdroid.util.DavUtils.parent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -166,15 +166,16 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         }
 
         /**
-         * Will tell whether a refresh worker with given service id and state exists
+         * Observes whether a refresh worker with given service id and state exists.
          *
          * @param workerName    name of worker to find
          * @param workState     state of worker to match
-         * @return boolean      true if worker with matching state was found
+         *
+         * @return flow that emits `true` if worker with matching state was found (otherwise `false`)
          */
-        fun exists(context: Context, workerName: String, workState: WorkInfo.State = WorkInfo.State.RUNNING) =
-            WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName).map {
-                workInfoList -> workInfoList.any { workInfo -> workInfo.state == workState }
+        fun existsFlow(context: Context, workerName: String, workState: WorkInfo.State = WorkInfo.State.RUNNING) =
+            WorkManager.getInstance(context).getWorkInfosForUniqueWorkFlow(workerName).map { workInfoList ->
+                workInfoList.any { workInfo -> workInfo.state == workState }
             }
 
     }

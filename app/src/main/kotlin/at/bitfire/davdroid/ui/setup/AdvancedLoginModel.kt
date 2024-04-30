@@ -11,8 +11,6 @@ import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
 import org.apache.commons.lang3.StringUtils
-import java.net.URI
-import java.net.URISyntaxException
 
 class AdvancedLoginModel: ViewModel() {
 

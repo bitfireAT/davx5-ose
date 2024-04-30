@@ -67,7 +67,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.account.progressAlpha
+import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -316,7 +316,7 @@ fun AccountsScreen_Preview_OneAccount() {
         accounts = listOf(
             AccountsModel.AccountInfo(
                 Account("Account Name", "test"),
-                AccountsModel.Progress.Idle
+                AccountProgress.Idle
             )
         )
     )
@@ -354,23 +354,22 @@ fun AccountList(
                     modifier = Modifier
                         .clickable { onClickAccount(account) }
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp)
+                        .padding(bottom = 8.dp)
                 ) {
                     Column {
-                        val progressAlpha = progressAlpha(progress)
+                        val progressAlpha = progress.rememberAlpha()
                         when (progress) {
-                            AccountsModel.Progress.Active ->
+                            AccountProgress.Active ->
                                 LinearProgressIndicator(
                                     //color = MaterialTheme.colors.onSecondary,
                                     modifier = Modifier
                                         .alpha(progressAlpha)
                                         .fillMaxWidth()
                                 )
-                            AccountsModel.Progress.Pending,
-                            AccountsModel.Progress.Idle ->
+                            AccountProgress.Pending,
+                            AccountProgress.Idle ->
                                 LinearProgressIndicator(
                                     progress = 1f,
-                                    //color = MaterialTheme.colors.onSecondary,
                                     modifier = Modifier
                                         .alpha(progressAlpha)
                                         .fillMaxWidth()
@@ -383,15 +382,15 @@ fun AccountList(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .align(Alignment.CenterHorizontally)
-                                    .size(48.dp)
+                                    .size(32.dp)
                             )
 
                             Text(
                                 text = account.name,
-                                style = MaterialTheme.typography.headlineMedium,
+                                style = MaterialTheme.typography.bodyLarge,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
-                                    .padding(top = 8.dp)
+                                    .padding(top = 4.dp)
                                     .fillMaxWidth()
                             )
                         }
@@ -407,7 +406,7 @@ fun AccountList_Preview_Idle() {
         listOf(
             AccountsModel.AccountInfo(
                 Account("Account Name", "test"),
-                AccountsModel.Progress.Idle
+                AccountProgress.Idle
             )
         )
     )
@@ -419,7 +418,7 @@ fun AccountList_Preview_SyncPending() {
     AccountList(listOf(
         AccountsModel.AccountInfo(
             Account("Account Name", "test"),
-            AccountsModel.Progress.Pending
+            AccountProgress.Pending
         )
     ))
 }
@@ -430,7 +429,7 @@ fun AccountList_Preview_Syncing() {
     AccountList(listOf(
         AccountsModel.AccountInfo(
             Account("Account Name", "test"),
-            AccountsModel.Progress.Active
+            AccountProgress.Active
         )
     ))
 }
