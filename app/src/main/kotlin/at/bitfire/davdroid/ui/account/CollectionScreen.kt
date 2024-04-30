@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CloudSync
@@ -139,7 +140,7 @@ fun CollectionScreen(
                 MediumTopAppBar(
                     navigationIcon = {
                         IconButton(onClick = onNavUp) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.navigate_up))
+                            Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(R.string.navigate_up))
                         }
                     },
                     title = {

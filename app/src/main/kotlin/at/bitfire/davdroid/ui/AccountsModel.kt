@@ -151,6 +151,7 @@ class AccountsModel @Inject constructor(
         ).map { connectivityManager.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED }
 
     /** whether storage is low (prevents sync framework from running synchronization) */
+    @Suppress("DEPRECATION")
     val storageLow =
         broadcastReceiverFlow(
             context = context,

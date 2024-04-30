@@ -442,8 +442,6 @@ fun AccountScreen_Actions(
     onDeleteAccount: () -> Unit,
     onAccountSettings: () -> Unit
 ) {
-    val context = LocalContext.current
-
     var showDeleteAccountDialog by remember { mutableStateOf(false) }
     var showRenameAccountDialog by remember { mutableStateOf(false) }
 
@@ -641,7 +639,7 @@ fun AccountScreen_ServiceTab(
 fun AccountScreen_Preview() {
     AccountScreen(
         accountName = "test@example.com",
-        showOnlyPersonal = AccountSettings.ShowOnlyPersonal(false, true),
+        showOnlyPersonal = AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = true),
         hasCardDav = true,
         canCreateAddressBook = false,
         cardDavProgress = AccountProgress.Active,
