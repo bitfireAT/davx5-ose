@@ -37,6 +37,7 @@ import at.bitfire.davdroid.syncadapter.groups.CategoriesStrategy
 import at.bitfire.davdroid.syncadapter.groups.VCard4Strategy
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.sameTypeAs
+import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import ezvcard.VCardVersion
@@ -304,7 +305,13 @@ class ContactsSyncManager(
                     val card = addressData?.card
                             ?: throw DavException("Received multi-get response without address data")
 
-                    processCard(DavUtils.lastSegmentOfUrl(response.href), eTag, StringReader(card), isJCard, resourceDownloader)
+                    processCard(
+                        response.href.lastSegment(),
+                        eTag,
+                        StringReader(card),
+                        isJCard,
+                        resourceDownloader
+                    )
                 }
             }
         }

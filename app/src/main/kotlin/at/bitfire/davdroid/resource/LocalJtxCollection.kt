@@ -13,6 +13,7 @@ import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxCollectionFactory
 import at.bitfire.ical4android.JtxICalObject
@@ -33,7 +34,10 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
         fun valuesFromCollection(info: Collection, account: Account, owner: Principal?, withColor: Boolean) =
             ContentValues().apply {
                 put(JtxContract.JtxCollection.URL, info.url.toString())
-                put(JtxContract.JtxCollection.DISPLAYNAME, info.displayName ?: DavUtils.lastSegmentOfUrl(info.url))
+                put(
+                    JtxContract.JtxCollection.DISPLAYNAME,
+                    info.displayName ?: info.url.lastSegment()
+                )
                 put(JtxContract.JtxCollection.DESCRIPTION, info.description)
                 if (owner != null)
                     put(JtxContract.JtxCollection.OWNER, owner.url.toString())

@@ -27,6 +27,7 @@ import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.util.DateUtils
@@ -182,7 +183,12 @@ class CalendarSyncManager(
                     val iCal = calendarData?.iCalendar
                             ?: throw DavException("Received multi-get response without calendar data")
 
-                    processVEvent(DavUtils.lastSegmentOfUrl(response.href), eTag, scheduleTag, StringReader(iCal))
+                    processVEvent(
+                        response.href.lastSegment(),
+                        eTag,
+                        scheduleTag,
+                        StringReader(iCal)
+                    )
                 }
             }
         }

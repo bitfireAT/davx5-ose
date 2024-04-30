@@ -16,6 +16,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
 import at.bitfire.ical4android.BatchOperation
@@ -54,7 +55,8 @@ class LocalCalendar private constructor(
         private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
             val values = ContentValues()
             values.put(Calendars.NAME, info.url.toString())
-            values.put(Calendars.CALENDAR_DISPLAY_NAME, if (info.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
+            values.put(Calendars.CALENDAR_DISPLAY_NAME,
+                if (info.displayName.isNullOrBlank()) info.url.lastSegment() else info.displayName)
 
             if (withColor)
                 values.put(Calendars.CALENDAR_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)

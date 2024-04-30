@@ -16,6 +16,7 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.lastSegment
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -81,7 +82,7 @@ class TestSyncManager(
         assertEquals(assertDownloadRemote.keys.toList(), bunch)
 
         for ((url, eTag) in assertDownloadRemote) {
-            val fileName = DavUtils.lastSegmentOfUrl(url)
+            val fileName = url.lastSegment()
             var localEntry = localCollection.entries.firstOrNull { it.fileName == fileName }
             if (localEntry == null) {
                 val newEntry = LocalTestResource().also {
