@@ -139,76 +139,76 @@ fun AccountsScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
     AppTheme {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    navigationIcon = {
-                        IconToggleButton(false, onCheckedChange = { openDrawer ->
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet {
+                    accountsDrawerHandler.AccountsDrawer(
+                        snackbarHostState = snackbarHostState,
+                        onCloseDrawer = {
                             scope.launch {
-                                if (openDrawer)
-                                    drawerState.open()
-                                else
-                                    drawerState.close()
+                                drawerState.close()
                             }
-                        }) {
-                            Icon(
-                                Icons.Filled.Menu,
-                                stringResource(androidx.compose.ui.R.string.navigation_menu)
-                            )
                         }
-                    },
-                    title = {
-                        Text(stringResource(R.string.app_name))
-                    }
-                )
-            },
-            floatingActionButton = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    if (showSyncAll)
-                        FloatingActionButton(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            onClick = onSyncAll
-                        ) {
-                            Icon(
-                                Icons.Default.Sync,
-                                contentDescription = stringResource(R.string.accounts_sync_all)
-                            )
-                        }
-
-                    if (showAddAccount == AccountsModel.FABStyle.WithText)
-                        ExtendedFloatingActionButton(
-                            text = { Text(stringResource(R.string.login_create_account)) },
-                            icon = { Icon(Icons.Filled.Add, stringResource(R.string.login_create_account)) },
-                            onClick = onAddAccount
-                        )
-                    else if (showAddAccount == AccountsModel.FABStyle.Standard)
-                        FloatingActionButton(
-                            onClick = onAddAccount,
-                            modifier = Modifier.padding(top = 24.dp)
-                        ) {
-                            Icon(Icons.Filled.Add, stringResource(R.string.login_create_account))
-                        }
+                    )
                 }
-            },
-            snackbarHost = { SnackbarHost(snackbarHostState) }
-        ) { padding ->
-            Box(Modifier.padding(padding)) {
-                ModalNavigationDrawer(
-                    drawerState = drawerState,
-                    drawerContent = {
-                        ModalDrawerSheet {
-                            accountsDrawerHandler.AccountsDrawer(
-                                snackbarHostState = snackbarHostState,
-                                onCloseDrawer = {
-                                    scope.launch {
+            }
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        navigationIcon = {
+                            IconToggleButton(false, onCheckedChange = { openDrawer ->
+                                scope.launch {
+                                    if (openDrawer)
+                                        drawerState.open()
+                                    else
                                         drawerState.close()
-                                    }
                                 }
-                            )
+                            }) {
+                                Icon(
+                                    Icons.Filled.Menu,
+                                    stringResource(androidx.compose.ui.R.string.navigation_menu)
+                                )
+                            }
+                        },
+                        title = {
+                            Text(stringResource(R.string.app_name))
                         }
+                    )
+                },
+                floatingActionButton = {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (showSyncAll)
+                            FloatingActionButton(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                onClick = onSyncAll
+                            ) {
+                                Icon(
+                                    Icons.Default.Sync,
+                                    contentDescription = stringResource(R.string.accounts_sync_all)
+                                )
+                            }
+
+                        if (showAddAccount == AccountsModel.FABStyle.WithText)
+                            ExtendedFloatingActionButton(
+                                text = { Text(stringResource(R.string.login_create_account)) },
+                                icon = { Icon(Icons.Filled.Add, stringResource(R.string.login_create_account)) },
+                                onClick = onAddAccount
+                            )
+                        else if (showAddAccount == AccountsModel.FABStyle.Standard)
+                            FloatingActionButton(
+                                onClick = onAddAccount,
+                                modifier = Modifier.padding(top = 24.dp)
+                            ) {
+                                Icon(Icons.Filled.Add, stringResource(R.string.login_create_account))
+                            }
                     }
-                ) {
+                },
+                snackbarHost = { SnackbarHost(snackbarHostState) }
+            ) { padding ->
+                Box(Modifier.padding(padding)) {
                     Box(
                         Modifier
                             .fillMaxSize()
