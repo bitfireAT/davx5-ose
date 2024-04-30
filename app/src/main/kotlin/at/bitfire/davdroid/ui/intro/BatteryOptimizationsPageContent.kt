@@ -1,6 +1,7 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -19,18 +20,54 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
 import java.util.Locale
 import org.apache.commons.text.WordUtils
+
+@Composable
+fun BatteryOptimizationsPageContent(
+    model: BatteryOptimizationsPageModel = viewModel()
+) {
+    val ignoreBatteryOptimizationsResultLauncher = rememberLauncherForActivityResult(
+        BatteryOptimizationsPage.IgnoreBatteryOptimizationsContract
+    ) {
+        model.checkBatteryOptimizations()
+    }
+
+    val hintBatteryOptimizations by model.hintBatteryOptimizations.collectAsStateWithLifecycle(false)
+    val shouldBeExempted = model.shouldBeExempted
+    val isExempted = model.isExempted
+    LaunchedEffect(shouldBeExempted, isExempted) {
+        if (shouldBeExempted && !isExempted)
+            ignoreBatteryOptimizationsResultLauncher.launch(BuildConfig.APPLICATION_ID)
+    }
+
+    val hintAutostartPermission by model.hintAutostartPermission.collectAsStateWithLifecycle(false)
+    BatteryOptimizationsPageContent(
+        dontShowBattery = hintBatteryOptimizations == false,
+        onChangeDontShowBattery = model::updateHintBatteryOptimizations,
+        isExempted = isExempted,
+        shouldBeExempted = shouldBeExempted,
+        onChangeShouldBeExempted = model::updateShouldBeExempted,
+        dontShowAutostart = hintAutostartPermission == false,
+        onChangeDontShowAutostart = model::updateHintAutostartPermission,
+        manufacturerWarning = BatteryOptimizationsPageModel.manufacturerWarning
+    )
+}
 
 @Composable
 fun BatteryOptimizationsPageContent(
