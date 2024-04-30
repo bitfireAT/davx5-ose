@@ -334,7 +334,7 @@
   <!--collection management-->
   <string name="create_addressbook">Adresboek aanmaken</string>
   <string name="create_calendar">Kalender aanmaken</string>
-  <string name="create_calendar_time_zone">Standaard tijdzone</string>
+  <string name="create_calendar_time_zone_optional">Standaard tijdzone</string>
   <string name="create_calendar_type">Mogelijke kalender-items</string>
   <string name="create_calendar_type_vevent">Gebeurtenissen</string>
   <string name="create_calendar_type_vtodo">Taken</string>

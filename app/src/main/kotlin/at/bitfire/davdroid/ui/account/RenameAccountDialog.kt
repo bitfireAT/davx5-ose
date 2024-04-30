@@ -8,10 +8,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DriveFileRenameOutline
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +44,7 @@ fun RenameAccountDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        icon = { Icon(Icons.Default.DriveFileRenameOutline, contentDescription = null) },
         title = { Text(stringResource(R.string.account_rename)) },
         text = { Column {
             Text(
@@ -69,18 +74,18 @@ fun RenameAccountDialog(
             }
         }},
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     onRenameAccount(accountName.text)
                 },
                 enabled = oldName != accountName.text
             ) {
-                Text(stringResource(R.string.account_rename_rename).uppercase())
+                Text(stringResource(R.string.account_rename_rename))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(android.R.string.cancel).uppercase())
+            OutlinedButton(onClick = onDismiss) {
+                Text(stringResource(android.R.string.cancel))
             }
         }
     )
