@@ -110,6 +110,8 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
 
         // start with login info from Intent
         model.updateLoginInfo(loginInfoFromIntent(intent))
+        if (intent.data != null)
+            model.navToPage(LoginScreenModel.Page.LoginDetails)
 
         setContent {
             LoginScreen(

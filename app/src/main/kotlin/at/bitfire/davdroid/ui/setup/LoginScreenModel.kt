@@ -53,6 +53,10 @@ class LoginScreenModel @Inject constructor(
 
     // navigation events
 
+    fun navToPage(toPage: Page) {
+        page = toPage
+    }
+
     fun navToNextPage() {
         when (page) {
             Page.LoginType -> {
