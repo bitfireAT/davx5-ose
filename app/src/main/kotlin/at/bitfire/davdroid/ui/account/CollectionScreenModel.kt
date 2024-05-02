@@ -59,7 +59,7 @@ class CollectionScreenModel @AssistedInject constructor(
     val owner: Flow<String?> = collection.map { collection ->
         collection?.ownerId?.let { ownerId ->
             val principal = principalDao.getAsync(ownerId)
-            principal.displayName ?: principal.url.lastSegment()
+            principal.displayName ?: principal.url.lastSegment
         }
     }
 
