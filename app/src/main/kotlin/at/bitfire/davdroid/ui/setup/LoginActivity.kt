@@ -109,9 +109,13 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // start with login info from Intent
-        model.updateLoginInfo(loginInfoFromIntent(intent))
-        if (intent.data != null)
-            model.navToPage(LoginScreenModel.Page.LoginDetails)
+        if (savedInstanceState == null) {
+            val loginInfo = loginInfoFromIntent(intent)
+            if (loginInfo.baseUri != null) {
+                model.updateLoginInfo(loginInfo)
+                model.navToPage(LoginScreenModel.Page.LoginDetails)
+            }
+        }
 
         setContent {
             LoginScreen(
