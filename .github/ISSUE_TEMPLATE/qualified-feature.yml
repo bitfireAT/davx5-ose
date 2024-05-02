@@ -1,0 +1,19 @@
+name: Qualified Feature Request
+description: "[Developers only] For qualified feature requests. (Use Discussions if unsure.)"
+labels: ["feature"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Scope
+      description: Use this form only for features that have been discussed in Discussions or if you're a DAVx5 developer.
+      options:
+        - label: I'm sure that this feature request belongs here and not into Discussions.
+          required: true
+  - type: textarea
+    attributes:
+      label: Description
+      description: Describe the requested feature and why it is desired.
+  - type: textarea
+    attributes:
+      label: Further info
+      description: How this could be implemented, links to further information, …

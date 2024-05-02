@@ -1,0 +1,38 @@
+name: Qualified Bug Report
+description: "[Developers only] For qualified bug reports. (Use Discussions if unsure.)"
+labels: ["bug"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Problem scope
+      description: Use Discussions if you're unsure which component (DAVx⁵, calendar app, server, …) causes your problem.
+      options:
+        - label: I'm sure that this is a DAVx⁵ problem.
+          required: true
+  - type: checkboxes
+    attributes:
+      label: App version
+      options:
+        - label: I'm using the latest available DAVx⁵ version.
+          required: true
+  - type: input
+    attributes:
+      label: Android version and device/firmware type
+      placeholder: "Android 13 (Samsung A32)"
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Provide detailed steps to reproduce the problem.
+      placeholder: |
+        1. Create DAVx⁵ account with Some Server (Version).
+        2. Sync Some Calendar.
+        3. SomeException appears.
+  - type: textarea
+    attributes:
+      label: Expected result
+      description: Describe what you would expect DAVx⁵ to avoid/solve the problem.
+      placeholder: "Some Property in source file should be ignored even if faulty and sync should continue instead of showing an error."
+  - type: textarea
+    attributes:
+      label: Further info
+      description: Debug info, links to further information, …
