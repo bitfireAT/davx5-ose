@@ -36,7 +36,7 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
                 put(JtxContract.JtxCollection.URL, info.url.toString())
                 put(
                     JtxContract.JtxCollection.DISPLAYNAME,
-                    info.displayName ?: info.url.lastSegment()
+                    info.displayName ?: info.url.lastSegment
                 )
                 put(JtxContract.JtxCollection.DESCRIPTION, info.description)
                 if (owner != null)

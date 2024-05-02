@@ -184,7 +184,7 @@ class CalendarSyncManager(
                             ?: throw DavException("Received multi-get response without calendar data")
 
                     processVEvent(
-                        response.href.lastSegment(),
+                        response.href.lastSegment,
                         eTag,
                         scheduleTag,
                         StringReader(iCal)

@@ -56,7 +56,7 @@ class LocalCalendar private constructor(
             val values = ContentValues()
             values.put(Calendars.NAME, info.url.toString())
             values.put(Calendars.CALENDAR_DISPLAY_NAME,
-                if (info.displayName.isNullOrBlank()) info.url.lastSegment() else info.displayName)
+                if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
 
             if (withColor)
                 values.put(Calendars.CALENDAR_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)

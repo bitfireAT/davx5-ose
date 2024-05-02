@@ -109,7 +109,7 @@ open class LocalAddressBook(
 
             val sb = StringBuilder(info.displayName.let {
                 if (it.isNullOrEmpty())
-                    info.url.lastSegment()
+                    info.url.lastSegment
                 else
                     it
             })

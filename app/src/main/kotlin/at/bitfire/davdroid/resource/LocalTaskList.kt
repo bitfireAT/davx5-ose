@@ -55,7 +55,7 @@ class LocalTaskList private constructor(
             val values = ContentValues(3)
             values.put(TaskLists._SYNC_ID, info.url.toString())
             values.put(TaskLists.LIST_NAME,
-                if (info.displayName.isNullOrBlank()) info.url.lastSegment() else info.displayName)
+                if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
 
             if (withColor)
                 values.put(TaskLists.LIST_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)

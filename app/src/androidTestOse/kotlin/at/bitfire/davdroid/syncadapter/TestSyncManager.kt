@@ -82,7 +82,7 @@ class TestSyncManager(
         assertEquals(assertDownloadRemote.keys.toList(), bunch)
 
         for ((url, eTag) in assertDownloadRemote) {
-            val fileName = url.lastSegment()
+            val fileName = url.lastSegment
             var localEntry = localCollection.entries.firstOrNull { it.fileName == fileName }
             if (localEntry == null) {
                 val newEntry = LocalTestResource().also {

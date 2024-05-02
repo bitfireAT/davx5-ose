@@ -306,7 +306,7 @@ class ContactsSyncManager(
                             ?: throw DavException("Received multi-get response without address data")
 
                     processCard(
-                        response.href.lastSegment(),
+                        response.href.lastSegment,
                         eTag,
                         StringReader(card),
                         isJCard,
