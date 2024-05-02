@@ -80,8 +80,7 @@ class LoginScreenModel @Inject constructor(
                     ?: loginInfo.baseUri?.host
                     ?: ""
                 updateAccountNameAndEmails(initialAccountName, emails)
-                if (loginTypeUiState.loginType == NextcloudLogin)
-                    updateGroupMethod(GroupMethod.CATEGORIES)
+                updateGroupMethod(loginInfo.suggestedGroupMethod)
                 page = Page.AccountDetails
             }
 
