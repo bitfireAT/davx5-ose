@@ -11,7 +11,6 @@ import androidx.work.Configuration
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
 import at.bitfire.davdroid.ui.DebugInfoActivity
-import at.bitfire.davdroid.ui.DebugInfoModel
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
 import dagger.hilt.android.HiltAndroidApp

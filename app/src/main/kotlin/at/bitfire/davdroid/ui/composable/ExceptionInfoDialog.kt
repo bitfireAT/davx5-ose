@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.DebugInfoActivity
-import at.bitfire.davdroid.ui.DebugInfoModel
 import okhttp3.HttpUrl
 import java.io.IOException
 
