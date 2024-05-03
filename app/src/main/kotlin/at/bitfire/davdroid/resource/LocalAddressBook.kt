@@ -25,6 +25,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountUtils
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
@@ -108,7 +109,7 @@ open class LocalAddressBook(
 
             val sb = StringBuilder(info.displayName.let {
                 if (it.isNullOrEmpty())
-                    DavUtils.lastSegmentOfUrl(info.url)
+                    info.url.lastSegment
                 else
                     it
             })

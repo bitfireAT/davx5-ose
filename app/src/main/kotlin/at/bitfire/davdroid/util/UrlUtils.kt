@@ -6,5 +6,5 @@ package at.bitfire.davdroid.util
 
 import okhttp3.HttpUrl
 
-fun HttpUrl.lastSegment(): String =
-    pathSegments.lastOrNull { it.isNotEmpty() } ?: "/"
+val HttpUrl.lastSegment: String
+    get() = pathSegments.lastOrNull { it.isNotEmpty() } ?: "/"

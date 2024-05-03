@@ -60,15 +60,6 @@ object DavUtils {
         return String.format(Locale.ROOT, "#%06X%02X", color, alpha)
     }
 
-    @Deprecated("Use HttpUrl.lastSegment in UrlUtils")
-    fun lastSegmentOfUrl(url: HttpUrl): String {
-        // the list returned by HttpUrl.pathSegments() is unmodifiable, so we have to create a copy
-        val segments = LinkedList(url.pathSegments)
-        segments.reverse()
-
-        return segments.firstOrNull { it.isNotEmpty() } ?: "/"
-    }
-
     fun prepareLookup(context: Context, lookup: Lookup) {
         if (Build.VERSION.SDK_INT >= 29) {
             /* Since Android 10, there's a native DnsResolver API that allows to send SRV queries without
