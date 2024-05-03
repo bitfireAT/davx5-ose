@@ -1,7 +1,6 @@
 
 import android.Manifest
 import android.accounts.Account
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -61,8 +60,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.R
@@ -70,7 +69,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.PermissionsActivity
-import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.account.AccountScreenModel
 import at.bitfire.davdroid.ui.account.CollectionsList
@@ -79,7 +77,6 @@ import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.util.TaskUtils
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.launch
 
 @Composable
@@ -92,16 +89,17 @@ fun AccountScreen(
     onNavUp: () -> Unit,
     onFinish: () -> Unit
 ) {
-    val context = LocalContext.current as Activity
-    val entryPoint = EntryPointAccessors.fromActivity(context, AccountActivity.AccountScreenEntryPoint::class.java)
-    val model = viewModel<AccountScreenModel>(
-        factory = AccountScreenModel.factoryFromAccount(entryPoint.accountModelAssistedFactory(), account)
+    val model: AccountScreenModel = hiltViewModel(
+        creationCallback = { factory: AccountScreenModel.Factory ->
+            factory.create(account)
+        }
     )
 
     val addressBooksPager by model.addressBooksPager.collectAsState(null)
     val calendarsPager by model.calendarsPager.collectAsState(null)
     val subscriptionsPager by model.webcalPager.collectAsState(null)
 
+    val context = LocalContext.current
     AccountScreen(
         accountName = account.name,
         error = model.error,

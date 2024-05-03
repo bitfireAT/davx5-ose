@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DoNotDisturbOn
@@ -47,19 +45,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
-import dagger.hilt.android.EntryPointAccessors
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -72,10 +68,10 @@ fun CollectionScreen(
     onFinish: () -> Unit,
     onNavUp: () -> Unit
 ) {
-    val context = LocalContext.current as Activity
-    val entryPoint = EntryPointAccessors.fromActivity(context, CollectionActivity.CollectionEntryPoint::class.java)
-    val model = viewModel<CollectionScreenModel>(
-        factory = CollectionScreenModel.factoryFromCollection(entryPoint.collectionModelAssistedFactory(), collectionId)
+    val model: CollectionScreenModel = hiltViewModel(
+        creationCallback = { factory: CollectionScreenModel.Factory ->
+            factory.create(collectionId)
+        }
     )
 
     val collectionOrNull by model.collection.collectAsStateWithLifecycle(null)
