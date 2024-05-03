@@ -9,6 +9,7 @@ import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.ui.setup.LoginInfo
+import at.bitfire.vcard4android.GroupMethod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
@@ -107,7 +108,8 @@ class NextcloudLoginFlow(
             credentials = Credentials(
                 username = json.getString("loginName"),
                 password = json.getString("appPassword")
-            )
+            ),
+            suggestedGroupMethod = GroupMethod.CATEGORIES
         )
     }
 

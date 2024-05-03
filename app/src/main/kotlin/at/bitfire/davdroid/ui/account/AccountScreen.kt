@@ -216,12 +216,12 @@ fun AccountScreen(
         var nextIdx = -1
 
         @Suppress("KotlinConstantConditions")
-        val idxCardDav: Int? = if (hasCardDav) ++nextIdx else null
         val idxCalDav: Int? = if (hasCalDav) ++nextIdx else null
+        val idxCardDav: Int? = if (hasCardDav) ++nextIdx else null
         val idxWebcal: Int? = if (hasWebcal) ++nextIdx else null
         val nrPages =
-            (if (idxCardDav != null) 1 else 0) +
-                    (if (idxCalDav != null) 1 else 0) +
+            (if (idxCalDav != null) 1 else 0) +
+                    (if (idxCardDav != null) 1 else 0) +
                     (if (idxWebcal != null) 1 else 0)
         val pagerState = rememberPagerState(pageCount = { nrPages })
 
@@ -298,21 +298,6 @@ fun AccountScreen(
                 Column {
                     if (nrPages > 0) {
                         TabRow(selectedTabIndex = pagerState.currentPage) {
-                            if (idxCardDav != null)
-                                Tab(
-                                    selected = pagerState.currentPage == idxCardDav,
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.scrollToPage(idxCardDav)
-                                        }
-                                    }
-                                ) {
-                                    Text(
-                                        stringResource(R.string.account_carddav),
-                                        modifier = Modifier.padding(8.dp)
-                                    )
-                                }
-
                             if (idxCalDav != null) {
                                 Tab(
                                     selected = pagerState.currentPage == idxCalDav,
@@ -324,6 +309,22 @@ fun AccountScreen(
                                 ) {
                                     Text(
                                         stringResource(R.string.account_caldav),
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                }
+                            }
+
+                            if (idxCardDav != null) {
+                                Tab(
+                                    selected = pagerState.currentPage == idxCardDav,
+                                    onClick = {
+                                        scope.launch {
+                                            pagerState.scrollToPage(idxCardDav)
+                                        }
+                                    }
+                                ) {
+                                    Text(
+                                        stringResource(R.string.account_carddav),
                                         modifier = Modifier.padding(8.dp)
                                     )
                                 }

@@ -53,6 +53,10 @@ class LoginScreenModel @Inject constructor(
 
     // navigation events
 
+    fun navToPage(toPage: Page) {
+        page = toPage
+    }
+
     fun navToNextPage() {
         when (page) {
             Page.LoginType -> {
@@ -80,6 +84,7 @@ class LoginScreenModel @Inject constructor(
                     ?: loginInfo.baseUri?.host
                     ?: ""
                 updateAccountNameAndEmails(initialAccountName, emails)
+                updateGroupMethod(loginInfo.suggestedGroupMethod)
                 page = Page.AccountDetails
             }
 
