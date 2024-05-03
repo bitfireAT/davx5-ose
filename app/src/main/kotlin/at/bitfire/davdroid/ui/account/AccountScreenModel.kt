@@ -30,6 +30,7 @@ import at.bitfire.davdroid.util.TaskUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,29 +40,21 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.logging.Level
 
+@HiltViewModel(assistedFactory = AccountScreenModel.Factory::class)
 class AccountScreenModel @AssistedInject constructor(
+    @Assisted val account: Account,
     val context: Application,
     private val accountRepository: AccountRepository,
     private val collectionRepository: DavCollectionRepository,
     serviceRepository: DavServiceRepository,
     accountProgressUseCase: AccountProgressUseCase,
     getBindableHomesetsFromServiceUseCase: GetBindableHomeSetsFromServiceUseCase,
-    getServiceCollectionPagerUseCase: GetServiceCollectionPagerUseCase,
-    @Assisted val account: Account
+    getServiceCollectionPagerUseCase: GetServiceCollectionPagerUseCase
 ): ViewModel() {
 
     @AssistedFactory
     interface Factory {
         fun create(account: Account): AccountScreenModel
-    }
-
-    companion object {
-        fun factoryFromAccount(assistedFactory: Factory, account: Account) = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return assistedFactory.create(account) as T
-            }
-        }
     }
 
     /** whether the account is invalid and the screen shall be closed */
