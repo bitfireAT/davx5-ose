@@ -84,40 +84,38 @@ fun DebugInfoScreen(
         }
     }
 
-    AppTheme {
-        DebugInfoScreen(
-            error = error,
-            onResetError = model::resetError,
-            showDebugInfo = debugInfo != null,
-            zipProgress = zipInProgress,
-            showModelCause = cause != null,
-            modelCauseTitle = when (cause) {
-                is HttpException -> stringResource(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
-                is DavException -> stringResource(R.string.debug_info_webdav_error)
-                is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
-                else -> cause?.let { it::class.java.simpleName }
-            } ?: "",
-            modelCauseSubtitle = cause?.localizedMessage,
-            modelCauseMessage = stringResource(
-                if (cause is HttpException)
-                    when {
-                        cause.code == 403 -> R.string.debug_info_http_403_description
-                        cause.code == 404 -> R.string.debug_info_http_404_description
-                        cause.code / 100 == 5 -> R.string.debug_info_http_5xx_description
-                        else -> R.string.debug_info_unexpected_error
-                    }
-                else
-                    R.string.debug_info_unexpected_error
-            ),
-            localResource = localResource,
-            remoteResource = remoteResource,
-            hasLogFile = logFile != null,
-            onShareZip = { model.generateZip() },
-            onShareLogsFile = { logFile?.let { onShareFile(it) } },
-            onViewDebugFile = { debugInfo?.let { onViewFile(it) } },
-            onNavUp = onNavUp
-        )
-    }
+    DebugInfoScreen(
+        error = error,
+        onResetError = model::resetError,
+        showDebugInfo = debugInfo != null,
+        zipProgress = zipInProgress,
+        showModelCause = cause != null,
+        modelCauseTitle = when (cause) {
+            is HttpException -> stringResource(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
+            is DavException -> stringResource(R.string.debug_info_webdav_error)
+            is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
+            else -> cause?.let { it::class.java.simpleName }
+        } ?: "",
+        modelCauseSubtitle = cause?.localizedMessage,
+        modelCauseMessage = stringResource(
+            if (cause is HttpException)
+                when {
+                    cause.code == 403 -> R.string.debug_info_http_403_description
+                    cause.code == 404 -> R.string.debug_info_http_404_description
+                    cause.code / 100 == 5 -> R.string.debug_info_http_5xx_description
+                    else -> R.string.debug_info_unexpected_error
+                }
+            else
+                R.string.debug_info_unexpected_error
+        ),
+        localResource = localResource,
+        remoteResource = remoteResource,
+        hasLogFile = logFile != null,
+        onShareZip = { model.generateZip() },
+        onShareLogsFile = { logFile?.let { onShareFile(it) } },
+        onViewDebugFile = { debugInfo?.let { onViewFile(it) } },
+        onNavUp = onNavUp
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,141 +149,147 @@ fun DebugInfoScreen(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            if (showDebugInfo && !zipProgress) {
-                FloatingActionButton(
-                    onClick = onShareZip
-                ) {
-                    Icon(Icons.Rounded.Share, stringResource(R.string.share))
+    AppTheme {
+        Scaffold(
+            floatingActionButton = {
+                if (showDebugInfo && !zipProgress) {
+                    FloatingActionButton(
+                        onClick = onShareZip
+                    ) {
+                        Icon(Icons.Rounded.Share, stringResource(R.string.share))
+                    }
                 }
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            },
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.debug_info_title)) },
+                    navigationIcon = {
+                        IconButton(onClick = onNavUp) {
+                            androidx.compose.material.Icon(
+                                Icons.AutoMirrored.Default.ArrowBack,
+                                stringResource(R.string.navigate_up)
+                            )
+                        }
+                    }
+                )
             }
-        },
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.debug_info_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onNavUp) {
-                        androidx.compose.material.Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-        ) {
-            if (!showDebugInfo || zipProgress)
-                LinearProgressIndicator()
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                if (!showDebugInfo || zipProgress)
+                    LinearProgressIndicator()
 
-            if (showDebugInfo && zipProgress) {
-                CardWithImage(
-                    image = painterResource(R.drawable.undraw_server_down),
-                    imageAlignment = BiasAlignment(0f, .7f),
-                    title = stringResource(R.string.debug_info_archive_caption),
-                    subtitle = stringResource(R.string.debug_info_archive_subtitle),
-                    message = stringResource(R.string.debug_info_archive_text),
-                    icon = Icons.Rounded.Share,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = onShareZip,
-                        enabled = !zipProgress,
-                        modifier = Modifier.padding(bottom = 4.dp)
+                if (showDebugInfo) {
+                    CardWithImage(
+                        image = painterResource(R.drawable.undraw_server_down),
+                        imageAlignment = BiasAlignment(0f, .7f),
+                        title = stringResource(R.string.debug_info_archive_caption),
+                        subtitle = stringResource(R.string.debug_info_archive_subtitle),
+                        message = stringResource(R.string.debug_info_archive_text),
+                        icon = Icons.Rounded.Share,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
-                        Text(
-                            stringResource(R.string.debug_info_archive_share)
-                        )
-                    }
-                }
-            }
-            if (showModelCause) {
-                CardWithImage(
-                    title = modelCauseTitle,
-                    subtitle = modelCauseSubtitle,
-                    message = modelCauseMessage,
-                    icon = Icons.Rounded.Info,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                ) {
-                    OutlinedButton(
-                        enabled = showDebugInfo,
-                        onClick = onViewDebugFile,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    ) {
-                        Text(
-                            stringResource(R.string.debug_info_view_details)
-                        )
-                    }
-                }
-            }
-
-            if (showDebugInfo)
-                CardWithImage(
-                    title = stringResource(R.string.debug_info_title),
-                    subtitle = stringResource(R.string.debug_info_subtitle),
-                    icon = Icons.Rounded.BugReport,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = onViewDebugFile,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    ) {
-                        Text(
-                            stringResource(R.string.debug_info_view_details)
-                        )
+                        OutlinedButton(
+                            onClick = onShareZip,
+                            enabled = !zipProgress,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.debug_info_archive_share)
+                            )
+                        }
                     }
                 }
 
-            if (localResource != null || remoteResource != null)
-                CardWithImage(
-                    title = stringResource(R.string.debug_info_involved_caption),
-                    subtitle = stringResource(R.string.debug_info_involved_subtitle),
-                    icon = Icons.Rounded.Adb,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                ) {
-                    remoteResource?.let {
-                        Text(
-                            text = stringResource(R.string.debug_info_involved_remote),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text(
-                            text = it,
-                            fontFamily = FontFamily.Monospace,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
-                    localResource?.let {
-                        Text(
-                            text = stringResource(R.string.debug_info_involved_local),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text(
-                            text = it,
-                            fontFamily = FontFamily.Monospace,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
+                if (showModelCause) {
+                    CardWithImage(
+                        title = modelCauseTitle,
+                        subtitle = modelCauseSubtitle,
+                        message = modelCauseMessage,
+                        icon = Icons.Rounded.Info,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                    ) {
+                        OutlinedButton(
+                            enabled = showDebugInfo,
+                            onClick = onViewDebugFile,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.debug_info_view_details)
+                            )
+                        }
                     }
                 }
 
-            if (hasLogFile) {
-                CardWithImage(
-                    title = stringResource(R.string.debug_info_logs_caption),
-                    subtitle = stringResource(R.string.debug_info_logs_subtitle),
-                    icon = Icons.Rounded.BugReport,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = onShareLogsFile,
-                        modifier = Modifier.padding(bottom = 4.dp)
+                if (showDebugInfo)
+                    CardWithImage(
+                        title = stringResource(R.string.debug_info_title),
+                        subtitle = stringResource(R.string.debug_info_subtitle),
+                        icon = Icons.Rounded.BugReport,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
-                        Text(
-                            stringResource(R.string.debug_info_logs_view)
-                        )
+                        OutlinedButton(
+                            onClick = onViewDebugFile,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.debug_info_view_details)
+                            )
+                        }
+                    }
+
+                if (localResource != null || remoteResource != null)
+                    CardWithImage(
+                        title = stringResource(R.string.debug_info_involved_caption),
+                        subtitle = stringResource(R.string.debug_info_involved_subtitle),
+                        icon = Icons.Rounded.Adb,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                    ) {
+                        remoteResource?.let {
+                            Text(
+                                text = stringResource(R.string.debug_info_involved_remote),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = it,
+                                fontFamily = FontFamily.Monospace,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
+                        localResource?.let {
+                            Text(
+                                text = stringResource(R.string.debug_info_involved_local),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = it,
+                                fontFamily = FontFamily.Monospace,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
+                    }
+
+                if (hasLogFile) {
+                    CardWithImage(
+                        title = stringResource(R.string.debug_info_logs_caption),
+                        subtitle = stringResource(R.string.debug_info_logs_subtitle),
+                        icon = Icons.Rounded.BugReport,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = onShareLogsFile,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.debug_info_logs_view)
+                            )
+                        }
                     }
                 }
             }
@@ -296,18 +300,16 @@ fun DebugInfoScreen(
 @Composable
 @Preview
 fun DebugInfoScreen_Preview() {
-    AppTheme {
-        DebugInfoScreen(
-            error = "Some error",
-            showDebugInfo = true,
-            zipProgress = false,
-            showModelCause = true,
-            modelCauseTitle = "ModelCauseTitle",
-            modelCauseSubtitle = "ModelCauseSubtitle",
-            modelCauseMessage = "ModelCauseMessage",
-            localResource = "local-resource-string",
-            remoteResource = "remote-resource-string",
-            hasLogFile = true
-        )
-    }
+    DebugInfoScreen(
+        error = "Some error",
+        showDebugInfo = true,
+        zipProgress = false,
+        showModelCause = true,
+        modelCauseTitle = "ModelCauseTitle",
+        modelCauseSubtitle = "ModelCauseSubtitle",
+        modelCauseMessage = "ModelCauseMessage",
+        localResource = "local-resource-string",
+        remoteResource = "remote-resource-string",
+        hasLogFile = true
+    )
 }
