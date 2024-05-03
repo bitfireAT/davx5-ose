@@ -86,11 +86,11 @@ fun DebugInfoScreen(
 
     AppTheme {
         DebugInfoScreen(
-            error,
+            error = error,
             onResetError = model::resetError,
-            debugInfo != null,
-            zipInProgress,
-            cause != null,
+            showDebugInfo = debugInfo != null,
+            zipProgress = zipInProgress,
+            showModelCause = cause != null,
             modelCauseTitle = when (cause) {
                 is HttpException -> stringResource(if (cause.code / 100 == 5) R.string.debug_info_server_error else R.string.debug_info_http_error)
                 is DavException -> stringResource(R.string.debug_info_webdav_error)
@@ -109,13 +109,13 @@ fun DebugInfoScreen(
                 else
                     R.string.debug_info_unexpected_error
             ),
-            localResource,
-            remoteResource,
-            logFile != null,
+            localResource = localResource,
+            remoteResource = remoteResource,
+            hasLogFile = logFile != null,
             onShareZip = { model.generateZip() },
             onShareLogsFile = { logFile?.let { onShareFile(it) } },
             onViewDebugFile = { debugInfo?.let { onViewFile(it) } },
-            onNavUp
+            onNavUp = onNavUp
         )
     }
 }

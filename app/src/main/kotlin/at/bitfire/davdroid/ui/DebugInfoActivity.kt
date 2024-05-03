@@ -65,15 +65,15 @@ class DebugInfoActivity : AppCompatActivity() {
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
                 logs = extras?.getString(EXTRA_LOGS),
-                onShareFile = { shareFile(it) },
-                onShareZipFile = { onShareZipFile(it) },
-                onViewFile = { viewFile(it) },
-                onNavUp = { onNavigateUp() }
+                onShareFile = ::shareFile,
+                onShareZipFile = ::shareZipFile,
+                onViewFile = ::viewFile,
+                onNavUp = ::onSupportNavigateUp
             )
         }
     }
 
-    private fun onShareZipFile(file: File) {
+    private fun shareZipFile(file: File) {
         shareFile(
             file,
             "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} debug info",
@@ -125,9 +125,7 @@ class DebugInfoActivity : AppCompatActivity() {
 
 
     /**
-     * Convenience class to build intents
-     *
-     * Note: Used by the rest of the app. Should probably be extracted to a better location
+     * Builder for [DebugInfoActivity] intents
      */
     class IntentBuilder(context: Context) {
 
