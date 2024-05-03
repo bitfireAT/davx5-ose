@@ -10,9 +10,9 @@ class UrlUtilsTest {
 
     @Test
     fun testLastSegmentOfUrl() {
-        Assert.assertEquals("/", exampleURL.toHttpUrl().lastSegment())
-        Assert.assertEquals("dir", (exampleURL + "dir").toHttpUrl().lastSegment())
-        Assert.assertEquals("dir", (exampleURL + "dir/").toHttpUrl().lastSegment())
-        Assert.assertEquals("file.html", (exampleURL + "dir/file.html").toHttpUrl().lastSegment())
+        Assert.assertEquals("/", exampleURL.toHttpUrl().lastSegment)
+        Assert.assertEquals("dir", (exampleURL + "dir").toHttpUrl().lastSegment)
+        Assert.assertEquals("dir", (exampleURL + "dir/").toHttpUrl().lastSegment)
+        Assert.assertEquals("file.html", (exampleURL + "dir/file.html").toHttpUrl().lastSegment)
     }
 }
