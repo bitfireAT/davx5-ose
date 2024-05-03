@@ -3,6 +3,8 @@ package at.bitfire.davdroid.ui
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material.icons.rounded.BugReport
@@ -12,12 +14,12 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -135,9 +137,10 @@ fun DebugInfoScreen(
         topBar = {
             BasicTopAppBar(
                 titleStringRes = R.string.debug_info_title,
-                onNavigateUp = { onNavUp() }
+                onNavigateUp = onNavUp
             )
-        }
+        },
+        modifier = Modifier.verticalScroll(rememberScrollState())
     ) { paddingValues ->
 
         LaunchedEffect(error) {
@@ -176,12 +179,13 @@ fun DebugInfoScreen(
                         icon = Icons.Rounded.Share,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
-                        TextButton(
+                        OutlinedButton(
                             onClick = onShareZip,
-                            enabled = !zipProgress
+                            enabled = !zipProgress,
+                            modifier = Modifier.padding(bottom = 4.dp)
                         ) {
                             Text(
-                                stringResource(R.string.debug_info_archive_share).uppercase()
+                                stringResource(R.string.debug_info_archive_share)
                             )
                         }
                     }
@@ -196,12 +200,13 @@ fun DebugInfoScreen(
                         icon = Icons.Rounded.Info,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
-                        TextButton(
+                        OutlinedButton(
                             enabled = showDebugInfo,
-                            onClick = onViewDebugFile
+                            onClick = onViewDebugFile,
+                            modifier = Modifier.padding(bottom = 4.dp)
                         ) {
                             Text(
-                                stringResource(R.string.debug_info_view_details).uppercase()
+                                stringResource(R.string.debug_info_view_details)
                             )
                         }
                     }
@@ -215,11 +220,12 @@ fun DebugInfoScreen(
                         icon = Icons.Rounded.BugReport,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
-                        TextButton(
-                            onClick = onViewDebugFile
+                        OutlinedButton(
+                            onClick = onViewDebugFile,
+                            modifier = Modifier.padding(bottom = 4.dp)
                         ) {
                             Text(
-                                stringResource(R.string.debug_info_view_details).uppercase()
+                                stringResource(R.string.debug_info_view_details)
                             )
                         }
                     }
@@ -264,11 +270,12 @@ fun DebugInfoScreen(
                         icon = Icons.Rounded.BugReport,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
-                        TextButton(
-                            onClick = onShareLogsFile
+                        OutlinedButton(
+                            onClick = onShareLogsFile,
+                            modifier = Modifier.padding(bottom = 4.dp)
                         ) {
                             Text(
-                                stringResource(R.string.debug_info_logs_view).uppercase()
+                                stringResource(R.string.debug_info_logs_view)
                             )
                         }
                     }
@@ -297,7 +304,7 @@ fun DebugInfoScreen_Preview() {
             onShareZip = {},
             onShareLogsFile = {},
             onViewDebugFile = {},
-            onNavUp = {},
+            onNavUp = {}
         )
     }
 }

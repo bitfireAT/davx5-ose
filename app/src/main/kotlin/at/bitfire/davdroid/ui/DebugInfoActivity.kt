@@ -45,15 +45,13 @@ class DebugInfoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent { 
-            M2Theme {
-                DebugInfoScreen(
-                    model,
-                    onShareFile = { shareFile(it) },
-                    onShareZipFile = { onShareZipFile(it) },
-                    onViewFile = { viewFile(it) },
-                    onNavUp = { onNavigateUp() }
-                )
-            }
+            DebugInfoScreen(
+                model,
+                onShareFile = { shareFile(it) },
+                onShareZipFile = { onShareZipFile(it) },
+                onViewFile = { viewFile(it) },
+                onNavUp = { onNavigateUp() }
+            )
         }
     }
 
