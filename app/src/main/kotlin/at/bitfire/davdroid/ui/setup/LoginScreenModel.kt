@@ -13,10 +13,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.AccountRepository
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -53,6 +53,10 @@ class LoginScreenModel @Inject constructor(
 
     // navigation events
 
+    fun navToPage(toPage: Page) {
+        page = toPage
+    }
+
     fun navToNextPage() {
         when (page) {
             Page.LoginType -> {
@@ -80,6 +84,7 @@ class LoginScreenModel @Inject constructor(
                     ?: loginInfo.baseUri?.host
                     ?: ""
                 updateAccountNameAndEmails(initialAccountName, emails)
+                updateGroupMethod(loginInfo.suggestedGroupMethod)
                 page = Page.AccountDetails
             }
 

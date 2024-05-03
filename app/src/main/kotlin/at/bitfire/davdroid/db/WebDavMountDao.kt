@@ -8,6 +8,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -32,6 +33,7 @@ interface WebDavMountDao {
     // complex queries
 
     @Query("SELECT * FROM webdav_mount ORDER BY name, url")
+    @Transaction
     fun getAllWithRootDocumentFlow(): Flow<List<WebDavMountWithRootDocument>>
 
 }
