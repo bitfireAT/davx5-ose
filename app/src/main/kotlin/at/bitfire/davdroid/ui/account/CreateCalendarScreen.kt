@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -53,15 +52,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import at.bitfire.davdroid.ui.widget.CalendarColorPickerDialog
 import at.bitfire.ical4android.Css3Color
-import dagger.hilt.android.EntryPointAccessors
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
@@ -70,10 +68,10 @@ fun CreateCalendarScreen(
     onFinish: () -> Unit,
     onNavUp: () -> Unit
 ) {
-    val context = LocalContext.current as Activity
-    val entryPoint = EntryPointAccessors.fromActivity(context, CreateCalendarActivity.CreateCalendarEntryPoint::class.java)
-    val model = viewModel<CreateCalendarModel>(
-        factory = CreateCalendarModel.factoryFromAccount(entryPoint.createCalendarModelAssistedFactory(), account)
+    val model: CreateCalendarModel = hiltViewModel(
+        creationCallback = { factory: CreateCalendarModel.Factory ->
+            factory.create(account)
+        }
     )
     val uiState = model.uiState
 
@@ -203,7 +201,8 @@ fun CreateCalendarScreen(
                             }
                             .size(48.dp)
                             .semantics {
-                                 contentDescription = context.getString(R.string.create_collection_color)
+                                contentDescription =
+                                    context.getString(R.string.create_collection_color)
                             }
                         )
                         if (showColorPicker) {

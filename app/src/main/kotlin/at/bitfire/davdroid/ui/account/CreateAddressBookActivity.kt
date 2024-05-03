@@ -10,19 +10,10 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.components.ActivityComponent
 
 @AndroidEntryPoint
 class CreateAddressBookActivity: AppCompatActivity() {
-
-    @EntryPoint
-    @InstallIn(ActivityComponent::class)
-    interface CreateAddressBookEntryPoint {
-        fun createAddressBookModelAssistedFactory(): CreateAddressBookModel.Factory
-    }
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
