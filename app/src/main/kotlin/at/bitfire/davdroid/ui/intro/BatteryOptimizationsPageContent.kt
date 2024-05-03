@@ -135,7 +135,7 @@ fun BatteryOptimizationsPageContent(
                             text = stringResource(R.string.intro_battery_dont_show),
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
-                                .clickable { onChangeDontShowBattery(!dontShowBattery) }
+                                .clickable { onChangeDontShowBattery(dontShowBattery) }
                         )
                     }
                 }
@@ -192,7 +192,7 @@ fun BatteryOptimizationsPageContent(
                             text = stringResource(R.string.intro_autostart_dont_show),
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
-                                .clickable { onChangeDontShowAutostart(!dontShowAutostart) }
+                                .clickable { onChangeDontShowAutostart(dontShowAutostart) }
                         )
                     }
                 }
