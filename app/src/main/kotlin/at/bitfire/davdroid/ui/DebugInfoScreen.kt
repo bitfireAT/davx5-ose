@@ -1,17 +1,20 @@
 package at.bitfire.davdroid.ui
 
-import androidx.compose.foundation.layout.fillMaxSize
+import android.accounts.Account
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -20,6 +23,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -30,10 +34,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.composable.BasicTopAppBar
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import java.io.File
 import java.io.IOError
@@ -41,19 +45,34 @@ import java.io.IOException
 
 @Composable
 fun DebugInfoScreen(
-    model: DebugInfoModel,
+    account: Account?,
+    authority: String?,
+    cause: Throwable?,
+    localResource: String?,
+    remoteResource: String?,
+    logs: String?,
     onShareFile: (File) -> Unit,
     onShareZipFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
     onNavUp: () -> Unit
 ) {
+    val model: DebugInfoModel = hiltViewModel(
+        creationCallback = { factory: DebugInfoModel.Factory ->
+            factory.createWithDetails(DebugInfoModel.DebugInfoDetails(
+                account = account,
+                authority = authority,
+                cause = cause,
+                localResource = localResource,
+                remoteResource = remoteResource,
+                logs = logs
+            ))
+        }
+    )
+
     val uiState = model.uiState
-    val cause = uiState.cause
     val debugInfo = uiState.debugInfo
     val zipInProgress = uiState.zipInProgress
     val zipFile = uiState.zipFile
-    val localResource = uiState.localResource
-    val remoteResource = uiState.remoteResource
     val logFile = uiState.logFile
     val error = uiState.error
 
@@ -101,10 +120,11 @@ fun DebugInfoScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DebugInfoScreen(
     error: String?,
-    onResetError: () -> Unit,
+    onResetError: () -> Unit = {},
     showDebugInfo: Boolean,
     zipProgress: Boolean,
     showModelCause: Boolean,
@@ -114,12 +134,22 @@ fun DebugInfoScreen(
     localResource: String?,
     remoteResource: String?,
     hasLogFile: Boolean,
-    onShareZip: () -> Unit,
-    onShareLogsFile: () -> Unit,
-    onViewDebugFile: () -> Unit,
-    onNavUp: () -> Unit
+    onShareZip: () -> Unit = {},
+    onShareLogsFile: () -> Unit = {},
+    onViewDebugFile: () -> Unit = {},
+    onNavUp: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(error) {
+        error?.let {
+            snackbarHostState.showSnackbar(
+                message = it,
+                duration = SnackbarDuration.Long
+            )
+            onResetError()
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -135,103 +165,83 @@ fun DebugInfoScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         topBar = {
-            BasicTopAppBar(
-                titleStringRes = R.string.debug_info_title,
-                onNavigateUp = onNavUp
-            )
-        },
-        modifier = Modifier.verticalScroll(rememberScrollState())
-    ) { paddingValues ->
-
-        LaunchedEffect(error) {
-            error?.let {
-                snackbarHostState.showSnackbar(
-                    message = it,
-                    duration = SnackbarDuration.Long
-                )
-                onResetError()
-            }
-        }
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            if (!showDebugInfo)
-                item {
-                    LinearProgressIndicator(color = MaterialTheme.colorScheme.secondary)
-                }
-
-            if (showDebugInfo) {
-                if (zipProgress)
-                    item {
-                        LinearProgressIndicator(color = MaterialTheme.colorScheme.secondary)
+            TopAppBar(
+                title = { Text(stringResource(R.string.debug_info_title)) },
+                navigationIcon = {
+                    IconButton(onClick = onNavUp) {
+                        androidx.compose.material.Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
                     }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+        ) {
+            if (!showDebugInfo || zipProgress)
+                LinearProgressIndicator()
 
-                item {
-                    CardWithImage(
-                        image = painterResource(R.drawable.undraw_server_down),
-                        imageAlignment = BiasAlignment(0f, .7f),
-                        title = stringResource(R.string.debug_info_archive_caption),
-                        subtitle = stringResource(R.string.debug_info_archive_subtitle),
-                        message = stringResource(R.string.debug_info_archive_text),
-                        icon = Icons.Rounded.Share,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+            if (showDebugInfo && zipProgress) {
+                CardWithImage(
+                    image = painterResource(R.drawable.undraw_server_down),
+                    imageAlignment = BiasAlignment(0f, .7f),
+                    title = stringResource(R.string.debug_info_archive_caption),
+                    subtitle = stringResource(R.string.debug_info_archive_subtitle),
+                    message = stringResource(R.string.debug_info_archive_text),
+                    icon = Icons.Rounded.Share,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onShareZip,
+                        enabled = !zipProgress,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     ) {
-                        OutlinedButton(
-                            onClick = onShareZip,
-                            enabled = !zipProgress,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_archive_share)
-                            )
-                        }
+                        Text(
+                            stringResource(R.string.debug_info_archive_share)
+                        )
                     }
                 }
             }
             if (showModelCause) {
-                item {
-                    CardWithImage(
-                        title = modelCauseTitle,
-                        subtitle = modelCauseSubtitle,
-                        message = modelCauseMessage,
-                        icon = Icons.Rounded.Info,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                CardWithImage(
+                    title = modelCauseTitle,
+                    subtitle = modelCauseSubtitle,
+                    message = modelCauseMessage,
+                    icon = Icons.Rounded.Info,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                ) {
+                    OutlinedButton(
+                        enabled = showDebugInfo,
+                        onClick = onViewDebugFile,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     ) {
-                        OutlinedButton(
-                            enabled = showDebugInfo,
-                            onClick = onViewDebugFile,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_view_details)
-                            )
-                        }
+                        Text(
+                            stringResource(R.string.debug_info_view_details)
+                        )
                     }
                 }
             }
-            if(showDebugInfo) {
-                item {
-                    CardWithImage(
-                        title = stringResource(R.string.debug_info_title),
-                        subtitle = stringResource(R.string.debug_info_subtitle),
-                        icon = Icons.Rounded.BugReport,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+
+            if (showDebugInfo)
+                CardWithImage(
+                    title = stringResource(R.string.debug_info_title),
+                    subtitle = stringResource(R.string.debug_info_subtitle),
+                    icon = Icons.Rounded.BugReport,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onViewDebugFile,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     ) {
-                        OutlinedButton(
-                            onClick = onViewDebugFile,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_view_details)
-                            )
-                        }
+                        Text(
+                            stringResource(R.string.debug_info_view_details)
+                        )
                     }
                 }
-            }
-            if (localResource != null || remoteResource != null) item {
+
+            if (localResource != null || remoteResource != null)
                 CardWithImage(
                     title = stringResource(R.string.debug_info_involved_caption),
                     subtitle = stringResource(R.string.debug_info_involved_subtitle),
@@ -261,23 +271,21 @@ fun DebugInfoScreen(
                         )
                     }
                 }
-            }
+
             if (hasLogFile) {
-                item {
-                    CardWithImage(
-                        title = stringResource(R.string.debug_info_logs_caption),
-                        subtitle = stringResource(R.string.debug_info_logs_subtitle),
-                        icon = Icons.Rounded.BugReport,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                CardWithImage(
+                    title = stringResource(R.string.debug_info_logs_caption),
+                    subtitle = stringResource(R.string.debug_info_logs_subtitle),
+                    icon = Icons.Rounded.BugReport,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onShareLogsFile,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     ) {
-                        OutlinedButton(
-                            onClick = onShareLogsFile,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_logs_view)
-                            )
-                        }
+                        Text(
+                            stringResource(R.string.debug_info_logs_view)
+                        )
                     }
                 }
             }
@@ -291,7 +299,6 @@ fun DebugInfoScreen_Preview() {
     AppTheme {
         DebugInfoScreen(
             error = "Some error",
-            onResetError = {},
             showDebugInfo = true,
             zipProgress = false,
             showModelCause = true,
@@ -300,11 +307,7 @@ fun DebugInfoScreen_Preview() {
             modelCauseMessage = "ModelCauseMessage",
             localResource = "local-resource-string",
             remoteResource = "remote-resource-string",
-            hasLogFile = true,
-            onShareZip = {},
-            onShareLogsFile = {},
-            onViewDebugFile = {},
-            onNavUp = {}
+            hasLogFile = true
         )
     }
 }

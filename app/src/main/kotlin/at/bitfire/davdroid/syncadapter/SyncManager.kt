@@ -48,6 +48,7 @@ import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.DebugInfoModel
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
@@ -820,7 +821,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     private fun buildDebugInfoIntent(e: Throwable, local: ResourceType?, remote: HttpUrl?) =
-        DebugInfoModel.IntentBuilder(context)
+        DebugInfoActivity.IntentBuilder(context)
             .withAccount(account)
             .withAuthority(authority)
             .withCause(e)

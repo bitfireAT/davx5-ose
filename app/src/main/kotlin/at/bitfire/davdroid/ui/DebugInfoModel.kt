@@ -17,7 +17,6 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.Environment
 import android.os.LocaleList
 import android.os.PowerManager
@@ -32,7 +31,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.PackageInfoCompat
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
@@ -52,13 +51,12 @@ import at.techbee.jtx.JtxContract
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
-import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
 import java.io.File
@@ -69,48 +67,36 @@ import java.util.TimeZone
 import java.util.logging.Level
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-import javax.inject.Inject
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
-class DebugInfoModel @AssistedInject constructor (
+@HiltViewModel(assistedFactory = DebugInfoModel.Factory::class)
+class DebugInfoModel @AssistedInject constructor(
+    @Assisted private val details: DebugInfoDetails,
     val context: Application,
-    @Assisted extras: Bundle?
-) : AndroidViewModel(context) {
+    val db: AppDatabase,
+    val settings: SettingsManager
+) : ViewModel() {
 
-    companion object {
-        /** [android.accounts.Account] (as [android.os.Parcelable]) related to problem */
-        private const val EXTRA_ACCOUNT = "account"
-
-        /** sync authority name related to problem */
-        private const val EXTRA_AUTHORITY = "authority"
-
-        /** serialized [Throwable] that causes the problem */
-        private const val EXTRA_CAUSE = "cause"
-
-        /** dump of local resource related to the problem (plain-text [String]) */
-        private const val EXTRA_LOCAL_RESOURCE = "localResource"
-
-        /** logs related to the problem (plain-text [String]) */
-        private const val EXTRA_LOGS = "logs"
-
-        /** URL of remote resource related to the problem (plain-text [String]) */
-        private const val EXTRA_REMOTE_RESOURCE = "remoteResource"
-
-        const val FILE_DEBUG_INFO = "debug-info.txt"
-        const val FILE_LOGS = "logs.txt"
-    }
+    data class DebugInfoDetails(
+        val account: Account?,
+        val authority: String?,
+        val cause: Throwable?,
+        val localResource: String?,
+        val remoteResource: String?,
+        val logs: String?
+    )
 
     @AssistedFactory
     interface Factory {
-        fun create(extras: Bundle?): DebugInfoModel
+        fun createWithDetails(details: DebugInfoDetails): DebugInfoModel
     }
 
-    @Inject
-    lateinit var db: AppDatabase
-    @Inject
-    lateinit var settings: SettingsManager
+    companion object {
+        private const val FILE_DEBUG_INFO = "debug-info.txt"
+        private const val FILE_LOGS = "logs.txt"
+    }
 
     data class UiState(
         val cause: Throwable? = null,
@@ -140,12 +126,11 @@ class DebugInfoModel @AssistedInject constructor (
 
         viewModelScope.launch(Dispatchers.Main) {
             // create log file from EXTRA_LOGS or log file
-            val logsText = extras?.getString(EXTRA_LOGS)
-            if (logsText != null) {
+            if (details.logs != null) {
                 val file = File(debugDir, FILE_LOGS)
                 if (!file.exists() || file.canWrite()) {
                     file.writer().buffered().use { writer ->
-                        IOUtils.copy(StringReader(logsText), writer)
+                        IOUtils.copy(StringReader(details.logs), writer)
                     }
                     uiState = uiState.copy(logFile = file)
                 } else
@@ -155,21 +140,18 @@ class DebugInfoModel @AssistedInject constructor (
                     uiState = uiState.copy(logFile = debugLogFile)
             }
 
-            val throwable = extras?.getSerializable(EXTRA_CAUSE) as? Throwable
-            uiState = uiState.copy(cause = throwable)
-
-            val local = extras?.getString(EXTRA_LOCAL_RESOURCE)
-            uiState = uiState.copy(localResource = local)
-
-            val remote = extras?.getString(EXTRA_REMOTE_RESOURCE)
-            uiState = uiState.copy(remoteResource = remote)
+            uiState = uiState.copy(
+                cause = details.cause,
+                localResource = details.localResource,
+                remoteResource = details.remoteResource
+            )
 
             generateDebugInfo(
-                extras?.getParcelable(EXTRA_ACCOUNT),
-                extras?.getString(EXTRA_AUTHORITY),
-                throwable,
-                local,
-                remote
+                syncAccount = details.account,
+                syncAuthority = details.authority,
+                cause = details.cause,
+                localResource = details.localResource,
+                remoteResource = details.remoteResource
             )
         }
     }
@@ -618,75 +600,6 @@ class DebugInfoModel @AssistedInject constructor (
             }
         }
         return table.toString()
-    }
-
-    /**
-     * Convenience class to build intents
-     *
-     * Note: Used by the rest of the app. Should probably be extracted to a better location
-     */
-    class IntentBuilder(context: Context) {
-
-        companion object {
-            const val MAX_ELEMENT_SIZE = 800 * FileUtils.ONE_KB.toInt()
-        }
-
-        val intent = Intent(context, DebugInfoActivity::class.java)
-
-        fun newTask(): IntentBuilder {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            return this
-        }
-
-        fun withAccount(account: Account?): IntentBuilder {
-            if (account != null)
-                intent.putExtra(EXTRA_ACCOUNT, account)
-            return this
-        }
-
-        fun withAuthority(authority: String?): IntentBuilder {
-            if (authority != null)
-                intent.putExtra(EXTRA_AUTHORITY, authority)
-            return this
-        }
-
-        fun withCause(throwable: Throwable?): IntentBuilder {
-            if (throwable != null)
-                intent.putExtra(EXTRA_CAUSE, throwable)
-            return this
-        }
-
-        fun withLocalResource(dump: String?): IntentBuilder {
-            if (dump != null)
-                intent.putExtra(
-                    EXTRA_LOCAL_RESOURCE,
-                    StringUtils.abbreviate(dump, MAX_ELEMENT_SIZE)
-                )
-            return this
-        }
-
-        fun withLogs(logs: String?): IntentBuilder {
-            if (logs != null)
-                intent.putExtra(
-                    EXTRA_LOGS,
-                    StringUtils.abbreviate(logs, MAX_ELEMENT_SIZE)
-                )
-            return this
-        }
-
-        fun withRemoteResource(remote: HttpUrl?): IntentBuilder {
-            if (remote != null)
-                intent.putExtra(EXTRA_REMOTE_RESOURCE, remote.toString())
-            return this
-        }
-
-
-        fun build() = intent
-
-        fun share() = intent.apply {
-            action = Intent.ACTION_SEND
-        }
-
     }
 
 }

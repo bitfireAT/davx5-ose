@@ -4,20 +4,21 @@
 
 package at.bitfire.davdroid.ui
 
+import android.accounts.Account
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import dagger.hilt.android.AndroidEntryPoint
+import okhttp3.HttpUrl
+import org.apache.commons.io.FileUtils
+import org.apache.commons.lang3.StringUtils
 import java.io.File
-import javax.inject.Inject
 
 /**
  * Debug info activity. Provides verbose information for debugging and support. Should enable users
@@ -32,21 +33,38 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DebugInfoActivity : AppCompatActivity() {
 
-    @Inject lateinit var modelFactory: DebugInfoModel.Factory
-    private val model by viewModels<DebugInfoModel> {
-        object: ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                modelFactory.create(intent.extras) as T
-        }
+    companion object {
+        /** [android.accounts.Account] (as [android.os.Parcelable]) related to problem */
+        private const val EXTRA_ACCOUNT = "account"
+
+        /** sync authority name related to problem */
+        private const val EXTRA_AUTHORITY = "authority"
+
+        /** serialized [Throwable] that causes the problem */
+        private const val EXTRA_CAUSE = "cause"
+
+        /** dump of local resource related to the problem (plain-text [String]) */
+        private const val EXTRA_LOCAL_RESOURCE = "localResource"
+
+        /** logs related to the problem (plain-text [String]) */
+        private const val EXTRA_LOGS = "logs"
+
+        /** URL of remote resource related to the problem (plain-text [String]) */
+        private const val EXTRA_REMOTE_RESOURCE = "remoteResource"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val extras = intent.extras
 
         setContent { 
             DebugInfoScreen(
-                model,
+                account = extras?.getParcelable(EXTRA_ACCOUNT),
+                authority = extras?.getString(EXTRA_AUTHORITY),
+                cause = extras?.getSerializable(EXTRA_CAUSE) as? Throwable,
+                localResource = extras?.getString(EXTRA_LOCAL_RESOURCE),
+                remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
+                logs = extras?.getString(EXTRA_LOGS),
                 onShareFile = { shareFile(it) },
                 onShareZipFile = { onShareZipFile(it) },
                 onViewFile = { viewFile(it) },
@@ -103,6 +121,76 @@ class DebugInfoActivity : AppCompatActivity() {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         startActivity(Intent.createChooser(intent, title))
+    }
+
+
+    /**
+     * Convenience class to build intents
+     *
+     * Note: Used by the rest of the app. Should probably be extracted to a better location
+     */
+    class IntentBuilder(context: Context) {
+
+        companion object {
+            const val MAX_ELEMENT_SIZE = 800 * FileUtils.ONE_KB.toInt()
+        }
+
+        val intent = Intent(context, DebugInfoActivity::class.java)
+
+        fun newTask(): IntentBuilder {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            return this
+        }
+
+        fun withAccount(account: Account?): IntentBuilder {
+            if (account != null)
+                intent.putExtra(EXTRA_ACCOUNT, account)
+            return this
+        }
+
+        fun withAuthority(authority: String?): IntentBuilder {
+            if (authority != null)
+                intent.putExtra(EXTRA_AUTHORITY, authority)
+            return this
+        }
+
+        fun withCause(throwable: Throwable?): IntentBuilder {
+            if (throwable != null)
+                intent.putExtra(EXTRA_CAUSE, throwable)
+            return this
+        }
+
+        fun withLocalResource(dump: String?): IntentBuilder {
+            if (dump != null)
+                intent.putExtra(
+                    EXTRA_LOCAL_RESOURCE,
+                    StringUtils.abbreviate(dump, MAX_ELEMENT_SIZE)
+                )
+            return this
+        }
+
+        fun withLogs(logs: String?): IntentBuilder {
+            if (logs != null)
+                intent.putExtra(
+                    EXTRA_LOGS,
+                    StringUtils.abbreviate(logs, MAX_ELEMENT_SIZE)
+                )
+            return this
+        }
+
+        fun withRemoteResource(remote: HttpUrl?): IntentBuilder {
+            if (remote != null)
+                intent.putExtra(EXTRA_REMOTE_RESOURCE, remote.toString())
+            return this
+        }
+
+
+        fun build() = intent
+
+        fun share() = intent.apply {
+            action = Intent.ACTION_SEND
+        }
+
     }
 
 }

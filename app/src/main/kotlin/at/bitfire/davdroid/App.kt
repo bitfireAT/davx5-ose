@@ -10,6 +10,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
+import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.DebugInfoModel
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
@@ -73,7 +74,7 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
     override fun uncaughtException(t: Thread, e: Throwable) {
         Logger.log.log(Level.SEVERE, "Unhandled exception!", e)
 
-        val intent = DebugInfoModel.IntentBuilder(this)
+        val intent = DebugInfoActivity.IntentBuilder(this)
             .withCause(e)
             .newTask()
             .build()

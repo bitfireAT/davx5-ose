@@ -17,6 +17,7 @@ import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
+import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.DebugInfoModel
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
@@ -94,7 +95,7 @@ object Logger : SharedPreferences.OnSharedPreferenceChangeListener {
                         .setContentText(context.getString(R.string.logging_notification_text, context.getString(R.string.app_name)))
                         .setOngoing(true)
 
-                val shareIntent = DebugInfoModel.IntentBuilder(context)
+                val shareIntent = DebugInfoActivity.IntentBuilder(context)
                     .newTask()
                     .share()
                 val pendingShare = PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
