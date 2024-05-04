@@ -7,7 +7,6 @@ package at.bitfire.davdroid.ui
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.intro.IntroActivity
@@ -30,8 +29,6 @@ class AccountsActivity: AppCompatActivity() {
             finish()
     }
 
-    val model by viewModels<AccountsModel>()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,11 +43,11 @@ class AccountsActivity: AppCompatActivity() {
         }
 
         // handle "Sync all" intent from launcher shortcut
-        if (savedInstanceState == null && intent.action == Intent.ACTION_SYNC)
-            model.syncAllAccounts()
+        val syncAccounts = intent.action == Intent.ACTION_SYNC
 
         setContent {
             AccountsScreen(
+                initialSyncAccounts = syncAccounts,
                 accountsDrawerHandler = accountsDrawerHandler,
                 onAddAccount = {
                     startActivity(Intent(this, LoginActivity::class.java))

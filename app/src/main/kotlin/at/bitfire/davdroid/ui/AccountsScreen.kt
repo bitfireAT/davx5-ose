@@ -63,8 +63,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountProgress
@@ -76,11 +76,16 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AccountsScreen(
+    initialSyncAccounts: Boolean,
     accountsDrawerHandler: AccountsDrawerHandler,
     onAddAccount: () -> Unit,
     onShowAccount: (Account) -> Unit,
     onManagePermissions: () -> Unit,
-    model: AccountsModel = viewModel()
+    model: AccountsModel = hiltViewModel(
+        creationCallback = { factory: AccountsModel.Factory ->
+            factory.create(initialSyncAccounts)
+        }
+    )
 ) {
     val accounts by model.accountInfos.collectAsStateWithLifecycle(emptyList())
     val showSyncAll by model.showSyncAll.collectAsStateWithLifecycle(true)
