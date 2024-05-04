@@ -17,12 +17,9 @@ class PermissionsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
-                PermissionsScreen(
-                    model = model,
-                    onNavigateUp = ::onSupportNavigateUp
-                )
-            }
+            PermissionsScreen(
+                onNavigateUp = ::onSupportNavigateUp
+            )
         }
     }
 

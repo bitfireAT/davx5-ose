@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import at.bitfire.davdroid.R
 
 @Composable
+@Deprecated("Directly use TopAppBar instead.", replaceWith = ReplaceWith("TopAppBar"))
 fun BasicTopAppBar(
     @StringRes titleStringRes: Int,
     onNavigateUp: () -> Unit

@@ -44,4 +44,5 @@ class PermissionsModel(app: Application): AndroidViewModel(app) {
         tasksOrgAvailable = pm.resolveContentProvider(TaskProvider.ProviderName.TasksOrg.authority, 0) != null
         jtxAvailable = pm.resolveContentProvider(TaskProvider.ProviderName.JtxBoard.authority, 0) != null
     }
+
 }

@@ -7,9 +7,9 @@ package at.bitfire.davdroid.ui.composable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,12 +40,12 @@ fun PermissionSwitchRow(
                 text = text,
                 modifier = Modifier.fillMaxWidth(),
                 fontWeight = fontWeight,
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.bodyMedium
             )
             Text(
                 text = if (allPermissionsGranted) summaryWhenGranted else summaryWhenNotGranted,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.bodyLarge
             )
         }
         Switch(

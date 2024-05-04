@@ -10,10 +10,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,30 +32,43 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.ui.composable.BasicTopAppBar
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import java.util.logging.Level
 
+/**
+ * Used when "Manage permissions" is selected in the settings.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PermissionsScreen(
-    model: PermissionsModel = viewModel(),
     onNavigateUp: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            BasicTopAppBar(
-                titleStringRes = R.string.app_settings_security_app_permissions,
-                onNavigateUp = onNavigateUp
-            )
+    AppTheme {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.app_settings_security_app_permissions)) },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = onNavigateUp
+                        ) {
+                            Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.navigate_up))
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
+            PermissionsCard(modifier = Modifier.padding(paddingValues))
         }
-    ) { paddingValues ->
-        PermissionsCard(modifier = Modifier.padding(paddingValues), model)
     }
 }
 
+/**
+ * Used by [PermissionsScreen] and directly embedded in [at.bitfire.davdroid.ui.intro.PermissionsIntroPage].
+ */
 @Composable
 fun PermissionsCard(
     modifier: Modifier = Modifier,
@@ -80,19 +99,6 @@ fun PermissionsCard(
     )
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PermissionsCard_Preview() {
-    AppTheme {
-        PermissionsCard(
-            keepPermissions = true,
-            onKeepPermissionsRequested = {},
-            openTasksAvailable = true,
-            tasksOrgAvailable = true,
-            jtxAvailable = true
-        )
-    }
-}
 
 @Composable
 fun PermissionsCard(
@@ -206,11 +212,25 @@ fun PermissionsCard(
             )
 
             OutlinedButton(
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier.padding(vertical = 8.dp),
                 onClick = { PermissionUtils.showAppSettings(context) }
             ) {
-                Text(stringResource(R.string.permissions_app_settings).uppercase())
+                Text(stringResource(R.string.permissions_app_settings))
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun PermissionsCard_Preview() {
+    AppTheme {
+        PermissionsCard(
+            keepPermissions = true,
+            onKeepPermissionsRequested = {},
+            openTasksAvailable = true,
+            tasksOrgAvailable = true,
+            jtxAvailable = true
+        )
     }
 }
