@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
-import androidx.annotation.WorkerThread
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
@@ -29,34 +28,12 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.M2Colors
 import at.bitfire.davdroid.ui.M2Theme
 import com.github.appintro.AppIntro2
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class IntroActivity : AppIntro2() {
-
-    companion object {
-
-        @EntryPoint
-        @InstallIn(ActivityComponent::class)
-        interface IntroActivityEntryPoint {
-            fun introPageFactory(): IntroPageFactory
-        }
-
-        @WorkerThread
-        fun shouldShowIntroActivity(activity: Activity): Boolean {
-            val introPageFactory = EntryPointAccessors.fromActivity(activity, IntroActivityEntryPoint::class.java).introPageFactory()
-            return introPageFactory.introPages.any {
-                it.getShowPolicy(activity.application) == IntroPage.ShowPolicy.SHOW_ALWAYS
-            }
-        }
-
-    }
 
     val model by viewModels<Model>()
     private var currentSlide = 0

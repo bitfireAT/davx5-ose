@@ -49,6 +49,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -77,6 +78,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountsScreen(
     initialSyncAccounts: Boolean,
+    onShowAppIntro: () -> Unit,
     accountsDrawerHandler: AccountsDrawerHandler,
     onAddAccount: () -> Unit,
     onShowAccount: (Account) -> Unit,
@@ -90,6 +92,12 @@ fun AccountsScreen(
     val accounts by model.accountInfos.collectAsStateWithLifecycle(emptyList())
     val showSyncAll by model.showSyncAll.collectAsStateWithLifecycle(true)
     val showAddAccount by model.showAddAccount.collectAsStateWithLifecycle(AccountsModel.FABStyle.Standard)
+
+    val showAppIntro by model.showAppIntro.collectAsState(false)
+    LaunchedEffect(showAppIntro) {
+        if (showAppIntro)
+            onShowAppIntro()
+    }
 
     AccountsScreen(
         accountsDrawerHandler = accountsDrawerHandler,
