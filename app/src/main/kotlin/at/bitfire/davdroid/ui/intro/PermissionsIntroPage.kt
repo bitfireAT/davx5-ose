@@ -7,7 +7,7 @@ package at.bitfire.davdroid.ui.intro
 import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.ui.PermissionsCard
+import at.bitfire.davdroid.ui.PermissionsScreen
 import at.bitfire.davdroid.ui.PermissionsModel
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
@@ -35,7 +35,7 @@ class PermissionsIntroPage: IntroPage {
         val newModel: PermissionsModel = viewModel()
         model = newModel
 
-        PermissionsCard(model = newModel)
+        PermissionsScreen(model = newModel)
     }
 
     // Check whether permissions have changed after user comes back from settings app

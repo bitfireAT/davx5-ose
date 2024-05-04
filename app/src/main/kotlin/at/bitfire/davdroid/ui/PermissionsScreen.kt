@@ -65,7 +65,7 @@ fun PermissionsScreen(
                 )
             }
         ) { paddingValues ->
-            PermissionsCard(modifier = Modifier.padding(paddingValues))
+            PermissionsScreen(modifier = Modifier.padding(paddingValues))
         }
     }
 }
@@ -74,12 +74,10 @@ fun PermissionsScreen(
  * Used by [PermissionsScreen] and directly embedded in [at.bitfire.davdroid.ui.intro.PermissionsIntroPage].
  */
 @Composable
-fun PermissionsCard(
+fun PermissionsScreen(
     modifier: Modifier = Modifier,
     model: PermissionsModel = viewModel()
 ) {
-    val context = LocalContext.current
-
     // check permissions when the lifecycle owner (for instance Activity) is resumed
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(lifecycle) {
@@ -95,7 +93,8 @@ fun PermissionsCard(
         }
     }
 
-    PermissionsCard(
+    val context = LocalContext.current
+    PermissionsScreen(
         keepPermissions = model.needKeepPermissions,
         onKeepPermissionsRequested = {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -120,7 +119,7 @@ fun PermissionsCard(
 
 
 @Composable
-fun PermissionsCard(
+fun PermissionsScreen(
     keepPermissions: Boolean?,
     onKeepPermissionsRequested: () -> Unit,
     openTasksAvailable: Boolean?,
@@ -128,8 +127,6 @@ fun PermissionsCard(
     jtxAvailable: Boolean?,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -230,6 +227,7 @@ fun PermissionsCard(
                 modifier = Modifier.padding(top = 24.dp)
             )
 
+            val context = LocalContext.current
             OutlinedButton(
                 modifier = Modifier.padding(vertical = 8.dp),
                 onClick = { PermissionUtils.showAppSettings(context) }
@@ -244,7 +242,7 @@ fun PermissionsCard(
 @Preview
 fun PermissionsCard_Preview() {
     AppTheme {
-        PermissionsCard(
+        PermissionsScreen(
             keepPermissions = true,
             onKeepPermissionsRequested = {},
             openTasksAvailable = true,
