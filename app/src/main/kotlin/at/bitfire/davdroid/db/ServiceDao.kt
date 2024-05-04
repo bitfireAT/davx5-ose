@@ -31,6 +31,9 @@ interface ServiceDao {
     @Query("DELETE FROM service")
     fun deleteAll()
 
+    @Query("DELETE FROM service WHERE accountName=:accountName")
+    suspend fun deleteByAccount(accountName: String)
+
     @Query("DELETE FROM service WHERE accountName NOT IN (:accountNames)")
     fun deleteExceptAccounts(accountNames: Array<String>)
 

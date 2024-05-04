@@ -142,6 +142,13 @@ class AccountRepository @Inject constructor(
                 // blocks calling thread
                 future.result
             }
+
+            // delete address book accounts
+            LocalAddressBook.deleteByAccount(context, accountName)
+
+            // delete from database
+            serviceRepository.deleteByAccount(accountName)
+
             true
         } catch (e: Exception) {
             Logger.log.log(Level.WARNING, "Couldn't remove account $accountName", e)
@@ -232,7 +239,7 @@ class AccountRepository @Inject constructor(
             }
 
             // update account name references in database
-            serviceRepository.onAccountRenamed(oldName, newName)
+            serviceRepository.renameAccount(oldName, newName)
 
             // update main account of address book accounts
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
