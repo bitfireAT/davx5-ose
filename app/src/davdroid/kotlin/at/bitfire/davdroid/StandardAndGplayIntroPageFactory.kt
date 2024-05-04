@@ -11,13 +11,17 @@ import at.bitfire.davdroid.ui.intro.TasksIntroPage
 import at.bitfire.davdroid.ui.intro.WelcomePage
 import javax.inject.Inject
 
-class StandardAndGplayIntroPageFactory @Inject constructor(): IntroPageFactory {
+class StandardAndGplayIntroPageFactory @Inject constructor(
+    batteryOptimizationsPage: BatteryOptimizationsPage,
+    permissionsIntroPage: PermissionsIntroPage,
+    tasksIntroPage: TasksIntroPage
+): IntroPageFactory {
 
     override val introPages = arrayOf(
         WelcomePage(),
-        TasksIntroPage(),
-        PermissionsIntroPage(),
-        BatteryOptimizationsPage()
+        tasksIntroPage,
+        permissionsIntroPage,
+        batteryOptimizationsPage
     )
 
 }
