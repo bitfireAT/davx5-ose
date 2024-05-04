@@ -35,7 +35,6 @@ class PermissionsIntroPage @Inject constructor(
 
     @Composable
     override fun ComposePage() {
-        val newModel: PermissionsModel = viewModel()
         PermissionsScreen()
     }
 

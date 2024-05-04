@@ -58,74 +58,13 @@ class OpenSourcePage @Inject constructor(
     @Composable
     private fun Page(model: Model = viewModel()) {
         val dontShow by model.dontShow.collectAsStateWithLifecycle(false)
-        PageContent(
+        OpenSourcePage(
             dontShow = dontShow,
             onChangeDontShow = {
                 model.setDontShow(it)
             }
         )
     }
-
-    @Preview(
-        showBackground = true,
-        showSystemUi = true
-    )
-    @Composable
-    fun PageContent(
-        dontShow: Boolean = false,
-        onChangeDontShow: (Boolean) -> Unit = {}
-    ) {
-        val uriHandler = LocalUriHandler.current
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(8.dp)
-        ) {
-            CardWithImage(
-                title = stringResource(R.string.intro_open_source_title),
-                image = painterResource(R.drawable.intro_open_source),
-                imageContentScale = ContentScale.Inside,
-                message = stringResource(
-                    R.string.intro_open_source_text,
-                    stringResource(R.string.app_name)
-                )
-            ) {
-                OutlinedButton(
-                    onClick = {
-                        uriHandler.openUri(
-                            Constants.HOMEPAGE_URL.buildUpon()
-                                .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
-                                .withStatParams("OpenSourcePage")
-                                .build()
-                                .toString()
-                        )
-                    }
-                ) {
-                    Text(stringResource(R.string.intro_open_source_details))
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Checkbox(
-                        checked = dontShow,
-                        onCheckedChange = onChangeDontShow
-                    )
-                    Text(
-                        text = stringResource(R.string.intro_open_source_dont_show),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
-                            .clickable { onChangeDontShow(!dontShow) }
-                            .weight(1f)
-                    )
-                }
-            }
-            Spacer(Modifier.height(90.dp))
-        }
-    }
-
 
     @HiltViewModel
     class Model @Inject constructor(
@@ -148,4 +87,61 @@ class OpenSourcePage @Inject constructor(
 
     }
 
+}
+
+@Preview
+@Composable
+fun OpenSourcePage(
+    dontShow: Boolean = false,
+    onChangeDontShow: (Boolean) -> Unit = {}
+) {
+    val uriHandler = LocalUriHandler.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(8.dp)
+    ) {
+        CardWithImage(
+            title = stringResource(R.string.intro_open_source_title),
+            image = painterResource(R.drawable.intro_open_source),
+            imageContentScale = ContentScale.Inside,
+            message = stringResource(
+                R.string.intro_open_source_text,
+                stringResource(R.string.app_name)
+            )
+        ) {
+            OutlinedButton(
+                onClick = {
+                    uriHandler.openUri(
+                        Constants.HOMEPAGE_URL.buildUpon()
+                            .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
+                            .withStatParams("OpenSourcePage")
+                            .build()
+                            .toString()
+                    )
+                }
+            ) {
+                Text(stringResource(R.string.intro_open_source_details))
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = dontShow,
+                    onCheckedChange = onChangeDontShow
+                )
+                Text(
+                    text = stringResource(R.string.intro_open_source_dont_show),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .clickable { onChangeDontShow(!dontShow) }
+                        .weight(1f)
+                )
+            }
+        }
+        Spacer(Modifier.height(90.dp))
+    }
 }
