@@ -117,7 +117,7 @@ class AccountsModel @AssistedInject constructor(
 
     val showAppIntro: Flow<Boolean> = flow<Boolean> {
         val anyShowAlwaysPage = introPageFactory.introPages.any { introPage ->
-            val policy = introPage.getShowPolicy(context)
+            val policy = introPage.getShowPolicy()
             Logger.log.fine("Intro page ${introPage::class.java.name} policy = $policy")
 
             policy == IntroPage.ShowPolicy.SHOW_ALWAYS

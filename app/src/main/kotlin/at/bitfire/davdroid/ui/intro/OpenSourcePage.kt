@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.intro
 
-import android.app.Application
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,24 +36,14 @@ import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.composable.CardWithImage
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 
-class OpenSourcePage : IntroPage {
+class OpenSourcePage @Inject constructor(
+    private val settingsManager: SettingsManager
+): IntroPage {
 
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface OpenSourcePageEntryPoint {
-        fun settingsManager(): SettingsManager
-    }
-
-    override fun getShowPolicy(application: Application): IntroPage.ShowPolicy {
-        val settingsManager = EntryPointAccessors.fromApplication(application, OpenSourcePageEntryPoint::class.java).settingsManager()
-
+    override fun getShowPolicy(): IntroPage.ShowPolicy {
         return if (System.currentTimeMillis() > (settingsManager.getLongOrNull(Model.SETTING_NEXT_DONATION_POPUP) ?: 0))
             IntroPage.ShowPolicy.SHOW_ALWAYS
         else

@@ -13,12 +13,15 @@ import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
 import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
 import at.bitfire.ical4android.TaskProvider
+import javax.inject.Inject
 
-class PermissionsIntroPage: IntroPage {
+class PermissionsIntroPage @Inject constructor(
+    private val application: Application
+): IntroPage {
 
     var model: PermissionsModel? = null
 
-    override fun getShowPolicy(application: Application): IntroPage.ShowPolicy {
+    override fun getShowPolicy(): IntroPage.ShowPolicy {
         // show PermissionsFragment as intro fragment when no permissions are granted
         val permissions = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS +
                 TaskProvider.PERMISSIONS_JTX +

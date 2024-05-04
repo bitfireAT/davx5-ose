@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -23,7 +22,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.dimensionResource
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.M2Colors
 import at.bitfire.davdroid.ui.M2Theme
@@ -97,12 +96,6 @@ class IntroActivity : AppIntro2() {
                 }
             }
 
-        // For on resume actions of intro pages
-        override fun onResume() {
-            super.onResume()
-            activity?.application?.let { page.onResume(it) }
-        }
-
     }
 
 
@@ -121,9 +114,8 @@ class IntroActivity : AppIntro2() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        application: Application,
         introPageFactory: IntroPageFactory
-    ): AndroidViewModel(application) {
+    ): ViewModel() {
 
         private val introPages = introPageFactory.introPages
 
@@ -141,10 +133,14 @@ class IntroActivity : AppIntro2() {
 
         private fun calculatePages(): List<IntroPage> {
             for (page in introPages)
-                Logger.log.fine("Found intro page ${page::class.java} with order ${page.getShowPolicy(getApplication())}")
+                Logger.log.fine("Found intro page ${page::class.java} with order ${page.getShowPolicy()}")
 
             val activePages: Map<IntroPage, IntroPage.ShowPolicy> = introPages
-                .associateWith { it.getShowPolicy(getApplication()) }
+                .associateWith { page ->
+                    page.getShowPolicy().also { policy ->
+                        Logger.log.fine("IntroActivity: found intro page ${page::class.java} with $policy")
+                    }
+                }
                 .filterValues { it != IntroPage.ShowPolicy.DONT_SHOW }
 
             val anyShowAlways = activePages.values.any { it == IntroPage.ShowPolicy.SHOW_ALWAYS }
