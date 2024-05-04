@@ -9,22 +9,22 @@ import android.os.StrictMode
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
+import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.logging.Level
 import javax.inject.Inject
-import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 @HiltAndroidApp
 class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provider {
 
-    @Inject lateinit var accountsUpdatedListener: AccountsUpdatedListener
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
     override val workManagerConfiguration: Configuration
@@ -58,15 +58,15 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
 
         // don't block UI for some background checks
         @OptIn(DelicateCoroutinesApi::class)
-        thread {
-            // watch for account changes/deletions
-            accountsUpdatedListener.listen()
+        GlobalScope.launch(Dispatchers.Default) {
+            // clean up orphaned accounts in DB from time to time
+            AccountsCleanupWorker.enqueue(this@App)
 
             // watch installed/removed tasks apps over whole app lifetime and update sync settings accordingly
-            TasksAppWatcher.watchInstalledTaskApps(this, GlobalScope)
+            TasksAppWatcher.watchInstalledTaskApps(this@App, this)
 
             // create/update app shortcuts
-            UiUtils.updateShortcuts(this)
+            UiUtils.updateShortcuts(this@App)
         }
     }
 
