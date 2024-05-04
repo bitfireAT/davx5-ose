@@ -2,17 +2,21 @@ package at.bitfire.davdroid.ui
 
 import android.app.Application
 import android.os.Build
-import androidx.annotation.MainThread
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PermissionsModel(app: Application): AndroidViewModel(app) {
+@HiltViewModel
+class PermissionsModel @Inject constructor(
+    val context: Application
+): ViewModel() {
 
     var needKeepPermissions by mutableStateOf(false)
         private set
@@ -25,15 +29,15 @@ class PermissionsModel(app: Application): AndroidViewModel(app) {
 
     init {
         viewModelScope.launch {
-            packageChangedFlow(app).collect {
+            // check permissions when a package (e.g. tasks app) is (un)installed
+            packageChangedFlow(context).collect {
                 checkPermissions()
             }
         }
     }
 
-    @MainThread
     fun checkPermissions() {
-        val pm = getApplication<Application>().packageManager
+        val pm = context.packageManager
 
         // auto-reset permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
