@@ -112,6 +112,8 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
         if (savedInstanceState == null) {
             val loginInfo = loginInfoFromIntent(intent)
             if (loginInfo.baseUri != null) {
+                val initialLoginType = model.loginTypesProvider.intentToInitialLoginType(intent)
+                model.selectLoginType(initialLoginType)
                 model.updateLoginInfo(loginInfo)
                 model.navToPage(LoginScreenModel.Page.LoginDetails)
             }

@@ -127,6 +127,7 @@ class LoginScreenModel @Inject constructor(
 
     fun selectLoginType(loginType: LoginType) {
         loginTypeUiState = loginTypeUiState.copy(loginType = loginType)
+        loginDetailsUiState = loginDetailsUiState.copy(loginType = loginType)
     }
 
 
