@@ -128,7 +128,7 @@ fun BatteryOptimizationsPageContent(
                     ) {
                         Checkbox(
                             checked = dontShowBattery,
-                            onCheckedChange = onChangeDontShowBattery,
+                            onCheckedChange = { onChangeDontShowBattery(dontShowBattery) },
                             enabled = !isExempted
                         )
                         Text(
@@ -186,7 +186,7 @@ fun BatteryOptimizationsPageContent(
                     ) {
                         Checkbox(
                             checked = dontShowAutostart,
-                            onCheckedChange = onChangeDontShowAutostart
+                            onCheckedChange = { onChangeDontShowAutostart(dontShowAutostart) }
                         )
                         Text(
                             text = stringResource(R.string.intro_autostart_dont_show),
