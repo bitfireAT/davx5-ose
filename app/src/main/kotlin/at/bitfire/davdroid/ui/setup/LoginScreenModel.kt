@@ -34,7 +34,7 @@ class LoginScreenModel @Inject constructor(
     val context: Application,
     val loginTypesProvider: LoginTypesProvider,
     private val accountRepository: AccountRepository,
-    private val settingsManager: SettingsManager
+    settingsManager: SettingsManager
 ): ViewModel() {
 
     enum class Page {
