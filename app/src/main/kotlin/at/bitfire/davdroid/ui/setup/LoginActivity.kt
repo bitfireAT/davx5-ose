@@ -48,6 +48,12 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
         const val EXTRA_LOGIN_FLOW = "loginFlow"
 
 
+        /**
+         * Extracts login information from given intent, validates it and returns it in [LoginInfo].
+         *
+         * @param intent Contains base url, username and password.
+         * @return Extracted login info. Contains null values if given info is invalid.
+         */
         fun loginInfoFromIntent(intent: Intent): LoginInfo {
             var givenUri: String? = null
             var givenUsername: String? = null
