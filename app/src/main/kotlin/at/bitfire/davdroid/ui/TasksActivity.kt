@@ -16,11 +16,9 @@ class TasksActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AppTheme {
-                TasksScreen(
-                    onSupportNavigateUp = ::onSupportNavigateUp
-                )
-            }
+            TasksScreen(
+                onSupportNavigateUp = ::onSupportNavigateUp
+            )
         }
     }
 }

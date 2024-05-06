@@ -44,16 +44,18 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TasksScreen(onSupportNavigateUp: () -> Unit) {
-    Scaffold(
-        topBar = {
-            BasicTopAppBar(
-                titleStringRes = R.string.intro_tasks_title,
-                onNavigateUp = onSupportNavigateUp
-            )
-        }
-    ) { paddingValues ->
-        Box(Modifier.padding(paddingValues)) {
-            TasksCard()
+    AppTheme {
+        Scaffold(
+            topBar = {
+                BasicTopAppBar(
+                    titleStringRes = R.string.intro_tasks_title,
+                    onNavigateUp = onSupportNavigateUp
+                )
+            }
+        ) { paddingValues ->
+            Box(Modifier.padding(paddingValues)) {
+                TasksCard()
+            }
         }
     }
 }
