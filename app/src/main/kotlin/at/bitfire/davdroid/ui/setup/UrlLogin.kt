@@ -31,7 +31,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
@@ -53,10 +53,11 @@ object UrlLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model = viewModel<UrlLoginModel>()
-        LaunchedEffect(initialLoginInfo) {
-            model.initialize(initialLoginInfo)
-        }
+        val model: UrlLoginModel = hiltViewModel(
+            creationCallback = { factory: UrlLoginModel.Factory ->
+                factory.create(loginInfo = initialLoginInfo)
+            }
+        )
 
         val uiState = model.uiState
         UrlLoginScreen(

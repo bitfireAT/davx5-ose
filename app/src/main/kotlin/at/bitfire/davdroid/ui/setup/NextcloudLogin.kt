@@ -42,7 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
@@ -69,10 +69,11 @@ object NextcloudLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model = viewModel<NextcloudLoginModel>()
-        LaunchedEffect(initialLoginInfo) {
-            model.initialize(initialLoginInfo)
-        }
+        val model: NextcloudLoginModel = hiltViewModel(
+            creationCallback = { factory: NextcloudLoginModel.Factory ->
+                factory.create(loginInfo = initialLoginInfo)
+            }
+        )
 
         val context = LocalContext.current
         val checkResultCallback = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
