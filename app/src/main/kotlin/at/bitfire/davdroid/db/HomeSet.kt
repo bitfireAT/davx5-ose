@@ -38,6 +38,6 @@ data class HomeSet(
     var displayName: String? = null
 ) {
 
-    fun title() = displayName ?: url.lastSegment()
+    fun title() = displayName ?: url.lastSegment
 
 }

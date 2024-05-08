@@ -9,10 +9,14 @@ import at.bitfire.davdroid.db.Service
 import javax.inject.Inject
 
 class DavServiceRepository @Inject constructor(
-    private val db: AppDatabase
+    db: AppDatabase
 ) {
 
     private val dao = db.serviceDao()
+
+    suspend fun deleteByAccount(accountName: String) {
+        dao.deleteByAccount(accountName)
+    }
 
     fun getCalDavServiceFlow(accountName: String) =
         dao.getByAccountAndTypeFlow(accountName, Service.TYPE_CALDAV)
@@ -20,7 +24,7 @@ class DavServiceRepository @Inject constructor(
     fun getCardDavServiceFlow(accountName: String) =
         dao.getByAccountAndTypeFlow(accountName, Service.TYPE_CARDDAV)
 
-    suspend fun onAccountRenamed(oldName: String, newName: String) {
+    suspend fun renameAccount(oldName: String, newName: String) {
         dao.renameAccount(oldName, newName)
     }
 

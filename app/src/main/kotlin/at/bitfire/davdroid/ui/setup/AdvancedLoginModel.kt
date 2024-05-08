@@ -10,9 +10,21 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.apache.commons.lang3.StringUtils
 
-class AdvancedLoginModel: ViewModel() {
+@HiltViewModel(assistedFactory = AdvancedLoginModel.Factory::class)
+class AdvancedLoginModel @AssistedInject constructor(
+    @Assisted val initialLoginInfo: LoginInfo,
+): ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(loginInfo: LoginInfo): AdvancedLoginModel
+    }
 
     data class UiState(
         val url: String = "",
@@ -44,12 +56,12 @@ class AdvancedLoginModel: ViewModel() {
     var uiState by mutableStateOf(UiState())
         private set
 
-    fun initialize(loginInfo: LoginInfo) {
+    init {
         uiState = uiState.copy(
-            url = loginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
-            username = loginInfo.credentials?.username ?: "",
-            password = loginInfo.credentials?.password ?: "",
-            certAlias = loginInfo.credentials?.certificateAlias ?: ""
+            url = initialLoginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
+            username = initialLoginInfo.credentials?.username ?: "",
+            password = initialLoginInfo.credentials?.password ?: "",
+            certAlias = initialLoginInfo.credentials?.certificateAlias ?: ""
         )
     }
 

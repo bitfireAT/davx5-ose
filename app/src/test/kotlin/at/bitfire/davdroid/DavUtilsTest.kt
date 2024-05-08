@@ -18,9 +18,6 @@ import org.xbill.DNS.SRVRecord
 
 class DavUtilsTest {
 
-    val exampleURL = "http://example.com/"
-
-
     @Test
     fun testAcceptAnything() {
         assertEquals("*/*", DavUtils.acceptAnything(null))
@@ -32,14 +29,6 @@ class DavUtilsTest {
         assertEquals("#00000000", DavUtils.ARGBtoCalDAVColor(0))
         assertEquals("#123456FF", DavUtils.ARGBtoCalDAVColor(0xFF123456.toInt()))
         assertEquals("#000000FF", DavUtils.ARGBtoCalDAVColor(0xFF000000.toInt()))
-    }
-
-    @Test
-    fun testLastSegmentOfUrl() {
-        assertEquals("/", DavUtils.lastSegmentOfUrl(exampleURL.toHttpUrl()))
-        assertEquals("dir", DavUtils.lastSegmentOfUrl((exampleURL + "dir").toHttpUrl()))
-        assertEquals("dir", DavUtils.lastSegmentOfUrl((exampleURL + "dir/").toHttpUrl()))
-        assertEquals("file.html", DavUtils.lastSegmentOfUrl((exampleURL + "dir/file.html").toHttpUrl()))
     }
 
     @Test

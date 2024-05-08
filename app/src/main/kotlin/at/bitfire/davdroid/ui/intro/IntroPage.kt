@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.intro
 
-import android.app.Application
 import androidx.compose.runtime.Composable
 
 interface IntroPage {
@@ -19,25 +18,18 @@ interface IntroPage {
      * Used to determine whether an intro page of this type (for instance,
      * the [BatteryOptimizationsPage]) should be shown.
      *
-     * @param application   used to determine whether the page shall be shown
-     *
      * @return Order with which an instance of this page type shall be created and shown. Possible values:
      *
      *   * < 0: only show the page when there is at least one other page with positive order (lower numbers are shown first)
      *   * [DONT_SHOW] (0): don't show the page
      *   * ≥ 0: show the page (lower numbers are shown first)
      */
-    fun getShowPolicy(application: Application): ShowPolicy
+    fun getShowPolicy(): ShowPolicy
 
     /**
      * Composes this page. Will only be called when [getShowPolicy] is not [DONT_SHOW].
      */
     @Composable
     fun ComposePage()
-
-    /**
-     * Called when the user leaves and re-enters the app intro
-     */
-    fun onResume(application: Application) {}
 
 }

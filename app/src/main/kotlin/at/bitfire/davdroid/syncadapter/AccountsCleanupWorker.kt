@@ -8,8 +8,8 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import androidx.hilt.work.HiltWorker
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -19,8 +19,8 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import java.time.Duration
 import java.util.concurrent.Semaphore
-import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
 @HiltWorker
@@ -42,12 +42,15 @@ class AccountsCleanupWorker @AssistedInject constructor(
         /** Must be called exactly one time after calling `lockAccountsCleanup`. */
         fun unlockAccountsCleanup() = mutex.release()
 
+        /**
+         * Enqueues [AccountsCleanupWorker] to be run regularly (but not necessarily now).
+         */
         fun enqueue(context: Context) {
-            WorkManager.getInstance(context).enqueueUniqueWork(NAME, ExistingWorkPolicy.KEEP,
-                OneTimeWorkRequestBuilder<AccountsCleanupWorker>()
-                    .setInitialDelay(15, TimeUnit.SECONDS)   // wait some time before cleaning up accouts
-                    .build())
+            // run every day
+            val rq = PeriodicWorkRequestBuilder<AccountsCleanupWorker>(Duration.ofDays(1))
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.UPDATE, rq.build())
         }
+
     }
 
     override fun doWork(): Result {

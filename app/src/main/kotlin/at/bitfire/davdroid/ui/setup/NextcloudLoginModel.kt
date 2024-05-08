@@ -12,18 +12,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.NextcloudLoginFlow
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
-import javax.inject.Inject
 
-@HiltViewModel
-class NextcloudLoginModel @Inject constructor(
+@HiltViewModel(assistedFactory = NextcloudLoginModel.Factory::class)
+class NextcloudLoginModel @AssistedInject constructor(
+    @Assisted val initialLoginInfo: LoginInfo,
     val context: Application
     //val state: SavedStateHandle
 ): ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(loginInfo: LoginInfo): NextcloudLoginModel
+    }
 
     /*companion object {
         const val STATE_POLL_URL = "poll_url"
@@ -59,8 +67,8 @@ class NextcloudLoginModel @Inject constructor(
     var uiState by mutableStateOf(UiState())
         private set
 
-    fun initialize(loginInfo: LoginInfo) {
-        val baseUri = loginInfo.baseUri
+    init {
+        val baseUri = initialLoginInfo.baseUri
         if (baseUri != null)
             uiState = uiState.copy(
                 baseUrl = baseUri.toString()

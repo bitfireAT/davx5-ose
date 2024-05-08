@@ -57,27 +57,18 @@ import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HIN
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.launch
 import org.apache.commons.text.WordUtils
 import java.util.Locale
 import javax.inject.Inject
 
-class BatteryOptimizationsPage: IntroPage {
+class BatteryOptimizationsPage @Inject constructor(
+    private val application: Application,
+    private val settingsManager: SettingsManager
+): IntroPage {
 
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface BatteryOptimizationsPageEntryPoint {
-        fun settingsManager(): SettingsManager
-    }
-
-    override fun getShowPolicy(application: Application): IntroPage.ShowPolicy {
-        val settingsManager = EntryPointAccessors.fromApplication(application, BatteryOptimizationsPageEntryPoint::class.java).settingsManager()
-
+    override fun getShowPolicy(): IntroPage.ShowPolicy {
         // show fragment when:
         // 1. DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked, and/or
         // 2a. evil manufacturer AND

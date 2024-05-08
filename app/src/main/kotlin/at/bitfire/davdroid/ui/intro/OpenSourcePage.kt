@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.intro
 
-import android.app.Application
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,10 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Checkbox
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,24 +36,14 @@ import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.composable.CardWithImage
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 
-class OpenSourcePage : IntroPage {
+class OpenSourcePage @Inject constructor(
+    private val settingsManager: SettingsManager
+): IntroPage {
 
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface OpenSourcePageEntryPoint {
-        fun settingsManager(): SettingsManager
-    }
-
-    override fun getShowPolicy(application: Application): IntroPage.ShowPolicy {
-        val settingsManager = EntryPointAccessors.fromApplication(application, OpenSourcePageEntryPoint::class.java).settingsManager()
-
+    override fun getShowPolicy(): IntroPage.ShowPolicy {
         return if (System.currentTimeMillis() > (settingsManager.getLongOrNull(Model.SETTING_NEXT_DONATION_POPUP) ?: 0))
             IntroPage.ShowPolicy.SHOW_ALWAYS
         else
@@ -69,74 +58,13 @@ class OpenSourcePage : IntroPage {
     @Composable
     private fun Page(model: Model = viewModel()) {
         val dontShow by model.dontShow.collectAsStateWithLifecycle(false)
-        PageContent(
+        OpenSourcePage(
             dontShow = dontShow,
             onChangeDontShow = {
                 model.setDontShow(it)
             }
         )
     }
-
-    @Preview(
-        showBackground = true,
-        showSystemUi = true
-    )
-    @Composable
-    fun PageContent(
-        dontShow: Boolean = false,
-        onChangeDontShow: (Boolean) -> Unit = {}
-    ) {
-        val uriHandler = LocalUriHandler.current
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(8.dp)
-        ) {
-            CardWithImage(
-                title = stringResource(R.string.intro_open_source_title),
-                image = painterResource(R.drawable.intro_open_source),
-                imageContentScale = ContentScale.Inside,
-                message = stringResource(
-                    R.string.intro_open_source_text,
-                    stringResource(R.string.app_name)
-                )
-            ) {
-                OutlinedButton(
-                    onClick = {
-                        uriHandler.openUri(
-                            Constants.HOMEPAGE_URL.buildUpon()
-                                .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
-                                .withStatParams("OpenSourcePage")
-                                .build()
-                                .toString()
-                        )
-                    }
-                ) {
-                    Text(stringResource(R.string.intro_open_source_details))
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Checkbox(
-                        checked = dontShow,
-                        onCheckedChange = onChangeDontShow
-                    )
-                    Text(
-                        text = stringResource(R.string.intro_open_source_dont_show),
-                        style = MaterialTheme.typography.body2,
-                        modifier = Modifier
-                            .clickable { onChangeDontShow(!dontShow) }
-                            .weight(1f)
-                    )
-                }
-            }
-            Spacer(Modifier.height(90.dp))
-        }
-    }
-
 
     @HiltViewModel
     class Model @Inject constructor(
@@ -159,4 +87,61 @@ class OpenSourcePage : IntroPage {
 
     }
 
+}
+
+@Preview
+@Composable
+fun OpenSourcePage(
+    dontShow: Boolean = false,
+    onChangeDontShow: (Boolean) -> Unit = {}
+) {
+    val uriHandler = LocalUriHandler.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(8.dp)
+    ) {
+        CardWithImage(
+            title = stringResource(R.string.intro_open_source_title),
+            image = painterResource(R.drawable.intro_open_source),
+            imageContentScale = ContentScale.Inside,
+            message = stringResource(
+                R.string.intro_open_source_text,
+                stringResource(R.string.app_name)
+            )
+        ) {
+            OutlinedButton(
+                onClick = {
+                    uriHandler.openUri(
+                        Constants.HOMEPAGE_URL.buildUpon()
+                            .appendPath(Constants.HOMEPAGE_PATH_OPEN_SOURCE)
+                            .withStatParams("OpenSourcePage")
+                            .build()
+                            .toString()
+                    )
+                }
+            ) {
+                Text(stringResource(R.string.intro_open_source_details))
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = dontShow,
+                    onCheckedChange = onChangeDontShow
+                )
+                Text(
+                    text = stringResource(R.string.intro_open_source_dont_show),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .clickable { onChangeDontShow(!dontShow) }
+                        .weight(1f)
+                )
+            }
+        }
+        Spacer(Modifier.height(90.dp))
+    }
 }

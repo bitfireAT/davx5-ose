@@ -16,8 +16,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +35,7 @@ import at.bitfire.davdroid.ui.M2Colors.primaryDark
 
 class WelcomePage: IntroPage {
 
-    override fun getShowPolicy(application: Application) = IntroPage.ShowPolicy.SHOW_ONLY_WITH_OTHERS
+    override fun getShowPolicy() = IntroPage.ShowPolicy.SHOW_ONLY_WITH_OTHERS
 
     @Composable
     override fun ComposePage() {
@@ -69,7 +69,7 @@ class WelcomePage: IntroPage {
             Text(
                 text = stringResource(R.string.intro_slogan1),
                 color = Color.White,
-                style = MaterialTheme.typography.subtitle1.copy(fontSize = 34.sp),
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 34.sp),
                 lineHeight = 38.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -81,7 +81,7 @@ class WelcomePage: IntroPage {
             Text(
                 text = stringResource(R.string.intro_slogan2),
                 color = Color.White,
-                style = MaterialTheme.typography.h5.copy(fontSize = 48.sp),
+                style = MaterialTheme.typography.labelLarge.copy(fontSize = 48.sp),
                 lineHeight = 52.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -132,7 +132,7 @@ class WelcomePage: IntroPage {
                 Text(
                     text = stringResource(R.string.intro_slogan1),
                     color = Color.White,
-                    style = MaterialTheme.typography.subtitle1.copy(fontSize = 34.sp),
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 34.sp),
                     lineHeight = 38.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -141,7 +141,7 @@ class WelcomePage: IntroPage {
                 Text(
                     text = stringResource(R.string.intro_slogan2),
                     color = Color.White,
-                    style = MaterialTheme.typography.h5.copy(fontSize = 48.sp),
+                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 48.sp),
                     lineHeight = 52.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
