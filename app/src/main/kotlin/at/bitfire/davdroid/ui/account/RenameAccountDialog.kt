@@ -14,8 +14,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,7 +53,7 @@ fun RenameAccountDialog(
             )
 
             val focusRequester = remember { FocusRequester() }
-            TextField(
+            OutlinedTextField(
                 value = accountName,
                 onValueChange = { accountName = it },
                 label = { Text(stringResource(R.string.account_rename_new_name)) },
