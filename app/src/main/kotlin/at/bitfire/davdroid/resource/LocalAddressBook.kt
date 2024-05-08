@@ -24,7 +24,7 @@ import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.AccountUtils
-import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
@@ -83,6 +83,13 @@ open class LocalAddressBook(
             return addressBook
         }
 
+        fun deleteByAccount(context: Context, accountName: String) {
+            val mainAccount = Account(accountName, context.getString(R.string.account_type))
+            findAll(context, null, mainAccount).forEach {
+                it.delete()
+            }
+        }
+
         /**
          * Finds and returns all the local address books belonging to a given main account
          *
@@ -108,7 +115,7 @@ open class LocalAddressBook(
 
             val sb = StringBuilder(info.displayName.let {
                 if (it.isNullOrEmpty())
-                    DavUtils.lastSegmentOfUrl(info.url)
+                    info.url.lastSegment
                 else
                     it
             })

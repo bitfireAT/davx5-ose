@@ -10,22 +10,14 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.TasksActivity
 import at.bitfire.davdroid.ui.TasksCard
 import at.bitfire.davdroid.util.TaskUtils
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
+import javax.inject.Inject
 
-class TasksIntroPage : IntroPage {
+class TasksIntroPage @Inject constructor(
+    private val application: Application,
+    private val settingsManager: SettingsManager
+): IntroPage {
 
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface TasksIntroPageEntryPoint {
-        fun settingsManager(): SettingsManager
-    }
-
-    override fun getShowPolicy(application: Application): IntroPage.ShowPolicy {
-        val settingsManager = EntryPointAccessors.fromApplication(application, TasksIntroPageEntryPoint::class.java).settingsManager()
-
+    override fun getShowPolicy(): IntroPage.ShowPolicy {
         return if (TaskUtils.isAvailable(application) || settingsManager.getBooleanOrNull(TasksActivity.Model.HINT_OPENTASKS_NOT_INSTALLED) == false)
                 IntroPage.ShowPolicy.DONT_SHOW
             else

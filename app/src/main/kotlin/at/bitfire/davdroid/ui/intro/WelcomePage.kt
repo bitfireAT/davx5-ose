@@ -35,7 +35,7 @@ import at.bitfire.davdroid.ui.M2Colors.primaryDark
 
 class WelcomePage: IntroPage {
 
-    override fun getShowPolicy(application: Application) = IntroPage.ShowPolicy.SHOW_ONLY_WITH_OTHERS
+    override fun getShowPolicy() = IntroPage.ShowPolicy.SHOW_ONLY_WITH_OTHERS
 
     @Composable
     override fun ComposePage() {

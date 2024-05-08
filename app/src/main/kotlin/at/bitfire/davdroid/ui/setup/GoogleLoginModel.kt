@@ -17,6 +17,9 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.GoogleLogin
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationRequest
@@ -25,13 +28,18 @@ import net.openid.appauth.AuthorizationService
 import org.apache.commons.lang3.StringUtils
 import java.util.Locale
 import java.util.logging.Level
-import javax.inject.Inject
 
-@HiltViewModel
-class GoogleLoginModel @Inject constructor(
+@HiltViewModel(assistedFactory = GoogleLoginModel.Factory::class)
+class GoogleLoginModel @AssistedInject constructor(
+    @Assisted val initialLoginInfo: LoginInfo,
     val context: Application,
     val authService: AuthorizationService
 ): ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(loginInfo: LoginInfo): GoogleLoginModel
+    }
 
     val googleLogin = GoogleLogin(authService)
 
@@ -55,9 +63,9 @@ class GoogleLoginModel @Inject constructor(
     var uiState by mutableStateOf(UiState())
         private set
 
-    fun initialize(loginInfo: LoginInfo) {
+    init {
         uiState = uiState.copy(
-            email = loginInfo.credentials?.username ?: findGoogleAccount() ?: "",
+            email = initialLoginInfo.credentials?.username ?: findGoogleAccount() ?: "",
             error = null,
             result = null
         )

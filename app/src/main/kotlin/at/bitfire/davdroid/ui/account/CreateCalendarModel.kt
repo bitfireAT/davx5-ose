@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavHomeSetRepository
@@ -17,6 +16,7 @@ import at.bitfire.ical4android.Css3Color
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -30,26 +30,17 @@ import java.time.format.TextStyle
 import java.util.Locale
 import java.util.TimeZone
 
+@HiltViewModel(assistedFactory = CreateCalendarModel.Factory::class)
 class CreateCalendarModel @AssistedInject constructor(
+    @Assisted val account: Account,
     private val collectionRepository: DavCollectionRepository,
-    homeSetRepository: DavHomeSetRepository,
-    @Assisted val account: Account
+    homeSetRepository: DavHomeSetRepository
 ): ViewModel() {
 
     @AssistedFactory
     interface Factory {
         fun create(account: Account): CreateCalendarModel
     }
-
-    companion object {
-        fun factoryFromAccount(assistedFactory: Factory, account: Account) = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return assistedFactory.create(account) as T
-            }
-        }
-    }
-
 
     val calendarHomeSets = homeSetRepository.getCalendarHomeSetsFlow(account)
 

@@ -10,19 +10,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.components.ActivityComponent
 
 @AndroidEntryPoint
 class AccountActivity : AppCompatActivity() {
-
-    @EntryPoint
-    @InstallIn(ActivityComponent::class)
-    interface AccountScreenEntryPoint {
-        fun accountModelAssistedFactory(): AccountScreenModel.Factory
-    }
 
     companion object {
         const val EXTRA_ACCOUNT = "account"

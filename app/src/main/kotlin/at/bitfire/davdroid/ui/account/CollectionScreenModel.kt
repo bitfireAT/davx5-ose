@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -17,6 +16,7 @@ import at.bitfire.davdroid.util.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
 class CollectionScreenModel @AssistedInject constructor(
     @Assisted val collectionId: Long,
     db: AppDatabase,
@@ -35,15 +36,6 @@ class CollectionScreenModel @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(collectionId: Long): CollectionScreenModel
-    }
-
-    companion object {
-        fun factoryFromCollection(assistedFactory: Factory, collectionId: Long) = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return assistedFactory.create(collectionId) as T
-            }
-        }
     }
 
     var invalid by mutableStateOf(false)
@@ -59,7 +51,7 @@ class CollectionScreenModel @AssistedInject constructor(
     val owner: Flow<String?> = collection.map { collection ->
         collection?.ownerId?.let { ownerId ->
             val principal = principalDao.getAsync(ownerId)
-            principal.displayName ?: principal.url.lastSegment()
+            principal.displayName ?: principal.url.lastSegment
         }
     }
 

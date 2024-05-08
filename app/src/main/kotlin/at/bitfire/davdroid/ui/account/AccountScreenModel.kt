@@ -13,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
@@ -30,7 +29,10 @@ import at.bitfire.davdroid.util.TaskUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOf
@@ -39,29 +41,21 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.logging.Level
 
+@HiltViewModel(assistedFactory = AccountScreenModel.Factory::class)
 class AccountScreenModel @AssistedInject constructor(
+    @Assisted val account: Account,
     val context: Application,
     private val accountRepository: AccountRepository,
     private val collectionRepository: DavCollectionRepository,
     serviceRepository: DavServiceRepository,
     accountProgressUseCase: AccountProgressUseCase,
     getBindableHomesetsFromServiceUseCase: GetBindableHomeSetsFromServiceUseCase,
-    getServiceCollectionPagerUseCase: GetServiceCollectionPagerUseCase,
-    @Assisted val account: Account
+    getServiceCollectionPagerUseCase: GetServiceCollectionPagerUseCase
 ): ViewModel() {
 
     @AssistedFactory
     interface Factory {
         fun create(account: Account): AccountScreenModel
-    }
-
-    companion object {
-        fun factoryFromAccount(assistedFactory: Factory, account: Account) = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return assistedFactory.create(account) as T
-            }
-        }
     }
 
     /** whether the account is invalid and the screen shall be closed */
@@ -142,9 +136,11 @@ class AccountScreenModel @AssistedInject constructor(
 
     // actions
 
+    private val notInterruptibleScope = CoroutineScope(SupervisorJob())
+
     /** Deletes the account from the system (won't touch collections on the server). */
     fun deleteAccount() {
-        viewModelScope.launch {
+        notInterruptibleScope.launch {
             accountRepository.delete(account.name)
         }
     }
@@ -164,7 +160,7 @@ class AccountScreenModel @AssistedInject constructor(
      * @param newName new account name
      */
     fun renameAccount(newName: String) {
-        viewModelScope.launch {
+        notInterruptibleScope.launch {
             try {
                 accountRepository.rename(account.name, newName)
 

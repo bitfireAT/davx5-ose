@@ -10,8 +10,20 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 
-class EmailLoginModel: ViewModel() {
+@HiltViewModel(assistedFactory = EmailLoginModel.Factory::class)
+class EmailLoginModel @AssistedInject constructor(
+    @Assisted val initialLoginInfo: LoginInfo
+): ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(loginInfo: LoginInfo): EmailLoginModel
+    }
 
     data class UiState(
         val email: String = "",
@@ -35,7 +47,7 @@ class EmailLoginModel: ViewModel() {
     var uiState by mutableStateOf(UiState())
         private set
 
-    fun initialize(initialLoginInfo: LoginInfo) {
+    init {
         uiState = uiState.copy(
             email = initialLoginInfo.credentials?.username ?: "",
             password = initialLoginInfo.credentials?.password ?: ""

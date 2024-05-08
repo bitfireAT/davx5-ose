@@ -10,9 +10,21 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.apache.commons.lang3.StringUtils
 
-class UrlLoginModel: ViewModel() {
+@HiltViewModel(assistedFactory = UrlLoginModel.Factory::class)
+class UrlLoginModel @AssistedInject constructor(
+    @Assisted val initialLoginInfo: LoginInfo
+): ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(loginInfo: LoginInfo): UrlLoginModel
+    }
 
     data class UiState(
         val url: String = "",
@@ -43,11 +55,11 @@ class UrlLoginModel: ViewModel() {
     var uiState by mutableStateOf(UiState())
         private set
 
-    fun initialize(loginInfo: LoginInfo) {
+    init {
         uiState = UiState(
-            url = loginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
-            username = loginInfo.credentials?.username ?: "",
-            password = loginInfo.credentials?.password ?: ""
+            url = initialLoginInfo.baseUri?.toString()?.removePrefix("https://") ?: "",
+            username = initialLoginInfo.credentials?.username ?: "",
+            password = initialLoginInfo.credentials?.password ?: ""
         )
     }
 

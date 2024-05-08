@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Activity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,18 +30,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
-import dagger.hilt.android.EntryPointAccessors
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
@@ -51,10 +48,10 @@ fun CreateAddressBookScreen(
     onNavUp: () -> Unit = {},
     onFinish: () -> Unit = {}
 ) {
-    val context = LocalContext.current as Activity
-    val entryPoint = EntryPointAccessors.fromActivity(context, CreateAddressBookActivity.CreateAddressBookEntryPoint::class.java)
-    val model = viewModel<CreateAddressBookModel>(
-        factory = CreateAddressBookModel.factoryFromAccount(entryPoint.createAddressBookModelAssistedFactory(), account)
+    val model: CreateAddressBookModel = hiltViewModel(
+        creationCallback = { factory: CreateAddressBookModel.Factory ->
+            factory.create(account)
+        }
     )
     val uiState = model.uiState
 
