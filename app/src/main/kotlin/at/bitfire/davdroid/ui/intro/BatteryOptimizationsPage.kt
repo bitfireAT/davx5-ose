@@ -12,22 +12,9 @@ import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.Composable
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.M2Theme
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_AUTOSTART_PERMISSION
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage.Model.Companion.HINT_BATTERY_OPTIMIZATIONS
-import at.bitfire.davdroid.util.PermissionUtils
-import at.bitfire.davdroid.util.broadcastReceiverFlow
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import org.apache.commons.text.WordUtils
-import java.util.Locale
 import javax.inject.Inject
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel.Companion.HINT_BATTERY_OPTIMIZATIONS
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 
 class BatteryOptimizationsPage @Inject constructor(
     private val application: Application,
