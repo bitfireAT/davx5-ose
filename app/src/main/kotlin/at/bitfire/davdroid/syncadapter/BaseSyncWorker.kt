@@ -31,6 +31,7 @@ import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -41,7 +42,8 @@ import java.util.logging.Level
 
 abstract class BaseSyncWorker(
     appContext: Context,
-    val workerParams: WorkerParameters
+    val workerParams: WorkerParameters,
+    private val syncDispatcher: CoroutineDispatcher,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -178,7 +180,6 @@ abstract class BaseSyncWorker(
     }
 
 
-    private val dispatcher = SyncWorkDispatcher.getInstance(applicationContext)
     private val notificationManager = NotificationManagerCompat.from(applicationContext)
 
 
@@ -240,7 +241,7 @@ abstract class BaseSyncWorker(
         account: Account,
         authority: String,
         accountSettings: AccountSettings
-    ): Result = withContext(dispatcher) {
+    ): Result = withContext(syncDispatcher) {
         Logger.log.info("Running ${javaClass.name}: account=$account, authority=$authority")
 
         // What are we going to sync? Select syncer based on authority
