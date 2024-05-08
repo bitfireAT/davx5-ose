@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.intro
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -14,7 +13,6 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
-import androidx.annotation.WorkerThread
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
@@ -24,39 +22,17 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.dimensionResource
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.M2Colors
 import at.bitfire.davdroid.ui.M2Theme
 import com.github.appintro.AppIntro2
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class IntroActivity : AppIntro2() {
-
-    companion object {
-
-        @EntryPoint
-        @InstallIn(ActivityComponent::class)
-        interface IntroActivityEntryPoint {
-            fun introPageFactory(): IntroPageFactory
-        }
-
-        @WorkerThread
-        fun shouldShowIntroActivity(activity: Activity): Boolean {
-            val introPageFactory = EntryPointAccessors.fromActivity(activity, IntroActivityEntryPoint::class.java).introPageFactory()
-            return introPageFactory.introPages.any {
-                it.getShowPolicy(activity.application) == IntroPage.ShowPolicy.SHOW_ALWAYS
-            }
-        }
-
-    }
 
     val model by viewModels<Model>()
     private var currentSlide = 0
@@ -120,12 +96,6 @@ class IntroActivity : AppIntro2() {
                 }
             }
 
-        // For on resume actions of intro pages
-        override fun onResume() {
-            super.onResume()
-            activity?.application?.let { page.onResume(it) }
-        }
-
     }
 
 
@@ -144,9 +114,8 @@ class IntroActivity : AppIntro2() {
 
     @HiltViewModel
     class Model @Inject constructor(
-        application: Application,
         introPageFactory: IntroPageFactory
-    ): AndroidViewModel(application) {
+    ): ViewModel() {
 
         private val introPages = introPageFactory.introPages
 
@@ -164,10 +133,14 @@ class IntroActivity : AppIntro2() {
 
         private fun calculatePages(): List<IntroPage> {
             for (page in introPages)
-                Logger.log.fine("Found intro page ${page::class.java} with order ${page.getShowPolicy(getApplication())}")
+                Logger.log.fine("Found intro page ${page::class.java} with order ${page.getShowPolicy()}")
 
             val activePages: Map<IntroPage, IntroPage.ShowPolicy> = introPages
-                .associateWith { it.getShowPolicy(getApplication()) }
+                .associateWith { page ->
+                    page.getShowPolicy().also { policy ->
+                        Logger.log.fine("IntroActivity: found intro page ${page::class.java} with $policy")
+                    }
+                }
                 .filterValues { it != IntroPage.ShowPolicy.DONT_SHOW }
 
             val anyShowAlways = activePages.values.any { it == IntroPage.ShowPolicy.SHOW_ALWAYS }

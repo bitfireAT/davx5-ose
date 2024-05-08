@@ -45,7 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
@@ -86,10 +86,11 @@ object GoogleLogin : LoginType {
         initialLoginInfo: LoginInfo,
         onLogin: (LoginInfo) -> Unit
     ) {
-        val model = viewModel<GoogleLoginModel>()
-        LaunchedEffect(initialLoginInfo) {
-            model.initialize(initialLoginInfo)
-        }
+        val model: GoogleLoginModel = hiltViewModel(
+            creationCallback = { factory: GoogleLoginModel.Factory ->
+                factory.create(loginInfo = initialLoginInfo)
+            }
+        )
 
         val uiState = model.uiState
         LaunchedEffect(uiState.result) {
