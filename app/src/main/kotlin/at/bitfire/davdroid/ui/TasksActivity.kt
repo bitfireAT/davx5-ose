@@ -17,7 +17,7 @@ class TasksActivity: AppCompatActivity() {
 
         setContent {
             TasksScreen(
-                onSupportNavigateUp = ::onSupportNavigateUp
+                onNavUp = ::onSupportNavigateUp
             )
         }
     }

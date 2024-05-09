@@ -43,13 +43,13 @@ import at.bitfire.ical4android.TaskProvider
 import kotlinx.coroutines.launch
 
 @Composable
-fun TasksScreen(onSupportNavigateUp: () -> Unit) {
+fun TasksScreen(onNavUp: () -> Unit) {
     AppTheme {
         Scaffold(
             topBar = {
                 BasicTopAppBar(
                     titleStringRes = R.string.intro_tasks_title,
-                    onNavigateUp = onSupportNavigateUp
+                    onNavigateUp = onNavUp
                 )
             }
         ) { paddingValues ->
@@ -110,25 +110,6 @@ fun TasksCard(
     )
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun TasksCard_Preview() {
-    AppTheme {
-        TasksCard(
-            jtxSelected = true,
-            jtxInstalled = true,
-            tasksOrgSelected = false,
-            tasksOrgInstalled = false,
-            openTasksSelected = false,
-            openTasksInstalled = false,
-            showAgain = true,
-            onSetShowAgain = {},
-            onProviderSelected = {},
-            installApp = {}
-        )
-    }
-}
-
 @Composable
 fun TasksCard(
     jtxSelected: Boolean,
@@ -137,10 +118,10 @@ fun TasksCard(
     tasksOrgInstalled: Boolean,
     openTasksSelected: Boolean,
     openTasksInstalled: Boolean,
+    onProviderSelected: (TaskProvider.ProviderName) -> Unit = {},
+    installApp: (String) -> Unit = {},
     showAgain: Boolean,
-    onSetShowAgain: (Boolean) -> Unit,
-    onProviderSelected: (TaskProvider.ProviderName) -> Unit,
-    installApp: (String) -> Unit,
+    onSetShowAgain: (Boolean) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -238,6 +219,22 @@ fun TasksCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 8.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun TasksCard_Preview() {
+    AppTheme {
+        TasksCard(
+            jtxSelected = true,
+            jtxInstalled = true,
+            tasksOrgSelected = false,
+            tasksOrgInstalled = false,
+            openTasksSelected = false,
+            openTasksInstalled = false,
+            showAgain = true
         )
     }
 }
