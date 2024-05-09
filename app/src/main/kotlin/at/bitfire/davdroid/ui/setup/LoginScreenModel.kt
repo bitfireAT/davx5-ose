@@ -18,6 +18,9 @@ import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.vcard4android.GroupMethod
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,15 +30,26 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@HiltViewModel
-class LoginScreenModel @Inject constructor(
+@HiltViewModel(assistedFactory = LoginScreenModel.Factory::class)
+class LoginScreenModel @AssistedInject constructor(
+    @Assisted val startPage: Page,
+    @Assisted val initialLoginInfo: LoginInfo,
+    @Assisted val initialLoginType: LoginType,
     val context: Application,
     val loginTypesProvider: LoginTypesProvider,
     private val accountRepository: AccountRepository,
     settingsManager: SettingsManager
 ): ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            startPage: Page,
+            initialLoginInfo: LoginInfo,
+            initialLoginType: LoginType
+        ): LoginScreenModel
+    }
 
     enum class Page {
         LoginType,
@@ -44,7 +58,7 @@ class LoginScreenModel @Inject constructor(
         AccountDetails
     }
 
-    var page by mutableStateOf(Page.LoginType)
+    var page by mutableStateOf(startPage)
         private set
 
     var finish by mutableStateOf(false)
@@ -52,10 +66,6 @@ class LoginScreenModel @Inject constructor(
 
 
     // navigation events
-
-    fun navToPage(toPage: Page) {
-        page = toPage
-    }
 
     fun navToNextPage() {
         when (page) {
@@ -122,7 +132,7 @@ class LoginScreenModel @Inject constructor(
         val loginType: LoginType
     )
 
-    var loginTypeUiState by mutableStateOf(LoginTypeUiState(loginType = loginTypesProvider.defaultLoginType))
+    var loginTypeUiState by mutableStateOf(LoginTypeUiState(loginType = initialLoginType))
         private set
 
     fun selectLoginType(loginType: LoginType) {
@@ -134,7 +144,7 @@ class LoginScreenModel @Inject constructor(
     // UI element state – second page: login details
 
     // base URI and credentials
-    private var loginInfo: LoginInfo = LoginInfo()
+    private var loginInfo: LoginInfo = initialLoginInfo
 
     data class LoginDetailsUiState(
         val loginType: LoginType,
@@ -142,7 +152,7 @@ class LoginScreenModel @Inject constructor(
     )
 
     var loginDetailsUiState by mutableStateOf(LoginDetailsUiState(
-        loginType = loginTypesProvider.defaultLoginType,
+        loginType = initialLoginType,
         loginInfo = loginInfo
     ))
         private set

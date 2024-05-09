@@ -8,7 +8,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.ui.account.AccountActivity
@@ -109,24 +108,23 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
 
     }
 
-    val model: LoginScreenModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // start with login info from Intent
-        if (savedInstanceState == null) {
-            val loginInfo = loginInfoFromIntent(intent)
-            if (loginInfo.baseUri != null) {
-                val initialLoginType = model.loginTypesProvider.intentToInitialLoginType(intent)
-                model.selectLoginType(initialLoginType)
-                model.updateLoginInfo(loginInfo)
-                model.navToPage(LoginScreenModel.Page.LoginDetails)
-            }
+        var initialLoginType: LoginType = UrlLogin
+        var startPage: LoginScreenModel.Page = LoginScreenModel.Page.LoginType
+
+        // Login flow from nextcloud app, via intent
+        if (intent.hasExtra(EXTRA_LOGIN_FLOW)) {
+            initialLoginType = NextcloudLogin
+            startPage = LoginScreenModel.Page.LoginDetails
         }
 
         setContent {
             LoginScreen(
+                startPage = startPage,
+                initialLoginType = initialLoginType,
+                initialLoginInfo = loginInfoFromIntent(intent),
                 onNavUp = { onSupportNavigateUp() },
                 onFinish = { newAccount ->
                     finish()
@@ -136,8 +134,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                         intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
                         startActivity(intent)
                     }
-                },
-                model = model
+                }
             )
         }
     }
