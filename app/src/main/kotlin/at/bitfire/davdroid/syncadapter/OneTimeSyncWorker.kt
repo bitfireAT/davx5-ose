@@ -40,8 +40,9 @@ import java.util.logging.Level
 @HiltWorker
 class OneTimeSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters
-) : BaseSyncWorker(appContext, workerParams) {
+    @Assisted workerParams: WorkerParameters,
+    syncDispatcher: SyncDispatcher
+) : BaseSyncWorker(appContext, workerParams, syncDispatcher.dispatcher) {
 
     companion object {
 
