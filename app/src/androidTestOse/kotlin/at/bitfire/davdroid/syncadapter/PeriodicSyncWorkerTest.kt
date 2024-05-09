@@ -15,6 +15,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.ListenableWorker
 import androidx.work.WorkManager
+import androidx.work.WorkerFactory
+import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.testing.WorkManagerTestInitHelper
 import androidx.work.workDataOf
@@ -36,6 +38,7 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 @HiltAndroidTest
 class PeriodicSyncWorkerTest {
@@ -79,6 +82,9 @@ class PeriodicSyncWorkerTest {
     @get:Rule
     val mockkRule = MockKRule(this)
 
+    @Inject
+    lateinit var syncDispatcher: SyncDispatcher
+
     @Before
     fun inject() {
         hiltRule.inject()
@@ -116,7 +122,12 @@ class PeriodicSyncWorkerTest {
         mockkObject(workManager)
 
         // run test worker, expect failure
-        val testWorker = TestListenableWorkerBuilder<PeriodicSyncWorker>(context, inputData).build()
+        val testWorker = TestListenableWorkerBuilder<PeriodicSyncWorker>(context, inputData)
+            .setWorkerFactory(object: WorkerFactory() {
+                override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters) =
+                    PeriodicSyncWorker(appContext, workerParameters, syncDispatcher)
+            })
+            .build()
         val result = runBlocking {
             testWorker.doWork()
         }

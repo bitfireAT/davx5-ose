@@ -42,7 +42,7 @@ import java.util.logging.Level
 
 abstract class BaseSyncWorker(
     appContext: Context,
-    val workerParams: WorkerParameters,
+    private val workerParams: WorkerParameters,
     private val syncDispatcher: CoroutineDispatcher,
 ) : CoroutineWorker(appContext, workerParams) {
 
