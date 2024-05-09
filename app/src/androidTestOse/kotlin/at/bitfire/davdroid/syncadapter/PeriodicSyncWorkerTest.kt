@@ -25,6 +25,7 @@ import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
+import dagger.assisted.AssistedFactory
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
@@ -77,13 +78,18 @@ class PeriodicSyncWorkerTest {
 
     }
 
+    @AssistedFactory
+    interface PeriodicSyncWorkerFactory {
+        fun create(appContext: Context, workerParams: WorkerParameters): PeriodicSyncWorker
+    }
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
     @get:Rule
     val mockkRule = MockKRule(this)
 
     @Inject
-    lateinit var syncDispatcher: SyncDispatcher
+    lateinit var syncWorkerFactory: PeriodicSyncWorkerFactory
 
     @Before
     fun inject() {
@@ -125,7 +131,7 @@ class PeriodicSyncWorkerTest {
         val testWorker = TestListenableWorkerBuilder<PeriodicSyncWorker>(context, inputData)
             .setWorkerFactory(object: WorkerFactory() {
                 override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters) =
-                    PeriodicSyncWorker(appContext, workerParameters, syncDispatcher)
+                    syncWorkerFactory.create(appContext, workerParameters)
             })
             .build()
         val result = runBlocking {
