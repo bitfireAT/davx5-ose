@@ -64,10 +64,7 @@ class JtxSyncer(context: Context): Syncer(context) {
 
         } catch (e: TaskProvider.ProviderTooOldException) {
             TaskUtils.notifyProviderTooOld(context, e)
-        } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't sync jtx collections", e)
         }
-        Logger.log.info("jtx sync complete")
     }
 
     private fun updateLocalCollections(account: Account, client: ContentProviderClient, settings: AccountSettings) {

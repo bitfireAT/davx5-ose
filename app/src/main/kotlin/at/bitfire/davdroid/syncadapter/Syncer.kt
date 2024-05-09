@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
+import android.os.DeadObjectException
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
@@ -54,11 +55,11 @@ abstract class Syncer(val context: Context) {
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
-    interface SyncAdapterEntryPoint {
+    interface SyncerEntryPoint {
         fun appDatabase(): AppDatabase
     }
 
-    private val syncAdapterEntryPoint = EntryPointAccessors.fromApplication(context, SyncAdapterEntryPoint::class.java)
+    private val syncAdapterEntryPoint = EntryPointAccessors.fromApplication(context, SyncerEntryPoint::class.java)
     internal val db = syncAdapterEntryPoint.appDatabase()
 
 
@@ -77,11 +78,24 @@ abstract class Syncer(val context: Context) {
         val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
         try {
-            val runSync = true  /* ose */
+            val runSync = /* ose */ true
+
             if (runSync)
                 sync(account, extras, authority, httpClient, provider, syncResult)
+
+        } catch (e: DeadObjectException) {
+            /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
+            is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
+            Logger.log.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
+            syncResult.stats.numIoExceptions++
+
         } catch (e: InvalidAccountException) {
             Logger.log.log(Level.WARNING, "Account was removed during synchronization", e)
+
+        } catch (e: Exception) {
+            Logger.log.log(Level.SEVERE, "Couldn't sync $authority", e)
+            syncResult.stats.numParseExceptions++
+
         } finally {
             if (httpClient.isInitialized())
                 httpClient.value.close()

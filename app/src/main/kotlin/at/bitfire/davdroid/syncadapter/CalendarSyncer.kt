@@ -33,26 +33,21 @@ class CalendarSyncer(context: Context): Syncer(context) {
         provider: ContentProviderClient,
         syncResult: SyncResult
     ) {
-        try {
-            val accountSettings = AccountSettings(context, account)
+        val accountSettings = AccountSettings(context, account)
 
-            if (accountSettings.getEventColors())
-                AndroidCalendar.insertColors(provider, account)
-            else
-                AndroidCalendar.removeColors(provider, account)
+        if (accountSettings.getEventColors())
+            AndroidCalendar.insertColors(provider, account)
+        else
+            AndroidCalendar.removeColors(provider, account)
 
-            updateLocalCalendars(provider, account, accountSettings)
+        updateLocalCalendars(provider, account, accountSettings)
 
-            val calendars = AndroidCalendar
-                .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
-            for (calendar in calendars) {
-                Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
-                CalendarSyncManager(context, account, accountSettings, extras, httpClient.value, authority, syncResult, calendar).performSync()
-            }
-        } catch(e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't sync calendars", e)
+        val calendars = AndroidCalendar
+            .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
+        for (calendar in calendars) {
+            Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
+            CalendarSyncManager(context, account, accountSettings, extras, httpClient.value, authority, syncResult, calendar).performSync()
         }
-        Logger.log.info("Calendar sync complete")
     }
 
     private fun updateLocalCalendars(provider: ContentProviderClient, account: Account, settings: AccountSettings) {

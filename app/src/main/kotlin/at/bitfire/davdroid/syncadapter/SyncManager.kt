@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.net.Uri
+import android.os.DeadObjectException
 import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.ContactsContract
@@ -296,7 +297,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         }, { e, local, remote ->
             when (e) {
-                // sync was cancelled or account has been removed: re-throw to SyncAdapterService (now BaseSyncer)
+                // DeadObjectException (may occur when syncing takes too long and process is demoted to cached):
+                // re-throw to base Syncer → will cause soft error and restart the sync process
+                is DeadObjectException ->
+                    throw e
+
+                // sync was cancelled or account has been removed: re-throw to BaseSyncer
                 is InterruptedException,
                 is InterruptedIOException,
                 is InvalidAccountException ->
