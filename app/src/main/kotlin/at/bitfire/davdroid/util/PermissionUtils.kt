@@ -14,10 +14,10 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
@@ -25,6 +25,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
@@ -33,7 +34,8 @@ import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.PermissionsActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 object PermissionUtils {
 
@@ -85,57 +87,44 @@ object PermissionUtils {
     }
 
     /**
-     * Checks whether all conditions to access the current WiFi's SSID are met:
+     * Returns a live state of whether all conditions to access the current WiFi's SSID are met:
      *
      * 1. location permissions ([WIFI_SSID_PERMISSIONS]) granted (Android 8.1+)
      * 2. location enabled (Android 9+)
      *
-     * @return An state that will be:
-     * - `true` if SSID can be obtained
-     * - `false` if the SSID will be _unknown_ or something like that
-     * - `null` never, the state will always have a value
+     * @return `true` if SSID can be obtained reliably; `false` otherwise (SSID will be "unknown" or something like that)
      */
     @Composable
-    @ExperimentalPermissionsApi
-    fun canAccessWifiSsidLiveState(): State<Boolean> {
+    @OptIn(ExperimentalPermissionsApi::class)
+    fun rememberCanAccessWifiSsid(): State<Boolean> {
         // before Android 8.1, SSIDs are always readable
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1)
-            return remember { derivedStateOf { true } }
+            return remember { mutableStateOf(true) }
 
-        val context = LocalContext.current
-
-        val locationAvailable = MutableStateFlow(
-            // Android <9 doesn't require active location services, otherwise set initial state to false
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // Only if Android >= 9, we need to check for location services, so add listener
-            LaunchedEffect(Unit) {
-                // Update the initial state
-                locationAvailable.tryEmit(canAccessWifiSsid(context))
-
+        val locationAvailableFlow =
+            // Android 9+: dynamically check whether Location is enabled
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val context = LocalContext.current
                 broadcastReceiverFlow(
                     context,
                     IntentFilter(LocationManager.MODE_CHANGED_ACTION),
-                    null
-                ).collect {
-                    // Update the state when location services change
-                    locationAvailable.tryEmit(canAccessWifiSsid(context))
+                    null,
+                    immediate = true
+                ).map {
+                    val locationManager = context.getSystemService<LocationManager>()!!
+                    LocationManagerCompat.isLocationEnabled(locationManager)
                 }
-            }
-        }
+            } else
+                // Android <9 doesn't require active Location to read the SSID
+                flowOf(true)
+        val locationAvailable by locationAvailableFlow.collectAsStateWithLifecycle(false)
 
-        val permissions = rememberMultiplePermissionsState(
-            permissions = WIFI_SSID_PERMISSIONS.toList()
-        )
-        return produceState(
-            initialValue = false,
-            permissions.allPermissionsGranted,
-            locationAvailable
-        ) {
-            val granted = permissions.allPermissionsGranted
-            val location = locationAvailable.value
-            value = granted && location
+        val permissions = rememberMultiplePermissionsState(WIFI_SSID_PERMISSIONS.toList())
+
+        return remember {
+            derivedStateOf {
+                locationAvailable && permissions.allPermissionsGranted
+            }
         }
     }
 

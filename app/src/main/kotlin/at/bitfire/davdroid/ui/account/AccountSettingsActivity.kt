@@ -77,16 +77,15 @@ import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.openid.appauth.AuthState
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountSettingsActivity: AppCompatActivity() {
@@ -211,7 +210,6 @@ class AccountSettingsActivity: AppCompatActivity() {
         }
     }
 
-    @OptIn(ExperimentalPermissionsApi::class)
     @Composable
     fun SyncSettings(
         contactsSyncInterval: Long?,
@@ -293,7 +291,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     onDismiss = { showWifiOnlySsidsDialog = false }
                 )
 
-            val canAccessWifiSsid by PermissionUtils.canAccessWifiSsidLiveState()
+            val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
             if (onlyOnSsids != null && !canAccessWifiSsid)
                 ActionCard(
                     icon = Icons.Default.SyncProblem,
