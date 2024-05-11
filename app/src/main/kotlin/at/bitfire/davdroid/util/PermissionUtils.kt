@@ -34,6 +34,7 @@ import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.PermissionsActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
@@ -103,18 +104,9 @@ object PermissionUtils {
 
         val locationAvailableFlow =
             // Android 9+: dynamically check whether Location is enabled
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                val context = LocalContext.current
-                broadcastReceiverFlow(
-                    context,
-                    IntentFilter(LocationManager.MODE_CHANGED_ACTION),
-                    null,
-                    immediate = true
-                ).map {
-                    val locationManager = context.getSystemService<LocationManager>()!!
-                    LocationManagerCompat.isLocationEnabled(locationManager)
-                }
-            } else
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                locationEnabledFlow(LocalContext.current)
+            else
                 // Android <9 doesn't require active Location to read the SSID
                 flowOf(true)
         val locationAvailable by locationAvailableFlow.collectAsStateWithLifecycle(false)
@@ -127,6 +119,17 @@ object PermissionUtils {
             }
         }
     }
+
+    private fun locationEnabledFlow(context: Context): Flow<Boolean> =
+        broadcastReceiverFlow(
+            context,
+            IntentFilter(LocationManager.MODE_CHANGED_ACTION),
+            null,
+            immediate = true
+        ).map {
+            val locationManager = context.getSystemService<LocationManager>()!!
+            LocationManagerCompat.isLocationEnabled(locationManager)
+        }
 
     /**
      * Checks whether at least one of the given permissions is granted.
