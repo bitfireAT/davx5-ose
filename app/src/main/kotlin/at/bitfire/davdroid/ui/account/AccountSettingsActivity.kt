@@ -49,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringArrayResource
@@ -292,7 +293,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                 )
 
             val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
-            if (onlyOnSsids != null && !canAccessWifiSsid)
+            if (LocalInspectionMode.current || (onlyOnSsids != null && !canAccessWifiSsid))
                 ActionCard(
                     icon = Icons.Default.SyncProblem,
                     actionText = stringResource(R.string.settings_sync_wifi_only_ssids_permissions_action),
