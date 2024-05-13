@@ -37,8 +37,9 @@ import java.util.concurrent.TimeUnit
 @HiltWorker
 class PeriodicSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters
-) : BaseSyncWorker(appContext, workerParams) {
+    @Assisted workerParams: WorkerParameters,
+    syncDispatcher: SyncDispatcher
+) : BaseSyncWorker(appContext, workerParams, syncDispatcher.dispatcher) {
 
     companion object {
 

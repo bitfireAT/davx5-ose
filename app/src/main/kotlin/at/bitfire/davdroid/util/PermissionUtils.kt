@@ -8,21 +8,35 @@ import android.Manifest
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.PermissionsActivity
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 object PermissionUtils {
 
@@ -72,6 +86,50 @@ object PermissionUtils {
         return  havePermissions(context, WIFI_SSID_PERMISSIONS) &&
                 locationAvailable
     }
+
+    /**
+     * Returns a live state of whether all conditions to access the current WiFi's SSID are met:
+     *
+     * 1. location permissions ([WIFI_SSID_PERMISSIONS]) granted (Android 8.1+)
+     * 2. location enabled (Android 9+)
+     *
+     * @return `true` if SSID can be obtained reliably; `false` otherwise (SSID will be "unknown" or something like that)
+     */
+    @Composable
+    @OptIn(ExperimentalPermissionsApi::class)
+    fun rememberCanAccessWifiSsid(): State<Boolean> {
+        // before Android 8.1, SSIDs are always readable
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1)
+            return remember { mutableStateOf(true) }
+
+        val locationAvailableFlow =
+            // Android 9+: dynamically check whether Location is enabled
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                locationEnabledFlow(LocalContext.current)
+            else
+                // Android <9 doesn't require active Location to read the SSID
+                flowOf(true)
+        val locationAvailable by locationAvailableFlow.collectAsStateWithLifecycle(false)
+
+        val permissions = rememberMultiplePermissionsState(WIFI_SSID_PERMISSIONS.toList())
+
+        return remember {
+            derivedStateOf {
+                locationAvailable && permissions.allPermissionsGranted
+            }
+        }
+    }
+
+    private fun locationEnabledFlow(context: Context): Flow<Boolean> =
+        broadcastReceiverFlow(
+            context,
+            IntentFilter(LocationManager.MODE_CHANGED_ACTION),
+            null,
+            immediate = true
+        ).map {
+            val locationManager = context.getSystemService<LocationManager>()!!
+            LocationManagerCompat.isLocationEnabled(locationManager)
+        }
 
     /**
      * Checks whether at least one of the given permissions is granted.

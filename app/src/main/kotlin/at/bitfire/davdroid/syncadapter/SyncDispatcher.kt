@@ -4,37 +4,33 @@
 
 package at.bitfire.davdroid.syncadapter
 
-import android.content.Context
+import android.app.Application
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object SyncWorkDispatcher {
+/**
+ * Creates a [CoroutineDispatcher] with multiple threads that guarantees that the threads
+ * have set their contextClassLoader to the application context's class loader.
+ *
+ * We use our own dispatcher to
+ *
+ * - make sure that all threads have [Thread.getContextClassLoader] set, which is required for ical4j (because it uses [ServiceLoader]),
+ * - control the global number of sync threads.
+ */
+@Singleton
+class SyncDispatcher @Inject constructor(
+    context: Application
+) {
 
-    private var _dispatcher: CoroutineDispatcher? = null
+    val dispatcher = createDispatcher(context.classLoader)
 
-    /**
-     * We use our own dispatcher to
-     *
-     *   - make sure that all threads have [Thread.getContextClassLoader] set,
-     *     which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]),
-     *   - control the global number of sync worker threads.
-     */
-    @Synchronized
-    fun getInstance(context: Context): CoroutineDispatcher {
-        // prefer cached work dispatcher
-        _dispatcher?.let { return it }
-
-        val newDispatcher = createDispatcher(context.applicationContext.classLoader)
-        _dispatcher = newDispatcher
-
-        return newDispatcher
-    }
-
-    private fun createDispatcher(classLoader: ClassLoader) =
+    private fun createDispatcher(classLoader: ClassLoader): CoroutineDispatcher =
         ThreadPoolExecutor(
             0, Runtime.getRuntime().availableProcessors(),
             10, TimeUnit.SECONDS, LinkedBlockingQueue(),

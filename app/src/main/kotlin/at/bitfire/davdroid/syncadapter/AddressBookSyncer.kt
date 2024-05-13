@@ -58,27 +58,21 @@ class AddressBookSyncer(
         provider: ContentProviderClient,        // for noop address book provider (not for contacts provider)
         syncResult: SyncResult
     ) {
-        try {
-            if (updateLocalAddressBooks(account, syncResult)) {
-                context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { contactsProvider ->
-                    for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
-                        Logger.log.info("Synchronizing address book $addressBookAccount")
-                        syncAddresBook(
-                            addressBookAccount,
-                            extras,
-                            ContactsContract.AUTHORITY,
-                            httpClient,
-                            contactsProvider,
-                            syncResult
-                        )
-                    }
+        if (updateLocalAddressBooks(account, syncResult)) {
+            context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { contactsProvider ->
+                for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
+                    Logger.log.info("Synchronizing address book $addressBookAccount")
+                    syncAddresBook(
+                        addressBookAccount,
+                        extras,
+                        ContactsContract.AUTHORITY,
+                        httpClient,
+                        contactsProvider,
+                        syncResult
+                    )
                 }
             }
-        } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't sync address books", e)
         }
-
-        Logger.log.info("Address book sync complete")
     }
 
     private fun updateLocalAddressBooks(account: Account, syncResult: SyncResult): Boolean {
