@@ -328,10 +328,11 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     private fun logSyncTime() {
         val serviceType = when (authority) {
-            CalendarContract.AUTHORITY -> Service.TYPE_CALDAV
-            ContactsContract.AUTHORITY,
-            context.getString(R.string.address_books_authority) -> Service.TYPE_CARDDAV
-            else -> throw IllegalArgumentException("Invalid authority")
+            ContactsContract.AUTHORITY,                             // Contacts
+            context.getString(R.string.address_books_authority) ->  // Address books
+                Service.TYPE_CARDDAV
+            else ->                                                 // Calendars + other (ie. tasks)
+                Service.TYPE_CALDAV
         }
         val db = EntryPointAccessors.fromApplication(context, SyncManagerEntryPoint::class.java).appDatabase()
         db.runInTransaction {
