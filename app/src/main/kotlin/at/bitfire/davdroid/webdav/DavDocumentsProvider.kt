@@ -49,9 +49,10 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.DavDocumentsProvider.DavDocumentsActor
-import at.bitfire.davdroid.webdav.cache.HeadResponseCacheBuilder
+import at.bitfire.davdroid.webdav.cache.HeadResponseCache
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
@@ -84,7 +85,15 @@ class DavDocumentsProvider: DocumentsProvider() {
     @InstallIn(SingletonComponent::class)
     interface DavDocumentsProviderEntryPoint {
         fun appDatabase(): AppDatabase
+        fun webdavComponentBuilder(): WebdavComponentBuilder
+    }
+
+    @EntryPoint
+    @InstallIn(WebdavComponent::class)
+    interface DavDocumentsProviderWebdavEntryPoint {
         fun credentialsStore(): CredentialsStore
+        fun headResponseCache(): HeadResponseCache
+        fun thumbnailCache(): ThumbnailCache
     }
 
     companion object {
@@ -110,16 +119,22 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     private val ourContext by lazy { context!! }        // requireContext() requires API level 30
     private val authority by lazy { ourContext.getString(R.string.webdav_authority) }
-    private val entryPoint by lazy { EntryPointAccessors.fromApplication<DavDocumentsProviderEntryPoint>(ourContext) }
+    private val globalEntryPoint by lazy { EntryPointAccessors.fromApplication<DavDocumentsProviderEntryPoint>(ourContext) }
+    private val webdavEntryPoint by lazy {
+        EntryPoints.get(
+            globalEntryPoint.webdavComponentBuilder().build(),
+            DavDocumentsProviderWebdavEntryPoint::class.java
+        )
+    }
 
-    private val db by lazy { entryPoint.appDatabase() }
+    private val db by lazy { globalEntryPoint.appDatabase() }
     private val mountDao by lazy { db.webDavMountDao() }
     private val documentDao by lazy { db.webDavDocumentDao() }
 
-    private val credentialsStore by lazy { entryPoint.credentialsStore() }
+    private val credentialsStore by lazy { webdavEntryPoint.credentialsStore() }
     private val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
-    private val headResponseCache by lazy { HeadResponseCacheBuilder.getInstance() }
-    private val thumbnailCache by lazy { ThumbnailCache.getInstance(ourContext) }
+    private val headResponseCache by lazy { webdavEntryPoint.headResponseCache() }
+    private val thumbnailCache by lazy { webdavEntryPoint.thumbnailCache() }
 
     private val connectivityManager by lazy { ourContext.getSystemService<ConnectivityManager>()!! }
     private val storageManager by lazy { ourContext.getSystemService<StorageManager>()!! }

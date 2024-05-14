@@ -11,6 +11,7 @@ import androidx.security.crypto.MasterKey
 import at.bitfire.davdroid.db.Credentials
 import javax.inject.Inject
 
+@WebdavScoped
 class CredentialsStore @Inject constructor(context: Application) {
 
     @Retention(AnnotationRetention.SOURCE)

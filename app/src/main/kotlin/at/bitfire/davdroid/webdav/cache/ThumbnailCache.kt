@@ -4,36 +4,24 @@
 
 package at.bitfire.davdroid.webdav.cache
 
-import android.content.Context
+import android.app.Application
 import android.graphics.Point
 import android.os.Build
 import android.os.storage.StorageManager
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.webdav.WebdavScoped
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import java.io.File
+import javax.inject.Inject
 
 /**
  * Simple disk cache for image thumbnails.
  */
-class ThumbnailCache private constructor(context: Context) {
-
-    companion object {
-
-        private var _instance: ThumbnailCache? = null
-
-        @Synchronized
-        fun getInstance(context: Context): ThumbnailCache {
-            _instance?.let { return it }
-
-            val newInstance = ThumbnailCache(context)
-            _instance = newInstance
-            return newInstance
-        }
-
-    }
+@WebdavScoped
+class ThumbnailCache @Inject constructor(context: Application) {
 
     val storage: DiskCache
 
