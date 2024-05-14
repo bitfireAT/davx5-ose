@@ -4,18 +4,16 @@
 
 package at.bitfire.davdroid.settings
 
-import android.content.Context
+import android.app.Application
 import android.util.NoSuchPropertyException
 import androidx.annotation.AnyThread
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.SettingsManager.OnChangeListener
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -24,29 +22,18 @@ import java.io.Writer
 import java.lang.ref.WeakReference
 import java.util.LinkedList
 import java.util.logging.Level
+import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * Settings manager which coordinates [SettingsProvider]s to read/write
  * application settings.
  */
-class SettingsManager internal constructor(
-    context: Context
+@Singleton
+class SettingsManager @Inject constructor(
+    context: Application,
+    factoryMap: Map<Int, @JvmSuppressWildcards SettingsProviderFactory>
 ) {
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    object SettingsManagerModule {
-        @Provides
-        @Singleton
-        fun settingsManager(@ApplicationContext context: Context) = SettingsManager(context)
-    }
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface SettingsManagerEntryPoint {
-        fun factories(): Map<Int, @JvmSuppressWildcards SettingsProviderFactory>
-    }
 
     private val providers = LinkedList<SettingsProvider>()
     private var writeProvider: SettingsProvider? = null
@@ -54,10 +41,9 @@ class SettingsManager internal constructor(
     private val observers = LinkedList<WeakReference<OnChangeListener>>()
 
     init {
-        val factories = EntryPointAccessors.fromApplication(context, SettingsManagerEntryPoint::class.java)
-            .factories()        // get factories from Hilt
-            .toSortedMap()      // sort by Int key
-            .values.reversed()  // take reverse-sorted values (because high priority numbers shall be processed first)
+        val factories = factoryMap  // get factories from Hilt
+            .toSortedMap()          // sort by Int key
+            .values.reversed()      // take reverse-sorted values (because high priority numbers shall be processed first)
         for (factory in factories) {
             Logger.log.fine("Loading settings providers from $factory")
             providers.addAll(factory.getProviders(context, this))
