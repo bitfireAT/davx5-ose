@@ -4,13 +4,14 @@
 
 package at.bitfire.davdroid.webdav
 
-import android.content.Context
+import android.app.Application
 import androidx.annotation.StringDef
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import at.bitfire.davdroid.db.Credentials
+import javax.inject.Inject
 
-class CredentialsStore(context: Context) {
+class CredentialsStore @Inject constructor(context: Application) {
 
     @Retention(AnnotationRetention.SOURCE)
     @StringDef(

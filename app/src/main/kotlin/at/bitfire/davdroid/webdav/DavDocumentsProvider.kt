@@ -84,6 +84,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     @InstallIn(SingletonComponent::class)
     interface DavDocumentsProviderEntryPoint {
         fun appDatabase(): AppDatabase
+        fun credentialsStore(): CredentialsStore
     }
 
     companion object {
@@ -109,12 +110,13 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     private val ourContext by lazy { context!! }        // requireContext() requires API level 30
     private val authority by lazy { ourContext.getString(R.string.webdav_authority) }
+    private val entryPoint by lazy { EntryPointAccessors.fromApplication<DavDocumentsProviderEntryPoint>(ourContext) }
 
-    private val db by lazy { EntryPointAccessors.fromApplication(ourContext, DavDocumentsProviderEntryPoint::class.java).appDatabase() }
+    private val db by lazy { entryPoint.appDatabase() }
     private val mountDao by lazy { db.webDavMountDao() }
     private val documentDao by lazy { db.webDavDocumentDao() }
 
-    private val credentialsStore by lazy { CredentialsStore(ourContext) }
+    private val credentialsStore by lazy { entryPoint.credentialsStore() }
     private val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
     private val headResponseCache by lazy { HeadResponseCacheBuilder.getInstance() }
     private val thumbnailCache by lazy { ThumbnailCache.getInstance(ourContext) }
