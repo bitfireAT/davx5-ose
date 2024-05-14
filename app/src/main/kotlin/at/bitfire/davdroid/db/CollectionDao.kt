@@ -50,10 +50,6 @@ interface CollectionDao {
     @Query("SELECT collection.* FROM collection, homeset WHERE collection.serviceId=:serviceId AND type=:type AND homeSetId=homeset.id AND homeset.personal ORDER BY collection.displayName COLLATE NOCASE, collection.url COLLATE NOCASE")
     fun pagePersonalByServiceAndType(serviceId: Long, type: String): PagingSource<Int, Collection>
 
-    @Deprecated("Use getByServiceAndUrl instead")
-    @Query("SELECT * FROM collection WHERE url=:url")
-    fun getByUrl(url: String): Collection?
-
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND url=:url")
     fun getByServiceAndUrl(serviceId: Long, url: String): Collection?
 
