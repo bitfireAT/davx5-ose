@@ -187,28 +187,6 @@ fun DebugInfoScreen(
                 if (!showDebugInfo || zipProgress)
                     LinearProgressIndicator()
 
-                if (showDebugInfo) {
-                    CardWithImage(
-                        image = painterResource(R.drawable.undraw_server_down),
-                        imageAlignment = BiasAlignment(0f, .7f),
-                        title = stringResource(R.string.debug_info_archive_caption),
-                        subtitle = stringResource(R.string.debug_info_archive_subtitle),
-                        message = stringResource(R.string.debug_info_archive_text),
-                        icon = Icons.Rounded.Share,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onShareZip,
-                            enabled = !zipProgress,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_archive_share)
-                            )
-                        }
-                    }
-                }
-
                 if (showModelCause) {
                     CardWithImage(
                         title = modelCauseTitle,
@@ -216,21 +194,13 @@ fun DebugInfoScreen(
                         message = modelCauseMessage,
                         icon = Icons.Rounded.Info,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        OutlinedButton(
-                            enabled = showDebugInfo,
-                            onClick = onViewDebugFile,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_view_details)
-                            )
-                        }
-                    }
+                    )
                 }
 
                 if (showDebugInfo)
                     CardWithImage(
+                        image = painterResource(R.drawable.undraw_server_down),
+                        imageAlignment = BiasAlignment(0f, .7f),
                         title = stringResource(R.string.debug_info_title),
                         subtitle = stringResource(R.string.debug_info_subtitle),
                         icon = Icons.Rounded.BugReport,
@@ -296,6 +266,26 @@ fun DebugInfoScreen(
                         ) {
                             Text(
                                 stringResource(R.string.debug_info_logs_view)
+                            )
+                        }
+                    }
+                }
+
+                if (showDebugInfo) {
+                    CardWithImage(
+                        title = stringResource(R.string.debug_info_archive_caption),
+                        subtitle = stringResource(R.string.debug_info_archive_subtitle),
+                        message = stringResource(R.string.debug_info_archive_text),
+                        icon = Icons.Rounded.Share,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = onShareZip,
+                            enabled = !zipProgress,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.debug_info_archive_share)
                             )
                         }
                     }
