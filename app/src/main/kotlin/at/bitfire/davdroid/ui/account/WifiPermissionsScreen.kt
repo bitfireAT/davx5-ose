@@ -10,19 +10,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -56,6 +57,7 @@ fun WifiPermissionsScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WifiPermissionsScreen(
     backgroundPermissionOptionLabel: String,
@@ -116,7 +118,7 @@ fun WifiPermissionsScreenContent(
             .verticalScroll(rememberScrollState())) {
         Text(
             stringResource(R.string.wifi_permissions_intro),
-            style = MaterialTheme.typography.body1
+            style = MaterialTheme.typography.bodyLarge
         )
 
         // Android 8.1+: location permission
@@ -143,7 +145,7 @@ fun WifiPermissionsScreenContent(
         // If permissions have actively been denied
         Text(
             stringResource(R.string.permissions_app_settings_hint),
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(top = 16.dp)
         )
         val context = LocalContext.current
@@ -153,7 +155,7 @@ fun WifiPermissionsScreenContent(
             Text(stringResource(R.string.permissions_app_settings))
         }
 
-        Divider(Modifier.padding(vertical = 16.dp))
+        HorizontalDivider(Modifier.padding(vertical = 16.dp))
 
         // Disclaimer
         Row {
@@ -162,7 +164,7 @@ fun WifiPermissionsScreenContent(
                     R.string.wifi_permissions_background_location_disclaimer, stringResource(
                         R.string.app_name)
                 ),
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.weight(1f)
             )
             Icon(Icons.Default.CloudOff, null, modifier = Modifier.padding(8.dp))
@@ -213,7 +215,7 @@ fun LocationService(
         Column(Modifier.weight(1f)) {
             Text(
                 stringResource(R.string.wifi_permissions_location_enabled),
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.bodyLarge
             )
             Text(
                 stringResource(
@@ -222,7 +224,7 @@ fun LocationService(
                     else
                         R.string.wifi_permissions_location_enabled_off
                 ),
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.bodyMedium
             )
         }
         Switch(
