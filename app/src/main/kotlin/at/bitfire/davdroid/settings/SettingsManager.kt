@@ -10,11 +10,6 @@ import androidx.annotation.AnyThread
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.SettingsManager.OnChangeListener
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
