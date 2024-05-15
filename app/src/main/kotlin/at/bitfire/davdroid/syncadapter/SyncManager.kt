@@ -846,7 +846,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             .withCause(e)
             .withLocalResource(
                 try {
-                    local.toString()
+                    local?.toString()
                 } catch (e: OutOfMemoryError) {
                     // for instance because of a huge contact photo; maybe we're lucky and can fetch it
                     null

@@ -22,7 +22,6 @@ import at.bitfire.dav4jvm.property.push.Topic
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
-import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.lastSegment
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
