@@ -31,16 +31,16 @@ class WifiPermissionsActivity: AppCompatActivity() {
         setContent {
             WifiPermissionsScreen(
                 backgroundPermissionOptionLabel =
-                if (Build.VERSION.SDK_INT >= 30)
-                    packageManager.backgroundPermissionOptionLabel.toString()
-                else
-                    stringResource(R.string.wifi_permissions_background_location_permission_label),
+                    if (Build.VERSION.SDK_INT >= 30)
+                        packageManager.backgroundPermissionOptionLabel.toString()
+                    else
+                        stringResource(R.string.wifi_permissions_background_location_permission_label),
                 onEnableLocationService = {
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     if (intent.resolveActivity(packageManager) != null)
                         startActivity(intent)
                 },
-                onNavUp = { onSupportNavigateUp() }
+                onNavUp = ::onSupportNavigateUp
             )
         }
     }

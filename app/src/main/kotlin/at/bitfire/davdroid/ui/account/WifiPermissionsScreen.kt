@@ -48,7 +48,7 @@ fun WifiPermissionsScreen(
     onEnableLocationService: (Boolean) -> Unit,
     onNavUp: () -> Unit
 ) {
-    val locationServiceEnabled by model.locationEnabled.collectAsStateWithLifecycle()
+    val locationServiceEnabled by model.locationEnabled.collectAsStateWithLifecycle(false)
     WifiPermissionsScreen(
         backgroundPermissionOptionLabel = backgroundPermissionOptionLabel,
         locationServiceEnabled = locationServiceEnabled,

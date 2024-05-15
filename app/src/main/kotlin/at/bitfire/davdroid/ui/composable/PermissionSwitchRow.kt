@@ -40,12 +40,12 @@ fun PermissionSwitchRow(
                 text = text,
                 modifier = Modifier.fillMaxWidth(),
                 fontWeight = fontWeight,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyLarge
             )
             Text(
                 text = if (allPermissionsGranted) summaryWhenGranted else summaryWhenNotGranted,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyMedium
             )
         }
         Switch(
