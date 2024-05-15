@@ -25,8 +25,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.AppTheme
-import at.bitfire.davdroid.ui.M2Colors
-import at.bitfire.davdroid.ui.M2Theme
+import at.bitfire.davdroid.ui.M3ColorScheme
 import com.github.appintro.AppIntro2
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,7 +49,7 @@ class IntroActivity : AppIntro2() {
             })
         }
 
-        setBarColor(M2Colors.primaryDark.toArgb())
+        setBarColor(M3ColorScheme.LightColors.primary.toArgb())
         isSkipButtonEnabled = false
 
         onBackPressedDispatcher.addCallback(this) {
@@ -89,12 +88,9 @@ class IntroActivity : AppIntro2() {
             ComposeView(requireActivity()).apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
-                    // TODO: Remove M2 theme once all pages have been migrated to M3
-                    M2Theme {
-                        AppTheme {
-                            Box(Modifier.padding(bottom = dimensionResource(com.github.appintro.R.dimen.appintro2_bottombar_height))) {
-                                page.ComposePage()
-                            }
+                    AppTheme {
+                        Box(Modifier.padding(bottom = dimensionResource(com.github.appintro.R.dimen.appintro2_bottombar_height))) {
+                            page.ComposePage()
                         }
                     }
                 }
