@@ -83,6 +83,13 @@ open class LocalAddressBook(
             return addressBook
         }
 
+        fun deleteByAccount(context: Context, accountName: String) {
+            val mainAccount = Account(accountName, context.getString(R.string.account_type))
+            findAll(context, null, mainAccount).forEach {
+                it.delete()
+            }
+        }
+
         /**
          * Finds and returns all the local address books belonging to a given main account
          *

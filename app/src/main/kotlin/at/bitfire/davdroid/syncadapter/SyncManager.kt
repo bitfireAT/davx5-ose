@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.net.Uri
+import android.os.DeadObjectException
 import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.ContactsContract
@@ -37,6 +38,7 @@ import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.db.SyncStats
 import at.bitfire.davdroid.log.Logger
@@ -184,14 +186,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             }
 
             // log sync time
-            val db = EntryPointAccessors.fromApplication(context, SyncManagerEntryPoint::class.java).appDatabase()
-            db.runInTransaction {
-                db.collectionDao().getByUrl(collectionURL.toString())?.let { collection ->
-                    db.syncStatsDao().insertOrReplace(
-                        SyncStats(0, collection.id, authority, System.currentTimeMillis())
-                    )
-                }
-            }
+            logSyncTime()
 
             Logger.log.info("Querying server capabilities")
             var remoteSyncState = queryCapabilities()
@@ -296,7 +291,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
         }, { e, local, remote ->
             when (e) {
-                // sync was cancelled or account has been removed: re-throw to SyncAdapterService (now BaseSyncer)
+                // DeadObjectException (may occur when syncing takes too long and process is demoted to cached):
+                // re-throw to base Syncer → will cause soft error and restart the sync process
+                is DeadObjectException ->
+                    throw e
+
+                // sync was cancelled or account has been removed: re-throw to BaseSyncer
                 is InterruptedException,
                 is InterruptedIOException,
                 is InvalidAccountException ->
@@ -324,6 +324,26 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     notifyException(e, local, remote)
             }
         })
+    }
+
+    private fun logSyncTime() {
+        val serviceType = when (authority) {
+            ContactsContract.AUTHORITY,                             // Contacts
+            context.getString(R.string.address_books_authority) ->  // Address books
+                Service.TYPE_CARDDAV
+            else ->                                                 // Calendars + other (ie. tasks)
+                Service.TYPE_CALDAV
+        }
+        val db = EntryPointAccessors.fromApplication(context, SyncManagerEntryPoint::class.java).appDatabase()
+        db.runInTransaction {
+            val service = db.serviceDao().getByAccountAndType(account.name, serviceType)
+                ?: return@runInTransaction
+            val collection = db.collectionDao().getByServiceAndUrl(service.id, collectionURL.toString())
+                ?: return@runInTransaction
+            db.syncStatsDao().insertOrReplace(
+                SyncStats(0, collection.id, authority, System.currentTimeMillis())
+            )
+        }
     }
 
 

@@ -15,7 +15,6 @@ import at.bitfire.davdroid.ui.setup.LoginTypesProvider
 import at.bitfire.davdroid.ui.setup.StandardLoginTypesProvider
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ViewModelComponent
@@ -46,17 +45,6 @@ interface OseFlavorModules {
     interface Global {
         @Binds
         fun introPageFactory(impl: OseIntroPageFactory): IntroPageFactory
-    }
-
-
-    //// intro pages ////
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    interface IntroPagesModule {
-        @Provides
-        @IntoSet
-        fun introPage(): IntroPage = BatteryOptimizationsPage()
     }
 
 }

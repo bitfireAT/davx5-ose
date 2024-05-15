@@ -7,17 +7,21 @@ package at.bitfire.davdroid.ui.intro
 import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import at.bitfire.davdroid.ui.PermissionsActivity
-import at.bitfire.davdroid.ui.PermissionsContent
+import at.bitfire.davdroid.ui.PermissionsModel
+import at.bitfire.davdroid.ui.PermissionsScreen
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
 import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
 import at.bitfire.ical4android.TaskProvider
-class PermissionsIntroPage: IntroPage {
+import javax.inject.Inject
 
-    var model: PermissionsActivity.Model? = null
+class PermissionsIntroPage @Inject constructor(
+    private val application: Application
+): IntroPage {
 
-    override fun getShowPolicy(application: Application): IntroPage.ShowPolicy {
+    var model: PermissionsModel? = null
+
+    override fun getShowPolicy(): IntroPage.ShowPolicy {
         // show PermissionsFragment as intro fragment when no permissions are granted
         val permissions = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS +
                 TaskProvider.PERMISSIONS_JTX +
@@ -31,15 +35,7 @@ class PermissionsIntroPage: IntroPage {
 
     @Composable
     override fun ComposePage() {
-        val newModel: PermissionsActivity.Model = viewModel()
-        model = newModel
-
-        PermissionsContent(model = newModel)
-    }
-
-    // Check whether permissions have changed after user comes back from settings app
-    override fun onResume(application: Application) {
-        model?.checkPermissions()
+        PermissionsScreen()
     }
 
 }

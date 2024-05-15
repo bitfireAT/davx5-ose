@@ -30,7 +30,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOf
@@ -134,9 +136,11 @@ class AccountScreenModel @AssistedInject constructor(
 
     // actions
 
+    private val notInterruptibleScope = CoroutineScope(SupervisorJob())
+
     /** Deletes the account from the system (won't touch collections on the server). */
     fun deleteAccount() {
-        viewModelScope.launch {
+        notInterruptibleScope.launch {
             accountRepository.delete(account.name)
         }
     }
@@ -156,7 +160,7 @@ class AccountScreenModel @AssistedInject constructor(
      * @param newName new account name
      */
     fun renameAccount(newName: String) {
-        viewModelScope.launch {
+        notInterruptibleScope.launch {
             try {
                 accountRepository.rename(account.name, newName)
 

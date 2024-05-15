@@ -4,43 +4,58 @@ import android.accounts.Account
 import android.app.Application
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.ShortcutManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Build
 import android.os.PowerManager
 import androidx.core.content.getSystemService
+import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.syncadapter.BaseSyncWorker
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.ui.account.AccountProgress
+import at.bitfire.davdroid.ui.intro.IntroPage
+import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.util.broadcastReceiverFlow
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.text.Collator
-import javax.inject.Inject
 
-@HiltViewModel
-class AccountsModel @Inject constructor(
-    val context: Application,
-    val accountRepository: AccountRepository,
-    private val db: AppDatabase
+@HiltViewModel(assistedFactory = AccountsModel.Factory::class)
+class AccountsModel @AssistedInject constructor(
+    @Assisted val syncAccountsOnInit: Boolean,
+    private val context: Application,
+    private val accountRepository: AccountRepository,
+    private val db: AppDatabase,
+    introPageFactory: IntroPageFactory
 ): ViewModel() {
 
-    // UI state
+    @AssistedFactory
+    interface Factory {
+        fun create(syncAccountsOnInit: Boolean): AccountsModel
+    }
+
+
+    // Accounts UI state
 
     enum class FABStyle {
         WithText,
@@ -96,6 +111,20 @@ class AccountsModel @Inject constructor(
                 AccountInfo(account, progress)
             }
     }
+
+
+    // other UI state
+
+    val showAppIntro: Flow<Boolean> = flow<Boolean> {
+        val anyShowAlwaysPage = introPageFactory.introPages.any { introPage ->
+            val policy = introPage.getShowPolicy()
+            Logger.log.fine("Intro page ${introPage::class.java.name} policy = $policy")
+
+            policy == IntroPage.ShowPolicy.SHOW_ALWAYS
+        }
+
+        emit(anyShowAlwaysPage)
+    }.flowOn(Dispatchers.Default)
 
 
     // warnings
@@ -167,12 +196,18 @@ class AccountsModel @Inject constructor(
             }
         }
 
+
+    init {
+        if (syncAccountsOnInit)
+            syncAllAccounts()
+    }
+
     
     // actions
 
     fun syncAllAccounts() {
-        if (Build.VERSION.SDK_INT >= 25)
-            context.getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
+        // report shortcut action to system
+        ShortcutManagerCompat.reportShortcutUsed(context, UiUtils.SHORTCUT_SYNC_ALL)
 
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
         for (account in accountRepository.getAll())
