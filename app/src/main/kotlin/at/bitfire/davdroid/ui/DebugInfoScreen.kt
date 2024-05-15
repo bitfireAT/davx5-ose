@@ -4,6 +4,7 @@ import android.accounts.Account
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -51,7 +52,6 @@ fun DebugInfoScreen(
     localResource: String?,
     remoteResource: String?,
     logs: String?,
-    onShareFile: (File) -> Unit,
     onShareZipFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
     onNavUp: () -> Unit
@@ -112,7 +112,7 @@ fun DebugInfoScreen(
         remoteResource = remoteResource,
         hasLogFile = logFile != null,
         onShareZip = { model.generateZip() },
-        onShareLogsFile = { logFile?.let { onShareFile(it) } },
+        onViewLogsFile = { logFile?.let { onViewFile(it) } },
         onViewDebugFile = { debugInfo?.let { onViewFile(it) } },
         onNavUp = onNavUp
     )
@@ -133,7 +133,7 @@ fun DebugInfoScreen(
     remoteResource: String?,
     hasLogFile: Boolean,
     onShareZip: () -> Unit = {},
-    onShareLogsFile: () -> Unit = {},
+    onViewLogsFile: () -> Unit = {},
     onViewDebugFile: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
@@ -256,11 +256,15 @@ fun DebugInfoScreen(
                                 text = stringResource(R.string.debug_info_involved_remote),
                                 style = MaterialTheme.typography.bodyLarge
                             )
-                            Text(
-                                text = it,
-                                fontFamily = FontFamily.Monospace,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
+                            SelectionContainer {
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        fontFamily = FontFamily.Monospace
+                                    ),
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                            }
                         }
                         localResource?.let {
                             Text(
@@ -269,7 +273,9 @@ fun DebugInfoScreen(
                             )
                             Text(
                                 text = it,
-                                fontFamily = FontFamily.Monospace,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontFamily = FontFamily.Monospace
+                                ),
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
                         }
@@ -283,7 +289,7 @@ fun DebugInfoScreen(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
                         OutlinedButton(
-                            onClick = onShareLogsFile,
+                            onClick = onViewLogsFile,
                             modifier = Modifier.padding(bottom = 4.dp)
                         ) {
                             Text(

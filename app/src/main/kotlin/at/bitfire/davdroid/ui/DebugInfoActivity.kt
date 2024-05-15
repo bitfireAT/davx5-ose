@@ -65,7 +65,6 @@ class DebugInfoActivity : AppCompatActivity() {
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE),
                 remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE),
                 logs = extras?.getString(EXTRA_LOGS),
-                onShareFile = ::shareFile,
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
                 onNavUp = ::onSupportNavigateUp
