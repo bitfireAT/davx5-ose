@@ -15,6 +15,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.ListenableWorker
 import androidx.work.WorkManager
+import androidx.work.WorkerFactory
+import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.testing.WorkManagerTestInitHelper
 import androidx.work.workDataOf
@@ -23,6 +25,7 @@ import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
+import dagger.assisted.AssistedFactory
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
@@ -36,6 +39,7 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 @HiltAndroidTest
 class PeriodicSyncWorkerTest {
@@ -74,10 +78,18 @@ class PeriodicSyncWorkerTest {
 
     }
 
+    @AssistedFactory
+    interface PeriodicSyncWorkerFactory {
+        fun create(appContext: Context, workerParams: WorkerParameters): PeriodicSyncWorker
+    }
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
     @get:Rule
     val mockkRule = MockKRule(this)
+
+    @Inject
+    lateinit var syncWorkerFactory: PeriodicSyncWorkerFactory
 
     @Before
     fun inject() {
@@ -116,7 +128,12 @@ class PeriodicSyncWorkerTest {
         mockkObject(workManager)
 
         // run test worker, expect failure
-        val testWorker = TestListenableWorkerBuilder<PeriodicSyncWorker>(context, inputData).build()
+        val testWorker = TestListenableWorkerBuilder<PeriodicSyncWorker>(context, inputData)
+            .setWorkerFactory(object: WorkerFactory() {
+                override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters) =
+                    syncWorkerFactory.create(appContext, workerParameters)
+            })
+            .build()
         val result = runBlocking {
             testWorker.doWork()
         }

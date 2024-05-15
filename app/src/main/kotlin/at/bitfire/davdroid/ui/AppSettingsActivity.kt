@@ -71,7 +71,7 @@ import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage
+import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.TaskUtils
@@ -79,11 +79,11 @@ import at.bitfire.davdroid.util.broadcastReceiverFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class AppSettingsActivity: AppCompatActivity() {
@@ -539,9 +539,9 @@ class AppSettingsActivity: AppCompatActivity() {
         }
 
         fun resetHints() {
-            settings.remove(BatteryOptimizationsPage.Model.HINT_BATTERY_OPTIMIZATIONS)
-            settings.remove(BatteryOptimizationsPage.Model.HINT_AUTOSTART_PERMISSION)
-            settings.remove(TasksActivity.Model.HINT_OPENTASKS_NOT_INSTALLED)
+            settings.remove(BatteryOptimizationsPageModel.HINT_BATTERY_OPTIMIZATIONS)
+            settings.remove(BatteryOptimizationsPageModel.HINT_AUTOSTART_PERMISSION)
+            settings.remove(TasksModel.HINT_OPENTASKS_NOT_INSTALLED)
             settings.remove(OpenSourcePage.Model.SETTING_NEXT_DONATION_POPUP)
         }
 

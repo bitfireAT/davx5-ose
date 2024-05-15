@@ -292,13 +292,8 @@ class AccountSettingsActivity: AppCompatActivity() {
                     onDismiss = { showWifiOnlySsidsDialog = false }
                 )
 
-            // TODO make canAccessWifiSsid live-capable
-            val canAccessWifiSsid =
-                if (LocalInspectionMode.current)
-                    false
-                else
-                    PermissionUtils.canAccessWifiSsid(context)
-            if (onlyOnSsids != null && !canAccessWifiSsid)
+            val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
+            if (LocalInspectionMode.current || (onlyOnSsids != null && !canAccessWifiSsid))
                 ActionCard(
                     icon = Icons.Default.SyncProblem,
                     actionText = stringResource(R.string.settings_sync_wifi_only_ssids_permissions_action),
