@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.intro
 
-import android.app.Application
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.M2Colors.primaryDark
 
 class WelcomePage: IntroPage {
 
@@ -55,7 +53,7 @@ class WelcomePage: IntroPage {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = primaryDark),
+                .background(color = MaterialTheme.colorScheme.primary),
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_launcher_foreground),
@@ -108,7 +106,7 @@ class WelcomePage: IntroPage {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = primaryDark)
+                .background(color = MaterialTheme.colorScheme.primary)
                 .padding(
                     bottom = dimensionResource(
                         com.github.appintro.R.dimen.appintro2_bottombar_height
