@@ -24,18 +24,37 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
+
+@Composable
+fun WifiPermissionsScreen(
+    model: WifiPermissionsModel = viewModel(),
+    backgroundPermissionOptionLabel: String,
+    onEnableLocationService: (Boolean) -> Unit,
+    onNavUp: () -> Unit
+) {
+    val locationServiceEnabled by model.locationEnabled.collectAsStateWithLifecycle()
+    WifiPermissionsScreen(
+        backgroundPermissionOptionLabel = backgroundPermissionOptionLabel,
+        locationServiceEnabled = locationServiceEnabled,
+        onEnableLocationService = onEnableLocationService,
+        onNavUp = onNavUp
+    )
+}
 
 @Composable
 fun WifiPermissionsScreen(
@@ -215,9 +234,13 @@ fun LocationService(
 
 @Composable
 @Preview
-fun Content_Preview() {
-    WifiPermissionsScreenContent(
-        backgroundPermissionOptionLabel = stringResource(R.string.wifi_permissions_background_location_permission_label),
-        locationServiceEnabled = true
-    ) {}
+fun WifiPermissionsScreen_Preview() {
+    AppTheme {
+        WifiPermissionsScreen(
+            backgroundPermissionOptionLabel = stringResource(R.string.wifi_permissions_background_location_permission_label),
+            locationServiceEnabled = true,
+            onEnableLocationService = {},
+            onNavUp = {}
+        )
+    }
 }

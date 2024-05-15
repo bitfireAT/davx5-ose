@@ -39,8 +39,6 @@ class WifiPermissionsActivity: AppCompatActivity() {
     }
 
     private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
-    private val model by viewModels<Model>()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +50,6 @@ class WifiPermissionsActivity: AppCompatActivity() {
                     packageManager.backgroundPermissionOptionLabel.toString()
                 else
                     stringResource(R.string.wifi_permissions_background_location_permission_label),
-                locationServiceEnabled = model.locationEnabled.collectAsStateWithLifecycle().value,
                 onEnableLocationService = {
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     if (intent.resolveActivity(packageManager) != null)
@@ -67,19 +64,6 @@ class WifiPermissionsActivity: AppCompatActivity() {
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
         builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
-    }
-
-    @HiltViewModel
-    class Model @Inject constructor(
-        context: Application
-    ): ViewModel() {
-
-        private val locationManager = context.getSystemService<LocationManager>()!!
-
-        val locationEnabled = broadcastReceiverFlow(context, IntentFilter(LocationManager.MODE_CHANGED_ACTION), immediate = true)
-            .map { LocationManagerCompat.isLocationEnabled(locationManager) }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
-
     }
 
 }
