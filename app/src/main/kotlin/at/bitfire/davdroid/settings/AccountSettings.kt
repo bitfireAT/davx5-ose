@@ -46,6 +46,7 @@ class AccountSettings(
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface AccountSettingsEntryPoint {
+        fun migrationsFactory(): AccountSettingsMigrations.Factory
         fun settingsManager(): SettingsManager
     }
 
@@ -135,7 +136,8 @@ class AccountSettings(
     }
 
 
-    val settings = EntryPointAccessors.fromApplication(context, AccountSettingsEntryPoint::class.java).settingsManager()
+    private val entryPoint = EntryPointAccessors.fromApplication<AccountSettingsEntryPoint>(context)
+    private val settings = entryPoint.settingsManager()
 
     val accountManager: AccountManager = AccountManager.get(context)
     val account: Account
@@ -498,8 +500,8 @@ class AccountSettings(
             val fromVersion = toVersion-1
             Logger.log.info("Updating account ${account.name} from version $fromVersion to $toVersion")
             try {
-                val migrations = AccountSettingsMigrations(
-                    context = context,
+                val migrationsFactory = entryPoint.migrationsFactory()
+                val migrations = migrationsFactory.create(
                     account = account,
                     accountSettings = this
                 )

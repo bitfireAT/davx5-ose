@@ -7,10 +7,10 @@ package at.bitfire.davdroid.settings
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Parcel
 import android.os.RemoteException
@@ -37,10 +37,9 @@ import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
 import at.techbee.jtx.JtxContract.asSyncAdapter
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.property.Url
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -49,21 +48,19 @@ import java.io.ByteArrayInputStream
 import java.io.ObjectInputStream
 import java.util.logging.Level
 
-class AccountSettingsMigrations(
-    val context: Context,
-    val account: Account,
-    val accountSettings: AccountSettings
+class AccountSettingsMigrations @AssistedInject constructor(
+    @Assisted val account: Account,
+    @Assisted val accountSettings: AccountSettings,
+    val context: Application,
+    val db: AppDatabase,
+    val settings: SettingsManager
 ) {
 
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface AccountSettingsMigrationsEntryPoint {
-        fun appDatabase(): AppDatabase
-        fun settingsManager(): SettingsManager
+    @AssistedFactory
+    interface Factory {
+        fun create(account: Account, accountSettings: AccountSettings): AccountSettingsMigrations
     }
 
-    val db = EntryPointAccessors.fromApplication<AccountSettingsMigrationsEntryPoint>(context).appDatabase()
-    val settings = EntryPointAccessors.fromApplication<AccountSettingsMigrationsEntryPoint>(context).settingsManager()
 
     val accountManager: AccountManager = AccountManager.get(context)
 

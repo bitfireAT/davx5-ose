@@ -9,8 +9,12 @@ import androidx.annotation.StringDef
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import at.bitfire.davdroid.db.Credentials
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class CredentialsStore(context: Context) {
+class CredentialsStore @Inject constructor(
+    @ApplicationContext context: Context
+) {
 
     @Retention(AnnotationRetention.SOURCE)
     @StringDef(
