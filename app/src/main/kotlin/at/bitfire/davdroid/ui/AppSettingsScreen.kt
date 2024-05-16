@@ -301,20 +301,6 @@ fun AppSettings_Debugging(
 }
 
 @Composable
-@Preview
-fun AppSettings_Debugging_Preview() {
-    Column {
-        AppSettings_Debugging(
-            verboseLogging = false,
-            onUpdateVerboseLogging = {},
-            batterySavingExempted = true,
-            onExemptFromBatterySaving = {},
-            onBatterySavingSettings = {}
-        )
-    }
-}
-
-@Composable
 fun AppSettings_Connection(
     proxyType: Int,
     onProxyTypeUpdated: (Int) -> Unit = {},
@@ -391,16 +377,6 @@ fun AppSettings_Connection(
 }
 
 @Composable
-@Preview
-fun AppSettings_Connection_Preview() {
-    Column {
-        AppSettings_Connection(
-            proxyType = Settings.PROXY_TYPE_HTTP
-        )
-    }
-}
-
-@Composable
 fun AppSettings_Security(
     distrustSystemCerts: Boolean,
     onDistrustSystemCertsUpdated: (Boolean) -> Unit = {},
@@ -434,16 +410,6 @@ fun AppSettings_Security(
             context.startActivity(Intent(context, PermissionsActivity::class.java))
         }
     )
-}
-
-@Composable
-@Preview
-fun AppSettings_Security_Preview() {
-    Column {
-        AppSettings_Security(
-            distrustSystemCerts = false
-        )
-    }
 }
 
 @Composable
@@ -495,16 +461,6 @@ fun AppSettings_UserInterface(
 }
 
 @Composable
-@Preview
-fun AppSettings_UserInterface_Preview() {
-    Column {
-        AppSettings_UserInterface(
-            theme = Settings.PREFERRED_THEME_DEFAULT
-        )
-    }
-}
-
-@Composable
 fun AppSettings_Integration(
     appName: String,
     icon: Drawable? = null,
@@ -525,14 +481,4 @@ fun AppSettings_Integration(
         summary = appName,
         onClick = onStartTasksApp
     )
-}
-
-@Composable
-@Preview
-fun AppSettings_Integration_Preview() {
-    Column {
-        AppSettings_Integration(
-            "No Tasks app"
-        )
-    }
 }
