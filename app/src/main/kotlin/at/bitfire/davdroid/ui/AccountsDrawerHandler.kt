@@ -46,6 +46,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
@@ -80,7 +81,7 @@ abstract class AccountsDrawerHandler {
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
         ) {
-            Header()
+            BrandingHeader()
 
             val closeDrawerHandler = object : CloseDrawerHandler() {
                 override fun closeDrawer() {
@@ -177,47 +178,6 @@ abstract class AccountsDrawerHandler {
     // building blocks
 
     @Composable
-    fun Header() {
-        Column(
-            Modifier
-                .background(Color.DarkGray)
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Spacer(Modifier.height(16.dp))
-            Box(
-                Modifier.background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(16.dp)
-                )
-            ) {
-                Icon(
-                    painterResource(R.drawable.ic_launcher_foreground),
-                    stringResource(R.string.app_name),
-                    tint = Color.White,
-                    modifier = Modifier
-                        .scale(1.2f)
-                        .size(64.dp)
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                stringResource(R.string.app_name),
-                color = Color.White,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                stringResource(R.string.navigation_drawer_subtitle),
-                color = Color.White.copy(alpha = 0.7f),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-
-        Spacer(Modifier.height(8.dp))
-    }
-
-    @Composable
     fun MenuHeading(text: String) {
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
@@ -262,4 +222,62 @@ abstract class AccountsDrawerHandler {
         )
     }
 
+}
+
+
+@Composable
+fun BrandingHeader() {
+    Column(
+        Modifier
+            .background(Color.DarkGray)
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Spacer(Modifier.height(16.dp))
+        Box(
+            Modifier.background(
+                color = M3ColorScheme.md_theme_light_primary,
+                shape = RoundedCornerShape(16.dp)
+            )
+        ) {
+            Icon(
+                painterResource(R.drawable.ic_launcher_foreground),
+                stringResource(R.string.app_name),
+                tint = Color.White,
+                modifier = Modifier
+                    .scale(1.2f)
+                    .size(64.dp)
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+
+        Text(
+            stringResource(R.string.app_name),
+            color = Color.White,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Text(
+            stringResource(R.string.navigation_drawer_subtitle),
+            color = Color.White.copy(alpha = 0.7f),
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+
+    Spacer(Modifier.height(8.dp))
+}
+
+@Composable
+@Preview
+fun BrandingHeader_Preview_Light() {
+    AppTheme(useDarkTheme = false) {
+        BrandingHeader()
+    }
+}
+
+@Composable
+@Preview
+fun BrandingHeader_Preview_Dark() {
+    AppTheme(useDarkTheme = true) {
+        BrandingHeader()
+    }
 }
