@@ -46,6 +46,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
@@ -64,10 +65,11 @@ import kotlinx.coroutines.launch
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
     onSyncWifiOnlyPermissionsAction: () -> Unit,
-    model: AccountSettingsActivity.Model,
     account: Account,
 ) {
-    val credentials by model.credentials.observeAsState()
+    val model = hiltViewModel { factory: AccountSettingsModel.Factory ->
+        factory.create(account)
+    }
     val context = LocalContext.current
     val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
 
@@ -110,7 +112,7 @@ fun AccountSettingsScreen(
             onUpdateIgnoreVpns = { model.updateIgnoreVpns(it) },
 
             // Authentication Settings
-            credentials = credentials,
+            credentials = model.credentials.observeAsState().value,
             onUpdateCredentials = { model.updateCredentials(it) },
 
             // CalDav Settings
@@ -186,7 +188,7 @@ fun AccountSettingsScreen(
                 title = { Text(accountName) },
                 actions = {
                     IconButton(onClick = {
-                        uriHandler.openUri(AccountSettingsActivity.ACCOUNT_SETTINGS_HELP_URL)
+                        uriHandler.openUri("https://manual.davx5.com/settings.html#account-settings")
                     }) {
                         Icon(Icons.AutoMirrored.Filled.Help, stringResource(R.string.help))
                     }
