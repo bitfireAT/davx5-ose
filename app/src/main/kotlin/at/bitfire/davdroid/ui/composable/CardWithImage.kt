@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,7 +53,7 @@ fun CardWithImage(
                     contentDescription = imageContentDescription,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = dimensionResource(R.dimen.card_theme_max_height)),
+                        .heightIn(max = 126.dp),
                     contentScale = imageContentScale,
                     alignment = imageAlignment
                 )

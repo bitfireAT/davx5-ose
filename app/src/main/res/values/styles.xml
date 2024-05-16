@@ -17,10 +17,4 @@
         <item name="android:colorBackground">@android:color/white</item>
     </style>
 
-    <!-- stepper (wizard) -->
-
-    <style name="stepper_nav_bar">
-        <item name="cardElevation">4dp</item>
-    </style>
-
 </resources>
