@@ -14,7 +14,9 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
@@ -89,8 +91,10 @@ class IntroActivity : AppIntro2() {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     AppTheme {
-                        Box(Modifier.padding(bottom = dimensionResource(com.github.appintro.R.dimen.appintro2_bottombar_height))) {
-                            page.ComposePage()
+                        Surface(Modifier.fillMaxSize()) {
+                            Box(Modifier.padding(bottom = dimensionResource(com.github.appintro.R.dimen.appintro2_bottombar_height))) {
+                                page.ComposePage()
+                            }
                         }
                     }
                 }
