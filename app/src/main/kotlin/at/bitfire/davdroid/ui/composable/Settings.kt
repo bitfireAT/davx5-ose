@@ -11,15 +11,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -41,8 +41,8 @@ fun SettingsHeader(divider: Boolean = false, content: @Composable () -> Unit) {
             .fillMaxWidth()
     ) {
         CompositionLocalProvider(
-            LocalTextStyle provides MaterialTheme.typography.body1.copy(
-                color = MaterialTheme.colors.secondary
+            LocalTextStyle provides MaterialTheme.typography.bodyLarge.copy(
+                color = MaterialTheme.colorScheme.secondary
             )
         ) {
             content()
@@ -94,12 +94,12 @@ fun Setting(
                 .padding(start = 8.dp)
                 .weight(1f)
         ) {
-            ProvideTextStyle(MaterialTheme.typography.body1) {
+            ProvideTextStyle(MaterialTheme.typography.bodyLarge) {
                 name()
             }
 
             if (summary != null)
-                Text(summary, style = MaterialTheme.typography.body2)
+                Text(summary, style = MaterialTheme.typography.bodyMedium)
         }
 
         end()
@@ -120,7 +120,7 @@ fun Setting(
                 Icon(icon, contentDescription = name)
         },
         name = {
-            Text(name, style = MaterialTheme.typography.body1)
+            Text(name, style = MaterialTheme.typography.bodyLarge)
         },
         summary = summary,
         enabled = enabled,

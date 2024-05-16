@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -17,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AppSettingsActivity: AppCompatActivity() {
 
+    @SuppressLint("BatteryLife")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,10 +32,10 @@ class AppSettingsActivity: AppCompatActivity() {
                         )
                     )
                 },
-                onBatterSavingSettings = {
+                onBatterySavingSettings = {
                     startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
                 },
-                onStartTasksApp = {
+                onStartTasksScreen = {
                     startActivity(Intent(this, TasksActivity::class.java))
                 },
                 onShowNotificationSettings = {
@@ -44,8 +46,9 @@ class AppSettingsActivity: AppCompatActivity() {
                             }
                         )
                 },
-                onNavUp = { onSupportNavigateUp() }
+                onNavUp = ::onSupportNavigateUp
             )
         }
     }
+
 }

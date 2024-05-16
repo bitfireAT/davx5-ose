@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.Settings
@@ -57,8 +58,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppSettingsScreen(
     onExemptFromBatterySaving: () -> Unit,
-    onBatterSavingSettings: () -> Unit,
-    onStartTasksApp: () -> Unit,
+    onBatterySavingSettings: () -> Unit,
+    onStartTasksScreen: () -> Unit,
     onShowNotificationSettings: () -> Unit,
     onNavUp: () -> Unit
 ) {
@@ -72,7 +73,7 @@ fun AppSettingsScreen(
             onUpdateVerboseLogging = { model.putPrefBoolean(Logger.LOG_TO_FILE, it) },
             batterySavingExempted = model.batterySavingExempted.collectAsStateWithLifecycle().value,
             onExemptFromBatterySaving = onExemptFromBatterySaving,
-            onBatterySavingSettings = onBatterSavingSettings,
+            onBatterySavingSettings = onBatterySavingSettings,
             onShowNotificationSettings = onShowNotificationSettings,
             onNavUp = onNavUp,
 
@@ -100,7 +101,7 @@ fun AppSettingsScreen(
             // AppSettings Integration
             tasksAppName = model.appName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.icon.collectAsStateWithLifecycle(null).value,
-            onStartTasksApp = onStartTasksApp
+            onStartTasksApp = onStartTasksScreen
         )
     }
 }
@@ -156,7 +157,11 @@ fun AppSettingsScreen(
                 title = { Text(stringResource(R.string.app_settings)) },
                 actions = {
                     IconButton(onClick = {
-                        uriHandler.openUri("https://manual.davx5.com/settings.html#app-wide-settings")
+                        val settingsUri = Constants.MANUAL_URL.buildUpon()
+                            .appendPath(Constants.MANUAL_PATH_SETTINGS)
+                            .fragment(Constants.MANUAL_FRAGMENT_APP_SETTINGS)
+                            .build()
+                        uriHandler.openUri(settingsUri.toString())
                     }) {
                         Icon(Icons.AutoMirrored.Filled.Help, stringResource(R.string.help))
                     }
