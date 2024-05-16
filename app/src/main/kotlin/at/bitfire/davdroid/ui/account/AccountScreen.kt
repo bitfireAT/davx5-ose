@@ -364,9 +364,10 @@ fun AccountScreen(
 
                                 idxCalDav -> {
                                     val permissions = mutableListOf(Manifest.permission.WRITE_CALENDAR)
-                                    TaskUtils.currentProvider(context)?.let { tasksProvider ->
-                                        permissions += tasksProvider.permissions
-                                    }
+                                    if (!LocalInspectionMode.current)   // TaskUtils.currentProvider prevents preview
+                                        TaskUtils.currentProvider(context)?.let { tasksProvider ->
+                                            permissions += tasksProvider.permissions
+                                        }
                                     AccountScreen_ServiceTab(
                                         requiredPermissions = permissions,
                                         progress = calDavProgress,

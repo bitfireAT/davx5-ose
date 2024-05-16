@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.filled.Contacts
@@ -29,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -198,6 +199,7 @@ fun CollectionsList_Item_Standard_Preview() {
             displayName = "Sample Calendar",
             description = "This Sample Calendar even has some lengthy description.",
             color = 0xffff0000.toInt(),
+            sync = true,
             forceReadOnly = true,
             supportsVEVENT = true,
             supportsVTODO = true,
@@ -243,9 +245,21 @@ fun CollectionList_Item_Webcal_Preview() {
 
 @Composable
 fun CollectionList_Item_Chip(icon: ImageVector, text: String) {
-    SuggestionChip(
-        icon = { Icon(icon, contentDescription = text) },
-        label = { Text(text) },
-        onClick = {}
-    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(8.dp))
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+    ) {
+        Icon(
+            icon,
+            contentDescription = text,
+            modifier = Modifier.size(20.dp)
+        )
+        Text(
+            text,
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(start = 4.dp)
+        )
+    }
 }

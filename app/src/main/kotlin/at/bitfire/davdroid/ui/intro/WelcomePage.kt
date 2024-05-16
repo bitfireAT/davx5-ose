@@ -30,6 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M3ColorScheme
 
 class WelcomePage: IntroPage {
 
@@ -44,16 +46,12 @@ class WelcomePage: IntroPage {
     }
 
 
-    @Preview(
-        device = "id:3.7in WVGA (Nexus One)",
-        showSystemUi = true
-    )
     @Composable
     private fun ContentPortrait() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.primary),
+                .background(color = M3ColorScheme.md_theme_light_primary),
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_launcher_foreground),
@@ -97,55 +95,80 @@ class WelcomePage: IntroPage {
         }
     }
 
+    @Composable
+    @Preview(
+        device = "id:3.7in WVGA (Nexus One)",
+        showSystemUi = true
+    )
+    fun Preview_ContentPortrait_Light() {
+        AppTheme(useDarkTheme = false) {
+            ContentPortrait()
+        }
+    }
+
+    @Composable
+    @Preview(
+        device = "id:3.7in WVGA (Nexus One)",
+        showSystemUi = true
+    )
+    fun Preview_ContentPortrait_Dark() {
+        AppTheme(useDarkTheme = true) {
+            ContentPortrait()
+        }
+    }
+
+
     @Preview(
         showSystemUi = true,
         device = "id:medium_tablet"
     )
     @Composable
     private fun ContentLandscape() {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.primary)
-                .padding(
-                    bottom = dimensionResource(
-                        com.github.appintro.R.dimen.appintro2_bottombar_height
-                    )
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_launcher_foreground),
-                contentDescription = null,
+        AppTheme {
+            Row(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-            )
-
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp)
-                    .weight(2f)
+                    .fillMaxSize()
+                    .background(color = MaterialTheme.colorScheme.primary)
+                    .padding(
+                        bottom = dimensionResource(
+                            com.github.appintro.R.dimen.appintro2_bottombar_height
+                        )
+                    ),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = stringResource(R.string.intro_slogan1),
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 34.sp),
-                    lineHeight = 38.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                Image(
+                    painter = painterResource(R.drawable.ic_launcher_foreground),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
                 )
 
-                Text(
-                    text = stringResource(R.string.intro_slogan2),
-                    color = Color.White,
-                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 48.sp),
-                    lineHeight = 52.sp,
-                    textAlign = TextAlign.Center,
+                Column(
                     modifier = Modifier
-                        .padding(top = 16.dp)
-                        .fillMaxWidth()
-                )
+                        .padding(horizontal = 32.dp)
+                        .weight(2f)
+                ) {
+                    Text(
+                        text = stringResource(R.string.intro_slogan1),
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 34.sp),
+                        lineHeight = 38.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Text(
+                        text = stringResource(R.string.intro_slogan2),
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 48.sp),
+                        lineHeight = 52.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .fillMaxWidth()
+                    )
+                }
             }
         }
     }

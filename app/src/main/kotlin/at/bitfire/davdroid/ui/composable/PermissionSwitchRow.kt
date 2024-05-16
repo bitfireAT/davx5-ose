@@ -7,6 +7,10 @@ package at.bitfire.davdroid.ui.composable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -16,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
@@ -50,7 +55,15 @@ fun PermissionSwitchRow(
         }
         Switch(
             checked = allPermissionsGranted,
-            enabled = !allPermissionsGranted,
+            thumbContent = if (allPermissionsGranted) {
+                {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = null,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                }
+            } else null,
             onCheckedChange = { checked ->
                 if (checked) {
                     onLaunchRequest()
