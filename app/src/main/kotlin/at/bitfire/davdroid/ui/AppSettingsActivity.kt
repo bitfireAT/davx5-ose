@@ -36,7 +36,6 @@ class AppSettingsActivity: AppCompatActivity() {
                 onStartTasksApp = {
                     startActivity(Intent(this, TasksActivity::class.java))
                 },
-                onNavUp = { onSupportNavigateUp() },
                 onShowNotificationSettings = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                         startActivity(
@@ -44,7 +43,8 @@ class AppSettingsActivity: AppCompatActivity() {
                                 putExtra(Settings.EXTRA_APP_PACKAGE, BuildConfig.APPLICATION_ID)
                             }
                         )
-                }
+                },
+                onNavUp = { onSupportNavigateUp() }
             )
         }
     }

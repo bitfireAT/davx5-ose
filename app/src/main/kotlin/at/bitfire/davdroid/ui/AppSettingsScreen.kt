@@ -59,10 +59,11 @@ fun AppSettingsScreen(
     onExemptFromBatterySaving: () -> Unit,
     onBatterSavingSettings: () -> Unit,
     onStartTasksApp: () -> Unit,
-    onNavUp: () -> Unit,
-    onShowNotificationSettings: () -> Unit
+    onShowNotificationSettings: () -> Unit,
+    onNavUp: () -> Unit
 ) {
     val model: AppSettingsModel = viewModel()
+    val settings = model.settings
     val context = LocalContext.current
 
     AppTheme {
@@ -72,24 +73,26 @@ fun AppSettingsScreen(
             batterySavingExempted = model.batterySavingExempted.collectAsStateWithLifecycle().value,
             onExemptFromBatterySaving = onExemptFromBatterySaving,
             onBatterySavingSettings = onBatterSavingSettings,
+            onShowNotificationSettings = onShowNotificationSettings,
+            onNavUp = onNavUp,
 
             // AppSettings Connection
-            proxyType = model.settings.getIntFlow(Settings.PROXY_TYPE).collectAsStateWithLifecycle(null).value ?: Settings.PROXY_TYPE_NONE,
-            onProxyTypeUpdated = { model.settings.putInt(Settings.PROXY_TYPE, it) },
-            proxyHostName = model.settings.getStringFlow(Settings.PROXY_HOST).collectAsStateWithLifecycle(null).value,
-            onProxyHostNameUpdated = { model.settings.putString(Settings.PROXY_HOST, it) },
-            proxyPort = model.settings.getIntFlow(Settings.PROXY_PORT).collectAsStateWithLifecycle(null).value,
-            onProxyPortUpdated = { model.settings.putInt(Settings.PROXY_PORT, it) },
+            proxyType = settings.getIntFlow(Settings.PROXY_TYPE).collectAsStateWithLifecycle(null).value ?: Settings.PROXY_TYPE_NONE,
+            onProxyTypeUpdated = { settings.putInt(Settings.PROXY_TYPE, it) },
+            proxyHostName = settings.getStringFlow(Settings.PROXY_HOST).collectAsStateWithLifecycle(null).value,
+            onProxyHostNameUpdated = { settings.putString(Settings.PROXY_HOST, it) },
+            proxyPort = settings.getIntFlow(Settings.PROXY_PORT).collectAsStateWithLifecycle(null).value,
+            onProxyPortUpdated = { settings.putInt(Settings.PROXY_PORT, it) },
 
             // AppSettings Security
-            distrustSystemCerts = model.settings.getBooleanFlow(Settings.DISTRUST_SYSTEM_CERTIFICATES).collectAsStateWithLifecycle(null).value ?: false,
-            onDistrustSystemCertsUpdated = { model.settings.putBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES, it) },
+            distrustSystemCerts = settings.getBooleanFlow(Settings.DISTRUST_SYSTEM_CERTIFICATES).collectAsStateWithLifecycle(null).value ?: false,
+            onDistrustSystemCertsUpdated = { settings.putBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES, it) },
             onResetCertificates = { model.resetCertificates() },
 
             // AppSettings UserInterface
-            theme = model.settings.getIntFlow(Settings.PREFERRED_THEME).collectAsStateWithLifecycle(null).value ?: Settings.PREFERRED_THEME_DEFAULT,
+            theme = settings.getIntFlow(Settings.PREFERRED_THEME).collectAsStateWithLifecycle(null).value ?: Settings.PREFERRED_THEME_DEFAULT,
             onThemeSelected = {
-                model.settings.putInt(Settings.PREFERRED_THEME, it)
+                settings.putInt(Settings.PREFERRED_THEME, it)
                 UiUtils.updateTheme(context)
             },
             onResetHints = { model.resetHints() },
@@ -97,10 +100,7 @@ fun AppSettingsScreen(
             // AppSettings Integration
             tasksAppName = model.appName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.icon.collectAsStateWithLifecycle(null).value,
-            onStartTasksApp = onStartTasksApp,
-
-            onShowNotificationSettings = onShowNotificationSettings,
-            onNavUp = onNavUp
+            onStartTasksApp = onStartTasksApp
         )
     }
 }
@@ -239,6 +239,8 @@ fun AppSettingsScreen_Preview() {
             onProxyHostNameUpdated = {},
             onExemptFromBatterySaving = {},
             onBatterySavingSettings = {},
+            onShowNotificationSettings = {},
+            onNavUp = {},
             onProxyTypeUpdated = {},
             onProxyPortUpdated = {},
             onDistrustSystemCertsUpdated = {},
@@ -248,8 +250,6 @@ fun AppSettingsScreen_Preview() {
             tasksAppName = "No tasks app",
             tasksAppIcon = null,
             onStartTasksApp = {},
-            onShowNotificationSettings = {},
-            onNavUp = {},
         )
     }
 }
