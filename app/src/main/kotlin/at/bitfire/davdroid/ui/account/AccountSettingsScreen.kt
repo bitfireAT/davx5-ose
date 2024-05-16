@@ -69,6 +69,7 @@ fun AccountSettingsScreen(
 ) {
     val credentials by model.credentials.observeAsState()
     val context = LocalContext.current
+    val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
 
     AppTheme {
         AccountSettingsScreen(
@@ -76,6 +77,7 @@ fun AccountSettingsScreen(
             onNavUp = onNavUp,
 
             // Sync settings
+            canAccessWifiSsid = canAccessWifiSsid,
             onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
             contactsSyncInterval = model.syncIntervalContacts.observeAsState().value,
             onUpdateContactsSyncInterval = {
@@ -134,6 +136,7 @@ fun AccountSettingsScreen(
     accountName: String,
 
     // Sync settings
+    canAccessWifiSsid: Boolean,
     onSyncWifiOnlyPermissionsAction: () -> Unit,
     contactsSyncInterval: Long?,
     onUpdateContactsSyncInterval: ((Long) -> Unit) = {},
@@ -201,6 +204,7 @@ fun AccountSettingsScreen(
                 snackbarHostState = snackbarHostState,
 
                 // Sync settings
+                canAccessWifiSsid = canAccessWifiSsid,
                 onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
                 contactsSyncInterval = contactsSyncInterval,
                 onUpdateContactsSyncInterval = onUpdateContactsSyncInterval,
@@ -245,6 +249,7 @@ fun AccountSettings_FromModel(
     snackbarHostState: SnackbarHostState,
 
     // Sync settings
+    canAccessWifiSsid: Boolean,
     onSyncWifiOnlyPermissionsAction: () -> Unit,
     contactsSyncInterval: Long?,
     onUpdateContactsSyncInterval: ((Long) -> Unit) = {},
@@ -280,6 +285,7 @@ fun AccountSettings_FromModel(
 ) {
     Column(Modifier.padding(8.dp)) {
         SyncSettings(
+            canAccessWifiSsid = canAccessWifiSsid,
             onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
             contactsSyncInterval = contactsSyncInterval,
             onUpdateContactsSyncInterval = onUpdateContactsSyncInterval,
@@ -324,6 +330,7 @@ fun AccountSettings_FromModel(
 
 @Composable
 fun SyncSettings(
+    canAccessWifiSsid: Boolean,
     onSyncWifiOnlyPermissionsAction: () -> Unit,
     contactsSyncInterval: Long?,
     onUpdateContactsSyncInterval: ((Long) -> Unit) = {},
@@ -402,7 +409,6 @@ fun SyncSettings(
                 onDismiss = { showWifiOnlySsidsDialog = false }
             )
 
-        val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
         if (LocalInspectionMode.current || (onlyOnSsids != null && !canAccessWifiSsid))
             ActionCard(
                 icon = Icons.Default.SyncProblem,
@@ -700,6 +706,7 @@ fun AccountSettingsScreen_Preview() {
             onNavUp = {},
 
             // Sync settings
+            canAccessWifiSsid = true,
             onSyncWifiOnlyPermissionsAction = {},
             contactsSyncInterval = 80000L,
             onUpdateContactsSyncInterval = {},
