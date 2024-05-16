@@ -4,7 +4,6 @@
 android-agp = "8.4.0"
 android-desugaring = "2.0.4"
 android-flexbox = "3.0.0"
-android-material = "1.12.0"
 androidx-activityCompose = "1.9.0"
 androidx-appcompat = "1.6.1"
 androidx-arch = "2.2.0"
@@ -61,7 +60,6 @@ room = "2.6.1"
 [libraries]
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugaring" }
 android-flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "android-flexbox" }
-android-material = { module = "com.google.android.material:material", version.ref = "android-material" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch" }
@@ -98,7 +96,6 @@ commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "com
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
-compose-material = { module = "androidx.compose.material:material" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }

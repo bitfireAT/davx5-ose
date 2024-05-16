@@ -170,7 +170,7 @@ fun DebugInfoScreen(
                     title = { Text(stringResource(R.string.debug_info_title)) },
                     navigationIcon = {
                         IconButton(onClick = onNavUp) {
-                            androidx.compose.material.Icon(
+                            Icon(
                                 Icons.AutoMirrored.Default.ArrowBack,
                                 stringResource(R.string.navigate_up)
                             )
