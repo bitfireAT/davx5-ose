@@ -14,7 +14,6 @@
         <!-- These non-Compose theme variables are required for AppIntro as long it doesn't support Compose: -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
-        <item name="colorPrimaryVariant">@color/primaryLightColor</item>
         <item name="android:colorBackground">@android:color/white</item>
     </style>
 

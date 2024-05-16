@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.android.material.color.MaterialColors
 
 @Composable
 fun SettingsHeader(divider: Boolean = false, content: @Composable () -> Unit) {
@@ -74,7 +73,7 @@ fun Setting(
     modifier = if (enabled)
         modifier.clickable(onClick = onClick)
     else
-        modifier.alpha(MaterialColors.ALPHA_DISABLED)
+        modifier.alpha(.38f)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -133,6 +132,17 @@ fun Setting(
 fun Setting_Sample() {
     Setting(
         icon = Icons.Default.Folder,
+        name = "Setting",
+        summary = "Currently off"
+    )
+}
+
+@Composable
+@Preview
+fun Setting_Sample_Disabled() {
+    Setting(
+        icon = Icons.Default.Folder,
+        enabled = false,
         name = "Setting",
         summary = "Currently off"
     )
