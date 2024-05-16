@@ -10,14 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.SnackbarResult
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
@@ -29,6 +21,15 @@ import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.outlined.Task
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -64,8 +65,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
-    onSyncWifiOnlyPermissionsAction: () -> Unit,
     account: Account,
+    onSyncWifiOnlyPermissionsAction: () -> Unit,
 ) {
     val model = hiltViewModel { factory: AccountSettingsModel.Factory ->
         factory.create(account)
@@ -82,28 +83,11 @@ fun AccountSettingsScreen(
             canAccessWifiSsid = canAccessWifiSsid,
             onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
             contactsSyncInterval = model.syncIntervalContacts.observeAsState().value,
-            onUpdateContactsSyncInterval = {
-                model.updateSyncInterval(
-                    context.getString(R.string.address_books_authority),
-                    it
-                )
-            },
+            onUpdateContactsSyncInterval = { model.updateSyncInterval(context.getString(R.string.address_books_authority), it) },
             calendarSyncInterval = model.syncIntervalCalendars.observeAsState().value,
-            onUpdateCalendarSyncInterval = {
-                model.updateSyncInterval(
-                    CalendarContract.AUTHORITY,
-                    it
-                )
-            },
+            onUpdateCalendarSyncInterval = { model.updateSyncInterval(CalendarContract.AUTHORITY, it) },
             taskSyncInterval = model.syncIntervalTasks.observeAsState().value,
-            onUpdateTaskSyncInterval = { interval ->
-                model.tasksProvider?.let {
-                    model.updateSyncInterval(
-                        it.authority,
-                        interval
-                    )
-                }
-            },
+            onUpdateTaskSyncInterval = { interval -> model.tasksProvider?.let { model.updateSyncInterval(it.authority, interval) } },
             syncOnlyOnWifi = model.syncWifiOnly.observeAsState(false).value,
             onUpdateSyncOnlyOnWifi = { model.updateSyncWifiOnly(it) },
             onlyOnSsids = model.syncWifiOnlySSIDs.observeAsState().value,
@@ -132,6 +116,7 @@ fun AccountSettingsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
@@ -235,12 +220,9 @@ fun AccountSettingsScreen(
                 eventColors = eventColors,
                 onUpdateEventColors = onUpdateEventColors,
 
-
                 // CardDav Settings
                 contactGroupMethod = contactGroupMethod,
                 onUpdateContactGroupMethod = onUpdateContactGroupMethod,
-
-
             )
         }
     }
@@ -283,7 +265,6 @@ fun AccountSettings_FromModel(
     // CardDav Settings
     contactGroupMethod: GroupMethod,
     onUpdateContactGroupMethod: (GroupMethod) -> Unit = {},
-
 ) {
     Column(Modifier.padding(8.dp)) {
         SyncSettings(
@@ -302,7 +283,6 @@ fun AccountSettings_FromModel(
             ignoreVpns = ignoreVpns,
             onUpdateIgnoreVpns = onUpdateIgnoreVpns
         )
-
 
         credentials?.let {
             AuthenticationSettings(
