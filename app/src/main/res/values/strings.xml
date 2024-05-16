@@ -336,8 +336,6 @@
     <string name="settings_ignore_vpns_on">VPN without underlying validated Internet connection is not enough to run synchronization (recommended)</string>
     <string name="settings_ignore_vpns_off">VPN without underlying validated Internet connection is enough to run synchronization</string>
     <string name="settings_authentication">Authentication</string>
-    <string name="settings_oauth">Re-authenticate</string>
-    <string name="settings_oauth_summary">Perform OAuth login again</string>
     <string name="settings_username">User name</string>
     <string name="settings_password">Password</string>
     <string name="settings_new_password">New password</string>
