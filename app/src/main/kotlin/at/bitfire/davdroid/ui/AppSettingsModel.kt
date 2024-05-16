@@ -3,6 +3,7 @@ package at.bitfire.davdroid.ui
 import android.app.Application
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.PowerManager
 import androidx.core.content.getSystemService
 import androidx.lifecycle.LiveData
@@ -36,7 +37,7 @@ class AppSettingsModel @Inject constructor(
         .map { powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
-    val pm = context.packageManager
+    val pm: PackageManager = context.packageManager
     private val appInfoFlow = TaskUtils.currentProviderFlow(context, viewModelScope).map { tasksProvider ->
         tasksProvider?.packageName?.let { pkgName ->
             pm.getApplicationInfo(pkgName, 0)
