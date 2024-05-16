@@ -59,7 +59,6 @@ import at.bitfire.davdroid.ui.composable.SwitchSetting
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.vcard4android.GroupMethod
 import kotlinx.coroutines.launch
-import net.openid.appauth.AuthState
 
 @Composable
 fun AccountSettingsScreen(
@@ -71,46 +70,62 @@ fun AccountSettingsScreen(
     val credentials by model.credentials.observeAsState()
     val context = LocalContext.current
 
-    AccountSettingsScreen(
-        accountName = account.name,
-        onNavUp = onNavUp,
+    AppTheme {
+        AccountSettingsScreen(
+            accountName = account.name,
+            onNavUp = onNavUp,
 
-        // Sync settings
-        onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
-        contactsSyncInterval = model.syncIntervalContacts.observeAsState().value,
-        onUpdateContactsSyncInterval = { model.updateSyncInterval(context.getString(R.string.address_books_authority), it) },
-        calendarSyncInterval = model.syncIntervalCalendars.observeAsState().value,
-        onUpdateCalendarSyncInterval = { model.updateSyncInterval(CalendarContract.AUTHORITY, it) },
-        taskSyncInterval = model.syncIntervalTasks.observeAsState().value,
-        onUpdateTaskSyncInterval = { interval -> model.tasksProvider?.let { model.updateSyncInterval(it.authority, interval) } },
-        syncOnlyOnWifi = model.syncWifiOnly.observeAsState(false).value,
-        onUpdateSyncOnlyOnWifi = { model.updateSyncWifiOnly(it) },
-        onlyOnSsids = model.syncWifiOnlySSIDs.observeAsState().value,
-        onUpdateOnlyOnSsids = { model.updateSyncWifiOnlySSIDs(it) },
-        ignoreVpns = model.ignoreVpns.observeAsState(false).value,
-        onUpdateIgnoreVpns = { model.updateIgnoreVpns(it) },
+            // Sync settings
+            onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
+            contactsSyncInterval = model.syncIntervalContacts.observeAsState().value,
+            onUpdateContactsSyncInterval = {
+                model.updateSyncInterval(
+                    context.getString(R.string.address_books_authority),
+                    it
+                )
+            },
+            calendarSyncInterval = model.syncIntervalCalendars.observeAsState().value,
+            onUpdateCalendarSyncInterval = {
+                model.updateSyncInterval(
+                    CalendarContract.AUTHORITY,
+                    it
+                )
+            },
+            taskSyncInterval = model.syncIntervalTasks.observeAsState().value,
+            onUpdateTaskSyncInterval = { interval ->
+                model.tasksProvider?.let {
+                    model.updateSyncInterval(
+                        it.authority,
+                        interval
+                    )
+                }
+            },
+            syncOnlyOnWifi = model.syncWifiOnly.observeAsState(false).value,
+            onUpdateSyncOnlyOnWifi = { model.updateSyncWifiOnly(it) },
+            onlyOnSsids = model.syncWifiOnlySSIDs.observeAsState().value,
+            onUpdateOnlyOnSsids = { model.updateSyncWifiOnlySSIDs(it) },
+            ignoreVpns = model.ignoreVpns.observeAsState(false).value,
+            onUpdateIgnoreVpns = { model.updateIgnoreVpns(it) },
 
-        // Authentication Settings
-        credentials = credentials,
-        onUpdateCredentials = { model.updateCredentials(it) },
+            // Authentication Settings
+            credentials = credentials,
+            onUpdateCredentials = { model.updateCredentials(it) },
 
-        // CalDav Settings
-        timeRangePastDays = model.timeRangePastDays.observeAsState().value,
-        onUpdateTimeRangePastDays = { model.updateTimeRangePastDays(it) },
-        defaultAlarmMinBefore = model.defaultAlarmMinBefore.observeAsState().value,
-        onUpdateDefaultAlarmMinBefore = { model.updateDefaultAlarm(it) },
-        manageCalendarColors = model.manageCalendarColors.observeAsState().value ?: false,
-        onUpdateManageCalendarColors = { model.updateManageCalendarColors(it) },
-        eventColors = model.eventColors.observeAsState().value ?: false,
-        onUpdateEventColors = { model.updateEventColors(it) },
+            // CalDav Settings
+            timeRangePastDays = model.timeRangePastDays.observeAsState().value,
+            onUpdateTimeRangePastDays = { model.updateTimeRangePastDays(it) },
+            defaultAlarmMinBefore = model.defaultAlarmMinBefore.observeAsState().value,
+            onUpdateDefaultAlarmMinBefore = { model.updateDefaultAlarm(it) },
+            manageCalendarColors = model.manageCalendarColors.observeAsState().value ?: false,
+            onUpdateManageCalendarColors = { model.updateManageCalendarColors(it) },
+            eventColors = model.eventColors.observeAsState().value ?: false,
+            onUpdateEventColors = { model.updateEventColors(it) },
 
-        // CardDav Settings
-        contactGroupMethod = model.contactGroupMethod.observeAsState(GroupMethod.GROUP_VCARDS).value,
-        onUpdateContactGroupMethod = { model.updateContactGroupMethod(it) },
-
-
-
-    )
+            // CardDav Settings
+            contactGroupMethod = model.contactGroupMethod.observeAsState(GroupMethod.GROUP_VCARDS).value,
+            onUpdateContactGroupMethod = { model.updateContactGroupMethod(it) },
+        )
+    }
 }
 
 @Composable
@@ -150,81 +165,77 @@ fun AccountSettingsScreen(
     // CardDav Settings
     contactGroupMethod: GroupMethod,
     onUpdateContactGroupMethod: (GroupMethod) -> Unit = {},
-
-
 ) {
-    AppTheme {
-        val uriHandler = LocalUriHandler.current
+    val uriHandler = LocalUriHandler.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
-        val snackbarHostState = remember { SnackbarHostState() }
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    navigationIcon = {
-                        IconButton(onClick = onNavUp) {
-                            Icon(
-                                Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = stringResource(R.string.navigate_up)
-                            )
-                        }
-                    },
-                    title = { Text(accountName) },
-                    actions = {
-                        IconButton(onClick = {
-                            uriHandler.openUri(AccountSettingsActivity.ACCOUNT_SETTINGS_HELP_URL)
-                        }) {
-                            Icon(Icons.AutoMirrored.Filled.Help, stringResource(R.string.help))
-                        }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = onNavUp) {
+                        Icon(
+                            Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.navigate_up)
+                        )
                     }
-                )
-            },
-            snackbarHost = { SnackbarHost(snackbarHostState) }
-        ) { padding ->
-            Box(
-                Modifier
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                AccountSettings_FromModel(
-                    snackbarHostState = snackbarHostState,
+                },
+                title = { Text(accountName) },
+                actions = {
+                    IconButton(onClick = {
+                        uriHandler.openUri(AccountSettingsActivity.ACCOUNT_SETTINGS_HELP_URL)
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.Help, stringResource(R.string.help))
+                    }
+                }
+            )
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        Box(
+            Modifier
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+        ) {
+            AccountSettings_FromModel(
+                snackbarHostState = snackbarHostState,
 
-                    // Sync settings
-                    onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
-                    contactsSyncInterval = contactsSyncInterval,
-                    onUpdateContactsSyncInterval = onUpdateContactsSyncInterval,
-                    calendarSyncInterval = calendarSyncInterval,
-                    onUpdateCalendarSyncInterval = onUpdateCalendarSyncInterval,
-                    taskSyncInterval = taskSyncInterval,
-                    onUpdateTaskSyncInterval = onUpdateTaskSyncInterval,
-                    syncOnlyOnWifi = syncOnlyOnWifi,
-                    onUpdateSyncOnlyOnWifi = onUpdateSyncOnlyOnWifi,
-                    onlyOnSsids = onlyOnSsids,
-                    onUpdateOnlyOnSsids = onUpdateOnlyOnSsids,
-                    ignoreVpns = ignoreVpns,
-                    onUpdateIgnoreVpns = onUpdateIgnoreVpns,
+                // Sync settings
+                onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
+                contactsSyncInterval = contactsSyncInterval,
+                onUpdateContactsSyncInterval = onUpdateContactsSyncInterval,
+                calendarSyncInterval = calendarSyncInterval,
+                onUpdateCalendarSyncInterval = onUpdateCalendarSyncInterval,
+                taskSyncInterval = taskSyncInterval,
+                onUpdateTaskSyncInterval = onUpdateTaskSyncInterval,
+                syncOnlyOnWifi = syncOnlyOnWifi,
+                onUpdateSyncOnlyOnWifi = onUpdateSyncOnlyOnWifi,
+                onlyOnSsids = onlyOnSsids,
+                onUpdateOnlyOnSsids = onUpdateOnlyOnSsids,
+                ignoreVpns = ignoreVpns,
+                onUpdateIgnoreVpns = onUpdateIgnoreVpns,
 
-                    // Authentication Settings
-                    credentials = credentials,
-                    onUpdateCredentials = onUpdateCredentials,
+                // Authentication Settings
+                credentials = credentials,
+                onUpdateCredentials = onUpdateCredentials,
 
-                    // CalDav Settings
-                    timeRangePastDays = timeRangePastDays,
-                    onUpdateTimeRangePastDays = onUpdateTimeRangePastDays,
-                    defaultAlarmMinBefore = defaultAlarmMinBefore,
-                    onUpdateDefaultAlarmMinBefore = onUpdateDefaultAlarmMinBefore,
-                    manageCalendarColors = manageCalendarColors,
-                    onUpdateManageCalendarColors = onUpdateManageCalendarColors,
-                    eventColors = eventColors,
-                    onUpdateEventColors = onUpdateEventColors,
-
-
-                    // CardDav Settings
-                    contactGroupMethod = contactGroupMethod,
-                    onUpdateContactGroupMethod = onUpdateContactGroupMethod,
+                // CalDav Settings
+                timeRangePastDays = timeRangePastDays,
+                onUpdateTimeRangePastDays = onUpdateTimeRangePastDays,
+                defaultAlarmMinBefore = defaultAlarmMinBefore,
+                onUpdateDefaultAlarmMinBefore = onUpdateDefaultAlarmMinBefore,
+                manageCalendarColors = manageCalendarColors,
+                onUpdateManageCalendarColors = onUpdateManageCalendarColors,
+                eventColors = eventColors,
+                onUpdateEventColors = onUpdateEventColors,
 
 
-                )
-            }
+                // CardDav Settings
+                contactGroupMethod = contactGroupMethod,
+                onUpdateContactGroupMethod = onUpdateContactGroupMethod,
+
+
+            )
         }
     }
 }
@@ -455,20 +466,6 @@ fun SyncIntervalSetting(
 }
 
 @Composable
-@Preview
-fun SyncSettings_Preview() {
-    SyncSettings(
-        onSyncWifiOnlyPermissionsAction = {},
-        contactsSyncInterval = 60*60,
-        calendarSyncInterval = 4*60*60,
-        taskSyncInterval = 2*60*60,
-        syncOnlyOnWifi = false,
-        onlyOnSsids = listOf("SSID1", "SSID2"),
-        ignoreVpns = true
-    )
-}
-
-@Composable
 fun AuthenticationSettings(
     credentials: Credentials,
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
@@ -566,40 +563,6 @@ fun AuthenticationSettings(
 }
 
 @Composable
-@Preview
-fun AuthenticationSettings_Preview_ClientCertificate() {
-    AuthenticationSettings(
-        credentials = Credentials(certificateAlias = "alias")
-    )
-}
-
-@Composable
-@Preview
-fun AuthenticationSettings_Preview_OAuth() {
-    AuthenticationSettings(
-        credentials = Credentials(authState = AuthState())
-    )
-}
-
-@Composable
-@Preview
-fun AuthenticationSettings_Preview_UsernamePassword() {
-    AuthenticationSettings(
-        credentials = Credentials(username = "user", password = "password")
-    )
-}
-
-@Composable
-@Preview
-fun AuthenticationSettings_Preview_UsernamePassword_ClientCertificate() {
-    AuthenticationSettings(
-        credentials = Credentials(username = "user", password = "password", certificateAlias = "alias")
-    )
-}
-
-
-
-@Composable
 fun CalDavSettings(
     timeRangePastDays: Int?,
     onUpdateTimeRangePastDays: (Int?) -> Unit = {},
@@ -694,17 +657,6 @@ fun CalDavSettings(
 }
 
 @Composable
-@Preview
-fun CalDavSettings_Preview() {
-    CalDavSettings(
-        timeRangePastDays = 30,
-        defaultAlarmMinBefore = 10,
-        manageCalendarColors = true,
-        eventColors = true
-    )
-}
-
-@Composable
 fun CardDavSettings(
     contactGroupMethod: GroupMethod,
     onUpdateContactGroupMethod: (GroupMethod) -> Unit = {}
@@ -741,50 +693,44 @@ fun CardDavSettings(
 
 @Composable
 @Preview
-fun CardDavSettings_Preview() {
-    CardDavSettings(
-        contactGroupMethod = GroupMethod.GROUP_VCARDS
-    )
-}
-
-@Composable
-@Preview
 fun AccountSettingsScreen_Preview() {
-    AccountSettingsScreen(
-        accountName = "Account Name Here",
-        onNavUp = {},
+    AppTheme {
+        AccountSettingsScreen(
+            accountName = "Account Name Here",
+            onNavUp = {},
 
-        // Sync settings
-        onSyncWifiOnlyPermissionsAction = {},
-        contactsSyncInterval = 80000L,
-        onUpdateContactsSyncInterval = {},
-        calendarSyncInterval = 50000L,
-        onUpdateCalendarSyncInterval = {},
-        taskSyncInterval = 900000L,
-        onUpdateTaskSyncInterval = {},
-        syncOnlyOnWifi = true,
-        onUpdateSyncOnlyOnWifi = {},
-        onlyOnSsids = listOf("HeyWifi", "Another"),
-        onUpdateOnlyOnSsids = {},
-        ignoreVpns = true,
-        onUpdateIgnoreVpns = {},
+            // Sync settings
+            onSyncWifiOnlyPermissionsAction = {},
+            contactsSyncInterval = 80000L,
+            onUpdateContactsSyncInterval = {},
+            calendarSyncInterval = 50000L,
+            onUpdateCalendarSyncInterval = {},
+            taskSyncInterval = 900000L,
+            onUpdateTaskSyncInterval = {},
+            syncOnlyOnWifi = true,
+            onUpdateSyncOnlyOnWifi = {},
+            onlyOnSsids = listOf("HeyWifi", "Another"),
+            onUpdateOnlyOnSsids = {},
+            ignoreVpns = true,
+            onUpdateIgnoreVpns = {},
 
-        // Authentication Settings
-        credentials = Credentials(),
-        onUpdateCredentials = {},
+            // Authentication Settings
+            credentials = Credentials(),
+            onUpdateCredentials = {},
 
-        // CalDav Settings
-        timeRangePastDays = 365,
-        onUpdateTimeRangePastDays = {},
-        defaultAlarmMinBefore = 585,
-        onUpdateDefaultAlarmMinBefore = {},
-        manageCalendarColors = false,
-        onUpdateManageCalendarColors = {},
-        eventColors = false,
-        onUpdateEventColors = {},
+            // CalDav Settings
+            timeRangePastDays = 365,
+            onUpdateTimeRangePastDays = {},
+            defaultAlarmMinBefore = 585,
+            onUpdateDefaultAlarmMinBefore = {},
+            manageCalendarColors = false,
+            onUpdateManageCalendarColors = {},
+            eventColors = false,
+            onUpdateEventColors = {},
 
-        // CardDav Settings
-        contactGroupMethod = GroupMethod.GROUP_VCARDS,
-        onUpdateContactGroupMethod = {}
-    )
+            // CardDav Settings
+            contactGroupMethod = GroupMethod.GROUP_VCARDS,
+            onUpdateContactGroupMethod = {}
+        )
+    }
 }
