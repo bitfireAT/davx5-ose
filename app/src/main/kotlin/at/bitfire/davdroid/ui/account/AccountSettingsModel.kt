@@ -100,10 +100,26 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
 
-    fun updateSyncInterval(authority: String, syncInterval: Long) {
+    fun updateCalendarSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings?.setSyncInterval(authority, syncInterval)
+            accountSettings?.setSyncInterval(CalendarContract.AUTHORITY, syncInterval)
             reload()
+        }
+    }
+
+    fun updateContactsSyncInterval(syncInterval: Long) {
+        CoroutineScope(Dispatchers.Default).launch {
+            accountSettings?.setSyncInterval(context.getString(R.string.address_books_authority), syncInterval)
+            reload()
+        }
+    }
+
+    fun updateTasksSyncInterval(syncInterval: Long) {
+        tasksProvider?.authority?.let { tasksAuthority ->
+            CoroutineScope(Dispatchers.Default).launch {
+                accountSettings?.setSyncInterval(tasksAuthority, syncInterval)
+                reload()
+            }
         }
     }
 

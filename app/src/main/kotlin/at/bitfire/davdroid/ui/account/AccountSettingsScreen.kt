@@ -2,7 +2,6 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.app.Activity
-import android.provider.CalendarContract
 import android.security.KeyChain
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
@@ -72,7 +71,6 @@ fun AccountSettingsScreen(
     val model = hiltViewModel { factory: AccountSettingsModel.Factory ->
         factory.create(account)
     }
-    val context = LocalContext.current
     val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
 
     AppTheme {
@@ -84,35 +82,35 @@ fun AccountSettingsScreen(
             canAccessWifiSsid = canAccessWifiSsid,
             onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
             contactsSyncInterval = model.syncIntervalContacts.observeAsState().value,
-            onUpdateContactsSyncInterval = { model.updateSyncInterval(context.getString(R.string.address_books_authority), it) },
+            onUpdateContactsSyncInterval = model::updateContactsSyncInterval,
             calendarSyncInterval = model.syncIntervalCalendars.observeAsState().value,
-            onUpdateCalendarSyncInterval = { model.updateSyncInterval(CalendarContract.AUTHORITY, it) },
-            taskSyncInterval = model.syncIntervalTasks.observeAsState().value,
-            onUpdateTaskSyncInterval = { interval -> model.tasksProvider?.let { model.updateSyncInterval(it.authority, interval) } },
+            onUpdateCalendarSyncInterval = model::updateCalendarSyncInterval,
+            tasksSyncInterval = model.syncIntervalTasks.observeAsState().value,
+            onUpdateTasksSyncInterval = model::updateTasksSyncInterval,
             syncOnlyOnWifi = model.syncWifiOnly.observeAsState(false).value,
-            onUpdateSyncOnlyOnWifi = { model.updateSyncWifiOnly(it) },
+            onUpdateSyncOnlyOnWifi = model::updateSyncWifiOnly,
             onlyOnSsids = model.syncWifiOnlySSIDs.observeAsState().value,
-            onUpdateOnlyOnSsids = { model.updateSyncWifiOnlySSIDs(it) },
+            onUpdateOnlyOnSsids = model::updateSyncWifiOnlySSIDs,
             ignoreVpns = model.ignoreVpns.observeAsState(false).value,
-            onUpdateIgnoreVpns = { model.updateIgnoreVpns(it) },
+            onUpdateIgnoreVpns = model::updateIgnoreVpns,
 
             // Authentication Settings
             credentials = model.credentials.observeAsState().value,
-            onUpdateCredentials = { model.updateCredentials(it) },
+            onUpdateCredentials = model::updateCredentials,
 
             // CalDav Settings
             timeRangePastDays = model.timeRangePastDays.observeAsState().value,
-            onUpdateTimeRangePastDays = { model.updateTimeRangePastDays(it) },
+            onUpdateTimeRangePastDays = model::updateTimeRangePastDays,
             defaultAlarmMinBefore = model.defaultAlarmMinBefore.observeAsState().value,
-            onUpdateDefaultAlarmMinBefore = { model.updateDefaultAlarm(it) },
+            onUpdateDefaultAlarmMinBefore = model::updateDefaultAlarm,
             manageCalendarColors = model.manageCalendarColors.observeAsState().value ?: false,
-            onUpdateManageCalendarColors = { model.updateManageCalendarColors(it) },
+            onUpdateManageCalendarColors = model::updateManageCalendarColors,
             eventColors = model.eventColors.observeAsState().value ?: false,
-            onUpdateEventColors = { model.updateEventColors(it) },
+            onUpdateEventColors = model::updateEventColors,
 
             // CardDav Settings
-            contactGroupMethod = model.contactGroupMethod.observeAsState(GroupMethod.GROUP_VCARDS).value,
-            onUpdateContactGroupMethod = { model.updateContactGroupMethod(it) },
+            contactGroupMethod = model.contactGroupMethod.observeAsState().value ?: GroupMethod.GROUP_VCARDS,
+            onUpdateContactGroupMethod = model::updateContactGroupMethod,
         )
     }
 }
@@ -130,8 +128,8 @@ fun AccountSettingsScreen(
     onUpdateContactsSyncInterval: ((Long) -> Unit) = {},
     calendarSyncInterval: Long?,
     onUpdateCalendarSyncInterval: ((Long) -> Unit) = {},
-    taskSyncInterval: Long?,
-    onUpdateTaskSyncInterval: ((Long) -> Unit) = {},
+    tasksSyncInterval: Long?,
+    onUpdateTasksSyncInterval: ((Long) -> Unit) = {},
     syncOnlyOnWifi: Boolean,
     onUpdateSyncOnlyOnWifi: (Boolean) -> Unit = {},
     onlyOnSsids: List<String>?,
@@ -202,8 +200,8 @@ fun AccountSettingsScreen(
                 onUpdateContactsSyncInterval = onUpdateContactsSyncInterval,
                 calendarSyncInterval = calendarSyncInterval,
                 onUpdateCalendarSyncInterval = onUpdateCalendarSyncInterval,
-                taskSyncInterval = taskSyncInterval,
-                onUpdateTaskSyncInterval = onUpdateTaskSyncInterval,
+                taskSyncInterval = tasksSyncInterval,
+                onUpdateTaskSyncInterval = onUpdateTasksSyncInterval,
                 syncOnlyOnWifi = syncOnlyOnWifi,
                 onUpdateSyncOnlyOnWifi = onUpdateSyncOnlyOnWifi,
                 onlyOnSsids = onlyOnSsids,
@@ -699,8 +697,8 @@ fun AccountSettingsScreen_Preview() {
             onUpdateContactsSyncInterval = {},
             calendarSyncInterval = 50000L,
             onUpdateCalendarSyncInterval = {},
-            taskSyncInterval = 900000L,
-            onUpdateTaskSyncInterval = {},
+            tasksSyncInterval = 900000L,
+            onUpdateTasksSyncInterval = {},
             syncOnlyOnWifi = true,
             onUpdateSyncOnlyOnWifi = {},
             onlyOnSsids = listOf("HeyWifi", "Another"),
