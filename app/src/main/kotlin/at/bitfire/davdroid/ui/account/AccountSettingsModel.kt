@@ -35,7 +35,7 @@ class AccountSettingsModel @AssistedInject constructor(
         fun create(account: Account): AccountSettingsModel
     }
 
-    private var accountSettings: AccountSettings? = null
+    private val accountSettings = AccountSettings(context, account)
 
     // settings
     val syncIntervalContacts = MutableLiveData<Long>()
@@ -59,10 +59,7 @@ class AccountSettingsModel @AssistedInject constructor(
 
 
     init {
-        accountSettings = AccountSettings(context, account)
-
         settings.addOnChangeListener(this)
-
         reload()
     }
 
@@ -72,12 +69,11 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
     override fun onSettingsChanged() {
-        Logger.log.info("Settings changed")
         reload()
     }
 
-    fun reload() {
-        val accountSettings = accountSettings ?: return
+    private fun reload() {
+        Logger.log.info("Reloading settings")
 
         syncIntervalContacts.postValue(
             accountSettings.getSyncInterval(context.getString(R.string.address_books_authority))
@@ -102,14 +98,14 @@ class AccountSettingsModel @AssistedInject constructor(
 
     fun updateCalendarSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings?.setSyncInterval(CalendarContract.AUTHORITY, syncInterval)
+            accountSettings.setSyncInterval(CalendarContract.AUTHORITY, syncInterval)
             reload()
         }
     }
 
     fun updateContactsSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings?.setSyncInterval(context.getString(R.string.address_books_authority), syncInterval)
+            accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), syncInterval)
             reload()
         }
     }
@@ -117,34 +113,34 @@ class AccountSettingsModel @AssistedInject constructor(
     fun updateTasksSyncInterval(syncInterval: Long) {
         tasksProvider?.authority?.let { tasksAuthority ->
             CoroutineScope(Dispatchers.Default).launch {
-                accountSettings?.setSyncInterval(tasksAuthority, syncInterval)
+                accountSettings.setSyncInterval(tasksAuthority, syncInterval)
                 reload()
             }
         }
     }
 
     fun updateSyncWifiOnly(wifiOnly: Boolean) {
-        accountSettings?.setSyncWiFiOnly(wifiOnly)
+        accountSettings.setSyncWiFiOnly(wifiOnly)
         reload()
     }
 
     fun updateSyncWifiOnlySSIDs(ssids: List<String>?) {
-        accountSettings?.setSyncWifiOnlySSIDs(ssids)
+        accountSettings.setSyncWifiOnlySSIDs(ssids)
         reload()
     }
 
     fun updateIgnoreVpns(ignoreVpns: Boolean) {
-        accountSettings?.setIgnoreVpns(ignoreVpns)
+        accountSettings.setIgnoreVpns(ignoreVpns)
         reload()
     }
 
     fun updateCredentials(credentials: Credentials) {
-        accountSettings?.credentials(credentials)
+        accountSettings.credentials(credentials)
         reload()
     }
 
     fun updateTimeRangePastDays(days: Int?) {
-        accountSettings?.setTimeRangePastDays(days)
+        accountSettings.setTimeRangePastDays(days)
         reload()
 
         /* If the new setting is a certain number of days, no full resync is required,
@@ -156,28 +152,28 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
     fun updateDefaultAlarm(minBefore: Int?) {
-        accountSettings?.setDefaultAlarm(minBefore)
+        accountSettings.setDefaultAlarm(minBefore)
         reload()
 
         resyncCalendars(fullResync = true, tasks = false)
     }
 
     fun updateManageCalendarColors(manage: Boolean) {
-        accountSettings?.setManageCalendarColors(manage)
+        accountSettings.setManageCalendarColors(manage)
         reload()
 
         resyncCalendars(fullResync = false, tasks = true)
     }
 
     fun updateEventColors(manageColors: Boolean) {
-        accountSettings?.setEventColors(manageColors)
+        accountSettings.setEventColors(manageColors)
         reload()
 
         resyncCalendars(fullResync = true, tasks = false)
     }
 
     fun updateContactGroupMethod(groupMethod: GroupMethod) {
-        accountSettings?.setGroupMethod(groupMethod)
+        accountSettings.setGroupMethod(groupMethod)
         reload()
 
         resync(

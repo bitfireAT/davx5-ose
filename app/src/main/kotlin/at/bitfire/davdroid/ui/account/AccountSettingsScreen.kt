@@ -66,7 +66,7 @@ import kotlinx.coroutines.launch
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
     account: Account,
-    onSyncWifiOnlyPermissionsAction: () -> Unit,
+    onNavWifiPermissionsScreen: () -> Unit,
 ) {
     val model = hiltViewModel { factory: AccountSettingsModel.Factory ->
         factory.create(account)
@@ -80,7 +80,7 @@ fun AccountSettingsScreen(
 
             // Sync settings
             canAccessWifiSsid = canAccessWifiSsid,
-            onSyncWifiOnlyPermissionsAction = onSyncWifiOnlyPermissionsAction,
+            onSyncWifiOnlyPermissionsAction = onNavWifiPermissionsScreen,
             contactsSyncInterval = model.syncIntervalContacts.observeAsState().value,
             onUpdateContactsSyncInterval = model::updateContactsSyncInterval,
             calendarSyncInterval = model.syncIntervalCalendars.observeAsState().value,

@@ -30,13 +30,13 @@ class AccountSettingsActivity: AppCompatActivity() {
 
         setContent {
             AccountSettingsScreen(
-                onNavUp = ::onSupportNavigateUp,
                 account = account,
-                onSyncWifiOnlyPermissionsAction = {
+                onNavWifiPermissionsScreen = {
                     val intent = Intent(this, WifiPermissionsActivity::class.java)
                     intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, account)
                     startActivity(intent)
-                }
+                },
+                onNavUp = ::onSupportNavigateUp,
             )
         }
     }
