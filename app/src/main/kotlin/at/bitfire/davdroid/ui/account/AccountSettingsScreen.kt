@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -81,35 +80,35 @@ fun AccountSettingsScreen(
             // Sync settings
             canAccessWifiSsid = canAccessWifiSsid,
             onSyncWifiOnlyPermissionsAction = onNavWifiPermissionsScreen,
-            contactsSyncInterval = model.syncIntervalContacts.observeAsState().value,
+            contactsSyncInterval = model.syncIntervalContacts,
             onUpdateContactsSyncInterval = model::updateContactsSyncInterval,
-            calendarSyncInterval = model.syncIntervalCalendars.observeAsState().value,
+            calendarSyncInterval = model.syncIntervalCalendars,
             onUpdateCalendarSyncInterval = model::updateCalendarSyncInterval,
-            tasksSyncInterval = model.syncIntervalTasks.observeAsState().value,
+            tasksSyncInterval = model.syncIntervalTasks,
             onUpdateTasksSyncInterval = model::updateTasksSyncInterval,
-            syncOnlyOnWifi = model.syncWifiOnly.observeAsState(false).value,
+            syncOnlyOnWifi = model.syncWifiOnly,
             onUpdateSyncOnlyOnWifi = model::updateSyncWifiOnly,
-            onlyOnSsids = model.syncWifiOnlySSIDs.observeAsState().value,
+            onlyOnSsids = model.syncWifiOnlySSIDs,
             onUpdateOnlyOnSsids = model::updateSyncWifiOnlySSIDs,
-            ignoreVpns = model.ignoreVpns.observeAsState(false).value,
+            ignoreVpns = model.ignoreVpns,
             onUpdateIgnoreVpns = model::updateIgnoreVpns,
 
             // Authentication Settings
-            credentials = model.credentials.observeAsState().value,
+            credentials = model.credentials,
             onUpdateCredentials = model::updateCredentials,
 
             // CalDav Settings
-            timeRangePastDays = model.timeRangePastDays.observeAsState().value,
+            timeRangePastDays = model.timeRangePastDays,
             onUpdateTimeRangePastDays = model::updateTimeRangePastDays,
-            defaultAlarmMinBefore = model.defaultAlarmMinBefore.observeAsState().value,
+            defaultAlarmMinBefore = model.defaultAlarmMinBefore,
             onUpdateDefaultAlarmMinBefore = model::updateDefaultAlarm,
-            manageCalendarColors = model.manageCalendarColors.observeAsState().value ?: false,
+            manageCalendarColors = model.manageCalendarColors,
             onUpdateManageCalendarColors = model::updateManageCalendarColors,
-            eventColors = model.eventColors.observeAsState().value ?: false,
+            eventColors = model.eventColors,
             onUpdateEventColors = model::updateEventColors,
 
             // CardDav Settings
-            contactGroupMethod = model.contactGroupMethod.observeAsState().value ?: GroupMethod.GROUP_VCARDS,
+            contactGroupMethod = model.contactGroupMethod,
             onUpdateContactGroupMethod = model::updateContactGroupMethod,
         )
     }

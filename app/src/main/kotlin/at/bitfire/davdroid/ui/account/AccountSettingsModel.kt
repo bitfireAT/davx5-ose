@@ -3,7 +3,9 @@ package at.bitfire.davdroid.ui.account
 import android.accounts.Account
 import android.app.Application
 import android.provider.CalendarContract
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -38,24 +40,24 @@ class AccountSettingsModel @AssistedInject constructor(
     private val accountSettings = AccountSettings(context, account)
 
     // settings
-    val syncIntervalContacts = MutableLiveData<Long>()
-    val syncIntervalCalendars = MutableLiveData<Long>()
+    var syncIntervalContacts by mutableStateOf<Long?>(null)
+    var syncIntervalCalendars by mutableStateOf<Long?>(null)
 
-    val tasksProvider = TaskUtils.currentProvider(context)
-    val syncIntervalTasks = MutableLiveData<Long>()
+    private val tasksProvider = TaskUtils.currentProvider(context)
+    var syncIntervalTasks by mutableStateOf<Long?>(null)
 
-    val syncWifiOnly = MutableLiveData<Boolean>()
-    val syncWifiOnlySSIDs = MutableLiveData<List<String>>()
-    val ignoreVpns = MutableLiveData<Boolean>()
+    var syncWifiOnly by mutableStateOf(false)
+    var syncWifiOnlySSIDs by mutableStateOf<List<String>?>(null)
+    var ignoreVpns by mutableStateOf(false)
 
-    val credentials = MutableLiveData<Credentials>()
+    var credentials by mutableStateOf(Credentials())
 
-    val timeRangePastDays = MutableLiveData<Int>()
-    val defaultAlarmMinBefore = MutableLiveData<Int>()
-    val manageCalendarColors = MutableLiveData<Boolean>()
-    val eventColors = MutableLiveData<Boolean>()
+    var timeRangePastDays by mutableStateOf<Int?>(null)
+    var defaultAlarmMinBefore by mutableStateOf<Int?>(null)
+    var manageCalendarColors by mutableStateOf(false)
+    var eventColors by mutableStateOf(false)
 
-    val contactGroupMethod = MutableLiveData<GroupMethod>()
+    var contactGroupMethod by mutableStateOf(GroupMethod.GROUP_VCARDS)
 
 
     init {
@@ -75,24 +77,22 @@ class AccountSettingsModel @AssistedInject constructor(
     private fun reload() {
         Logger.log.info("Reloading settings")
 
-        syncIntervalContacts.postValue(
-            accountSettings.getSyncInterval(context.getString(R.string.address_books_authority))
-        )
-        syncIntervalCalendars.postValue(accountSettings.getSyncInterval(CalendarContract.AUTHORITY))
-        syncIntervalTasks.postValue(tasksProvider?.let { accountSettings.getSyncInterval(it.authority) })
+        syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority))
+        syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY)
+        syncIntervalTasks = tasksProvider?.let { accountSettings.getSyncInterval(it.authority) }
 
-        syncWifiOnly.postValue(accountSettings.getSyncWifiOnly())
-        syncWifiOnlySSIDs.postValue(accountSettings.getSyncWifiOnlySSIDs())
-        ignoreVpns.postValue(accountSettings.getIgnoreVpns())
+        syncWifiOnly = accountSettings.getSyncWifiOnly()
+        syncWifiOnlySSIDs = accountSettings.getSyncWifiOnlySSIDs()
+        ignoreVpns = accountSettings.getIgnoreVpns()
 
-        credentials.postValue(accountSettings.credentials())
+        credentials = accountSettings.credentials()
 
-        timeRangePastDays.postValue(accountSettings.getTimeRangePastDays())
-        defaultAlarmMinBefore.postValue(accountSettings.getDefaultAlarm())
-        manageCalendarColors.postValue(accountSettings.getManageCalendarColors())
-        eventColors.postValue(accountSettings.getEventColors())
+        timeRangePastDays = accountSettings.getTimeRangePastDays()
+        defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
+        manageCalendarColors = accountSettings.getManageCalendarColors()
+        eventColors = accountSettings.getEventColors()
 
-        contactGroupMethod.postValue(accountSettings.getGroupMethod())
+        contactGroupMethod = accountSettings.getGroupMethod()
     }
 
 
