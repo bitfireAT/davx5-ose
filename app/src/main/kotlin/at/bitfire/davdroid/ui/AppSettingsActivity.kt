@@ -24,6 +24,9 @@ class AppSettingsActivity: AppCompatActivity() {
 
         setContent {
             AppSettingsScreen(
+                onNavDebugInfo = {
+                    startActivity(Intent(this, DebugInfoActivity::class.java))
+                },
                 onExemptFromBatterySaving = {
                     startActivity(
                         Intent(
@@ -45,6 +48,9 @@ class AppSettingsActivity: AppCompatActivity() {
                                 putExtra(Settings.EXTRA_APP_PACKAGE, BuildConfig.APPLICATION_ID)
                             }
                         )
+                },
+                onNavPermissionsScreen = {
+                    startActivity(Intent(this, PermissionsActivity::class.java))
                 },
                 onNavUp = ::onSupportNavigateUp
             )

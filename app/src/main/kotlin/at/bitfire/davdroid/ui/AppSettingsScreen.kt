@@ -1,7 +1,6 @@
 package at.bitfire.davdroid.ui
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.compose.foundation.Image
@@ -33,7 +32,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -55,48 +53,46 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AppSettingsScreen(
+    onNavDebugInfo: () -> Unit,
     onExemptFromBatterySaving: () -> Unit,
     onBatterySavingSettings: () -> Unit,
-    onNavTasksScreen: () -> Unit,
+    onNavPermissionsScreen: () -> Unit,
     onShowNotificationSettings: () -> Unit,
-    onNavUp: () -> Unit
+    onNavTasksScreen: () -> Unit,
+    onNavUp: () -> Unit,
+    model: AppSettingsModel = viewModel()
 ) {
-    val model: AppSettingsModel = viewModel()
-    val settings = model.settings
-    val context = LocalContext.current
-
     AppTheme {
         AppSettingsScreen(
-            verboseLogging = model.verboseLoggingFlow().collectAsStateWithLifecycle(false).value,
+            onNavDebugInfo = onNavDebugInfo,
+            verboseLogging = model.verboseLogging().collectAsStateWithLifecycle(false).value,
             onUpdateVerboseLogging = model::updateVerboseLogging,
             batterySavingExempted = model.batterySavingExempted.collectAsStateWithLifecycle().value,
             onExemptFromBatterySaving = onExemptFromBatterySaving,
             onBatterySavingSettings = onBatterySavingSettings,
-            onShowNotificationSettings = onShowNotificationSettings,
             onNavUp = onNavUp,
 
-            // AppSettings Connection
-            proxyType = settings.getIntFlow(Settings.PROXY_TYPE).collectAsStateWithLifecycle(null).value ?: Settings.PROXY_TYPE_NONE,
-            onProxyTypeUpdated = { settings.putInt(Settings.PROXY_TYPE, it) },
-            proxyHostName = settings.getStringFlow(Settings.PROXY_HOST).collectAsStateWithLifecycle(null).value,
-            onProxyHostNameUpdated = { settings.putString(Settings.PROXY_HOST, it) },
-            proxyPort = settings.getIntFlow(Settings.PROXY_PORT).collectAsStateWithLifecycle(null).value,
-            onProxyPortUpdated = { settings.putInt(Settings.PROXY_PORT, it) },
+            // Connection
+            proxyType = model.proxyType().collectAsStateWithLifecycle(null).value ?: Settings.PROXY_TYPE_NONE,
+            onProxyTypeUpdated = model::updateProxyType,
+            proxyHostName = model.proxyHostName().collectAsStateWithLifecycle(null).value,
+            onProxyHostNameUpdated = model::updateProxyHostName,
+            proxyPort = model.proxyPort().collectAsStateWithLifecycle(null).value,
+            onProxyPortUpdated = model::updateProxyPort,
 
-            // AppSettings Security
-            distrustSystemCerts = settings.getBooleanFlow(Settings.DISTRUST_SYSTEM_CERTIFICATES).collectAsStateWithLifecycle(null).value ?: false,
-            onDistrustSystemCertsUpdated = { settings.putBoolean(Settings.DISTRUST_SYSTEM_CERTIFICATES, it) },
-            onResetCertificates = { model.resetCertificates() },
+            // Security
+            distrustSystemCerts = model.distrustSystemCertificates().collectAsStateWithLifecycle(null).value ?: false,
+            onDistrustSystemCertsUpdated = model::updateDistrustSystemCertificates,
+            onResetCertificates = model::resetCertificates,
+            onNavPermissionsScreen = onNavPermissionsScreen,
 
-            // AppSettings UserInterface
-            theme = settings.getIntFlow(Settings.PREFERRED_THEME).collectAsStateWithLifecycle(null).value ?: Settings.PREFERRED_THEME_DEFAULT,
-            onThemeSelected = {
-                settings.putInt(Settings.PREFERRED_THEME, it)
-                UiUtils.updateTheme(context)
-            },
-            onResetHints = { model.resetHints() },
+            // User interface
+            onShowNotificationSettings = onShowNotificationSettings,
+            theme = model.theme().collectAsStateWithLifecycle(null).value ?: Settings.PREFERRED_THEME_DEFAULT,
+            onThemeSelected = model::updateTheme,
+            onResetHints = model::resetHints,
 
-            // AppSettings Integration
+            // Integration (Tasks)
             tasksAppName = model.appName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.icon.collectAsStateWithLifecycle(null).value,
             onNavTasksScreen = onNavTasksScreen
@@ -108,6 +104,7 @@ fun AppSettingsScreen(
 @SuppressLint("BatteryLife")
 @Composable
 fun AppSettingsScreen(
+    onNavDebugInfo: () -> Unit,
     verboseLogging: Boolean,
     onUpdateVerboseLogging: (Boolean) -> Unit,
     batterySavingExempted: Boolean,
@@ -126,6 +123,7 @@ fun AppSettingsScreen(
     distrustSystemCerts: Boolean,
     onDistrustSystemCertsUpdated: (Boolean) -> Unit,
     onResetCertificates: () -> Unit,
+    onNavPermissionsScreen: () -> Unit,
 
     // AppSettings UserInterface
     theme: Int,
@@ -175,6 +173,7 @@ fun AppSettingsScreen(
         ) {
             Column(Modifier.padding(8.dp)) {
                 AppSettings_Debugging(
+                    onNavDebugInfo = onNavDebugInfo,
                     verboseLogging = verboseLogging,
                     onUpdateVerboseLogging = onUpdateVerboseLogging,
                     batterySavingExempted = batterySavingExempted,
@@ -200,7 +199,8 @@ fun AppSettingsScreen(
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar(resetCertificatesSuccessMessage)
                         }
-                    }
+                    },
+                    onNavPermissionsScreen = onNavPermissionsScreen
                 )
 
                 val resetHintsSuccessMessage = stringResource(R.string.app_settings_reset_hints_success)
@@ -231,6 +231,7 @@ fun AppSettingsScreen(
 fun AppSettingsScreen_Preview() {
     AppTheme {
         AppSettingsScreen(
+            onNavDebugInfo = {},
             verboseLogging = true,
             batterySavingExempted = true,
             proxyType = 0,
@@ -248,6 +249,7 @@ fun AppSettingsScreen_Preview() {
             onProxyPortUpdated = {},
             onDistrustSystemCertsUpdated = {},
             onResetCertificates = {},
+            onNavPermissionsScreen = {},
             onThemeSelected = {},
             onResetHints = {},
             tasksAppName = "No tasks app",
@@ -259,14 +261,13 @@ fun AppSettingsScreen_Preview() {
 
 @Composable
 fun AppSettings_Debugging(
+    onNavDebugInfo: () -> Unit,
     verboseLogging: Boolean,
     onUpdateVerboseLogging: (Boolean) -> Unit,
     batterySavingExempted: Boolean,
     onExemptFromBatterySaving: () -> Unit,
     onBatterySavingSettings: () -> Unit
 ) {
-    val context = LocalContext.current
-
     SettingsHeader {
         Text(stringResource(R.string.app_settings_debug))
     }
@@ -276,7 +277,7 @@ fun AppSettings_Debugging(
         name = stringResource(R.string.app_settings_show_debug_info),
         summary = stringResource(R.string.app_settings_show_debug_info_details)
     ) {
-        context.startActivity(Intent(context, DebugInfoActivity::class.java))
+        onNavDebugInfo()
     }
 
     SwitchSetting(
@@ -382,11 +383,10 @@ fun AppSettings_Connection(
 @Composable
 fun AppSettings_Security(
     distrustSystemCerts: Boolean,
-    onDistrustSystemCertsUpdated: (Boolean) -> Unit = {},
-    onResetCertificates: () -> Unit = {}
+    onDistrustSystemCertsUpdated: (Boolean) -> Unit,
+    onResetCertificates: () -> Unit,
+    onNavPermissionsScreen: () -> Unit
 ) {
-    val context = LocalContext.current
-
     SettingsHeader(divider = true) {
         Text(stringResource(R.string.app_settings_security))
     }
@@ -409,9 +409,7 @@ fun AppSettings_Security(
     Setting(
         name = stringResource(R.string.app_settings_security_app_permissions),
         summary = stringResource(R.string.app_settings_security_app_permissions_summary),
-        onClick = {
-            context.startActivity(Intent(context, PermissionsActivity::class.java))
-        }
+        onClick = onNavPermissionsScreen
     )
 }
 
