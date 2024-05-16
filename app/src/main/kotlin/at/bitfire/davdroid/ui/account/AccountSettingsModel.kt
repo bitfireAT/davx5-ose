@@ -114,8 +114,8 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
     fun updateTasksSyncInterval(syncInterval: Long) {
-        tasksProvider?.authority?.let { tasksAuthority ->
-            CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.Default).launch {
+            tasksProvider?.authority?.let { tasksAuthority ->
                 accountSettings.setSyncInterval(tasksAuthority, syncInterval)
                 reload()
             }

@@ -464,23 +464,13 @@ fun AuthenticationSettings(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    Column(Modifier.padding(8.dp)) {
-        SettingsHeader(false) {
-            Text(stringResource(R.string.settings_authentication))
-        }
+    if (credentials.authState != null || credentials.username != null || credentials.password != null || credentials.certificateAlias != null)
+        Column {
+            SettingsHeader(false) {
+                Text(stringResource(R.string.settings_authentication))
+            }
 
-        if (credentials.authState != null) {       // OAuth
-            Setting(
-                icon = Icons.Default.Password,
-                name = stringResource(R.string.settings_oauth),
-                summary = stringResource(R.string.settings_oauth_summary),
-                onClick = {
-                    // GoogleLoginFragment replacement
-                }
-            )
-
-        } else { // username/password
-            if (credentials.username != null) {
+            if (credentials.username != null || credentials.password != null) {
                 var showUsernameDialog by remember { mutableStateOf(false) }
                 Setting(
                     icon = Icons.Default.AccountCircle,
@@ -499,9 +489,7 @@ fun AuthenticationSettings(
                         },
                         onDismiss = { showUsernameDialog = false }
                     )
-            }
 
-            if (credentials.password != null) {
                 var showPasswordDialog by remember { mutableStateOf(false) }
                 Setting(
                     icon = Icons.Default.Password,
@@ -548,7 +536,6 @@ fun AuthenticationSettings(
                     }, null, null, null, -1, credentials.certificateAlias)
                 }
             )
-        }
     }
 }
 
@@ -706,7 +693,7 @@ fun AccountSettingsScreen_Preview() {
             onUpdateIgnoreVpns = {},
 
             // Authentication Settings
-            credentials = Credentials(),
+            credentials = Credentials(username = "test", password = "test"),
             onUpdateCredentials = {},
 
             // CalDav Settings
