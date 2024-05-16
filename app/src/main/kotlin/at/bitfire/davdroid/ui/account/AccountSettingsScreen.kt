@@ -538,7 +538,7 @@ fun AuthenticationSettings(
                             scope.launch {
                                 if (snackbarHostState.showSnackbar(
                                         context.getString(R.string.settings_certificate_alias_empty),
-                                        actionLabel = context.getString(R.string.settings_certificate_install).uppercase()
+                                        actionLabel = context.getString(R.string.settings_certificate_install)
                                     ) == SnackbarResult.ActionPerformed) {
                                     val intent = KeyChain.createInstallIntent()
                                     if (intent.resolveActivity(context.packageManager) != null)

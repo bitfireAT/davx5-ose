@@ -6,6 +6,7 @@ import android.provider.CalendarContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
@@ -77,35 +78,37 @@ class AccountSettingsModel @AssistedInject constructor(
     private fun reload() {
         Logger.log.info("Reloading settings")
 
-        syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority))
-        syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY)
-        syncIntervalTasks = tasksProvider?.let { accountSettings.getSyncInterval(it.authority) }
+        Snapshot.withMutableSnapshot {
+            syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority))
+            syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY)
+            syncIntervalTasks = tasksProvider?.let { accountSettings.getSyncInterval(it.authority) }
 
-        syncWifiOnly = accountSettings.getSyncWifiOnly()
-        syncWifiOnlySSIDs = accountSettings.getSyncWifiOnlySSIDs()
-        ignoreVpns = accountSettings.getIgnoreVpns()
+            syncWifiOnly = accountSettings.getSyncWifiOnly()
+            syncWifiOnlySSIDs = accountSettings.getSyncWifiOnlySSIDs()
+            ignoreVpns = accountSettings.getIgnoreVpns()
 
-        credentials = accountSettings.credentials()
+            credentials = accountSettings.credentials()
 
-        timeRangePastDays = accountSettings.getTimeRangePastDays()
-        defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
-        manageCalendarColors = accountSettings.getManageCalendarColors()
-        eventColors = accountSettings.getEventColors()
+            timeRangePastDays = accountSettings.getTimeRangePastDays()
+            defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
+            manageCalendarColors = accountSettings.getManageCalendarColors()
+            eventColors = accountSettings.getEventColors()
 
-        contactGroupMethod = accountSettings.getGroupMethod()
-    }
-
-
-    fun updateCalendarSyncInterval(syncInterval: Long) {
-        CoroutineScope(Dispatchers.Default).launch {
-            accountSettings.setSyncInterval(CalendarContract.AUTHORITY, syncInterval)
-            reload()
+            contactGroupMethod = accountSettings.getGroupMethod()
         }
     }
+
 
     fun updateContactsSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
             accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), syncInterval)
+            reload()
+        }
+    }
+
+    fun updateCalendarSyncInterval(syncInterval: Long) {
+        CoroutineScope(Dispatchers.Default).launch {
+            accountSettings.setSyncInterval(CalendarContract.AUTHORITY, syncInterval)
             reload()
         }
     }
