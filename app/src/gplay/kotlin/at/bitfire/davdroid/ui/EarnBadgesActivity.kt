@@ -22,23 +22,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarRate
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -615,6 +616,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
     class BillingException(msg: String) : Exception(msg)
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun EarnBadges(
         availableBadges: List<Badge>,
@@ -759,14 +761,14 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
     @Composable
     fun TextHeading(text: String) = Text(
         text,
-        style = MaterialTheme.typography.h6,
+        style = MaterialTheme.typography.headlineSmall,
         modifier = Modifier.padding(top = 20.dp, bottom = 16.dp)
     )
 
     @Composable
     fun TextBody(text: String) = Text(
         text,
-        style = MaterialTheme.typography.body1,
+        style = MaterialTheme.typography.bodyLarge,
         modifier = Modifier.padding(bottom = 16.dp)
     )
 
