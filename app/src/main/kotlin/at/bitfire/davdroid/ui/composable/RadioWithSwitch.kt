@@ -8,13 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.RadioButton
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -31,8 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
  * @param isSelected Whether the item is currently selected. Refers to the radio button.
  * @param isToggled Whether the switch is toggled.
  * @param modifier Any modifiers to apply to the row.
- * @param enabled Whether the radio button should be enabled. The enabled state of the switch is
- * reverse from this. So if it's `true`, the switch will be disabled.
+ * @param enabled Whether the radio button should be enabled.
  * @param onSelected Gets called whenever the user requests this row to be enabled. Either by
  * selecting the radio button or tapping the text.
  * @param onToggled Gets called whenever the switch gets updated. Contains the checked status.
@@ -58,20 +55,11 @@ fun RadioWithSwitch(
         ) {
             Text(
                 text = title,
-                color = LocalContentColor.current.copy(
-                    alpha = if (enabled) 1f else ContentAlpha.disabled
-                ),
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.fillMaxWidth()
             )
             summary?.let { sum ->
-                ProvideTextStyle(
-                    value = MaterialTheme.typography.body2.copy(
-                        color = LocalContentColor.current.copy(
-                            alpha = if (enabled) 1f else ContentAlpha.disabled
-                        )
-                    )
-                ) {
+                ProvideTextStyle(MaterialTheme.typography.bodyMedium) {
                     sum()
                 }
             }
@@ -79,8 +67,7 @@ fun RadioWithSwitch(
 
         Switch(
             checked = isToggled,
-            onCheckedChange = onToggled,
-            enabled = !enabled
+            onCheckedChange = onToggled
         )
     }
 }
