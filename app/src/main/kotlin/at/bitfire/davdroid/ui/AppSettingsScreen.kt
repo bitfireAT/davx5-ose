@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,7 +45,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.ui.composable.EditTextInputDialog
 import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
@@ -59,7 +57,7 @@ import kotlinx.coroutines.launch
 fun AppSettingsScreen(
     onExemptFromBatterySaving: () -> Unit,
     onBatterySavingSettings: () -> Unit,
-    onStartTasksScreen: () -> Unit,
+    onNavTasksScreen: () -> Unit,
     onShowNotificationSettings: () -> Unit,
     onNavUp: () -> Unit
 ) {
@@ -69,8 +67,8 @@ fun AppSettingsScreen(
 
     AppTheme {
         AppSettingsScreen(
-            verboseLogging = model.getPrefBoolean(Logger.LOG_TO_FILE).observeAsState().value ?: false,
-            onUpdateVerboseLogging = { model.putPrefBoolean(Logger.LOG_TO_FILE, it) },
+            verboseLogging = model.verboseLoggingFlow().collectAsStateWithLifecycle(false).value,
+            onUpdateVerboseLogging = model::updateVerboseLogging,
             batterySavingExempted = model.batterySavingExempted.collectAsStateWithLifecycle().value,
             onExemptFromBatterySaving = onExemptFromBatterySaving,
             onBatterySavingSettings = onBatterySavingSettings,
@@ -101,7 +99,7 @@ fun AppSettingsScreen(
             // AppSettings Integration
             tasksAppName = model.appName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.icon.collectAsStateWithLifecycle(null).value,
-            onStartTasksApp = onStartTasksScreen
+            onNavTasksScreen = onNavTasksScreen
         )
     }
 }
@@ -137,7 +135,7 @@ fun AppSettingsScreen(
     // AppSettings Integration
     tasksAppName: String,
     tasksAppIcon: Drawable?,
-    onStartTasksApp: () -> Unit,
+    onNavTasksScreen: () -> Unit,
 
     onShowNotificationSettings: () -> Unit,
     onNavUp: () -> Unit
@@ -221,7 +219,7 @@ fun AppSettingsScreen(
                 AppSettings_Integration(
                     appName = tasksAppName,
                     icon = tasksAppIcon,
-                    onStartTasksApp = onStartTasksApp
+                    onNavTasksScreen = onNavTasksScreen
                 )
             }
         }
@@ -254,7 +252,7 @@ fun AppSettingsScreen_Preview() {
             onResetHints = {},
             tasksAppName = "No tasks app",
             tasksAppIcon = null,
-            onStartTasksApp = {},
+            onNavTasksScreen = {}
         )
     }
 }
@@ -469,7 +467,7 @@ fun AppSettings_UserInterface(
 fun AppSettings_Integration(
     appName: String,
     icon: Drawable? = null,
-    onStartTasksApp: () -> Unit = {}
+    onNavTasksScreen: () -> Unit = {}
 ) {
     SettingsHeader(divider = true) {
         Text(stringResource(R.string.app_settings_integration))
@@ -484,6 +482,6 @@ fun AppSettings_Integration(
                }
         },
         summary = appName,
-        onClick = onStartTasksApp
+        onClick = onNavTasksScreen
     )
 }

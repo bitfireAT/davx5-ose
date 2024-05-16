@@ -35,7 +35,7 @@ class AppSettingsActivity: AppCompatActivity() {
                 onBatterySavingSettings = {
                     startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
                 },
-                onStartTasksScreen = {
+                onNavTasksScreen = {
                     startActivity(Intent(this, TasksActivity::class.java))
                 },
                 onShowNotificationSettings = {
