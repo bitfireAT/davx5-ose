@@ -12,7 +12,11 @@ interface LoginTypesProvider {
 
     val defaultLoginType: LoginType
 
-    fun intentToInitialLoginType(intent: Intent): LoginType
+    /**
+     * Which login type to use and whether to skip the login type selection page. Used for Nextcloud
+     * login flow. May be used by other login flows.
+     */
+    fun intentToInitialLoginType(intent: Intent): Pair<LoginType, Boolean> = Pair(defaultLoginType, false)
 
     /** Whether the [LoginTypePage] may be non-interactive. This causes it to be skipped in back navigation. */
     val maybeNonInteractive: Boolean

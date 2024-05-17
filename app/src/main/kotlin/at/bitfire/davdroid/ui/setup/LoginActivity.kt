@@ -108,22 +108,17 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
 
     }
 
+    @Inject lateinit var loginTypesProvider: LoginTypesProvider
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var initialLoginType: LoginType = UrlLogin
-        var startPage: LoginScreenModel.Page = LoginScreenModel.Page.LoginType
-
-        // Login flow from nextcloud app, via intent
-        if (intent.hasExtra(EXTRA_LOGIN_FLOW)) {
-            initialLoginType = NextcloudLogin
-            startPage = LoginScreenModel.Page.LoginDetails
-        }
+        val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
 
         setContent {
             LoginScreen(
-                startPage = startPage,
                 initialLoginType = initialLoginType,
+                skipLoginTypePage = skipLoginTypePage,
                 initialLoginInfo = loginInfoFromIntent(intent),
                 onNavUp = { onSupportNavigateUp() },
                 onFinish = { newAccount ->

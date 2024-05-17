@@ -33,14 +33,14 @@ import at.bitfire.davdroid.ui.AppTheme
 
 @Composable
 fun LoginScreen(
-    startPage: LoginScreenModel.Page = LoginScreenModel.Page.LoginType,
     initialLoginInfo: LoginInfo = LoginInfo(),
+    skipLoginTypePage: Boolean = false,
     initialLoginType: LoginType = UrlLogin,
     onNavUp: () -> Unit,
     onFinish: (Account?) -> Unit
 ) {
     val model: LoginScreenModel = hiltViewModel { factory: LoginScreenModel.Factory ->
-        factory.create(startPage, initialLoginInfo, initialLoginType)
+        factory.create(skipLoginTypePage, initialLoginInfo, initialLoginType)
     }
 
     // handle back/up navigation
