@@ -25,7 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
@@ -33,10 +33,16 @@ import at.bitfire.davdroid.ui.AppTheme
 
 @Composable
 fun LoginScreen(
+    initialLoginInfo: LoginInfo = LoginInfo(),
+    skipLoginTypePage: Boolean = false,
+    initialLoginType: LoginType = UrlLogin,
     onNavUp: () -> Unit,
-    onFinish: (Account?) -> Unit,
-    model: LoginScreenModel = viewModel()
+    onFinish: (Account?) -> Unit
 ) {
+    val model: LoginScreenModel = hiltViewModel { factory: LoginScreenModel.Factory ->
+        factory.create(initialLoginType, skipLoginTypePage, initialLoginInfo)
+    }
+
     // handle back/up navigation
     BackHandler {
         model.navBack()

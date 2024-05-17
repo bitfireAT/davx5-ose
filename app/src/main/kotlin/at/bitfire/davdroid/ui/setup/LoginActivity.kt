@@ -8,7 +8,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.ui.account.AccountActivity
@@ -48,6 +47,12 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
         const val EXTRA_LOGIN_FLOW = "loginFlow"
 
 
+        /**
+         * Extracts login information from given intent, validates it and returns it in [LoginInfo].
+         *
+         * @param intent Contains base url, username and password.
+         * @return Extracted login info. Contains null values if given info is invalid.
+         */
         fun loginInfoFromIntent(intent: Intent): LoginInfo {
             var givenUri: String? = null
             var givenUsername: String? = null
@@ -103,22 +108,18 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
 
     }
 
-    val model: LoginScreenModel by viewModels()
+    @Inject lateinit var loginTypesProvider: LoginTypesProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // start with login info from Intent
-        if (savedInstanceState == null) {
-            val loginInfo = loginInfoFromIntent(intent)
-            if (loginInfo.baseUri != null) {
-                model.updateLoginInfo(loginInfo)
-                model.navToPage(LoginScreenModel.Page.LoginDetails)
-            }
-        }
+        val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
 
         setContent {
             LoginScreen(
+                initialLoginType = initialLoginType,
+                skipLoginTypePage = skipLoginTypePage,
+                initialLoginInfo = loginInfoFromIntent(intent),
                 onNavUp = { onSupportNavigateUp() },
                 onFinish = { newAccount ->
                     finish()
@@ -128,8 +129,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                         intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
                         startActivity(intent)
                     }
-                },
-                model = model
+                }
             )
         }
     }

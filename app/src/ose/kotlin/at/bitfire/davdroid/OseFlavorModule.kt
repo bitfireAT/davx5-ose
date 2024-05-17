@@ -8,8 +8,6 @@ import at.bitfire.davdroid.ui.AboutActivity
 import at.bitfire.davdroid.ui.AccountsDrawerHandler
 import at.bitfire.davdroid.ui.OpenSourceLicenseInfoProvider
 import at.bitfire.davdroid.ui.OseAccountsDrawerHandler
-import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPage
-import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.ui.setup.LoginTypesProvider
 import at.bitfire.davdroid.ui.setup.StandardLoginTypesProvider
@@ -19,7 +17,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntoSet
 
 interface OseFlavorModules {
 
@@ -28,6 +25,9 @@ interface OseFlavorModules {
     interface ForActivities {
         @Binds
         fun accountsDrawerHandler(impl: OseAccountsDrawerHandler): AccountsDrawerHandler
+
+        @Binds
+        fun loginTypesProvider(impl: StandardLoginTypesProvider): LoginTypesProvider
     }
 
     @Module
