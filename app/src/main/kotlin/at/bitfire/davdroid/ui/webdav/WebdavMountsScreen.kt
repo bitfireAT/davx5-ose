@@ -36,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -240,7 +241,7 @@ fun WebdavMountsItem(
             title = { Text(stringResource(R.string.webdav_remove_mount_title)) },
             text = { Text(stringResource(R.string.webdav_remove_mount_text)) },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         onRemoveMount(info.mount)
                     }
@@ -249,7 +250,7 @@ fun WebdavMountsItem(
                 }
             },
             dismissButton = {
-                TextButton(
+                OutlinedButton(
                     onClick = { showingDialog = false }
                 ) {
                     Text(stringResource(R.string.dialog_deny))

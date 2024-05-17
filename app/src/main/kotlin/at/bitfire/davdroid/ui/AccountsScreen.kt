@@ -361,8 +361,8 @@ fun AccountList(
             for ((account, progress) in accounts)
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     elevation = CardDefaults.cardElevation(1.dp),
                     modifier = Modifier

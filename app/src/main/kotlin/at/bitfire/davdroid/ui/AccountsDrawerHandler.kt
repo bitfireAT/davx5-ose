@@ -269,7 +269,7 @@ fun BrandingHeader() {
 @Composable
 @Preview
 fun BrandingHeader_Preview_Light() {
-    AppTheme(useDarkTheme = false) {
+    AppTheme(darkTheme = false) {
         BrandingHeader()
     }
 }
@@ -277,7 +277,7 @@ fun BrandingHeader_Preview_Light() {
 @Composable
 @Preview
 fun BrandingHeader_Preview_Dark() {
-    AppTheme(useDarkTheme = true) {
+    AppTheme(darkTheme = true) {
         BrandingHeader()
     }
 }

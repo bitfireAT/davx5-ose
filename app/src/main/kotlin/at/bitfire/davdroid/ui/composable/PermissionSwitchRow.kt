@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,6 +22,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import at.bitfire.davdroid.ui.AppTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
@@ -64,6 +66,7 @@ fun PermissionSwitchRow(
                     )
                 }
             } else null,
+            colors = SwitchDefaults.colors(checkedIconColor = MaterialTheme.colorScheme.onSurface),
             onCheckedChange = { checked ->
                 if (checked) {
                     onLaunchRequest()
@@ -112,23 +115,27 @@ fun PermissionSwitchRow(
 @Preview(showBackground = true)
 @Composable
 fun PermissionSwitchRow_Preview_NotGranted() {
-    PermissionSwitchRow(
-        text = "Contacts",
-        allPermissionsGranted = false,
-        summaryWhenGranted = "Granted",
-        summaryWhenNotGranted = "Not granted",
-        onLaunchRequest = {}
-    )
+    AppTheme {
+        PermissionSwitchRow(
+            text = "Contacts",
+            allPermissionsGranted = false,
+            summaryWhenGranted = "Granted",
+            summaryWhenNotGranted = "Not granted",
+            onLaunchRequest = {}
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PermissionSwitchRow_Preview_Granted() {
-    PermissionSwitchRow(
-        text = "Contacts",
-        allPermissionsGranted = true,
-        summaryWhenGranted = "Granted",
-        summaryWhenNotGranted = "Not granted",
-        onLaunchRequest = {}
-    )
+    AppTheme {
+        PermissionSwitchRow(
+            text = "Contacts",
+            allPermissionsGranted = true,
+            summaryWhenGranted = "Granted",
+            summaryWhenNotGranted = "Not granted",
+            onLaunchRequest = {}
+        )
+    }
 }

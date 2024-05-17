@@ -101,7 +101,7 @@ class WelcomePage: IntroPage {
         showSystemUi = true
     )
     fun Preview_ContentPortrait_Light() {
-        AppTheme(useDarkTheme = false) {
+        AppTheme(darkTheme = false) {
             ContentPortrait()
         }
     }
@@ -112,7 +112,7 @@ class WelcomePage: IntroPage {
         showSystemUi = true
     )
     fun Preview_ContentPortrait_Dark() {
-        AppTheme(useDarkTheme = true) {
+        AppTheme(darkTheme = true) {
             ContentPortrait()
         }
     }

@@ -11,13 +11,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -26,11 +29,10 @@ import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.icons.filled.Task
 import androidx.compose.material.icons.filled.Today
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +51,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.ui.AppTheme
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
@@ -61,7 +64,7 @@ fun CollectionsList(
 ) {
     LazyColumn(
         contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
+        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
         modifier = modifier
     ) {
         items(
@@ -108,48 +111,43 @@ fun CollectionList_Item(
     if (onShowDetails != null)
         modifier = modifier.clickable(onClick = onShowDetails)
 
-    OutlinedCard(
-        elevation = CardDefaults.cardElevation(1.dp),
+    ElevatedCard(
         modifier = modifier
     ) {
-        Box {
-            Column {
-                if (color != null)
-                    Box(
-                        Modifier
-                            .background(color)
-                            .fillMaxWidth()
-                            .height(8.dp)
-                    )
+        Row(Modifier.height(IntrinsicSize.Max)) {
+            Box(
+                Modifier
+                    .background(color ?: Color.Transparent)
+                    .width(8.dp)
+                    .fillMaxHeight())
 
-                Column(Modifier.padding(8.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text(title, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
+            Column(Modifier.padding(8.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(title, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
 
-                            if (description != null)
-                                Text(description, style = MaterialTheme.typography.bodyMedium)
-                        }
-
-                        syncControl()
+                        if (description != null)
+                            Text(description, style = MaterialTheme.typography.bodyMedium)
                     }
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier
-                    ) {
-                        if (addressBook)
-                            CollectionList_Item_Chip(Icons.Default.Contacts, stringResource(R.string.account_contacts))
 
-                        if (calendar)
-                            CollectionList_Item_Chip(Icons.Default.Today, stringResource(R.string.account_calendar))
-                        if (todoList)
-                            CollectionList_Item_Chip(Icons.Default.Task, stringResource(R.string.account_task_list))
-                        if (journal)
-                            CollectionList_Item_Chip(Icons.AutoMirrored.Default.EventNote, stringResource(R.string.account_journal))
+                    syncControl()
+                }
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    if (addressBook)
+                        CollectionList_Item_Chip(Icons.Default.Contacts, stringResource(R.string.account_contacts))
 
-                        if (readOnly)
-                            CollectionList_Item_Chip(Icons.Default.RemoveCircle, stringResource(R.string.account_read_only))
-                    }
+                    if (calendar)
+                        CollectionList_Item_Chip(Icons.Default.Today, stringResource(R.string.account_calendar))
+                    if (todoList)
+                        CollectionList_Item_Chip(Icons.Default.Task, stringResource(R.string.account_task_list))
+                    if (journal)
+                        CollectionList_Item_Chip(Icons.AutoMirrored.Default.EventNote, stringResource(R.string.account_journal))
+
+                    if (readOnly)
+                        CollectionList_Item_Chip(Icons.Default.RemoveCircle, stringResource(R.string.account_read_only))
                 }
             }
         }
@@ -190,22 +188,24 @@ fun CollectionsList_Item_Standard(
 }
 
 @Composable
-@Preview
+@Preview(locale = "de")
 fun CollectionsList_Item_Standard_Preview() {
-    CollectionsList_Item_Standard(
-        Collection(
-            type = Collection.TYPE_CALENDAR,
-            url = "https://example.com/caldav/sample".toHttpUrl(),
-            displayName = "Sample Calendar",
-            description = "This Sample Calendar even has some lengthy description.",
-            color = 0xffff0000.toInt(),
-            sync = true,
-            forceReadOnly = true,
-            supportsVEVENT = true,
-            supportsVTODO = true,
-            supportsVJOURNAL = true
+    AppTheme {
+        CollectionsList_Item_Standard(
+            Collection(
+                type = Collection.TYPE_CALENDAR,
+                url = "https://example.com/caldav/sample".toHttpUrl(),
+                displayName = "Sample Calendar",
+                description = "This Sample Calendar even has some lengthy description.",
+                color = 0xffff0000.toInt(),
+                sync = true,
+                forceReadOnly = true,
+                supportsVEVENT = true,
+                supportsVTODO = true,
+                supportsVJOURNAL = true
+            )
         )
-    )
+    }
 }
 
 @Composable
@@ -232,15 +232,17 @@ fun CollectionsList_Item_Webcal(
 @Composable
 @Preview
 fun CollectionList_Item_Webcal_Preview() {
-    CollectionsList_Item_Webcal(
-        Collection(
-            type = Collection.TYPE_WEBCAL,
-            url = "https://example.com/caldav/sample".toHttpUrl(),
-            displayName = "Sample Subscription",
-            description = "This Sample Subscription even has some lengthy description.",
-            color = 0xffff0000.toInt()
+    AppTheme {
+        CollectionsList_Item_Webcal(
+            Collection(
+                type = Collection.TYPE_WEBCAL,
+                url = "https://example.com/caldav/sample".toHttpUrl(),
+                displayName = "Sample Subscription",
+                description = "This Sample Subscription even has some lengthy description.",
+                color = 0xffff0000.toInt()
+            )
         )
-    )
+    }
 }
 
 @Composable
@@ -248,7 +250,7 @@ fun CollectionList_Item_Chip(icon: ImageVector, text: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest, shape = RoundedCornerShape(8.dp))
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Icon(
