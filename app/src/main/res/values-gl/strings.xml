@@ -335,7 +335,7 @@
   <!--collection management-->
   <string name="create_addressbook">Crear libreta de enderezos</string>
   <string name="create_calendar">Crear calendario</string>
-  <string name="create_calendar_time_zone_optional">Zona horaria por defecto</string>
+  <string name="create_calendar_time_zone">Zona horaria por defecto</string>
   <string name="create_calendar_type">Entradas posibles no calendario</string>
   <string name="create_calendar_type_vevent">Eventos</string>
   <string name="create_calendar_type_vtodo">Tarefas</string>

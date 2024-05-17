@@ -151,7 +151,7 @@
   <string name="app_settings_proxy">代理类型</string>
   <string-array name="app_settings_proxy_types">
     <item>系统默认</item>
-    <item>无代理五</item>
+    <item>无代理</item>
     <item>HTTP</item>
     <item>SOCKS (用于 Orbot)</item>
   </string-array>
@@ -332,7 +332,7 @@
   <!--collection management-->
   <string name="create_addressbook">创建通讯录</string>
   <string name="create_calendar">创建日历</string>
-  <string name="create_calendar_time_zone_optional">默认时区</string>
+  <string name="create_calendar_time_zone">默认时区</string>
   <string name="create_calendar_type">可能使用的日历类型</string>
   <string name="create_calendar_type_vevent">事件</string>
   <string name="create_calendar_type_vtodo">任务</string>

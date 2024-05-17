@@ -222,6 +222,7 @@
   <string name="login_select_certificate">Zertifikat auswählen</string>
   <string name="login_create_account">Konto anlegen</string>
   <string name="login_account_name">Kontoname</string>
+  <string name="login_account_avoid_apostrophe">Das Verwenden von Apostrophen (\') scheint auf einigen Geräten Probleme zu verursachen.</string>
   <string name="login_account_name_info">Verwenden Sie Ihre E-Mail-Adresse als Kontonamen, da Android den Kontonamen als ORGANIZER einsetzt. Es kann allerdings keine zwei Konten mit dem gleichen Namen geben.</string>
   <string name="login_account_contact_group_method">Kontaktgruppen-Methode:</string>
   <string name="login_account_name_required">Kontoname wird benötigt</string>
@@ -320,7 +321,7 @@
   <!--collection management-->
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_calendar">Kalender anlegen</string>
-  <string name="create_calendar_time_zone_optional">Standardzeitzone</string>
+  <string name="create_calendar_time_zone">Standardzeitzone</string>
   <string name="create_calendar_type">Mögliche Kalendereinträge</string>
   <string name="create_calendar_type_vevent">Termine</string>
   <string name="create_calendar_type_vtodo">Aufgaben</string>

@@ -1,0 +1,432 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!--common strings-->
+  <string name="account_invalid">ანგარიში (აღარ) არსებობს</string>
+  <string name="account_title_address_book">DAVx⁵ მისამართთა წიგნაკი</string>
+  <string name="address_books_authority_title">მისამართთა წიგნაკები</string>
+  <string name="dialog_remove">ამოშლა</string>
+  <string name="dialog_deny">გაუქმება</string>
+  <string name="field_required">ეს ველი სავალდებულოა</string>
+  <string name="help">დახმარება</string>
+  <string name="manage_accounts">ანგარიშების მართვა</string>
+  <string name="navigate_up">ზემოთ გადასვლა</string>
+  <string name="optional_label">* არასავალდებულო</string>
+  <string name="options_menu">ოპციების მენიუ</string>
+  <string name="share">გაზიარება</string>
+  <string name="sync_started">სინქრონიზაცია დაიწყა/დადგა რიგში</string>
+  <string name="database_destructive_migration_title">მონაცემთა ბაზა კორუმპირებულია</string>
+  <string name="database_destructive_migration_text">ყველა ანგარიში წაშლილ იქნა ადგილობრივად.</string>
+  <string name="notification_channel_debugging">დებაგი</string>
+  <string name="notification_channel_general">სხვა მნიშვნელოვანი შეტყობინებები</string>
+  <string name="notification_channel_status">დაბალი პრიორიტეტის სტატუსის შეტყობინებები</string>
+  <string name="notification_channel_sync">სინქრონიზაცია</string>
+  <string name="notification_channel_sync_errors">სინქრონიზაციის შეცდომები</string>
+  <string name="notification_channel_sync_errors_desc">მნიშვნელოვანი შეცდომები, რომლებიც აჩერებს სინქრონიზაციას, მაგ., მოულოდნელი სერვერის პასუხები</string>
+  <string name="notification_channel_sync_warnings">სინქრონიზაციის გაფრთხილებები</string>
+  <string name="notification_channel_sync_warnings_desc">არა-ლეტალური სინქრონიზაციის პრობლემები, როგორც ზოგი არასწორი ფაილი</string>
+  <string name="notification_channel_sync_io_errors">ქსელის ან ჩაწერა/წაკითხვის შეცდომები</string>
+  <string name="notification_channel_sync_io_errors_desc">ვადის გასვლა, კავშირის პრობლემები, სხვა (ხშირად დროებითი)</string>
+  <!--IntroActivity-->
+  <string name="intro_slogan1">თქვენი მონაცემები. თქვენი არჩევანი.</string>
+  <string name="intro_slogan2">აიღეთ კონტროლი.</string>
+  <string name="intro_battery_title">რეგულარული სინქრონიზაციის ინტერვალები</string>
+  <string name="intro_battery_text">რეგულარული ინტერვალი სინქრონიზაციისთვის, %s-ს უნდა ჰქონდეს უფლება გაეშვას ფონურ რეჟიმში. სხვაგვარად, Android-მა შეიძლება ნებისმიერ მომენტში შეაჩეროს სინქრონიზაცია.</string>
+  <string name="intro_battery_dont_show">მე არ მჭირდება რეგულარული სინქრონიზაციის ინტერვალები.*</string>
+  <string name="intro_autostart_title">%s თავსებადობა</string>
+  <string name="intro_autostart_text">ეს მოწყობილობა სავარაუდოდ ბლოკავს სინქრონიზაცია. თუ ეს გეხებათ, ამის გამოსწორება მხოლოდ ხელით შეიძლება.</string>
+  <string name="intro_autostart_dont_show">მე შევცვალე საჭირო პარამეტრები. აღარ შემახსენოთ.*</string>
+  <string name="intro_leave_unchecked">* დატოვეთ მოუნიშნელად მოგვიანებით შესახსენებლად. შეიძლება ჩამოგდებულ იქნას აპის პარამეტრებში /%s.</string>
+  <string name="intro_more_info">მეტი ინფორმაცია</string>
+  <string name="intro_tasks_jtx">jtx Board</string>
+  <string name="intro_tasks_jtx_info"><![CDATA[Supports sync of Tasks, Journals and Notes.]]></string>
+  <string name="intro_tasks_title">დავალებების მხარდაჭერა</string>
+  <string name="intro_tasks_text1">თუ დავალებები მხარდაჭერილია თქვენი სერვერის მიერ, მათი სინქრონიზირება შეიძლება მხარდაჭერილი დავალებათა აპით:</string>
+  <string name="intro_tasks_opentasks">OpenTasks</string>
+  <string name="intro_tasks_opentasks_info">აღარ მიმდინარეობს განვითარება - არ არის რეკომენდებული.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
+  <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">are not supported</a> (yet).]]></string>
+  <string name="intro_tasks_no_app_store">აპების მაღაზია ხელმიუწვდომია</string>
+  <string name="intro_tasks_dont_show">მე არ მჭირდება დავალებების მხარდაჭერა.*</string>
+  <string name="intro_open_source_title">ღია კოდის პროგრამული უზრუნველყოფა</string>
+  <string name="intro_open_source_text">კმაყოფილები ვართ, რომ იყენებთ %s-ს, რომელიც ღია კოდის პროგრამული უზრუნველყოფაა. განვითარება და მხარდაჭერა რთული სამუშაო. გთხოვთ, გაითვალისწინოთ წილის შეტანა (მრავალი გზა არსებობს) ან ფულის ჩუქბეა. ძალიან მადლობელი ვიქნებით!</string>
+  <string name="intro_open_source_details">როგორ შევიტანო წვლილი/დაგეხმაროთ</string>
+  <string name="intro_open_source_dont_show">არ მაჩვენოთ ახლო მომავალში</string>
+  <!--PermissionsActivity-->
+  <string name="permissions_title">უფლებები</string>
+  <string name="permissions_text">%s-ს სჭირდება უფლებები სწორად სამუშაოდ.</string>
+  <string name="permissions_all_title">ყველა ქვემოთ მოცემული</string>
+  <string name="permissions_all_status_off">გამოიყენეთ ეს ყველა ფუნქციის ჩასართავად (რეკომენდებული)</string>
+  <string name="permissions_all_status_on">ყველა უფლება დართულია</string>
+  <string name="permissions_contacts_title">კონტაქტების უფლებები</string>
+  <string name="permissions_contacts_status_off">კონტაქტის სინქრონიზაციის გარეშე (არა რეკომენდებული)</string>
+  <string name="permissions_contacts_status_on">კონტაქტის სინქრონიზაცია შესაძლებელია</string>
+  <string name="permissions_calendar_title">კალენდარის უფლებები</string>
+  <string name="permissions_calendar_status_off">კალენდარის სინქრონიზაციის გარეშე (არა რეკომენდებული)</string>
+  <string name="permissions_calendar_status_on">კალენდარის სინქრონიზაცია შესაძლებელია</string>
+  <string name="permissions_notification_title">შეტყობინებების უფლება</string>
+  <string name="permissions_notification_status_off">შეტყობინებები გათიშულია (არა რეკომენდებული)</string>
+  <string name="permissions_notification_status_on">შეტყობინებები ჩართლია</string>
+  <string name="permissions_jtx_title">jtx Board-ის უფლებები</string>
+  <string name="permissions_opentasks_title">OpenTasks-ის უფლებები</string>
+  <string name="permissions_tasksorg_title">დავალებების უფლებები</string>
+  <string name="permissions_tasks_status_off">დავალებების სინქრონიზაციის გარეშე</string>
+  <string name="permissions_tasks_status_on">დავალებების სინქრონიზაცია შესაძლებელია</string>
+  <string name="permissions_autoreset_title">Keep-ის უფლებები</string>
+  <string name="permissions_autoreset_status_off">უფლებები შეიძლება ავტომატურად ჩამოიყაროს (არა რეკომენდებული)</string>
+  <string name="permissions_autoreset_status_on">უფლებები ავტომატურად არ ჩამოიყრება</string>
+  <string name="permissions_autoreset_instruction">შეამოწმეთ უფლებები &gt; მოხსენით \"უფლებების ამოშლა, თუ აპი არ გამოიყენება\"-ს მონიშვნა</string>
+  <string name="permissions_app_settings_hint">თუ გადამრთველი არ მუშაობს, გამოიყენეთ აპის პარამეტრები / უფლებები.</string>
+  <string name="permissions_app_settings">აპის პარამეტრები</string>
+  <!--WifiPermissionsActivity-->
+  <string name="wifi_permissions_label">WiFi SSID-ს უფლებები</string>
+  <string name="wifi_permissions_intro">რათა მიწვდეთ მიმდინარე WiFi-ს სახელს (SSID), ეს პირობები უნდა შესრულდეს:</string>
+  <string name="wifi_permissions_location_permission">ზუსტი ადგილმდებარეობის უფლება</string>
+  <string name="wifi_permissions_location_permission_on">ადგილმდებარეობის უფლება დართულია</string>
+  <string name="wifi_permissions_location_permission_off">ადგილმდებარეობის უფლება უარყოფილია</string>
+  <string name="wifi_permissions_background_location_permission">ფონური ადგილმდებარეობის უფლება</string>
+  <string name="wifi_permissions_background_location_permission_label">ყოველთვის დაშვება</string>
+  <string name="wifi_permissions_background_location_permission_on">ადგილმდებარეობის უფლების მნიშვნელობა: %s</string>
+  <string name="wifi_permissions_background_location_permission_off">ადგილმდებარეობის უფლება არ არის შემდეგი: %s</string>
+  <string name="wifi_permissions_background_location_disclaimer">%s იყენებს ადგილმდებარეობის უფლებას მხოლოდ რათ დაადგინოს მიმდინარე WiFi-ს SSID SSID-თი შეზღუდული ანგარიშებისთვის. ეს მოხდება მაშინაც, როდესაც აპი ფონურ რეჟიმშია. არანაირი ადგილმდებარეობიაპის მონაცემები არ იკრიფება, ინახება, მუშავდება ან სადმე იგზავნება.</string>
+  <string name="wifi_permissions_location_enabled">ადგილმდებარეობა ყოველთვის ჩართულია</string>
+  <string name="wifi_permissions_location_enabled_on">ადგილმდებარეობის სერვისი ჩართულია</string>
+  <string name="wifi_permissions_location_enabled_off">ადგილმდებარეობის სერვისი გათიშულია</string>
+  <!--AboutActivity-->
+  <string name="about_translations">თარგმანი</string>
+  <string name="about_libraries">ბიბლიოთეკები</string>
+  <string name="about_version">ვერსია %1$s (%2$d)</string>
+  <string name="about_build_date">კომპილირებულია %s-ს</string>
+  <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) და მონაწილეები</string>
+  <string name="about_license_info_no_warranty">ამ პროგრამას არ აქვს არანაირი გარანტია. იგი არის უფასო პროგრამული უზრუნველყოფა, ხოლო თქვენ შეგეძლეიათ იგი გაავრცელოთ გარკვეული პირობების გათვალისწინებით.</string>
+  <!--global settings-->
+  <string name="logging_couldnt_create_file">ჟურნალის ფაილი ვერ შეიქმნა</string>
+  <string name="logging_notification_text">აწი მიმდინარეობს ყველა %s აქტივობის ჟურნალში ჩაწერა</string>
+  <string name="logging_notification_view_share">ნახვა/გაზიარება</string>
+  <string name="logging_notification_disable">გათიშვა</string>
+  <!--AccountsActivity-->
+  <string name="navigation_drawer_subtitle">CalDAV/CardDAV სინქრონიზაციის ადაპტერი</string>
+  <string name="navigation_drawer_about">შესახებ / ლიცენზია</string>
+  <string name="navigation_drawer_beta_feedback">ბეტას უკუკავშირი</string>
+  <string name="install_browser">გთხოვთ, დააყენოთ ვებ ბრაუზერი</string>
+  <string name="navigation_drawer_settings">პარამეტრები</string>
+  <string name="navigation_drawer_news_updates">ახალი ამბები &amp; განახლებები</string>
+  <string name="navigation_drawer_tools">ხელსაწყოები</string>
+  <string name="navigation_drawer_external_links">გარე ბმულები</string>
+  <string name="navigation_drawer_website">ვებ საიტი</string>
+  <string name="navigation_drawer_manual">ინსტრუქცია</string>
+  <string name="navigation_drawer_faq">ხდკ</string>
+  <string name="navigation_drawer_community">საზოგადოება</string>
+  <string name="navigation_drawer_support_project">პროექტის მხარდაჭერა</string>
+  <string name="navigation_drawer_contribute">როგორ შევიტანო ღვაწლი</string>
+  <string name="navigation_drawer_privacy_policy">პირადულობის პოლიტიკა</string>
+  <string name="account_list_no_notification_permission">შეტყობინებები გათიშული. თქვენ არ მიიღებთ შეტყობინებებს სიქნრონიზაციის შეცდომების შესახებ.</string>
+  <string name="account_list_no_internet">დადასტურებული ინტერნეტ კავშირი არ არის. სიქნრონიზაცია შეიძლება არ გაეშვას.</string>
+  <string name="account_list_manage_connections">კავშირების მართვა</string>
+  <string name="account_list_datasaver_enabled">გააქტიურებულია მონაცემთა შემნახველი. ფონური სინქრონიზაცია შეზღუდულია.</string>
+  <string name="account_list_manage_datasaver">მონაცემთა შემნახველის მართვა</string>
+  <string name="account_list_battery_saver_enabled">გფააქტიურებულია კვების ელემენტის შემნახველი. სინქრონიზაცია შეიძლება შეზღუდულ იქნას.</string>
+  <string name="account_list_manage_battery_saver">კვების ელემენტის შემნახველის მართვა</string>
+  <string name="account_list_low_storage">მეხსიერება ცოტა დარჩა. Android არ დაასინქრონიზირებს ადგილობრივ ცვლილებებს დაუყონებლივ, ხოლო დაასინქრონიზირებს შემდეგი რეგულარული სინქრონიზაციის დროს.</string>
+  <string name="account_list_manage_storage">მეხსიერების მართვა</string>
+  <string name="account_list_empty">კეტილი იყოს თქვენი მობრძანება DAVx⁵-ში!\n\nაწი შეგიძლიათ დაამატოთ CalDAV/CardDAV ანგარიში.</string>
+  <string name="accounts_sync_all">ყველა ანგარიშის სინქრონიზაცია</string>
+  <!--RefreshCollectionsWorker-->
+  <string name="refresh_collections_worker_refresh_failed">სერვისის აღმოჩენა ჩაიშალა</string>
+  <string name="refresh_collections_worker_refresh_couldnt_refresh">კოლექციათა სიის განახლება ვერ მოხერხდა</string>
+  <!--Foreground service used by WorkManager on Android <12-->
+  <string name="foreground_service_notify_title">მუშაობს ფონში</string>
+  <string name="foreground_service_notify_text">ზოგ მოწყობილობაზე, ეს საჭიროა ავტომატური სინქრონიზაციისთვის.</string>
+  <!--AppSettingsActivity-->
+  <string name="app_settings">პარამეტრები</string>
+  <string name="app_settings_debug">დებაგი</string>
+  <string name="app_settings_show_debug_info">დებაგის ინფორმაციის ჩვენება</string>
+  <string name="app_settings_show_debug_info_details">პროგრამული უზრუნველყოფის და კონფიგურაციის დეტალების ნახვა/გაზიარება</string>
+  <string name="app_settings_logging">დეტალური ჟურნალში ჩაწერა</string>
+  <string name="app_settings_logging_on">ჟურნალში ჩაწერა აქტიურია</string>
+  <string name="app_settings_logging_off">ჟურნალში ჩაწერა გათიშულია</string>
+  <string name="app_settings_battery_optimization">კვების ელემენტის ოპტიმიზაცია</string>
+  <string name="app_settings_battery_optimization_exempted">აპი გამორიცხულია (რეკომენდებულია)</string>
+  <string name="app_settings_battery_optimization_optimized">გამოიყენება კვების ელემენტის შეზღუდვები (არა რეკომენდებულია)</string>
+  <string name="app_settings_connection">კავშირი</string>
+  <string name="app_settings_proxy">პროქსის ტიპი</string>
+  <string-array name="app_settings_proxy_types">
+    <item>ნაგულისხმევი სისტემის მიერ</item>
+    <item>პროქსის გარეშე</item>
+    <item>HTTP3</item>
+    <item>SOCKS (Orbot-სთვის)</item>
+  </string-array>
+  <string name="app_settings_proxy_host">პროქსის ჰოსტის სახელი</string>
+  <string name="app_settings_proxy_port">პროქსის პორტი</string>
+  <string name="app_settings_security">უსაფრთხოება</string>
+  <string name="app_settings_security_app_permissions">აპის ეფლებები</string>
+  <string name="app_settings_security_app_permissions_summary">გადახედეთ სინქრონიზაციისთვის საჭირო ეფლებებს</string>
+  <string name="app_settings_distrust_system_certs">სისტემური სერთიფიკატების ნდობის გაუქმება</string>
+  <string name="app_settings_distrust_system_certs_on">სისტემური და მომხმარებლის მიერ დამატებული სერთიფიცირების ავტორიტეტების ნდობა არ იქნება</string>
+  <string name="app_settings_distrust_system_certs_off">სისტემური და მომხმარებლის მიერ დამატებული სერთიფიცირების ავტორიტეტების ნდობა იქნება (რეკომენდებული)</string>
+  <string name="app_settings_reset_certificates">(არა) ნდობითი სერთიფიკატების ჩამოყრა</string>
+  <string name="app_settings_reset_certificates_summary">ნდობის ჩამოყრა ყველა კერძო სერთიფიკატზე</string>
+  <string name="app_settings_reset_certificates_success">ყველა კერძო სერთიფიკატი გასუფთავდა</string>
+  <string name="app_settings_user_interface">მომხმარებლის ინტერფეისი</string>
+  <string name="app_settings_notification_settings">შეტყობინებების პარამეტრები</string>
+  <string name="app_settings_notification_settings_summary">შეტყობინებების არხების და პარამეტრების მართვა</string>
+  <string name="app_settings_theme_title">აირჩიეთ თემა</string>
+  <string-array name="app_settings_theme_names">
+    <item>სისტემის მიერ ნაგულისხმევი</item>
+    <item>ღია</item>
+    <item>მუქი</item>
+  </string-array>
+  <string name="app_settings_reset_hints">მითითებების ჩამოყრა</string>
+  <string name="app_settings_reset_hints_summary">თავიდან ააქტიურებს მითითებებს, რომლებიც დამალულ იქნა წარსულში</string>
+  <string name="app_settings_reset_hints_success">ყველა მითითება თავიდან იქნება ნაჩვენები</string>
+  <string name="app_settings_integration">ინტეგრაცია</string>
+  <string name="app_settings_tasks_provider">დავალებათა აპი</string>
+  <string name="app_settings_tasks_provider_none">თავსებადი დავალებათა აპი ვერ მოიძებნა</string>
+  <!--AccountActivity-->
+  <string name="account_carddav">CardDAV</string>
+  <string name="account_caldav">CalDAV</string>
+  <string name="account_webcal">Webcal</string>
+  <string name="account_missing_permissions">საჭიროა დამატებითი უფლებები ამ კოლექციების სინქრონიზაციისთვის.</string>
+  <string name="account_manage_permissions">უფლებების მართვა</string>
+  <string name="account_synchronize_now">ახლავე სინქრონიზირება</string>
+  <string name="account_settings">ანგარიშის პარამეტრები</string>
+  <string name="account_rename">ანგარიშის სახელის შეცვლა</string>
+  <string name="account_rename_new_name_description">შეუნახავი ადგილობრივი მონაცემები შეიძლება გაუქმებულ იქნას. საჭიროა თავიდან სინქრონიზირება სახელის შეცვლის შემდეგ.</string>
+  <string name="account_rename_new_name">ახალი ანგარიშის სახელი</string>
+  <string name="account_rename_rename">სახელის შეცვლა</string>
+  <string name="account_rename_exists_already">ანგარიშის სახელი უკვე დაკავებულია</string>
+  <string name="account_rename_couldnt_rename">ანგარიშის სახელის შეცვლა ვერ მოხერხდა</string>
+  <string name="account_delete">ანგარიშის წაშლა</string>
+  <string name="account_delete_confirmation_title">მართლა წაიშალოს ანგარიში?</string>
+  <string name="account_delete_confirmation_text">წაიშლება მისამართთა წიგნაკების, კალენდრების და დავალებათა სიების ყველა ადგილობრივი ასლი.</string>
+  <string name="account_synchronize_this_collection">ამ კოლექციის სინქრონიზირება</string>
+  <string name="account_read_only">მხოლოდ წაკითხვადი</string>
+  <string name="account_calendar">კალენდარი</string>
+  <string name="account_task_list">დავალებათა სია</string>
+  <string name="account_journal">ჟურნალი</string>
+  <string name="account_only_personal">მხოლოდ პირადის ჩვენება</string>
+  <string name="account_refresh_collections">კოლექციების განახლება</string>
+  <string name="account_refreshing_collections">მიმდინარეობსკოლექციათა სიის განახლება</string>
+  <string name="account_webcal_external_app">Webcal გამოწერები შეიძ₾ება სინქრონიზირებულ იქნას გარე აპებთან.</string>
+  <string name="account_no_webcal_handler_found">Webcal-თან თავსებადი აპი ვერ მოიძებნა</string>
+  <string name="account_install_icsx5">ICSx⁵-ს დაყენება</string>
+  <!--AddAccountActivity-->
+  <string name="login_title">ანგარიშის დამატება</string>
+  <string name="login_generic_login">ზოგადი შესვლა</string>
+  <string name="login_provider_login">პროვაიდერის შესვლა</string>
+  <string name="login_continue">გაგრძელება</string>
+  <string name="login_login">შესვლა</string>
+  <string name="login_type_email">ელ. ფოსტის მისამართით შესვლა</string>
+  <string name="login_email_address">ელ. ფოსტის მისამართი</string>
+  <string name="login_email_address_error">საჭიროა სწორი ელ. ფოსტის მისამართი</string>
+  <string name="login_email_address_info"><![CDATA[ელ. ფოსტის დომენი გამოიყენება საბაზო URL-ად. <a href="%s">აღმოჩენილია სერვისები</a> DNS ჩანაწერების და კარგად ცნობილი URL-ების მეშვეობით.]]></string>
+  <string name="login_password">პაროლი</string>
+  <string name="login_password_hide">პაროლის დამალვა</string>
+  <string name="login_password_show">პაროლის ჩვენება</string>
+  <string name="login_password_optional">პაროლი*</string>
+  <string name="login_type_url">URL-ით და მომხმარებლის სახელით შესვლა</string>
+  <string name="login_user_name">მომხმარებლის სახელი</string>
+  <string name="login_user_name_optional">მოხმარებლის სახელი*</string>
+  <string name="login_base_url">საბაზო URL</string>
+  <string name="login_base_url_info"><![CDATA[საბაზო URL-ი პირადპირ იქნება შემოწმებული, მაგრამ <a href="%s">ასევე აღმოჩენილია სერვისები</a> DNS ჩანაწერების და კარგად ცნობილი URL-ების მეშვეობით.]]></string>
+  <string name="login_select_certificate">სერტიფიკატის არჩევა</string>
+  <string name="login_create_account">ანგარიშის შექმნა</string>
+  <string name="login_account_name">ანგარიშის სახელი</string>
+  <string name="login_account_avoid_apostrophe">აპოსტროფების (\') გამოყენება იწვევს პრობლემებს ზოგ მოწყობილობაზე.</string>
+  <string name="login_account_name_info">გამოიყენეთ თქვენი ელ. ფოსტის მსიამართი ანგარიშის სახელად, რადგან Android გამოიყენებს ანგარიშის სახელს ორგანიზატორის ველში თქვენს მიერ შექმნილ ღონისძიებებისთვის. თქვენ არ შეიძლება გქონდეთ ორი ანგარიში იგივე სახელით.</string>
+  <string name="login_account_contact_group_method">კონტაქტების დაჯგუფების მეთოდი:</string>
+  <string name="login_account_name_required">საჭიროა ანგარიშის სახელი</string>
+  <string name="login_account_name_already_taken">ანგარიშის სახელი უკვე დაკავებულია</string>
+  <string name="login_account_not_created">ანგარიში ვერ შეიქმნა</string>
+  <string name="login_type_advanced">გაფართოებული შესვლა</string>
+  <string name="login_no_client_certificate_optional">კლიენტის სერტიფიკატი არ არის*</string>
+  <string name="login_client_certificate_selected">კლიენტის სერტიფიკატი: %s</string>
+  <string name="login_no_certificate_found">სერტიფიკატი ვერ მოიძებნა</string>
+  <string name="login_install_certificate">სერტიფიკატის დაყენება</string>
+  <string name="login_type_google">Google კონტაქტები / კალენდარი</string>
+  <string name="login_google_see_tested_with">გთხოვთ, იხილოთ ჩვენი \"ტესტირებულია Google-თან\" გვერდი ბოლო ინფორმაციისთვის.</string>
+  <string name="login_google_unexpected_warnings">შეიძლება გქონდეთ მოულოდნელი გაფრთხილებები ან/და მოგიწიოთ შექმნათ თქვენი პირადი კლიენტის ID.</string>
+  <string name="login_google_account">Google ანგარიში</string>
+  <string name="login_google">Google-ით შესვლა</string>
+  <string name="login_google_client_id">კლიენტის ID (aრასავალდებულო)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$sგადასცემს თქვენს Google კონტაქტებისა და კალენდარის მონაცემებს მხოლოდ სინქრონიზაციისთვის ამ მოწყობილობასთან. იხილეთ ჩვენი <a href="%2$s">პირადულობის პოლიტიკა</a> დეტალებისთვის.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s ექვემდებარება <a href="%2$s">Google API სერვისების მომხმარებელთა მონაცემების პოლიტიკას</a>, მათ შორის, შეზღუდული გამოყენების მოთხოვნებს.]]></string>
+  <string name="login_oauth_couldnt_obtain_auth_code">ავტორიზაციის კოდის მიღება ვერ მოხერხდა</string>
+  <string name="login_type_nextcloud">Nextcloud</string>
+  <string name="login_nextcloud_login_with_nextcloud">შესვლა Nextcloud-ისთ</string>
+  <string name="login_nextcloud_login_flow_text">ეს დაიწყებს Nextcloud-ის შესვლის პროცესს ვებ ბრაუზერში.</string>
+  <string name="login_nextcloud_login_flow_server_address">Nextcloud-ის სერვერის მისამართი</string>
+  <string name="login_nextcloud_login_flow_sign_in">შესვლა</string>
+  <string name="login_nextcloud_login_flow_no_login_url">შესვლის URL-ის მიღება ვერ მოხერხდა</string>
+  <string name="login_nextcloud_login_flow_no_login_data">შესვლის მონაცემების მიღება ვერ მოხერხდა</string>
+  <string name="login_configuration_detection">კონფიგურაციის აღმოჩენა</string>
+  <string name="login_querying_server">გთხოვთ, დაელოდოთ, მიმდინარეობს სერვერის გამოკითხვა...</string>
+  <string name="login_no_service">CalDAV-ის ან CardDAV-ის სერვისის მოძებნა ვერ მოხერხდა.</string>
+  <string name="login_no_service_info">საბაზო URL არ არის წვდომადი CalDAV/CardDAV URL და სერვერისის აღმოჩენა არ იყო წარმატებული.</string>
+  <string name="login_see_tested_services"><![CDATA[გთხოვთ, იხილოთ თქვენი სერვის პროვაიდერის ინსტრუქცია და <a href="%s">ჩვენს მიერ ტესტირებული სერვისების სია</a> და მათი საბაზო URL.</a>]]></string>
+  <string name="login_check_credentials">გთხოვთ, ასევე გადაამოწმოთ აუთენტიფიკაცია (ზოგადად, მომხმარებლის სახელი დაპაროლი).</string>
+  <string name="login_logs_available">დამატებითი ტექნიკური ინფორმაცია ხელმისაწვდომია ჟურნალებში.</string>
+  <string name="login_view_logs">ჟურნალების ნახვა</string>
+  <!--AccountSettingsActivity-->
+  <string name="settings_sync">სინქრონიზაცია</string>
+  <string name="settings_sync_interval_contacts">კონტაქტების სინქრონიზაციის ინტერვალი</string>
+  <string name="settings_sync_summary_manually">მხოლოდ ხელით</string>
+  <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">ყოველ %d წუთში + დაუყონებლივ ადგილობრივი ცვლილებებისას</string>
+  <string name="settings_sync_interval_calendars">კალენდრების სინქრონიზაციის ინტერვალი</string>
+  <string name="settings_sync_interval_tasks">დავალებვათა სინქრონიზაციის ინტერვალი</string>
+  <string-array name="settings_sync_interval_names">
+    <item>მხოლოდ ხელით</item>
+    <item>ყოველ 15 წუთში</item>
+    <item>ყოველ 30 წუთში</item>
+    <item>ყოველ 1 საათში</item>
+    <item>ყოველ 2 საათში</item>
+    <item>ყოველ 4 საათში</item>
+    <item>ყოველდღე</item>
+  </string-array>
+  <string name="settings_sync_wifi_only">მხოლოდ WiFi-ით სინქრონიზაცია</string>
+  <string name="settings_sync_wifi_only_on">სინქრონიზაცია შეზღუდულია WiFi კავშირზე</string>
+  <string name="settings_sync_wifi_only_off">კავშირის ტიპი არ გაითვალისწინება</string>
+  <string name="settings_sync_wifi_only_ssids">WiFi SSID-ს შეზღუდვა</string>
+  <string name="settings_sync_wifi_only_ssids_on">დასინქრონიზირდება მხოლო %s-ით</string>
+  <string name="settings_sync_wifi_only_ssids_off">გამოიყენება ყველა WiFi კავშირი</string>
+  <string name="settings_sync_wifi_only_ssids_message">დაშვებული WiFi ქსელების მძიმეთი დაყოფილი სახელები (SSID) (დატოვეთ ცარიელად ყველასთვის)</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID-ს შეზღუდვას სჭირდება დამატებითი პარამეტრები</string>
+  <string name="settings_sync_wifi_only_ssids_permissions_action">მართვა</string>
+  <string name="settings_ignore_vpns">VPN-ს სჭირდება არსებული ინტერნეტ-კავშირი</string>
+  <string name="settings_ignore_vpns_on">VPN არსებული დადასტურებული ინტერნეტ-კავშირის გარეშე არ არის საკმარისი სინქრონიზაციის გასაშვებად (რეკომენდებული)</string>
+  <string name="settings_ignore_vpns_off">VPN არსებული დადასტურებული ინტერნეტ-კავშირის გარეშე არ არის საკმარისი სინქრონიზაციის გასაშვებად</string>
+  <string name="settings_authentication">აუთენტიფიკაცია</string>
+  <string name="settings_oauth">თავიდან აუთენტიფიკაცია</string>
+  <string name="settings_oauth_summary">OAuth შესვლის თავიდან განხორციელება</string>
+  <string name="settings_username">მომხმარებლის სახელი</string>
+  <string name="settings_password">პაროლი</string>
+  <string name="settings_new_password">ახალი პაროლი</string>
+  <string name="settings_password_summary">პაროლის განახლება თქვენი სერვერის მიხედვით</string>
+  <string name="settings_certificate_alias">კლიენტის სერთიფიკატი</string>
+  <string name="settings_certificate_alias_empty">სერთიფიკატი ხელმიუწვდომია ან არ არის არჩეული</string>
+  <string name="settings_certificate_install">სერტიფიკატის დაყენება</string>
+  <string name="settings_caldav">CalDAV</string>
+  <string name="settings_sync_time_range_past">გასული ღონისძიების დროის შეზღუდვა</string>
+  <string name="settings_sync_time_range_past_none">დასინქრონიზირდება ყველა ღონისძიება</string>
+  <plurals name="settings_sync_time_range_past_days">
+    <item quantity="one">ერთ დღეზე უფრო ძველი ღონისძიებები იქნება იგნორირებული</item>
+    <item quantity="other">%d დღეზე უფრო ძველი ღონისძიებები იქნება იგნორირებული</item>
+  </plurals>
+  <string name="settings_sync_time_range_past_message">ღონისძიებები, რომლებიც უფრო ძველია, ვიდრე დღეთა მითითებული რაოდენობა, იქნება იგნორირებული (შეიძლება იყოს 0). დატოვეთ ცარიელად ყველას სინქრონიზებისთვის.</string>
+  <string name="settings_default_alarm">ნაგულისხმევა შეხსენება</string>
+  <plurals name="settings_default_alarm_on">
+    <item quantity="one">ნაგულისხმევი შეხსენება ღონისძიებამდე ერთი წუთით ადრე</item>
+    <item quantity="other">ნაგულისხმევი შეხსენება ღონისძიებამდე %d წუთით ადრე</item>
+  </plurals>
+  <string name="settings_default_alarm_off">ნაგულისხმევი შეხსენება არ არის შექმნილი</string>
+  <string name="settings_default_alarm_message">თუ ნაგულისხმევი შეხსენება უნდა შეიქმნას შეხსენების გარეშე ღონისძიებებისთვის: ღონისძიებამდე წუთების სასურველი რიცხვი. დატოვეთ ცარიელად ნაგულისხმევი შეხსენებების გასათიშად.</string>
+  <string name="settings_manage_calendar_colors">კალენდარის ფერების მართვა</string>
+  <string name="settings_manage_calendar_colors_on">კალენდარის ფერები ჩამოიყრება ყოველ სინქრონიზაციაზე</string>
+  <string name="settings_manage_calendar_colors_off">კალენდარის ფერები შეიძლება დაყენებულ იქნას სხვა აპების მიერ</string>
+  <string name="settings_event_colors">ღონისძიების ფერის მხარდაჭერა</string>
+  <string name="settings_event_colors_on">ღონისძიების ფერები არის სინქრონიზირებული</string>
+  <string name="settings_event_colors_off">ღონისძიების ფერები არ არის სინქრონიზირებული</string>
+  <string name="settings_carddav">CardDAV</string>
+  <string name="settings_contact_group_method">კონტაქტების დაჯგუფების მეთოდი</string>
+  <string-array name="settings_contact_group_method_entries">
+    <item>ჯგუფები ცალკე vCard-ებია</item>
+    <item>ჯგუფები არის კონტაქტთა კატეგორია</item>
+  </string-array>
+  <!--collection management-->
+  <string name="create_addressbook">მისამართთა წიგნაკის შექმნა</string>
+  <string name="create_calendar">კალენდარის შექმნა</string>
+  <string name="create_calendar_time_zone">ნაგულისხმევი საათის სარტყელი</string>
+  <string name="create_calendar_type">დაშვებული კალენდარის ჩანაწერები</string>
+  <string name="create_calendar_type_vevent">ღონისძიებები</string>
+  <string name="create_calendar_type_vtodo">დავალებები</string>
+  <string name="create_calendar_type_vjournal">შენიშვნები / ჟურნალი</string>
+  <string name="create_collection_color">ფერი</string>
+  <string name="create_collection_creating">მიმდინარეობს კოლექციის შექმნა</string>
+  <string name="create_collection_display_name">სათაური</string>
+  <string name="create_collection_display_name_required">სათაური სავალდებულოა</string>
+  <string name="create_collection_description">აღწერა</string>
+  <string name="create_collection_description_optional">აღწერა (არასავალდებულო)</string>
+  <string name="create_collection_optional">არასავალდებულო</string>
+  <string name="create_collection_home_set">მეხსიერების ადგილმდებარეობა</string>
+  <string name="create_collection_home_set_required">მეხსიერების ადგილმდებარეობა სავალდებულოა</string>
+  <string name="create_collection_create">შექმნა</string>
+  <string name="delete_collection">კოლექციის წაშლა</string>
+  <string name="delete_collection_confirm_title">დარწმუნებული ხართ?</string>
+  <string name="delete_collection_confirm_warning">ეს კოლექცია (%s) და ყველა მისი მონაცემები მუდმივად წაიშლება.</string>
+  <string name="delete_collection_data_shall_be_deleted">ეს მონაცემები წაიშლება სერვერიდან.</string>
+  <string name="collection_force_read_only">მხოლოდ წაკითხვადის დაძალება</string>
+  <string name="collection_properties">თვისებები</string>
+  <string name="collection_properties_sync_time">ბოლოს სინქრონიზირებული:</string>
+  <string name="collection_properties_sync_time_never">არასდროს არ სინქრონიზირებული</string>
+  <string name="collection_properties_url">მისამართი (URL):</string>
+  <string name="collection_properties_owner">მფლობელი</string>
+  <!--debugging and DebugInfoActivity-->
+  <string name="debug_info_title">დებაგის ინფო</string>
+  <string name="debug_info_archive_caption">ZIP არქივი</string>
+  <string name="debug_info_archive_subtitle">შეიცავს დებაგის ინფოს და ჟურნალებს</string>
+  <string name="debug_info_archive_text">გააზიარეთ არქივი მისი კომპიუტერზე გადასაგზავნად, ელ. ფოსტით გასაგზავნად ან მისი მხარდაჭერის ბილეთზე მისაბმელად.</string>
+  <string name="debug_info_archive_share">არქივის გაზიარება</string>
+  <string name="debug_info_attached">დებაგის ინფო მიბმულია ამ შეტყობინებაზე (სჭირდება მიბმის მხარდაჭერა მიმღებ აპში).</string>
+  <string name="debug_info_http_error">HTTP შეცდომა</string>
+  <string name="debug_info_server_error">სერვერის შეცდომა</string>
+  <string name="debug_info_webdav_error">WebDAV შეცდომა</string>
+  <string name="debug_info_io_error">წაკითხვა/ჩაწერის შეცდომა</string>
+  <string name="debug_info_http_403_description">ეს მოთხოვნა იქნა უარყოფილი. შეამოწმეთ შესაბამისი რესურსები და დებაგის ინფო დეტალებისთვის.</string>
+  <string name="debug_info_http_404_description">მოთხოვნილი რესურსი (აღარ) არსებობს. შეამოწმეთ შესაბამისი რესურსები და დებაგის ინფო დეტალებისთვის.</string>
+  <string name="debug_info_http_5xx_description">მოხდა პრობლემა სერვერის მხარეს. გთხოვთ, დაუკავშირდეთ თქვენს სერვერის მხარდაჭერას.</string>
+  <string name="debug_info_unexpected_error">მოხდა მოულოდნელი შეცდომა. იხილეთ დებაგის ინფო დეტალებისთვის.</string>
+  <string name="debug_info_view_details">დეტალების ნახვა</string>
+  <string name="debug_info_subtitle">დებაგის ინფო შეგროვდა</string>
+  <string name="debug_info_involved_caption">შესაბამისი რესურსები</string>
+  <string name="debug_info_involved_subtitle">დაკავშირებული პრობლემასთან</string>
+  <string name="debug_info_involved_remote">დაშორებული რესურსი:</string>
+  <string name="debug_info_involved_local">ადგილობრივი რესურსი:</string>
+  <string name="debug_info_logs_caption">ჟურნალები</string>
+  <string name="debug_info_logs_subtitle">ხელმისაწვდომია დეტალური ჟურნალები</string>
+  <string name="debug_info_logs_view">ჟურნალების ნახვა</string>
+  <!--ExceptionInfoFragment-->
+  <string name="exception">მოხდა შეცდომა.</string>
+  <string name="exception_httpexception">მოხდა HTTP შეცდომა.</string>
+  <string name="exception_ioexception">მოხდა წაკითხვა/ჩაწერის შეცდომა.</string>
+  <string name="exception_show_details">დეტალების ჩვენება.</string>
+  <!--WebDAV accounts-->
+  <string name="webdav_mounts_title">WebDAV-ის მიბმები</string>
+  <string name="webdav_mounts_quota_used_available">გამოყენებული კვოტა: %1$s / ხელმისაწვდომი: %2$s</string>
+  <string name="webdav_mounts_share_content">შიგთავსის გაზიარება</string>
+  <string name="webdav_mounts_unmount">მიბმის გათიშვა</string>
+  <string name="webdav_add_mount_title">WebDAV-ის მიბმის დამატება</string>
+  <string name="webdav_mounts_empty">პირდაპირ იქონიეთ წვდომა თქვენი ღრუბლის ფაილებზე WebDAV-ის მიბმის დამატებით!</string>
+  <string name="webdav_add_mount_empty_more_info"><![CDATA[იხილეთ ინსტრუქცია, თუ <a href="%1$s">როგორ მოქმედებს WebDAV-ის მიბმები</a>.</string>]]></string>
+  <string name="webdav_add_mount_display_name">ნაჩვენები სახელი</string>
+  <string name="webdav_add_mount_url">WebDAV URL</string>
+  <string name="webdav_add_mount_url_invalid">არასწორი URL</string>
+  <string name="webdav_add_mount_authentication">აუთენტიფიკაცია (არასავალდებულო)</string>
+  <string name="webdav_add_mount_username">მომხმარებლის სახელი</string>
+  <string name="webdav_add_mount_password">პაროლი</string>
+  <string name="webdav_add_mount_add">მიბმის დამატება</string>
+  <string name="webdav_add_mount_no_support">WebDAV სერვისი ამ URL-ზე არ არის</string>
+  <string name="webdav_remove_mount_title">მიბმის წერტილის ამოშლა</string>
+  <string name="webdav_remove_mount_text">კავშირის დეტალები დაიკარგება, მაგრამ ფაილები არ წაიშლება.</string>
+  <string name="webdav_notification_access">მიმდინარეობს WebDAV ფაილზე წვდომა</string>
+  <string name="webdav_notification_download">მიმდინარეობს WebDAV ფაილის გადმოტვირთვა</string>
+  <string name="webdav_notification_upload">მიმდინარეობს WebDAV ფაილის ატვირთვა</string>
+  <string name="webdav_provider_root_title">WebDAV-iს მიბმა</string>
+  <!--sync-->
+  <string name="sync_error_permissions">DAVx⁵-ის უფლებები</string>
+  <string name="sync_error_permissions_text">საჭიროა დამატებითი უფლებები</string>
+  <string name="sync_error_tasks_too_old">%s ნამეტანი ძველია</string>
+  <string name="sync_error_tasks_required_version">მინიმალური საჭირო ვერსია: %1$s</string>
+  <string name="sync_error_authentication_failed">აუთენტიფიკაცია ჩაიშალა (შეამოწმეთ შევლის იდენტიფიკატორები)</string>
+  <string name="sync_error_io">ქსელური ან ჩაწერა/წაკითხვის შეცდომა - %s</string>
+  <string name="sync_error_http_dav">HTTP სერვერის შეცდომა - %s</string>
+  <string name="sync_error_local_storage">ადგილობრივი მეხსიერების შეცდომა - %s</string>
+  <string name="sync_error_retry_limit_reached">რბილის შეცდომა (მიღწეულია თავიდან ცდის მაწსიმუმი)</string>
+  <string name="sync_error_view_item">ჩანაწერის ნახვა</string>
+  <string name="sync_invalid_contact">მიღებულია არასწორი კონტაქტი სერვერიდან</string>
+  <string name="sync_invalid_event">მიღებულია არასწორი ღონისძიება სერვერიდან</string>
+  <string name="sync_invalid_task">მიღებული არასწორი დავალება სერვერიდან</string>
+  <string name="sync_invalid_resources_ignoring">ერთი ან მეტი არასწორი რესურსის იგნორირება</string>
+  <!--widgets-->
+  <string name="widget_sync_all">ყველაფრის სინქრონიზირება</string>
+  <string name="widget_sync_all_accounts">ყველა ანგარიშის სინქრონიზაცია</string>
+  <!--cert4android-->
+</resources>

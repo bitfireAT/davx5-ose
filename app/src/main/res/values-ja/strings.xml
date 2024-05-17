@@ -211,7 +211,8 @@
   <string name="account_install_icsx5">ICSx⁵ をインストール</string>
   <!--AddAccountActivity-->
   <string name="login_title">アカウントを追加</string>
-  <string name="login_provider_login">プロバイダー固有の方法でログイン</string>
+  <string name="login_generic_login">共通のログイン方法</string>
+  <string name="login_provider_login">プロバイダー固有のログイン方法</string>
   <string name="login_continue">続行</string>
   <string name="login_login">ログイン</string>
   <string name="login_type_email">メールアドレスでログイン</string>
@@ -331,7 +332,7 @@
   <!--collection management-->
   <string name="create_addressbook">アドレス帳を作成</string>
   <string name="create_calendar">カレンダーを作成</string>
-  <string name="create_calendar_time_zone_optional">デフォルトのタイムゾーン</string>
+  <string name="create_calendar_time_zone">デフォルトのタイムゾーン</string>
   <string name="create_calendar_type">可能なカレンダーエントリー</string>
   <string name="create_calendar_type_vevent">予定</string>
   <string name="create_calendar_type_vtodo">タスク</string>

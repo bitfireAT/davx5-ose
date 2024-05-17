@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="account_invalid">Le compte n’existe plus (désormais)</string>
+  <string name="account_invalid">Le compte n’existe plus (supprimé)</string>
   <string name="account_title_address_book">Carnet d\'adresses DAVx⁵</string>
   <string name="address_books_authority_title">Carnets d\'adresses</string>
   <string name="dialog_remove">Retirer</string>
@@ -9,7 +9,11 @@
   <string name="field_required">Ce champ est requis</string>
   <string name="help">Aide</string>
   <string name="manage_accounts">Gestion des comptes</string>
+  <string name="navigate_up">Revenir en haut</string>
+  <string name="optional_label">* facultatif</string>
+  <string name="options_menu">Menu d\'options</string>
   <string name="share">Partager</string>
+  <string name="sync_started">Synchronisation démarrée/en file d\'attente</string>
   <string name="database_destructive_migration_title">Base de données corrompue</string>
   <string name="database_destructive_migration_text">Tous les comptes ont été supprimés localement.</string>
   <string name="notification_channel_debugging">Débogage</string>
@@ -20,7 +24,7 @@
   <string name="notification_channel_sync_errors_desc">Erreurs importantes qui bloquent la synchronisation, telles que des réponses inattendues du serveur</string>
   <string name="notification_channel_sync_warnings">Avertissements de synchronisation</string>
   <string name="notification_channel_sync_warnings_desc">Problèmes de synchronisation non fatals tels que certains fichiers non valides</string>
-  <string name="notification_channel_sync_io_errors">Erreurs de réseau et d\'entrée / sortie</string>
+  <string name="notification_channel_sync_io_errors">Erreurs de réseau et d\'entrée/sortie</string>
   <string name="notification_channel_sync_io_errors_desc">Délais d\'attente, problèmes de connexion, etc. (souvent temporaires)</string>
   <!--IntroActivity-->
   <string name="intro_slogan1">Vos données, votre choix.</string>
@@ -81,6 +85,8 @@
   <string name="wifi_permissions_location_permission_off">Autorisation de localisation refusée</string>
   <string name="wifi_permissions_background_location_permission">Autorisation de localisation en arrière-plan</string>
   <string name="wifi_permissions_background_location_permission_label">Autorisez tout le temps</string>
+  <string name="wifi_permissions_background_location_permission_on">Autorisation de localisation réglée sur : %s</string>
+  <string name="wifi_permissions_background_location_permission_off">Autorisation de localisation non réglée sur : %s&lt;/b&gt;]]&gt;</string>
   <string name="wifi_permissions_background_location_disclaimer">%s utilise l\'autorisation de localisation uniquement pour déterminer le SSID du WiFi actuel pour les comptes à SSID restreint. Cela se produit même lorsque l\'application est en arrière-plan. Aucune donnée de localisation n\'est collectée, stockée, traitée ou envoyée nulle part.</string>
   <string name="wifi_permissions_location_enabled">Localisation toujours activée</string>
   <string name="wifi_permissions_location_enabled_on">Le service de localisation est activé</string>
@@ -110,6 +116,8 @@
   <string name="navigation_drawer_manual">Manuel</string>
   <string name="navigation_drawer_faq">Foire aux questions</string>
   <string name="navigation_drawer_community">Communauté</string>
+  <string name="navigation_drawer_support_project">Soutenir le projet</string>
+  <string name="navigation_drawer_contribute">Comment contribuer</string>
   <string name="navigation_drawer_privacy_policy">Politique de confidentialité</string>
   <string name="account_list_no_notification_permission">Notifications désactivées. Vous ne serez pas averti des erreurs de synchronisation.</string>
   <string name="account_list_no_internet">Pas de connexion Internet. La synchronisation risque de ne pas fonctionner.</string>
@@ -137,8 +145,10 @@
   <string name="app_settings_logging_on">La journalisation est activée</string>
   <string name="app_settings_logging_off">La journalisation est désactivée</string>
   <string name="app_settings_battery_optimization">Optimisation de la batterie</string>
+  <string name="app_settings_battery_optimization_exempted">Pas de restriction (recommandé)</string>
+  <string name="app_settings_battery_optimization_optimized">Restriction d\'utilisation de la batterie activée (non recommandé)</string>
   <string name="app_settings_connection">Connexion</string>
-  <string name="app_settings_proxy">Type de Proxy</string>
+  <string name="app_settings_proxy">Type de proxy</string>
   <string-array name="app_settings_proxy_types">
     <item>Par défaut (système)</item>
     <item>Pas de proxy</item>
@@ -169,50 +179,67 @@
   <string name="app_settings_reset_hints_summary">Réactiver les astuces qui ont été vues précédemment</string>
   <string name="app_settings_reset_hints_success">Toutes les astuces seront affichés à nouveau</string>
   <string name="app_settings_integration">Intégration</string>
-  <string name="app_settings_tasks_provider">Applications de gestion de taches</string>
+  <string name="app_settings_tasks_provider">Applications de gestion de tâches</string>
   <string name="app_settings_tasks_provider_none">Aucune application de tâches compatibles trouvée</string>
   <!--AccountActivity-->
-  <string name="account_carddav">Carnets d\'adresses</string>
-  <string name="account_caldav">Agendas</string>
+  <string name="account_carddav">Carnets d\'adresses (CardDAV)</string>
+  <string name="account_caldav">Agendas (CalDAV)</string>
   <string name="account_webcal">WebCal</string>
+  <string name="account_missing_permissions">Des autorisations supplémentaires sont nécessaires pour synchroniser ces collections.</string>
+  <string name="account_manage_permissions">Gérer les autorisations</string>
   <string name="account_synchronize_now">Synchroniser maintenant</string>
   <string name="account_settings">Paramètres du compte</string>
   <string name="account_rename">Renommer le compte</string>
-  <string name="account_rename_new_name">Nouveau nom d\'utilisateur</string>
+  <string name="account_rename_new_name_description">Les données locales non sauvegardées risquent d\'être perdues. Une resynchronisation est nécessaire après le renommage.</string>
+  <string name="account_rename_new_name">Nouveau nom de compte</string>
   <string name="account_rename_rename">Renommer</string>
   <string name="account_rename_exists_already">Le nom du compte est déjà pris</string>
   <string name="account_rename_couldnt_rename">Impossible de renommer le compte</string>
   <string name="account_delete">Supprimer le compte</string>
-  <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte?</string>
+  <string name="account_delete_confirmation_title">Voulez-vous vraiment supprimer le compte ?</string>
   <string name="account_delete_confirmation_text">Toutes les copies locales des carnets d\'adresses, des calendriers et des listes de tâches seront supprimées.</string>
-  <string name="account_synchronize_this_collection">Synchronise cette collection</string>
+  <string name="account_synchronize_this_collection">Synchroniser cette collection</string>
   <string name="account_read_only">En lecture seulement</string>
   <string name="account_calendar">calendrier</string>
-  <string name="account_task_list">liste de tâche</string>
+  <string name="account_task_list">liste de tâches</string>
   <string name="account_journal">journal</string>
-  <string name="account_only_personal">N\'afficher que les comptes perso.</string>
+  <string name="account_only_personal">N\'afficher que les comptes personnels</string>
+  <string name="account_refresh_collections">Rafraîchir les collections</string>
+  <string name="account_refreshing_collections">Rafraîchir la liste des collections</string>
+  <string name="account_webcal_external_app">Les abonnements Webcal peuvent être synchronisés avec des applications tierces.</string>
   <string name="account_no_webcal_handler_found">Aucune application compatible WebCal</string>
   <string name="account_install_icsx5">Installer ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Ajouter un compte</string>
+  <string name="login_generic_login">Connexion standard</string>
+  <string name="login_provider_login">Connexion par fournisseur spécifique</string>
+  <string name="login_continue">Suivant</string>
   <string name="login_login">Se connecter</string>
-  <string name="login_type_email">Connexion avec une adresse email</string>
-  <string name="login_email_address">Adresse mail</string>
-  <string name="login_email_address_error">Une adresse e-mail valide est requise</string>
+  <string name="login_type_email">Connexion avec une adresse de courriel</string>
+  <string name="login_email_address">Adresse de courriel</string>
+  <string name="login_email_address_error">Une adresse de courriel valide est requise</string>
+  <string name="login_email_address_info"><![CDATA[Le domaine de l\'adresse de courriel est utilisé comme URL de base. <a href="%s">Les services sont découverts</a> en utilisant les enregistrements DNS et les URL connues.]]></string>
   <string name="login_password">Mot de passe</string>
   <string name="login_password_hide">Cacher le mot de passe</string>
   <string name="login_password_show">Montrer le mot de passe</string>
+  <string name="login_password_optional">Mot de passe*</string>
   <string name="login_type_url">Connexion avec une URL et un nom d\'utilisateur</string>
   <string name="login_user_name">Nom d\'utilisateur</string>
+  <string name="login_user_name_optional">Nom d\'utilisateur*</string>
   <string name="login_base_url">URL de base</string>
+  <string name="login_base_url_info"><![CDATA[L\'URL de base sera vérifié directement, et <a href="%s">les services sont aussi découverts</a> en utilisant les enregistrements DNS et les URL connues.]]></string>
   <string name="login_select_certificate">Choisir le certificat</string>
   <string name="login_create_account">Créer un compte</string>
   <string name="login_account_name">Nom du compte</string>
-  <string name="login_account_name_info">Utilisez votre adresse e-mail comme nom de compte car Android utilisera ce nom en tant que champ ORGANISATEUR pour les événements que vous créerez. Vous ne pouvez pas avoir deux comptes avec le même nom.</string>
+  <string name="login_account_avoid_apostrophe">L\'utilisation d\'apostrophe (\') semble poser problème sur certains appareils.</string>
+  <string name="login_account_name_info">Utilisez votre adresse de courriel comme nom de compte car Android utilisera ce nom en tant que champ ORGANISATEUR pour les événements que vous créerez. Vous ne pouvez pas avoir deux comptes avec le même nom.</string>
   <string name="login_account_contact_group_method">Méthode pour les contacts de type groupe :</string>
   <string name="login_account_name_required">Nom du compte requis</string>
   <string name="login_account_name_already_taken">Le nom du compte est déjà pris</string>
   <string name="login_account_not_created">Le compte n\'a pas pu être créé</string>
+  <string name="login_type_advanced">Connexion avancée</string>
+  <string name="login_no_client_certificate_optional">Pas de certificat client*</string>
+  <string name="login_client_certificate_selected">Certificat client : %s</string>
   <string name="login_no_certificate_found">Aucun certificat trouvé</string>
   <string name="login_install_certificate">Installer un certificat</string>
   <string name="login_type_google">Google Contacts / Agenda</string>
@@ -221,6 +248,8 @@
   <string name="login_google_account">Compte Google</string>
   <string name="login_google">Se connecter avec Google</string>
   <string name="login_google_client_id">ID client (optionnel)</string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s transfère vos Contacts Google et Agenda Google uniquement pour la synchronisation avec cet appareil. Voir plus de détails dans notre <a href="%2$s">Politique de confidentialité</a>.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s respecte la <a href="%2$s">politique des données utilisateur des services API Google</a>, incluant les exigences de limitation d\'utilisation.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">N\'a pas pu obtenir le code d\'autorisation</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Se connecter avec Nextcloud</string>
@@ -232,7 +261,11 @@
   <string name="login_configuration_detection">Détection de la configuration</string>
   <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur …</string>
   <string name="login_no_service">Aucun accès possible au service CalDAV ou CardDAV.</string>
-  <string name="login_view_logs">Voir les logs</string>
+  <string name="login_no_service_info">L\'URL de base ne semble pas être une URL CalDAV/CardDAV et la détection du service a échoué.</string>
+  <string name="login_see_tested_services"><![CDATA[Merci de consulter les notices de votre fournisseur de services et <a href="%s">notre liste de services vérifiés</a> ainsi que leur URL de base.]]></string>
+  <string name="login_check_credentials">Merci de bien vérifier l\'authentification (souvent le nom d\'utilisateur et le mot de passe).</string>
+  <string name="login_logs_available">Plus d\'information technique est disponible dans les journaux.</string>
+  <string name="login_view_logs">Voir les journaux</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronisation</string>
   <string name="settings_sync_interval_contacts">Intervalle de synchronisation des carnets d\'adresses</string>
@@ -258,10 +291,18 @@
   <string name="settings_sync_wifi_only_ssids_message">Liste des points d\'accès WiFi (SSID) autorisés, séparés par des virgules. (Laissez vide pour tous)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restriction du SSID WiFi nécessite des réglages supplémentaires</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Gérer</string>
+  <string name="settings_ignore_vpns">Le VPN nécessite un accès Internet fonctionnel</string>
+  <string name="settings_ignore_vpns_on">Un VPN sans connexion Internet fonctionnelle ne permet pas de lancer une synchronisation (recommandé)</string>
+  <string name="settings_ignore_vpns_off">Un VPN sans connexion Internet fonctionnelle peut lancer une synchronisation</string>
   <string name="settings_authentication">Authentification</string>
+  <string name="settings_oauth">Ré-authentification</string>
+  <string name="settings_oauth_summary">Retenter la connexion OAuth</string>
   <string name="settings_username">Nom d\'utilisateur</string>
   <string name="settings_password">Mot de passe</string>
+  <string name="settings_new_password">Nouveau mot de passe</string>
   <string name="settings_password_summary">Mettre à jour le mot de passe </string>
+  <string name="settings_certificate_alias">Certificat client</string>
+  <string name="settings_certificate_alias_empty">Aucun certificat disponible ou sélectionné</string>
   <string name="settings_certificate_install">Installer un certificat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite des événements passés</string>
@@ -280,7 +321,7 @@
   </plurals>
   <string name="settings_default_alarm_off">Aucun rappel par défaut</string>
   <string name="settings_default_alarm_message">Si des rappels par défaut doivent être créé pour des événements sans rappel: le nombre de minutes avant l\'événement. Laisser blanc pour désactiver les rappels par défaut.</string>
-  <string name="settings_manage_calendar_colors">Choisir couleur du calendrier</string>
+  <string name="settings_manage_calendar_colors">Choisir la couleur du calendrier</string>
   <string name="settings_manage_calendar_colors_on">Les couleurs du calendrier sont réinitialisées à chaque synchronisation</string>
   <string name="settings_manage_calendar_colors_off">Les couleurs du calendrier peuvent être définies par d\'autres applications</string>
   <string name="settings_event_colors">Couleur associée aux événements</string>
@@ -295,26 +336,28 @@
   <!--collection management-->
   <string name="create_addressbook">Créer un carnet d\'adresses</string>
   <string name="create_calendar">Créer un calendrier</string>
+  <string name="create_calendar_time_zone">Fuseau horaire par défaut</string>
   <string name="create_calendar_type">Entrées possibles de calendrier</string>
   <string name="create_calendar_type_vevent">Événements</string>
   <string name="create_calendar_type_vtodo">Tâches</string>
   <string name="create_calendar_type_vjournal">Notes / journal</string>
   <string name="create_collection_color">Couleur</string>
-  <string name="create_collection_creating">Création collection</string>
+  <string name="create_collection_creating">Création d\'une collection</string>
   <string name="create_collection_display_name">Titre</string>
-  <string name="create_collection_display_name_required">Titre requis</string>
+  <string name="create_collection_display_name_required">Un titre est obligatoire</string>
   <string name="create_collection_description">Description</string>
+  <string name="create_collection_description_optional">Description (facultative)</string>
   <string name="create_collection_optional">facultatif</string>
   <string name="create_collection_home_set">Emplacement de stockage</string>
   <string name="create_collection_home_set_required">Emplacement de stockage requis</string>
   <string name="create_collection_create">Créer</string>
   <string name="delete_collection">Supprimer la collection</string>
-  <string name="delete_collection_confirm_title">Êtes-vous sur?</string>
+  <string name="delete_collection_confirm_title">Êtes-vous sûr ?</string>
   <string name="delete_collection_confirm_warning">Cette collection (%s)  et toutes ses données seront supprimées définitivement.</string>
   <string name="delete_collection_data_shall_be_deleted">Ces données sont supprimées du serveur.</string>
-  <string name="collection_force_read_only">Forcer la lecture seulement</string>
+  <string name="collection_force_read_only">Forcer en lecture seule</string>
   <string name="collection_properties">Propriétés</string>
-  <string name="collection_properties_sync_time">Dernièrement synchronisé :</string>
+  <string name="collection_properties_sync_time">Dernière synchronisation :</string>
   <string name="collection_properties_sync_time_never">Jamais synchronisé</string>
   <string name="collection_properties_url">Adresse (URL) :</string>
   <string name="collection_properties_owner">Propriétaire :</string>
@@ -322,42 +365,43 @@
   <string name="debug_info_title">Infos de débogage</string>
   <string name="debug_info_archive_caption">Archive ZIP</string>
   <string name="debug_info_archive_subtitle">Contient des informations de débogage et des journaux</string>
-  <string name="debug_info_archive_text">Partagez l’archive pour la transférer sur un ordinateur, pour l’envoyer par e-mail ou pour la joindre à un ticket de support.</string>
+  <string name="debug_info_archive_text">Partagez l’archive pour la transférer sur un ordinateur, pour l’envoyer par courriel ou pour la joindre à un ticket de support.</string>
   <string name="debug_info_archive_share">Partager l\'archive</string>
   <string name="debug_info_attached">Informations de débogage jointes à ce message (nécessite une application compatible).</string>
   <string name="debug_info_http_error">Erreur HTTP</string>
   <string name="debug_info_server_error">Erreur Serveur</string>
   <string name="debug_info_webdav_error">Erreur WebDAV</string>
-  <string name="debug_info_io_error">Erreur I/O</string>
+  <string name="debug_info_io_error">Erreur d\'entrée/sortie</string>
   <string name="debug_info_http_403_description">La demande a été rejetée. Vérifiez les ressources impliquées et les informations de débogage pour plus de détails.</string>
-  <string name="debug_info_http_404_description">La ressource demandée n\'existe pas (plus). Vérifiez les ressources concernées et les informations de débogage pour plus de détails.</string>
-  <string name="debug_info_http_5xx_description">Un problème de serveur s\'est produit. Veuillez contacter le support de votre serveur.</string>
+  <string name="debug_info_http_404_description">La ressource demandée n\'existe plus. Vérifiez les ressources concernées et les informations de débogage pour plus de détails.</string>
+  <string name="debug_info_http_5xx_description">Un problème s\'est produit côté serveur. Veuillez contacter le support de votre serveur.</string>
   <string name="debug_info_unexpected_error">Une erreur inattendue s\'est produite. Voir les informations de débogage pour plus de détails.</string>
   <string name="debug_info_view_details">Voir les détails</string>
   <string name="debug_info_subtitle">Les informations de débogage ont été collectées</string>
   <string name="debug_info_involved_caption">Ressources impliquées</string>
   <string name="debug_info_involved_subtitle">En rapport avec le problème</string>
   <string name="debug_info_involved_remote">Ressource à distance :</string>
-  <string name="debug_info_involved_local">Ressource local :</string>
+  <string name="debug_info_involved_local">Ressource locale :</string>
   <string name="debug_info_logs_caption">Journaux</string>
-  <string name="debug_info_logs_subtitle">Des logs verbeux sont disponibles</string>
-  <string name="debug_info_logs_view">Voir les logs</string>
+  <string name="debug_info_logs_subtitle">Des journaux verbeux sont disponibles</string>
+  <string name="debug_info_logs_view">Voir les journaux</string>
   <!--ExceptionInfoFragment-->
   <string name="exception">Une erreur est survenue.</string>
   <string name="exception_httpexception">Une erreur HTTP est survenue.</string>
-  <string name="exception_ioexception">Une erreur I/O est survenue.</string>
+  <string name="exception_ioexception">Une erreur d\'entrée/sortie est survenue.</string>
   <string name="exception_show_details">Voir détails</string>
   <!--WebDAV accounts-->
   <string name="webdav_mounts_title">Points de montage WebDAV</string>
-  <string name="webdav_mounts_quota_used_available">Quota utitlisé : %1$s / disponible : %2$s</string>
+  <string name="webdav_mounts_quota_used_available">Quota utilisé : %1$s / disponible : %2$s</string>
   <string name="webdav_mounts_share_content">Partager le contenu</string>
   <string name="webdav_mounts_unmount">Démonter</string>
   <string name="webdav_add_mount_title">Ajouter un point de montage WebDAV</string>
-  <string name="webdav_mounts_empty">Accédez directement à vos fichiers du cloud en ajoutant un point de montage WebDAV !</string>
+  <string name="webdav_mounts_empty">Accédez directement à vos fichiers du cloud en ajoutant un point de montage WebDAV !</string>
   <string name="webdav_add_mount_empty_more_info"><![CDATA[Consultez le manuel pour voir <a href="%1$s">comment fonctionnent les points de montage WebDAV</a>.</string>]]></string>
   <string name="webdav_add_mount_display_name">Nom affiché</string>
   <string name="webdav_add_mount_url">URL WebDAV</string>
   <string name="webdav_add_mount_url_invalid">URL incorrecte</string>
+  <string name="webdav_add_mount_authentication">Authentification (facultative)</string>
   <string name="webdav_add_mount_username">Nom d\'utilisateur</string>
   <string name="webdav_add_mount_password">Mot de passe</string>
   <string name="webdav_add_mount_add">Ajouter un point de montage</string>
@@ -371,18 +415,20 @@
   <!--sync-->
   <string name="sync_error_permissions">Autorisations DAVx⁵</string>
   <string name="sync_error_permissions_text">Autorisations supplémentaires demandées</string>
-  <string name="sync_error_tasks_too_old">%s trop vieux</string>
+  <string name="sync_error_tasks_too_old">%s trop ancien</string>
   <string name="sync_error_tasks_required_version">Version minimale requise : %1$s</string>
-  <string name="sync_error_authentication_failed">Echec d\'authentification (contrôler vos identifiants de connexion)</string>
-  <string name="sync_error_io">Erreur de réseau ou d\'entrée / sortie - %s</string>
+  <string name="sync_error_authentication_failed">Echec de connexion (vérifier vos identifiants de connexion)</string>
+  <string name="sync_error_io">Erreur de réseau ou d\'entrée/sortie - %s</string>
   <string name="sync_error_http_dav">Erreur de serveur HTTP - %s</string>
   <string name="sync_error_local_storage">Erreur de stockage local - %s</string>
+  <string name="sync_error_retry_limit_reached">Erreur logicielle (nombre maximum de tentatives atteint)</string>
   <string name="sync_error_view_item">Voir l\'élément</string>
   <string name="sync_invalid_contact">Reçu un contact invalide du serveur</string>
   <string name="sync_invalid_event">Reçu un événement invalide du serveur</string>
   <string name="sync_invalid_task">Reçu une tâche invalide du serveur</string>
   <string name="sync_invalid_resources_ignoring">Ignorer une ou plusieurs ressources non valides</string>
   <!--widgets-->
+  <string name="widget_sync_all">Tout synchroniser</string>
   <string name="widget_sync_all_accounts">Synchroniser tous les comptes</string>
   <!--cert4android-->
 </resources>

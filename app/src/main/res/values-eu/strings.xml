@@ -13,6 +13,7 @@
   <string name="optional_label">* aukeran</string>
   <string name="options_menu">Aukeren menua</string>
   <string name="share">Partekatu</string>
+  <string name="sync_started">Sinkronizazioa hasi/ilaran jarri da</string>
   <string name="database_destructive_migration_title">Datu-basea hondatua</string>
   <string name="database_destructive_migration_text">Kontu lokal guztiak ezabatu dira.</string>
   <string name="notification_channel_debugging">Arazten</string>
@@ -333,7 +334,7 @@
   <!--collection management-->
   <string name="create_addressbook">Sortu helbide liburua</string>
   <string name="create_calendar">Sortu egutegia</string>
-  <string name="create_calendar_time_zone_optional">Ordu-zona lehenetsia</string>
+  <string name="create_calendar_time_zone">Ordu-zona lehenetsia</string>
   <string name="create_calendar_type">Egutegi sarrera posibleak</string>
   <string name="create_calendar_type_vevent">Gertaerak</string>
   <string name="create_calendar_type_vtodo">Zereginak</string>
