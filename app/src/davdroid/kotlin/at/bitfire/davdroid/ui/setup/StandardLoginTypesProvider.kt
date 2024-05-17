@@ -28,9 +28,9 @@ class StandardLoginTypesProvider @Inject constructor() : LoginTypesProvider {
 
     override fun intentToInitialLoginType(intent: Intent) =
         if (intent.hasExtra(LoginActivity.EXTRA_LOGIN_FLOW))
-            NextcloudLogin
+            Pair(NextcloudLogin, true)
         else
-            UrlLogin
+            Pair(defaultLoginType, false)
 
     @Composable
     override fun LoginTypePage(
