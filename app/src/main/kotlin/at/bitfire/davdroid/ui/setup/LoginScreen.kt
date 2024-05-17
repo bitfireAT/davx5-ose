@@ -40,7 +40,7 @@ fun LoginScreen(
     onFinish: (Account?) -> Unit
 ) {
     val model: LoginScreenModel = hiltViewModel { factory: LoginScreenModel.Factory ->
-        factory.create(skipLoginTypePage, initialLoginInfo, initialLoginType)
+        factory.create(initialLoginType, skipLoginTypePage, initialLoginInfo)
     }
 
     // handle back/up navigation

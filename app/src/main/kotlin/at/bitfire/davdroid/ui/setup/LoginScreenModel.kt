@@ -33,9 +33,9 @@ import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = LoginScreenModel.Factory::class)
 class LoginScreenModel @AssistedInject constructor(
+    @Assisted val initialLoginType: LoginType,
     @Assisted val skipLoginTypePage: Boolean,
     @Assisted val initialLoginInfo: LoginInfo,
-    @Assisted val initialLoginType: LoginType,
     val context: Application,
     val loginTypesProvider: LoginTypesProvider,
     private val accountRepository: AccountRepository,
@@ -45,9 +45,9 @@ class LoginScreenModel @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(
+            initialLoginType: LoginType,
             skipLoginTypePage: Boolean,
-            initialLoginInfo: LoginInfo,
-            initialLoginType: LoginType
+            initialLoginInfo: LoginInfo
         ): LoginScreenModel
     }
 
