@@ -21,8 +21,6 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
-import androidx.glance.color.DynamicThemeColorProviders.onPrimary
-import androidx.glance.color.DynamicThemeColorProviders.primary
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxWidth
@@ -30,12 +28,13 @@ import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.text.Text
 import androidx.glance.text.TextDefaults
+import androidx.glance.unit.ColorProvider
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
+import at.bitfire.davdroid.ui.M3ColorScheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SyncButtonWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -51,7 +50,7 @@ class SyncButtonWidget : GlanceAppWidget() {
         Row(
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .background(primary)
+                .background(ColorProvider(M3ColorScheme.md_theme_light_primary))
                 .cornerRadius(16.dp)
                 .padding(4.dp)
                 .clickable {
@@ -59,6 +58,7 @@ class SyncButtonWidget : GlanceAppWidget() {
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val onPrimary = ColorProvider(M3ColorScheme.md_theme_light_onPrimary)
             Image(
                 provider = ImageProvider(R.drawable.ic_sync),
                 contentDescription = context.getString(R.string.widget_sync_all_accounts),
@@ -80,16 +80,16 @@ class SyncButtonWidget : GlanceAppWidget() {
         }
     }
 
-    private fun requestSync(context: Context) = CoroutineScope(Dispatchers.IO).launch {
-        val accountType = context.getString(R.string.account_type)
-        val accounts = AccountManager.get(context).getAccountsByType(accountType)
-        for (account in accounts) {
-            OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
+    private fun requestSync(context: Context) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val accountType = context.getString(R.string.account_type)
+            val accounts = AccountManager.get(context).getAccountsByType(accountType)
+            for (account in accounts) {
+                OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
+            }
         }
 
-        withContext(Dispatchers.Main) {
-            Toast.makeText(context, R.string.sync_started, Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(context, R.string.sync_started, Toast.LENGTH_SHORT).show()
     }
 
 }
