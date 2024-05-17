@@ -361,8 +361,8 @@ fun AccountList(
             for ((account, progress) in accounts)
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
                     ),
                     elevation = CardDefaults.cardElevation(1.dp),
                     modifier = Modifier
@@ -375,7 +375,6 @@ fun AccountList(
                         when (progress) {
                             AccountProgress.Active ->
                                 LinearProgressIndicator(
-                                    //color = MaterialTheme.colors.onSecondary,
                                     modifier = Modifier
                                         .alpha(progressAlpha)
                                         .fillMaxWidth()

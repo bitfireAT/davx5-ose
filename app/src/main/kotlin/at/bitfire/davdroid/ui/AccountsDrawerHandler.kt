@@ -236,7 +236,7 @@ fun BrandingHeader() {
         Spacer(Modifier.height(16.dp))
         Box(
             Modifier.background(
-                color = M3ColorScheme.md_theme_light_primary,
+                color = M3ColorScheme.primaryLight,
                 shape = RoundedCornerShape(16.dp)
             )
         ) {

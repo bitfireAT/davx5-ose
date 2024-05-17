@@ -51,7 +51,7 @@ class WelcomePage: IntroPage {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = M3ColorScheme.md_theme_light_primary),
+                .background(color = M3ColorScheme.primaryLight),
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_launcher_foreground),

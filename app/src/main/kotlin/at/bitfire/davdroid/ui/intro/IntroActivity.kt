@@ -51,7 +51,7 @@ class IntroActivity : AppIntro2() {
             })
         }
 
-        setBarColor(M3ColorScheme.LightColors.primary.toArgb())
+        setBarColor(M3ColorScheme.primaryLight.toArgb())
         isSkipButtonEnabled = false
 
         onBackPressedDispatcher.addCallback(this) {

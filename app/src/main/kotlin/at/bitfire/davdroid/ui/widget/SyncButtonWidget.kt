@@ -50,7 +50,7 @@ class SyncButtonWidget : GlanceAppWidget() {
         Row(
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .background(ColorProvider(M3ColorScheme.md_theme_light_primary))
+                .background(ColorProvider(M3ColorScheme.primaryLight))
                 .cornerRadius(16.dp)
                 .padding(4.dp)
                 .clickable {
@@ -58,7 +58,7 @@ class SyncButtonWidget : GlanceAppWidget() {
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val onPrimary = ColorProvider(M3ColorScheme.md_theme_light_onPrimary)
+            val onPrimary = ColorProvider(M3ColorScheme.onPrimaryLight)
             Image(
                 provider = ImageProvider(R.drawable.ic_sync),
                 contentDescription = context.getString(R.string.widget_sync_all_accounts),
