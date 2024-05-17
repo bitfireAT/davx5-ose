@@ -98,7 +98,7 @@
   <string name="logging_notification_text">Действията на %s се записват в дневник</string>
   <string name="logging_notification_view_share">Преглед/споделяне</string>
   <string name="logging_notification_disable">Изключване</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Адаптор за синхронизиране на CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Относно / лиценз</string>
   <string name="navigation_drawer_beta_feedback">Обратна връзка към бета</string>
@@ -172,7 +172,7 @@
   <string name="app_settings_integration">Интеграция</string>
   <string name="app_settings_tasks_provider">Приложението Tasks</string>
   <string name="app_settings_tasks_provider_none">Не е инсталирана съвместимо приложение за задачи.</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -190,7 +190,6 @@
   <string name="account_synchronize_this_collection">синхронизиране на списък</string>
   <string name="account_read_only">само за четене</string>
   <string name="account_calendar">календар</string>
-  <string name="account_task_list">списък със задачи</string>
   <string name="account_journal">дневник</string>
   <string name="account_only_personal">Само лични</string>
   <string name="account_no_webcal_handler_found">Няма инсталирана програма за Webcal абонамент.</string>
@@ -266,8 +265,6 @@
   <string name="settings_ignore_vpns_on">VPN без работеща и проверена връзка с интернет не е достатъчен, за да се извършва синхронизация (препоръчително)</string>
   <string name="settings_ignore_vpns_off">VPN без работеща и проверена връзка с интернет е достатъчен, за да се извършва синхронизация</string>
   <string name="settings_authentication">Удостоверяване</string>
-  <string name="settings_oauth">Повторно удостоверяване</string>
-  <string name="settings_oauth_summary">Изпълнява повторно влизане чрез OAuth</string>
   <string name="settings_username">Потребителско име</string>
   <string name="settings_password">Парола</string>
   <string name="settings_password_summary">Променете паролата съгласно сървъра.</string>
@@ -299,7 +296,7 @@
     <item>Групите са отделни vCards</item>
     <item>Групите са категории във всеки контакт</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Създаване на адресник</string>
   <string name="create_calendar">Създаване на календар</string>
   <string name="create_calendar_type">Възможни компоненти в календара</string>
@@ -307,25 +304,14 @@
   <string name="create_calendar_type_vtodo">Задачи</string>
   <string name="create_calendar_type_vjournal">Бележки / дневник</string>
   <string name="create_collection_color">Цвят</string>
-  <string name="create_collection_creating">Създаване на ресурс</string>
   <string name="create_collection_display_name">Заглавие</string>
-  <string name="create_collection_display_name_required">Необходимо е заглавие</string>
-  <string name="create_collection_description">Описание</string>
-  <string name="create_collection_description_optional">Описание (по желание)</string>
-  <string name="create_collection_optional">по желание</string>
   <string name="create_collection_home_set">Местоположение на хранилището</string>
-  <string name="create_collection_home_set_required">Местоположението на хранилището е задължително</string>
   <string name="create_collection_create">Създаване</string>
-  <string name="delete_collection">Премахване</string>
-  <string name="delete_collection_confirm_title">Сигурни ли сте?</string>
-  <string name="delete_collection_confirm_warning">Този ресурс (%s) и всичките данни в него ще бъдат изтрити.</string>
-  <string name="delete_collection_data_shall_be_deleted">Тези данни ще бъдат премахнати от сървъра.</string>
-  <string name="collection_force_read_only">Само за четене</string>
-  <string name="collection_properties">Свойства</string>
-  <string name="collection_properties_sync_time">Последно синхронизирано:</string>
-  <string name="collection_properties_sync_time_never">Никога</string>
-  <string name="collection_properties_url">Адрес:</string>
-  <string name="collection_properties_owner">Собственик</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Премахване</string>
+  <string name="collection_synchronization">Синхронизация</string>
+  <string name="collection_title">Заглавие</string>
+  <string name="collection_description">Описание</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Информация за отстраняване на дефекти</string>
   <string name="debug_info_archive_caption">Архив на ZIP</string>

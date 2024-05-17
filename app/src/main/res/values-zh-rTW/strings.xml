@@ -48,7 +48,7 @@
   <string name="about_license_info_no_warranty">我們｢完全不保證｣本程式無瑕疵。這是個自由軟體，歡迎您在符合公用授權條款的情況下任意散布它。</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">無法創建事項記錄文檔</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV 同步器</string>
   <string name="navigation_drawer_about">關於我們 / 授權條款</string>
   <string name="navigation_drawer_beta_feedback">為測試版本給回饋意見</string>
@@ -88,7 +88,7 @@
   <string name="app_settings_reset_hints">重新開啟提示</string>
   <string name="app_settings_reset_hints_summary">重新啟用之前取消的提示</string>
   <string name="app_settings_reset_hints_success">所有提示將再次顯示</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV聯絡人檔案</string>
   <string name="account_caldav">CalDav行事曆檔案</string>
   <string name="account_webcal">Webcal網際網絡行事曆</string>
@@ -104,7 +104,6 @@
   <string name="account_synchronize_this_collection">同步這個行事曆或工作清單</string>
   <string name="account_read_only">唯讀</string>
   <string name="account_calendar">行事曆</string>
-  <string name="account_task_list">待辦事項</string>
   <string name="account_only_personal">只顯示個人</string>
   <string name="account_no_webcal_handler_found">未找到支援Webcal的APP</string>
   <string name="account_install_icsx5">安裝ICSx⁵</string>
@@ -178,7 +177,7 @@
     <item>群組存成額外的 VCard 檔案</item>
     <item>群組存成每個聯絡人的分類屬性</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">建立通訊錄</string>
   <string name="create_calendar">建立行事曆</string>
   <string name="create_calendar_type">可使用的行事曆項目</string>
@@ -186,20 +185,14 @@
   <string name="create_calendar_type_vtodo">事務</string>
   <string name="create_calendar_type_vjournal">筆記/日誌</string>
   <string name="create_collection_color">顔色</string>
-  <string name="create_collection_creating">建立新行事曆或工作清單</string>
   <string name="create_collection_display_name">標題</string>
-  <string name="create_collection_display_name_required">必須輸入標題</string>
-  <string name="create_collection_description">描述</string>
-  <string name="create_collection_optional">可選操作</string>
   <string name="create_collection_home_set">存儲位置</string>
   <string name="create_collection_create">建立</string>
-  <string name="delete_collection">刪除行事曆或工作清單</string>
-  <string name="delete_collection_confirm_title">您確定嗎? </string>
-  <string name="delete_collection_confirm_warning">這個組合 (%s) 和它的所有資料將永久刪除。</string>
-  <string name="delete_collection_data_shall_be_deleted">這些數據會從伺服器上永久刪除。</string>
-  <string name="collection_force_read_only">强制只讀</string>
-  <string name="collection_properties">權限</string>
-  <string name="collection_properties_url">地址（URL）：</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">刪除行事曆或工作清單</string>
+  <string name="collection_synchronization">同步</string>
+  <string name="collection_title">標題</string>
+  <string name="collection_description">描述</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">除錯訊息</string>
   <!--ExceptionInfoFragment-->

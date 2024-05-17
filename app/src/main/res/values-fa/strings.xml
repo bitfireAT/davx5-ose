@@ -96,7 +96,7 @@
   <string name="logging_notification_text">اکنون همه %s فعالیت ها را ثبت می کنید</string>
   <string name="logging_notification_view_share">مشاهده / اشتراک گذاری</string>
   <string name="logging_notification_disable">غیر فعال</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle"> همگام سازی CalDAV / CardDAV</string>
   <string name="navigation_drawer_about">درباره / مجوز</string>
   <string name="navigation_drawer_beta_feedback">بازخورد بتا</string>
@@ -166,7 +166,7 @@
   <string name="app_settings_integration">ادغام</string>
   <string name="app_settings_tasks_provider">برنامه مدیریت فعالیت ها</string>
   <string name="app_settings_tasks_provider_none">برنامه سازگار یافت نشد</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -182,7 +182,6 @@
   <string name="account_synchronize_this_collection">همگام سازی این مجموعه</string>
   <string name="account_read_only">فقط خواندنی</string>
   <string name="account_calendar">تقویم</string>
-  <string name="account_task_list">لیست کار</string>
   <string name="account_journal">وقایع</string>
   <string name="account_only_personal">فقط شخصی ها را نمایش بده</string>
   <string name="account_no_webcal_handler_found">هیچ برنامه ای با قابلیت Webcal پیدا نشد</string>
@@ -268,7 +267,7 @@
     <item>گروه‌ها کارت‌های مجازی جداگانه هستند</item>
     <item>گروه ها دسته های هر مخاطب هستند</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">ایجاد دفترچه آدرس</string>
   <string name="create_calendar">تقویم ایجاد کنید</string>
   <string name="create_calendar_type">ورودی های احتمالی تقویم</string>
@@ -276,22 +275,14 @@
   <string name="create_calendar_type_vtodo">فعالیت ها</string>
   <string name="create_calendar_type_vjournal">یادداشت ها / ژورنال</string>
   <string name="create_collection_color">رنگ</string>
-  <string name="create_collection_creating">ایجاد مجموعه</string>
   <string name="create_collection_display_name">عنوان</string>
-  <string name="create_collection_display_name_required">عنوان لازم است</string>
-  <string name="create_collection_description">شرح</string>
-  <string name="create_collection_optional">اختیاری</string>
   <string name="create_collection_home_set">محل ذخیره سازی</string>
-  <string name="create_collection_home_set_required">تعیین محل ذخیره سازی الزامیست</string>
   <string name="create_collection_create">ایجاد</string>
-  <string name="delete_collection">حذف مجموعه</string>
-  <string name="delete_collection_confirm_title">آیا مطمئن هستید؟</string>
-  <string name="delete_collection_confirm_warning">این مجموعه (%s) و تمام داده های آن برای همیشه حذف می شوند.</string>
-  <string name="delete_collection_data_shall_be_deleted">این داده ها باید از سرور حذف شوند.</string>
-  <string name="collection_force_read_only">اجبار به فقط خواندنی</string>
-  <string name="collection_properties">خواص</string>
-  <string name="collection_properties_url">آدرس(URL)</string>
-  <string name="collection_properties_owner">مالک:</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">حذف مجموعه</string>
+  <string name="collection_synchronization">همگام سازی</string>
+  <string name="collection_title">عنوان</string>
+  <string name="collection_description">شرح</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">اطلاعات اشکال زدایی</string>
   <string name="debug_info_archive_caption">آرشیوسازی ZIP</string>

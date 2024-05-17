@@ -103,7 +103,7 @@
   <string name="logging_notification_text">Сейчас логируется вся активность %s </string>
   <string name="logging_notification_view_share">Просмотр/обмен</string>
   <string name="logging_notification_disable">Отключить</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Адаптер синхронизации CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">О программе / Лицензия</string>
   <string name="navigation_drawer_beta_feedback">Отзыв о бета-тестировании</string>
@@ -181,7 +181,7 @@
   <string name="app_settings_integration">Интеграция</string>
   <string name="app_settings_tasks_provider">Приложение Tasks</string>
   <string name="app_settings_tasks_provider_none">Не найдено совместимое приложение для задач</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">WebСal</string>
@@ -201,11 +201,8 @@
   <string name="account_synchronize_this_collection">синхронизировать эту коллекцию</string>
   <string name="account_read_only">только для чтения</string>
   <string name="account_calendar">календарь</string>
-  <string name="account_task_list">список задач</string>
   <string name="account_journal">журнал</string>
   <string name="account_only_personal">Показать только личные</string>
-  <string name="account_refresh_collections">Обновить коллекции</string>
-  <string name="account_refreshing_collections">Обновление списка коллекций</string>
   <string name="account_webcal_external_app">Подписки Webcal можно синхронизировать с внешними приложениями.</string>
   <string name="account_no_webcal_handler_found">Не найдено приложение, поддерживающее WebCal</string>
   <string name="account_install_icsx5">Установить ICSx⁵</string>
@@ -262,7 +259,6 @@
   <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>
   <string name="login_no_service">Не удалось найти службу CalDAV или CardDAV.</string>
   <string name="login_no_service_info">Судя по всему, базовый URL не является допустимым URL CalDAV/CardDAV, и обнаружение службы не увенчалось успехом.</string>
-  <string name="login_see_tested_services"><![CDATA[Обратитесь к руководству вашего поставщика услуг, а <a href="%s">также к списку протестированных сервисов</a> и их базовым URL-адресам.</a>]]></string>
   <string name="login_check_credentials">Кроме того, проверьте правильность авторизации (обычно это имя пользователя и пароль).</string>
   <string name="login_logs_available">Дополнительную техническую информацию можно найти в логах.</string>
   <string name="login_view_logs">Просмотр логов</string>
@@ -295,8 +291,6 @@
   <string name="settings_ignore_vpns_on">VPN без основного интернета недостаточно для выполнения синхронизации (рекомендуется)</string>
   <string name="settings_ignore_vpns_off">VPN без основного интернета достаточно для выполнения синхронизации</string>
   <string name="settings_authentication">Аутентификация</string>
-  <string name="settings_oauth">Повторная аутентификация</string>
-  <string name="settings_oauth_summary">Выполните вход через OAuth повторно</string>
   <string name="settings_username">Имя пользователя</string>
   <string name="settings_password">Пароль</string>
   <string name="settings_new_password">Новый пароль</string>
@@ -335,34 +329,23 @@
     <item>Группы являются отдельными vCards</item>
     <item>Группы являются категориями контактов</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Создать адресную книгу</string>
   <string name="create_calendar">Создать календарь</string>
-  <string name="create_calendar_time_zone">Часовой пояс по умолчанию</string>
   <string name="create_calendar_type">Возможные записи календаря</string>
   <string name="create_calendar_type_vevent">События</string>
   <string name="create_calendar_type_vtodo">Задачи</string>
   <string name="create_calendar_type_vjournal">Заметки / журнал</string>
   <string name="create_collection_color">Цвет</string>
-  <string name="create_collection_creating">Создание коллекции</string>
   <string name="create_collection_display_name">Название</string>
-  <string name="create_collection_display_name_required">Название обязательно</string>
-  <string name="create_collection_description">Описание</string>
-  <string name="create_collection_description_optional">Описание (необязательно)</string>
-  <string name="create_collection_optional">опционально</string>
   <string name="create_collection_home_set">Место хранения</string>
-  <string name="create_collection_home_set_required">Место хранения обязательно</string>
   <string name="create_collection_create">Создать</string>
-  <string name="delete_collection">Удалить коллекцию</string>
-  <string name="delete_collection_confirm_title">Вы уверены?</string>
-  <string name="delete_collection_confirm_warning">Эта коллекция (%s) и все ее данные будут удалены навсегда.</string>
-  <string name="delete_collection_data_shall_be_deleted">Эти данные должны быть удалены с сервера.</string>
-  <string name="collection_force_read_only">Только для чтения</string>
-  <string name="collection_properties">Свойства</string>
-  <string name="collection_properties_sync_time">Последняя синхронизация:</string>
-  <string name="collection_properties_sync_time_never">Никогда не синхронизировалось</string>
-  <string name="collection_properties_url">Адрес (URL):</string>
-  <string name="collection_properties_owner">Владелец:</string>
+  <string name="create_collection_optional">* опционально</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Удалить коллекцию</string>
+  <string name="collection_synchronization">Синхронизация</string>
+  <string name="collection_title">Название</string>
+  <string name="collection_description">Описание</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
   <string name="debug_info_archive_caption">ZIP-архив</string>

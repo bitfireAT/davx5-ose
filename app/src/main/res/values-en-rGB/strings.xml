@@ -97,7 +97,7 @@
   <string name="logging_notification_text">Now logging all %s activities</string>
   <string name="logging_notification_view_share">View/share</string>
   <string name="logging_notification_disable">Disable</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
   <string name="navigation_drawer_about">About / License</string>
   <string name="navigation_drawer_beta_feedback">Beta feedback</string>
@@ -169,7 +169,7 @@
   <string name="app_settings_integration">Integration</string>
   <string name="app_settings_tasks_provider">Tasks app</string>
   <string name="app_settings_tasks_provider_none">No compatible tasks app found</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -185,7 +185,6 @@
   <string name="account_synchronize_this_collection">synchronise this collection</string>
   <string name="account_read_only">read-only</string>
   <string name="account_calendar">calendar</string>
-  <string name="account_task_list">task list</string>
   <string name="account_journal">journal</string>
   <string name="account_only_personal">Show only personal</string>
   <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
@@ -259,8 +258,6 @@
   <string name="settings_ignore_vpns_on">VPN without underlying validated Internet connection is not enough to run synchronisation (recommended)</string>
   <string name="settings_ignore_vpns_off">VPN without underlying validated Internet connection is enough to run synchronisation</string>
   <string name="settings_authentication">Authentication</string>
-  <string name="settings_oauth">Re-authenticate</string>
-  <string name="settings_oauth_summary">Perform OAuth login again</string>
   <string name="settings_username">User name</string>
   <string name="settings_password">Password</string>
   <string name="settings_password_summary">Update the password according to your server.</string>
@@ -292,7 +289,7 @@
     <item>Groups are separate vCards</item>
     <item>Groups are per-contact categories</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Create address book</string>
   <string name="create_calendar">Create calendar</string>
   <string name="create_calendar_type">Possible calendar entries</string>
@@ -300,24 +297,14 @@
   <string name="create_calendar_type_vtodo">Tasks</string>
   <string name="create_calendar_type_vjournal">Notes / journal</string>
   <string name="create_collection_color">Colour</string>
-  <string name="create_collection_creating">Creating collection</string>
   <string name="create_collection_display_name">Title</string>
-  <string name="create_collection_display_name_required">Title is required</string>
-  <string name="create_collection_description">Description</string>
-  <string name="create_collection_optional">optional</string>
   <string name="create_collection_home_set">Storage location</string>
-  <string name="create_collection_home_set_required">Storage location is required</string>
   <string name="create_collection_create">Create</string>
-  <string name="delete_collection">Delete collection</string>
-  <string name="delete_collection_confirm_title">Are you sure?</string>
-  <string name="delete_collection_confirm_warning">This collection (%s) and all its data will be removed permanently.</string>
-  <string name="delete_collection_data_shall_be_deleted">These data shall be deleted from the server.</string>
-  <string name="collection_force_read_only">Force read-only</string>
-  <string name="collection_properties">Properties</string>
-  <string name="collection_properties_sync_time">Last synced:</string>
-  <string name="collection_properties_sync_time_never">Never synced</string>
-  <string name="collection_properties_url">Address (URL):</string>
-  <string name="collection_properties_owner">Owner:</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Delete collection</string>
+  <string name="collection_synchronization">Synchronisation</string>
+  <string name="collection_title">Title</string>
+  <string name="collection_description">Description</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug info</string>
   <string name="debug_info_archive_caption">ZIP archive</string>

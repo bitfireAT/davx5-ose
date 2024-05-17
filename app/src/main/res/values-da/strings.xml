@@ -9,7 +9,11 @@
   <string name="field_required">Feltet er påkrævet</string>
   <string name="help">Hjælp</string>
   <string name="manage_accounts">Administrer konti</string>
+  <string name="navigate_up">Naviger opad</string>
+  <string name="optional_label">* valgfri</string>
+  <string name="options_menu">Indstillinger</string>
   <string name="share">Del</string>
+  <string name="sync_started">Synkronisering startet/i kø</string>
   <string name="database_destructive_migration_title">Database ødelagt</string>
   <string name="database_destructive_migration_text">Alle konti er fjernet lokalt.</string>
   <string name="notification_channel_debugging">Fejlsøgning</string>
@@ -81,6 +85,8 @@
   <string name="wifi_permissions_location_permission_off">Placering rettighed afvist</string>
   <string name="wifi_permissions_background_location_permission">Baggrund placerings-rettighed</string>
   <string name="wifi_permissions_background_location_permission_label">Tillad altid</string>
+  <string name="wifi_permissions_background_location_permission_on">Lokaliseringstilladelse sat til: %s</string>
+  <string name="wifi_permissions_background_location_permission_off">Lokationstilladelse ikke sat til: %s</string>
   <string name="wifi_permissions_background_location_disclaimer">%s bruger kun placering rettighed for at bestemme nuværende trådløs SSID for SSID begrænset konti. Dette sker selvom programmet kører i baggrund. Ingen placering data bliver opsamlet, gemt, behandlet eller sendt.</string>
   <string name="wifi_permissions_location_enabled">Placering altid aktiveret</string>
   <string name="wifi_permissions_location_enabled_on">Placering tjeneste er aktiveret</string>
@@ -97,7 +103,7 @@
   <string name="logging_notification_text">Logger alle %s aktiviteter</string>
   <string name="logging_notification_view_share">Vis/del</string>
   <string name="logging_notification_disable">Deaktivere</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / licens</string>
   <string name="navigation_drawer_beta_feedback">Beta tilbagemelding</string>
@@ -110,6 +116,8 @@
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">OSS</string>
   <string name="navigation_drawer_community">Fællesskab</string>
+  <string name="navigation_drawer_support_project">Støt projektet</string>
+  <string name="navigation_drawer_contribute">Sådan bidrager du</string>
   <string name="navigation_drawer_privacy_policy">Privatlivs politik</string>
   <string name="account_list_no_notification_permission">Notifikationer slået fra. Du vil ikke blive gjort opmærksom på synkroniserings-fejl.</string>
   <string name="account_list_no_internet">Ingen valideret internetforbindelse. 
@@ -117,6 +125,8 @@ Synkronisering kører muligvis ikke.</string>
   <string name="account_list_manage_connections">Aministrer forbindelser</string>
   <string name="account_list_datasaver_enabled">Gemning af data slået til. Synkronisering i baggrunden er begrænset.</string>
   <string name="account_list_manage_datasaver">Administrer gemning af data</string>
+  <string name="account_list_battery_saver_enabled">Batteribesparelse aktiveret. Synkronisering kan være forhindret.</string>
+  <string name="account_list_manage_battery_saver">Administrer batteribesparelse</string>
   <string name="account_list_low_storage">124
 Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, men under den næste almindelige synkronisering.</string>
   <string name="account_list_manage_storage">Administrer lagerplads</string>
@@ -137,6 +147,8 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="app_settings_logging_on">Logning er aktiv</string>
   <string name="app_settings_logging_off">Logning er deaktiveret</string>
   <string name="app_settings_battery_optimization">Batteri optimering</string>
+  <string name="app_settings_battery_optimization_exempted">Appen er undtaget (anbefalet)</string>
+  <string name="app_settings_battery_optimization_optimized">Batteribesparelse aktiv (anbefales ikke)</string>
   <string name="app_settings_connection">Forbindelse</string>
   <string name="app_settings_proxy">Proxy type</string>
   <string-array name="app_settings_proxy_types">
@@ -171,13 +183,17 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="app_settings_integration">Integration</string>
   <string name="app_settings_tasks_provider">Opgaver program</string>
   <string name="app_settings_tasks_provider_none">Der er ikke fundet et program der kan håndtere opgaver</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_missing_permissions">Der kræves yderligere tilladelser for at synkronisere disse datasamlinger.</string>
+  <string name="account_manage_permissions">Administrer rettigheder</string>
   <string name="account_synchronize_now">Synkronisere</string>
   <string name="account_settings">Opsætning af konti</string>
   <string name="account_rename">Omdøb konto</string>
+  <string name="account_rename_new_name_description">Ikke gemt lokal data kan blive afvist. Gen-synkronisering er påkrævet efter omdøbning.</string>
+  <string name="account_rename_new_name">Nyt kontonavn</string>
   <string name="account_rename_rename">Omdøbe</string>
   <string name="account_rename_exists_already">Konto navn er allerede i brug</string>
   <string name="account_rename_couldnt_rename">Kunne ikke omdøbe konto</string>
@@ -187,29 +203,42 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="account_synchronize_this_collection">synkronisere samling</string>
   <string name="account_read_only">skrivebeskyttet</string>
   <string name="account_calendar">kalender</string>
-  <string name="account_task_list">opgave liste</string>
   <string name="account_journal">journal</string>
   <string name="account_only_personal">Vis kun personlig</string>
+  <string name="account_webcal_external_app">Webcal-abonnementer kan synkroniseres med eksterne apps.</string>
   <string name="account_no_webcal_handler_found">Der er ikke fundet noget program der kan håndtere Webcal.</string>
   <string name="account_install_icsx5">Installere ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Tilføj konto</string>
+  <string name="login_generic_login">Generisk login</string>
+  <string name="login_provider_login">Provider-specifikt login</string>
+  <string name="login_continue">Fortsæt</string>
   <string name="login_login">Log ind</string>
   <string name="login_type_email">Log ind med e-mail adresse</string>
   <string name="login_email_address">E-mail adresse</string>
   <string name="login_email_address_error">Gyldig e-mail adresse påkrævet</string>
+  <string name="login_email_address_info"><![CDATA[E-mail-domænet bruges som basis-URL. <a href="%s">Tjenester findes</a> ved hjælp af DNS-records og velkendte URL\'er]]>.</string>
   <string name="login_password">Adgangskode</string>
+  <string name="login_password_hide">Skjul password</string>
+  <string name="login_password_show">Vis kodeord</string>
+  <string name="login_password_optional">Kodeord*</string>
   <string name="login_type_url">Log ind med URL og brugernavn</string>
   <string name="login_user_name">Brugernavn</string>
+  <string name="login_user_name_optional">Brugernavn*</string>
   <string name="login_base_url">Basis URL</string>
+  <string name="login_base_url_info"><![CDATA[Basis-URL\'en vil blive tjekket direkte, men <a href="%s">tjenester opdages også</a> ved hjælp af DNS-records og velkendte URL\'er]]>.</string>
   <string name="login_select_certificate">Vælge certifikat</string>
   <string name="login_create_account">Oprette konto</string>
   <string name="login_account_name">Kontonavn</string>
+  <string name="login_account_avoid_apostrophe">Brug af apostroffer (\') ser ud til at give problemer på nogle enheder.</string>
   <string name="login_account_name_info">Brug en e-mail adresse som kontonavn da Android bruger kontonavn til ORGANIZER-felt for oprettede aktiviteter. Man kan ikke have to konti med samme navn.</string>
   <string name="login_account_contact_group_method">Gruppering af kontakter:</string>
   <string name="login_account_name_required">Kontonavn påkrævet</string>
   <string name="login_account_name_already_taken">Konto navn er allerede i brug</string>
   <string name="login_account_not_created">Konto kunne ikke oprettes</string>
+  <string name="login_type_advanced">Avanceret login</string>
+  <string name="login_no_client_certificate_optional">Intet certifikat fra klienten*</string>
+  <string name="login_client_certificate_selected">Klientcertifikat: %s</string>
   <string name="login_no_certificate_found">Intet certifikat fundet</string>
   <string name="login_install_certificate">Installere certifikat</string>
   <string name="login_type_google">Google Kontakter / Kalender</string>
@@ -223,6 +252,7 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="login_oauth_couldnt_obtain_auth_code">Kunne ikke hente autorisationskode</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Log ind med Nextcloud</string>
+  <string name="login_nextcloud_login_flow_text">Starter Nextcloud Login Flow i en webbrowser.</string>
   <string name="login_nextcloud_login_flow_server_address">Nextcloud serveradresse</string>
   <string name="login_nextcloud_login_flow_sign_in">Log ind</string>
   <string name="login_nextcloud_login_flow_no_login_url">Kunne ikke hente login-URL</string>
@@ -230,6 +260,9 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="login_configuration_detection">Check konfiguration</string>
   <string name="login_querying_server">Vent, forespørger serveren…</string>
   <string name="login_no_service">Kunne ikke finde CalDAV- eller CardDAV-tjeneste.</string>
+  <string name="login_no_service_info">Basis-URL\'en ser ikke ud til at være en tilgængelig CalDAV/CardDAV-URL, og tjenestegenkendelsen lykkedes ikke.</string>
+  <string name="login_check_credentials">Dobbelttjek også autentificeringen (oftest brugernavn og adgangskode).</string>
+  <string name="login_logs_available">Yderligere tekniske oplysninger findes i logfilerne.</string>
   <string name="login_view_logs">Vis logfiler</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synkronisering</string>
@@ -260,10 +293,12 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="settings_ignore_vpns_on">VPN uden underliggende valideret internetforbindelse er ikke nok til at køre synkronisering (anbefales)</string>
   <string name="settings_ignore_vpns_off">VPN uden underliggende valideret internetforbindelse er nok til at køre synkronisering</string>
   <string name="settings_authentication">Adgangsgodkendelse</string>
-  <string name="settings_oauth_summary">Udfør OAuth-login igen</string>
   <string name="settings_username">Brugernavn</string>
   <string name="settings_password">Adgangskode</string>
+  <string name="settings_new_password">Ny adgangskode</string>
   <string name="settings_password_summary">Opdater adgangskoden, så den svarer til din server.</string>
+  <string name="settings_certificate_alias">Klientcertifikat</string>
+  <string name="settings_certificate_alias_empty">Intet certifikat tilgængeligt eller udvalgt</string>
   <string name="settings_certificate_install">Installere certifikat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsafgrænsning for tidligere begivenheder</string>
@@ -292,7 +327,7 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
     <item>Grupper er særskilte vCards</item>
     <item>Grupper er kategorier per kontakt</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Opret adressebog</string>
   <string name="create_calendar">Opret kalender</string>
   <string name="create_calendar_type">Mulige kalenderposte</string>
@@ -300,24 +335,15 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="create_calendar_type_vtodo">Opgaver</string>
   <string name="create_calendar_type_vjournal">Notater / journal</string>
   <string name="create_collection_color">Farve</string>
-  <string name="create_collection_creating">Opretter sæt</string>
   <string name="create_collection_display_name">Titel</string>
-  <string name="create_collection_display_name_required">En titel er påkrævet</string>
-  <string name="create_collection_description">Beskrivelse</string>
-  <string name="create_collection_optional">Valgfri</string>
   <string name="create_collection_home_set">Lager placering</string>
-  <string name="create_collection_home_set_required">Lagerplads er påkrævet</string>
   <string name="create_collection_create">Opret</string>
-  <string name="delete_collection">Slet sæt</string>
-  <string name="delete_collection_confirm_title">Er du sikker?</string>
-  <string name="delete_collection_confirm_warning">Denne samling (%s) og alle dens data vil blive fjernet helt.</string>
-  <string name="delete_collection_data_shall_be_deleted">Disse data vil blive slettet fra serveren.</string>
-  <string name="collection_force_read_only">Sæt skrivebeskyttet</string>
-  <string name="collection_properties">Egenskaber</string>
-  <string name="collection_properties_sync_time">Sidst synkroniseret:</string>
-  <string name="collection_properties_sync_time_never">Aldrig synkroniseret</string>
-  <string name="collection_properties_url">Adresse (URL):</string>
-  <string name="collection_properties_owner">Ejer:</string>
+  <string name="create_collection_optional">* valgfri</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Slet sæt</string>
+  <string name="collection_synchronization">Synkronisering</string>
+  <string name="collection_title">Titel</string>
+  <string name="collection_description">Beskrivelse</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug-info</string>
   <string name="debug_info_archive_caption">ZIP arkiv</string>
@@ -358,6 +384,7 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="webdav_add_mount_display_name">Vis navn</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Ugyldig URL</string>
+  <string name="webdav_add_mount_authentication">Autentificering (valgfrit)</string>
   <string name="webdav_add_mount_username">Brugernavn</string>
   <string name="webdav_add_mount_password">Adgangskode</string>
   <string name="webdav_add_mount_add">Tilføj monteringspunkt</string>
@@ -384,6 +411,7 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="sync_invalid_task">Modtaget ugyldig opgave fra server</string>
   <string name="sync_invalid_resources_ignoring">Ignorere en eller flere ugyldige kilder</string>
   <!--widgets-->
+  <string name="widget_sync_all">Synkroniser alle</string>
   <string name="widget_sync_all_accounts">Synkroniser alle konti</string>
   <!--cert4android-->
 </resources>

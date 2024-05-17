@@ -56,7 +56,7 @@
   <string name="about_license_info_no_warranty">Ta program ne vsebuje NIČ garancije. To je brezplačna programska oprema in jo lahko pod določenimi pogoji delite naprej.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Ni bilo mogoče ustvariti zapisnika</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV sinhronizacijski adapter</string>
   <string name="navigation_drawer_about">O aplikaciji / licenca</string>
   <string name="navigation_drawer_beta_feedback">Beta povratne aplikacije</string>
@@ -93,7 +93,7 @@
   <string name="app_settings_reset_hints">Ponastavi namige</string>
   <string name="app_settings_reset_hints_summary">Ponovno omogoči namige, ki si bilo predhodno izključeni</string>
   <string name="app_settings_reset_hints_success">Vsi namigi bodo ponovno prikazani</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -108,7 +108,6 @@
   <string name="account_synchronize_this_collection">sinhroniziraj to zbirko</string>
   <string name="account_read_only">samo za branje</string>
   <string name="account_calendar">koledar</string>
-  <string name="account_task_list">seznam opravil</string>
   <string name="account_journal">dnevnik</string>
   <string name="account_only_personal">Pokaži samo osebno</string>
   <string name="account_no_webcal_handler_found">Nobena Webcal sposobna aplikacija ni bila najdena</string>
@@ -175,7 +174,7 @@
   <string name="settings_event_colors">Podpora barva dogodka</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Metoda skupine kontaktov</string>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Ustvari imenik</string>
   <string name="create_calendar">Ustvari koledar</string>
   <string name="create_calendar_type">Mogoči koledarski vnosi</string>
@@ -183,20 +182,14 @@
   <string name="create_calendar_type_vtodo">Naloge</string>
   <string name="create_calendar_type_vjournal">Beležnice / dnevnik</string>
   <string name="create_collection_color">Barva</string>
-  <string name="create_collection_creating">Ustvarjenje zbirke</string>
   <string name="create_collection_display_name">Naslov</string>
-  <string name="create_collection_display_name_required">Zahtevan je naslov</string>
-  <string name="create_collection_description">Opis</string>
-  <string name="create_collection_optional">opcionalno</string>
   <string name="create_collection_home_set">Lokacija shrambe</string>
   <string name="create_collection_create">Ustvari</string>
-  <string name="delete_collection">Izbriši zbirko</string>
-  <string name="delete_collection_confirm_title">Si prepričan?</string>
-  <string name="delete_collection_confirm_warning">Ta zbirka (%s) in njena vsebina bodo za stalno izbrisane.</string>
-  <string name="delete_collection_data_shall_be_deleted">Ti podatki bodo izbrisani iz strežnika</string>
-  <string name="collection_force_read_only">Prisili samo za branje</string>
-  <string name="collection_properties">Lastnosti</string>
-  <string name="collection_properties_url">Naslov (URL):</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Izbriši zbirko</string>
+  <string name="collection_synchronization">Sinhronizacija</string>
+  <string name="collection_title">Naslov</string>
+  <string name="collection_description">Opis</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacije razhroščevalnika</string>
   <!--ExceptionInfoFragment-->

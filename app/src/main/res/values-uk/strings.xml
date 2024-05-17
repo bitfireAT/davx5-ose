@@ -54,7 +54,7 @@
   <!--global settings-->
   <string name="logging_couldnt_create_file">Не вдалося створити файл звіту</string>
   <string name="logging_notification_disable">Вимкнути</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Адаптер синхронізації CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Про / Ліцензія</string>
   <string name="navigation_drawer_beta_feedback">Beta відгук</string>
@@ -103,7 +103,7 @@
   <string name="app_settings_reset_hints_success">Всі підказки будуть показані знову</string>
   <string name="app_settings_tasks_provider">Застосунок завдань</string>
   <string name="app_settings_tasks_provider_none">Не знайдено сумісного застосунку завдань</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -119,7 +119,6 @@
   <string name="account_synchronize_this_collection">синхронізувати дану колекцію</string>
   <string name="account_read_only">лише читання</string>
   <string name="account_calendar">календар</string>
-  <string name="account_task_list">перелік завдань</string>
   <string name="account_no_webcal_handler_found">Не знайдено додатку з підтримкою Webcal</string>
   <string name="account_install_icsx5">Встановити ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -201,7 +200,7 @@
     <item>Групи-це окремі записи</item>
     <item>Групи є в категоріями в контактах</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Створити адресну книгу</string>
   <string name="create_calendar">Створити календар</string>
   <string name="create_calendar_type">Можливі записи календаря</string>
@@ -209,21 +208,14 @@
   <string name="create_calendar_type_vtodo">Завдання</string>
   <string name="create_calendar_type_vjournal">Нотатки/Журнал</string>
   <string name="create_collection_color">Колір</string>
-  <string name="create_collection_creating">Створення колекції</string>
   <string name="create_collection_display_name">Заголовок</string>
-  <string name="create_collection_display_name_required">Потребує назву</string>
-  <string name="create_collection_description">Опис</string>
-  <string name="create_collection_optional">необов\'язково</string>
   <string name="create_collection_home_set">Розташування сховища</string>
   <string name="create_collection_create">Створити</string>
-  <string name="delete_collection">Видалити колекцію</string>
-  <string name="delete_collection_confirm_title">Ви впевнені?</string>
-  <string name="delete_collection_confirm_warning">Ця колекція (%s) і всі його дані будуть видалені назавжди.</string>
-  <string name="delete_collection_data_shall_be_deleted">Ці дані видаляються з сервера.</string>
-  <string name="collection_force_read_only">Примусово лише читання</string>
-  <string name="collection_properties">Властивості</string>
-  <string name="collection_properties_url">Адреса (URL):</string>
-  <string name="collection_properties_owner">Власник:</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Видалити колекцію</string>
+  <string name="collection_synchronization">Синхронізація</string>
+  <string name="collection_title">Заголовок</string>
+  <string name="collection_description">Опис</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Інформація зневадження</string>
   <string name="debug_info_archive_caption">Архів ZIP</string>

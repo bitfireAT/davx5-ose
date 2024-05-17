@@ -98,7 +98,7 @@
   <string name="logging_notification_text">Loggar nu alla %s aktiviteter</string>
   <string name="logging_notification_view_share">Visa/dela</string>
   <string name="logging_notification_disable">Inaktivera</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Synk Adapter</string>
   <string name="navigation_drawer_about">Om / Licens</string>
   <string name="navigation_drawer_beta_feedback">Betafeedback</string>
@@ -170,7 +170,7 @@
   <string name="app_settings_integration">Integrering</string>
   <string name="app_settings_tasks_provider">Tasks appen</string>
   <string name="app_settings_tasks_provider_none">Ingen kompatibel task-app hittades</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -186,7 +186,6 @@
   <string name="account_synchronize_this_collection">synkronisera denna samling</string>
   <string name="account_read_only">skrivskyddad</string>
   <string name="account_calendar">kalender</string>
-  <string name="account_task_list">uppgiftslista</string>
   <string name="account_journal">Journal</string>
   <string name="account_only_personal">Visa endast personligt</string>
   <string name="account_no_webcal_handler_found">Ingen Webcal-kompatibel app hittades</string>
@@ -262,8 +261,6 @@
   <string name="settings_ignore_vpns_on">VPN utan bakomliggande bekräftad internetanslutning är inte tillräckligt för att köra synkronisering (rekommenderat)</string>
   <string name="settings_ignore_vpns_off">VPN utan bakomliggande bekräftad internetanslutning är tillräckligt för att köra synkronisering</string>
   <string name="settings_authentication">Autentisering</string>
-  <string name="settings_oauth">Autentisera på nytt</string>
-  <string name="settings_oauth_summary">Genomför OAuth-inloggning igen</string>
   <string name="settings_username">Användarnamn</string>
   <string name="settings_password">Lösenord</string>
   <string name="settings_password_summary">Uppdatera lösenordet enligt din server.</string>
@@ -295,7 +292,7 @@
     <item>Grupper är separata vCards</item>
     <item>Grupper är per-kontaktkategorier</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Skapa adressbok</string>
   <string name="create_calendar">Skapa kalender</string>
   <string name="create_calendar_type">Möjliga kalenderposter</string>
@@ -303,24 +300,14 @@
   <string name="create_calendar_type_vtodo">Ärenden</string>
   <string name="create_calendar_type_vjournal">Anteckningar / journal</string>
   <string name="create_collection_color">Färg</string>
-  <string name="create_collection_creating">Skapar samling</string>
   <string name="create_collection_display_name">Titel</string>
-  <string name="create_collection_display_name_required">Titel krävs</string>
-  <string name="create_collection_description">Beskrivning</string>
-  <string name="create_collection_optional">valfritt</string>
   <string name="create_collection_home_set">Lagringsplats</string>
-  <string name="create_collection_home_set_required">Lagringsplats krävs</string>
   <string name="create_collection_create">Skapa</string>
-  <string name="delete_collection">Ta bort samling</string>
-  <string name="delete_collection_confirm_title">Är du säker?</string>
-  <string name="delete_collection_confirm_warning">Denna samling(%s) och all dess data tas bort permanent.</string>
-  <string name="delete_collection_data_shall_be_deleted">Denna data blir borttagen från servern.</string>
-  <string name="collection_force_read_only">Tvinga endast läsning</string>
-  <string name="collection_properties">Egenskaper</string>
-  <string name="collection_properties_sync_time">Senaste synkronisering:</string>
-  <string name="collection_properties_sync_time_never">Aldrig synkroniserad</string>
-  <string name="collection_properties_url">Adress (URL):</string>
-  <string name="collection_properties_owner">Ägare:</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Ta bort samling</string>
+  <string name="collection_synchronization">Synkronisering</string>
+  <string name="collection_title">Titel</string>
+  <string name="collection_description">Beskrivning</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Felsöknings information</string>
   <string name="debug_info_archive_caption">ZIP arkiv</string>

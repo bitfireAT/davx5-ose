@@ -103,7 +103,7 @@
   <string name="logging_notification_text">Acum se înregistrează toate activitățile %s</string>
   <string name="logging_notification_view_share">Vizualizare/distribuire</string>
   <string name="logging_notification_disable">Dezactivează</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Adaptor de sincronizare CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Despre / Licență</string>
   <string name="navigation_drawer_beta_feedback">Feedback beta</string>
@@ -181,7 +181,7 @@
   <string name="app_settings_integration">Integrare</string>
   <string name="app_settings_tasks_provider">Aplicația de sarcini</string>
   <string name="app_settings_tasks_provider_none">Nu a fost găsită nicio aplicație de sarcini compatibilă</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -201,11 +201,8 @@
   <string name="account_synchronize_this_collection">sincronizează această colecție</string>
   <string name="account_read_only">numai pentru citire</string>
   <string name="account_calendar">calendar</string>
-  <string name="account_task_list">lista de sarcini</string>
   <string name="account_journal">jurnal</string>
   <string name="account_only_personal">Afișează numai personal</string>
-  <string name="account_refresh_collections">Actualizează colecțiile</string>
-  <string name="account_refreshing_collections">Se reîmprospătează lista de colecții</string>
   <string name="account_webcal_external_app">Abonamentele Webcal pot fi sincronizate cu aplicații externe.</string>
   <string name="account_no_webcal_handler_found">Nu a fost găsită nicio aplicație compatibilă cu Webcal</string>
   <string name="account_install_icsx5">Instalează ICSx⁵</string>
@@ -262,7 +259,6 @@
   <string name="login_querying_server">Se interoghează serverul…</string>
   <string name="login_no_service">Nu s-a putut găsi serviciul CalDAV sau CardDAV.</string>
   <string name="login_no_service_info">Adresa URL de bază nu pare să fie o adresă URL CalDAV/CardDAV accesibilă, iar detectarea serviciului nu a avut succes.</string>
-  <string name="login_see_tested_services"><![CDATA[Consultă manualul furnizorului de servicii, <a href="%s">lista de servicii testate</a> și adresele lor URL de bază.</a>]]></string>
   <string name="login_check_credentials">Verifică, de asemenea, și autentificarea (de obicei, numele de utilizator și parola).</string>
   <string name="login_logs_available">Informații tehnice suplimentare sunt disponibile în jurnale.</string>
   <string name="login_view_logs">Vezi jurnalele</string>
@@ -295,8 +291,6 @@
   <string name="settings_ignore_vpns_on">VPN fără conexiune validată la Internet nu este suficient pentru a rula sincronizarea (recomandat)</string>
   <string name="settings_ignore_vpns_off">VPN fără conexiune validată la Internet este suficient pentru a rula sincronizarea</string>
   <string name="settings_authentication">Autentificare</string>
-  <string name="settings_oauth">Reautentificare</string>
-  <string name="settings_oauth_summary">Efectuează din nou autentificarea OAuth</string>
   <string name="settings_username">Nume de utilizator</string>
   <string name="settings_password">Parolă</string>
   <string name="settings_new_password">Parolă nouă</string>
@@ -333,34 +327,23 @@
     <item>Grupurile sunt vCard-uri separate</item>
     <item>Grupurile sunt categorii per-contact</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Creează agendă de adrese</string>
   <string name="create_calendar">Creează un calendar</string>
-  <string name="create_calendar_time_zone">Fus orar implicit</string>
   <string name="create_calendar_type">Posibile intrări din calendar</string>
   <string name="create_calendar_type_vevent">Evenimente</string>
   <string name="create_calendar_type_vtodo">Sarcini</string>
   <string name="create_calendar_type_vjournal">Note/jurnal</string>
   <string name="create_collection_color">Culoare</string>
-  <string name="create_collection_creating">Creare colecție</string>
   <string name="create_collection_display_name">Titlu</string>
-  <string name="create_collection_display_name_required">Titlul este obligatoriu</string>
-  <string name="create_collection_description">Descriere</string>
-  <string name="create_collection_description_optional">Descriere (opțional)</string>
-  <string name="create_collection_optional">opțional</string>
   <string name="create_collection_home_set">Locația de stocare</string>
-  <string name="create_collection_home_set_required">Este necesară locația de stocare</string>
   <string name="create_collection_create">Crează</string>
-  <string name="delete_collection">Șterge colecția</string>
-  <string name="delete_collection_confirm_title">Ești sigur?</string>
-  <string name="delete_collection_confirm_warning">Această colecție (%s) și toate datele sale vor fi eliminate definitiv.</string>
-  <string name="delete_collection_data_shall_be_deleted">Aceste date vor fi șterse de pe server.</string>
-  <string name="collection_force_read_only">Forțează numai citire</string>
-  <string name="collection_properties">Proprietăți</string>
-  <string name="collection_properties_sync_time">Ultima sincronizare:</string>
-  <string name="collection_properties_sync_time_never">Nu s-a sincronizat niciodată</string>
-  <string name="collection_properties_url">Adresă (URL):</string>
-  <string name="collection_properties_owner">Proprietar:</string>
+  <string name="create_collection_optional">* opțional</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Șterge colecția</string>
+  <string name="collection_synchronization">Sincronizare</string>
+  <string name="collection_title">Titlu</string>
+  <string name="collection_description">Descriere</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informații de depanare</string>
   <string name="debug_info_archive_caption">Arhivă ZIP</string>

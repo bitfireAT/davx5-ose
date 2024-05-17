@@ -103,7 +103,7 @@
   <string name="logging_notification_text">Logt nu alle %s activiteiten</string>
   <string name="logging_notification_view_share">Bekijken/delen</string>
   <string name="logging_notification_disable">Uitschakelen</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync adapter</string>
   <string name="navigation_drawer_about">Over / Licentie</string>
   <string name="navigation_drawer_beta_feedback">Beta terugkoppeling</string>
@@ -181,7 +181,7 @@
   <string name="app_settings_integration">Integratie</string>
   <string name="app_settings_tasks_provider">Taken app</string>
   <string name="app_settings_tasks_provider_none">Geen compatibele taken app gevonden</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -201,11 +201,8 @@
   <string name="account_synchronize_this_collection">deze collectie synchroniseren</string>
   <string name="account_read_only">alleen-lezen</string>
   <string name="account_calendar">kalender</string>
-  <string name="account_task_list">takenlijst</string>
   <string name="account_journal">logboek</string>
   <string name="account_only_personal">Alleen persoonlijk tonen</string>
-  <string name="account_refresh_collections">Collecties vernieuwen</string>
-  <string name="account_refreshing_collections">Collectielijst aan het verversen</string>
   <string name="account_webcal_external_app">Webcal abonnementen kunnen worden gesynchroniseerd met externe apps.</string>
   <string name="account_no_webcal_handler_found">Geen Webcal-app gevonden</string>
   <string name="account_install_icsx5">ICSx⁵ installeren</string>
@@ -262,7 +259,6 @@
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_service">Geen CalDAV- of CardDAV-service gevonden.</string>
   <string name="login_no_service_info">De basis URL lijkt geen toegankelijke CalDAV/CardDAV URL te zijn en de detectie van de service was niet succesvol.</string>
-  <string name="login_see_tested_services"><![CDATA[Raadpleeg de handleiding van uw serviceprovider en <a href="%s">onze lijst met geteste services</a> en hun basis-URL\'s.</a>]]></string>
   <string name="login_check_credentials">Controleer ook de authenticatie (meestal gebruikersnaam en wachtwoord).</string>
   <string name="login_logs_available">Meer technische informatie is beschikbaar in de logboeken.</string>
   <string name="login_view_logs">Details bekijken</string>
@@ -295,8 +291,6 @@
   <string name="settings_ignore_vpns_on">VPN zonder onderliggende gevalideerde internetverbinding is niet voldoende om synchronisatie uit te voeren (aanbevolen)</string>
   <string name="settings_ignore_vpns_off">VPN zonder onderliggende gevalideerde internetverbinding is voldoende om synchronisatie uit te voeren</string>
   <string name="settings_authentication">Authenticatie</string>
-  <string name="settings_oauth">Opnieuw authenticeren</string>
-  <string name="settings_oauth_summary">Voer OAuth-aanmelding opnieuw uit</string>
   <string name="settings_username">Gebruikersnaam</string>
   <string name="settings_password">Wachtwoord</string>
   <string name="settings_new_password">Nieuw wachtwoord</string>
@@ -331,34 +325,23 @@
     <item>Groepen zijn afzonderlijke vCards</item>
     <item>Groepen zijn categorieën per contact</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Adresboek aanmaken</string>
   <string name="create_calendar">Kalender aanmaken</string>
-  <string name="create_calendar_time_zone">Standaard tijdzone</string>
   <string name="create_calendar_type">Mogelijke kalender-items</string>
   <string name="create_calendar_type_vevent">Gebeurtenissen</string>
   <string name="create_calendar_type_vtodo">Taken</string>
   <string name="create_calendar_type_vjournal">Notities / Dagboek</string>
   <string name="create_collection_color">Kleur</string>
-  <string name="create_collection_creating">Maakt collectie aan</string>
   <string name="create_collection_display_name">Titel</string>
-  <string name="create_collection_display_name_required">Titel is verplicht</string>
-  <string name="create_collection_description">Beschrijving</string>
-  <string name="create_collection_description_optional">Beschrijving (optioneel)</string>
-  <string name="create_collection_optional">optioneel</string>
   <string name="create_collection_home_set">Opslaglocatie</string>
-  <string name="create_collection_home_set_required">Opslaglocatie is verplicht</string>
   <string name="create_collection_create">Aanmaken</string>
-  <string name="delete_collection">Collectie verwijderen</string>
-  <string name="delete_collection_confirm_title">Inderdaad verwijderen?</string>
-  <string name="delete_collection_confirm_warning">Deze collectie (%s) wordt met alle gegevens blijvend verwijderd.</string>
-  <string name="delete_collection_data_shall_be_deleted">Deze gegevens worden verwijderd van de server</string>
-  <string name="collection_force_read_only">Forceer alleen-lezen</string>
-  <string name="collection_properties">Eigenschappen</string>
-  <string name="collection_properties_sync_time">Laatst gesynchroniseerd:</string>
-  <string name="collection_properties_sync_time_never">Nooit gesynchroniseerd:</string>
-  <string name="collection_properties_url">Adres (URL):</string>
-  <string name="collection_properties_owner">Eigenaar:</string>
+  <string name="create_collection_optional">*optioneel</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Collectie verwijderen</string>
+  <string name="collection_synchronization">Synchroniseren</string>
+  <string name="collection_title">Titel</string>
+  <string name="collection_description">Beschrijving</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
   <string name="debug_info_archive_caption">ZIP archief</string>

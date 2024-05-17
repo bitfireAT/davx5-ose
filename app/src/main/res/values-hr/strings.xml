@@ -81,7 +81,7 @@
   <string name="logging_notification_text">Now logging all %s activities </string>
   <string name="logging_notification_view_share">Pregledaj/podijeli</string>
   <string name="logging_notification_disable">Onemogući</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
   <string name="navigation_drawer_about">About / License</string>
   <string name="navigation_drawer_beta_feedback">Beta feedback</string>
@@ -128,7 +128,7 @@
   <string name="app_settings_integration">Integracija</string>
   <string name="app_settings_tasks_provider">Tasks aplikacija</string>
   <string name="app_settings_tasks_provider_none">Kompatibilna aplikacija za zadatke nije pronađena</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -144,7 +144,6 @@
   <string name="account_synchronize_this_collection">sinkroniziraj ovu zbirku</string>
   <string name="account_read_only">read-only</string>
   <string name="account_calendar">kalendar</string>
-  <string name="account_task_list">popis zadataka</string>
   <string name="account_only_personal">Prikaži samo osobno</string>
   <string name="account_no_webcal_handler_found">Aplikacija sa Webcal mogućnostima nije pronađena</string>
   <string name="account_install_icsx5">Instaliraj ICSx⁵</string>
@@ -231,7 +230,7 @@
     <item>Grupe su odvojene vCards</item>
     <item>Grupe su kategorije po kontaktima</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Kreiraj adresar</string>
   <string name="create_calendar">Kreiraj kalendar</string>
   <string name="create_calendar_type">Mogući unosi u kalendar</string>
@@ -239,21 +238,14 @@
   <string name="create_calendar_type_vtodo">Zadatci</string>
   <string name="create_calendar_type_vjournal">Bilješke / dnevnik</string>
   <string name="create_collection_color">Boja</string>
-  <string name="create_collection_creating">Izrada zbirke</string>
   <string name="create_collection_display_name">Naslov</string>
-  <string name="create_collection_display_name_required">Potreban je naslov</string>
-  <string name="create_collection_description">Opis</string>
-  <string name="create_collection_optional">opcionalno</string>
   <string name="create_collection_home_set">Mjesto pohrane</string>
   <string name="create_collection_create">Kreiraj</string>
-  <string name="delete_collection">Obriši zbirku</string>
-  <string name="delete_collection_confirm_title">Jeste li sigurni?</string>
-  <string name="delete_collection_confirm_warning">Ova zbirka (%s) i njeni podatci biti će trajno uklonjeni.</string>
-  <string name="delete_collection_data_shall_be_deleted">Ovi podatci biti će obrisani sa poslužitelja.</string>
-  <string name="collection_force_read_only">Prisilno samo za čitanje</string>
-  <string name="collection_properties">Svojstva</string>
-  <string name="collection_properties_url">Adresa (URL):</string>
-  <string name="collection_properties_owner">Vlasnik:</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Obriši zbirku</string>
+  <string name="collection_synchronization">Sinkronizacija</string>
+  <string name="collection_title">Naslov</string>
+  <string name="collection_description">Opis</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug info</string>
   <string name="debug_info_attached">Debug info priložen je uz ovu poruku (zahtijeva podršku za privitke aplikacije koja će primiti poruku).</string>

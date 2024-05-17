@@ -99,7 +99,7 @@
   <string name="logging_notification_text">Alle %s-Aktivitäten werden protokolliert</string>
   <string name="logging_notification_view_share">Anzeigen/teilen</string>
   <string name="logging_notification_disable">Deaktivieren</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV-Sync-Adapter</string>
   <string name="navigation_drawer_about">Über / Lizenz</string>
   <string name="navigation_drawer_beta_feedback">Beta-Rückmeldung</string>
@@ -174,7 +174,7 @@
   <string name="app_settings_integration">Integration</string>
   <string name="app_settings_tasks_provider">Aufgaben-App</string>
   <string name="app_settings_tasks_provider_none">Keine kompatible Aufgaben-App gefunden</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -194,11 +194,8 @@
   <string name="account_synchronize_this_collection">Diesen Ordner synchronisieren</string>
   <string name="account_read_only">schreibgeschützt</string>
   <string name="account_calendar">Kalender</string>
-  <string name="account_task_list">Aufgabenliste</string>
   <string name="account_journal">Journal</string>
   <string name="account_only_personal">Nur eigene anzeigen</string>
-  <string name="account_refresh_collections">Ordner aktualisieren</string>
-  <string name="account_refreshing_collections">Ordnerliste aktualisieren</string>
   <string name="account_webcal_external_app">Webcal-Abonnements können mit externen Apps synchronisiert werden.</string>
   <string name="account_no_webcal_handler_found">Keine Webcal-App gefunden</string>
   <string name="account_install_icsx5">ICSx⁵ installieren</string>
@@ -282,8 +279,6 @@
   <string name="settings_ignore_vpns_on">VPN ohne zugrundeliegende überprüfte Internetverbindung reicht für Synchronisierung nicht aus (empfohlen)</string>
   <string name="settings_ignore_vpns_off">VPN ohne zugrundeliegende überprüfte Internetverbindung reicht für Synchronisierung aus</string>
   <string name="settings_authentication">Anmeldeinformationen</string>
-  <string name="settings_oauth">Erneut anmelden</string>
-  <string name="settings_oauth_summary">Erneut mit OAuth anmelden</string>
   <string name="settings_username">Benutzername</string>
   <string name="settings_password">Passwort</string>
   <string name="settings_new_password">Neues Passwort</string>
@@ -318,34 +313,23 @@
     <item>Gruppen sind eigene vCards</item>
     <item>Gruppen sind Kategorien der Kontakte</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_calendar">Kalender anlegen</string>
-  <string name="create_calendar_time_zone">Standardzeitzone</string>
   <string name="create_calendar_type">Mögliche Kalendereinträge</string>
   <string name="create_calendar_type_vevent">Termine</string>
   <string name="create_calendar_type_vtodo">Aufgaben</string>
   <string name="create_calendar_type_vjournal">Notizen / Journal</string>
   <string name="create_collection_color">Farbe</string>
-  <string name="create_collection_creating">Ordner wird angelegt</string>
   <string name="create_collection_display_name">Titel</string>
-  <string name="create_collection_display_name_required">Ein Titel wird benötigt</string>
-  <string name="create_collection_description">Beschreibung</string>
-  <string name="create_collection_description_optional">Beschreibung (optional)</string>
-  <string name="create_collection_optional">optional</string>
   <string name="create_collection_home_set">Speicherort</string>
-  <string name="create_collection_home_set_required">Speicherort wird benötigt</string>
   <string name="create_collection_create">Erstellen</string>
-  <string name="delete_collection">Ordner löschen</string>
-  <string name="delete_collection_confirm_title">Sind Sie sicher?</string>
-  <string name="delete_collection_confirm_warning">Dieser Ordner (%s) und alle enthaltenen Daten werden dauerhaft gelöscht.</string>
-  <string name="delete_collection_data_shall_be_deleted">Diese Daten sollen vom Server gelöscht werden.</string>
-  <string name="collection_force_read_only">Schreibschutz erzwingen</string>
-  <string name="collection_properties">Eigenschaften</string>
-  <string name="collection_properties_sync_time">Zuletzt synchronisiert:</string>
-  <string name="collection_properties_sync_time_never">Nie synchronisiert</string>
-  <string name="collection_properties_url">Adresse (URL):</string>
-  <string name="collection_properties_owner">Besitzer:</string>
+  <string name="create_collection_optional">* optional</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Ordner löschen</string>
+  <string name="collection_synchronization">Synchronisierung</string>
+  <string name="collection_title">Titel</string>
+  <string name="collection_description">Beschreibung</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
   <string name="debug_info_archive_caption">ZIP-Archiv</string>

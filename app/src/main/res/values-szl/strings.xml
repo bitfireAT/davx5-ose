@@ -41,7 +41,7 @@
   <string name="about_license_info_no_warranty">Tyn program przichodzi BEZ ŻODNYJ GWARANCYJE. To je wolne ôprogramowanie i możesz je rozkludzać pod ôkryślōnymi warōnkami.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Niy szło stworzić zbioru dziynnika</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Adapter synchrōnizacyje CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Ô DAVx⁵ / Licyncyjo</string>
   <string name="navigation_drawer_beta_feedback">Przekoż ôpinijo</string>
@@ -80,7 +80,7 @@
   <string name="app_settings_reset_hints">Zresetuj podpowiedzi</string>
   <string name="app_settings_reset_hints_summary">Włōncz zaś skazōwki, co wcześnij były wychrōniōne</string>
   <string name="app_settings_reset_hints_success">Wszyjske skazōwki pokożōm sie zaś</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -95,7 +95,6 @@
   <string name="account_synchronize_this_collection">Synchrōnizuj kolekcyjo</string>
   <string name="account_read_only">ino do ôdczytu</string>
   <string name="account_calendar">kalyndorz</string>
-  <string name="account_task_list">lista zadań</string>
   <string name="account_no_webcal_handler_found">Niy szło znojś aplikacyje, co ôbsuguje Webcal</string>
   <string name="account_install_icsx5">Zainstaluj ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -171,7 +170,7 @@
     <item>Grupy to sōm ôddzielne VCards</item>
     <item>Grupy to sōm kategoryje co kōntakt</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Stwōrz ksiōnżka adresowo</string>
   <string name="create_calendar">Stwōrz kalyndorz</string>
   <string name="create_calendar_type">Możliwe wpisy kalyndorza</string>
@@ -179,20 +178,14 @@
   <string name="create_calendar_type_vtodo">Zadania</string>
   <string name="create_calendar_type_vjournal">Zopiski / dziynnik</string>
   <string name="create_collection_color">Farba</string>
-  <string name="create_collection_creating">Tworzynie kolekcyje</string>
   <string name="create_collection_display_name">Tytuł</string>
-  <string name="create_collection_display_name_required">Tytuł je wymogany</string>
-  <string name="create_collection_description">Ôpis</string>
-  <string name="create_collection_optional">ôpcyjōnalne</string>
   <string name="create_collection_home_set">Położynie przechowowanio</string>
   <string name="create_collection_create">Stwōrz</string>
-  <string name="delete_collection">Skasuj kolekcyjo</string>
-  <string name="delete_collection_confirm_title">Je żeś zicher?</string>
-  <string name="delete_collection_confirm_warning">Ta kolekcyjo (%s) i wszyjske jeji dane bydōm doimyntnie skasowane.</string>
-  <string name="delete_collection_data_shall_be_deleted">Te dane bydōm skasowane ze serwera.</string>
-  <string name="collection_force_read_only">Wymuś ino do ôdczytu</string>
-  <string name="collection_properties">Włosności</string>
-  <string name="collection_properties_url">Adresa (URL):</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Skasuj kolekcyjo</string>
+  <string name="collection_synchronization">Synchrōnizacyjo</string>
+  <string name="collection_title">Tytuł</string>
+  <string name="collection_description">Ôpis</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informacyje debugowe</string>
   <!--ExceptionInfoFragment-->

@@ -92,7 +92,7 @@
   <string name="logging_notification_text">Bây giờ đang ghi lại tất cả %s hoạt động</string>
   <string name="logging_notification_view_share">Xem/chia sẻ</string>
   <string name="logging_notification_disable">Tắt</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Đồng bộ CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Giới thiệu / Giấy phép</string>
   <string name="navigation_drawer_beta_feedback">Phản hồi về bản beta</string>
@@ -157,7 +157,7 @@
   <string name="app_settings_integration">Tích hợp</string>
   <string name="app_settings_tasks_provider">Ứng dụng công việc</string>
   <string name="app_settings_tasks_provider_none">Không tìm thấy ứng dụng công việc tương thích</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -173,7 +173,6 @@
   <string name="account_synchronize_this_collection">đồng bộ hoá bộ sưu tập này</string>
   <string name="account_read_only">chỉ đọc</string>
   <string name="account_calendar">lịch</string>
-  <string name="account_task_list">danh sách công việc</string>
   <string name="account_journal">nhật ký</string>
   <string name="account_only_personal">Chỉ hiện cá nhân</string>
   <string name="account_no_webcal_handler_found">Không tìm thấy ứng dụng nào có khả năng xử lý Webcal</string>
@@ -257,7 +256,7 @@
     <item>Các nhóm là các tệp vCard riêng</item>
     <item>Các nhóm là các hạng mục cho từng liên hệ</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Tạo sổ địa chỉ</string>
   <string name="create_calendar">Tạo lịch</string>
   <string name="create_calendar_type">Các mục của lịch có thể có</string>
@@ -265,22 +264,14 @@
   <string name="create_calendar_type_vtodo">Công việc</string>
   <string name="create_calendar_type_vjournal">Ghi chú / nhật ký</string>
   <string name="create_collection_color">Màu</string>
-  <string name="create_collection_creating">Đang tạo bộ sưu tập</string>
   <string name="create_collection_display_name">Tiêu đề</string>
-  <string name="create_collection_display_name_required">Yêu cầu tiêu đề</string>
-  <string name="create_collection_description">Mô tả</string>
-  <string name="create_collection_optional">không bắt buộc</string>
   <string name="create_collection_home_set">Vị trí kho lưu trữ</string>
-  <string name="create_collection_home_set_required">Yêu cầu quyền bộ nhớ</string>
   <string name="create_collection_create">Tạo</string>
-  <string name="delete_collection">Xoá bộ sưu tập</string>
-  <string name="delete_collection_confirm_title">Bạn có chắc không?</string>
-  <string name="delete_collection_confirm_warning">Bộ sưu tập này (%s) và tất cả dữ liệu của nó sẽ bị xoá vĩnh viễn.</string>
-  <string name="delete_collection_data_shall_be_deleted">Những dữ liệu này sẽ bị xoá khỏi máy chủ.</string>
-  <string name="collection_force_read_only">Buộc chỉ đọc</string>
-  <string name="collection_properties">Thuộc tính</string>
-  <string name="collection_properties_url">Địa chỉ (URL):</string>
-  <string name="collection_properties_owner">Chủ sở hữu:</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Xoá bộ sưu tập</string>
+  <string name="collection_synchronization">Đồng bộ hoá</string>
+  <string name="collection_title">Tiêu đề</string>
+  <string name="collection_description">Mô tả</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Thông tin gỡ lỗi</string>
   <string name="debug_info_archive_caption">Tệp nén ZIP</string>

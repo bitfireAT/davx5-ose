@@ -91,7 +91,7 @@
   <string name="logging_notification_text">Сада се записују све %s активности</string>
   <string name="logging_notification_view_share">Прегледај/подели</string>
   <string name="logging_notification_disable">Онемогући</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">КалДАВ/КардДАВ адаптер синхронизације</string>
   <string name="navigation_drawer_about">О програму/лиценца</string>
   <string name="navigation_drawer_beta_feedback">Повратне информације бета издања</string>
@@ -154,7 +154,7 @@
   <string name="app_settings_reset_hints_success">Сви савети ће поново бити приказани</string>
   <string name="app_settings_integration">Интеграција</string>
   <string name="app_settings_tasks_provider">Апликација за задатке</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">КардДАВ</string>
   <string name="account_caldav">КалДАВ</string>
   <string name="account_webcal">Вебкал</string>
@@ -170,7 +170,6 @@
   <string name="account_synchronize_this_collection">синхронизуј ову збирку</string>
   <string name="account_read_only">само-за-читање</string>
   <string name="account_calendar">календар</string>
-  <string name="account_task_list">листа задатака</string>
   <string name="account_journal">журнал</string>
   <string name="account_only_personal">Прикажи само личне</string>
   <string name="account_no_webcal_handler_found">Нема апликације за Вебкал</string>
@@ -227,7 +226,6 @@
   <string name="settings_sync_wifi_only_ssids_message">Имена (ССИД) дозвољених мрежа. одвојена зарезом (оставите празно за све мреже)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_action">Управљај</string>
   <string name="settings_authentication">Аутентификација</string>
-  <string name="settings_oauth">Поновна аутентификација</string>
   <string name="settings_username">Корисничко име</string>
   <string name="settings_password">Лозинка</string>
   <string name="settings_password_summary">Ажурирајте лозинку за ваш сервер.</string>
@@ -248,26 +246,20 @@
   <string name="settings_event_colors_off">Боје догађаја нису синхронизоване</string>
   <string name="settings_carddav">КардДАВ</string>
   <string name="settings_contact_group_method">Режим група контаката</string>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Направи адресар</string>
   <string name="create_calendar">Направи календар</string>
   <string name="create_calendar_type_vevent">Догађаји</string>
   <string name="create_calendar_type_vtodo">Задаци</string>
   <string name="create_collection_color">Боја</string>
-  <string name="create_collection_creating">Правим збирку</string>
   <string name="create_collection_display_name">Наслов</string>
-  <string name="create_collection_display_name_required">Наслов је обавезан</string>
-  <string name="create_collection_description">Опис</string>
-  <string name="create_collection_optional">опционо</string>
   <string name="create_collection_home_set">Локација складишта</string>
-  <string name="create_collection_home_set_required">Локација складишта је обавезна</string>
   <string name="create_collection_create">Направи</string>
-  <string name="delete_collection">Обриши збирку</string>
-  <string name="delete_collection_confirm_title">Да ли сте сигурни?</string>
-  <string name="collection_force_read_only">Присили само-за-читање</string>
-  <string name="collection_properties">Својства</string>
-  <string name="collection_properties_url">Адреса (УРЛ):</string>
-  <string name="collection_properties_owner">Власник:</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Обриши збирку</string>
+  <string name="collection_synchronization">Синхронизација</string>
+  <string name="collection_title">Наслов</string>
+  <string name="collection_description">Опис</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Подаци за исправљање грешака</string>
   <string name="debug_info_view_details">Прикажи детаље</string>

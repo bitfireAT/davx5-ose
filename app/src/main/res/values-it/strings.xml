@@ -93,7 +93,7 @@
   <string name="logging_notification_text">Adesso l\'accesso all\' %s delle attività </string>
   <string name="logging_notification_view_share">Visualizza/condividi</string>
   <string name="logging_notification_disable">Disabilita</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV adattatore di sincronizzazione</string>
   <string name="navigation_drawer_about">Informazioni / Licenza</string>
   <string name="navigation_drawer_beta_feedback">Feedback sulla beta</string>
@@ -158,7 +158,7 @@
   <string name="app_settings_integration">Integrazione</string>
   <string name="app_settings_tasks_provider">Funzioni dell\'applicazione</string>
   <string name="app_settings_tasks_provider_none">Nessuna applicazione compatibile con e funzionalità trovata</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -174,7 +174,6 @@
   <string name="account_synchronize_this_collection">Sincronizza questa raccolta</string>
   <string name="account_read_only">sola lettura</string>
   <string name="account_calendar">calendario</string>
-  <string name="account_task_list">elenco attività</string>
   <string name="account_only_personal">Mostra solo personale</string>
   <string name="account_no_webcal_handler_found">Non ho trovato nessuna applicazione abilitata per Webcal</string>
   <string name="account_install_icsx5">Installa ICSx⁵</string>
@@ -270,7 +269,7 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
     <item>I gruppi sono vCards separate</item>
     <item>I gruppi sono categorie per ogni contatto</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Crea rubrica</string>
   <string name="create_calendar">Crea calendario</string>
   <string name="create_calendar_type">Possibili voci del calendario</string>
@@ -278,22 +277,14 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="create_calendar_type_vtodo">Attività</string>
   <string name="create_calendar_type_vjournal">Note / diario</string>
   <string name="create_collection_color">Colore</string>
-  <string name="create_collection_creating">Crea una raccolta</string>
   <string name="create_collection_display_name">Titolo</string>
-  <string name="create_collection_display_name_required">Il titolo è richiesto</string>
-  <string name="create_collection_description">Descrizione</string>
-  <string name="create_collection_optional">opzionale</string>
   <string name="create_collection_home_set">Percorso di archiviazione</string>
-  <string name="create_collection_home_set_required">É richiesta una memoria di stoccaggio</string>
   <string name="create_collection_create">Crea</string>
-  <string name="delete_collection">Elimina raccolta</string>
-  <string name="delete_collection_confirm_title">Sei sicuro?</string>
-  <string name="delete_collection_confirm_warning">Questa raccolta (%s) e tutti i suoi dati saranno rimossi permanentemente.</string>
-  <string name="delete_collection_data_shall_be_deleted">Questi dati saranno cancellati dal server.</string>
-  <string name="collection_force_read_only">Forza sola lettura</string>
-  <string name="collection_properties">Proprietà</string>
-  <string name="collection_properties_url">Indirizzo (URL):</string>
-  <string name="collection_properties_owner">Possessore:</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Elimina raccolta</string>
+  <string name="collection_synchronization">Sincronizzazione</string>
+  <string name="collection_title">Titolo</string>
+  <string name="collection_description">Descrizione</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informazioni di debug</string>
   <string name="debug_info_archive_caption">Archivio ZIP</string>

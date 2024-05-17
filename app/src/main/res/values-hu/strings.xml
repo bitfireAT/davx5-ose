@@ -103,7 +103,7 @@
   <string name="logging_notification_text">Mostantól %s minden művelete naplózásra kerül</string>
   <string name="logging_notification_view_share">Nézet/megosztás</string>
   <string name="logging_notification_disable">Kikapcsolás</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV szinkronizációs adapter</string>
   <string name="navigation_drawer_about">Névjegy/licenc</string>
   <string name="navigation_drawer_beta_feedback">Tesztelői visszajelzés</string>
@@ -181,7 +181,7 @@
   <string name="app_settings_integration">Integráció</string>
   <string name="app_settings_tasks_provider">Feladatok alkalmazás</string>
   <string name="app_settings_tasks_provider_none">Nem található kompatibilis feladatalkalmazás</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -201,11 +201,8 @@
   <string name="account_synchronize_this_collection">a gyűjtemény szinkronizálása</string>
   <string name="account_read_only">csak olvasható</string>
   <string name="account_calendar">naptár</string>
-  <string name="account_task_list">feladatlista</string>
   <string name="account_journal">napló</string>
   <string name="account_only_personal">Csak a személyesek megjelenítése</string>
-  <string name="account_refresh_collections">Gyűjtemények frissítése</string>
-  <string name="account_refreshing_collections">Gyűjteménylista frissítése</string>
   <string name="account_webcal_external_app">A Webcal feliratkozások külső alkalmazásokkal szinkronizálhatók.</string>
   <string name="account_no_webcal_handler_found">Nem található Webcal-képes alkalmazás</string>
   <string name="account_install_icsx5">ICSx⁵ telepítése</string>
@@ -262,7 +259,6 @@
   <string name="login_querying_server">Várjon, a kiszolgáló lekérdezése…</string>
   <string name="login_no_service">Nem található CalDAV vagy CardDAV szolgáltatás.</string>
   <string name="login_no_service_info">Ez az alapwebcím nem tűnik elérhető CalDAV/CardDAV webcímnek, és a szolgáltatásfelderítés nem sikerült.</string>
-  <string name="login_see_tested_services"><![CDATA[Ellenőrizze a szolgáltatója leírását, az <a href="%s">általunk tesztelt szolgáltatások listáját</a> és az alapwebcímeket.</a>]]></string>
   <string name="login_check_credentials">Ellenőrizze a hitelesítő adatok is (általában a felhasználónevet és a jelszót).</string>
   <string name="login_logs_available">További műszaki információk érhetők el a naplókban.</string>
   <string name="login_view_logs">Naplóbejegyzések megtekintése</string>
@@ -295,8 +291,6 @@
   <string name="settings_ignore_vpns_on">A VPN ellenőrzött internetkapcsolat nélkül nem elég a szinkronizáláshoz (ajánlott)</string>
   <string name="settings_ignore_vpns_off">A VPN ellenőrzött internetkapcsolat nélkül is elég a szinkronizáláshoz</string>
   <string name="settings_authentication">Hitelesítés</string>
-  <string name="settings_oauth">Hitelesítés megismétlése</string>
-  <string name="settings_oauth_summary">Az OAuth bejelentkezés megismétlése</string>
   <string name="settings_username">Felhasználónév</string>
   <string name="settings_password">Jelszó</string>
   <string name="settings_new_password">Új jelszó</string>
@@ -331,34 +325,23 @@
     <item>A csoportok különálló vCard objektumok</item>
     <item>A csoportok névjegy-kategóriák</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Címjegyzék létrehozása</string>
   <string name="create_calendar">Naptár létrehozása</string>
-  <string name="create_calendar_time_zone">Alapértelmezett időzóna</string>
   <string name="create_calendar_type">Lehetséges naptárbejegyzések</string>
   <string name="create_calendar_type_vevent">Események</string>
   <string name="create_calendar_type_vtodo">Feladatok</string>
   <string name="create_calendar_type_vjournal">Jegyzetek/napló</string>
   <string name="create_collection_color">Szín</string>
-  <string name="create_collection_creating">Gyűjtemény létrehozása</string>
   <string name="create_collection_display_name">Cím</string>
-  <string name="create_collection_display_name_required">A cím kötelező</string>
-  <string name="create_collection_description">Leírás</string>
-  <string name="create_collection_description_optional">Leírás (nem kötelező)</string>
-  <string name="create_collection_optional">nem kötelező</string>
   <string name="create_collection_home_set">Tárhely</string>
-  <string name="create_collection_home_set_required">A tárolási hely kötelező</string>
   <string name="create_collection_create">Létrehozás</string>
-  <string name="delete_collection">Gyűjtemény törlése</string>
-  <string name="delete_collection_confirm_title">Biztos?</string>
-  <string name="delete_collection_confirm_warning">A gyűjtemény (%s) és a hozzá tartozó adatok véglegesen törölve lesznek a kiszolgálóról.</string>
-  <string name="delete_collection_data_shall_be_deleted">Az adatok törölve lesznek a kiszolgálóról.</string>
-  <string name="collection_force_read_only">Csak olvashatóvá tétel</string>
-  <string name="collection_properties">Tulajdonságok</string>
-  <string name="collection_properties_sync_time">Utolsó szinkronizálás:</string>
-  <string name="collection_properties_sync_time_never">Még soha</string>
-  <string name="collection_properties_url">Cím (URL):</string>
-  <string name="collection_properties_owner">Tulajdonos:</string>
+  <string name="create_collection_optional">* nem kötelező</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Gyűjtemény törlése</string>
+  <string name="collection_synchronization">Szinkronizáció</string>
+  <string name="collection_title">Cím</string>
+  <string name="collection_description">Leírás</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Hibakeresési információ</string>
   <string name="debug_info_archive_caption">ZIP archívum</string>

@@ -86,7 +86,7 @@
   <string name="wifi_permissions_background_location_permission">Autorisation de localisation en arrière-plan</string>
   <string name="wifi_permissions_background_location_permission_label">Autorisez tout le temps</string>
   <string name="wifi_permissions_background_location_permission_on">Autorisation de localisation réglée sur : %s</string>
-  <string name="wifi_permissions_background_location_permission_off">Autorisation de localisation non réglée sur : %s&lt;/b&gt;]]&gt;</string>
+  <string name="wifi_permissions_background_location_permission_off">Autorisation de localisation non réglée sur : %s</string>
   <string name="wifi_permissions_background_location_disclaimer">%s utilise l\'autorisation de localisation uniquement pour déterminer le SSID du WiFi actuel pour les comptes à SSID restreint. Cela se produit même lorsque l\'application est en arrière-plan. Aucune donnée de localisation n\'est collectée, stockée, traitée ou envoyée nulle part.</string>
   <string name="wifi_permissions_location_enabled">Localisation toujours activée</string>
   <string name="wifi_permissions_location_enabled_on">Le service de localisation est activé</string>
@@ -103,7 +103,7 @@
   <string name="logging_notification_text">Maintenant toutes les activités de %s seront enregistrées</string>
   <string name="logging_notification_view_share">Voir/partager</string>
   <string name="logging_notification_disable">Désactiver</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Adaptateur de synchronisation CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">À propos / Licence</string>
   <string name="navigation_drawer_beta_feedback">Commentaire pour la version Beta</string>
@@ -181,7 +181,7 @@
   <string name="app_settings_integration">Intégration</string>
   <string name="app_settings_tasks_provider">Applications de gestion de tâches</string>
   <string name="app_settings_tasks_provider_none">Aucune application de tâches compatibles trouvée</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">Carnets d\'adresses (CardDAV)</string>
   <string name="account_caldav">Agendas (CalDAV)</string>
   <string name="account_webcal">WebCal</string>
@@ -201,11 +201,8 @@
   <string name="account_synchronize_this_collection">Synchroniser cette collection</string>
   <string name="account_read_only">En lecture seulement</string>
   <string name="account_calendar">calendrier</string>
-  <string name="account_task_list">liste de tâches</string>
   <string name="account_journal">journal</string>
   <string name="account_only_personal">N\'afficher que les comptes personnels</string>
-  <string name="account_refresh_collections">Rafraîchir les collections</string>
-  <string name="account_refreshing_collections">Rafraîchir la liste des collections</string>
   <string name="account_webcal_external_app">Les abonnements Webcal peuvent être synchronisés avec des applications tierces.</string>
   <string name="account_no_webcal_handler_found">Aucune application compatible WebCal</string>
   <string name="account_install_icsx5">Installer ICSx⁵</string>
@@ -262,7 +259,6 @@
   <string name="login_querying_server">Veuillez patienter, nous interrogeons le serveur …</string>
   <string name="login_no_service">Aucun accès possible au service CalDAV ou CardDAV.</string>
   <string name="login_no_service_info">L\'URL de base ne semble pas être une URL CalDAV/CardDAV et la détection du service a échoué.</string>
-  <string name="login_see_tested_services"><![CDATA[Merci de consulter les notices de votre fournisseur de services et <a href="%s">notre liste de services vérifiés</a> ainsi que leur URL de base.]]></string>
   <string name="login_check_credentials">Merci de bien vérifier l\'authentification (souvent le nom d\'utilisateur et le mot de passe).</string>
   <string name="login_logs_available">Plus d\'information technique est disponible dans les journaux.</string>
   <string name="login_view_logs">Voir les journaux</string>
@@ -295,8 +291,6 @@
   <string name="settings_ignore_vpns_on">Un VPN sans connexion Internet fonctionnelle ne permet pas de lancer une synchronisation (recommandé)</string>
   <string name="settings_ignore_vpns_off">Un VPN sans connexion Internet fonctionnelle peut lancer une synchronisation</string>
   <string name="settings_authentication">Authentification</string>
-  <string name="settings_oauth">Ré-authentification</string>
-  <string name="settings_oauth_summary">Retenter la connexion OAuth</string>
   <string name="settings_username">Nom d\'utilisateur</string>
   <string name="settings_password">Mot de passe</string>
   <string name="settings_new_password">Nouveau mot de passe</string>
@@ -333,34 +327,23 @@
     <item>Les groupes sont des VCards indépendantes</item>
     <item>Les groupes sont des catégories pour chacun des contacts</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Créer un carnet d\'adresses</string>
   <string name="create_calendar">Créer un calendrier</string>
-  <string name="create_calendar_time_zone">Fuseau horaire par défaut</string>
   <string name="create_calendar_type">Entrées possibles de calendrier</string>
   <string name="create_calendar_type_vevent">Événements</string>
   <string name="create_calendar_type_vtodo">Tâches</string>
   <string name="create_calendar_type_vjournal">Notes / journal</string>
   <string name="create_collection_color">Couleur</string>
-  <string name="create_collection_creating">Création d\'une collection</string>
   <string name="create_collection_display_name">Titre</string>
-  <string name="create_collection_display_name_required">Un titre est obligatoire</string>
-  <string name="create_collection_description">Description</string>
-  <string name="create_collection_description_optional">Description (facultative)</string>
-  <string name="create_collection_optional">facultatif</string>
   <string name="create_collection_home_set">Emplacement de stockage</string>
-  <string name="create_collection_home_set_required">Emplacement de stockage requis</string>
   <string name="create_collection_create">Créer</string>
-  <string name="delete_collection">Supprimer la collection</string>
-  <string name="delete_collection_confirm_title">Êtes-vous sûr ?</string>
-  <string name="delete_collection_confirm_warning">Cette collection (%s)  et toutes ses données seront supprimées définitivement.</string>
-  <string name="delete_collection_data_shall_be_deleted">Ces données sont supprimées du serveur.</string>
-  <string name="collection_force_read_only">Forcer en lecture seule</string>
-  <string name="collection_properties">Propriétés</string>
-  <string name="collection_properties_sync_time">Dernière synchronisation :</string>
-  <string name="collection_properties_sync_time_never">Jamais synchronisé</string>
-  <string name="collection_properties_url">Adresse (URL) :</string>
-  <string name="collection_properties_owner">Propriétaire :</string>
+  <string name="create_collection_optional">* facultatif</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Supprimer la collection</string>
+  <string name="collection_synchronization">Synchronisation</string>
+  <string name="collection_title">Titre</string>
+  <string name="collection_description">Description</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Infos de débogage</string>
   <string name="debug_info_archive_caption">Archive ZIP</string>

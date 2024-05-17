@@ -104,7 +104,7 @@
   <string name="logging_notification_text">%s jarduera guztiak erregistratzen</string>
   <string name="logging_notification_view_share">Ikusi/partekatu</string>
   <string name="logging_notification_disable">Desgaitu</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV sinkronizazio moldagailua</string>
   <string name="navigation_drawer_about">Honi buruz / Lizentzia</string>
   <string name="navigation_drawer_beta_feedback">Beta iritzia</string>
@@ -182,7 +182,7 @@
   <string name="app_settings_integration">Integrazioa</string>
   <string name="app_settings_tasks_provider">Tasks aplikazioa</string>
   <string name="app_settings_tasks_provider_none">Ez da zeregin aplikazio bategarririk aurkitu</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -202,11 +202,8 @@
   <string name="account_synchronize_this_collection">sinkronizatu kolekzio hau</string>
   <string name="account_read_only">irakurri-soilik</string>
   <string name="account_calendar">egutegia</string>
-  <string name="account_task_list">zeregin zerrenda</string>
   <string name="account_journal">egunkaria</string>
   <string name="account_only_personal">Erakutsi pertsonala soilik</string>
-  <string name="account_refresh_collections">Freskatu bildumak</string>
-  <string name="account_refreshing_collections">Bilduma zerrenda freskatzen</string>
   <string name="account_webcal_external_app">Webcal harpidetzak kanpoko aplikazioen bidez sinkroniza daitezke.</string>
   <string name="account_no_webcal_handler_found">Ez da Webcal-ekin bateragarria den aplikaziorik aurkitu</string>
   <string name="account_install_icsx5">Instalatu ICSx⁵</string>
@@ -263,7 +260,6 @@
   <string name="login_querying_server">Mesedez itxaron, zerbitzaria kontsultatzen...</string>
   <string name="login_no_service">Ezin izan da CalDAV edo CardDAV zerbitzua aurkitu.</string>
   <string name="login_no_service_info">Oinarrizko URLa ez dirudi CalDAV/CardDAV URL eskuragarria denik eta zerbitzuaren detekzioa ez da gauzatu.</string>
-  <string name="login_see_tested_services"><![CDATA[Ikusi zure zerbitzu-hornitzailearen eskuliburua eta <a href="%s">gure probatutako zerbitzuen zerrenda</a> eta haien oinarrizko URLak.</a>]]></string>
   <string name="login_check_credentials">Mesedez, egiaztatu autentifikazioa ere (normalean erabiltzaile-izena eta pasahitza).</string>
   <string name="login_logs_available">Informazio tekniko gehiago eskuragarri dago erregistroetan.</string>
   <string name="login_view_logs">Ikusi egunkariak</string>
@@ -296,8 +292,6 @@
   <string name="settings_ignore_vpns_on">Interneterako konexio balioztatu gabeko VPN ez da nahikoa sinkronizazioa exekutatzeko (gomendatua)</string>
   <string name="settings_ignore_vpns_off">Interneterako konexio balioztatu gabeko VPN nahikoa da sinkronizazioa exekutatzeko</string>
   <string name="settings_authentication">Autentifikazioa</string>
-  <string name="settings_oauth">Berriro autentifikatu</string>
-  <string name="settings_oauth_summary">Egin OAuth saioa berriro</string>
   <string name="settings_username">Erabiltzaile izena</string>
   <string name="settings_password">Pasahitza</string>
   <string name="settings_password_summary">Eguneratu pasahitza zure zerbitzariaren arabera</string>
@@ -331,34 +325,23 @@
     <item>Taldeak vCard banatuak dira</item>
     <item>Taldeak kontaktu bakoitzeko kategoriak dira</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Sortu helbide liburua</string>
   <string name="create_calendar">Sortu egutegia</string>
-  <string name="create_calendar_time_zone">Ordu-zona lehenetsia</string>
   <string name="create_calendar_type">Egutegi sarrera posibleak</string>
   <string name="create_calendar_type_vevent">Gertaerak</string>
   <string name="create_calendar_type_vtodo">Zereginak</string>
   <string name="create_calendar_type_vjournal">Notak / egunkaria</string>
   <string name="create_collection_color">Kolorea</string>
-  <string name="create_collection_creating">Kolekzioa sortzen</string>
   <string name="create_collection_display_name">Izenburua</string>
-  <string name="create_collection_display_name_required">Izenburua beharrezkoa da</string>
-  <string name="create_collection_description">Deskribapena</string>
-  <string name="create_collection_description_optional">Deskribapena (aukerakoa)</string>
-  <string name="create_collection_optional">aukerazkoa</string>
   <string name="create_collection_home_set">Biltegiratze kokapena</string>
-  <string name="create_collection_home_set_required">Biltegiaren kokapena beharrezkoa da</string>
   <string name="create_collection_create">Sortu</string>
-  <string name="delete_collection">Ezabatu kolekzioa</string>
-  <string name="delete_collection_confirm_title">Ziur zaude?</string>
-  <string name="delete_collection_confirm_warning">Bilduma hau (%s) eta bere datu guztiak behin betiko ezabatuko dira.</string>
-  <string name="delete_collection_data_shall_be_deleted">Datu hauek zerbitzaritik ezabatu beharko litzakete.</string>
-  <string name="collection_force_read_only">Behartu irakurri-soilik</string>
-  <string name="collection_properties">Propietateak</string>
-  <string name="collection_properties_sync_time">Azkenengoz sinkronizatuta:</string>
-  <string name="collection_properties_sync_time_never">Ez da inoiz sinkronizatu</string>
-  <string name="collection_properties_url">Helbidea (URL):</string>
-  <string name="collection_properties_owner">Jabea:</string>
+  <string name="create_collection_optional">* aukeran</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Ezabatu kolekzioa</string>
+  <string name="collection_synchronization">Sinkronizazioa</string>
+  <string name="collection_title">Izenburua</string>
+  <string name="collection_description">Deskribapena</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Arazketa informazioa</string>
   <string name="debug_info_archive_caption">ZIP artxiboa</string>

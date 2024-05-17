@@ -25,7 +25,7 @@
   <string name="about_license_info_no_warranty">Tento program sa poskytuje BEZ AKEJKOĽVEK ZÁRUKY. Je to slobodný softvér a môžete ho ďalej šíriť pri splnení určitých podmienok.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Nie je možné vytvoriť súbor protokolu</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adaptér</string>
   <string name="navigation_drawer_about">O programe / Licencia</string>
   <string name="navigation_drawer_beta_feedback">Odozva na beta-verziu</string>
@@ -64,7 +64,7 @@
   <string name="app_settings_reset_hints">Vynulovať náznaky</string>
   <string name="app_settings_reset_hints_summary">Znovu povolí náznaky odstránené skôr</string>
   <string name="app_settings_reset_hints_success">Všetky náznaky budú zobrazené znovu</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -79,7 +79,6 @@
   <string name="account_synchronize_this_collection">synchronizovať túto zbierku</string>
   <string name="account_read_only">len na čítanie</string>
   <string name="account_calendar">kalendár</string>
-  <string name="account_task_list">zoznam úloh</string>
   <string name="account_no_webcal_handler_found">Nenašla sa žiadna aplikácia schopná používať Webcal</string>
   <string name="account_install_icsx5">Nainštalovať ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -157,7 +156,7 @@
     <item>Skupiny sú osobitné vKarty</item>
     <item>Skupiny sú kategórie na kontakt</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Vytvoriť adresár</string>
   <string name="create_calendar">Vytvoriť kalendár</string>
   <string name="create_calendar_type">Možné kalendárové položky</string>
@@ -165,20 +164,14 @@
   <string name="create_calendar_type_vtodo">Úlohy</string>
   <string name="create_calendar_type_vjournal">Poznámky / denník</string>
   <string name="create_collection_color">Farba</string>
-  <string name="create_collection_creating">Vytvára sa kolekcia</string>
   <string name="create_collection_display_name">Názov</string>
-  <string name="create_collection_display_name_required">Vyžaduje sa názov</string>
-  <string name="create_collection_description">Popis</string>
-  <string name="create_collection_optional">voliteľné</string>
   <string name="create_collection_home_set">Umiestnenie úložiska</string>
   <string name="create_collection_create">Vytvoriť</string>
-  <string name="delete_collection">Zmazať kolekciu</string>
-  <string name="delete_collection_confirm_title">Ste si istý?</string>
-  <string name="delete_collection_confirm_warning">Kolekcia (%s) a všetky jej údaje budú natrvalo zmazané.</string>
-  <string name="delete_collection_data_shall_be_deleted">Tieto data budú zmazané zo servera.</string>
-  <string name="collection_force_read_only">Vyžiadať len na čítanie</string>
-  <string name="collection_properties">Vlastnosti</string>
-  <string name="collection_properties_url">Adresa (URL):</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Zmazať kolekciu</string>
+  <string name="collection_synchronization">Synchronizácia</string>
+  <string name="collection_title">Názov</string>
+  <string name="collection_description">Popis</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Ladiace informácie</string>
   <!--ExceptionInfoFragment-->

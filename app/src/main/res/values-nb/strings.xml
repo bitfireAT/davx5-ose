@@ -26,7 +26,7 @@
   <string name="about_license_info_no_warranty">Dette programmet kommer uten NOEN FORM FOR GARANTI. Det er fri programvare, og du er velkommen til å redistribuere det under gitte forhold.</string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Kan ikke opprette loggfil</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV -synkroniseringsadapter</string>
   <string name="navigation_drawer_about">Om / Lisens</string>
   <string name="navigation_drawer_beta_feedback">Tilbakemelding om beta-en</string>
@@ -62,7 +62,7 @@
   <string name="app_settings_reset_hints">Tilbakestill hint</string>
   <string name="app_settings_reset_hints_summary">Skrur på hint som har blitt avslått tidligere</string>
   <string name="app_settings_reset_hints_success">Alle hint vil bli vist igjen</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -77,7 +77,6 @@
   <string name="account_synchronize_this_collection">synkroniser denne samlingen</string>
   <string name="account_read_only">kun lesbar</string>
   <string name="account_calendar">kalender</string>
-  <string name="account_task_list">oppgaveliste</string>
   <string name="account_no_webcal_handler_found">Fant ingen programmer med støtte for Webcal</string>
   <string name="account_install_icsx5">Installer ICSx⁵</string>
   <!--AddAccountActivity-->
@@ -139,27 +138,21 @@
   <string name="settings_event_colors">Støtte for fargelegging av hendelser</string>
   <string name="settings_carddav">CardDAV</string>
   <string name="settings_contact_group_method">Kontaktgruppemetode</string>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Opprett adressebok</string>
   <string name="create_calendar">Opprett kalender</string>
   <string name="create_calendar_type">Mulige kalenderhendelser</string>
   <string name="create_calendar_type_vevent">Hendelser</string>
   <string name="create_calendar_type_vtodo">Oppgaver</string>
   <string name="create_collection_color">Farge</string>
-  <string name="create_collection_creating">Oppretter samling</string>
   <string name="create_collection_display_name">Tittel</string>
-  <string name="create_collection_display_name_required">Tittel kreves</string>
-  <string name="create_collection_description">Beskrivelse</string>
-  <string name="create_collection_optional">valgfri</string>
   <string name="create_collection_home_set">Lagringslokasjon</string>
   <string name="create_collection_create">Opprett</string>
-  <string name="delete_collection">Slett samling</string>
-  <string name="delete_collection_confirm_title">Er du sikker?</string>
-  <string name="delete_collection_confirm_warning">Denne samlingen (%s) og all dens data vil bli permanent slettet.</string>
-  <string name="delete_collection_data_shall_be_deleted">Disse datene blir slettet fra serveren.</string>
-  <string name="collection_force_read_only">Tving kun lesbar</string>
-  <string name="collection_properties">Egenskaper</string>
-  <string name="collection_properties_url">Adresse (URL):</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Slett samling</string>
+  <string name="collection_synchronization">Synkronisering</string>
+  <string name="collection_title">Tittel</string>
+  <string name="collection_description">Beskrivelse</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Feilrettingsinfo</string>
   <!--ExceptionInfoFragment-->

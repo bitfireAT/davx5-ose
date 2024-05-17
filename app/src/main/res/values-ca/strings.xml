@@ -4,6 +4,7 @@
   <string name="account_invalid">El compte no existeix (eliminat)</string>
   <string name="account_title_address_book">Llibreta d’adreces del DAVx⁵</string>
   <string name="address_books_authority_title">Llibreta d’adreces</string>
+  <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Elimina</string>
   <string name="dialog_deny">Cancel·la</string>
   <string name="field_required">Cal aquest camp</string>
@@ -103,7 +104,7 @@
   <string name="logging_notification_text">Iniciant a totes les %s activitats</string>
   <string name="logging_notification_view_share">Veure/compartir</string>
   <string name="logging_notification_disable">Inhabilita</string>
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Adaptador de sincronització CalDAV / CardDAV</string>
   <string name="navigation_drawer_about">Quant a/llicència</string>
   <string name="navigation_drawer_beta_feedback">Retroacció de la Beta</string>
@@ -181,7 +182,7 @@
   <string name="app_settings_integration">Integració</string>
   <string name="app_settings_tasks_provider">Aplicació de tasques</string>
   <string name="app_settings_tasks_provider_none">No s\'ha trobat cap aplicació de tasques compatible</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
@@ -201,11 +202,11 @@
   <string name="account_synchronize_this_collection">Sincronitza aquesta col·lecció</string>
   <string name="account_read_only">Només de lectura</string>
   <string name="account_calendar">Calendari</string>
-  <string name="account_task_list">Llista de tasques</string>
+  <string name="account_contacts">contactes</string>
   <string name="account_journal">Diari</string>
+  <string name="account_task_list">tasques</string>
   <string name="account_only_personal">Mostra només les personals</string>
-  <string name="account_refresh_collections">Actualitza les col·leccions</string>
-  <string name="account_refreshing_collections">S\'està actualitzant la llista de col·leccions</string>
+  <string name="account_refresh_collections">Recarregar llista</string>
   <string name="account_webcal_external_app">Les subscripcions Webcal es poden sincronitzar amb aplicacions externes.</string>
   <string name="account_no_webcal_handler_found">No s\'ha trobat cap aplicació compatible amb Webcal</string>
   <string name="account_install_icsx5">Instal·la ICSx⁵</string>
@@ -262,7 +263,7 @@
   <string name="login_querying_server">Espereu, s\'està consultant el servidor…</string>
   <string name="login_no_service">No s\'ha pogut trobar cap servei CalDAV o CardDAV.</string>
   <string name="login_no_service_info">L\'URL base no sembla que sigui un URL accessible de CalDAV/CardDAV i la detecció del servei no ha estat correcta.</string>
-  <string name="login_see_tested_services"><![CDATA[Vegeu el manual del proveïdor de serveis i la <a href="%s">nostra llista de serveis provats</a> i els seus URL base.</a>]]></string>
+  <string name="login_see_tested_services"><![CDATA[Per favor, revisa el manual del teu proveïdor i <a href="%s">la nostra llista de serveis provats</a> i les seves URL base.]]></string>
   <string name="login_check_credentials">Comproveu també l\'autenticació (normalment nom d\'usuari i contrasenya).</string>
   <string name="login_logs_available">Hi ha més informació tècnica disponible als registres.</string>
   <string name="login_view_logs">Visualitza els registres</string>
@@ -295,8 +296,6 @@
   <string name="settings_ignore_vpns_on">Una VPN sense connexió a Internet validada subjacent no és suficient per a executar la sincronització (recomanat)</string>
   <string name="settings_ignore_vpns_off">Una VPN sense connexió a Internet validada subjacent és suficient per a executar la sincronització</string>
   <string name="settings_authentication">Autentificació</string>
-  <string name="settings_oauth">Re-Autenticar</string>
-  <string name="settings_oauth_summary">Tornar a realitzar l\'inici de sessió amb OAuth</string>
   <string name="settings_username">Nom d\'usuari/ària</string>
   <string name="settings_password">Contrasenya</string>
   <string name="settings_new_password">Contrasenya nova</string>
@@ -331,34 +330,40 @@
     <item>Els grups són vCards separades</item>
     <item>Els grups són categories per contacte</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Crea una llibreta d\'adreces</string>
+  <string name="create_addressbook_maybe_not_supported">La creació de llibretes de direccions sobre CardDAV pot no ser suportada pel servidor.</string>
   <string name="create_calendar">Crea un calendari</string>
-  <string name="create_calendar_time_zone">Zona horària predeterminada</string>
+  <string name="create_calendar_time_zone_optional">Zona horaria per defecte*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Possibles entrades de calendari</string>
   <string name="create_calendar_type_vevent">Esdeveniments</string>
   <string name="create_calendar_type_vtodo">Tasques</string>
   <string name="create_calendar_type_vjournal">Notes/diari</string>
+  <string name="create_calendar_maybe_not_supported">La creació de calendaris sobre CalDAV pot no ser suportada pel servidor.</string>
   <string name="create_collection_color">Color</string>
-  <string name="create_collection_creating">S\'està creant una col·lecció</string>
   <string name="create_collection_display_name">Títol</string>
-  <string name="create_collection_display_name_required">Cal un títol</string>
-  <string name="create_collection_description">Descripció</string>
-  <string name="create_collection_description_optional">Descripció (opcional)</string>
-  <string name="create_collection_optional">opcional</string>
   <string name="create_collection_home_set">Ubicació d’emmagatzematge</string>
-  <string name="create_collection_home_set_required">Cal una ubicació d’emmagatzematge</string>
+  <string name="create_collection_description_optional">Descripció*</string>
   <string name="create_collection_create">Crea</string>
-  <string name="delete_collection">Suprimeix la col·lecció</string>
-  <string name="delete_collection_confirm_title">Estàs segur?</string>
-  <string name="delete_collection_confirm_warning">Aquesta col·lecció (%s) i totes les seves dades s’eliminaran definitivament.</string>
-  <string name="delete_collection_data_shall_be_deleted">Aquestes dades se suprimiran del servidor.</string>
-  <string name="collection_force_read_only">Força que sigui de només lectura</string>
-  <string name="collection_properties">Propietats</string>
-  <string name="collection_properties_sync_time">Darrera sincronització:</string>
-  <string name="collection_properties_sync_time_never">No s\'ha sincronitzat mai</string>
-  <string name="collection_properties_url">Adreça (URL):</string>
-  <string name="collection_properties_owner">Propietari:</string>
+  <string name="create_collection_optional">* opcional</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Suprimeix la col·lecció</string>
+  <string name="collection_delete_warning">Aquesta colecció (%s) i totes les seves dades seran eliminades localment i del servidor.</string>
+  <string name="collection_synchronization">Sincronització</string>
+  <string name="collection_synchronization_on">Sincronització habilitada</string>
+  <string name="collection_synchronization_off">Sincronització deshabilitada</string>
+  <string name="collection_read_only">Només lectura</string>
+  <string name="collection_read_only_by_server">Només lectura (pel servidor)</string>
+  <string name="collection_read_only_forced">Només lectura (localment)</string>
+  <string name="collection_read_write">Lectura/escriptura</string>
+  <string name="collection_title">Títol</string>
+  <string name="collection_description">Descripció</string>
+  <string name="collection_owner">Propietari</string>
+  <string name="collection_push_support">Suport de Push</string>
+  <string name="collection_push_web_push">El servidor té suport per a Push</string>
+  <string name="collection_last_sync">Última sincronització (%s)</string>
+  <string name="collection_url">Adreça (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informació de depuració</string>
   <string name="debug_info_archive_caption">Arxiu ZIP</string>

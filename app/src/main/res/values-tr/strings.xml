@@ -16,7 +16,7 @@
   <!--AboutActivity-->
   <string name="about_license_info_no_warranty">Bu uygulama HİÇ BİR GARANTİ ile gelmemektedir. Bedava bir yazılımdır ve belli koşullar altında dağıtabilirsiniz.</string>
   <!--global settings-->
-  <!--AccountsActivity-->
+  <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV Senkronizasyon Adaptörü</string>
   <string name="navigation_drawer_about">Hakkında / Lisans</string>
   <string name="navigation_drawer_settings">Ayarlar</string>
@@ -40,7 +40,7 @@
   <string name="app_settings_reset_hints">İpuçlarını sıfırla</string>
   <string name="app_settings_reset_hints_summary">Daha önceden azat edilen ipuçlarını yeniden etkinleştirir</string>
   <string name="app_settings_reset_hints_success">Tüm ipuçları artık gösterilecek</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_caldav">CalDAV</string>
   <string name="account_synchronize_now">Şimdi senkronize et</string>
   <string name="account_settings">Hesap ayarları</string>
@@ -91,13 +91,12 @@
   </plurals>
   <string name="settings_sync_time_range_past_message">Bu sayıdan daha eski olan olaylar yok sayılacaktır (0 olabilir). Tüm olayları senkronize etmek için boş bırak.</string>
   <string name="settings_manage_calendar_colors">Takvim renklerini yönet</string>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Rehber yarat</string>
-  <string name="create_collection_creating">Koleksiyon yaratılıyor</string>
-  <string name="create_collection_display_name_required">Başlık zorunlu</string>
   <string name="create_collection_create">Yarat</string>
-  <string name="delete_collection">Koleksiyonu sil</string>
-  <string name="delete_collection_confirm_title">Emin misin?</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Koleksiyonu sil</string>
+  <string name="collection_synchronization">Senkronizasyon</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Hata ayıklama bilgisi</string>
   <string name="debug_info_logs_view">Jurnallere bak</string>
