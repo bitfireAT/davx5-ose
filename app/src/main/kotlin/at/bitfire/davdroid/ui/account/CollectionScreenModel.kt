@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.account
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
+import at.bitfire.davdroid.syncadapter.PushRegistrationWorker
 import at.bitfire.davdroid.util.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -24,10 +26,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import okhttp3.internal.applyConnectionSpec
 
 @HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
 class CollectionScreenModel @AssistedInject constructor(
     @Assisted val collectionId: Long,
+    val context: Application,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
     syncStatsRepository: DavSyncStatsRepository
@@ -98,6 +102,7 @@ class CollectionScreenModel @AssistedInject constructor(
     fun setSync(sync: Boolean) {
         viewModelScope.launch {
             collectionRepository.setSync(collectionId, sync)
+            PushRegistrationWorker.enqueue(context)
         }
     }
 

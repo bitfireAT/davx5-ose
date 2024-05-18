@@ -160,6 +160,10 @@ class DavCollectionRepository @Inject constructor(
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
+    /** Returns all collections that are both selected for synchronization and push-capable. */
+    suspend fun getSyncEnabledAndPushCapable(): List<Collection> =
+        dao.getPushCapableSyncCollections()
+
     suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
         dao.updateForceReadOnly(id, forceReadOnly)
     }
