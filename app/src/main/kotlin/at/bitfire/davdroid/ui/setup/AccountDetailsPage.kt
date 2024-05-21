@@ -20,7 +20,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -44,6 +43,7 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.Assistant
+import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.vcard4android.GroupMethod
 
 @Composable
@@ -99,7 +99,7 @@ fun AccountDetailsPageContent(
     ) {
         Column(Modifier.padding(8.dp)) {
             if (creatingAccount)
-                LinearProgressIndicator(
+                ProgressBar(
                     Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp))

@@ -18,7 +18,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -40,6 +39,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
+import at.bitfire.davdroid.ui.composable.ProgressBar
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
@@ -117,7 +117,7 @@ fun CreateAddressBookScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 if (isCreating)
-                    LinearProgressIndicator(
+                    ProgressBar(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)

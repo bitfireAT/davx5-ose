@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
@@ -48,6 +47,7 @@ import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.UiUtils.haveCustomTabs
 import at.bitfire.davdroid.ui.composable.Assistant
+import at.bitfire.davdroid.ui.composable.ProgressBar
 import kotlinx.coroutines.launch
 
 object NextcloudLogin : LoginType {
@@ -146,7 +146,7 @@ fun NextcloudLoginScreen(
         onNext = onLogin
     ) {
         if (inProgress)
-            LinearProgressIndicator(
+            ProgressBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)

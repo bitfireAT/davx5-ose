@@ -34,12 +34,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -69,6 +67,7 @@ import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.db.WebDavMountWithRootDocument
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
+import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl
@@ -168,9 +167,10 @@ fun WebdavMountsScreen(
             else {
                 Column {
                     if (refreshingQuota)
-                        LinearProgressIndicator(Modifier
-                            .fillMaxWidth()
-                            .height(4.dp))
+                        ProgressBar(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp))
                     else
                         Spacer(Modifier.height(4.dp))
 
@@ -287,7 +287,7 @@ fun WebdavMountsItem(
             if (quotaUsed != null && quotaAvailable != null) {
                 val quotaTotal = quotaUsed + quotaAvailable
                 val progress = quotaUsed.toFloat() / quotaTotal
-                LinearProgressIndicator(
+                ProgressBar(
                     progress = { progress },
                     modifier = Modifier
                         .fillMaxWidth()

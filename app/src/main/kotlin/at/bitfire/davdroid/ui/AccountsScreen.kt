@@ -35,7 +35,6 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -56,7 +55,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -71,6 +69,7 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
+import at.bitfire.davdroid.ui.composable.ProgressBar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -374,18 +373,18 @@ fun AccountList(
                         val progressAlpha = progress.rememberAlpha()
                         when (progress) {
                             AccountProgress.Active ->
-                                LinearProgressIndicator(
+                                ProgressBar(
                                     modifier = Modifier
                                         .alpha(progressAlpha)
                                         .fillMaxWidth()
                                 )
                             AccountProgress.Pending,
                             AccountProgress.Idle ->
-                                LinearProgressIndicator(
-                                    progress = 1f,
+                                ProgressBar(
+                                    progress = { 1f },
                                     modifier = Modifier
                                         .alpha(progressAlpha)
-                                        .fillMaxWidth()
+                                        .fillMaxWidth(),
                                 )
                         }
 

@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +31,7 @@ import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
+import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 
 @Composable
@@ -72,7 +72,7 @@ fun DetectResourcesPageContent(
 @Preview
 fun DetectResourcesPageContent_InProgress() {
     Column(Modifier.fillMaxWidth()) {
-        LinearProgressIndicator(
+        ProgressBar(
             //color = MaterialTheme.colors.secondary,
             modifier = Modifier
                 .fillMaxWidth()

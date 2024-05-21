@@ -29,14 +29,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +55,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
+import at.bitfire.davdroid.ui.composable.ProgressBar
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -175,7 +174,7 @@ fun CollectionScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 if (inProgress)
-                    LinearProgressIndicator(
+                    ProgressBar(
                         Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp))
