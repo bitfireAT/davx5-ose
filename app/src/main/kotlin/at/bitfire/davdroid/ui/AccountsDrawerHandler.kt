@@ -28,6 +28,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemColors
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -205,7 +207,17 @@ abstract class AccountsDrawerHandler {
             onClick = {
                 onClick()
                 closeHandler.closeDrawer()
-            }
+            },
+            colors = NavigationDrawerItemDefaults.colors(
+                selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unselectedContainerColor = MaterialTheme.colorScheme.background,
+                selectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                selectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onBackground,
+                selectedBadgeColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedBadgeColor = MaterialTheme.colorScheme.onBackground
+            )
         )
     }
 

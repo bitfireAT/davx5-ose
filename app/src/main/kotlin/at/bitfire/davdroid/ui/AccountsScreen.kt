@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -156,7 +157,10 @@ fun AccountsScreen(
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                ModalDrawerSheet {
+                ModalDrawerSheet(
+                    drawerContainerColor = MaterialTheme.colorScheme.background,
+                    drawerContentColor = MaterialTheme.colorScheme.onBackground
+                ) {
                     accountsDrawerHandler.AccountsDrawer(
                         snackbarHostState = snackbarHostState,
                         onCloseDrawer = {
@@ -166,7 +170,8 @@ fun AccountsScreen(
                         }
                     )
                 }
-            }
+            },
+//            scrimColor = MaterialTheme.colorScheme.secondary
         ) {
             Scaffold(
                 topBar = {
