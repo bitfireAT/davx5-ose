@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -136,6 +137,7 @@ fun AccountDetailsPageContent(
                     DropdownMenu(   // ExposedDropdownMenu takes focus away from the text field when expanded
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
                         properties = PopupProperties(focusable = false)     // prevent focus from being taken away
                     ) {
                         for (name in suggestedAccountNames)

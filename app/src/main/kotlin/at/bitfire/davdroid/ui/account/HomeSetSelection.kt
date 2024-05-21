@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.account
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -66,7 +67,8 @@ fun HomeSetSelection(
 
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(Modifier.padding(horizontal = 8.dp)
                 ) {

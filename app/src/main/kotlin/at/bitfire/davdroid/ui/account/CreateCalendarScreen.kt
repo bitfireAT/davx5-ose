@@ -254,7 +254,9 @@ fun CreateCalendarScreen(
                         ExposedDropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
-                            modifier = Modifier.fillMaxHeight()
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                         ) {
                             Text(
                                 text = stringResource(R.string.create_calendar_time_zone_none),

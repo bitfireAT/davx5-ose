@@ -4,6 +4,7 @@ import android.accounts.Account
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,7 +41,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -456,7 +456,8 @@ fun AccountScreen_Actions(
     }
     DropdownMenu(
         expanded = overflowOpen,
-        onDismissRequest = { overflowOpen = false }
+        onDismissRequest = { overflowOpen = false },
+        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         // TAB-SPECIFIC ACTIONS
 
