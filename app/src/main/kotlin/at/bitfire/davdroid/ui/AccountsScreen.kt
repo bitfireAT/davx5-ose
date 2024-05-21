@@ -384,7 +384,7 @@ fun AccountList(
                                     progress = { 1f },
                                     modifier = Modifier
                                         .alpha(progressAlpha)
-                                        .fillMaxWidth(),
+                                        .fillMaxWidth()
                                 )
                         }
 
