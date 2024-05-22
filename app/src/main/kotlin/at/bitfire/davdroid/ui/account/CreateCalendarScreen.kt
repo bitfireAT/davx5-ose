@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -205,7 +203,6 @@ fun CreateCalendarScreen(
                             .clickable {
                                 showColorPicker = true
                             }
-                            // .size(48.dp)
                             .fillMaxHeight()
                             .aspectRatio(1f)
                             .semantics {
