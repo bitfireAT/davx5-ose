@@ -30,6 +30,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -45,6 +46,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -429,6 +431,7 @@ fun AccountScreen(
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun AccountScreen_Actions(
     accountName: String,
     canCreateAddressBook: Boolean,
@@ -504,14 +507,18 @@ fun AccountScreen_Actions(
         // show only personal
         DropdownMenuItem(
             leadingIcon = {
-                Checkbox(
-                    checked = showOnlyPersonal.onlyPersonal,
-                    enabled = !showOnlyPersonal.locked,
-                    onCheckedChange = {
-                        onSetShowOnlyPersonal(it)
-                        overflowOpen = false
-                    }
-                )
+                CompositionLocalProvider(
+                    LocalMinimumInteractiveComponentEnforcement provides false
+                ) {
+                    Checkbox(
+                        checked = showOnlyPersonal.onlyPersonal,
+                        enabled = !showOnlyPersonal.locked,
+                        onCheckedChange = {
+                            onSetShowOnlyPersonal(it)
+                            overflowOpen = false
+                        }
+                    )
+                }
             },
             text = {
                 Text(stringResource(R.string.account_only_personal))
