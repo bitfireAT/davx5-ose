@@ -5,14 +5,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 
 
 @Composable
 fun ProgressBar(
     modifier: Modifier = Modifier,
-    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.secondary,
-    trackColor: androidx.compose.ui.graphics.Color = ProgressIndicatorDefaults.linearTrackColor,
+    color: Color = MaterialTheme.colorScheme.secondary,
+    trackColor: Color = ProgressIndicatorDefaults.linearTrackColor,
     strokeCap: StrokeCap = ProgressIndicatorDefaults.LinearStrokeCap
 ) {
     LinearProgressIndicator(
@@ -27,8 +28,8 @@ fun ProgressBar(
 fun ProgressBar(
     progress: () -> Float,
     modifier: Modifier = Modifier,
-    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.secondary,
-    trackColor: androidx.compose.ui.graphics.Color = ProgressIndicatorDefaults.linearTrackColor,
+    color: Color = MaterialTheme.colorScheme.secondary,
+    trackColor: Color = ProgressIndicatorDefaults.linearTrackColor,
     strokeCap: StrokeCap = ProgressIndicatorDefaults.LinearStrokeCap
 ) {
     LinearProgressIndicator(
