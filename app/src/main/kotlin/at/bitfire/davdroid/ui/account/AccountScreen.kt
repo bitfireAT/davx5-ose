@@ -516,7 +516,8 @@ fun AccountScreen_Actions(
                         onCheckedChange = {
                             onSetShowOnlyPersonal(it)
                             overflowOpen = false
-                        }
+                        },
+                        modifier = Modifier.padding(end = 8.dp)
                     )
                 }
             },
