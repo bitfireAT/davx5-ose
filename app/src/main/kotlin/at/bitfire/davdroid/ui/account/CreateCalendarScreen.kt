@@ -9,10 +9,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -173,7 +177,8 @@ fun CreateCalendarScreen(
                         .padding(8.dp)
                 ) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.height(IntrinsicSize.Min)
                     ) {
                         val focusRequester = remember { FocusRequester() }
                         OutlinedTextField(
@@ -195,11 +200,14 @@ fun CreateCalendarScreen(
 
                         var showColorPicker by remember { mutableStateOf(false) }
                         Box(Modifier
+                            .padding(top = 8.dp)
                             .background(color = Color(color), shape = RoundedCornerShape(4.dp))
                             .clickable {
                                 showColorPicker = true
                             }
-                            .size(48.dp)
+                            // .size(48.dp)
+                            .fillMaxHeight()
+                            .aspectRatio(1f)
                             .semantics {
                                 contentDescription =
                                     context.getString(R.string.create_collection_color)
