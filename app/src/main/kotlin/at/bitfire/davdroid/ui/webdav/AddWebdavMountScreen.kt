@@ -20,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -44,6 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.PasswordTextField
+import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.composable.SelectClientCertificateCard
 
 @Composable
@@ -143,7 +143,7 @@ fun AddWebDavMountScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             if (isLoading)
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                ProgressBar(modifier = Modifier.fillMaxWidth())
 
             Column(
                 modifier = Modifier

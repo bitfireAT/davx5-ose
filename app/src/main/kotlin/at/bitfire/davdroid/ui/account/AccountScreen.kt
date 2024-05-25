@@ -29,7 +29,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -41,7 +40,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -78,6 +76,7 @@ import at.bitfire.davdroid.ui.account.AccountScreenModel
 import at.bitfire.davdroid.ui.account.CollectionsList
 import at.bitfire.davdroid.ui.account.RenameAccountDialog
 import at.bitfire.davdroid.ui.composable.ActionCard
+import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.util.TaskUtils
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -601,13 +600,13 @@ fun AccountScreen_ServiceTab(
         // progress indicator
         val progressAlpha = progress.rememberAlpha()
         when (progress) {
-            AccountProgress.Active -> LinearProgressIndicator(
+            AccountProgress.Active -> ProgressBar(
                 modifier = Modifier
                     .alpha(progressAlpha)
                     .fillMaxWidth()
             )
             AccountProgress.Pending,
-            AccountProgress.Idle -> LinearProgressIndicator(
+            AccountProgress.Idle -> ProgressBar(
                 progress = { 1f },
                 modifier = Modifier
                     .alpha(progressAlpha)

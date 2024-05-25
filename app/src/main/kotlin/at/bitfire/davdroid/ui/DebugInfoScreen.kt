@@ -18,7 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -42,6 +41,7 @@ import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.CardWithImage
+import at.bitfire.davdroid.ui.composable.ProgressBar
 import java.io.File
 import java.io.IOError
 import java.io.IOException
@@ -185,7 +185,7 @@ fun DebugInfoScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 if (!showDebugInfo || zipProgress)
-                    LinearProgressIndicator()
+                    ProgressBar()
 
                 if (showModelCause) {
                     CardWithImage(
