@@ -1,7 +1,7 @@
 # Comments apply to next line
 
 [versions]
-android-agp = "8.4.0"
+android-agp = "8.4.1"
 android-desugaring = "2.0.4"
 android-flexbox = "3.0.0"
 androidx-activityCompose = "1.9.0"
@@ -37,22 +37,19 @@ commons-io = "2.8.0"
 commons-text = "1.11.0"
 compose-accompanist = "0.34.0"
 compose-bom = "2024.05.00"
-# Keep this in sync with Kotlin version:
-# https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-compose-compiler = "1.5.14"
 # don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
 dnsjava = "2.1.9"
 glance = "1.0.0"
 hilt = "2.51.1"
 #  keep in sync with * app/build.gradle.kts composeOptions.kotlinCompilerExtensionVersion
 #                    * com.google.devtools.ksp at the end of this file
-kotlin = "1.9.24"
+kotlin = "2.0.0"
 kotlinx-coroutines = "1.8.1"
 # see https://github.com/google/ksp/releases for version numbers
-ksp = "1.9.24-1.0.20"
-mikepenz-aboutLibraries = "11.1.4"
-nsk90-kstatemachine = "0.27.0"
-mockk = "1.13.10"
+ksp = "2.0.0-1.0.21"
+mikepenz-aboutLibraries = "11.2.0"
+nsk90-kstatemachine = "0.30.0"
+mockk = "1.13.11"
 okhttp = "4.12.0"
 openid-appauth = "0.11.1"
 room = "2.6.1"
@@ -126,6 +123,7 @@ room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-agp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
