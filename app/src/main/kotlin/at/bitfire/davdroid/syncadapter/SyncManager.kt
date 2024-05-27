@@ -327,22 +327,24 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     private fun logSyncTime() {
-        val serviceType = when (authority) {
-            ContactsContract.AUTHORITY,                             // Contacts
-            context.getString(R.string.address_books_authority) ->  // Address books
-                Service.TYPE_CARDDAV
-            else ->                                                 // Calendars + other (ie. tasks)
-                Service.TYPE_CALDAV
+        val (serviceType, accountName) = when (authority) {
+            ContactsContract.AUTHORITY,
+            context.getString(R.string.address_books_authority) -> // Contacts and Address books
+                Pair(Service.TYPE_CARDDAV, mainAccount?.name)
+            else ->                                                // Calendars + other (ie. tasks)
+                Pair(Service.TYPE_CALDAV, account.name)
         }
-        val db = EntryPointAccessors.fromApplication(context, SyncManagerEntryPoint::class.java).appDatabase()
-        db.runInTransaction {
-            val service = db.serviceDao().getByAccountAndType(account.name, serviceType)
-                ?: return@runInTransaction
-            val collection = db.collectionDao().getByServiceAndUrl(service.id, collectionURL.toString())
-                ?: return@runInTransaction
-            db.syncStatsDao().insertOrReplace(
-                SyncStats(0, collection.id, authority, System.currentTimeMillis())
-            )
+        accountName?.let {
+            val db = EntryPointAccessors.fromApplication(context, SyncManagerEntryPoint::class.java).appDatabase()
+            db.runInTransaction {
+                val service = db.serviceDao().getByAccountAndType(accountName, serviceType)
+                    ?: return@runInTransaction
+                val collection = db.collectionDao().getByServiceAndUrl(service.id, collectionURL.toString())
+                    ?: return@runInTransaction
+                db.syncStatsDao().insertOrReplace(
+                    SyncStats(0, collection.id, authority, System.currentTimeMillis())
+                )
+            }
         }
     }
 
