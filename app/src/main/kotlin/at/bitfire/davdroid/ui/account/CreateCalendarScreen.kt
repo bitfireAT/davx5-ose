@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -200,6 +201,11 @@ fun CreateCalendarScreen(
                         Box(Modifier
                             .padding(top = 8.dp)
                             .background(color = Color(color), shape = RoundedCornerShape(4.dp))
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                shape = RoundedCornerShape(4.dp)
+                            )
                             .clickable {
                                 showColorPicker = true
                             }
