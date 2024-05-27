@@ -5,6 +5,7 @@
 plugins {
     alias(libs.plugins.mikepenz.aboutLibraries)
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
@@ -43,9 +44,6 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
