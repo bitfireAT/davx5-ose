@@ -186,7 +186,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             }
 
             // log sync time
-            logSyncTime()
+            saveSyncTime()
 
             Logger.log.info("Querying server capabilities")
             var remoteSyncState = queryCapabilities()
@@ -326,7 +326,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         })
     }
 
-    private fun logSyncTime() {
+    /**
+     * Saves the sync time of the synced account and service.
+     */
+    private fun saveSyncTime() {
         val (serviceType, accountName) = when (authority) {
             ContactsContract.AUTHORITY,
             context.getString(R.string.address_books_authority) -> // Contacts and Address books
