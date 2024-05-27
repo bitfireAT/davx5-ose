@@ -388,18 +388,18 @@ fun AccountList(
                                 )
                         }
 
-                        Column(Modifier.padding(8.dp)) {
+                        Column(Modifier.padding(vertical = 12.dp)) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .align(Alignment.CenterHorizontally)
-                                    .size(32.dp)
+                                    .size(48.dp)
                             )
 
                             Text(
                                 text = account.name,
-                                style = MaterialTheme.typography.bodyLarge,
+                                style = MaterialTheme.typography.titleLarge,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .padding(top = 4.dp)
