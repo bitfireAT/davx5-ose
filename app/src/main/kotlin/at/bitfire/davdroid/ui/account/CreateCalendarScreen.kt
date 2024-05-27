@@ -5,10 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -25,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -32,6 +30,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -177,7 +176,7 @@ fun CreateCalendarScreen(
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.height(IntrinsicSize.Min)
+                        modifier = Modifier.height(IntrinsicSize.Max)
                     ) {
                         val focusRequester = remember { FocusRequester() }
                         OutlinedTextField(
@@ -198,24 +197,21 @@ fun CreateCalendarScreen(
                         }
 
                         var showColorPicker by remember { mutableStateOf(false) }
-                        Box(Modifier
-                            .padding(top = 8.dp)
-                            .background(color = Color(color), shape = RoundedCornerShape(4.dp))
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                            .clickable {
+                        OutlinedButton(
+                            onClick = {
                                 showColorPicker = true
-                            }
-                            .fillMaxHeight()
-                            .aspectRatio(1f)
-                            .semantics {
-                                contentDescription =
-                                    context.getString(R.string.create_collection_color)
-                            }
-                        )
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = Color(color)
+                            ),
+                            shape = RoundedCornerShape(4.dp),
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .aspectRatio(1f)
+                                .semantics {
+                                    contentDescription = context.getString(R.string.create_collection_color)
+                                }
+                        ) { /* no content */ }
                         if (showColorPicker) {
                             CalendarColorPickerDialog(
                                 onSelectColor = { color ->
