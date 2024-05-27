@@ -388,7 +388,7 @@ fun AccountList(
                                 )
                         }
 
-                        Column(Modifier.padding(8.dp)) {
+                        Column(Modifier.padding(vertical = 12.dp)) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
                                 contentDescription = null,
