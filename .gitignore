@@ -8,8 +8,9 @@
 # Files for the Dalvik VM
 *.dex
 
-# Java class files
+# Java/Kotlin
 *.class
+.kotlin/
 
 # Generated files
 bin/
