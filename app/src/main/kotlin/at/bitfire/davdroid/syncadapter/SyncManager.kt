@@ -161,7 +161,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     protected val mainAccount = if (localCollection is LocalAddressBook)
-        localCollection.mainAccount
+        localCollection.requireMainAccount()
     else
         account
 
@@ -186,7 +186,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             }
 
             // log sync time
-            logSyncTime()
+            saveSyncTime()
 
             Logger.log.info("Querying server capabilities")
             var remoteSyncState = queryCapabilities()
@@ -326,17 +326,27 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         })
     }
 
-    private fun logSyncTime() {
+    /**
+     * Saves the sync time of the synced account and service.
+     */
+    private fun saveSyncTime() {
         val serviceType = when (authority) {
-            ContactsContract.AUTHORITY,                             // Contacts
-            context.getString(R.string.address_books_authority) ->  // Address books
+            ContactsContract.AUTHORITY,
+            context.getString(R.string.address_books_authority) ->      // Contacts and Address books
                 Service.TYPE_CARDDAV
-            else ->                                                 // Calendars + other (ie. tasks)
+            else ->                                    // Calendars + other (ie. tasks
                 Service.TYPE_CALDAV
         }
+
+        val accountName =
+            if (localCollection is LocalAddressBook)
+                localCollection.requireMainAccount().name
+            else
+                account.name
+
         val db = EntryPointAccessors.fromApplication(context, SyncManagerEntryPoint::class.java).appDatabase()
         db.runInTransaction {
-            val service = db.serviceDao().getByAccountAndType(account.name, serviceType)
+            val service = db.serviceDao().getByAccountAndType(accountName, serviceType)
                 ?: return@runInTransaction
             val collection = db.collectionDao().getByServiceAndUrl(service.id, collectionURL.toString())
                 ?: return@runInTransaction
@@ -829,7 +839,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setContentTitle(localCollection.title)
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
-                .setSubText(mainAccount?.name)
+                .setSubText(mainAccount.name)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
                 .setPriority(priority)
@@ -883,7 +893,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         builder .setSmallIcon(R.drawable.ic_warning_notify)
                 .setContentTitle(notifyInvalidResourceTitle())
                 .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
-                .setSubText(mainAccount?.name)
+                .setSubText(mainAccount.name)
                 .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
