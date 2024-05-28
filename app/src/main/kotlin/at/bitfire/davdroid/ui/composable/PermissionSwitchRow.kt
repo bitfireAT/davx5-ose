@@ -66,7 +66,6 @@ fun PermissionSwitchRow(
                     )
                 }
             } else null,
-            colors = SwitchDefaults.colors(checkedIconColor = MaterialTheme.colorScheme.onSurface),
             onCheckedChange = { checked ->
                 if (checked) {
                     onLaunchRequest()

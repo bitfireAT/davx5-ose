@@ -28,6 +28,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -38,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -202,6 +204,11 @@ abstract class AccountsDrawerHandler {
             icon = { Icon(icon, contentDescription = title) },
             label = { Text(title) },
             selected = false,
+            shape = RectangleShape,
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.onSurfaceVariant),
+            colors = NavigationDrawerItemDefaults.colors(
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
             onClick = {
                 onClick()
                 closeHandler.closeDrawer()
