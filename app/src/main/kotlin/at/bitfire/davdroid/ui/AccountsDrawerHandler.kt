@@ -28,7 +28,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -47,7 +46,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -57,14 +55,14 @@ import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import kotlinx.coroutines.launch
 import java.net.URI
 
+val LocalCloseDrawerHandler = compositionLocalOf {
+    AccountsDrawerHandler.CloseDrawerHandler()
+}
+
 abstract class AccountsDrawerHandler {
 
     open class CloseDrawerHandler {
         open fun closeDrawer() {}
-    }
-
-    val localCloseDrawerHandler = compositionLocalOf {
-        CloseDrawerHandler()
     }
 
 
@@ -90,7 +88,7 @@ abstract class AccountsDrawerHandler {
                     onCloseDrawer()
                 }
             }
-            CompositionLocalProvider(localCloseDrawerHandler provides closeDrawerHandler) {
+            CompositionLocalProvider(LocalCloseDrawerHandler provides closeDrawerHandler) {
                 MenuEntries(snackbarHostState)
             }
         }
@@ -176,61 +174,75 @@ abstract class AccountsDrawerHandler {
         }
     }
 
-
-    // building blocks
-
-    @Composable
-    fun MenuHeading(text: String) {
-        HorizontalDivider(Modifier.padding(vertical = 8.dp))
-
-        Text(
-            text,
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(8.dp)
-        )
-    }
-
-    @Composable
-    fun MenuHeading(@StringRes text: Int) = MenuHeading(stringResource(text))
-
-    @Composable
-    fun MenuEntry(
-        icon: Painter,
-        title: String,
-        onClick: () -> Unit
-    ) {
-        val closeHandler = localCloseDrawerHandler.current
-        NavigationDrawerItem(
-            icon = { Icon(icon, contentDescription = title) },
-            label = { Text(title) },
-            selected = false,
-            shape = RectangleShape,
-            modifier = Modifier.background(color = MaterialTheme.colorScheme.onSurfaceVariant),
-            colors = NavigationDrawerItemDefaults.colors(
-                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-            ),
-            onClick = {
-                onClick()
-                closeHandler.closeDrawer()
-            }
-        )
-    }
-
-    @Composable
-    fun MenuEntry(
-        icon: ImageVector,
-        title: String,
-        onClick: () -> Unit
-    ) {
-        MenuEntry(
-            icon = rememberVectorPainter(icon),
-            title = title,
-            onClick = onClick
-        )
-    }
-
 }
 
+
+// generic building blocks
+
+@Composable
+fun MenuHeading(text: String) {
+    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
+    Text(
+        text,
+        style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(8.dp)
+    )
+}
+
+@Composable
+fun MenuHeading(@StringRes text: Int) = MenuHeading(stringResource(text))
+
+@Composable
+@Preview
+fun MenuHeading_Preview() {
+    MenuHeading("Tools")
+}
+
+@Composable
+fun MenuEntry(
+    icon: Painter,
+    title: String,
+    onClick: () -> Unit
+) {
+    val closeHandler = LocalCloseDrawerHandler.current
+    NavigationDrawerItem(
+        icon = { Icon(icon, contentDescription = title) },
+        label = { Text(title, style = MaterialTheme.typography.labelLarge) },
+        selected = false,
+        shape = RectangleShape,
+        onClick = {
+            onClick()
+            closeHandler.closeDrawer()
+        }
+    )
+}
+
+@Composable
+fun MenuEntry(
+    icon: ImageVector,
+    title: String,
+    onClick: () -> Unit
+) {
+    MenuEntry(
+        icon = rememberVectorPainter(icon),
+        title = title,
+        onClick = onClick
+    )
+}
+
+@Composable
+@Preview
+fun MenuEntry_Preview() {
+    MenuEntry(
+        icon = Icons.Default.Info,
+        title = "About",
+        onClick = {}
+    )
+}
+
+
+// specific blocks
 
 @Composable
 fun BrandingHeader() {

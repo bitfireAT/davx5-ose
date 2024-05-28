@@ -5,8 +5,6 @@
 package at.bitfire.davdroid.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpCenter
 import androidx.compose.material.icons.filled.CloudOff
@@ -14,17 +12,12 @@ import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.VolunteerActivism
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.COMMUNITY_URL
 import at.bitfire.davdroid.Constants.FEDIVERSE_URL
@@ -47,13 +40,6 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
 
         // Most important entries
         ImportantEntries(snackbarHostState)
-
-        Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            modifier = Modifier.fillMaxWidth().height(32.dp)
-        ) {
-            Text("Container shape", color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
 
         // News
         MenuHeading(R.string.navigation_drawer_news_updates)
