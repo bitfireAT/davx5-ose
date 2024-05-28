@@ -29,9 +29,14 @@ body:
         3. SomeException appears.
   - type: textarea
     attributes:
+      label: Actual result
+      description: Describe what you DAVx⁵ currently does (and what is not expected).
+      placeholder: "Some Property in ICS file causes the whole synchronization to stop."
+  - type: textarea
+    attributes:
       label: Expected result
       description: Describe what you would expect DAVx⁵ to avoid/solve the problem.
-      placeholder: "Some Property in source file should be ignored even if faulty and sync should continue instead of showing an error."
+      placeholder: "Some Property in ICS file should be ignored even if faulty and sync should continue instead of showing an error."
   - type: textarea
     attributes:
       label: Further info
