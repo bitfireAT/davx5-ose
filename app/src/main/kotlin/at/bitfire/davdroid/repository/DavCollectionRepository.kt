@@ -252,6 +252,7 @@ class DavCollectionRepository @Inject constructor(
                 }
 
                 if (!supportsVEVENT || !supportsVTODO || !supportsVJOURNAL) {
+                    startTag(NS_CALDAV, "supported-calendar-component-set")
                     // Only if there's at least one not explicitly supported calendar component set,
                     // otherwise don't include the property, which means "supports everything".
                     if (supportsVEVENT) {
@@ -269,6 +270,7 @@ class DavCollectionRepository @Inject constructor(
                         attribute(null, "name", "VJOURNAL")
                         endTag(NS_CALDAV, "comp")
                     }
+                    endTag(NS_CALDAV, "supported-calendar-component-set")
                 }
             }
 
