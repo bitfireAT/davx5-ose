@@ -8,10 +8,17 @@ import android.accounts.Account
 import android.app.Application
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
-import at.bitfire.dav4jvm.property.caldav.NS_APPLE_ICAL
+import at.bitfire.dav4jvm.XmlUtils.insertTag
+import at.bitfire.dav4jvm.property.caldav.CalendarColor
+import at.bitfire.dav4jvm.property.caldav.CalendarDescription
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
 import at.bitfire.dav4jvm.property.caldav.NS_CALDAV
+import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
+import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
 import at.bitfire.dav4jvm.property.carddav.NS_CARDDAV
+import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.NS_WEBDAV
+import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -24,6 +31,7 @@ import at.bitfire.ical4android.util.DateUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
+import net.fortuna.ical4j.model.Component
 import okhttp3.HttpUrl
 import java.io.StringWriter
 import java.util.UUID
@@ -204,76 +212,70 @@ class DavCollectionRepository @Inject constructor(
                 startTag(NS_WEBDAV, "mkcol")
             else
                 startTag(NS_CALDAV, "mkcalendar")
-            startTag(NS_WEBDAV, "set")
-            startTag(NS_WEBDAV, "prop")
 
-            startTag(NS_WEBDAV, "resourcetype")
-            startTag(NS_WEBDAV, "collection")
-            endTag(NS_WEBDAV, "collection")
-            if (addressBook) {
-                startTag(NS_CARDDAV, "addressbook")
-                endTag(NS_CARDDAV, "addressbook")
-            } else {
-                startTag(NS_CALDAV, "calendar")
-                endTag(NS_CALDAV, "calendar")
-            }
-            endTag(NS_WEBDAV, "resourcetype")
-
-            displayName?.let {
-                startTag(NS_WEBDAV, "displayname")
-                text(it)
-                endTag(NS_WEBDAV, "displayname")
-            }
-
-            if (addressBook) {
-                // addressbook-specific properties
-                description?.let {
-                    startTag(NS_CARDDAV, "addressbook-description")
-                    text(it)
-                    endTag(NS_CARDDAV, "addressbook-description")
-                }
-
-            } else {
-                // calendar-specific properties
-                description?.let {
-                    startTag(NS_CALDAV, "calendar-description")
-                    text(it)
-                    endTag(NS_CALDAV, "calendar-description")
-                }
-                color?.let {
-                    startTag(NS_APPLE_ICAL, "calendar-color")
-                    text(DavUtils.ARGBtoCalDAVColor(it))
-                    endTag(NS_APPLE_ICAL, "calendar-color")
-                }
-                timezoneDef?.let {
-                    startTag(NS_CALDAV, "calendar-timezone")
-                    cdsect(it)
-                    endTag(NS_CALDAV, "calendar-timezone")
-                }
-
-                if (!supportsVEVENT || !supportsVTODO || !supportsVJOURNAL) {
-                    // Only if there's at least one not explicitly supported calendar component set,
-                    // otherwise don't include the property, which means "supports everything".
-                    if (supportsVEVENT) {
-                        startTag(NS_CALDAV, "comp")
-                        attribute(null, "name", "VEVENT")
-                        endTag(NS_CALDAV, "comp")
+            insertTag(DavResource.SET) {
+                insertTag(DavResource.PROP) {
+                    insertTag(ResourceType.NAME) {
+                        insertTag(ResourceType.COLLECTION)
+                        if (addressBook)
+                            insertTag(ResourceType.ADDRESSBOOK)
+                        else
+                            insertTag(ResourceType.CALENDAR)
                     }
-                    if (supportsVTODO) {
-                        startTag(NS_CALDAV, "comp")
-                        attribute(null, "name", "VTODO")
-                        endTag(NS_CALDAV, "comp")
+
+                    displayName?.let {
+                        insertTag(DisplayName.NAME) {
+                            text(it)
+                        }
                     }
-                    if (supportsVJOURNAL) {
-                        startTag(NS_CALDAV, "comp")
-                        attribute(null, "name", "VJOURNAL")
-                        endTag(NS_CALDAV, "comp")
+
+                    if (addressBook) {
+                        // addressbook-specific properties
+                        description?.let {
+                            insertTag(AddressbookDescription.NAME) {
+                                text(it)
+                            }
+                        }
+
+                    } else {
+                        // calendar-specific properties
+                        description?.let {
+                            insertTag(CalendarDescription.NAME) {
+                                text(it)
+                            }
+                        }
+                        color?.let {
+                            insertTag(CalendarColor.NAME) {
+                                text(DavUtils.ARGBtoCalDAVColor(it))
+                            }
+                        }
+                        timezoneDef?.let {
+                            insertTag(CalendarTimezone.NAME) {
+                                cdsect(it)
+                            }
+                        }
+
+                        if (!supportsVEVENT || !supportsVTODO || !supportsVJOURNAL) {
+                            insertTag(SupportedCalendarComponentSet.NAME) {
+                                // Only if there's at least one not explicitly supported calendar component set,
+                                // otherwise don't include the property, which means "supports everything".
+                                if (supportsVEVENT)
+                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                        attribute(null, "name", Component.VEVENT)
+                                    }
+                                if (supportsVTODO)
+                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                        attribute(null, "name", Component.VTODO)
+                                    }
+                                if (supportsVJOURNAL)
+                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                        attribute(null, "name", Component.VJOURNAL)
+                                    }
+                            }
+                        }
                     }
                 }
             }
-
-            endTag(NS_WEBDAV, "prop")
-            endTag(NS_WEBDAV, "set")
             if (addressBook)
                 endTag(NS_WEBDAV, "mkcol")
             else
