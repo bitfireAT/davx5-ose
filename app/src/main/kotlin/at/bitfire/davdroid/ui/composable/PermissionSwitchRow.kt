@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.composable
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -57,6 +59,9 @@ fun PermissionSwitchRow(
         }
         Switch(
             checked = allPermissionsGranted,
+            colors = SwitchDefaults.colors(
+                checkedIconColor = MaterialTheme.colorScheme.outline
+            ),
             thumbContent = if (allPermissionsGranted) {
                 {
                     Icon(
@@ -66,7 +71,6 @@ fun PermissionSwitchRow(
                     )
                 }
             } else null,
-            colors = SwitchDefaults.colors(checkedIconColor = MaterialTheme.colorScheme.onSurface),
             onCheckedChange = { checked ->
                 if (checked) {
                     onLaunchRequest()
@@ -112,7 +116,7 @@ fun PermissionSwitchRow(
     )
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun PermissionSwitchRow_Preview_NotGranted() {
     AppTheme {
@@ -126,16 +130,19 @@ fun PermissionSwitchRow_Preview_NotGranted() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PermissionSwitchRow_Preview_Granted() {
     AppTheme {
-        PermissionSwitchRow(
-            text = "Contacts",
-            allPermissionsGranted = true,
-            summaryWhenGranted = "Granted",
-            summaryWhenNotGranted = "Not granted",
-            onLaunchRequest = {}
-        )
+        Surface {
+            PermissionSwitchRow(
+                text = "Contacts",
+                allPermissionsGranted = true,
+                summaryWhenGranted = "Granted",
+                summaryWhenNotGranted = "Not granted",
+                onLaunchRequest = {}
+            )
+        }
     }
 }

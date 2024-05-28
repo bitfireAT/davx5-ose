@@ -192,30 +192,34 @@ fun AccountsScreen(
                 },
                 floatingActionButton = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (showSyncAll)
-                            FloatingActionButton(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                onClick = onSyncAll
-                            ) {
-                                Icon(
-                                    Icons.Default.Sync,
-                                    contentDescription = stringResource(R.string.accounts_sync_all)
-                                )
-                            }
-
                         if (showAddAccount == AccountsModel.FABStyle.WithText)
                             ExtendedFloatingActionButton(
                                 text = { Text(stringResource(R.string.login_create_account)) },
                                 icon = { Icon(Icons.Filled.Add, stringResource(R.string.login_create_account)) },
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
                                 onClick = onAddAccount
                             )
                         else if (showAddAccount == AccountsModel.FABStyle.Standard)
                             FloatingActionButton(
                                 onClick = onAddAccount,
-                                modifier = Modifier.padding(top = 24.dp)
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onSecondary
                             ) {
                                 Icon(Icons.Filled.Add, stringResource(R.string.login_create_account))
+                            }
+
+                        if (showSyncAll)
+                            FloatingActionButton(
+                                onClick = onSyncAll,
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.padding(top = 24.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Sync,
+                                    contentDescription = stringResource(R.string.accounts_sync_all)
+                                )
                             }
                     }
                 },
