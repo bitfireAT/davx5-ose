@@ -5,8 +5,6 @@
 package at.bitfire.davdroid.ui.composable
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
-import androidx.appcompat.app.AppCompatDelegate.NightMode
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,13 +15,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,8 +60,7 @@ fun PermissionSwitchRow(
         Switch(
             checked = allPermissionsGranted,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                checkedIconColor = MaterialTheme.colorScheme.onPrimaryContainer
+                checkedIconColor = MaterialTheme.colorScheme.outline
             ),
             thumbContent = if (allPermissionsGranted) {
                 {
