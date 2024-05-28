@@ -59,9 +59,6 @@ fun PermissionSwitchRow(
         }
         Switch(
             checked = allPermissionsGranted,
-            colors = SwitchDefaults.colors(
-                checkedIconColor = MaterialTheme.colorScheme.outline
-            ),
             thumbContent = if (allPermissionsGranted) {
                 {
                     Icon(
