@@ -156,7 +156,9 @@ fun DebugInfoScreen(
             floatingActionButton = {
                 if (showDebugInfo && !zipProgress) {
                     FloatingActionButton(
-                        onClick = onShareZip
+                        onClick = onShareZip,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Icon(Icons.Rounded.Share, stringResource(R.string.share))
                     }

@@ -147,7 +147,9 @@ fun WebdavMountsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onAddMount
+                onClick = onAddMount,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,

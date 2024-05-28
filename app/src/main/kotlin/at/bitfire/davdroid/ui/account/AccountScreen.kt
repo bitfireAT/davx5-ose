@@ -270,8 +270,8 @@ fun AccountScreen(
                             Icon(Icons.Outlined.RuleFolder, stringResource(R.string.account_refresh_collections))
                         },
                         onClick = onRefreshCollections,
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
@@ -283,6 +283,8 @@ fun AccountScreen(
                             icon = {
                                 Icon(Icons.Default.Sync, stringResource(R.string.account_synchronize_now))
                             },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
                             onClick = onSync
                         )
                 }
