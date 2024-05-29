@@ -11,18 +11,15 @@ import com.google.android.play.core.review.testing.FakeReviewManager
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.spyk
-import io.mockk.unmockkAll
 import io.mockk.verify
-import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
 
 @HiltAndroidTest
 class EarnBadgesActivityTest {
@@ -39,10 +36,7 @@ class EarnBadgesActivityTest {
         hiltRule.inject()
     }
 
-
-    @Inject
-    lateinit var settings: SettingsManager
-
+    private val settings = mockk<SettingsManager>()
 
     @Test
     fun testShowRatingRequest() {
