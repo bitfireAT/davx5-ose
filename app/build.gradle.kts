@@ -18,12 +18,12 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404000003
-        versionName = "4.4-rc.1"
+        versionCode = 404000004
+        versionName = "4.4"
 
         buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
 
-        setProperty("archivesBaseName", "davx5-ose-" + versionName)
+        setProperty("archivesBaseName", "davx5-ose-$versionName")
 
         minSdk = 24        // Android 7.0
         targetSdk = 34     // Android 14
