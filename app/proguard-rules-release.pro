@@ -35,6 +35,7 @@
 # [https://developer.android.com/build/releases/past-releases/agp-7-0-0-release-notes#r8-missing-class-warning]
 -dontwarn com.android.org.conscrypt.SSLParametersImpl
 -dontwarn com.github.erosb.jsonsKema.**  # ical4j
+-dontwarn com.google.errorprone.annotations.**
 -dontwarn com.sun.jna.**                 # dnsjava
 -dontwarn groovy.**
 -dontwarn java.beans.Transient
