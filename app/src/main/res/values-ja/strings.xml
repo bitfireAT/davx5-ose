@@ -4,6 +4,7 @@
   <string name="account_invalid">アカウントがありません</string>
   <string name="account_title_address_book">DAVx⁵ アドレス帳</string>
   <string name="address_books_authority_title">アドレス帳</string>
+  <string name="dialog_delete">削除</string>
   <string name="dialog_remove">削除</string>
   <string name="dialog_deny">キャンセル</string>
   <string name="field_required">このフィールドは入力必須です</string>
@@ -201,8 +202,11 @@
   <string name="account_synchronize_this_collection">このコレクションを同期</string>
   <string name="account_read_only">読み取り専用</string>
   <string name="account_calendar">カレンダー</string>
+  <string name="account_contacts">連絡先</string>
   <string name="account_journal">ジャーナル</string>
+  <string name="account_task_list">ToDo リスト</string>
   <string name="account_only_personal">プライベートのみ表示する</string>
+  <string name="account_refresh_collections">リストを再読み込み</string>
   <string name="account_webcal_external_app">Webcal の購読は外部アプリで同期できます。</string>
   <string name="account_no_webcal_handler_found">Webcal に対応するアプリが見つかりませんでした</string>
   <string name="account_install_icsx5">ICSx⁵ をインストール</string>
@@ -259,6 +263,7 @@
   <string name="login_querying_server">しばらくお待ちください。サーバーに問い合わせ中…</string>
   <string name="login_no_service">CalDAV または CardDAV サービスが見つかりませんでした。</string>
   <string name="login_no_service_info">ベース URL から CalDAV/CardDAV URL に到達できなかったため、サービス検出に失敗しました。</string>
+  <string name="login_see_tested_services"><![CDATA[ベース URL やサービス提供元のマニュアル、 <a href="%s">私たちがテストしたサービス一覧</a> を確認してください。]]></string>
   <string name="login_check_credentials">認証情報 (ほとんどの場合はユーザー名とパスワード) もご確認ください。</string>
   <string name="login_logs_available">さらに詳細な技術情報はログで確認できます。</string>
   <string name="login_view_logs">ログを表示</string>
@@ -325,21 +330,38 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">アドレス帳を作成</string>
+  <string name="create_addressbook_maybe_not_supported">サーバーが CardDAV 経由のカレンダー作成に対応していない可能性があります。</string>
   <string name="create_calendar">カレンダーを作成</string>
+  <string name="create_calendar_time_zone_optional">デフォルトのタイムゾーン*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">可能なカレンダーエントリー</string>
   <string name="create_calendar_type_vevent">予定</string>
   <string name="create_calendar_type_vtodo">タスク</string>
   <string name="create_calendar_type_vjournal">メモ / ジャーナル</string>
+  <string name="create_calendar_maybe_not_supported">サーバーが CalDAV 経由のカレンダー作成に対応していない可能性があります。</string>
   <string name="create_collection_color">色</string>
   <string name="create_collection_display_name">タイトル</string>
   <string name="create_collection_home_set">ストレージの場所</string>
+  <string name="create_collection_description_optional">説明*</string>
   <string name="create_collection_create">作成</string>
   <string name="create_collection_optional">* オプション</string>
   <!--CollectionScreen-->
   <string name="collection_delete">コレクションを削除</string>
+  <string name="collection_delete_warning">このコレクション (%s) とコレクション内のすべてのデータが、ローカルとサーバーから永久に削除されます。</string>
   <string name="collection_synchronization">同期</string>
+  <string name="collection_synchronization_on">同期が有効です</string>
+  <string name="collection_synchronization_off">同期が無効です</string>
+  <string name="collection_read_only">読み取り専用</string>
+  <string name="collection_read_only_by_server">読み取り専用 (サーバー設定)</string>
+  <string name="collection_read_only_forced">読み取り専用 (ローカル設定)</string>
+  <string name="collection_read_write">読み取り/書き込み</string>
   <string name="collection_title">タイトル</string>
   <string name="collection_description">説明</string>
+  <string name="collection_owner">所有者</string>
+  <string name="collection_push_support">プッシュ対応</string>
+  <string name="collection_push_web_push">サーバーがプッシュへの対応を通知しています</string>
+  <string name="collection_last_sync">最終同期 (%s)</string>
+  <string name="collection_url">アドレス (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">デバッグ情報</string>
   <string name="debug_info_archive_caption">ZIP アーカイブ</string>
@@ -399,7 +421,7 @@
   <string name="sync_error_authentication_failed">認証に失敗しました (ログイン情報を確認してください)</string>
   <string name="sync_error_io">ネットワークまたは I/O エラー – %s</string>
   <string name="sync_error_http_dav">HTTP サーバーエラー – %s</string>
-  <string name="sync_error_local_storage">内蔵ストレージエラー – %s</string>
+  <string name="sync_error_local_storage">ローカルストレージエラー – %s</string>
   <string name="sync_error_retry_limit_reached">ソフトエラー (再試行回数の上限に到達)</string>
   <string name="sync_error_view_item">アイテムを表示</string>
   <string name="sync_invalid_contact">サーバーから無効な連絡先を受信しました</string>

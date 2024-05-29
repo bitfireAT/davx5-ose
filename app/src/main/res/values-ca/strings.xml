@@ -107,7 +107,7 @@
   <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Adaptador de sincronització CalDAV / CardDAV</string>
   <string name="navigation_drawer_about">Quant a/llicència</string>
-  <string name="navigation_drawer_beta_feedback">Retroacció de la Beta</string>
+  <string name="navigation_drawer_beta_feedback">Opina sobre la Beta</string>
   <string name="install_browser">Instal·leu un navegador web</string>
   <string name="navigation_drawer_settings">Configuració</string>
   <string name="navigation_drawer_news_updates">Novetats i actualitzacions</string>
@@ -200,10 +200,10 @@
   <string name="account_delete_confirmation_title">Segur que vols suprimir el compte?</string>
   <string name="account_delete_confirmation_text">Se suprimiran totes les còpies locals de llibretes d\'adreces, calendaris i llistes de tasques.</string>
   <string name="account_synchronize_this_collection">Sincronitza aquesta col·lecció</string>
-  <string name="account_read_only">Només de lectura</string>
-  <string name="account_calendar">Calendari</string>
+  <string name="account_read_only">només lectura</string>
+  <string name="account_calendar">calendari</string>
   <string name="account_contacts">contactes</string>
-  <string name="account_journal">Diari</string>
+  <string name="account_journal">diari</string>
   <string name="account_task_list">tasques</string>
   <string name="account_only_personal">Mostra només les personals</string>
   <string name="account_refresh_collections">Recarregar llista</string>

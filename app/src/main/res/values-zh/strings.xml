@@ -4,6 +4,7 @@
   <string name="account_invalid">账户（已）不存在</string>
   <string name="account_title_address_book">DAVx⁵ 通讯录</string>
   <string name="address_books_authority_title">通讯录</string>
+  <string name="dialog_delete">删除</string>
   <string name="dialog_remove">删除</string>
   <string name="dialog_deny">取消</string>
   <string name="field_required">此字段是必填项</string>
@@ -201,8 +202,11 @@
   <string name="account_synchronize_this_collection">同步该集合</string>
   <string name="account_read_only">只读</string>
   <string name="account_calendar">日历</string>
+  <string name="account_contacts">联系人</string>
   <string name="account_journal">日记</string>
+  <string name="account_task_list">任务</string>
   <string name="account_only_personal">只显示个人</string>
+  <string name="account_refresh_collections">刷新列表</string>
   <string name="account_webcal_external_app">可以用外部应用来同步 Webcal 订阅</string>
   <string name="account_no_webcal_handler_found">找不到支持 Webcal 的应用</string>
   <string name="account_install_icsx5">安装 ICSx⁵</string>
@@ -259,6 +263,7 @@
   <string name="login_querying_server">正在与服务器通信，请稍等…</string>
   <string name="login_no_service">找不到 CalDAV 或 CardDAV 服务。</string>
   <string name="login_no_service_info">基URL似乎不是可访问的CalDAV/CardDAV URL 且服务检测不成功。</string>
+  <string name="login_see_tested_services"><![CDATA[请查看服务供应商手册和 <a href="%s">我们的已测试服务列表</a> 及它们的基础 URLs.]]></string>
   <string name="login_check_credentials">也请仔细核查身份验证数据（通常是用户名和密码）。</string>
   <string name="login_logs_available">可以在日志中看到进一步的技术信息</string>
   <string name="login_view_logs">查看日志</string>
@@ -325,21 +330,38 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">创建通讯录</string>
+  <string name="create_addressbook_maybe_not_supported">服务器可能不支持通过 CalDAV 创建通讯录</string>
   <string name="create_calendar">创建日历</string>
+  <string name="create_calendar_time_zone_optional">默认时区*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">可能使用的日历类型</string>
   <string name="create_calendar_type_vevent">事件</string>
   <string name="create_calendar_type_vtodo">任务</string>
   <string name="create_calendar_type_vjournal">笔记 / 日志</string>
+  <string name="create_calendar_maybe_not_supported">服务器可能不支持通过 CalDAV 创建日历</string>
   <string name="create_collection_color">颜色</string>
   <string name="create_collection_display_name">标题</string>
   <string name="create_collection_home_set">存储位置</string>
+  <string name="create_collection_description_optional">描述</string>
   <string name="create_collection_create">创建</string>
   <string name="create_collection_optional">* 可选</string>
   <!--CollectionScreen-->
   <string name="collection_delete">删除集合</string>
+  <string name="collection_delete_warning">此集合(%s)及其所有数据将从本地和服务器被永久删除</string>
   <string name="collection_synchronization">同步</string>
+  <string name="collection_synchronization_on">同步已启用</string>
+  <string name="collection_synchronization_off">已停用同步</string>
+  <string name="collection_read_only">只读</string>
+  <string name="collection_read_only_by_server">只读（服务器)</string>
+  <string name="collection_read_only_forced">只读 (仅本地)</string>
+  <string name="collection_read_write">读/写</string>
   <string name="collection_title">标题</string>
   <string name="collection_description">描述</string>
+  <string name="collection_owner">所有者</string>
+  <string name="collection_push_support">推送支持</string>
+  <string name="collection_push_web_push">服务器宣告推送支持</string>
+  <string name="collection_last_sync">上次同步(%s)</string>
+  <string name="collection_url">地址(URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">调试信息</string>
   <string name="debug_info_archive_caption">ZIP 压缩文件</string>

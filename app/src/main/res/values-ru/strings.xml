@@ -4,6 +4,7 @@
   <string name="account_invalid">Аккаунт не существует (больше)</string>
   <string name="account_title_address_book">Адресная книга DAVx⁵</string>
   <string name="address_books_authority_title">Адресные книги</string>
+  <string name="dialog_delete">Удалить</string>
   <string name="dialog_remove">Удалить</string>
   <string name="dialog_deny">Отмена</string>
   <string name="field_required">Это поле является обязательным</string>
@@ -201,8 +202,11 @@
   <string name="account_synchronize_this_collection">синхронизировать эту коллекцию</string>
   <string name="account_read_only">только для чтения</string>
   <string name="account_calendar">календарь</string>
+  <string name="account_contacts">контакты</string>
   <string name="account_journal">журнал</string>
+  <string name="account_task_list">задачи</string>
   <string name="account_only_personal">Показать только личные</string>
+  <string name="account_refresh_collections">Обновить список</string>
   <string name="account_webcal_external_app">Подписки Webcal можно синхронизировать с внешними приложениями.</string>
   <string name="account_no_webcal_handler_found">Не найдено приложение, поддерживающее WebCal</string>
   <string name="account_install_icsx5">Установить ICSx⁵</string>
@@ -259,6 +263,7 @@
   <string name="login_querying_server">Ожидайте, выполняется запрос к серверу…</string>
   <string name="login_no_service">Не удалось найти службу CalDAV или CardDAV.</string>
   <string name="login_no_service_info">Судя по всему, базовый URL не является допустимым URL CalDAV/CardDAV, и обнаружение службы не увенчалось успехом.</string>
+  <string name="login_see_tested_services"><![CDATA[Обратитесь к инструкциям вашего поставщика сервиса, а также к <a href="%s">нашему списку проверенных сервисов</a> и их базовых URL.]]></string>
   <string name="login_check_credentials">Кроме того, проверьте правильность авторизации (обычно это имя пользователя и пароль).</string>
   <string name="login_logs_available">Дополнительную техническую информацию можно найти в логах.</string>
   <string name="login_view_logs">Просмотр логов</string>
@@ -331,21 +336,38 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Создать адресную книгу</string>
+  <string name="create_addressbook_maybe_not_supported">Создание адресной книги через CardDAV может не поддерживаться сервером.</string>
   <string name="create_calendar">Создать календарь</string>
+  <string name="create_calendar_time_zone_optional">Часовой пояс по умолчанию*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Возможные записи календаря</string>
   <string name="create_calendar_type_vevent">События</string>
   <string name="create_calendar_type_vtodo">Задачи</string>
   <string name="create_calendar_type_vjournal">Заметки / журнал</string>
+  <string name="create_calendar_maybe_not_supported">Создание календаря через CalDAV может не поддерживаться сервером.</string>
   <string name="create_collection_color">Цвет</string>
   <string name="create_collection_display_name">Название</string>
   <string name="create_collection_home_set">Место хранения</string>
+  <string name="create_collection_description_optional">Описание*</string>
   <string name="create_collection_create">Создать</string>
   <string name="create_collection_optional">* опционально</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Удалить коллекцию</string>
+  <string name="collection_delete_warning">Эта коллекция (%s) и все ее данные будут удалены навсегда, как локально, так и на сервере.</string>
   <string name="collection_synchronization">Синхронизация</string>
+  <string name="collection_synchronization_on">Синхронизация включена</string>
+  <string name="collection_synchronization_off">Синхронизация отключена</string>
+  <string name="collection_read_only">Только для чтения</string>
+  <string name="collection_read_only_by_server">Только для чтения (со стороны сервера)</string>
+  <string name="collection_read_only_forced">Только для чтения (локально)</string>
+  <string name="collection_read_write">Чтение/запись</string>
   <string name="collection_title">Название</string>
   <string name="collection_description">Описание</string>
+  <string name="collection_owner">Владелец</string>
+  <string name="collection_push_support">Поддержка push</string>
+  <string name="collection_push_web_push">Сервер анонсирует поддержку push</string>
+  <string name="collection_last_sync">Последняя синхронизация (%s)</string>
+  <string name="collection_url">Адрес (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Отладочная информация</string>
   <string name="debug_info_archive_caption">ZIP-архив</string>

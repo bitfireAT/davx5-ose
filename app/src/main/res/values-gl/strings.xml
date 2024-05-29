@@ -4,6 +4,7 @@
   <string name="account_invalid">A conta non existe (definitivamente)</string>
   <string name="account_title_address_book">Libreta de enderezos DAVx⁵</string>
   <string name="address_books_authority_title">Libretas de enderezos</string>
+  <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Eliminar</string>
   <string name="dialog_deny">Desbotar</string>
   <string name="field_required">Este campo é requerido</string>
@@ -201,8 +202,11 @@
   <string name="account_synchronize_this_collection">sincronizar esta colección</string>
   <string name="account_read_only">só lectura</string>
   <string name="account_calendar">calendario</string>
+  <string name="account_contacts">contactos</string>
   <string name="account_journal">diario</string>
+  <string name="account_task_list">tarefas</string>
   <string name="account_only_personal">Mostrar só personal</string>
+  <string name="account_refresh_collections">Actualizar lista</string>
   <string name="account_webcal_external_app">As subscricións Webcal poden sincronizarse con apps externas.</string>
   <string name="account_no_webcal_handler_found">Non se atopou app para Webcal</string>
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
@@ -260,6 +264,7 @@
   <string name="login_querying_server">Agarda por favor, consultando o servidor…</string>
   <string name="login_no_service">Non se atopou servizo CalDAV ou CardDAV.</string>
   <string name="login_no_service_info">O URL base non parece ser accesible. Non se puido detectar o URL do servizo CalDAV/CardDAV.</string>
+  <string name="login_see_tested_services"><![CDATA[Le o manual do teu provedor de servizos e <a href="%s">a nosa lista de servizos comprobados</a> e o seu URL base.]]></string>
   <string name="login_check_credentials">Ademais comproba ben a autenticación (normalmente identificador e contrasinal).</string>
   <string name="login_logs_available">Tes dispoñible máis información técnica nos rexistros.</string>
   <string name="login_view_logs">Ver rexistros</string>
@@ -328,21 +333,38 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Crear libreta de enderezos</string>
+  <string name="create_addressbook_maybe_not_supported">O servidor podería non ter soporte para crear libretas de enderezos usando CardDAV.</string>
   <string name="create_calendar">Crear calendario</string>
+  <string name="create_calendar_time_zone_optional">Zona horaria por defecto*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Entradas posibles no calendario</string>
   <string name="create_calendar_type_vevent">Eventos</string>
   <string name="create_calendar_type_vtodo">Tarefas</string>
   <string name="create_calendar_type_vjournal">Notas / diario</string>
+  <string name="create_calendar_maybe_not_supported">O servidor podería non ter soporte para crear caledarios usando CalDAV.</string>
   <string name="create_collection_color">Cor</string>
   <string name="create_collection_display_name">Título</string>
   <string name="create_collection_home_set">Localización do almacenamento</string>
+  <string name="create_collection_description_optional">Descrición*</string>
   <string name="create_collection_create">Crear</string>
   <string name="create_collection_optional">* optativo</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Eliminar colección</string>
+  <string name="collection_delete_warning">Esta colección (%s) e todos os seus datos serán borrados permanentemente, tanto localmente como no servidor.</string>
   <string name="collection_synchronization">Sincronización</string>
+  <string name="collection_synchronization_on">Sincronización activada</string>
+  <string name="collection_synchronization_off">Sincronización desactivada</string>
+  <string name="collection_read_only">Só lectura</string>
+  <string name="collection_read_only_by_server">Só lectura (polo servidor)</string>
+  <string name="collection_read_only_forced">Só lectura (só localmente)</string>
+  <string name="collection_read_write">Lectura/escritura</string>
   <string name="collection_title">Título</string>
   <string name="collection_description">Descrición</string>
+  <string name="collection_owner">Dona</string>
+  <string name="collection_push_support">Soporte Push</string>
+  <string name="collection_push_web_push">O servidor anuncia soporte para Push</string>
+  <string name="collection_last_sync">Última sincr (%s)</string>
+  <string name="collection_url">Enderezo (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Info depuración</string>
   <string name="debug_info_archive_caption">Arquivo ZIP</string>

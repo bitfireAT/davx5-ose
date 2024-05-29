@@ -4,6 +4,7 @@
   <string name="account_invalid">Konto findes ikke (længere)</string>
   <string name="account_title_address_book">DAVx⁵ adressebog</string>
   <string name="address_books_authority_title">Adressebøger</string>
+  <string name="dialog_delete">Slet</string>
   <string name="dialog_remove">Fjern</string>
   <string name="dialog_deny">Annullér</string>
   <string name="field_required">Feltet er påkrævet</string>
@@ -203,8 +204,11 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   <string name="account_synchronize_this_collection">synkronisere samling</string>
   <string name="account_read_only">skrivebeskyttet</string>
   <string name="account_calendar">kalender</string>
+  <string name="account_contacts">Kontakter</string>
   <string name="account_journal">journal</string>
+  <string name="account_task_list">Opgaver</string>
   <string name="account_only_personal">Vis kun personlig</string>
+  <string name="account_refresh_collections">Opdater listen</string>
   <string name="account_webcal_external_app">Webcal-abonnementer kan synkroniseres med eksterne apps.</string>
   <string name="account_no_webcal_handler_found">Der er ikke fundet noget program der kan håndtere Webcal.</string>
   <string name="account_install_icsx5">Installere ICSx⁵</string>
@@ -329,19 +333,25 @@ Lav lagerplads. Android vil ikke synkronisere lokale ændringer med det samme, m
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Opret adressebog</string>
+  <string name="create_addressbook_maybe_not_supported">Oprettelse af adressebøger via CardDAV understøttes muligvis ikke af serveren.</string>
   <string name="create_calendar">Opret kalender</string>
+  <string name="create_calendar_time_zone_optional">Standard tidszone*.</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Mulige kalenderposte</string>
   <string name="create_calendar_type_vevent">Begivenheder</string>
   <string name="create_calendar_type_vtodo">Opgaver</string>
   <string name="create_calendar_type_vjournal">Notater / journal</string>
+  <string name="create_calendar_maybe_not_supported">Kalenderoprettelse via CalDAV understøttes muligvis ikke af serveren.</string>
   <string name="create_collection_color">Farve</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Lager placering</string>
+  <string name="create_collection_description_optional">Beskrivelse*</string>
   <string name="create_collection_create">Opret</string>
   <string name="create_collection_optional">* valgfri</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Slet sæt</string>
   <string name="collection_synchronization">Synkronisering</string>
+  <string name="collection_synchronization_on">Synkronisering aktiveret</string>
   <string name="collection_title">Titel</string>
   <string name="collection_description">Beskrivelse</string>
   <!--debugging and DebugInfoActivity-->

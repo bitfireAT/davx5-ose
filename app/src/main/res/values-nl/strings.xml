@@ -4,6 +4,7 @@
   <string name="account_invalid">Account bestaat niet (of niet meer)</string>
   <string name="account_title_address_book">DAVx⁵ Adresboek</string>
   <string name="address_books_authority_title">Adresboeken</string>
+  <string name="dialog_delete">Verwijderen</string>
   <string name="dialog_remove">Verwijder</string>
   <string name="dialog_deny">Annuleer</string>
   <string name="field_required">Dit veld is verplicht</string>
@@ -201,8 +202,11 @@
   <string name="account_synchronize_this_collection">deze collectie synchroniseren</string>
   <string name="account_read_only">alleen-lezen</string>
   <string name="account_calendar">kalender</string>
+  <string name="account_contacts">contacten</string>
   <string name="account_journal">logboek</string>
+  <string name="account_task_list">taken</string>
   <string name="account_only_personal">Alleen persoonlijk tonen</string>
+  <string name="account_refresh_collections">Lijst verversen</string>
   <string name="account_webcal_external_app">Webcal abonnementen kunnen worden gesynchroniseerd met externe apps.</string>
   <string name="account_no_webcal_handler_found">Geen Webcal-app gevonden</string>
   <string name="account_install_icsx5">ICSx⁵ installeren</string>
@@ -259,6 +263,7 @@
   <string name="login_querying_server">Even geduld, verzoek naar server…</string>
   <string name="login_no_service">Geen CalDAV- of CardDAV-service gevonden.</string>
   <string name="login_no_service_info">De basis URL lijkt geen toegankelijke CalDAV/CardDAV URL te zijn en de detectie van de service was niet succesvol.</string>
+  <string name="login_see_tested_services"><![CDATA[Raadpleeg de handleiding van uw serviceprovider en <a href="%s">onze lijst met geteste services</a> en hun basis URL\'s.]]></string>
   <string name="login_check_credentials">Controleer ook de authenticatie (meestal gebruikersnaam en wachtwoord).</string>
   <string name="login_logs_available">Meer technische informatie is beschikbaar in de logboeken.</string>
   <string name="login_view_logs">Details bekijken</string>
@@ -327,21 +332,38 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Adresboek aanmaken</string>
+  <string name="create_addressbook_maybe_not_supported">Het aanmaken van een adresboek via CardDAV wordt mogelijk niet ondersteund door de server.</string>
   <string name="create_calendar">Kalender aanmaken</string>
+  <string name="create_calendar_time_zone_optional">Standaard tijdzone*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Mogelijke kalender-items</string>
   <string name="create_calendar_type_vevent">Gebeurtenissen</string>
   <string name="create_calendar_type_vtodo">Taken</string>
   <string name="create_calendar_type_vjournal">Notities / Dagboek</string>
+  <string name="create_calendar_maybe_not_supported">Het aanmaken van een kalender via CalDAV wordt mogelijk niet ondersteund door de server.</string>
   <string name="create_collection_color">Kleur</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Opslaglocatie</string>
+  <string name="create_collection_description_optional">Beschrijving*</string>
   <string name="create_collection_create">Aanmaken</string>
   <string name="create_collection_optional">*optioneel</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Collectie verwijderen</string>
+  <string name="collection_delete_warning">Deze collectie (%s) en alle gegevens worden permanent verwijderd, zowel lokaal als op de server.</string>
   <string name="collection_synchronization">Synchroniseren</string>
+  <string name="collection_synchronization_on">Synchronisatie ingeschakeld</string>
+  <string name="collection_synchronization_off">Synchronisatie uitgeschakeld</string>
+  <string name="collection_read_only">Alleen-lezen</string>
+  <string name="collection_read_only_by_server">Alleen-lezen (door server)</string>
+  <string name="collection_read_only_forced">Alleen-lezen (alleen lokaal)</string>
+  <string name="collection_read_write">Lezen/schrijven</string>
   <string name="collection_title">Titel</string>
   <string name="collection_description">Beschrijving</string>
+  <string name="collection_owner">Eigenaar</string>
+  <string name="collection_push_support">Push-ondersteuning</string>
+  <string name="collection_push_web_push">Server adverteert Push-ondersteuning</string>
+  <string name="collection_last_sync">Laatste gesynchroniseerd (%s)</string>
+  <string name="collection_url">Adres (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Debug informatie</string>
   <string name="debug_info_archive_caption">ZIP archief</string>

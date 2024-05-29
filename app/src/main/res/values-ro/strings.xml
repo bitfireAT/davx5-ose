@@ -4,6 +4,7 @@
   <string name="account_invalid">Contul nu (mai) există</string>
   <string name="account_title_address_book">Agenda DAVx⁵</string>
   <string name="address_books_authority_title">Agende cu adrese</string>
+  <string name="dialog_delete">Șterge</string>
   <string name="dialog_remove">Elimină</string>
   <string name="dialog_deny">Anulează</string>
   <string name="field_required">Acest câmp este obligatoriu</string>
@@ -201,8 +202,11 @@
   <string name="account_synchronize_this_collection">sincronizează această colecție</string>
   <string name="account_read_only">numai pentru citire</string>
   <string name="account_calendar">calendar</string>
+  <string name="account_contacts">contacte</string>
   <string name="account_journal">jurnal</string>
+  <string name="account_task_list">sarcini</string>
   <string name="account_only_personal">Afișează numai personal</string>
+  <string name="account_refresh_collections">Actualizează lista</string>
   <string name="account_webcal_external_app">Abonamentele Webcal pot fi sincronizate cu aplicații externe.</string>
   <string name="account_no_webcal_handler_found">Nu a fost găsită nicio aplicație compatibilă cu Webcal</string>
   <string name="account_install_icsx5">Instalează ICSx⁵</string>
@@ -259,6 +263,7 @@
   <string name="login_querying_server">Se interoghează serverul…</string>
   <string name="login_no_service">Nu s-a putut găsi serviciul CalDAV sau CardDAV.</string>
   <string name="login_no_service_info">Adresa URL de bază nu pare să fie o adresă URL CalDAV/CardDAV accesibilă, iar detectarea serviciului nu a avut succes.</string>
+  <string name="login_see_tested_services"><![CDATA[Consultă manualul furnizorului de servicii, <a href="%s">lista de servicii testate</a> și adresele lor URL de bază.]]></string>
   <string name="login_check_credentials">Verifică, de asemenea, și autentificarea (de obicei, numele de utilizator și parola).</string>
   <string name="login_logs_available">Informații tehnice suplimentare sunt disponibile în jurnale.</string>
   <string name="login_view_logs">Vezi jurnalele</string>
@@ -329,21 +334,38 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Creează agendă de adrese</string>
+  <string name="create_addressbook_maybe_not_supported">Crearea agendei prin CardDAV poate să nu fie acceptată de server.</string>
   <string name="create_calendar">Creează un calendar</string>
+  <string name="create_calendar_time_zone_optional">Fus orar implicit*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Posibile intrări din calendar</string>
   <string name="create_calendar_type_vevent">Evenimente</string>
   <string name="create_calendar_type_vtodo">Sarcini</string>
   <string name="create_calendar_type_vjournal">Note/jurnal</string>
+  <string name="create_calendar_maybe_not_supported">Crearea calendarului prin CalDAV poate să nu fie acceptată de server.</string>
   <string name="create_collection_color">Culoare</string>
   <string name="create_collection_display_name">Titlu</string>
   <string name="create_collection_home_set">Locația de stocare</string>
+  <string name="create_collection_description_optional">Descriere*</string>
   <string name="create_collection_create">Crează</string>
   <string name="create_collection_optional">* opțional</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Șterge colecția</string>
+  <string name="collection_delete_warning">Această colecție (%s) și toate datele sale vor fi șterse definitiv, atât local, cât și de pe server.</string>
   <string name="collection_synchronization">Sincronizare</string>
+  <string name="collection_synchronization_on">Sincronizarea este activată</string>
+  <string name="collection_synchronization_off">Sincronizarea este dezactivată</string>
+  <string name="collection_read_only">Numai citire</string>
+  <string name="collection_read_only_by_server">Numai citire (de pe server)</string>
+  <string name="collection_read_only_forced">Numai citire (doar local)</string>
+  <string name="collection_read_write">Citire/scriere</string>
   <string name="collection_title">Titlu</string>
   <string name="collection_description">Descriere</string>
+  <string name="collection_owner">Proprietar</string>
+  <string name="collection_push_support">Suport Push</string>
+  <string name="collection_push_web_push">Serverul informează despre suportul Push</string>
+  <string name="collection_last_sync">Ultima sincronizare (%s)</string>
+  <string name="collection_url">Adresă (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informații de depanare</string>
   <string name="debug_info_archive_caption">Arhivă ZIP</string>

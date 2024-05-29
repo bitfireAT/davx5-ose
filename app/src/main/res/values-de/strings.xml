@@ -4,6 +4,7 @@
   <string name="account_invalid">Konto nicht (mehr) vorhanden</string>
   <string name="account_title_address_book">DAVx⁵-Adressbuch</string>
   <string name="address_books_authority_title">Adressbücher</string>
+  <string name="dialog_delete">Löschen</string>
   <string name="dialog_remove">Entfernen</string>
   <string name="dialog_deny">Abbrechen</string>
   <string name="field_required">Feld wird benötigt</string>
@@ -11,7 +12,9 @@
   <string name="manage_accounts">Konten verwalten</string>
   <string name="navigate_up">Aufwärts navigieren</string>
   <string name="optional_label">* optional</string>
+  <string name="options_menu">Auswahlmenü</string>
   <string name="share">Teilen</string>
+  <string name="sync_started">Synchronisierung gestartet/angehalten</string>
   <string name="database_destructive_migration_title">Datenbank beschädigt</string>
   <string name="database_destructive_migration_text">Alle Accounts wurden lokal entfernt.</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
@@ -83,6 +86,8 @@
   <string name="wifi_permissions_location_permission_off">Standort-Zugriff verweigert</string>
   <string name="wifi_permissions_background_location_permission">Hintergrund-Standort-Berechtigung</string>
   <string name="wifi_permissions_background_location_permission_label">Immer zulassen</string>
+  <string name="wifi_permissions_background_location_permission_on">Standort-Zugriff eingestellt auf: %s</string>
+  <string name="wifi_permissions_background_location_permission_off">Standort-Zugriff nicht eingestellt auf: %s</string>
   <string name="wifi_permissions_background_location_disclaimer">%s verwendet die Standort-Berechtigung ausschließlich zum Bestimmen der aktuellen WLAN-SSID für SSID-beschränkte Accounts. Dies findet auch statt, wenn die App geschlossen ist bzw. im Hintergrund läuft. Standortdaten werden weder gesammelt, gespeichert, verarbeitet noch irgendwohin gesendet.</string>
   <string name="wifi_permissions_location_enabled">Standort-Dienst immer aktiviert</string>
   <string name="wifi_permissions_location_enabled_on">Standort-Dienst aktiv</string>
@@ -113,6 +118,7 @@
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_support_project">Projekt unterstützen</string>
+  <string name="navigation_drawer_contribute">Einen Beitrag leisten</string>
   <string name="navigation_drawer_privacy_policy">Datenschutzerklärung</string>
   <string name="account_list_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisation informiert.</string>
   <string name="account_list_no_internet">Keine überprüfte Internetverbindung. Synchronisierung funktioniert eventuell nicht.</string>
@@ -140,6 +146,8 @@
   <string name="app_settings_logging_on">Protokollierung läuft</string>
   <string name="app_settings_logging_off">Keine Protokollierung</string>
   <string name="app_settings_battery_optimization">Akku-Optimierung</string>
+  <string name="app_settings_battery_optimization_exempted">App ist ausgenommen (empfohlen)</string>
+  <string name="app_settings_battery_optimization_optimized">Akku-Einschränkungen gelten (nicht empfohlen)</string>
   <string name="app_settings_connection">Verbindung</string>
   <string name="app_settings_proxy">Proxy-Typ</string>
   <string-array name="app_settings_proxy_types">
@@ -194,8 +202,11 @@
   <string name="account_synchronize_this_collection">Diesen Ordner synchronisieren</string>
   <string name="account_read_only">schreibgeschützt</string>
   <string name="account_calendar">Kalender</string>
+  <string name="account_contacts">Kontakte</string>
   <string name="account_journal">Journal</string>
+  <string name="account_task_list">Aufgaben</string>
   <string name="account_only_personal">Nur eigene anzeigen</string>
+  <string name="account_refresh_collections">Liste aktualisieren</string>
   <string name="account_webcal_external_app">Webcal-Abonnements können mit externen Apps synchronisiert werden.</string>
   <string name="account_no_webcal_handler_found">Keine Webcal-App gefunden</string>
   <string name="account_install_icsx5">ICSx⁵ installieren</string>
@@ -208,6 +219,7 @@
   <string name="login_type_email">Mit E-Mail-Adresse anmelden</string>
   <string name="login_email_address">E-Mail-Adresse</string>
   <string name="login_email_address_error">Gültige E-Mail-Adresse benötigt</string>
+  <string name="login_email_address_info"><![CDATA[Die E-Mail-Domäne wird als Basis-URL verwendet. <a href="%s">Die Dienste werden ermittelt</a>, anhand von DNS-Einträgen und bekannten URLs.]]></string>
   <string name="login_password">Passwort</string>
   <string name="login_password_hide">Passwort ausblenden</string>
   <string name="login_password_show">Passwort anzeigen</string>
@@ -216,6 +228,7 @@
   <string name="login_user_name">Benutzername</string>
   <string name="login_user_name_optional">Benutzername*</string>
   <string name="login_base_url">Basis-URL</string>
+  <string name="login_base_url_info"><![CDATA[Die Basis-URL wird direkt geprüft, aber <a href="%s">Dienste werden auch ermittelt</a>, anhand von DNS-Einträgen und bekannten URLs.]]></string>
   <string name="login_select_certificate">Zertifikat auswählen</string>
   <string name="login_create_account">Konto anlegen</string>
   <string name="login_account_name">Kontoname</string>
@@ -249,6 +262,10 @@
   <string name="login_configuration_detection">Ressourcen-Erkennung</string>
   <string name="login_querying_server">Server-Informationen werden abgerufen. Bitte warten …</string>
   <string name="login_no_service">Es konnte weder ein CalDAV- noch ein CardDAV-Dienst gefunden werden.</string>
+  <string name="login_no_service_info">Die Basis-URL scheint keine erreichbare CalDAV/CardDAV-URL zu sein und die Diensterkennung war nicht erfolgreich.</string>
+  <string name="login_see_tested_services"><![CDATA[Bitte beachten Sie das Handbuch Ihres Dienstanbieters und <a href="%s">unsere Liste der getesteten Dienste</a> und deren Basis-URLs.]]></string>
+  <string name="login_check_credentials">Bitte überprüfen Sie auch die Authentifizierung (normalerweise Benutzername und Passwort).</string>
+  <string name="login_logs_available">Weitere technische Informationen sind den Protokollen zu entnehmen.</string>
   <string name="login_view_logs">Logs anzeigen</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronisierung</string>
@@ -315,21 +332,38 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Adressbuch erstellen</string>
+  <string name="create_addressbook_maybe_not_supported">Das Erstellen von Adressbüchern über CardDAV wird vom Server möglicherweise nicht unterstützt.</string>
   <string name="create_calendar">Kalender anlegen</string>
+  <string name="create_calendar_time_zone_optional">Standard-Zeitzone*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Mögliche Kalendereinträge</string>
   <string name="create_calendar_type_vevent">Termine</string>
   <string name="create_calendar_type_vtodo">Aufgaben</string>
   <string name="create_calendar_type_vjournal">Notizen / Journal</string>
+  <string name="create_calendar_maybe_not_supported">Das Erstellen von Kalendern über CardDAV wird vom Server möglicherweise nicht unterstützt.</string>
   <string name="create_collection_color">Farbe</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Speicherort</string>
+  <string name="create_collection_description_optional">Beschreibung*</string>
   <string name="create_collection_create">Erstellen</string>
   <string name="create_collection_optional">* optional</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Ordner löschen</string>
+  <string name="collection_delete_warning">Dieser Ordner (%s) und alle enthaltenen Daten werden dauerhaft entfernt, sowohl lokal als auch auf dem Server.</string>
   <string name="collection_synchronization">Synchronisierung</string>
+  <string name="collection_synchronization_on">Synchronisierung aktiviert</string>
+  <string name="collection_synchronization_off">Synchronisierung deaktiviert</string>
+  <string name="collection_read_only">Schreibgeschützt</string>
+  <string name="collection_read_only_by_server">Schreibgeschützt (durch Server)</string>
+  <string name="collection_read_only_forced">Schreibgeschützt (nur lokal)</string>
+  <string name="collection_read_write">Lesen/Schreiben</string>
   <string name="collection_title">Titel</string>
   <string name="collection_description">Beschreibung</string>
+  <string name="collection_owner">Besitzer</string>
+  <string name="collection_push_support">Push-Unterstützung</string>
+  <string name="collection_push_web_push">Server wirbt mit Push-Unterstützung</string>
+  <string name="collection_last_sync">Letzte Synchronisierung (%s)</string>
+  <string name="collection_url">Adresse (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informationen zur Fehlersuche</string>
   <string name="debug_info_archive_caption">ZIP-Archiv</string>
