@@ -51,6 +51,9 @@ class PreferenceRepository @Inject constructor(
             }
             preferences.registerOnSharedPreferenceChangeListener(listener)
 
+            // Emit the initial value
+            trySend(getValue())
+
             awaitClose {
                 preferences.unregisterOnSharedPreferenceChangeListener(listener)
             }
