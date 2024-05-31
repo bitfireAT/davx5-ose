@@ -157,9 +157,9 @@
     <string name="app_settings">Settings</string>
     <string name="app_settings_debug">Debugging</string>
     <string name="app_settings_show_debug_info">Show debug info</string>
-    <string name="app_settings_show_debug_info_details">View/share software and configuration details</string>
+    <string name="app_settings_show_debug_info_details">View/share configuration details and logs</string>
     <string name="app_settings_logging">Verbose logging</string>
-    <string name="app_settings_logging_on">Logging is active</string>
+    <string name="app_settings_logging_on">Logging is active. You can view the logs as part of the debug info.</string>
     <string name="app_settings_logging_off">Logging is disabled</string>
     <string name="app_settings_battery_optimization">Battery optimization</string>
     <string name="app_settings_battery_optimization_exempted">App is exempted (recommended)</string>
