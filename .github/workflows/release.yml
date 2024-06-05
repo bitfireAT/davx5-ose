@@ -39,7 +39,7 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.android_key_password }}
 
       - name: Create Github release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           prerelease: ${{ env.prerelease }}
           files: app/build/outputs/apk/ose/release/*.apk
