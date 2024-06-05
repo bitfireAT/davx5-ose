@@ -55,6 +55,7 @@ import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
@@ -97,6 +98,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     var db: AppDatabase,
+    var collectionRepository: DavCollectionRepository,
     var settings: SettingsManager
 ): CoroutineWorker(appContext, workerParams) {
 
@@ -205,7 +207,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                     .setForeground(true)
                     .build().use { client ->
                         val httpClient = client.okHttpClient
-                        val refresher = Refresher(db, service, settings, httpClient)
+                        val refresher = Refresher(db, collectionRepository, service, settings, httpClient)
 
                         // refresh home set list (from principal url)
                         service.principal?.let { principalUrl ->
@@ -289,6 +291,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
      */
     class Refresher(
         val db: AppDatabase,
+        val collectionRepository: DavCollectionRepository,
         val service: Service,
         val settings: SettingsManager,
         val httpClient: OkHttpClient
@@ -448,7 +451,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
                         // save or update collection if usable (ignore it otherwise)
                         if (isUsableCollection(collection))
-                            db.collectionDao().insertOrUpdateByUrlAndRememberFlags(collection)
+                            collectionRepository.insertOrUpdateByUrlAndRememberFlags(collection)
 
                         // Remove this collection from queue - because it was found in the home set
                         localHomesetCollections.remove(collection.url)
@@ -462,7 +465,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 // Mark leftover (not rediscovered) collections from queue as homeless (remove association)
                 for ((_, homelessCollection) in localHomesetCollections) {
                     homelessCollection.homeSetId = null
-                    db.collectionDao().insertOrUpdateByUrlAndRememberFlags(homelessCollection)
+                    collectionRepository.insertOrUpdateByUrlAndRememberFlags(homelessCollection)
                 }
 
             }
@@ -478,7 +481,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             for((url, localCollection) in homelessCollections) try {
                 DavResource(httpClient, url).propfind(0, *DAV_COLLECTION_PROPERTIES) { response, _ ->
                     if (!response.isSuccess()) {
-                        db.collectionDao().delete(localCollection)
+                        collectionRepository.deleteLocal(localCollection)
                         return@propfind
                     }
 
@@ -497,13 +500,13 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                                 collection.ownerId = principalId
                             }
 
-                        db.collectionDao().insertOrUpdateByUrlAndRememberFlags(collection)
-                    } ?: db.collectionDao().delete(localCollection)
+                        collectionRepository.insertOrUpdateByUrlAndRememberFlags(collection)
+                    } ?: collectionRepository.deleteLocal(localCollection)
                 }
             } catch (e: HttpException) {
                 // delete collection locally if it was not accessible (40x)
                 if (e.code in arrayOf(403, 404, 410))
-                    db.collectionDao().delete(localCollection)
+                    collectionRepository.deleteLocal(localCollection)
                 else
                     throw e
             }

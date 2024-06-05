@@ -6,6 +6,7 @@ package at.bitfire.davdroid.repository
 
 import android.accounts.Account
 import android.app.Application
+import android.content.Context
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
@@ -28,6 +29,7 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.util.DateUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
@@ -38,7 +40,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 class DavCollectionRepository @Inject constructor(
-    val context: Application,
+    @ApplicationContext val context: Context,
     db: AppDatabase
 ) {
 
@@ -160,13 +162,34 @@ class DavCollectionRepository @Inject constructor(
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
-    suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
+    suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) =
         dao.updateForceReadOnly(id, forceReadOnly)
+
+    suspend fun setSync(id: Long, forceReadOnly: Boolean) =
+        dao.updateSync(id, forceReadOnly)
+
+    fun insertOrUpdateByUrl(collection: Collection): Long =
+        dao.insertOrUpdateByUrl(collection)
+
+    /**
+     * Inserts or updates the collection. On update it will not update flag values ([Collection.sync],
+     * [Collection.forceReadOnly]), but use the values of the already existing collection.
+     *
+     * @param newCollection Collection to be inserted or updated
+     */
+    fun insertOrUpdateByUrlAndRememberFlags(newCollection: Collection) {
+        // remember locally set flags
+        dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())?.let { oldCollection ->
+            newCollection.sync = oldCollection.sync
+            newCollection.forceReadOnly = oldCollection.forceReadOnly
+        }
+
+        // commit to database
+        insertOrUpdateByUrl(newCollection)
     }
 
-    suspend fun setSync(id: Long, forceReadOnly: Boolean) {
-        dao.updateSync(id, forceReadOnly)
-    }
+    fun deleteLocal(collection: Collection) =
+        dao.delete(collection)
 
 
     // helpers

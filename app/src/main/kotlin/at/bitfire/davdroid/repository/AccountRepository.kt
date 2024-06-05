@@ -299,10 +299,10 @@ class AccountRepository @Inject constructor(
             homeSetDao.insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
 
         // insert collections
-        val collectionDao = db.collectionDao()
+        val collectionRepository = DavCollectionRepository(context, db)
         for (collection in info.collections.values) {
             collection.serviceId = serviceId
-            collectionDao.insertOrUpdateByUrl(collection)
+            collectionRepository.insertOrUpdateByUrl(collection)
         }
 
         return serviceId

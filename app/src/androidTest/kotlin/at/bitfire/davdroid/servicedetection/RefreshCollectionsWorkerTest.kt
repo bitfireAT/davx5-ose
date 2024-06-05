@@ -18,6 +18,7 @@ import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -88,6 +89,9 @@ class RefreshCollectionsWorkerTest {
 
     @Inject
     lateinit var db: AppDatabase
+    
+    @Inject
+    lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
     lateinit var settings: SettingsManager
@@ -132,7 +136,7 @@ class RefreshCollectionsWorkerTest {
         val baseUrl = mockServer.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)
 
         // Query home sets
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .discoverHomesets(baseUrl)
 
         // Check home sets have been saved to database
@@ -153,7 +157,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshHomesetsAndTheirCollections()
 
         // Check the collection defined in homeset is now in the database
@@ -191,7 +195,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshHomesetsAndTheirCollections()
 
         // Check the collection got updated
@@ -231,7 +235,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshHomesetsAndTheirCollections()
 
         // Check the collection got updated
@@ -274,7 +278,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh - should mark collection as homeless, because serverside homeset is empty
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshHomesetsAndTheirCollections()
 
         // Check the collection, is now marked as homeless
@@ -304,7 +308,7 @@ class RefreshCollectionsWorkerTest {
 
         // Refresh - homesets and their collections
         assertEquals(0, db.principalDao().getByService(service.id).size)
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshHomesetsAndTheirCollections()
 
         // Check principal saved and the collection was updated with its reference
@@ -338,7 +342,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshHomelessCollections()
 
         // Check the collection got updated - with display name and description
@@ -374,7 +378,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh - should delete collection
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshHomelessCollections()
 
         // Check the collection got deleted
@@ -399,7 +403,7 @@ class RefreshCollectionsWorkerTest {
 
         // Refresh homeless collections
         assertEquals(0, db.principalDao().getByService(service.id).size)
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshHomelessCollections()
 
         // Check principal saved and the collection was updated with its reference
@@ -442,7 +446,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh principals
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshPrincipals()
 
         // Check principal was not updated
@@ -478,7 +482,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh principals
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshPrincipals()
 
         // Check principal now got a display name
@@ -502,7 +506,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh principals - detecting it does not own collections
-        RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
             .refreshPrincipals()
 
         // Check principal was deleted
@@ -531,7 +535,7 @@ class RefreshCollectionsWorkerTest {
             HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
         )
 
-        val refresher = RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
         assertFalse(refresher.shouldPreselect(collection, homesets))
     }
 
@@ -554,7 +558,7 @@ class RefreshCollectionsWorkerTest {
             HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
         )
 
-        val refresher = RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
         assertTrue(refresher.shouldPreselect(collection, homesets))
     }
 
@@ -578,7 +582,7 @@ class RefreshCollectionsWorkerTest {
             HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
         )
 
-        val refresher = RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
         assertFalse(refresher.shouldPreselect(collection, homesets))
     }
 
@@ -601,7 +605,7 @@ class RefreshCollectionsWorkerTest {
             HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
         )
 
-        val refresher = RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
         assertFalse(refresher.shouldPreselect(collection, homesets))
     }
 
@@ -624,7 +628,7 @@ class RefreshCollectionsWorkerTest {
             HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
         )
 
-        val refresher = RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
         assertTrue(refresher.shouldPreselect(collection, homesets))
     }
 
@@ -647,8 +651,8 @@ class RefreshCollectionsWorkerTest {
         val homesets = listOf(
             HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
         )
-
-        val refresher = RefreshCollectionsWorker.Refresher(db, service, settings, client.okHttpClient)
+        
+        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
         assertFalse(refresher.shouldPreselect(collection, homesets))
     }
 
