@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.repository
 
 import android.accounts.Account
-import android.app.Application
 import android.content.Context
+import androidx.annotation.AnyThread
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
@@ -36,13 +36,20 @@ import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Component
 import okhttp3.HttpUrl
 import java.io.StringWriter
+import java.lang.ref.WeakReference
+import java.util.LinkedList
 import java.util.UUID
 import javax.inject.Inject
 
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
 class DavCollectionRepository @Inject constructor(
     @ApplicationContext val context: Context,
     db: AppDatabase
 ) {
+
+    private val observers = LinkedList<WeakReference<OnChangeListener>>()
 
     private val serviceDao = db.serviceDao()
     private val dao = db.collectionDao()
@@ -84,6 +91,8 @@ class DavCollectionRepository @Inject constructor(
             description = description
         )
         dao.insertAsync(collection)
+
+        onCollectionsChanged()
     }
 
     suspend fun createCalendar(
@@ -139,6 +148,8 @@ class DavCollectionRepository @Inject constructor(
         // Trigger service detection (because the collection may actually have other properties than the ones we have inserted).
         // Some servers are known to change the supported components (VEVENT, …) after creation.
         RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
+
+        onCollectionsChanged()
     }
 
     /** Deletes the given collection from the server and the database. */
@@ -158,18 +169,21 @@ class DavCollectionRepository @Inject constructor(
                     }
                 }
             }
+
+        onCollectionsChanged()
     }
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
-    suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) =
+    suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
         dao.updateForceReadOnly(id, forceReadOnly)
+        onCollectionsChanged()
+    }
 
-    suspend fun setSync(id: Long, forceReadOnly: Boolean) =
+    suspend fun setSync(id: Long, forceReadOnly: Boolean) {
         dao.updateSync(id, forceReadOnly)
-
-    fun insertOrUpdateByUrl(collection: Collection): Long =
-        dao.insertOrUpdateByUrl(collection)
+        onCollectionsChanged()
+    }
 
     /**
      * Inserts or updates the collection. On update it will not update flag values ([Collection.sync],
@@ -185,12 +199,20 @@ class DavCollectionRepository @Inject constructor(
         }
 
         // commit to database
-        insertOrUpdateByUrl(newCollection)
+        dao.insertOrUpdateByUrl(newCollection)
+
+        onCollectionsChanged()
     }
 
-    fun deleteLocal(collection: Collection) =
-        dao.delete(collection)
+    fun insertOrUpdateByUrl(collection: Collection) {
+        dao.insertOrUpdateByUrl(collection)
+        onCollectionsChanged()
+    }
 
+    fun deleteLocal(collection: Collection) {
+        dao.delete(collection)
+        onCollectionsChanged()
+    }
 
     // helpers
 
@@ -310,5 +332,34 @@ class DavCollectionRepository @Inject constructor(
 
     private fun getVTimeZone(tzId: String): String? =
         DateUtils.ical4jTimeZone(tzId)?.toString()
+
+
+    /*** OBSERVERS ***/
+
+    fun addOnChangeListener(observer: OnChangeListener) = synchronized(observers) {
+        observers += WeakReference(observer)
+    }
+
+    fun removeOnChangeListener(observer: OnChangeListener) = synchronized(observers) {
+        observers.removeAll { it.get() == null || it.get() == observer }
+    }
+
+    /**
+     * Notifies registered listeners about changes in the collections.
+     */
+    @AnyThread
+    private fun onCollectionsChanged() = synchronized(observers) {
+        for (observer in observers.mapNotNull { it.get() })
+            observer.onCollectionsChanged(context)
+    }
+
+    fun interface OnChangeListener {
+        /**
+         * Will be called when collections have changed.
+         * May run in worker thread!
+         */
+        @AnyThread
+        fun onCollectionsChanged(context: Context)
+    }
 
 }
