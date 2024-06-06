@@ -57,6 +57,9 @@ class DavCollectionRepository @Inject constructor(
     suspend fun anyWebcal(serviceId: Long) =
         dao.anyOfType(serviceId, Collection.TYPE_WEBCAL)
 
+    /**
+     * Creates address book collection on server and locally
+     */
     suspend fun createAddressBook(
         account: Account,
         homeSet: HomeSet,
@@ -95,6 +98,9 @@ class DavCollectionRepository @Inject constructor(
         onCollectionsChanged()
     }
 
+    /**
+     * Create calendar collection on server and locally
+     */
     suspend fun createCalendar(
         account: Account,
         homeSet: HomeSet,
@@ -175,11 +181,17 @@ class DavCollectionRepository @Inject constructor(
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
+    /**
+     * Sets the flag for whether read-only should be enforced on the local collection
+     */
     suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
         dao.updateForceReadOnly(id, forceReadOnly)
         onCollectionsChanged()
     }
 
+    /**
+     * Whether or not the local collection should be synced with the server
+     */
     suspend fun setSync(id: Long, forceReadOnly: Boolean) {
         dao.updateSync(id, forceReadOnly)
         onCollectionsChanged()
@@ -204,11 +216,17 @@ class DavCollectionRepository @Inject constructor(
         onCollectionsChanged()
     }
 
+    /**
+     * Creates or updates the existing collection if it exists (URL)
+     */
     fun insertOrUpdateByUrl(collection: Collection) {
         dao.insertOrUpdateByUrl(collection)
         onCollectionsChanged()
     }
 
+    /**
+     * Deletes the collection locally
+     */
     fun deleteLocal(collection: Collection) {
         dao.delete(collection)
         onCollectionsChanged()
