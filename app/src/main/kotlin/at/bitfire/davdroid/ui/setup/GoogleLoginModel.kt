@@ -57,7 +57,7 @@ class GoogleLoginModel @AssistedInject constructor(
         val result: LoginInfo? = null
     ) {
         val canContinue = email.isNotEmpty()
-        val emailWithDomain = StringUtils.appendIfMissing(email, "@gmail.com")
+        val emailWithDomain = if (email.contains("@")) email else "$email@gmail.com"
     }
 
     var uiState by mutableStateOf(UiState())
