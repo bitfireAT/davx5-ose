@@ -33,12 +33,15 @@ android {
         testInstrumentationRunner = "at.bitfire.davdroid.CustomTestRunner"
     }
 
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
     compileOptions {
         // enable because ical4android requires desugaring
         isCoreLibraryDesugaringEnabled = true
-
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
