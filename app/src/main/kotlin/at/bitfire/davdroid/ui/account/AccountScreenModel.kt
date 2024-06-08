@@ -82,8 +82,7 @@ class AccountScreenModel @AssistedInject constructor(
     private val cardDavSvc = serviceRepository
         .getCardDavServiceFlow(account.name)
         .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Eagerly)
-    val hasCardDav = cardDavSvc.map { it != null }
-    val bindableAddressBookHomesets = getBindableHomesetsFromServiceUseCase(cardDavSvc)
+    private val bindableAddressBookHomesets = getBindableHomesetsFromServiceUseCase(cardDavSvc)
     val canCreateAddressBook = bindableAddressBookHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
@@ -97,8 +96,7 @@ class AccountScreenModel @AssistedInject constructor(
     private val calDavSvc = serviceRepository
         .getCalDavServiceFlow(account.name)
         .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Eagerly)
-    val hasCalDav = calDavSvc.map { it != null }
-    val bindableCalendarHomesets = getBindableHomesetsFromServiceUseCase(calDavSvc)
+    private val bindableCalendarHomesets = getBindableHomesetsFromServiceUseCase(calDavSvc)
     val canCreateCalendar = bindableCalendarHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
@@ -112,12 +110,6 @@ class AccountScreenModel @AssistedInject constructor(
         authoritiesFlow = calDavAuthorities
     )
     val calendarsPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
-    val hasWebcal = calDavSvc.map { service ->
-        if (service != null)
-            collectionRepository.anyWebcal(service.id)
-        else
-            false
-    }
     val webcalPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
 
 

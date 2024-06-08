@@ -99,8 +99,13 @@ fun AccountScreen(
     )
 
     val addressBooksPager by model.addressBooksPager.collectAsState(null)
+    val addressBooks = addressBooksPager?.flow?.collectAsLazyPagingItems()
+
     val calendarsPager by model.calendarsPager.collectAsState(null)
+    val calendars = calendarsPager?.flow?.collectAsLazyPagingItems()
+
     val subscriptionsPager by model.webcalPager.collectAsState(null)
+    val subscriptions = subscriptionsPager?.flow?.collectAsLazyPagingItems()
 
     val context = LocalContext.current
     AccountScreen(
@@ -112,16 +117,16 @@ fun AccountScreen(
             initialValue = AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = false)
         ).value,
         onSetShowOnlyPersonal = model::setShowOnlyPersonal,
-        hasCardDav = model.hasCardDav.collectAsStateWithLifecycle(false).value,
+        hasCardDav = addressBooks?.itemCount != 0,
         canCreateAddressBook = model.canCreateAddressBook.collectAsStateWithLifecycle(false).value,
         cardDavProgress = model.cardDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle).value,
-        addressBooks = addressBooksPager?.flow?.collectAsLazyPagingItems(),
-        hasCalDav = model.hasCalDav.collectAsStateWithLifecycle(initialValue = false).value,
+        addressBooks = addressBooks,
+        hasCalDav = calendars?.itemCount != 0,
         canCreateCalendar = model.canCreateCalendar.collectAsStateWithLifecycle(false).value,
         calDavProgress = model.calDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle).value,
-        calendars = calendarsPager?.flow?.collectAsLazyPagingItems(),
-        hasWebcal = model.hasWebcal.collectAsStateWithLifecycle(false).value,
-        subscriptions =  subscriptionsPager?.flow?.collectAsLazyPagingItems(),
+        calendars = calendars,
+        hasWebcal = subscriptions?.itemCount != 0,
+        subscriptions = subscriptions,
         onUpdateCollectionSync = model::setCollectionSync,
         onSubscribe = { collection ->
             // subscribe
