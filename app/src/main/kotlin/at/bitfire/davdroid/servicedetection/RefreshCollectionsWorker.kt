@@ -76,8 +76,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     val db: AppDatabase,
-    val collectionListRefresherFactory: CollectionListRefresher.Factory,
-    val settings: SettingsManager
+    val collectionListRefresherFactory: CollectionListRefresher.Factory
 ): CoroutineWorker(appContext, workerParams) {
 
     companion object {
