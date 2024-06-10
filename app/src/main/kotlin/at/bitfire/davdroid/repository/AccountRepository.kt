@@ -49,9 +49,10 @@ import javax.inject.Inject
  */
 class AccountRepository @Inject constructor(
     val context: Application,
-    val db: AppDatabase,
-    val settingsManager: SettingsManager,
-    val serviceRepository: DavServiceRepository
+    private val db: AppDatabase,
+    private val homeSetRepository: DavHomeSetRepository,
+    private val settingsManager: SettingsManager,
+    private val serviceRepository: DavServiceRepository
 ) {
 
     private val accountType = context.getString(R.string.account_type)
@@ -291,12 +292,11 @@ class AccountRepository @Inject constructor(
     private fun insertService(accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
         // insert service
         val service = Service(0, accountName, type, info.principal)
-        val serviceId = db.serviceDao().insertOrReplace(service)
+        val serviceId = serviceRepository.insertOrReplace(service)
 
         // insert home sets
-        val homeSetDao = db.homeSetDao()
         for (homeSet in info.homeSets)
-            homeSetDao.insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
+            homeSetRepository.insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
 
         // insert collections
         val collectionDao = db.collectionDao()
