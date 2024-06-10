@@ -36,7 +36,6 @@ import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Component
 import okhttp3.HttpUrl
 import java.io.StringWriter
-import java.lang.ref.WeakReference
 import java.util.LinkedList
 import java.util.UUID
 import javax.inject.Inject
@@ -46,7 +45,7 @@ class DavCollectionRepository @Inject constructor(
     db: AppDatabase
 ) {
 
-    private val observers = LinkedList<WeakReference<OnChangeListener>>()
+    private val observers = LinkedList<OnChangeListener>()
 
     private val serviceDao = db.serviceDao()
     private val dao = db.collectionDao()
@@ -352,11 +351,11 @@ class DavCollectionRepository @Inject constructor(
     /*** OBSERVERS ***/
 
     fun addOnChangeListener(observer: OnChangeListener) = synchronized(observers) {
-        observers += WeakReference(observer)
+        observers += observer
     }
 
     fun removeOnChangeListener(observer: OnChangeListener) = synchronized(observers) {
-        observers.removeAll { it.get() == null || it.get() == observer }
+        observers.removeAll { it == observer }
     }
 
     /**
@@ -364,8 +363,9 @@ class DavCollectionRepository @Inject constructor(
      */
     @AnyThread
     private fun onCollectionsChanged() = synchronized(observers) {
-        for (observer in observers.mapNotNull { it.get() })
+        observers.forEach { observer ->
             observer.onCollectionsChanged(context)
+        }
     }
 
     fun interface OnChangeListener {
