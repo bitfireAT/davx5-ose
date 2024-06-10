@@ -1,12 +1,13 @@
 package at.bitfire.davdroid.repository
 
-import android.content.Context
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
@@ -53,25 +54,23 @@ class TestDavCollectionRepository {
                 forceReadOnly = false,
             )
         )
-        val testObserver = TestObserver()
+        val testObserver = mockk<DavCollectionRepository.OnChangeListener>(relaxed = true)
         collectionRepository.addOnChangeListener(testObserver)
 
-        assert(!testObserver.gotNotified)
+
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == false)
+        verify(exactly = 0) {
+            testObserver.onCollectionsChanged(any())
+        }
         collectionRepository.setForceReadOnly(collectionId, true)
-        assert(testObserver.gotNotified)
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == true)
+        verify(exactly = 1) {
+            testObserver.onCollectionsChanged(any())
+        }
     }
 
 
     // Test helpers and dependencies
-
-    class TestObserver : DavCollectionRepository.OnChangeListener {
-        var gotNotified = false
-        override fun onCollectionsChanged(context: Context) {
-            gotNotified = true
-        }
-    }
 
     private fun createTestService(serviceType: String) : Service? {
         val service = Service(id=0, accountName="test", type=serviceType, principal = null)
