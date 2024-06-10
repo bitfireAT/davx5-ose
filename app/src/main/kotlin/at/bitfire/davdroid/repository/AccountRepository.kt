@@ -53,7 +53,7 @@ class AccountRepository @Inject constructor(
     private val homeSetRepository: DavHomeSetRepository,
     private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
-    val collectionRepository: DavCollectionRepository
+    private val collectionRepository: DavCollectionRepository
 ) {
 
     private val accountType = context.getString(R.string.account_type)
