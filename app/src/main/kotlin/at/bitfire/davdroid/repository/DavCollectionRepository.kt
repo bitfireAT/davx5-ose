@@ -91,7 +91,7 @@ class DavCollectionRepository @Inject constructor(
         )
         dao.insertAsync(collection)
 
-        onCollectionsChanged()
+        notifyOnChangeListeners()
     }
 
     /**
@@ -151,7 +151,7 @@ class DavCollectionRepository @Inject constructor(
         // Some servers are known to change the supported components (VEVENT, …) after creation.
         RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
 
-        onCollectionsChanged()
+        notifyOnChangeListeners()
     }
 
     /** Deletes the given collection from the server and the database. */
@@ -172,7 +172,7 @@ class DavCollectionRepository @Inject constructor(
                 }
             }
 
-        onCollectionsChanged()
+        notifyOnChangeListeners()
     }
 
     fun getFlow(id: Long) = dao.getFlow(id)
@@ -182,7 +182,7 @@ class DavCollectionRepository @Inject constructor(
      */
     suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
         dao.updateForceReadOnly(id, forceReadOnly)
-        onCollectionsChanged()
+        notifyOnChangeListeners()
     }
 
     /**
@@ -190,7 +190,7 @@ class DavCollectionRepository @Inject constructor(
      */
     suspend fun setSync(id: Long, forceReadOnly: Boolean) {
         dao.updateSync(id, forceReadOnly)
-        onCollectionsChanged()
+        notifyOnChangeListeners()
     }
 
     /**
@@ -209,7 +209,7 @@ class DavCollectionRepository @Inject constructor(
         // commit to database
         dao.insertOrUpdateByUrl(newCollection)
 
-        onCollectionsChanged()
+        notifyOnChangeListeners()
     }
 
     /**
@@ -217,7 +217,7 @@ class DavCollectionRepository @Inject constructor(
      */
     fun insertOrUpdateByUrl(collection: Collection) {
         dao.insertOrUpdateByUrl(collection)
-        onCollectionsChanged()
+        notifyOnChangeListeners()
     }
 
     /**
@@ -225,7 +225,7 @@ class DavCollectionRepository @Inject constructor(
      */
     fun deleteLocal(collection: Collection) {
         dao.delete(collection)
-        onCollectionsChanged()
+        notifyOnChangeListeners()
     }
 
     // helpers
@@ -362,7 +362,7 @@ class DavCollectionRepository @Inject constructor(
      * Notifies registered listeners about changes in the collections.
      */
     @AnyThread
-    private fun onCollectionsChanged() = synchronized(observers) {
+    private fun notifyOnChangeListeners() = synchronized(observers) {
         observers.forEach { observer ->
             observer.onCollectionsChanged(context)
         }
