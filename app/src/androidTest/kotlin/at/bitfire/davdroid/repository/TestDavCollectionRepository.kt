@@ -45,7 +45,7 @@ class TestDavCollectionRepository {
     }
 
     @Test
-    fun testAddOnChangeListener() = runTest {
+    fun testOnChangeListener_setForceReadOnly() = runTest {
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
                 serviceId = service!!.id,
@@ -56,7 +56,6 @@ class TestDavCollectionRepository {
         )
         val testObserver = mockk<DavCollectionRepository.OnChangeListener>(relaxed = true)
         collectionRepository.addOnChangeListener(testObserver)
-
 
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == false)
         verify(exactly = 0) {
