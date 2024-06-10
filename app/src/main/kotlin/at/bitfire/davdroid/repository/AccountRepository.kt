@@ -51,7 +51,8 @@ class AccountRepository @Inject constructor(
     val context: Application,
     val db: AppDatabase,
     val settingsManager: SettingsManager,
-    val serviceRepository: DavServiceRepository
+    val serviceRepository: DavServiceRepository,
+    val collectionRepository: DavCollectionRepository
 ) {
 
     private val accountType = context.getString(R.string.account_type)
@@ -299,7 +300,6 @@ class AccountRepository @Inject constructor(
             homeSetDao.insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
 
         // insert collections
-        val collectionRepository = DavCollectionRepository(context, db)
         for (collection in info.collections.values) {
             collection.serviceId = serviceId
             collectionRepository.insertOrUpdateByUrl(collection)
