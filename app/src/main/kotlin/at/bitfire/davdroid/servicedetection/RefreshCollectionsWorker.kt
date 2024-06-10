@@ -41,7 +41,6 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
@@ -76,8 +75,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     val db: AppDatabase,
-    val collectionListRefresherFactory: CollectionListRefresher.Factory,
-    val settings: SettingsManager
+    val collectionListRefresherFactory: CollectionListRefresher.Factory
 ): CoroutineWorker(appContext, workerParams) {
 
     companion object {
