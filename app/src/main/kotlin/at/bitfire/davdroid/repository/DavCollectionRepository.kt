@@ -41,9 +41,6 @@ import java.util.LinkedList
 import java.util.UUID
 import javax.inject.Inject
 
-/*
- * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- */
 class DavCollectionRepository @Inject constructor(
     @ApplicationContext val context: Context,
     db: AppDatabase
