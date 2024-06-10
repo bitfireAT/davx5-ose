@@ -6,11 +6,7 @@ package at.bitfire.davdroid.servicedetection
 
 import android.content.Context
 import android.security.NetworkSecurityPolicy
-import android.util.Log
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.work.Configuration
-import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
@@ -25,8 +21,7 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
-import io.mockk.junit4.MockKRule
-import io.mockk.mockk
+import io.mockk.mockkObject
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -43,18 +38,16 @@ import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
-class RefreshCollectionsWorkerTest {
+class CollectionListRefresherTest {
     
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
-    @get:Rule
-    val mockkRule = MockKRule(this)
 
     val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-    
+    lateinit var settings: SettingsManager
+
     @Before
     fun setUp() {
         hiltRule.inject()
@@ -62,13 +55,6 @@ class RefreshCollectionsWorkerTest {
         // The test application is an instance of HiltTestApplication, which doesn't initialize notification channels.
         // However, we need notification channels for the ongoing work notifications.
         NotificationUtils.createChannels(context)
-
-        // Initialize WorkManager for instrumentation tests.
-        val config = Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .setWorkerFactory(workerFactory)
-            .build()
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
 
     
@@ -89,16 +75,15 @@ class RefreshCollectionsWorkerTest {
 
     @Inject
     lateinit var db: AppDatabase
-    
+
     @Inject
     lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
-    lateinit var settings: SettingsManager
+    lateinit var refresherFactory: CollectionListRefresher.Factory
 
-    var mockServer =  MockWebServer()
-
-    lateinit var client: HttpClient
+    private val mockServer = MockWebServer()
+    private lateinit var client: HttpClient
 
     @Before
     fun mockServerSetup() {
@@ -117,18 +102,6 @@ class RefreshCollectionsWorkerTest {
         db.close()
     }
 
-    
-    // Actual tests
-    
-    /* Often fails for unknown reasons:
-    @Test
-    fun testRefreshCollections_enqueuesWorker() {
-        val service = createTestService(Service.TYPE_CALDAV)!!
-
-        val (workerName, enqueueOp) = RefreshCollectionsWorker.enqueue(context, service.id)
-        enqueueOp.result.get()
-        assertTrue(workScheduledOrRunningOrSuccessful(context, workerName))
-    }*/
 
     @Test
     fun testDiscoverHomesets() {
@@ -136,8 +109,7 @@ class RefreshCollectionsWorkerTest {
         val baseUrl = mockServer.url(PATH_CARDDAV + SUBPATH_PRINCIPAL)
 
         // Query home sets
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .discoverHomesets(baseUrl)
+        refresherFactory.create(service, client.okHttpClient).discoverHomesets(baseUrl)
 
         // Check home sets have been saved to database
         assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET/"), db.homeSetDao().getByService(service.id).first().url)
@@ -157,8 +129,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshHomesetsAndTheirCollections()
+        refresherFactory.create(service, client.okHttpClient).refreshHomesetsAndTheirCollections()
 
         // Check the collection defined in homeset is now in the database
         assertEquals(
@@ -195,8 +166,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshHomesetsAndTheirCollections()
+        refresherFactory.create(service, client.okHttpClient).refreshHomesetsAndTheirCollections()
 
         // Check the collection got updated
         assertEquals(
@@ -235,8 +205,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshHomesetsAndTheirCollections()
+        refresherFactory.create(service, client.okHttpClient).refreshHomesetsAndTheirCollections()
 
         // Check the collection got updated
         assertEquals(
@@ -277,9 +246,8 @@ class RefreshCollectionsWorkerTest {
             )
         )
 
-        // Refresh - should mark collection as homeless, because serverside homeset is empty
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshHomesetsAndTheirCollections()
+        // Refresh - should mark collection as homeless, because serverside homeset is empty.
+        refresherFactory.create(service, client.okHttpClient).refreshHomesetsAndTheirCollections()
 
         // Check the collection, is now marked as homeless
         assertEquals(null, db.collectionDao().get(collectionId)!!.homeSetId)
@@ -308,8 +276,7 @@ class RefreshCollectionsWorkerTest {
 
         // Refresh - homesets and their collections
         assertEquals(0, db.principalDao().getByService(service.id).size)
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshHomesetsAndTheirCollections()
+        refresherFactory.create(service, client.okHttpClient).refreshHomesetsAndTheirCollections()
 
         // Check principal saved and the collection was updated with its reference
         val principals = db.principalDao().getByService(service.id)
@@ -342,8 +309,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshHomelessCollections()
+        refresherFactory.create(service, client.okHttpClient).refreshHomelessCollections()
 
         // Check the collection got updated - with display name and description
         assertEquals(
@@ -378,8 +344,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh - should delete collection
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshHomelessCollections()
+        refresherFactory.create(service, client.okHttpClient).refreshHomelessCollections()
 
         // Check the collection got deleted
         assertEquals(null, db.collectionDao().get(collectionId))
@@ -403,8 +368,7 @@ class RefreshCollectionsWorkerTest {
 
         // Refresh homeless collections
         assertEquals(0, db.principalDao().getByService(service.id).size)
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshHomelessCollections()
+        refresherFactory.create(service, client.okHttpClient).refreshHomelessCollections()
 
         // Check principal saved and the collection was updated with its reference
         val principals = db.principalDao().getByService(service.id)
@@ -446,8 +410,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh principals
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshPrincipals()
+        refresherFactory.create(service, client.okHttpClient).refreshPrincipals()
 
         // Check principal was not updated
         val principals = db.principalDao().getByService(service.id)
@@ -482,8 +445,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh principals
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshPrincipals()
+        refresherFactory.create(service, client.okHttpClient).refreshPrincipals()
 
         // Check principal now got a display name
         val principals = db.principalDao().getByService(service.id)
@@ -506,8 +468,7 @@ class RefreshCollectionsWorkerTest {
         )
 
         // Refresh principals - detecting it does not own collections
-        RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-            .refreshPrincipals()
+        refresherFactory.create(service, client.okHttpClient).refreshPrincipals()
 
         // Check principal was deleted
         val principals = db.principalDao().getByService(service.id)
@@ -520,46 +481,48 @@ class RefreshCollectionsWorkerTest {
     fun shouldPreselect_none() {
         val service = createTestService(Service.TYPE_CARDDAV)!!
 
-        val settings = mockk<SettingsManager>()
-        every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_NONE
-        every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
+        mockkObject(settings) {
+            every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_NONE
+            every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
 
-        val collection = Collection(
-            0,
-            service.id,
-            0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
-        )
-        val homesets = listOf(
-            HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
-        )
+            val collection = Collection(
+                0,
+                service.id,
+                0,
+                type = Collection.TYPE_ADDRESSBOOK,
+                url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
+            )
+            val homesets = listOf(
+                HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+            )
 
-        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-        assertFalse(refresher.shouldPreselect(collection, homesets))
+            val refresher = refresherFactory.create(service, client.okHttpClient)
+            assertFalse(refresher.shouldPreselect(collection, homesets))
+        }
     }
 
     @Test
     fun shouldPreselect_all() {
         val service = createTestService(Service.TYPE_CARDDAV)!!
 
-        val settings = mockk<SettingsManager>()
-        every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_ALL
-        every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
+        mockkObject(settings) {
+            every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_ALL
+            every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
 
-        val collection = Collection(
-            0,
-            service.id,
-            0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
-        )
-        val homesets = listOf(
-            HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
-        )
+            val collection = Collection(
+                0,
+                service.id,
+                0,
+                type = Collection.TYPE_ADDRESSBOOK,
+                url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
+            )
+            val homesets = listOf(
+                HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+            )
 
-        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-        assertTrue(refresher.shouldPreselect(collection, homesets))
+            val refresher = refresherFactory.create(service, client.okHttpClient)
+            assertTrue(refresher.shouldPreselect(collection, homesets))
+        }
     }
 
     @Test
@@ -567,69 +530,72 @@ class RefreshCollectionsWorkerTest {
         val service = createTestService(Service.TYPE_CARDDAV)!!
         val url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
 
-        val settings = mockk<SettingsManager>()
-        every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_ALL
-        every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns url.toString()
+        mockkObject(settings) {
+            every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_ALL
+            every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns url.toString()
 
-        val collection = Collection(
-            0,
-            service.id,
-            0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = url
-        )
-        val homesets = listOf(
-            HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
-        )
+            val collection = Collection(
+                0,
+                service.id,
+                0,
+                type = Collection.TYPE_ADDRESSBOOK,
+                url = url
+            )
+            val homesets = listOf(
+                HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+            )
 
-        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-        assertFalse(refresher.shouldPreselect(collection, homesets))
+            val refresher = refresherFactory.create(service, client.okHttpClient)
+            assertFalse(refresher.shouldPreselect(collection, homesets))
+        }
     }
 
     @Test
     fun shouldPreselect_personal_notPersonal() {
         val service = createTestService(Service.TYPE_CARDDAV)!!
 
-        val settings = mockk<SettingsManager>()
-        every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_PERSONAL
-        every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
+        mockkObject(settings) {
+            every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_PERSONAL
+            every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
 
-        val collection = Collection(
-            0,
-            service.id,
-            0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
-        )
-        val homesets = listOf(
-            HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
-        )
+            val collection = Collection(
+                0,
+                service.id,
+                0,
+                type = Collection.TYPE_ADDRESSBOOK,
+                url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
+            )
+            val homesets = listOf(
+                HomeSet(0, service.id, false, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+            )
 
-        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-        assertFalse(refresher.shouldPreselect(collection, homesets))
+            val refresher = refresherFactory.create(service, client.okHttpClient)
+            assertFalse(refresher.shouldPreselect(collection, homesets))
+        }
     }
 
     @Test
     fun shouldPreselect_personal_isPersonal() {
         val service = createTestService(Service.TYPE_CARDDAV)!!
 
-        val settings = mockk<SettingsManager>()
-        every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_PERSONAL
-        every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
+        mockkObject(settings) {
+            every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_PERSONAL
+            every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
 
-        val collection = Collection(
-            0,
-            service.id,
-            0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
-        )
-        val homesets = listOf(
-            HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
-        )
+            val collection = Collection(
+                0,
+                service.id,
+                0,
+                type = Collection.TYPE_ADDRESSBOOK,
+                url = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
+            )
+            val homesets = listOf(
+                HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+            )
 
-        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-        assertTrue(refresher.shouldPreselect(collection, homesets))
+            val refresher = refresherFactory.create(service, client.okHttpClient)
+            assertTrue(refresher.shouldPreselect(collection, homesets))
+        }
     }
 
     @Test
@@ -637,23 +603,24 @@ class RefreshCollectionsWorkerTest {
         val service = createTestService(Service.TYPE_CARDDAV)!!
         val collectionUrl = mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
 
-        val settings = mockk<SettingsManager>()
-        every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_PERSONAL
-        every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns collectionUrl.toString()
+        mockkObject(settings) {
+            every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_PERSONAL
+            every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns collectionUrl.toString()
 
-        val collection = Collection(
-            0,
-            service.id,
-            0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = collectionUrl
-        )
-        val homesets = listOf(
-            HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
-        )
-        
-        val refresher = RefreshCollectionsWorker.Refresher(db,  collectionRepository, service, settings, client.okHttpClient)
-        assertFalse(refresher.shouldPreselect(collection, homesets))
+            val collection = Collection(
+                0,
+                service.id,
+                0,
+                type = Collection.TYPE_ADDRESSBOOK,
+                url = collectionUrl
+            )
+            val homesets = listOf(
+                HomeSet(0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET"))
+            )
+
+            val refresher = refresherFactory.create(service, client.okHttpClient)
+            assertFalse(refresher.shouldPreselect(collection, homesets))
+        }
     }
 
     // Test helpers and dependencies

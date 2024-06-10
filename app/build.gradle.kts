@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404000100
-        versionName = "4.4.0.1"
+        versionCode = 404010000
+        versionName = "4.4.1-alpha.1"
 
         buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
 
@@ -33,12 +33,15 @@ android {
         testInstrumentationRunner = "at.bitfire.davdroid.CustomTestRunner"
     }
 
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
     compileOptions {
         // enable because ical4android requires desugaring
         isCoreLibraryDesugaringEnabled = true
-
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {

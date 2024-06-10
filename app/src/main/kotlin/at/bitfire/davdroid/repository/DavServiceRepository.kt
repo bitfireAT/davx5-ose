@@ -24,6 +24,9 @@ class DavServiceRepository @Inject constructor(
     fun getCardDavServiceFlow(accountName: String) =
         dao.getByAccountAndTypeFlow(accountName, Service.TYPE_CARDDAV)
 
+    fun insertOrReplace(service: Service) =
+        dao.insertOrReplace(service)
+
     suspend fun renameAccount(oldName: String, newName: String) {
         dao.renameAccount(oldName, newName)
     }
