@@ -40,6 +40,7 @@ class TestDavCollectionRepository {
     @After
     fun cleanUp() {
         db.close()
+        db.serviceDao().deleteAll()
     }
 
     @Test
