@@ -20,7 +20,11 @@ class DavHomeSetRepository @Inject constructor(
     fun getAddressBookHomeSetsFlow(account: Account) =
         dao.getBindableByAccountAndServiceTypeFlow(account.name, Service.TYPE_CARDDAV)
 
+    fun getBindableByServiceFlow(serviceId: Long) = dao.getBindableByServiceFlow(serviceId)
+
     fun getById(id: Long) = dao.getById(id)
+
+    fun getByService(serviceId: Long) = dao.getByService(serviceId)
 
     fun getCalendarHomeSetsFlow(account: Account) =
         dao.getBindableByAccountAndServiceTypeFlow(account.name, Service.TYPE_CALDAV)

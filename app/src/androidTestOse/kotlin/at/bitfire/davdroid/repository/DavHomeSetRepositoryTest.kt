@@ -9,7 +9,7 @@ import at.bitfire.davdroid.db.Service
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -40,18 +40,18 @@ class DavHomeSetRepositoryTest {
 
         val entry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toHttpUrl())
         val insertId1 = repository.insertOrUpdateByUrl(entry1)
-        Assert.assertEquals(1L, insertId1)
-        Assert.assertEquals(entry1.apply { id = 1L }, repository.getById(1L))
+        assertEquals(1L, insertId1)
+        assertEquals(entry1.apply { id = 1L }, repository.getById(1L))
 
         val updatedEntry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toHttpUrl(), displayName="Updated Entry")
         val updateId1 = repository.insertOrUpdateByUrl(updatedEntry1)
-        Assert.assertEquals(1L, updateId1)
-        Assert.assertEquals(updatedEntry1.apply { id = 1L }, repository.getById(1L))
+        assertEquals(1L, updateId1)
+        assertEquals(updatedEntry1.apply { id = 1L }, repository.getById(1L))
 
         val entry2 = HomeSet(id=0, serviceId=serviceId, personal=true, url= "https://example.com/2".toHttpUrl())
         val insertId2 = repository.insertOrUpdateByUrl(entry2)
-        Assert.assertEquals(2L, insertId2)
-        Assert.assertEquals(entry2.apply { id = 2L }, repository.getById(2L))
+        assertEquals(2L, insertId2)
+        assertEquals(entry2.apply { id = 2L }, repository.getById(2L))
     }
 
     @Test
@@ -62,11 +62,11 @@ class DavHomeSetRepositoryTest {
         val entry1 = HomeSet(id=1, serviceId=serviceId, personal=true, url= "https://example.com/1".toHttpUrl())
 
         val insertId1 = repository.insertOrUpdateByUrl(entry1)
-        Assert.assertEquals(1L, insertId1)
-        Assert.assertEquals(entry1, repository.getById(1L))
+        assertEquals(1L, insertId1)
+        assertEquals(entry1, repository.getById(1L))
 
         repository.delete(entry1)
-        Assert.assertEquals(null, repository.getById(1L))
+        assertEquals(null, repository.getById(1L))
     }
 
 

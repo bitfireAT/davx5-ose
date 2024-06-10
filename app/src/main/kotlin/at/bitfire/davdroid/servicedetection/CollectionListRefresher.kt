@@ -171,7 +171,7 @@ class CollectionListRefresher @AssistedInject constructor(
      * and a null value for it's home-set. Refreshing of collections without home-sets is then handled by [refreshHomelessCollections].
      */
     internal fun refreshHomesetsAndTheirCollections() {
-        val homesets = db.homeSetDao().getByService(service.id).associateBy { it.url }.toMutableMap()
+        val homesets = homeSetRepository.getByService(service.id).associateBy { it.url }.toMutableMap()
         for((homeSetUrl, localHomeset) in homesets) {
             Logger.log.fine("Listing home set $homeSetUrl")
 
@@ -223,7 +223,7 @@ class CollectionListRefresher @AssistedInject constructor(
             } catch (e: HttpException) {
                 // delete home set locally if it was not accessible (40x)
                 if (e.code in arrayOf(403, 404, 410))
-                    db.homeSetDao().delete(localHomeset)
+                    homeSetRepository.delete(localHomeset)
             }
 
             // Mark leftover (not rediscovered) collections from queue as homeless (remove association)
