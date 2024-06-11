@@ -7,7 +7,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Before
@@ -42,7 +42,7 @@ class TestDavCollectionRepository {
     }
 
     @Test
-    fun testOnChangeListener_setForceReadOnly() = runTest {
+    fun testOnChangeListener_setForceReadOnly() = runBlocking {
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
                 serviceId = service!!.id,
