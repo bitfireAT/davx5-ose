@@ -36,7 +36,7 @@ import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Component
 import okhttp3.HttpUrl
 import java.io.StringWriter
-import java.util.LinkedList
+import java.util.Collections
 import java.util.UUID
 import javax.inject.Inject
 
@@ -45,7 +45,7 @@ class DavCollectionRepository @Inject constructor(
     db: AppDatabase
 ) {
 
-    private val observers = LinkedList<OnChangeListener>()
+    private val observers = Collections.synchronizedSet(mutableSetOf<OnChangeListener>())
 
     private val serviceDao = db.serviceDao()
     private val dao = db.collectionDao()
@@ -350,12 +350,12 @@ class DavCollectionRepository @Inject constructor(
 
     /*** OBSERVERS ***/
 
-    fun addOnChangeListener(observer: OnChangeListener) = synchronized(observers) {
-        observers += observer
+    fun addOnChangeListener(observer: OnChangeListener) {
+        observers.add(observer)
     }
 
-    fun removeOnChangeListener(observer: OnChangeListener) = synchronized(observers) {
-        observers.removeAll { it == observer }
+    fun removeOnChangeListener(observer: OnChangeListener) {
+        observers.remove(observer)
     }
 
     /**
