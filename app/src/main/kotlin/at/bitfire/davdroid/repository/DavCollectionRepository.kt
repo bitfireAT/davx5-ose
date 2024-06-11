@@ -29,23 +29,26 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.util.DateUtils
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.ElementsIntoSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Component
 import okhttp3.HttpUrl
 import java.io.StringWriter
-import java.util.Collections
 import java.util.UUID
 import javax.inject.Inject
 
 class DavCollectionRepository @Inject constructor(
     @ApplicationContext val context: Context,
+    private val observers: Set<@JvmSuppressWildcards Observer>,
     db: AppDatabase
 ) {
-
-    private val observers = Collections.synchronizedSet(mutableSetOf<OnChangeListener>())
 
     private val serviceDao = db.serviceDao()
     private val dao = db.collectionDao()
@@ -350,31 +353,31 @@ class DavCollectionRepository @Inject constructor(
 
     /*** OBSERVERS ***/
 
-    fun addOnChangeListener(observer: OnChangeListener) {
-        observers.add(observer)
-    }
-
-    fun removeOnChangeListener(observer: OnChangeListener) {
-        observers.remove(observer)
-    }
-
     /**
      * Notifies registered listeners about changes in the collections.
      */
     @AnyThread
     private fun notifyOnChangeListeners() = synchronized(observers) {
         observers.forEach { observer ->
-            observer.onCollectionsChanged(context)
+            observer.onCollectionsChanged()
         }
     }
 
-    fun interface OnChangeListener {
+    fun interface Observer {
         /**
          * Will be called when collections have changed.
          * May run in worker thread!
          */
         @AnyThread
-        fun onCollectionsChanged(context: Context)
+        fun onCollectionsChanged()
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    class EmptyObserverSetModule {
+        @Provides
+        @ElementsIntoSet
+        fun primeEmptyObserverSet(): Set<@JvmSuppressWildcards Observer> = setOf()
     }
 
 }

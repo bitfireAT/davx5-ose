@@ -1,5 +1,6 @@
 package at.bitfire.davdroid.repository
 
+import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -24,8 +25,7 @@ class TestDavCollectionRepository {
     @Inject
     lateinit var db: AppDatabase
 
-    @Inject
-    lateinit var collectionRepository: DavCollectionRepository
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     var service: Service? = null
 
@@ -51,17 +51,17 @@ class TestDavCollectionRepository {
                 forceReadOnly = false,
             )
         )
-        val testObserver = mockk<DavCollectionRepository.OnChangeListener>(relaxed = true)
-        collectionRepository.addOnChangeListener(testObserver)
+        val testObserver = mockk<DavCollectionRepository.Observer>(relaxed = true)
+        val collectionRepository = DavCollectionRepository(context, mutableSetOf(testObserver), db)
 
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == false)
         verify(exactly = 0) {
-            testObserver.onCollectionsChanged(any())
+            testObserver.onCollectionsChanged()
         }
         collectionRepository.setForceReadOnly(collectionId, true)
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == true)
         verify(exactly = 1) {
-            testObserver.onCollectionsChanged(any())
+            testObserver.onCollectionsChanged()
         }
     }
 
@@ -74,3 +74,20 @@ class TestDavCollectionRepository {
         return db.serviceDao().get(serviceId)
     }
 }
+
+//class FakeCollectionRepositoryObserver @Inject constructor(): DavCollectionRepository.Observer {
+//    override fun onCollectionsChanged() {}
+//}
+
+//@Module
+//@InstallIn(SingletonComponent::class)
+//@Module
+//@TestInstallIn(
+//    components = [SingletonComponent::class],
+//    replaces = []
+//)
+//interface FakeModule {
+//    @Binds
+//    @IntoSet
+//    fun observer(impl: FakeCollectionRepositoryObserver): DavCollectionRepository.Observer
+//}
