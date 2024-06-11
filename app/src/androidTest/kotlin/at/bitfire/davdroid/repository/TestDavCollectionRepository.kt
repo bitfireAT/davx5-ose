@@ -5,7 +5,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
@@ -21,8 +20,6 @@ class TestDavCollectionRepository {
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
-    @get:Rule
-    val mockkRule = MockKRule(this)
 
     @Inject
     lateinit var db: AppDatabase
