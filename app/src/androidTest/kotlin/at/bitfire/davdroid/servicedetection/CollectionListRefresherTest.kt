@@ -6,7 +6,10 @@ package at.bitfire.davdroid.servicedetection
 
 import android.content.Context
 import android.security.NetworkSecurityPolicy
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.work.Configuration
+import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
@@ -54,6 +57,12 @@ class CollectionListRefresherTest {
         // The test application is an instance of HiltTestApplication, which doesn't initialize notification channels.
         // However, we need notification channels for the ongoing work notifications.
         NotificationUtils.createChannels(context)
+
+        // Initialize WorkManager for instrumentation tests.
+        val config = Configuration.Builder()
+            .setMinimumLoggingLevel(Log.DEBUG)
+            .build()
+        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
 
     
