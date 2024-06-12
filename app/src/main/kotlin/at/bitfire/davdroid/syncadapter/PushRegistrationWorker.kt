@@ -1,7 +1,6 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.app.Application
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
@@ -20,15 +19,21 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
+import dagger.Binds
+import dagger.Module
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import java.io.StringWriter
-import java.util.concurrent.TimeUnit
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
 import kotlinx.coroutines.runInterruptible
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.StringWriter
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @HiltWorker
 class PushRegistrationWorker @AssistedInject constructor(
@@ -106,4 +111,19 @@ class PushRegistrationWorker @AssistedInject constructor(
 
         return Result.success()
     }
+
+    class DavCollectionRepositoryListener @Inject constructor(
+        @ApplicationContext val context: Context
+    ): DavCollectionRepository.OnChangeListener {
+        override fun onCollectionsChanged() = enqueue(context)
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    interface PushRegistrationWorkerModule {
+        @Binds
+        @IntoSet
+        fun listener(impl: DavCollectionRepositoryListener): DavCollectionRepository.OnChangeListener
+    }
+
 }
