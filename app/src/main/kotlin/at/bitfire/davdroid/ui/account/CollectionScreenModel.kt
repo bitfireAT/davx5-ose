@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -29,7 +28,6 @@ import kotlinx.coroutines.launch
 @HiltViewModel(assistedFactory = CollectionScreenModel.Factory::class)
 class CollectionScreenModel @AssistedInject constructor(
     @Assisted val collectionId: Long,
-    val context: Application,
     db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
     syncStatsRepository: DavSyncStatsRepository
