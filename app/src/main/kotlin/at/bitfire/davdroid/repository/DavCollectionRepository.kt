@@ -51,12 +51,12 @@ import javax.inject.Inject
 class DavCollectionRepository @Inject constructor(
     @ApplicationContext val context: Context,
     defaultListeners: Set<@JvmSuppressWildcards OnChangeListener>,
+    val serviceRepository: DavServiceRepository,
     db: AppDatabase
 ) {
 
     private val listeners = Collections.synchronizedSet(defaultListeners.toMutableSet())
 
-    private val serviceDao = db.serviceDao()
     private val dao = db.collectionDao()
 
     /**
@@ -162,7 +162,7 @@ class DavCollectionRepository @Inject constructor(
 
     /** Deletes the given collection from the server and the database. */
     suspend fun deleteRemote(collection: Collection) {
-        val service = serviceDao.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
+        val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
         HttpClient.Builder(context, AccountSettings(context, account))

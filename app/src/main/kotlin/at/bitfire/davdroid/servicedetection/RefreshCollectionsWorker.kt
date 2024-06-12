@@ -36,9 +36,9 @@ import at.bitfire.dav4jvm.property.webdav.Owner
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -74,7 +74,7 @@ import java.util.logging.Level
 class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    val db: AppDatabase,
+    serviceRepository: DavServiceRepository,
     val collectionListRefresherFactory: CollectionListRefresher.Factory
 ): CoroutineWorker(appContext, workerParams) {
 
@@ -159,7 +159,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     }
 
     val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
-    val service = db.serviceDao().get(serviceId)
+    val service = serviceRepository.get(serviceId)
     val account = service?.let { service ->
         Account(service.accountName, applicationContext.getString(R.string.account_type))
     }
