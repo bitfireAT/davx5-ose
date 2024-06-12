@@ -29,7 +29,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import kotlinx.coroutines.runInterruptible
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.StringWriter
 import java.util.concurrent.TimeUnit
@@ -81,18 +80,11 @@ class PushRegistrationWorker @AssistedInject constructor(
                     }
                     serializer.endDocument()
 
-                    // TODO - Add proper POST method in dav4jvm
-                    DavResource(httpClient, collection.url)
-                        .httpClient
-                        .newCall(
-                            Request.Builder()
-                                .post(
-                                    writer.toString().toRequestBody(DavResource.MIME_XML)
-                                )
-                                .url(collection.url)
-                                .build()
-                        )
-                        .execute()
+                    DavResource(httpClient, collection.url).post(
+                        writer.toString().toRequestBody(DavResource.MIME_XML)
+                    ) { response ->
+                        // TODO
+                    }
                 }
         }
     }
