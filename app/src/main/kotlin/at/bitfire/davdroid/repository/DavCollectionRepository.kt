@@ -6,7 +6,6 @@ package at.bitfire.davdroid.repository
 
 import android.accounts.Account
 import android.content.Context
-import androidx.annotation.AnyThread
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
@@ -172,14 +171,12 @@ class DavCollectionRepository @Inject constructor(
                 withContext(Dispatchers.IO) {
                     runInterruptible {
                         DavResource(httpClient.okHttpClient, collection.url).delete() {
-                            // success, otherwise an exception would have been thrown
-                            dao.delete(collection)
+                            // success, otherwise an exception would have been thrown → delete locally, too
+                            delete(collection)
                         }
                     }
                 }
             }
-
-        notifyOnChangeListeners()
     }
 
     fun getFlow(id: Long) = dao.getFlow(id)
@@ -214,9 +211,7 @@ class DavCollectionRepository @Inject constructor(
         }
 
         // commit to database
-        dao.insertOrUpdateByUrl(newCollection)
-
-        notifyOnChangeListeners()
+        insertOrUpdateByUrl(newCollection)
     }
 
     /**
@@ -360,7 +355,6 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Notifies registered listeners about changes in the collections.
      */
-    @AnyThread
     private fun notifyOnChangeListeners() = synchronized(listeners) {
         listeners.forEach { listener ->
             listener.onCollectionsChanged()
@@ -370,10 +364,10 @@ class DavCollectionRepository @Inject constructor(
 
     fun interface OnChangeListener {
         /**
-         * Will be called when collections have changed.
-         * May run in worker thread!
+         * Will be called when collections have changed. Will run in the coroutine context/thread
+         * of the data-modifying method. For instance, if [delete] is called, [onCollectionsChanged]
+         * will be called in the context/thread that called [delete].
          */
-        @AnyThread
         fun onCollectionsChanged()
     }
 
