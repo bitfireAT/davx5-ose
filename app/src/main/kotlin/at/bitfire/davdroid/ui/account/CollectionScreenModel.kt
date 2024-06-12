@@ -76,7 +76,7 @@ class CollectionScreenModel @AssistedInject constructor(
         inProgress = true
         noCancellationScope.launch {
             try {
-                collectionRepository.delete(collection)
+                collectionRepository.deleteRemote(collection)
             } catch (e: Exception) {
                 error = e
             } finally {

@@ -162,7 +162,7 @@ class DavCollectionRepository @Inject constructor(
     }
 
     /** Deletes the given collection from the server and the database. */
-    suspend fun delete(collection: Collection) {
+    suspend fun deleteRemote(collection: Collection) {
         val service = serviceDao.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
@@ -230,7 +230,7 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Deletes the collection locally
      */
-    fun deleteLocal(collection: Collection) {
+    fun delete(collection: Collection) {
         dao.delete(collection)
         notifyOnChangeListeners()
     }

@@ -247,7 +247,7 @@ class CollectionListRefresher @AssistedInject constructor(
         for((url, localCollection) in homelessCollections) try {
             DavResource(httpClient, url).propfind(0, *RefreshCollectionsWorker.DAV_COLLECTION_PROPERTIES) { response, _ ->
                 if (!response.isSuccess()) {
-                    db.collectionDao().delete(localCollection)
+                    collectionRepository.delete(localCollection)
                     return@propfind
                 }
 
@@ -267,12 +267,12 @@ class CollectionListRefresher @AssistedInject constructor(
                         }
 
                     collectionRepository.insertOrUpdateByUrlAndRememberFlags(collection)
-                } ?: db.collectionDao().delete(localCollection)
+                } ?: collectionRepository.delete(localCollection)
             }
         } catch (e: HttpException) {
             // delete collection locally if it was not accessible (40x)
             if (e.code in arrayOf(403, 404, 410))
-                db.collectionDao().delete(localCollection)
+                collectionRepository.delete(localCollection)
             else
                 throw e
         }
