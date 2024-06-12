@@ -25,6 +25,7 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -44,6 +45,7 @@ class CollectionListRefresher @AssistedInject constructor(
     @Assisted val httpClient: OkHttpClient,
     private val db: AppDatabase,
     private val homeSetRepository: DavHomeSetRepository,
+    private val collectionRepository: DavCollectionRepository,
     private val settings: SettingsManager
 ) {
 
@@ -215,7 +217,7 @@ class CollectionListRefresher @AssistedInject constructor(
 
                     // save or update collection if usable (ignore it otherwise)
                     if (isUsableCollection(collection))
-                        db.collectionDao().insertOrUpdateByUrlAndRememberFlags(collection)
+                        collectionRepository.insertOrUpdateByUrlAndRememberFlags(collection)
 
                     // Remove this collection from queue - because it was found in the home set
                     localHomesetCollections.remove(collection.url)
@@ -229,7 +231,7 @@ class CollectionListRefresher @AssistedInject constructor(
             // Mark leftover (not rediscovered) collections from queue as homeless (remove association)
             for ((_, homelessCollection) in localHomesetCollections) {
                 homelessCollection.homeSetId = null
-                db.collectionDao().insertOrUpdateByUrlAndRememberFlags(homelessCollection)
+                collectionRepository.insertOrUpdateByUrlAndRememberFlags(homelessCollection)
             }
 
         }
@@ -245,7 +247,7 @@ class CollectionListRefresher @AssistedInject constructor(
         for((url, localCollection) in homelessCollections) try {
             DavResource(httpClient, url).propfind(0, *RefreshCollectionsWorker.DAV_COLLECTION_PROPERTIES) { response, _ ->
                 if (!response.isSuccess()) {
-                    db.collectionDao().delete(localCollection)
+                    collectionRepository.delete(localCollection)
                     return@propfind
                 }
 
@@ -264,13 +266,13 @@ class CollectionListRefresher @AssistedInject constructor(
                             collection.ownerId = principalId
                         }
 
-                    db.collectionDao().insertOrUpdateByUrlAndRememberFlags(collection)
-                } ?: db.collectionDao().delete(localCollection)
+                    collectionRepository.insertOrUpdateByUrlAndRememberFlags(collection)
+                } ?: collectionRepository.delete(localCollection)
             }
         } catch (e: HttpException) {
             // delete collection locally if it was not accessible (40x)
             if (e.code in arrayOf(403, 404, 410))
-                db.collectionDao().delete(localCollection)
+                collectionRepository.delete(localCollection)
             else
                 throw e
         }
