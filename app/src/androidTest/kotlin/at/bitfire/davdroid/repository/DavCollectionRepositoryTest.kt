@@ -17,7 +17,7 @@ import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
-class TestDavCollectionRepository {
+class DavCollectionRepositoryTest {
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
@@ -51,7 +51,7 @@ class TestDavCollectionRepository {
                 forceReadOnly = false,
             )
         )
-        val testObserver = mockk<DavCollectionRepository.Observer>(relaxed = true)
+        val testObserver = mockk<DavCollectionRepository.OnChangeListener>(relaxed = true)
         val collectionRepository = DavCollectionRepository(context, mutableSetOf(testObserver), db)
 
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == false)
@@ -74,20 +74,3 @@ class TestDavCollectionRepository {
         return db.serviceDao().get(serviceId)
     }
 }
-
-//class FakeCollectionRepositoryObserver @Inject constructor(): DavCollectionRepository.Observer {
-//    override fun onCollectionsChanged() {}
-//}
-
-//@Module
-//@InstallIn(SingletonComponent::class)
-//@Module
-//@TestInstallIn(
-//    components = [SingletonComponent::class],
-//    replaces = []
-//)
-//interface FakeModule {
-//    @Binds
-//    @IntoSet
-//    fun observer(impl: FakeCollectionRepositoryObserver): DavCollectionRepository.Observer
-//}

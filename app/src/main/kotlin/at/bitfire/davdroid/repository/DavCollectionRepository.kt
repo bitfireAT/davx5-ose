@@ -30,31 +30,35 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.util.DateUtils
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.ElementsIntoSet
+import dagger.multibindings.Multibinds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Component
 import okhttp3.HttpUrl
 import java.io.StringWriter
+import java.util.Collections
 import java.util.UUID
 import javax.inject.Inject
 
+/**
+ * Repository for managing collections.
+ *
+ * Implements an observer pattern that can be used to listen for changes of collections.
+ */
 class DavCollectionRepository @Inject constructor(
     @ApplicationContext val context: Context,
-    private val observers: Set<@JvmSuppressWildcards Observer>,
+    defaultListeners: Set<@JvmSuppressWildcards OnChangeListener>,
     db: AppDatabase
 ) {
 
+    private val listeners = Collections.synchronizedSet(defaultListeners.toMutableSet())
+
     private val serviceDao = db.serviceDao()
     private val dao = db.collectionDao()
-
-    suspend fun anyWebcal(serviceId: Long) =
-        dao.anyOfType(serviceId, Collection.TYPE_WEBCAL)
 
     /**
      * Creates address book collection on server and locally
@@ -88,7 +92,7 @@ class DavCollectionRepository @Inject constructor(
             serviceId = homeSet.serviceId,
             homeSetId = homeSet.id,
             url = url,
-            type = Collection.TYPE_ADDRESSBOOK, //if (addressBook) Collection.TYPE_ADDRESSBOOK else Collection.TYPE_CALENDAR,
+            type = Collection.TYPE_ADDRESSBOOK,
             displayName = displayName,
             description = description
         )
@@ -357,13 +361,14 @@ class DavCollectionRepository @Inject constructor(
      * Notifies registered listeners about changes in the collections.
      */
     @AnyThread
-    private fun notifyOnChangeListeners() = synchronized(observers) {
-        observers.forEach { observer ->
-            observer.onCollectionsChanged()
+    private fun notifyOnChangeListeners() = synchronized(listeners) {
+        listeners.forEach { listener ->
+            listener.onCollectionsChanged()
         }
     }
 
-    fun interface Observer {
+
+    fun interface OnChangeListener {
         /**
          * Will be called when collections have changed.
          * May run in worker thread!
@@ -374,10 +379,8 @@ class DavCollectionRepository @Inject constructor(
 
     @Module
     @InstallIn(SingletonComponent::class)
-    class EmptyObserverSetModule {
-        @Provides
-        @ElementsIntoSet
-        fun primeEmptyObserverSet(): Set<@JvmSuppressWildcards Observer> = setOf()
+    abstract class DavCollectionRepositoryModule {
+        @Multibinds abstract fun defaultOnChangeListeners(): Set<OnChangeListener>
     }
 
 }

@@ -14,7 +14,6 @@ import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -75,9 +74,6 @@ class CollectionListRefresherTest {
 
     @Inject
     lateinit var db: AppDatabase
-
-    @Inject
-    lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
     lateinit var refresherFactory: CollectionListRefresher.Factory
