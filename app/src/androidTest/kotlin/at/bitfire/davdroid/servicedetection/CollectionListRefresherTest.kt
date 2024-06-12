@@ -98,7 +98,7 @@ class CollectionListRefresherTest {
         db.close()
     }
 
-    
+
     @Test
     fun testDiscoverHomesets() {
         val service = createTestService(Service.TYPE_CARDDAV)!!

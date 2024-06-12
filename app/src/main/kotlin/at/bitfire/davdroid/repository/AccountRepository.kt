@@ -16,7 +16,6 @@ import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
@@ -49,10 +48,10 @@ import javax.inject.Inject
  */
 class AccountRepository @Inject constructor(
     val context: Application,
-    private val db: AppDatabase,
     private val homeSetRepository: DavHomeSetRepository,
     private val settingsManager: SettingsManager,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    private val collectionRepository: DavCollectionRepository
 ) {
 
     private val accountType = context.getString(R.string.account_type)
@@ -299,10 +298,9 @@ class AccountRepository @Inject constructor(
             homeSetRepository.insertOrUpdateByUrl(HomeSet(0, serviceId, true, homeSet))
 
         // insert collections
-        val collectionDao = db.collectionDao()
         for (collection in info.collections.values) {
             collection.serviceId = serviceId
-            collectionDao.insertOrUpdateByUrl(collection)
+            collectionRepository.insertOrUpdateByUrl(collection)
         }
 
         return serviceId

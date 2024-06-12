@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.repository
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
@@ -28,26 +28,40 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.util.DateUtils
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.Multibinds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import net.fortuna.ical4j.model.Component
 import okhttp3.HttpUrl
 import java.io.StringWriter
+import java.util.Collections
 import java.util.UUID
 import javax.inject.Inject
 
+/**
+ * Repository for managing collections.
+ *
+ * Implements an observer pattern that can be used to listen for changes of collections.
+ */
 class DavCollectionRepository @Inject constructor(
-    val context: Application,
+    @ApplicationContext val context: Context,
+    defaultListeners: Set<@JvmSuppressWildcards OnChangeListener>,
     db: AppDatabase
 ) {
+
+    private val listeners = Collections.synchronizedSet(defaultListeners.toMutableSet())
 
     private val serviceDao = db.serviceDao()
     private val dao = db.collectionDao()
 
-    suspend fun anyWebcal(serviceId: Long) =
-        dao.anyOfType(serviceId, Collection.TYPE_WEBCAL)
-
+    /**
+     * Creates address book collection on server and locally
+     */
     suspend fun createAddressBook(
         account: Account,
         homeSet: HomeSet,
@@ -77,13 +91,18 @@ class DavCollectionRepository @Inject constructor(
             serviceId = homeSet.serviceId,
             homeSetId = homeSet.id,
             url = url,
-            type = Collection.TYPE_ADDRESSBOOK, //if (addressBook) Collection.TYPE_ADDRESSBOOK else Collection.TYPE_CALENDAR,
+            type = Collection.TYPE_ADDRESSBOOK,
             displayName = displayName,
             description = description
         )
         dao.insertAsync(collection)
+
+        notifyOnChangeListeners()
     }
 
+    /**
+     * Create calendar collection on server and locally
+     */
     suspend fun createCalendar(
         account: Account,
         homeSet: HomeSet,
@@ -137,10 +156,12 @@ class DavCollectionRepository @Inject constructor(
         // Trigger service detection (because the collection may actually have other properties than the ones we have inserted).
         // Some servers are known to change the supported components (VEVENT, …) after creation.
         RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
+
+        notifyOnChangeListeners()
     }
 
     /** Deletes the given collection from the server and the database. */
-    suspend fun delete(collection: Collection) {
+    suspend fun deleteRemote(collection: Collection) {
         val service = serviceDao.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
@@ -150,8 +171,8 @@ class DavCollectionRepository @Inject constructor(
                 withContext(Dispatchers.IO) {
                     runInterruptible {
                         DavResource(httpClient.okHttpClient, collection.url).delete() {
-                            // success, otherwise an exception would have been thrown
-                            dao.delete(collection)
+                            // success, otherwise an exception would have been thrown → delete locally, too
+                            delete(collection)
                         }
                     }
                 }
@@ -164,14 +185,54 @@ class DavCollectionRepository @Inject constructor(
     suspend fun getSyncEnabledAndPushCapable(): List<Collection> =
         dao.getPushCapableSyncCollections()
 
+    /**
+     * Sets the flag for whether read-only should be enforced on the local collection
+     */
     suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
         dao.updateForceReadOnly(id, forceReadOnly)
+        notifyOnChangeListeners()
     }
 
+    /**
+     * Whether or not the local collection should be synced with the server
+     */
     suspend fun setSync(id: Long, forceReadOnly: Boolean) {
         dao.updateSync(id, forceReadOnly)
+        notifyOnChangeListeners()
     }
 
+    /**
+     * Inserts or updates the collection. On update it will not update flag values ([Collection.sync],
+     * [Collection.forceReadOnly]), but use the values of the already existing collection.
+     *
+     * @param newCollection Collection to be inserted or updated
+     */
+    fun insertOrUpdateByUrlAndRememberFlags(newCollection: Collection) {
+        // remember locally set flags
+        dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())?.let { oldCollection ->
+            newCollection.sync = oldCollection.sync
+            newCollection.forceReadOnly = oldCollection.forceReadOnly
+        }
+
+        // commit to database
+        insertOrUpdateByUrl(newCollection)
+    }
+
+    /**
+     * Creates or updates the existing collection if it exists (URL)
+     */
+    fun insertOrUpdateByUrl(collection: Collection) {
+        dao.insertOrUpdateByUrl(collection)
+        notifyOnChangeListeners()
+    }
+
+    /**
+     * Deletes the collection locally
+     */
+    fun delete(collection: Collection) {
+        dao.delete(collection)
+        notifyOnChangeListeners()
+    }
 
     // helpers
 
@@ -291,5 +352,33 @@ class DavCollectionRepository @Inject constructor(
 
     private fun getVTimeZone(tzId: String): String? =
         DateUtils.ical4jTimeZone(tzId)?.toString()
+
+
+    /*** OBSERVERS ***/
+
+    /**
+     * Notifies registered listeners about changes in the collections.
+     */
+    private fun notifyOnChangeListeners() = synchronized(listeners) {
+        listeners.forEach { listener ->
+            listener.onCollectionsChanged()
+        }
+    }
+
+
+    fun interface OnChangeListener {
+        /**
+         * Will be called when collections have changed. Will run in the coroutine context/thread
+         * of the data-modifying method. For instance, if [delete] is called, [onCollectionsChanged]
+         * will be called in the context/thread that called [delete].
+         */
+        fun onCollectionsChanged()
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    abstract class DavCollectionRepositoryModule {
+        @Multibinds abstract fun defaultOnChangeListeners(): Set<OnChangeListener>
+    }
 
 }

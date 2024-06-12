@@ -101,23 +101,6 @@ interface CollectionDao {
         localCollection.id
     } ?: insert(collection)
 
-    /**
-     * Inserts or updates the collection. On update it will not update flag values ([Collection.sync],
-     * [Collection.forceReadOnly]), but use the values of the already existing collection.
-     *
-     * @param newCollection Collection to be inserted or updated
-     */
-    fun insertOrUpdateByUrlAndRememberFlags(newCollection: Collection) {
-        // remember locally set flags
-        getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())?.let { oldCollection ->
-            newCollection.sync = oldCollection.sync
-            newCollection.forceReadOnly = oldCollection.forceReadOnly
-        }
-
-        // commit to database
-        insertOrUpdateByUrl(newCollection)
-    }
-
     @Delete
     fun delete(collection: Collection)
 

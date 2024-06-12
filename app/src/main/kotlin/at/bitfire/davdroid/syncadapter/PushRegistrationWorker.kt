@@ -34,6 +34,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 class PushRegistrationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
+    val collectionRepository: DavCollectionRepository,
     val db: AppDatabase
 ) : CoroutineWorker(context, workerParameters) {
     companion object {
@@ -93,8 +94,7 @@ class PushRegistrationWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         Logger.log.info("Running push registration worker")
-        val repo = DavCollectionRepository(applicationContext as Application, db)
-        val collections = repo.getSyncEnabledAndPushCapable()
+        val collections = collectionRepository.getSyncEnabledAndPushCapable()
 
         for (collection in collections) {
             Logger.log.info("Registering push for ${collection.url}")

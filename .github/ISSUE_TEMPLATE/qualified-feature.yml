@@ -1,6 +1,6 @@
 name: Qualified Feature Request
 description: "[Developers only] For qualified feature requests. (Use Discussions if unsure.)"
-labels: ["feature"]
+labels: ["enhancement"]
 body:
   - type: checkboxes
     attributes:
