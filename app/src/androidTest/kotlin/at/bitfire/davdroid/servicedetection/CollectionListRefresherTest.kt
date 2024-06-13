@@ -6,10 +6,7 @@ package at.bitfire.davdroid.servicedetection
 
 import android.content.Context
 import android.security.NetworkSecurityPolicy
-import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.work.Configuration
-import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
@@ -17,10 +14,16 @@ import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.syncadapter.PushRegistrationWorker
+import dagger.Module
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.components.SingletonComponent
+import dagger.hilt.testing.TestInstallIn
+import dagger.multibindings.Multibinds
 import io.mockk.every
 import io.mockk.mockkObject
 import okhttp3.mockwebserver.Dispatcher
@@ -52,12 +55,6 @@ class CollectionListRefresherTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-
-        // Initialize WorkManager for instrumentation tests.
-        val config = Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .build()
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
 
     
@@ -723,4 +720,15 @@ class CollectionListRefresherTest {
         }
 
     }
+}
+
+@Module
+@TestInstallIn(
+    components = [SingletonComponent::class],
+    replaces = [PushRegistrationWorker.PushRegistrationWorkerModule::class]
+)
+abstract class FakePushRegistrationWorkerModule {
+    // Provides empty set of listeners
+    @Multibinds
+    abstract fun defaultOnChangeListeners(): Set<DavCollectionRepository.OnChangeListener>
 }

@@ -383,6 +383,7 @@ class DavCollectionRepository @Inject constructor(
     @Module
     @InstallIn(SingletonComponent::class)
     abstract class DavCollectionRepositoryModule {
+        // Provides empty set of listeners
         @Multibinds abstract fun defaultOnChangeListeners(): Set<OnChangeListener>
     }
 
