@@ -3,8 +3,10 @@ package at.bitfire.davdroid.syncadapter
 import android.accounts.Account
 import android.content.Context
 import androidx.hilt.work.HiltWorker
+import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -60,8 +62,12 @@ class PushRegistrationWorker @AssistedInject constructor(
          * Enqueues a push registration worker with a minimum delay of 5 seconds.
          */
         fun enqueue(context: Context) {
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)   // require a network connection
+                .build()
             val workRequest = OneTimeWorkRequestBuilder<PushRegistrationWorker>()
                 .setInitialDelay(5, TimeUnit.SECONDS)
+                .setConstraints(constraints)
                 .build()
             Logger.log.info("Enqueueing push registration worker")
             WorkManager.getInstance(context)
