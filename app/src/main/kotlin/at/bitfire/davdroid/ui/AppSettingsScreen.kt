@@ -32,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +51,7 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
+import org.unifiedpush.android.connector.UnifiedPush
 
 @Composable
 fun AppSettingsScreen(
@@ -481,5 +483,13 @@ fun AppSettings_Integration(
         },
         summary = appName,
         onClick = onNavTasksScreen
+    )
+
+    val context = LocalContext.current
+    Setting(
+        name = "UnifiedPush",
+        onClick = {
+            UnifiedPush.registerAppWithDialog(context)
+        }
     )
 }

@@ -111,7 +111,7 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
-unifiedpush = { module = "com.github.UnifiedPush:android-connector", version = "unified-push" }
+unifiedpush = { module = "com.github.UnifiedPush:android-connector", version.ref = "unifiedpush" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-agp" }
