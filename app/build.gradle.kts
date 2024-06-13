@@ -144,11 +144,7 @@ dependencies {
     implementation(libs.androidx.activityCompose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.browser)
-    implementation(libs.androidx.cardView)
-    implementation(libs.androidx.concurrentFuture)
-    implementation(libs.androidx.constraintLayout)
     implementation(libs.androidx.core)
-    implementation(libs.androidx.fragment)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -159,7 +155,6 @@ dependencies {
     implementation(libs.androidx.preference)
     implementation(libs.androidx.security)
     implementation(libs.androidx.work.base)
-    implementation(libs.android.flexbox)
 
     // Jetpack Compose
     implementation(libs.compose.accompanist.permissions)

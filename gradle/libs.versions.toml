@@ -3,18 +3,13 @@
 [versions]
 android-agp = "8.4.2"
 android-desugaring = "2.0.4"
-android-flexbox = "3.0.0"
 androidx-activityCompose = "1.9.0"
 androidx-appcompat = "1.7.0"
 androidx-arch = "2.2.0"
 androidx-browser = "1.8.0"
-androidx-cardView = "1.0.0"
-androidx-concurrentFuture = "1.1.0"
-androidx-constraintLayout = "2.1.4"
 androidx-core = "1.13.1"
-androidx-fragment = "1.7.1"
 androidx-hilt = "1.2.0"
-androidx-lifecycle = "2.7.0"        # 2.8.0 requires Compose 1.7 (currently in beta)
+androidx-lifecycle = "2.8.2"
 androidx-paging = "3.3.0"
 androidx-preference = "1.2.1"
 androidx-security = "1.1.0-alpha06"
@@ -36,10 +31,10 @@ commons-io = "2.8.0"
 #noinspection GradleDependency
 commons-text = "1.11.0"
 compose-accompanist = "0.34.0"
-compose-bom = "2024.05.00"
+compose-bom = "2024.06.00"
 # don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
 dnsjava = "2.1.9"
-glance = "1.0.0"
+glance = "1.1.0"
 hilt = "2.51.1"
 #  keep in sync with * app/build.gradle.kts composeOptions.kotlinCompilerExtensionVersion
 #                    * com.google.devtools.ksp at the end of this file
@@ -56,16 +51,11 @@ room = "2.6.1"
 
 [libraries]
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugaring" }
-android-flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "android-flexbox" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
-androidx-cardView = { module = "androidx.cardview:cardview", version.ref = "androidx-cardView" }
-androidx-concurrentFuture = { module = "androidx.concurrent:concurrent-futures", version.ref = "androidx-concurrentFuture" }
-androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintLayout" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
-androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx-fragment" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidx-hilt" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
