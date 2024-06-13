@@ -186,22 +186,6 @@ class DavCollectionRepository @Inject constructor(
         dao.getPushCapableSyncCollections()
 
     /**
-     * Sets the flag for whether read-only should be enforced on the local collection
-     */
-    suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
-        dao.updateForceReadOnly(id, forceReadOnly)
-        notifyOnChangeListeners()
-    }
-
-    /**
-     * Whether or not the local collection should be synced with the server
-     */
-    suspend fun setSync(id: Long, forceReadOnly: Boolean) {
-        dao.updateSync(id, forceReadOnly)
-        notifyOnChangeListeners()
-    }
-
-    /**
      * Inserts or updates the collection. On update it will not update flag values ([Collection.sync],
      * [Collection.forceReadOnly]), but use the values of the already existing collection.
      *
@@ -227,12 +211,33 @@ class DavCollectionRepository @Inject constructor(
     }
 
     /**
+     * Sets the flag for whether read-only should be enforced on the local collection
+     */
+    suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
+        dao.updateForceReadOnly(id, forceReadOnly)
+        notifyOnChangeListeners()
+    }
+
+    /**
+     * Whether or not the local collection should be synced with the server
+     */
+    suspend fun setSync(id: Long, forceReadOnly: Boolean) {
+        dao.updateSync(id, forceReadOnly)
+        notifyOnChangeListeners()
+    }
+
+    suspend fun updatePushSubscription(id: Long, subscriptionUrl: String) {
+        dao.updatePushSubscription(id, subscriptionUrl)
+    }
+
+    /**
      * Deletes the collection locally
      */
     fun delete(collection: Collection) {
         dao.delete(collection)
         notifyOnChangeListeners()
     }
+
 
     // helpers
 

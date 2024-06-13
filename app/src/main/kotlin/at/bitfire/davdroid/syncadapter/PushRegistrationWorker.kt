@@ -29,12 +29,20 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.StringWriter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+/**
+ * Worker that registers push for all collections that support it.
+ * To be run as soon as a collection that supports push is changed (selected for sync status
+ * changes, or collection is created, deleted, etc).
+ *
+ * TODO Should run periodically, too. Not required for a first demonstration version.
+ */
 @Suppress("unused")
 @HiltWorker
 class PushRegistrationWorker @AssistedInject constructor(
@@ -90,8 +98,10 @@ class PushRegistrationWorker @AssistedInject constructor(
 
                     val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
                     DavCollection(httpClient, collection.url).post(xml) { response ->
-                        if (response.isSuccessful) {
-                            // TODO: Update Collection's pushSubscription and pushSubscriptionCreated
+                        if (response.isSuccessful) runBlocking {
+                            response.header("Location")?.let  { subscriptionUrl ->
+                                collectionRepository.updatePushSubscription(collection.id, subscriptionUrl)
+                            }
                         } else
                             Logger.log.warning("Couldn't register push for ${collection.url}: $response")
                     }
