@@ -1,7 +1,7 @@
 package at.bitfire.davdroid
 
 import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.syncadapter.PushRegistrationWorker
+import at.bitfire.davdroid.push.PushRegistrationWorker
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.Multibinds
