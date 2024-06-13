@@ -19,7 +19,6 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
@@ -53,10 +52,6 @@ class CollectionListRefresherTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-
-        // The test application is an instance of HiltTestApplication, which doesn't initialize notification channels.
-        // However, we need notification channels for the ongoing work notifications.
-        NotificationUtils.createChannels(context)
 
         // Initialize WorkManager for instrumentation tests.
         val config = Configuration.Builder()
