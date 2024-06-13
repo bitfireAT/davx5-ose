@@ -14,16 +14,10 @@ import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.PushRegistrationWorker
-import dagger.Module
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.components.SingletonComponent
-import dagger.hilt.testing.TestInstallIn
-import dagger.multibindings.Multibinds
 import io.mockk.every
 import io.mockk.mockkObject
 import okhttp3.mockwebserver.Dispatcher
@@ -720,15 +714,4 @@ class CollectionListRefresherTest {
         }
 
     }
-}
-
-@Module
-@TestInstallIn(
-    components = [SingletonComponent::class],
-    replaces = [PushRegistrationWorker.PushRegistrationWorkerModule::class]
-)
-abstract class FakePushRegistrationWorkerModule {
-    // Provides empty set of listeners
-    @Multibinds
-    abstract fun defaultOnChangeListeners(): Set<DavCollectionRepository.OnChangeListener>
 }
