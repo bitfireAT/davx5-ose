@@ -14,6 +14,10 @@ class DavServiceRepository @Inject constructor(
 
     private val dao = db.serviceDao()
 
+    fun get(id: Long): Service? = dao.get(id)
+
+    fun deleteAll() = dao.deleteAll()
+
     suspend fun deleteByAccount(accountName: String) {
         dao.deleteByAccount(accountName)
     }

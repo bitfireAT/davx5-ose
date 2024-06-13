@@ -23,6 +23,9 @@ class DavCollectionRepositoryTest {
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
+    lateinit var serviceRepository: DavServiceRepository
+
+    @Inject
     lateinit var db: AppDatabase
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -38,7 +41,7 @@ class DavCollectionRepositoryTest {
     @After
     fun cleanUp() {
         db.close()
-        db.serviceDao().deleteAll()
+        serviceRepository.deleteAll()
     }
 
     @Test
@@ -52,7 +55,7 @@ class DavCollectionRepositoryTest {
             )
         )
         val testObserver = mockk<DavCollectionRepository.OnChangeListener>(relaxed = true)
-        val collectionRepository = DavCollectionRepository(context, mutableSetOf(testObserver), db)
+        val collectionRepository = DavCollectionRepository(context, mutableSetOf(testObserver), serviceRepository, db)
 
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == false)
         verify(exactly = 0) {
@@ -70,7 +73,7 @@ class DavCollectionRepositoryTest {
 
     private fun createTestService(serviceType: String) : Service? {
         val service = Service(id=0, accountName="test", type=serviceType, principal = null)
-        val serviceId = db.serviceDao().insertOrReplace(service)
-        return db.serviceDao().get(serviceId)
+        val serviceId = serviceRepository.insertOrReplace(service)
+        return serviceRepository.get(serviceId)
     }
 }

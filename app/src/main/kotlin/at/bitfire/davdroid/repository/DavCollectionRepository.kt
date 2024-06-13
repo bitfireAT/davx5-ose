@@ -51,12 +51,12 @@ import javax.inject.Inject
 class DavCollectionRepository @Inject constructor(
     @ApplicationContext val context: Context,
     defaultListeners: Set<@JvmSuppressWildcards OnChangeListener>,
+    val serviceRepository: DavServiceRepository,
     db: AppDatabase
 ) {
 
     private val listeners = Collections.synchronizedSet(defaultListeners.toMutableSet())
 
-    private val serviceDao = db.serviceDao()
     private val dao = db.collectionDao()
 
     /**
@@ -162,7 +162,7 @@ class DavCollectionRepository @Inject constructor(
 
     /** Deletes the given collection from the server and the database. */
     suspend fun deleteRemote(collection: Collection) {
-        val service = serviceDao.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
+        val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
         HttpClient.Builder(context, AccountSettings(context, account))
@@ -181,21 +181,9 @@ class DavCollectionRepository @Inject constructor(
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
-    /**
-     * Sets the flag for whether read-only should be enforced on the local collection
-     */
-    suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
-        dao.updateForceReadOnly(id, forceReadOnly)
-        notifyOnChangeListeners()
-    }
-
-    /**
-     * Whether or not the local collection should be synced with the server
-     */
-    suspend fun setSync(id: Long, forceReadOnly: Boolean) {
-        dao.updateSync(id, forceReadOnly)
-        notifyOnChangeListeners()
-    }
+    /** Returns all collections that are both selected for synchronization and push-capable. */
+    suspend fun getSyncEnabledAndPushCapable(): List<Collection> =
+        dao.getPushCapableSyncCollections()
 
     /**
      * Inserts or updates the collection. On update it will not update flag values ([Collection.sync],
@@ -223,12 +211,33 @@ class DavCollectionRepository @Inject constructor(
     }
 
     /**
+     * Sets the flag for whether read-only should be enforced on the local collection
+     */
+    suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
+        dao.updateForceReadOnly(id, forceReadOnly)
+        notifyOnChangeListeners()
+    }
+
+    /**
+     * Whether or not the local collection should be synced with the server
+     */
+    suspend fun setSync(id: Long, forceReadOnly: Boolean) {
+        dao.updateSync(id, forceReadOnly)
+        notifyOnChangeListeners()
+    }
+
+    suspend fun updatePushSubscription(id: Long, subscriptionUrl: String) {
+        dao.updatePushSubscription(id, subscriptionUrl)
+    }
+
+    /**
      * Deletes the collection locally
      */
     fun delete(collection: Collection) {
         dao.delete(collection)
         notifyOnChangeListeners()
     }
+
 
     // helpers
 
@@ -374,6 +383,7 @@ class DavCollectionRepository @Inject constructor(
     @Module
     @InstallIn(SingletonComponent::class)
     abstract class DavCollectionRepositoryModule {
+        // Provides empty set of listeners
         @Multibinds abstract fun defaultOnChangeListeners(): Set<OnChangeListener>
     }
 

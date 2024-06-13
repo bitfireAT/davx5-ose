@@ -62,6 +62,13 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVTODO AND sync ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
     fun getSyncTaskLists(serviceId: Long): List<Collection>
 
+    /**
+     * Get a list of collections that are both sync enabled and push capable (supportsWebPush and
+     * pushTopic is available).
+     */
+    @Query("SELECT * FROM collection WHERE sync AND supportsWebPush AND pushTopic IS NOT NULL")
+    suspend fun getPushCapableSyncCollections(): List<Collection>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(collection: Collection): Long
 
@@ -73,6 +80,9 @@ interface CollectionDao {
 
     @Query("UPDATE collection SET forceReadOnly=:forceReadOnly WHERE id=:id")
     suspend fun updateForceReadOnly(id: Long, forceReadOnly: Boolean)
+
+    @Query("UPDATE collection SET pushSubscription=:pushSubscription, pushSubscriptionCreated=:updatedAt WHERE id=:id")
+    suspend fun updatePushSubscription(id: Long, pushSubscription: String, updatedAt: Long = System.currentTimeMillis())
 
     @Query("UPDATE collection SET sync=:sync WHERE id=:id")
     suspend fun updateSync(id: Long, sync: Boolean)
