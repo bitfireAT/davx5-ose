@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -84,11 +83,6 @@ class WelcomePage: IntroPage {
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(horizontal = 32.dp)
-                    .padding(
-                        bottom = dimensionResource(
-                            com.github.appintro.R.dimen.appintro2_bottombar_height
-                        )
-                    )
             )
 
             Spacer(modifier = Modifier.weight(0.1f))
@@ -128,12 +122,7 @@ class WelcomePage: IntroPage {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = MaterialTheme.colorScheme.primary)
-                    .padding(
-                        bottom = dimensionResource(
-                            com.github.appintro.R.dimen.appintro2_bottombar_height
-                        )
-                    ),
+                    .background(color = MaterialTheme.colorScheme.primary),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
