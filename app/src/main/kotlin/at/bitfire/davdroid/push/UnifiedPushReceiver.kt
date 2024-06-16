@@ -23,15 +23,24 @@ class UnifiedPushReceiver: MessagingReceiver() {
     @Inject
     lateinit var preferenceRepository: PreferenceRepository
 
-    override fun onMessage(context: Context, message: ByteArray, instance: String) {
-        for (account in accountRepository.getAll())
-            OneTimeSyncWorker.enqueue(context, account, CalendarContract.AUTHORITY)
-    }
-
     override fun onNewEndpoint(context: Context, endpoint: String, instance: String) {
+        // remember new endpoint
         preferenceRepository.unifiedPushEndpoint(endpoint)
 
+        // register new endpoint at CalDAV/CardDAV servers
         PushRegistrationWorker.enqueue(context)
+    }
+
+    override fun onUnregistered(context: Context, instance: String) {
+        // reset known endpoint
+        preferenceRepository.unifiedPushEndpoint(null)
+    }
+
+    override fun onMessage(context: Context, message: ByteArray, instance: String) {
+        // received WebDAV Push notification, sync all accounts
+        // TODO: sync only affected account / collection
+        for (account in accountRepository.getAll())
+            OneTimeSyncWorker.enqueue(context, account, CalendarContract.AUTHORITY)
     }
 
 }

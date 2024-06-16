@@ -23,7 +23,7 @@ class PreferenceRepository @Inject constructor(
 ) {
 
     companion object {
-        const val UNIFIED_PUSH_ENDPOINT = "unifiedPushEndpoint"
+        const val UNIFIED_PUSH_ENDPOINT = "unified_push_endpoint"
     }
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -45,12 +45,14 @@ class PreferenceRepository @Inject constructor(
         preferences.getBoolean(Logger.LOG_TO_FILE, false)
     }
 
-    // TODO constants for "unifiedPushEndpoint"
     fun unifiedPushEndpoint() =
         preferences.getString(UNIFIED_PUSH_ENDPOINT, null)
 
-    fun unifiedPushEndpoint(endpoint: String) {
-        preferences.edit().putString(UNIFIED_PUSH_ENDPOINT, endpoint).apply()
+    fun unifiedPushEndpoint(endpoint: String?) {
+        preferences
+            .edit()
+            .putString(UNIFIED_PUSH_ENDPOINT, endpoint)
+            .apply()
     }
 
 
