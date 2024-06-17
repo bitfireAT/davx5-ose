@@ -20,8 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.composable.ButtonWithIcon
 import at.bitfire.davdroid.ui.composable.PositionIndicator
@@ -69,7 +71,7 @@ fun IntroScreen(
                 } else {
                     Icons.AutoMirrored.Default.ArrowForward
                 },
-                contentDescription = null,
+                contentDescription = stringResource(R.string.intro_next),
                 modifier = Modifier
                     .padding(end = 16.dp)
                     .align(Alignment.CenterEnd)
