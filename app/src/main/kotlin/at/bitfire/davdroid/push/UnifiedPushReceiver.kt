@@ -31,6 +31,10 @@ class UnifiedPushReceiver: MessagingReceiver() {
     @Inject
     lateinit var preferenceRepository: PreferenceRepository
 
+    @Inject
+    lateinit var parsePushMessage: PushMessageParser
+
+
     override fun onNewEndpoint(context: Context, endpoint: String, instance: String) {
         // remember new endpoint
         preferenceRepository.unifiedPushEndpoint(endpoint)
@@ -45,26 +49,11 @@ class UnifiedPushReceiver: MessagingReceiver() {
     }
 
     override fun onMessage(context: Context, message: ByteArray, instance: String) {
-        // parse push notification
         val messageXml = message.toString(Charsets.UTF_8)
-        /*val messageXml = "<push-message xmlns=\"DAV:Push\">\n" +
-                "  <topic>O7M1nQ7cKkKTKsoS_j6Z3w</topic>\n" +
-                "</push-message>"*/
-
         Logger.log.log(Level.INFO, "Received push message", messageXml)
-        var topic: String? = null
 
-        val parser = XmlUtils.newPullParser()
-        parser.setInput(StringReader(messageXml))
-        var eventType = parser.eventType
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-            XmlUtils.processTag(parser, PushMessage.NAME) {
-                val pushMessage = PushMessage.Factory.create(parser)
-                topic = pushMessage.topic
-            }
-
-            eventType = parser.next()
-        }
+        // parse push notification
+        val topic = parsePushMessage(messageXml)
 
         // sync affected collection
         if (topic != null) {
