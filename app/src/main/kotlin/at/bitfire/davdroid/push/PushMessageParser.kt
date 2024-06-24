@@ -6,7 +6,10 @@ package at.bitfire.davdroid.push
 
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.property.push.PushMessage
+import at.bitfire.davdroid.log.Logger
+import org.xmlpull.v1.XmlPullParserException
 import java.io.StringReader
+import java.util.logging.Level
 import javax.inject.Inject
 
 class PushMessageParser @Inject constructor() {
@@ -20,11 +23,15 @@ class PushMessageParser @Inject constructor() {
         var topic: String? = null
 
         val parser = XmlUtils.newPullParser()
-        parser.setInput(StringReader(message))
+        try {
+            parser.setInput(StringReader(message))
 
-        XmlUtils.processTag(parser, PushMessage.NAME) {
-            val pushMessage = PushMessage.Factory.create(parser)
-            topic = pushMessage.topic
+            XmlUtils.processTag(parser, PushMessage.NAME) {
+                val pushMessage = PushMessage.Factory.create(parser)
+                topic = pushMessage.topic
+            }
+        } catch (e: XmlPullParserException) {
+            Logger.log.log(Level.WARNING, "Couldn't parse push message", e)
         }
 
         return topic

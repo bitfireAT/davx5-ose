@@ -5,11 +5,17 @@
 package at.bitfire.davdroid.push
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class PushMessageParserTest {
 
     private val parse = PushMessageParser()
+
+    @Test
+    fun testInvalidXml() {
+        assertNull(parse("Non-XML content"))
+    }
 
     @Test
     fun testWithXmlDeclAndTopic() {
