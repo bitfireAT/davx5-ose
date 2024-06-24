@@ -12,9 +12,9 @@ import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.Composable
 import at.bitfire.davdroid.settings.SettingsManager
-import javax.inject.Inject
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel.Companion.HINT_AUTOSTART_PERMISSION
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel.Companion.HINT_BATTERY_OPTIMIZATIONS
+import javax.inject.Inject
 
 class BatteryOptimizationsPage @Inject constructor(
     private val application: Application,

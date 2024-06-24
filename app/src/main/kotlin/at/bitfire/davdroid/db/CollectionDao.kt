@@ -32,8 +32,8 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
     fun getByServiceAndType(serviceId: Long, type: String): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE pushTopic=:topic")
-    fun getByPushTopic(topic: String): Collection?
+    @Query("SELECT * FROM collection WHERE pushTopic=:topic AND sync")
+    fun getSyncableByPushTopic(topic: String): Collection?
 
     @Query("SELECT COUNT(*) FROM collection WHERE serviceId=:serviceId AND type=:type")
     suspend fun anyOfType(serviceId: Long, type: String): Boolean
