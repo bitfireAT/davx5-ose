@@ -125,7 +125,7 @@ class PushRegistrationWorker @AssistedInject constructor(
         Logger.log.info("Running push registration worker")
 
         preferenceRepository.unifiedPushEndpoint()?.let { endpoint ->
-            for (collection in collectionRepository.getSyncEnabledAndPushCapable()) {
+            for (collection in collectionRepository.getSyncableAndPushCapable()) {
                 Logger.log.info("Registering push for ${collection.url}")
                 val service = serviceRepository.get(collection.serviceId) ?: continue
                 val account = Account(service.accountName, applicationContext.getString(R.string.account_type))

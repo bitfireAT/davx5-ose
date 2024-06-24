@@ -179,10 +179,12 @@ class DavCollectionRepository @Inject constructor(
             }
     }
 
+    fun getSyncableByTopic(topic: String) = dao.getByPushTopic(topic)
+
     fun getFlow(id: Long) = dao.getFlow(id)
 
     /** Returns all collections that are both selected for synchronization and push-capable. */
-    suspend fun getSyncEnabledAndPushCapable(): List<Collection> =
+    suspend fun getSyncableAndPushCapable(): List<Collection> =
         dao.getPushCapableSyncCollections()
 
     /**

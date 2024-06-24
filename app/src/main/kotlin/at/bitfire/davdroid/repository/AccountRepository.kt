@@ -69,7 +69,7 @@ class AccountRepository @Inject constructor(
      * @return account if account creation was successful; null otherwise (for instance because an account with this name already exists)
      */
     fun create(accountName: String, credentials: Credentials?, config: DavResourceFinder.Configuration, groupMethod: GroupMethod): Account? {
-        val account = account(accountName)
+        val account = fromName(accountName)
 
         // create Android account
         val userData = AccountSettings.initialUserData(credentials)
@@ -135,7 +135,7 @@ class AccountRepository @Inject constructor(
 
     suspend fun delete(accountName: String): Boolean {
         // remove account
-        val future = accountManager.removeAccount(account(accountName), null, null, null)
+        val future = accountManager.removeAccount(fromName(accountName), null, null, null)
         return try {
             // wait for operation to complete
             withContext(Dispatchers.Default) {
@@ -162,7 +162,10 @@ class AccountRepository @Inject constructor(
         else
             accountManager
                 .getAccountsByType(accountType)
-                .contains(Account(accountName, accountType))
+                .any { it.name == accountName }
+
+    fun fromName(accountName: String) =
+        Account(accountName, accountType)
 
     fun getAll(): Array<Account> = accountManager.getAccountsByType(accountType)
 
@@ -191,8 +194,8 @@ class AccountRepository @Inject constructor(
      * @throws Exception (or sub-classes) on other errors
      */
     suspend fun rename(oldName: String, newName: String) {
-        val oldAccount = account(oldName)
-        val newAccount = account(newName)
+        val oldAccount = fromName(oldName)
+        val newAccount = fromName(newName)
 
         // check whether new account name already exists
         if (accountManager.getAccountsByType(context.getString(R.string.account_type)).contains(newAccount))
@@ -285,8 +288,6 @@ class AccountRepository @Inject constructor(
 
 
     // helpers
-
-    private fun account(accountName: String) = Account(accountName, accountType)
 
     private fun insertService(accountName: String, type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
         // insert service

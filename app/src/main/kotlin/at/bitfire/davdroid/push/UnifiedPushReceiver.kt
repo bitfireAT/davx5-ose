@@ -5,17 +5,14 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
-import at.bitfire.dav4jvm.XmlUtils
-import at.bitfire.dav4jvm.property.push.PushMessage
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
 import org.unifiedpush.android.connector.MessagingReceiver
-import org.xmlpull.v1.XmlPullParser
-import java.io.StringReader
 import java.util.logging.Level
 import javax.inject.Inject
 
@@ -27,6 +24,9 @@ class UnifiedPushReceiver: MessagingReceiver() {
 
     @Inject
     lateinit var collectionRepository: DavCollectionRepository
+
+    @Inject
+    lateinit var serviceRepository: DavServiceRepository
 
     @Inject
     lateinit var preferenceRepository: PreferenceRepository
@@ -59,8 +59,14 @@ class UnifiedPushReceiver: MessagingReceiver() {
         if (topic != null) {
             Logger.log.info("Got push notification for topic $topic")
 
-            // TODO fetch collection by topic
-            //collectionRepository.getByTopic()
+            // Sync all authorities of account that the collection belongs to
+            // Later: only sync affected collection and authorities
+            collectionRepository.getSyncableByTopic(topic)?.let { collection ->
+                serviceRepository.get(collection.serviceId)?.let { service ->
+                    val account = accountRepository.fromName(service.accountName)
+                    OneTimeSyncWorker.enqueueAllAuthorities(context, account)
+                }
+            }
 
         } else {
             Logger.log.warning("Got push message without topic, syncing all accounts")
