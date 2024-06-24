@@ -48,6 +48,10 @@ class PreferenceRepository @Inject constructor(
     fun unifiedPushEndpoint() =
         preferences.getString(UNIFIED_PUSH_ENDPOINT, null)
 
+    fun unifiedPushEndpointFlow() = observeAsFlow(UNIFIED_PUSH_ENDPOINT) {
+        unifiedPushEndpoint()
+    }
+
     fun unifiedPushEndpoint(endpoint: String?) {
         preferences
             .edit()
