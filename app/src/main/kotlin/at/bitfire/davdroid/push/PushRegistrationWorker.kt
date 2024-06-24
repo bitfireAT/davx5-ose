@@ -124,7 +124,9 @@ class PushRegistrationWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         Logger.log.info("Running push registration worker")
 
-        preferenceRepository.unifiedPushEndpoint()?.let { endpoint ->
+        val endpoint = preferenceRepository.unifiedPushEndpoint()
+
+        if (endpoint != null)
             for (collection in collectionRepository.getSyncableAndPushCapable()) {
                 Logger.log.info("Registering push for ${collection.url}")
                 val service = serviceRepository.get(collection.serviceId) ?: continue
@@ -132,7 +134,8 @@ class PushRegistrationWorker @AssistedInject constructor(
 
                 requestPushRegistration(collection, account, endpoint)
             }
-        }
+        else
+            Logger.log.info("No UnifiedPush endpoint configured")
 
         return Result.success()
     }
