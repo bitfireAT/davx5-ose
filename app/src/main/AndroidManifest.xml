@@ -288,6 +288,16 @@
                 android:resource="@xml/debug_paths" />
         </provider>
 
+        <!-- UnifiedPush receiver -->
+        <receiver android:exported="true"  android:enabled="true"  android:name=".push.UnifiedPushReceiver" tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="org.unifiedpush.android.connector.MESSAGE"/>
+                <action android:name="org.unifiedpush.android.connector.UNREGISTERED"/>
+                <action android:name="org.unifiedpush.android.connector.NEW_ENDPOINT"/>
+                <action android:name="org.unifiedpush.android.connector.REGISTRATION_FAILED"/>
+            </intent-filter>
+        </receiver>
+
         <!-- Widgets -->
         <receiver android:name=".ui.widget.SyncButtonWidgetReceiver"
             android:exported="true">

@@ -12,10 +12,10 @@ import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class TasksModel @Inject constructor(

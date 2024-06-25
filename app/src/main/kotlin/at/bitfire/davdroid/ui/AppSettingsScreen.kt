@@ -32,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +51,7 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
+import org.unifiedpush.android.connector.UnifiedPush
 
 @Composable
 fun AppSettingsScreen(
@@ -92,9 +94,10 @@ fun AppSettingsScreen(
             onThemeSelected = model::updateTheme,
             onResetHints = model::resetHints,
 
-            // Integration (Tasks)
+            // Integration (Tasks and Push)
             tasksAppName = model.appName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.icon.collectAsStateWithLifecycle(null).value,
+            pushEndpoint = model.pushEndpoint.collectAsStateWithLifecycle(null).value,
             onNavTasksScreen = onNavTasksScreen
         )
     }
@@ -133,6 +136,7 @@ fun AppSettingsScreen(
     // AppSettings Integration
     tasksAppName: String,
     tasksAppIcon: Drawable?,
+    pushEndpoint: String?,
     onNavTasksScreen: () -> Unit,
 
     onShowNotificationSettings: () -> Unit,
@@ -219,6 +223,7 @@ fun AppSettingsScreen(
                 AppSettings_Integration(
                     appName = tasksAppName,
                     icon = tasksAppIcon,
+                    pushEndpoint = pushEndpoint,
                     onNavTasksScreen = onNavTasksScreen
                 )
             }
@@ -254,6 +259,7 @@ fun AppSettingsScreen_Preview() {
             onResetHints = {},
             tasksAppName = "No tasks app",
             tasksAppIcon = null,
+            pushEndpoint = null,
             onNavTasksScreen = {}
         )
     }
@@ -464,6 +470,7 @@ fun AppSettings_UserInterface(
 @Composable
 fun AppSettings_Integration(
     appName: String,
+    pushEndpoint: String?,
     icon: Drawable? = null,
     onNavTasksScreen: () -> Unit = {}
 ) {
@@ -481,5 +488,15 @@ fun AppSettings_Integration(
         },
         summary = appName,
         onClick = onNavTasksScreen
+    )
+
+    val context = LocalContext.current
+
+    Setting(
+        name = "UnifiedPush",
+        summary = pushEndpoint ?: stringResource(R.string.app_settings_unifiedpush_no_endpoint),
+        onClick = {
+            UnifiedPush.registerAppWithDialog(context)
+        }
     )
 }

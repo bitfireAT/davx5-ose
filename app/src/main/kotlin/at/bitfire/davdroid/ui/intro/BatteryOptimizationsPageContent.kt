@@ -35,8 +35,8 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
-import java.util.Locale
 import org.apache.commons.text.WordUtils
+import java.util.Locale
 
 @Composable
 fun BatteryOptimizationsPageContent(

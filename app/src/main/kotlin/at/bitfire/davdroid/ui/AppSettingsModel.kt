@@ -101,4 +101,8 @@ class AppSettingsModel @Inject constructor(
     val icon = appInfoFlow.map { it?.loadIcon(pm) }
 
 
+    // push
+
+    val pushEndpoint = preference.unifiedPushEndpointFlow()
+
 }

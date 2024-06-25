@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui.intro
 
 import android.app.Application
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.ui.PermissionsModel
 import at.bitfire.davdroid.ui.PermissionsScreen
 import at.bitfire.davdroid.util.PermissionUtils

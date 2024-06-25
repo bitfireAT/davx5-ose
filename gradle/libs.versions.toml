@@ -20,7 +20,7 @@ androidx-test-junit = "1.1.5"
 androidx-work = "2.9.0"
 appIntro = "7.0.0-beta02"
 bitfire-cert4android = "f1cc9b9ca3"
-bitfire-dav4jvm = "fa173ab215"
+bitfire-dav4jvm = "b8be778202"
 bitfire-ical4android = "ba5a013d69"
 bitfire-vcard4android = "03a37a8284"
 commons-collections = "4.4"
@@ -48,6 +48,7 @@ mockk = "1.13.11"
 okhttp = "4.12.0"
 openid-appauth = "0.11.1"
 room = "2.6.1"
+unifiedpush = "2.4.0"
 
 [libraries]
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugaring" }
@@ -110,6 +111,7 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
+unifiedpush = { module = "com.github.UnifiedPush:android-connector", version.ref = "unifiedpush" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-agp" }

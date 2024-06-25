@@ -1,4 +1,8 @@
-package at.bitfire.davdroid.syncadapter
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.push
 
 import android.accounts.Account
 import android.content.Context
@@ -22,6 +26,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import dagger.Binds
 import dagger.Module
@@ -51,6 +56,7 @@ class PushRegistrationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val collectionRepository: DavCollectionRepository,
+    private val preferenceRepository: PreferenceRepository,
     private val serviceRepository: DavServiceRepository
 ) : CoroutineWorker(context, workerParameters) {
 
@@ -118,16 +124,18 @@ class PushRegistrationWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         Logger.log.info("Running push registration worker")
 
-        // We will get this endpoint from UnifiedPush:
-        val sampleEndpoint = "https://endpoint.example.com"
+        val endpoint = preferenceRepository.unifiedPushEndpoint()
 
-        for (collection in collectionRepository.getSyncEnabledAndPushCapable()) {
-            Logger.log.info("Registering push for ${collection.url}")
-            val service = serviceRepository.get(collection.serviceId) ?: continue
-            val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
+        if (endpoint != null)
+            for (collection in collectionRepository.getSyncableAndPushCapable()) {
+                Logger.log.info("Registering push for ${collection.url}")
+                val service = serviceRepository.get(collection.serviceId) ?: continue
+                val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
 
-            requestPushRegistration(collection, account, sampleEndpoint)
-        }
+                requestPushRegistration(collection, account, endpoint)
+            }
+        else
+            Logger.log.info("No UnifiedPush endpoint configured")
 
         return Result.success()
     }

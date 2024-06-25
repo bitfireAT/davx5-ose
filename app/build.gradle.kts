@@ -198,6 +198,7 @@ dependencies {
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)
     implementation(libs.openid.appauth)
+    implementation(libs.unifiedpush)
 
     // for tests
     androidTestImplementation(libs.androidx.arch.core.testing)
