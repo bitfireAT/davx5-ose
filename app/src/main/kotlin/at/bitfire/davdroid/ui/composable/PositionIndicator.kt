@@ -10,12 +10,12 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -26,7 +26,8 @@ fun PositionIndicator(
     modifier: Modifier = Modifier,
     selectedIndicatorColor: Color = MaterialTheme.colorScheme.tertiary,
     unselectedIndicatorColor: Color = contentColorFor(selectedIndicatorColor),
-    indicatorSize: Float = 20f
+    indicatorSize: Float = 20f,
+    indicatorPadding: Float = 20f
 ) {
     val selectedPosition by animateFloatAsState(
         targetValue = index.toFloat(),
@@ -34,27 +35,34 @@ fun PositionIndicator(
     )
 
     Canvas(modifier = modifier) {
-        val padding = size.width / (max + 1)
+        // idx * indicatorSize * 2 + idx * indicatorPadding + indicatorSize
+        // idx * (indicatorSize * 2 + indicatorPadding) + indicatorSize
+        val padding = indicatorSize * 2 + indicatorPadding
 
-        for (idx in 0 until max) {
+        val totalWidth = indicatorSize * 2 * max + indicatorPadding * (max - 1)
+        translate(
+            left = size.width / 2 - totalWidth / 2
+        ) {
+            for (idx in 0 until max) {
+                drawCircle(
+                    color = unselectedIndicatorColor,
+                    radius = indicatorSize,
+                    center = Offset(
+                        x = idx * padding + indicatorSize,
+                        y = size.height / 2
+                    )
+                )
+            }
+
             drawCircle(
-                color = unselectedIndicatorColor,
+                color = selectedIndicatorColor,
                 radius = indicatorSize,
                 center = Offset(
-                    x = (idx + 1) * padding,
+                    x = selectedPosition * padding + indicatorSize,
                     y = size.height / 2
                 )
             )
         }
-
-        drawCircle(
-            color = selectedIndicatorColor,
-            radius = indicatorSize,
-            center = Offset(
-                x = (selectedPosition + 1) * padding,
-                y = size.height / 2
-            )
-        )
     }
 }
 
