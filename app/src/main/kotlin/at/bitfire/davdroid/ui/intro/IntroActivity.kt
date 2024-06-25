@@ -64,9 +64,7 @@ class IntroActivity : AppCompatActivity() {
      */
     object Contract: ActivityResultContract<Unit?, Boolean>() {
         override fun createIntent(context: Context, input: Unit?): Intent =
-            Intent(context, IntroActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
+            Intent(context, IntroActivity::class.java)
 
         override fun parseResult(resultCode: Int, intent: Intent?): Boolean {
             return resultCode == Activity.RESULT_CANCELED
