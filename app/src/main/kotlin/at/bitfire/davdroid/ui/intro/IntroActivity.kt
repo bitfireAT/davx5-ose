@@ -8,98 +8,54 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.activity.addCallback
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.dimensionResource
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModel
-import at.bitfire.davdroid.log.Logger
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.rememberCoroutineScope
 import at.bitfire.davdroid.ui.AppTheme
-import at.bitfire.davdroid.ui.M3ColorScheme
-import com.github.appintro.AppIntro2
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class IntroActivity : AppIntro2() {
+@OptIn(ExperimentalFoundationApi::class)
+class IntroActivity : AppCompatActivity() {
 
-    val model by viewModels<Model>()
-    private var currentSlide = 0
+    val model by viewModels<IntroModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model.pages.forEachIndexed { idx, _ ->
-            addSlide(PageFragment().apply {
-                arguments = Bundle(1).apply {
-                    putInt(PageFragment.ARG_PAGE_IDX, idx)
-                }
-            })
-        }
+        val pages = model.pages
 
-        setBarColor(M3ColorScheme.primaryLight.toArgb())
-        isSkipButtonEnabled = false
+        setContent {
+            AppTheme {
+                val scope = rememberCoroutineScope()
+                val pagerState = rememberPagerState { pages.size }
 
-        onBackPressedDispatcher.addCallback(this) {
-            if (currentSlide == 0) {
-                setResult(Activity.RESULT_CANCELED)
-                finish()
-            } else {
-                goToPreviousSlide()
-            }
-        }
-    }
-
-    override fun onPageSelected(position: Int) {
-        super.onPageSelected(position)
-        currentSlide = position
-    }
-
-    override fun onDonePressed(currentFragment: Fragment?) {
-        super.onDonePressed(currentFragment)
-        setResult(Activity.RESULT_OK)
-        finish()
-    }
-
-
-    @AndroidEntryPoint
-    class PageFragment: Fragment() {
-
-        companion object {
-            const val ARG_PAGE_IDX = "page"
-        }
-
-        val model by activityViewModels<Model>()
-        val page by lazy { model.pages[requireArguments().getInt(ARG_PAGE_IDX)] }
-
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            ComposeView(requireActivity()).apply {
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    AppTheme {
-                        Surface(Modifier.fillMaxSize()) {
-                            Box(Modifier.padding(bottom = dimensionResource(com.github.appintro.R.dimen.appintro2_bottombar_height))) {
-                                page.ComposePage()
-                            }
-                        }
+                BackHandler {
+                    if (pagerState.settledPage == 0) {
+                        setResult(Activity.RESULT_CANCELED)
+                        finish()
+                    } else scope.launch {
+                        pagerState.animateScrollToPage(pagerState.settledPage - 1)
                     }
                 }
-            }
 
+                IntroScreen(
+                    pages = pages,
+                    pagerState = pagerState,
+                    onDonePressed = {
+                        setResult(Activity.RESULT_OK)
+                        finish()
+                    }
+                )
+            }
+        }
     }
 
 
@@ -113,51 +69,6 @@ class IntroActivity : AppIntro2() {
         override fun parseResult(resultCode: Int, intent: Intent?): Boolean {
             return resultCode == Activity.RESULT_CANCELED
         }
-    }
-
-
-    @HiltViewModel
-    class Model @Inject constructor(
-        introPageFactory: IntroPageFactory
-    ): ViewModel() {
-
-        private val introPages = introPageFactory.introPages
-
-        private var _pages: List<IntroPage>? = null
-        val pages: List<IntroPage>
-            @Synchronized
-            get() {
-                _pages?.let { return it }
-
-                val newPages = calculatePages()
-                _pages = newPages
-
-                return newPages
-            }
-
-        private fun calculatePages(): List<IntroPage> {
-            for (page in introPages)
-                Logger.log.fine("Found intro page ${page::class.java} with order ${page.getShowPolicy()}")
-
-            val activePages: Map<IntroPage, IntroPage.ShowPolicy> = introPages
-                .associateWith { page ->
-                    page.getShowPolicy().also { policy ->
-                        Logger.log.fine("IntroActivity: found intro page ${page::class.java} with $policy")
-                    }
-                }
-                .filterValues { it != IntroPage.ShowPolicy.DONT_SHOW }
-
-            val anyShowAlways = activePages.values.any { it == IntroPage.ShowPolicy.SHOW_ALWAYS }
-            return if (anyShowAlways) {
-                val pages = mutableListOf<IntroPage>()
-                activePages.filterValues { it != IntroPage.ShowPolicy.DONT_SHOW }.forEach { page, _ ->
-                    pages += page
-                }
-                pages
-            } else
-                emptyList()
-        }
-
     }
 
 }

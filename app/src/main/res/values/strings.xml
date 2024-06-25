@@ -60,6 +60,7 @@
     <string name="intro_open_source_text">We\'re happy that you use %s, which is open-source software. Development, maintenance and support are hard work. Please consider contributing (there are many ways) or a donation. It would be highly appreciated!</string>
     <string name="intro_open_source_details">How to contribute/donate</string>
     <string name="intro_open_source_dont_show">Don\'t show in the near future</string>
+    <string name="intro_next">Next</string>
 
     <!-- PermissionsActivity -->
     <string name="permissions_title">Permissions</string>
