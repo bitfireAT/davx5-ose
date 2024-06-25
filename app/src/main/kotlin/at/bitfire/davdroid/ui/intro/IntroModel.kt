@@ -12,22 +12,16 @@ class IntroModel @Inject constructor(
 
     private val introPages = introPageFactory.introPages
 
-    private var _pages: List<IntroPage>? = null
-    val pages: List<IntroPage>
-        @Synchronized
-        get() {
-            _pages?.let { return it }
+    val pages: List<IntroPage> by lazy {
+        calculatePages()
+    }
 
-            val newPages = calculatePages()
-            _pages = newPages
-
-            return newPages
-        }
 
     private fun calculatePages(): List<IntroPage> {
         for (page in introPages)
             Logger.log.fine("Found intro page ${page::class.java} with order ${page.getShowPolicy()}")
 
+        // Calculate which intro pages shall be shown
         val activePages: Map<IntroPage, IntroPage.ShowPolicy> = introPages
             .associateWith { page ->
                 page.getShowPolicy().also { policy ->
@@ -36,6 +30,7 @@ class IntroModel @Inject constructor(
             }
             .filterValues { it != IntroPage.ShowPolicy.DONT_SHOW }
 
+        // Show intro screen when there's at least one page that shall [always] be shown
         val anyShowAlways = activePages.values.any { it == IntroPage.ShowPolicy.SHOW_ALWAYS }
         return if (anyShowAlways) {
             val pages = mutableListOf<IntroPage>()
@@ -46,4 +41,5 @@ class IntroModel @Inject constructor(
         } else
             emptyList()
     }
+
 }
