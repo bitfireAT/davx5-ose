@@ -73,9 +73,6 @@ jobs:
           path: ~/.config/.android/avd
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
-      - name: Remove cached system image
-        run: rm -rf /usr/local/lib/android/sdk/system-images/android-34/aosp_atd/x86_64
-
       - name: Run device tests
         run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon app:virtualCheck
 
