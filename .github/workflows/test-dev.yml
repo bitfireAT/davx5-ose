@@ -74,7 +74,7 @@ jobs:
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
       - name: Run device tests
-        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon app:virtualCheck
+        run: ./gradlew --no-build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon app:virtualCheck
 
       - name: Create incremental build cache
         if: ${{ env.is_main_branch }}
