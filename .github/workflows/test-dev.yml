@@ -74,7 +74,7 @@ jobs:
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
       - name: Run device tests
-        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon app:virtualCheck -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=180 -Pandroid.experimental.androidTest.numManagedDeviceShards=1 -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
+        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon app:cleanManagedDevices app:virtualCheck -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=180 -Pandroid.experimental.androidTest.numManagedDeviceShards=1 -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
 
       - name: Create incremental build cache
         if: ${{ env.is_main_branch }}
