@@ -39,7 +39,7 @@ jobs:
   # generates the build caches because it uses more gradle dependencies
   test_on_emulator:
     name: Tests with emulator
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-4-cores
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -74,7 +74,7 @@ jobs:
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
       - name: Run device tests
-        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=180 app:virtualCheck
+        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon app:virtualCheck
 
       - name: Create incremental build cache
         if: ${{ env.is_main_branch }}
