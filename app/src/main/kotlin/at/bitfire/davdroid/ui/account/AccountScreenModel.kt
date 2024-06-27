@@ -79,7 +79,7 @@ class AccountScreenModel @AssistedInject constructor(
         refreshSettingsSignal.postValue(Unit)
     }
 
-    private val cardDavSvc = serviceRepository
+    val cardDavSvc = serviceRepository
         .getCardDavServiceFlow(account.name)
         .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Eagerly)
     private val bindableAddressBookHomesets = getBindableHomesetsFromServiceUseCase(cardDavSvc)
@@ -93,7 +93,7 @@ class AccountScreenModel @AssistedInject constructor(
     )
     val addressBooksPager = getServiceCollectionPagerUseCase(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
 
-    private val calDavSvc = serviceRepository
+    val calDavSvc = serviceRepository
         .getCalDavServiceFlow(account.name)
         .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Eagerly)
     private val bindableCalendarHomesets = getBindableHomesetsFromServiceUseCase(calDavSvc)
