@@ -20,10 +20,12 @@ jobs:
           java-version: 17
 
       # See https://community.gradle.org/github-actions/docs/setup-gradle/ for more information
-      - uses: gradle/actions/setup-gradle@v3    # creates build cache when on main branch
+      - uses: gradle/actions/setup-gradle@v3            # creates build cache when on main branch
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
-          gradle-home-cache-cleanup: true       # clean up unused files
+          gradle-home-cache-cleanup: true               # clean up unused files
+          dependency-graph: generate-and-submit         # submit Github Dependency Graph info
+          dependency-graph-continue-on-failure: false
 
       - run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:assembleDebug
 
