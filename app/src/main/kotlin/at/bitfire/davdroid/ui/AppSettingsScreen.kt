@@ -51,6 +51,7 @@ import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.unifiedpush.android.connector.UnifiedPush
 
 @Composable
@@ -493,8 +494,11 @@ fun AppSettings_Integration(
     val context = LocalContext.current
 
     Setting(
-        name = "UnifiedPush",
-        summary = pushEndpoint ?: stringResource(R.string.app_settings_unifiedpush_no_endpoint),
+        name = stringResource(R.string.app_settings_unifiedpush),
+        summary = if (pushEndpoint != null)
+            stringResource(R.string.app_settings_unifiedpush_endpoint_domain, pushEndpoint.toHttpUrlOrNull()?.host ?: pushEndpoint)
+        else
+            stringResource(R.string.app_settings_unifiedpush_no_endpoint),
         onClick = {
             UnifiedPush.registerAppWithDialog(context)
         }

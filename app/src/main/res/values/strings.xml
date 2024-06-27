@@ -210,7 +210,8 @@
     <string name="app_settings_integration">Integration</string>
     <string name="app_settings_tasks_provider">Tasks app</string>
     <string name="app_settings_tasks_provider_none">No compatible tasks app found</string>
-    <string name="app_settings_unifiedpush" translatable="false">UnifiedPush</string>
+    <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
+    <string name="app_settings_unifiedpush_endpoint_domain">Ready to receive push notifications (%s)</string>
     <string name="app_settings_unifiedpush_no_endpoint">No endpoint configured</string>
 
     <!-- AccountScreen -->
