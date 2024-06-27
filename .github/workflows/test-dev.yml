@@ -18,13 +18,14 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+
+      # See https://community.gradle.org/github-actions/docs/setup-gradle/ for more information
       - uses: gradle/actions/setup-gradle@v3    # creates build cache when on main branch
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           gradle-home-cache-cleanup: true       # clean up unused files
-          gradle-home-cache-excludes: |
-            - caches/transforms-*               # transforms are very big
-      - run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon app:assembleDebug
+
+      - run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:assembleDebug
 
   test:
     needs: compile
@@ -42,7 +43,7 @@ jobs:
           cache-read-only: true
 
       - name: Run lint and unit tests
-        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon app:check
+        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:check
 
   # generates the build caches because it uses more gradle dependencies
   test_on_emulator:
@@ -73,4 +74,4 @@ jobs:
           key: avd-${{ hashFiles('app/build.gradle.kts') }}   # gradle-managed devices are defined there
 
       - name: Run device tests
-        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn --no-daemon app:virtualCheck
+        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:virtualCheck
