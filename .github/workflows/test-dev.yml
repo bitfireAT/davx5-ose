@@ -44,8 +44,10 @@ jobs:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: true
 
-      - name: Run lint and unit tests
-        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:check
+      - name: Run lint
+        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:lintOseDebug
+      - name: Run unit tests
+        run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:testOseDebugUnitTest
 
   # generates the build caches because it uses more gradle dependencies
   test_on_emulator:
