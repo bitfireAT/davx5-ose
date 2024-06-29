@@ -4,13 +4,16 @@
   <string name="account_invalid">Kontot finns inte (längre)</string>
   <string name="account_title_address_book">DAVx⁵ Adressbok</string>
   <string name="address_books_authority_title">Adressböcker</string>
+  <string name="dialog_delete">Ta bort</string>
   <string name="dialog_remove">Ta bort</string>
   <string name="dialog_deny">Avbryt</string>
   <string name="field_required">Detta fÄlt Ã¤r obligatoriskt</string>
   <string name="help">Hjälp</string>
   <string name="manage_accounts">Hantera konton</string>
   <string name="navigate_up">Navigera upp</string>
+  <string name="optional_label">* valfritt</string>
   <string name="share">Dela</string>
+  <string name="sync_started">Synkronisering startad/kölagd</string>
   <string name="database_destructive_migration_title">Databasen är korrupt</string>
   <string name="database_destructive_migration_text">Alla konton har blivit borttagna lokalt.</string>
   <string name="notification_channel_debugging">Felsökning</string>
@@ -82,6 +85,8 @@
   <string name="wifi_permissions_location_permission_off">Behörighet för platsdata nekad</string>
   <string name="wifi_permissions_background_location_permission">Behörighet för platsdata i bakgrunden</string>
   <string name="wifi_permissions_background_location_permission_label">Tillåt hela tiden</string>
+  <string name="wifi_permissions_background_location_permission_on">Platsbehörighet satt till: %s</string>
+  <string name="wifi_permissions_background_location_permission_off">Platsbehörighet inte satt till: %s</string>
   <string name="wifi_permissions_background_location_disclaimer">%s använder platsbehörigheten endast för att bestämma den aktuella WiFi:s SSID för konton med SSID-begränsning. Detta kommer att hända även när appen är i bakgrunden. Ingen platsdata samlas in, lagras, bearbetas eller skickas någonstans.</string>
   <string name="wifi_permissions_location_enabled">Plats alltid påslagen</string>
   <string name="wifi_permissions_location_enabled_on">Platstjänster är påslagna</string>
@@ -111,12 +116,16 @@
   <string name="navigation_drawer_manual">Manual</string>
   <string name="navigation_drawer_faq">FAQ</string>
   <string name="navigation_drawer_community">Gemenskap</string>
+  <string name="navigation_drawer_support_project">Stöd projektet</string>
+  <string name="navigation_drawer_contribute">Hur man kan bidra</string>
   <string name="navigation_drawer_privacy_policy">Integritetspolicy</string>
   <string name="account_list_no_notification_permission">Notifieringar avstängda. Du kommer inte bli informerad om synkroniseringsfel.</string>
   <string name="account_list_no_internet">Ingen bekräftad internetanslutning. Synkronisering kanske inte kan köras.</string>
   <string name="account_list_manage_connections">Hantera anslutningar</string>
   <string name="account_list_datasaver_enabled">Begränsad data-synkronisering aktiverad. Begränsad bakgrundssynkronisering.</string>
   <string name="account_list_manage_datasaver">Hantera begränsad data-synkronisering</string>
+  <string name="account_list_battery_saver_enabled">Batterisparning aktiverad. Det kan hända att synkronisering begränsas.</string>
+  <string name="account_list_manage_battery_saver">Hantera batterisparare</string>
   <string name="account_list_low_storage">Lagringsutrymmet är lågt. Android kommer inte synka lokala ändringar direkt, utan vänta till nästa regelbundna synkronisering.</string>
   <string name="account_list_manage_storage">Hantera lagring</string>
   <string name="account_list_empty">Välkommen till DAVx⁵!\n\nDu kan lägga till ett CalDAV/CardDAV-konto nu.</string>
@@ -136,6 +145,8 @@
   <string name="app_settings_logging_on">Loggning är påslagen</string>
   <string name="app_settings_logging_off">Loggning är avstängd</string>
   <string name="app_settings_battery_optimization">Batterioptimering</string>
+  <string name="app_settings_battery_optimization_exempted">Appen är undantagen (rekommenderas)</string>
+  <string name="app_settings_battery_optimization_optimized">Batteribegränsningar tillämpas (rekommenderas inte)</string>
   <string name="app_settings_connection">Anslutning</string>
   <string name="app_settings_proxy">Proxy typ</string>
   <string-array name="app_settings_proxy_types">
@@ -174,9 +185,12 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_missing_permissions">Ytterligare behörigheter krävs för att synkronisera dessa samlingar.</string>
+  <string name="account_manage_permissions">Hantera behörigheter</string>
   <string name="account_synchronize_now">Synkronisera nu</string>
   <string name="account_settings">Kontoinställningar</string>
   <string name="account_rename">Byt namn på kontot</string>
+  <string name="account_rename_new_name">Nytt kontonamn</string>
   <string name="account_rename_rename">Byt namn</string>
   <string name="account_rename_exists_already">Kontonamn är upptaget</string>
   <string name="account_rename_couldnt_rename">Kunde inte ändra namn på kontot</string>
@@ -186,12 +200,17 @@
   <string name="account_synchronize_this_collection">synkronisera denna samling</string>
   <string name="account_read_only">skrivskyddad</string>
   <string name="account_calendar">kalender</string>
+  <string name="account_contacts">kontakter</string>
   <string name="account_journal">Journal</string>
+  <string name="account_task_list">uppgifter</string>
   <string name="account_only_personal">Visa endast personligt</string>
+  <string name="account_refresh_collections">Uppdatera lista</string>
+  <string name="account_webcal_external_app">Webcal-prenumerationer kan synkroniseras med externa appar.</string>
   <string name="account_no_webcal_handler_found">Ingen Webcal-kompatibel app hittades</string>
   <string name="account_install_icsx5">Installera ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Lägg till konto</string>
+  <string name="login_continue">Fortsätt</string>
   <string name="login_login">Logga in</string>
   <string name="login_type_email">Logga in med e-postadress</string>
   <string name="login_email_address">E-postadress</string>
@@ -199,17 +218,23 @@
   <string name="login_password">Lösenord</string>
   <string name="login_password_hide">Dölj lösenord</string>
   <string name="login_password_show">Visa lösenord</string>
+  <string name="login_password_optional">Lösenord*</string>
   <string name="login_type_url">Logga in med URL och användarnamn</string>
   <string name="login_user_name">Användarnamn</string>
+  <string name="login_user_name_optional">Användarnamn*</string>
   <string name="login_base_url">Bas-URL</string>
   <string name="login_select_certificate">Välj certifikat</string>
   <string name="login_create_account">Skapa konto</string>
   <string name="login_account_name">Kontonamn</string>
+  <string name="login_account_avoid_apostrophe">Användning av apostrof (\') verkar orsaka problem på vissa enheter.</string>
   <string name="login_account_name_info">Använd din e-postadress som kontonamn eftersom Android kommer att använda kontonamnet som fält för ARRANGÖR för händelser du skapar. Du kan inte ha två konton med samma namn.</string>
   <string name="login_account_contact_group_method">Kontaktgruppsmetod:</string>
   <string name="login_account_name_required">Konto namn krävs</string>
   <string name="login_account_name_already_taken">Kontonamn är upptaget</string>
   <string name="login_account_not_created">Konto kunde inte skapas</string>
+  <string name="login_type_advanced">Avancerad inloggning</string>
+  <string name="login_no_client_certificate_optional">Inget klientcertifikat*</string>
+  <string name="login_client_certificate_selected">Klientcertifikat: %s</string>
   <string name="login_no_certificate_found">Inget certifikat funnet</string>
   <string name="login_install_certificate">Installera certifikat</string>
   <string name="login_type_google">Google Kontakter / Kalender</string>
@@ -231,6 +256,9 @@
   <string name="login_configuration_detection">Konfigurationsdetektering</string>
   <string name="login_querying_server">Vänligen vänta, frågar efter server...</string>
   <string name="login_no_service">Det gick inte att hitta CalDAV eller CardDAV-tjänsten.</string>
+  <string name="login_no_service_info">Bas-URL:en verkar inte vara en åtkomlig CalDAV-/CardDAV-URL och upptäckt av tjänster misslyckades.</string>
+  <string name="login_check_credentials">Vänligen dubbelkolla också autentisering (vanligtvis användarnamn och lösenord)</string>
+  <string name="login_logs_available">Ytterligare teknisk information finns i loggarna.</string>
   <string name="login_view_logs">Visa loggar</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synkronisering</string>
@@ -263,7 +291,10 @@
   <string name="settings_authentication">Autentisering</string>
   <string name="settings_username">Användarnamn</string>
   <string name="settings_password">Lösenord</string>
+  <string name="settings_new_password">Nytt lösenord</string>
   <string name="settings_password_summary">Uppdatera lösenordet enligt din server.</string>
+  <string name="settings_certificate_alias">Klientcertifikat</string>
+  <string name="settings_certificate_alias_empty">Inget certifikat tillgängligt eller valt</string>
   <string name="settings_certificate_install">Installera certifikat</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Tidsgräns för tidigare händelser</string>
@@ -294,20 +325,36 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Skapa adressbok</string>
+  <string name="create_addressbook_maybe_not_supported">Att skapa adressbok över CardDAV kanske inte stöds av servern.</string>
   <string name="create_calendar">Skapa kalender</string>
+  <string name="create_calendar_time_zone_optional">Standardtidszon*</string>
   <string name="create_calendar_type">Möjliga kalenderposter</string>
   <string name="create_calendar_type_vevent">Händelser</string>
   <string name="create_calendar_type_vtodo">Ärenden</string>
   <string name="create_calendar_type_vjournal">Anteckningar / journal</string>
+  <string name="create_calendar_maybe_not_supported">Att skapa kalender över CalDAV kanske inte stöds av servern.</string>
   <string name="create_collection_color">Färg</string>
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_home_set">Lagringsplats</string>
+  <string name="create_collection_description_optional">Beskrivning*</string>
   <string name="create_collection_create">Skapa</string>
+  <string name="create_collection_optional">* valfritt</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Ta bort samling</string>
+  <string name="collection_delete_warning">Denna samling (%s) och all dess data kommer att tas bort permanent, både lokalt och på servern.</string>
   <string name="collection_synchronization">Synkronisering</string>
+  <string name="collection_synchronization_on">Synkronisering aktiverad</string>
+  <string name="collection_synchronization_off">Synkronisering inaktiverad</string>
+  <string name="collection_read_only">Skrivskyddad</string>
+  <string name="collection_read_only_by_server">Skrivskyddad (av server)</string>
+  <string name="collection_read_only_forced">Skrivskyddad (endast lokalt)</string>
+  <string name="collection_read_write">Läs/skriv</string>
   <string name="collection_title">Titel</string>
   <string name="collection_description">Beskrivning</string>
+  <string name="collection_owner">Ägare</string>
+  <string name="collection_push_support">Push-stöd</string>
+  <string name="collection_last_sync">Senaste synk (%s)</string>
+  <string name="collection_url">Adress (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Felsöknings information</string>
   <string name="debug_info_archive_caption">ZIP arkiv</string>
@@ -348,6 +395,7 @@
   <string name="webdav_add_mount_display_name">Visningsnamn</string>
   <string name="webdav_add_mount_url">WebDAV URL</string>
   <string name="webdav_add_mount_url_invalid">Felaktig URL</string>
+  <string name="webdav_add_mount_authentication">Autentisering (valfritt)</string>
   <string name="webdav_add_mount_username">Användarnamn</string>
   <string name="webdav_add_mount_password">Lösenord</string>
   <string name="webdav_add_mount_add">Lägg till fäste</string>
@@ -374,6 +422,7 @@
   <string name="sync_invalid_task">Fick ogiltigt ärende från servern</string>
   <string name="sync_invalid_resources_ignoring">Ignorerar en eller flera ogiltiga resurser</string>
   <!--widgets-->
+  <string name="widget_sync_all">Synkronisera alla</string>
   <string name="widget_sync_all_accounts">Synkronisera alla konton</string>
   <!--cert4android-->
 </resources>

@@ -141,10 +141,10 @@
   <string name="app_settings">設定</string>
   <string name="app_settings_debug">デバッグ</string>
   <string name="app_settings_show_debug_info">デバッグ情報を表示</string>
-  <string name="app_settings_show_debug_info_details">ソフトウェアと設定の詳細を表示/共有</string>
+  <string name="app_settings_show_debug_info_details">ソフトウェアと設定の詳細を表示/共有します</string>
   <string name="app_settings_logging">詳細ログ</string>
-  <string name="app_settings_logging_on">ログ取得が有効</string>
-  <string name="app_settings_logging_off">ログ取得が無効</string>
+  <string name="app_settings_logging_on">ログを取得します</string>
+  <string name="app_settings_logging_off">ログを取得しません</string>
   <string name="app_settings_battery_optimization">バッテリー最適化</string>
   <string name="app_settings_battery_optimization_exempted">アプリは除外されています (推奨)</string>
   <string name="app_settings_battery_optimization_optimized">バッテリー最適化が適用されています (非推奨)</string>
@@ -162,8 +162,8 @@
   <string name="app_settings_security_app_permissions">アプリの権限</string>
   <string name="app_settings_security_app_permissions_summary">同期に必要な権限を確認する</string>
   <string name="app_settings_distrust_system_certs">システム証明書を無視</string>
-  <string name="app_settings_distrust_system_certs_on">システムとユーザーが追加した CA を信頼しない</string>
-  <string name="app_settings_distrust_system_certs_off">システムとユーザーが追加した CA を信頼する (推奨)</string>
+  <string name="app_settings_distrust_system_certs_on">システムとユーザーが追加した CA を信頼しません</string>
+  <string name="app_settings_distrust_system_certs_off">システムとユーザーが追加した CA を信頼します (推奨)</string>
   <string name="app_settings_reset_certificates">(未) 信頼証明書をリセット</string>
   <string name="app_settings_reset_certificates_summary">すべてのカスタム証明書の信頼をリセットします</string>
   <string name="app_settings_reset_certificates_success">すべてのカスタム証明書をクリアしました</string>

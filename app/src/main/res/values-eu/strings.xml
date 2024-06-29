@@ -2,8 +2,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Kontua ez da existitzen (dagoeneko)</string>
-  <string name="account_title_address_book">DAVx⁵ Helbide liburua</string>
-  <string name="address_books_authority_title">Helbide liburuak</string>
+  <string name="account_title_address_book">DAVx⁵ Helbide-liburua</string>
+  <string name="address_books_authority_title">Helbide-liburuak</string>
+  <string name="dialog_delete">Ezabatu</string>
   <string name="dialog_remove">Kendu</string>
   <string name="dialog_deny">Utzi</string>
   <string name="field_required">Eremu hau beharrezkoa da</string>
@@ -202,8 +203,11 @@
   <string name="account_synchronize_this_collection">sinkronizatu kolekzio hau</string>
   <string name="account_read_only">irakurri-soilik</string>
   <string name="account_calendar">egutegia</string>
+  <string name="account_contacts">kontaktuak</string>
   <string name="account_journal">egunkaria</string>
+  <string name="account_task_list">zereginak</string>
   <string name="account_only_personal">Erakutsi pertsonala soilik</string>
+  <string name="account_refresh_collections">Freskatu zerrenda</string>
   <string name="account_webcal_external_app">Webcal harpidetzak kanpoko aplikazioen bidez sinkroniza daitezke.</string>
   <string name="account_no_webcal_handler_found">Ez da Webcal-ekin bateragarria den aplikaziorik aurkitu</string>
   <string name="account_install_icsx5">Instalatu ICSx⁵</string>
@@ -260,6 +264,7 @@
   <string name="login_querying_server">Mesedez itxaron, zerbitzaria kontsultatzen...</string>
   <string name="login_no_service">Ezin izan da CalDAV edo CardDAV zerbitzua aurkitu.</string>
   <string name="login_no_service_info">Oinarrizko URLa ez dirudi CalDAV/CardDAV URL eskuragarria denik eta zerbitzuaren detekzioa ez da gauzatu.</string>
+  <string name="login_see_tested_services"><![CDATA[Ikusi zure zerbitzu-hornitzailearen eskuliburua eta <a href="%s">gure probatutako zerbitzuen zerrenda</a> eta haien oinarrizko URLak.]]></string>
   <string name="login_check_credentials">Mesedez, egiaztatu autentifikazioa ere (normalean erabiltzaile-izena eta pasahitza).</string>
   <string name="login_logs_available">Informazio tekniko gehiago eskuragarri dago erregistroetan.</string>
   <string name="login_view_logs">Ikusi egunkariak</string>
@@ -294,6 +299,7 @@
   <string name="settings_authentication">Autentifikazioa</string>
   <string name="settings_username">Erabiltzaile izena</string>
   <string name="settings_password">Pasahitza</string>
+  <string name="settings_new_password">Pasahitz berria</string>
   <string name="settings_password_summary">Eguneratu pasahitza zure zerbitzariaren arabera</string>
   <string name="settings_certificate_alias">Bezeroaren ziurtagiria</string>
   <string name="settings_certificate_alias_empty">Ez dago ziurtagiririk eskuragarri edo hautaturik</string>
@@ -327,21 +333,38 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Sortu helbide liburua</string>
+  <string name="create_addressbook_maybe_not_supported">Baliteke zerbitzariak ez onartzea CardDAV bidez sortutako helbide-liburua.</string>
   <string name="create_calendar">Sortu egutegia</string>
+  <string name="create_calendar_time_zone_optional">Lehenetsitako ordu-zona*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Egutegi sarrera posibleak</string>
   <string name="create_calendar_type_vevent">Gertaerak</string>
   <string name="create_calendar_type_vtodo">Zereginak</string>
   <string name="create_calendar_type_vjournal">Notak / egunkaria</string>
+  <string name="create_calendar_maybe_not_supported">Baliteke zerbitzariak ez onartzea CalDAV bidez sortutako egutegia.</string>
   <string name="create_collection_color">Kolorea</string>
   <string name="create_collection_display_name">Izenburua</string>
   <string name="create_collection_home_set">Biltegiratze kokapena</string>
+  <string name="create_collection_description_optional">Deskribapena*</string>
   <string name="create_collection_create">Sortu</string>
   <string name="create_collection_optional">* aukeran</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Ezabatu kolekzioa</string>
+  <string name="collection_delete_warning">Bilduma hau (%s) eta bere datu guztiak behin betiko kenduko dira, bai lokaletik bai zerbitzaritik.</string>
   <string name="collection_synchronization">Sinkronizazioa</string>
+  <string name="collection_synchronization_on">Sinkronizazioa gaitua dago</string>
+  <string name="collection_synchronization_off">Sinkronizazioa desgaitua dago</string>
+  <string name="collection_read_only">Irakurtzeko soilik</string>
+  <string name="collection_read_only_by_server">Irakurtzeko soilik (zerbitzarian)</string>
+  <string name="collection_read_only_forced">Irakurtzeko soilik (lokala soilik)</string>
+  <string name="collection_read_write">Irakurri/idatzi</string>
   <string name="collection_title">Izenburua</string>
   <string name="collection_description">Deskribapena</string>
+  <string name="collection_owner">Jabea</string>
+  <string name="collection_push_support">Bultzaden onarpena</string>
+  <string name="collection_push_web_push">Zerbitzariak bultzaden laguntza iragartzen du</string>
+  <string name="collection_last_sync">Azken sinkronizazioa (%s)</string>
+  <string name="collection_url">Helbidea (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Arazketa informazioa</string>
   <string name="debug_info_archive_caption">ZIP artxiboa</string>
