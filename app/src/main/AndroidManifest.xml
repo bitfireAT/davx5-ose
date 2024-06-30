@@ -167,7 +167,7 @@
 
         <!-- account type "DAVx⁵" -->
         <service
-            android:name=".syncadapter.AccountAuthenticatorService"
+            android:name=".sync.account.AccountAuthenticatorService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
@@ -177,7 +177,7 @@
                 android:resource="@xml/account_authenticator"/>
         </service>
         <service
-            android:name=".syncadapter.CalendarsSyncAdapterService"
+            android:name=".sync.adapter.CalendarsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -188,7 +188,7 @@
                 android:resource="@xml/sync_calendars"/>
         </service>
         <service
-            android:name=".syncadapter.JtxSyncAdapterService"
+            android:name=".sync.adapter.JtxSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -199,7 +199,7 @@
                 android:resource="@xml/sync_notes"/>
         </service>
         <service
-            android:name=".syncadapter.OpenTasksSyncAdapterService"
+            android:name=".sync.adapter.OpenTasksSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -210,7 +210,7 @@
                 android:resource="@xml/sync_opentasks"/>
         </service>
         <service
-            android:name=".syncadapter.TasksOrgSyncAdapterService"
+            android:name=".sync.adapter.TasksOrgSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -233,7 +233,7 @@
 
         <!-- account type "DAVx⁵ Address book" -->
         <service
-            android:name=".syncadapter.AddressBookAuthenticatorService"
+            android:name=".sync.account.AddressBookAuthenticatorService"
             android:exported="true"
             tools:ignore="ExportedService">   <!-- Since Android 11, this must be true so that Google Contacts shows the address book accounts -->
             <intent-filter>
@@ -248,9 +248,9 @@
             android:authorities="@string/address_books_authority"
             android:exported="false"
             android:label="@string/address_books_authority_title"
-            android:name=".syncadapter.AddressBookProvider" />
+            android:name=".sync.adapter.AddressBookProvider" />
         <service
-            android:name=".syncadapter.AddressBooksSyncAdapterService"
+            android:name=".sync.adapter.AddressBooksSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -262,7 +262,7 @@
                 android:resource="@xml/sync_address_books"/>
         </service>
         <service
-            android:name=".syncadapter.ContactsSyncAdapterService"
+            android:name=".sync.adapter.ContactsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>

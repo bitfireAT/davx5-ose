@@ -9,7 +9,7 @@ import android.os.StrictMode
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
+import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils

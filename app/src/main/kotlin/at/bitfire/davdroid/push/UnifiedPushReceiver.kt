@@ -10,7 +10,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
-import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
 import org.unifiedpush.android.connector.MessagingReceiver
 import java.util.logging.Level

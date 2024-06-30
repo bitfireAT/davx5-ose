@@ -9,8 +9,8 @@ import android.app.Application
 import androidx.work.WorkInfo
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.syncadapter.BaseSyncWorker
-import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker
+import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

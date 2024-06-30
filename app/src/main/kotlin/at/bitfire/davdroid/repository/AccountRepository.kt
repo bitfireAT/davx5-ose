@@ -27,10 +27,10 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.AccountUtils
-import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
-import at.bitfire.davdroid.syncadapter.BaseSyncWorker
-import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
+import at.bitfire.davdroid.sync.account.AccountUtils
+import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker
+import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.vcard4android.GroupMethod
 import kotlinx.coroutines.Dispatchers

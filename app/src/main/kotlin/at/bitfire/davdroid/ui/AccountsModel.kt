@@ -19,9 +19,9 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.syncadapter.BaseSyncWorker
-import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
-import at.bitfire.davdroid.syncadapter.SyncUtils
+import at.bitfire.davdroid.sync.SyncUtils
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker
+import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory

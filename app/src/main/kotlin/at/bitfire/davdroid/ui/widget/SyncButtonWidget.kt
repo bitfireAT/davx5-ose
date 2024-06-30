@@ -30,7 +30,7 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextDefaults
 import androidx.glance.unit.ColorProvider
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.syncadapter.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.ui.M3ColorScheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
