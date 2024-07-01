@@ -8,10 +8,6 @@
 -dontobfuscate
 -printusage build/reports/r8-usage.txt
 
-# https://issuetracker.google.com/issues/336842920#comment33
-# Should be removed as soon as Compose 1.7 (Compose BOM > 2024.06.00) is used
--keep class androidx.compose.ui.platform.AndroidCompositionLocals_androidKt { *; }
-
 # ez-vcard: keep all vCard properties/parameters (used via reflection)
 -keep class ezvcard.io.scribe.** { *; }
 -keep class ezvcard.property.** { *; }
