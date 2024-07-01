@@ -405,6 +405,7 @@
     <string name="collection_synchronization_off">Synchronization disabled</string>
     <string name="collection_read_only">Read-only</string>
     <string name="collection_read_only_by_server">Read-only (by server)</string>
+    <string name="collection_read_only_by_setting">Read-only (by policy)</string>
     <string name="collection_read_only_forced">Read-only (only locally)</string>
     <string name="collection_read_write">Read/write</string>
     <string name="collection_title">Title</string>

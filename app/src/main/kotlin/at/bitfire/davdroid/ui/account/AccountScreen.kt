@@ -98,15 +98,11 @@ fun AccountScreen(
     )
 
     val cardDavService by model.cardDavSvc.collectAsStateWithLifecycle()
-    val addressBooksPager by model.addressBooksPager.collectAsStateWithLifecycle(null)
-    val addressBooks = addressBooksPager?.flow?.collectAsLazyPagingItems()
+    val addressBooks = model.addressBooks.collectAsLazyPagingItems()
 
     val calDavService by model.calDavSvc.collectAsStateWithLifecycle()
-    val calendarsPager by model.calendarsPager.collectAsStateWithLifecycle(null)
-    val calendars = calendarsPager?.flow?.collectAsLazyPagingItems()
-
-    val subscriptionsPager by model.webcalPager.collectAsStateWithLifecycle(null)
-    val subscriptions = subscriptionsPager?.flow?.collectAsLazyPagingItems()
+    val calendars = model.calendars.collectAsLazyPagingItems()
+    val subscriptions = model.subscriptions.collectAsLazyPagingItems()
 
     val context = LocalContext.current
     AccountScreen(
@@ -126,7 +122,7 @@ fun AccountScreen(
         canCreateCalendar = model.canCreateCalendar.collectAsStateWithLifecycle(false).value,
         calDavProgress = model.calDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle).value,
         calendars = calendars,
-        hasWebcal = subscriptions?.itemCount != 0,
+        hasWebcal = subscriptions.itemCount != 0,
         subscriptions = subscriptions,
         onUpdateCollectionSync = model::setCollectionSync,
         onSubscribe = { collection ->

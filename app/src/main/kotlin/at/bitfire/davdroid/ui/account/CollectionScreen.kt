@@ -88,8 +88,7 @@ fun CollectionScreen(
         color = collection.color,
         sync = collection.sync,
         onSetSync = model::setSync,
-        privWriteContent = collection.privWriteContent,
-        forceReadOnly = collection.forceReadOnly,
+        readOnly = model.readOnly.collectAsStateWithLifecycle(CollectionScreenModel.ReadOnlyState.READ_WRITE).value,
         onSetForceReadOnly = model::setForceReadOnly,
         title = collection.title(),
         displayName = collection.displayName,
@@ -111,8 +110,7 @@ fun CollectionScreen(
     color: Int?,
     sync: Boolean,
     onSetSync: (Boolean) -> Unit = {},
-    privWriteContent: Boolean,
-    forceReadOnly: Boolean,
+    readOnly: CollectionScreenModel.ReadOnlyState,
     onSetForceReadOnly: (Boolean) -> Unit = {},
     title: String,
     displayName: String? = null,
@@ -209,15 +207,19 @@ fun CollectionScreen(
                     CollectionScreen_Entry(
                         icon = Icons.Default.DoNotDisturbOn,
                         title = stringResource(R.string.collection_read_only),
-                        text = when {
-                            !privWriteContent -> stringResource(R.string.collection_read_only_by_server)
-                            forceReadOnly -> stringResource(R.string.collection_read_only_forced)
+                        text = when (readOnly) {
+                            CollectionScreenModel.ReadOnlyState.READ_ONLY_BY_SERVER ->
+                                stringResource(R.string.collection_read_only_by_server)
+                            CollectionScreenModel.ReadOnlyState.READ_ONLY_BY_SETTING ->
+                                stringResource(R.string.collection_read_only_by_setting)
+                            CollectionScreenModel.ReadOnlyState.READ_ONLY_BY_USER ->
+                                stringResource(R.string.collection_read_only_forced)
                             else -> stringResource(R.string.collection_read_write)
                         },
                         control = {
                             Switch(
-                                checked = forceReadOnly || !privWriteContent,
-                                enabled = privWriteContent,
+                                checked = readOnly.isReadOnly(),
+                                enabled = readOnly.canUserChange(),
                                 onCheckedChange = onSetForceReadOnly
                             )
                         }
@@ -335,8 +337,7 @@ fun CollectionScreen_Preview() {
         inProgress = true,
         color = 0xff14c0c4.toInt(),
         sync = true,
-        privWriteContent = true,
-        forceReadOnly = false,
+        readOnly = CollectionScreenModel.ReadOnlyState.READ_ONLY_BY_USER,
         url = "https://example.com/calendar",
         title = "Some Calendar, with some additional text to make it wrap around and stuff.",
         displayName = "Some Calendar, with some additional text to make it wrap around and stuff.",

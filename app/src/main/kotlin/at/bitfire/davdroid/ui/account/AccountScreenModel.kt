@@ -49,8 +49,8 @@ class AccountScreenModel @AssistedInject constructor(
     private val collectionRepository: DavCollectionRepository,
     serviceRepository: DavServiceRepository,
     accountProgressUseCase: AccountProgressUseCase,
-    getBindableHomesetsFromServiceUseCase: GetBindableHomeSetsFromServiceUseCase,
-    getServiceCollectionPagerUseCase: GetServiceCollectionPagerUseCase
+    getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
+    getServiceCollectionPager: GetServiceCollectionPagerUseCase
 ): ViewModel() {
 
     @AssistedFactory
@@ -82,7 +82,7 @@ class AccountScreenModel @AssistedInject constructor(
     val cardDavSvc = serviceRepository
         .getCardDavServiceFlow(account.name)
         .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Eagerly)
-    private val bindableAddressBookHomesets = getBindableHomesetsFromServiceUseCase(cardDavSvc)
+    private val bindableAddressBookHomesets = getBindableHomesetsFromService(cardDavSvc)
     val canCreateAddressBook = bindableAddressBookHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
@@ -91,12 +91,12 @@ class AccountScreenModel @AssistedInject constructor(
         serviceFlow = cardDavSvc,
         authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority)))
     )
-    val addressBooksPager = getServiceCollectionPagerUseCase(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
+    val addressBooks = getServiceCollectionPager(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
 
     val calDavSvc = serviceRepository
         .getCalDavServiceFlow(account.name)
         .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Eagerly)
-    private val bindableCalendarHomesets = getBindableHomesetsFromServiceUseCase(calDavSvc)
+    private val bindableCalendarHomesets = getBindableHomesetsFromService(calDavSvc)
     val canCreateCalendar = bindableCalendarHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
@@ -109,8 +109,8 @@ class AccountScreenModel @AssistedInject constructor(
         serviceFlow = calDavSvc,
         authoritiesFlow = calDavAuthorities
     )
-    val calendarsPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
-    val webcalPager = getServiceCollectionPagerUseCase(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
+    val calendars = getServiceCollectionPager(calDavSvc, Collection.TYPE_CALENDAR, showOnlyPersonal)
+    val subscriptions = getServiceCollectionPager(calDavSvc, Collection.TYPE_WEBCAL, showOnlyPersonal)
 
 
     var error by mutableStateOf<String?>(null)

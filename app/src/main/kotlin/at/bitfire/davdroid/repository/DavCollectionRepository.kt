@@ -212,6 +212,12 @@ class DavCollectionRepository @Inject constructor(
         notifyOnChangeListeners()
     }
 
+    fun pageByServiceAndType(serviceId: Long, type: String) =
+        dao.pageByServiceAndType(serviceId, type)
+
+    fun pagePersonalByServiceAndType(serviceId: Long, type: String) =
+        dao.pagePersonalByServiceAndType(serviceId, type)
+
     /**
      * Sets the flag for whether read-only should be enforced on the local collection
      */
