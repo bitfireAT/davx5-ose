@@ -46,7 +46,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -98,13 +97,15 @@ fun AccountScreen(
         }
     )
 
-    val addressBooksPager by model.addressBooksPager.collectAsState(null)
+    val cardDavService by model.cardDavSvc.collectAsStateWithLifecycle()
+    val addressBooksPager by model.addressBooksPager.collectAsStateWithLifecycle(null)
     val addressBooks = addressBooksPager?.flow?.collectAsLazyPagingItems()
 
-    val calendarsPager by model.calendarsPager.collectAsState(null)
+    val calDavService by model.calDavSvc.collectAsStateWithLifecycle()
+    val calendarsPager by model.calendarsPager.collectAsStateWithLifecycle(null)
     val calendars = calendarsPager?.flow?.collectAsLazyPagingItems()
 
-    val subscriptionsPager by model.webcalPager.collectAsState(null)
+    val subscriptionsPager by model.webcalPager.collectAsStateWithLifecycle(null)
     val subscriptions = subscriptionsPager?.flow?.collectAsLazyPagingItems()
 
     val context = LocalContext.current
@@ -117,11 +118,11 @@ fun AccountScreen(
             initialValue = AccountSettings.ShowOnlyPersonal(onlyPersonal = false, locked = false)
         ).value,
         onSetShowOnlyPersonal = model::setShowOnlyPersonal,
-        hasCardDav = addressBooks?.itemCount != 0,
+        hasCardDav = cardDavService != null,
         canCreateAddressBook = model.canCreateAddressBook.collectAsStateWithLifecycle(false).value,
         cardDavProgress = model.cardDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle).value,
         addressBooks = addressBooks,
-        hasCalDav = calendars?.itemCount != 0,
+        hasCalDav = calDavService != null,
         canCreateCalendar = model.canCreateCalendar.collectAsStateWithLifecycle(false).value,
         calDavProgress = model.calDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle).value,
         calendars = calendars,
