@@ -134,7 +134,6 @@ abstract class SyncAdapterService: Service() {
 }
 
 // exported sync adapter services; we need a separate class for each authority
-class AddressBooksSyncAdapterService: SyncAdapterService()
 class CalendarsSyncAdapterService: SyncAdapterService()
 class ContactsSyncAdapterService: SyncAdapterService()
 class JtxSyncAdapterService: SyncAdapterService()

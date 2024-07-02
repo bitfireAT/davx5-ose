@@ -245,18 +245,6 @@
                 android:resource="@xml/account_authenticator_address_book"/>
         </service>
         <service
-            android:name=".sync.adapter.AddressBooksSyncAdapterService"
-            android:exported="true"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_address_books"/>
-        </service>
-        <service
             android:name=".sync.adapter.ContactsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
