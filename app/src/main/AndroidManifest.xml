@@ -244,11 +244,6 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/account_authenticator_address_book"/>
         </service>
-        <provider
-            android:authorities="@string/address_books_authority"
-            android:exported="false"
-            android:label="@string/address_books_authority_title"
-            android:name=".sync.adapter.AddressBookProvider" />
         <service
             android:name=".sync.adapter.AddressBooksSyncAdapterService"
             android:exported="true"
