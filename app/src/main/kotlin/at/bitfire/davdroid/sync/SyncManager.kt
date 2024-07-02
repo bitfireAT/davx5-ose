@@ -59,10 +59,6 @@ import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.UsesThreadContextClassLoader
 import at.bitfire.vcard4android.ContactsStorageException
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -83,21 +79,17 @@ import javax.net.ssl.SSLHandshakeException
 
 @UsesThreadContextClassLoader
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
-    val context: Context,
     val account: Account,
     val accountSettings: AccountSettings,
     val httpClient: HttpClient,
     val extras: Array<String>,
     val authority: String,
     val syncResult: SyncResult,
-    val localCollection: CollectionType
+    val localCollection: CollectionType,
+    // injected
+    val context: Context,
+    val db: AppDatabase
 ) {
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface SyncManagerEntryPoint {
-        fun appDatabase(): AppDatabase
-    }
 
     enum class SyncAlgorithm {
         PROPFIND_REPORT,
@@ -344,7 +336,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             else
                 account.name
 
-        val db = EntryPointAccessors.fromApplication(context, SyncManagerEntryPoint::class.java).appDatabase()
         db.runInTransaction {
             val service = db.serviceDao().getByAccountAndType(accountName, serviceType)
                 ?: return@runInTransaction

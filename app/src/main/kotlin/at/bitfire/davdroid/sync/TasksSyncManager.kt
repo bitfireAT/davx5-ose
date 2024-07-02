@@ -17,6 +17,7 @@ import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -27,6 +28,10 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.Task
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
@@ -40,16 +45,31 @@ import java.util.logging.Level
 /**
  * Synchronization manager for CalDAV collections; handles tasks (VTODO)
  */
-class TasksSyncManager(
-    context: Context,
-    account: Account,
-    accountSettings: AccountSettings,
-    httpClient: HttpClient,
-    extras: Array<String>,
-    authority: String,
-    syncResult: SyncResult,
-    localCollection: LocalTaskList
-): SyncManager<LocalTask, LocalTaskList, DavCalendar>(context, account, accountSettings, httpClient, extras, authority, syncResult, localCollection) {
+class TasksSyncManager @AssistedInject constructor(
+    @Assisted account: Account,
+    @Assisted accountSettings: AccountSettings,
+    @Assisted httpClient: HttpClient,
+    @Assisted extras: Array<String>,
+    @Assisted authority: String,
+    @Assisted syncResult: SyncResult,
+    @Assisted localCollection: LocalTaskList,
+    @ApplicationContext context: Context,
+    db: AppDatabase
+): SyncManager<LocalTask, LocalTaskList, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, context, db) {
+
+    @AssistedFactory
+    interface Factory {
+        fun tasksSyncManager(
+            account: Account,
+            accountSettings: AccountSettings,
+            httpClient: HttpClient,
+            extras: Array<String>,
+            authority: String,
+            syncResult: SyncResult,
+            localCollection: LocalTaskList
+        ): TasksSyncManager
+    }
+
 
     override fun prepare(): Boolean {
         collectionURL = (localCollection.syncId ?: return false).toHttpUrlOrNull() ?: return false

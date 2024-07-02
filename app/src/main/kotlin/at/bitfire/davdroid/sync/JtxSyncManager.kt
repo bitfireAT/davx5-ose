@@ -17,6 +17,7 @@ import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -27,6 +28,10 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.JtxICalObject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
@@ -37,16 +42,31 @@ import java.io.Reader
 import java.io.StringReader
 import java.util.logging.Level
 
-class JtxSyncManager(
-    context: Context,
-    account: Account,
-    accountSettings: AccountSettings,
-    extras: Array<String>,
-    httpClient: HttpClient,
-    authority: String,
-    syncResult: SyncResult,
-    localCollection: LocalJtxCollection
-):  SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(context, account, accountSettings, httpClient, extras, authority, syncResult, localCollection) {
+class JtxSyncManager @AssistedInject constructor(
+    @Assisted account: Account,
+    @Assisted accountSettings: AccountSettings,
+    @Assisted extras: Array<String>,
+    @Assisted httpClient: HttpClient,
+    @Assisted authority: String,
+    @Assisted syncResult: SyncResult,
+    @Assisted localCollection: LocalJtxCollection,
+    @ApplicationContext context: Context,
+    db: AppDatabase
+): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, context, db) {
+
+    @AssistedFactory
+    interface Factory {
+        fun jtxSyncManager(
+            account: Account,
+            accountSettings: AccountSettings,
+            extras: Array<String>,
+            httpClient: HttpClient,
+            authority: String,
+            syncResult: SyncResult,
+            localCollection: LocalJtxCollection
+        ): JtxSyncManager
+    }
+
 
     override fun prepare(): Boolean {
         collectionURL = (localCollection.url ?: return false).toHttpUrlOrNull() ?: return false

@@ -16,6 +16,10 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
@@ -24,6 +28,15 @@ import java.util.logging.Level
  * Sync logic for calendars
  */
 class CalendarSyncer(context: Context): Syncer(context) {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface CalendarSyncerEntryPoint {
+        fun calendarSyncManagerFactory(): CalendarSyncManager.Factory
+    }
+
+    private val entryPoint = EntryPointAccessors.fromApplication<CalendarSyncerEntryPoint>(context)
+
 
     override fun sync(
         account: Account,
@@ -46,7 +59,10 @@ class CalendarSyncer(context: Context): Syncer(context) {
             .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
         for (calendar in calendars) {
             Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
-            CalendarSyncManager(context, account, accountSettings, extras, httpClient.value, authority, syncResult, calendar).performSync()
+
+            val syncManagerFactory = entryPoint.calendarSyncManagerFactory()
+            val syncManager = syncManagerFactory.calendarSyncManager(account, accountSettings, extras, httpClient.value, authority, syncResult, calendar)
+            syncManager.performSync()
         }
     }
 

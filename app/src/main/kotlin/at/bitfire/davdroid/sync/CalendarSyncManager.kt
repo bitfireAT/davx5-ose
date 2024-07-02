@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -30,6 +31,10 @@ import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.util.DateUtils
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.property.Action
@@ -48,16 +53,30 @@ import java.util.logging.Level
 /**
  * Synchronization manager for CalDAV collections; handles events (VEVENT)
  */
-class CalendarSyncManager(
-    context: Context,
-    account: Account,
-    accountSettings: AccountSettings,
-    extras: Array<String>,
-    httpClient: HttpClient,
-    authority: String,
-    syncResult: SyncResult,
-    localCalendar: LocalCalendar
-): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(context, account, accountSettings, httpClient, extras, authority, syncResult, localCalendar) {
+class CalendarSyncManager @AssistedInject constructor(
+    @Assisted account: Account,
+    @Assisted accountSettings: AccountSettings,
+    @Assisted extras: Array<String>,
+    @Assisted httpClient: HttpClient,
+    @Assisted authority: String,
+    @Assisted syncResult: SyncResult,
+    @Assisted localCalendar: LocalCalendar,
+    @ApplicationContext context: Context,
+    db: AppDatabase
+): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCalendar, context, db) {
+
+    @AssistedFactory
+    interface Factory {
+        fun calendarSyncManager(
+            account: Account,
+            accountSettings: AccountSettings,
+            extras: Array<String>,
+            httpClient: HttpClient,
+            authority: String,
+            syncResult: SyncResult,
+            localCalendar: LocalCalendar
+        ): CalendarSyncManager
+    }
 
     override fun prepare(): Boolean {
         collectionURL = (localCollection.name ?: return false).toHttpUrlOrNull() ?: return false

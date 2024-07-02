@@ -38,7 +38,8 @@ class AddressBookSyncer(
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
-    interface AddressBooksSyncAdapterEntryPoint {
+    interface AddressBooksSyncerEntryPoint {
+        fun contactsSyncManagerFactory(): ContactsSyncManager.Factory
         fun settingsManager(): SettingsManager
     }
 
@@ -46,7 +47,7 @@ class AddressBookSyncer(
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"
     }
 
-    val entryPoint = EntryPointAccessors.fromApplication(context, AddressBooksSyncAdapterEntryPoint::class.java)
+    private val entryPoint = EntryPointAccessors.fromApplication<AddressBooksSyncerEntryPoint>(context)
     val settingsManager = entryPoint.settingsManager()
 
 
@@ -162,7 +163,10 @@ class AddressBookSyncer(
             Logger.log.info("Synchronizing address book: ${addressBook.url}")
             Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
 
-            ContactsSyncManager(context, account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook).performSync()
+            val syncManagerFactory = entryPoint.contactsSyncManagerFactory()
+            val syncManager = syncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook)
+            syncManager.performSync()
+
         } catch(e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't sync contacts", e)
         }

@@ -24,6 +24,7 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -40,6 +41,10 @@ import at.bitfire.davdroid.util.DavUtils.sameTypeAs
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
 import okhttp3.HttpUrl
@@ -90,17 +95,35 @@ import java.util.logging.Level
  *   [LocalGroup.COLUMN_PENDING_MEMBERS]. In [postProcess],
  *   these "pending memberships" are assigned to the actual contacts and then cleaned up.
  */
-class ContactsSyncManager(
-    context: Context,
-    account: Account,
-    accountSettings: AccountSettings,
-    httpClient: HttpClient,
-    extras: Array<String>,
-    authority: String,
-    syncResult: SyncResult,
-    val provider: ContentProviderClient,
-    localAddressBook: LocalAddressBook
-): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(context, account, accountSettings, httpClient, extras, authority, syncResult, localAddressBook) {
+class ContactsSyncManager @AssistedInject constructor(
+    @Assisted account: Account,
+    @Assisted accountSettings: AccountSettings,
+    @Assisted httpClient: HttpClient,
+    @Assisted extras: Array<String>,
+    @Assisted authority: String,
+    @Assisted syncResult: SyncResult,
+    @Assisted val provider: ContentProviderClient,
+    @Assisted localAddressBook: LocalAddressBook,
+    @ApplicationContext context: Context,
+    db: AppDatabase
+): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
+    account, accountSettings, httpClient, extras, authority, syncResult, localAddressBook,
+    context, db
+) {
+
+    @AssistedFactory
+    interface Factory {
+        fun contactsSyncManager(
+            account: Account,
+            accountSettings: AccountSettings,
+            httpClient: HttpClient,
+            extras: Array<String>,
+            authority: String,
+            syncResult: SyncResult,
+            provider: ContentProviderClient,
+            localAddressBook: LocalAddressBook
+        ): ContactsSyncManager
+    }
 
     companion object {
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
