@@ -323,10 +323,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      */
     private fun saveSyncTime() {
         val serviceType = when (authority) {
-            ContactsContract.AUTHORITY,
-            context.getString(R.string.address_books_authority) ->      // Contacts and Address books
+            ContactsContract.AUTHORITY ->      // Contacts in address books
                 Service.TYPE_CARDDAV
-            else ->                                    // Calendars + other (ie. tasks
+            else ->                            // Calendars + other (ie. tasks
                 Service.TYPE_CALDAV
         }
 

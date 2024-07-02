@@ -9,14 +9,15 @@ import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.sync.SyncUtils
+import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
@@ -221,7 +222,7 @@ class AccountSettings(
             return null
 
         val key = when {
-            authority == context.getString(R.string.address_books_authority) ->
+            authority == ContactsContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_ADDRESSBOOKS
             authority == CalendarContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_CALENDARS
@@ -255,7 +256,7 @@ class AccountSettings(
 
         // Store (user defined) sync interval in account settings
         val key = when {
-            authority == context.getString(R.string.address_books_authority) ->
+            authority == ContactsContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_ADDRESSBOOKS
             authority == CalendarContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_CALENDARS
