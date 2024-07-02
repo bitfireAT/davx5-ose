@@ -19,7 +19,10 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
@@ -29,6 +32,8 @@ import java.util.logging.Level
  */
 class JtxSyncer(context: Context): Syncer(context) {
 
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
     interface JtxSyncerEntryPoint {
         fun jtxSyncManagerFactory(): JtxSyncManager.Factory
     }
