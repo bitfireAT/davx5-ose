@@ -30,7 +30,7 @@ object SyncUtils {
      * Returns a list of all available sync authorities:
      *
      *   1. calendar authority
-     *   2. address books authority
+     *   2. contacts authority
      *   3. current tasks authority (if available)
      *
      * Checking the availability of authorities may be relatively expensive, so the
