@@ -19,6 +19,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
+import dagger.hilt.android.EntryPointAccessors
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
@@ -27,6 +28,13 @@ import java.util.logging.Level
  * Sync logic for jtx board
  */
 class JtxSyncer(context: Context): Syncer(context) {
+
+    interface JtxSyncerEntryPoint {
+        fun jtxSyncManagerFactory(): JtxSyncManager.Factory
+    }
+
+    private val entryPoint = EntryPointAccessors.fromApplication<JtxSyncerEntryPoint>(context)
+
 
     override fun sync(
         account: Account,
@@ -59,7 +67,10 @@ class JtxSyncer(context: Context): Syncer(context) {
             val collections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
             for (collection in collections) {
                 Logger.log.info("Synchronizing $collection")
-                JtxSyncManager(context, account, accountSettings, extras, httpClient.value, authority, syncResult, collection).performSync()
+
+                val syncManagerFactory = entryPoint.jtxSyncManagerFactory()
+                val syncManager = syncManagerFactory.jtxSyncManager(account, accountSettings, extras, httpClient.value, authority, syncResult, collection)
+                syncManager.performSync()
             }
 
         } catch (e: TaskProvider.ProviderTooOldException) {

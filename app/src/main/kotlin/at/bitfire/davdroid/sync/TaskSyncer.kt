@@ -19,6 +19,10 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
@@ -28,6 +32,16 @@ import java.util.logging.Level
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
 class TaskSyncer(context: Context): Syncer(context) {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface TaskSyncerEntryPoint {
+        fun tasksSyncManagerFactory(): TasksSyncManager.Factory
+    }
+
+    private val entryPoint = EntryPointAccessors.fromApplication<TaskSyncerEntryPoint>(context)
+
+
 
     override fun sync(
         account: Account,
@@ -59,7 +73,10 @@ class TaskSyncer(context: Context): Syncer(context) {
                 .find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
             for (taskList in taskLists) {
                 Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
-                TasksSyncManager(context, account, accountSettings, httpClient.value, extras, authority, syncResult, taskList).performSync()
+
+                val syncManagerFactory = entryPoint.tasksSyncManagerFactory()
+                val syncManager = syncManagerFactory.tasksSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, taskList)
+                syncManager.performSync()
             }
         } catch (e: TaskProvider.ProviderTooOldException) {
             TaskUtils.notifyProviderTooOld(context, e)
