@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.Context
 import android.content.SyncResult
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
@@ -20,6 +19,7 @@ import at.bitfire.dav4jvm.Response.HrefRelation
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils.assertWithin
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
@@ -49,7 +49,7 @@ class SyncManagerTest {
 
     companion object {
 
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        private val context = InstrumentationRegistry.getInstrumentation().targetContext
         val account = Account("SyncManagerTest", context.getString(R.string.account_type))
 
         @BeforeClass
@@ -73,12 +73,13 @@ class SyncManagerTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    @Inject
+    lateinit var db: AppDatabase
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    val server = MockWebServer()
+    private val server = MockWebServer()
 
     @Before
     fun inject() {
@@ -98,16 +99,16 @@ class SyncManagerTest {
 
 
     private fun syncManager(collection: LocalTestCollection, syncResult: SyncResult = SyncResult()) =
-            TestSyncManager(
-                    context,
-                    account,
-                    arrayOf(),
-                    "TestAuthority",
-                    HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build(),
-                    syncResult,
-                    collection,
-                    server
-            )
+        TestSyncManager(
+            account,
+            arrayOf(),
+            "TestAuthority",
+            HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build(),
+            syncResult,
+            collection,
+            server,
+            context, db
+        )
 
     @Before
     fun startServer() {
