@@ -20,6 +20,7 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
@@ -27,6 +28,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Protocol
 import okhttp3.internal.http.StatusLine
 import okhttp3.mockwebserver.MockResponse
@@ -98,13 +100,18 @@ class SyncManagerTest {
     }
 
 
-    private fun syncManager(collection: LocalTestCollection, syncResult: SyncResult = SyncResult()) =
+    private fun syncManager(
+        localCollection: LocalTestCollection,
+        syncResult: SyncResult = SyncResult(),
+        collection: Collection = Collection(0,0, type = "", url = "http://a".toHttpUrl())
+    ) =
         TestSyncManager(
             account,
             arrayOf(),
             "TestAuthority",
             HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build(),
             syncResult,
+            localCollection,
             collection,
             server,
             context, db

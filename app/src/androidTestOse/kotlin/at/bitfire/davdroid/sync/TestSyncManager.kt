@@ -12,6 +12,7 @@ import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
@@ -30,10 +31,11 @@ class TestSyncManager(
     httpClient: HttpClient,
     syncResult: SyncResult,
     localCollection: LocalTestCollection,
+    collection: Collection,
     val mockWebServer: MockWebServer,
     context: Context,
     db: AppDatabase
-): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(account, AccountSettings(context, account), httpClient, extras, authority, syncResult, localCollection, context, db) {
+): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(account, AccountSettings(context, account), httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
 
     override fun prepare(): Boolean {
         collectionURL = mockWebServer.url("/")
