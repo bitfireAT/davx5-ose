@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -50,6 +51,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
+    @Assisted collection: Collection,
     @ApplicationContext context: Context,
     db: AppDatabase
 ): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, context, db) {
@@ -63,7 +65,8 @@ class JtxSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             authority: String,
             syncResult: SyncResult,
-            localCollection: LocalJtxCollection
+            localCollection: LocalJtxCollection,
+            collection: Collection
         ): JtxSyncManager
     }
 

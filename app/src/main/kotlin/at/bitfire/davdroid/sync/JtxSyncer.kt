@@ -66,55 +66,63 @@ class JtxSyncer(context: Context): Syncer(context) {
             val accountSettings = AccountSettings(context, account)
 
             // sync list of collections
-            updateLocalCollections(account, provider, accountSettings)
+            val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
+
+            val remoteCollections = mutableMapOf<HttpUrl, Collection>()
+            if (service != null)
+                for (collection in db.collectionDao().getSyncJtxCollections(service.id))
+                    remoteCollections[collection.url] = collection
+
+            val updateColors = accountSettings.getManageCalendarColors()
+
+            for (jtxCollection in JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null))
+                jtxCollection.url?.let { strUrl ->
+                    val url = strUrl.toHttpUrl()
+                    val collection = remoteCollections[url]
+                    if (collection == null) {
+                        Logger.log.fine("Deleting obsolete local collection $url")
+                        jtxCollection.delete()
+                    } else {
+                        // remote CollectionInfo found for this local collection, update data
+                        Logger.log.log(Level.FINE, "Updating local collection $url", collection)
+                        val owner = collection.ownerId?.let { db.principalDao().get(it) }
+                        jtxCollection.updateCollection(collection, owner, updateColors)
+                        // we already have a local task list for this remote collection, don't take into consideration anymore
+                        remoteCollections -= url
+                    }
+                }
+
+            // create new local collections
+            for ((_,info) in remoteCollections) {
+                Logger.log.log(Level.INFO, "Adding local collections", info)
+                val owner = info.ownerId?.let { db.principalDao().get(it) }
+                LocalJtxCollection.create(account, provider, info, owner)
+            }
 
             // sync contents of collections
-            val collections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
-            for (collection in collections) {
-                Logger.log.info("Synchronizing $collection")
+            val localCollections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
+            for (localCollection in localCollections) {
+                Logger.log.info("Synchronizing $localCollection")
 
-                val syncManagerFactory = entryPoint.jtxSyncManagerFactory()
-                val syncManager = syncManagerFactory.jtxSyncManager(account, accountSettings, extras, httpClient.value, authority, syncResult, collection)
-                syncManager.performSync()
+                val url = localCollection.url?.toHttpUrl()
+                remoteCollections[url]?.let { collection ->
+                    val syncManagerFactory = entryPoint.jtxSyncManagerFactory()
+                    val syncManager = syncManagerFactory.jtxSyncManager(
+                        account,
+                        accountSettings,
+                        extras,
+                        httpClient.value,
+                        authority,
+                        syncResult,
+                        localCollection,
+                        collection
+                    )
+                    syncManager.performSync()
+                }
             }
 
         } catch (e: TaskProvider.ProviderTooOldException) {
             TaskUtils.notifyProviderTooOld(context, e)
-        }
-    }
-
-    private fun updateLocalCollections(account: Account, client: ContentProviderClient, settings: AccountSettings) {
-        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
-
-        val remoteCollections = mutableMapOf<HttpUrl, Collection>()
-        if (service != null)
-            for (collection in db.collectionDao().getSyncJtxCollections(service.id))
-                remoteCollections[collection.url] = collection
-
-        val updateColors = settings.getManageCalendarColors()
-
-        for (jtxCollection in JtxCollection.find(account, client, context, LocalJtxCollection.Factory, null, null))
-            jtxCollection.url?.let { strUrl ->
-                val url = strUrl.toHttpUrl()
-                val info = remoteCollections[url]
-                if (info == null) {
-                    Logger.log.fine("Deleting obsolete local collection $url")
-                    jtxCollection.delete()
-                } else {
-                    // remote CollectionInfo found for this local collection, update data
-                    Logger.log.log(Level.FINE, "Updating local collection $url", info)
-                    val owner = info.ownerId?.let { db.principalDao().get(it) }
-                    jtxCollection.updateCollection(info, owner, updateColors)
-                    // we already have a local task list for this remote collection, don't take into consideration anymore
-                    remoteCollections -= url
-                }
-            }
-
-        // create new local collections
-        for ((_,info) in remoteCollections) {
-            Logger.log.log(Level.INFO, "Adding local collections", info)
-            val owner = info.ownerId?.let { db.principalDao().get(it) }
-            LocalJtxCollection.create(account, client, info, owner)
         }
     }
 }
