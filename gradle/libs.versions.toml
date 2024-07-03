@@ -22,10 +22,6 @@ bitfire-cert4android = "f1cc9b9ca3"
 bitfire-dav4jvm = "b8be778202"
 bitfire-ical4android = "83cda23ceb"
 bitfire-vcard4android = "03a37a8284"
-commons-collections = "4.4"
-commons-lang = "3.14.0"
-#noinspection GradleDependency
-commons-text = "1.11.0"
 compose-accompanist = "0.34.0"
 compose-bom = "2024.06.00"
 # don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
@@ -74,9 +70,6 @@ bitfire-cert4android = { module = "com.github.bitfireAT:cert4android", version.r
 bitfire-dav4jvm = { module = "com.github.bitfireAT:dav4jvm", version.ref = "bitfire-dav4jvm" }
 bitfire-ical4android = { module = "com.github.bitfireAT:ical4android", version.ref = "bitfire-ical4android" }
 bitfire-vcard4android = { module = "com.github.bitfireAT:vcard4android", version.ref = "bitfire-vcard4android" }
-commons-collections = { module = "org.apache.commons:commons-collections4", version.ref = "commons-collections" }
-commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
-commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }

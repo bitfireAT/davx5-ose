@@ -184,10 +184,6 @@ dependencies {
     implementation(libs.bitfire.vcard4android)
 
     // third-party libs
-    implementation(libs.commons.collections)
-    @Suppress("RedundantSuppression")
-    implementation(libs.commons.lang)
-    implementation(libs.commons.text)
     @Suppress("RedundantSuppression")
     implementation(libs.dnsjava)
     implementation(libs.guava)
