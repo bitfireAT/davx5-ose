@@ -54,7 +54,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @ApplicationContext context: Context,
     db: AppDatabase
-): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, context, db) {
+): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
 
     @AssistedFactory
     interface Factory {

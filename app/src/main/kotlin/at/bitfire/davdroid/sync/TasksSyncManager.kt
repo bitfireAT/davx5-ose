@@ -57,7 +57,7 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @ApplicationContext context: Context,
     db: AppDatabase
-): SyncManager<LocalTask, LocalTaskList, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, context, db) {
+): SyncManager<LocalTask, LocalTaskList, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
 
     @AssistedFactory
     interface Factory {

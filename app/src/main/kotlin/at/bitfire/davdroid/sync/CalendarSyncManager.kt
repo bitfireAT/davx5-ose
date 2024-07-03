@@ -65,7 +65,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @ApplicationContext context: Context,
     db: AppDatabase
-): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCalendar, context, db) {
+): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCalendar, collection, context, db) {
 
     @AssistedFactory
     interface Factory {

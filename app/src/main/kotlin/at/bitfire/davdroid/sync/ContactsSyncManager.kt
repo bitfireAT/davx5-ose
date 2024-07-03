@@ -109,7 +109,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @ApplicationContext context: Context,
     db: AppDatabase
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
-    account, accountSettings, httpClient, extras, authority, syncResult, localAddressBook,
+    account, accountSettings, httpClient, extras, authority, syncResult, localAddressBook,  collection,
     context, db
 ) {
 
