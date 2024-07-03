@@ -4,9 +4,11 @@
 
 package at.bitfire.davdroid.webdav
 
+import android.os.FileUtils
 import at.bitfire.davdroid.webdav.cache.DiskCache
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
+import com.google.common.io.ByteStreams
+import com.google.common.io.Files
+import ezvcard.util.IOUtils
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -26,7 +28,7 @@ class DiskCacheTest {
         val SOME_OTHER_VALUE = ByteArray(30) { (it/2).toByte() }
 
         const val MAX_CACHE_MB = 10
-        const val MAX_CACHE_SIZE = MAX_CACHE_MB*FileUtils.ONE_MB
+        const val MAX_CACHE_SIZE = MAX_CACHE_MB * 1024*1024L
     }
 
     @Rule
@@ -53,22 +55,21 @@ class DiskCacheTest {
 
         // null value shouldn't have been written to cache
         assertEquals(0, cache.entries())
-        val file = cache.getFileOrPut(SOME_KEY) { SOME_VALUE }
-        file!!.inputStream().use { input ->
-            assertArrayEquals(SOME_VALUE, IOUtils.toByteArray(input))
+        cache.getFileOrPut(SOME_KEY) { SOME_VALUE }!!.let {
+            assertArrayEquals(SOME_VALUE, Files.asByteSource(it).read())
         }
     }
 
     @Test
     fun testGetFile_NotNull() {
-        cache.getFileOrPut(SOME_KEY) { SOME_VALUE }!!.inputStream().use { input ->
-            assertArrayEquals(SOME_VALUE, IOUtils.toByteArray(input))
+        cache.getFileOrPut(SOME_KEY) { SOME_VALUE }!!.let {
+            assertArrayEquals(SOME_VALUE, Files.asByteSource(it).read())
         }
 
         // non-null value should have been written to cache
         assertEquals(1, cache.entries())
-        cache.getFileOrPut(SOME_KEY) { SOME_OTHER_VALUE }!!.inputStream().use { input ->
-            assertArrayEquals(SOME_VALUE, IOUtils.toByteArray(input))
+        cache.getFileOrPut(SOME_KEY) { SOME_OTHER_VALUE }!!.let {
+            assertArrayEquals(SOME_VALUE, Files.asByteSource(it).read())
         }
     }
 
@@ -97,7 +98,7 @@ class DiskCacheTest {
 
         // add 11 x 1 MB
         for (i in 0..MAX_CACHE_MB) {
-            cache.getFileOrPut(i.toString()) { ByteArray(FileUtils.ONE_MB.toInt()) }
+            cache.getFileOrPut(i.toString()) { ByteArray(1024*1024) }
             Thread.sleep(5)     // make sure that files are exactly sortable by modification date
         }
         // now in cache: SOME_KEY (some bytes) and "0" .. "10" (1 MB each), i.e. 11 MB + some bytes in total
