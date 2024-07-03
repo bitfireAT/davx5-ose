@@ -85,7 +85,6 @@ class AccountRepository @Inject constructor(
             val defaultSyncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
 
             // Configure CardDAV service
-            val addrBookAuthority = context.getString(R.string.address_books_authority)
             if (config.cardDAV != null) {
                 // insert CardDAV service
                 val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
@@ -95,12 +94,7 @@ class AccountRepository @Inject constructor(
 
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
-
-                // set default sync interval and enable sync regardless of permissions
-                ContentResolver.setIsSyncable(account, addrBookAuthority, 1)
-                accountSettings.setSyncInterval(addrBookAuthority, defaultSyncInterval)
-            } else
-                ContentResolver.setIsSyncable(account, addrBookAuthority, 0)
+            }
 
             // Configure CalDAV service
             if (config.calDAV != null) {
