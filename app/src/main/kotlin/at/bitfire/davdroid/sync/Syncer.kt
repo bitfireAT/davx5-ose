@@ -63,6 +63,11 @@ abstract class Syncer(val context: Context) {
     internal val db = syncAdapterEntryPoint.appDatabase()
 
 
+    /**
+     * Creates and/or deletes local collections (calendars, address books, etc) and updates them
+     * with remote information. Then syncs the actual entries (events, tasks, contacts, etc) of all
+     * collections.
+     */
     abstract fun sync(account: Account, extras: Array<String>, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult)
 
     fun onPerformSync(
