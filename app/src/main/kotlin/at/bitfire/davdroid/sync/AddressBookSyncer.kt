@@ -118,7 +118,7 @@ class AddressBookSyncer(
 
                 val url = addressBook.url.toHttpUrl()
                 remoteAddressBooks[url]?.let { collection ->
-                    syncAddresBook(
+                    syncAddressBook(
                         addressBook.account,
                         extras,
                         ContactsContract.AUTHORITY,
@@ -132,7 +132,7 @@ class AddressBookSyncer(
         }
     }
 
-    fun syncAddresBook(
+    fun syncAddressBook(
         account: Account,
         extras: Array<String>,
         authority: String,

@@ -87,8 +87,9 @@ class CalendarSyncer(context: Context): Syncer(context) {
         // Sync local calendars
         val calendars = AndroidCalendar
             .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
-        for (calendar in calendars)
-            remoteCalendars[calendar.name?.toHttpUrl()]?.let { collection ->
+        for (calendar in calendars) {
+            val url = calendar.name?.toHttpUrl()
+            remoteCalendars[url]?.let { collection ->
                 Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
 
                 val syncManagerFactory = entryPoint.calendarSyncManagerFactory()
@@ -104,6 +105,7 @@ class CalendarSyncer(context: Context): Syncer(context) {
                 )
                 syncManager.performSync()
             }
+        }
 
     }
 }
