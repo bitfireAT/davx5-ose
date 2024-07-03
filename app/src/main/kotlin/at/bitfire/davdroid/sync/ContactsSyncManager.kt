@@ -26,6 +26,7 @@ import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -104,6 +105,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
     @Assisted localAddressBook: LocalAddressBook,
+    @Assisted collection: Collection,
     @ApplicationContext context: Context,
     db: AppDatabase
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
@@ -121,7 +123,8 @@ class ContactsSyncManager @AssistedInject constructor(
             authority: String,
             syncResult: SyncResult,
             provider: ContentProviderClient,
-            localAddressBook: LocalAddressBook
+            localAddressBook: LocalAddressBook,
+            collection: Collection
         ): ContactsSyncManager
     }
 

@@ -59,24 +59,7 @@ class AddressBookSyncer(
         provider: ContentProviderClient,        // for noop address book provider (not for contacts provider)
         syncResult: SyncResult
     ) {
-        if (updateLocalAddressBooks(account, syncResult)) {
-            context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { contactsProvider ->
-                for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
-                    Logger.log.info("Synchronizing address book $addressBookAccount")
-                    syncAddresBook(
-                        addressBookAccount,
-                        extras,
-                        ContactsContract.AUTHORITY,
-                        httpClient,
-                        contactsProvider,
-                        syncResult
-                    )
-                }
-            }
-        }
-    }
-
-    private fun updateLocalAddressBooks(account: Account, syncResult: SyncResult): Boolean {
+        // update local address books
         val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)
 
         val remoteAddressBooks = mutableMapOf<HttpUrl, Collection>()
@@ -89,14 +72,14 @@ class AddressBookSyncer(
                 Logger.log.info("No contacts permission, but no address book selected for synchronization")
             else
                 Logger.log.warning("No contacts permission, but address books are selected for synchronization")
-            return false
+            return // Don't sync
         }
 
         context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY).use { contactsProvider ->
             if (contactsProvider == null) {
                 Logger.log.severe("Couldn't access contacts provider")
                 syncResult.databaseError = true
-                return false
+                return // Don't sync
             }
 
             val forceAllReadOnly = settingsManager.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
@@ -104,15 +87,15 @@ class AddressBookSyncer(
             // delete/update local address books
             for (addressBook in LocalAddressBook.findAll(context, contactsProvider, account)) {
                 val url = addressBook.url.toHttpUrl()
-                val info = remoteAddressBooks[url]
-                if (info == null) {
+                val collection = remoteAddressBooks[url]
+                if (collection == null) {
                     Logger.log.log(Level.INFO, "Deleting obsolete local address book", url)
                     addressBook.delete()
                 } else {
                     // remote CollectionInfo found for this local collection, update data
                     try {
-                        Logger.log.log(Level.FINE, "Updating local address book $url", info)
-                        addressBook.update(info, forceAllReadOnly)
+                        Logger.log.log(Level.FINE, "Updating local address book $url", collection)
+                        addressBook.update(collection, forceAllReadOnly)
                     } catch (e: Exception) {
                         Logger.log.log(Level.WARNING, "Couldn't rename address book account", e)
                     }
@@ -128,9 +111,26 @@ class AddressBookSyncer(
             }
         }
 
-        return true
-    }
+        // Sync address books
+        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { contactsProvider ->
+            for (addressBook in LocalAddressBook.findAll(context, null, account)) {
+                Logger.log.info("Synchronizing address book $addressBook")
 
+                val url = addressBook.url.toHttpUrl()
+                remoteAddressBooks[url]?.let { collection ->
+                    syncAddresBook(
+                        addressBook.account,
+                        extras,
+                        ContactsContract.AUTHORITY,
+                        httpClient,
+                        contactsProvider,
+                        syncResult,
+                        collection
+                    )
+                }
+            }
+        }
+    }
 
     fun syncAddresBook(
         account: Account,
@@ -138,7 +138,8 @@ class AddressBookSyncer(
         authority: String,
         httpClient: Lazy<HttpClient>,
         provider: ContentProviderClient,
-        syncResult: SyncResult
+        syncResult: SyncResult,
+        collection: Collection
     ) {
         try {
             val accountSettings = AccountSettings(context, account)
@@ -164,7 +165,7 @@ class AddressBookSyncer(
             Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
 
             val syncManagerFactory = entryPoint.contactsSyncManagerFactory()
-            val syncManager = syncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook)
+            val syncManager = syncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
             syncManager.performSync()
 
         } catch(e: Exception) {
