@@ -21,6 +21,7 @@ import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -61,6 +62,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
+    @Assisted collection: Collection,
     @ApplicationContext context: Context,
     db: AppDatabase
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCalendar, context, db) {
@@ -74,7 +76,8 @@ class CalendarSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             authority: String,
             syncResult: SyncResult,
-            localCalendar: LocalCalendar
+            localCalendar: LocalCalendar,
+            collection: Collection
         ): CalendarSyncManager
     }
 

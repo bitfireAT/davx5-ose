@@ -53,41 +53,26 @@ class CalendarSyncer(context: Context): Syncer(context) {
         else
             AndroidCalendar.removeColors(provider, account)
 
-        updateLocalCalendars(provider, account, accountSettings)
-
-        val calendars = AndroidCalendar
-            .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
-        for (calendar in calendars) {
-            Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
-
-            val syncManagerFactory = entryPoint.calendarSyncManagerFactory()
-            val syncManager = syncManagerFactory.calendarSyncManager(account, accountSettings, extras, httpClient.value, authority, syncResult, calendar)
-            syncManager.performSync()
-        }
-    }
-
-    private fun updateLocalCalendars(provider: ContentProviderClient, account: Account, settings: AccountSettings) {
-        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
-
+        // Sync remote collection info (DB) to local calendars (content provider)
         val remoteCalendars = mutableMapOf<HttpUrl, Collection>()
+        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
         if (service != null)
             for (collection in db.collectionDao().getSyncCalendars(service.id)) {
                 remoteCalendars[collection.url] = collection
             }
 
-        // delete/update local calendars
-        val updateColors = settings.getManageCalendarColors()
+        val updateColors = accountSettings.getManageCalendarColors()
         for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null))
             calendar.name?.let {
                 val url = it.toHttpUrl()
-                val info = remoteCalendars[url]
-                if (info == null) {
+                val collection = remoteCalendars[url]
+                if (collection == null) {
                     Logger.log.log(Level.INFO, "Deleting obsolete local calendar", url)
                     calendar.delete()
                 } else {
                     // remote CollectionInfo found for this local collection, update data
-                    Logger.log.log(Level.FINE, "Updating local calendar $url", info)
-                    calendar.update(info, updateColors)
+                    Logger.log.log(Level.FINE, "Updating local calendar $url", collection)
+                    calendar.update(collection, updateColors)
                     // we already have a local calendar for this remote collection, don't take into consideration anymore
                     remoteCalendars -= url
                 }
@@ -98,5 +83,27 @@ class CalendarSyncer(context: Context): Syncer(context) {
             Logger.log.log(Level.INFO, "Adding local calendar", info)
             LocalCalendar.create(account, provider, info)
         }
+
+        // Sync local calendars
+        val calendars = AndroidCalendar
+            .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
+        for (calendar in calendars)
+            remoteCalendars[calendar.name?.toHttpUrl()]?.let { collection ->
+                Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
+
+                val syncManagerFactory = entryPoint.calendarSyncManagerFactory()
+                val syncManager = syncManagerFactory.calendarSyncManager(
+                    account,
+                    accountSettings,
+                    extras,
+                    httpClient.value,
+                    authority,
+                    syncResult,
+                    calendar,
+                    collection
+                )
+                syncManager.performSync()
+            }
+
     }
 }
