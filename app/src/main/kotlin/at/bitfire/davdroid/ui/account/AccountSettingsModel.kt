@@ -3,18 +3,18 @@ package at.bitfire.davdroid.ui.account
 import android.accounts.Account
 import android.app.Application
 import android.provider.CalendarContract
-import android.provider.ContactsContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.ViewModel
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
@@ -79,7 +79,7 @@ class AccountSettingsModel @AssistedInject constructor(
         Logger.log.info("Reloading settings")
 
         Snapshot.withMutableSnapshot {
-            syncIntervalContacts = accountSettings.getSyncInterval(ContactsContract.AUTHORITY)
+            syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority))
             syncIntervalCalendars = accountSettings.getSyncInterval(CalendarContract.AUTHORITY)
             syncIntervalTasks = tasksProvider?.let { accountSettings.getSyncInterval(it.authority) }
 
@@ -101,7 +101,7 @@ class AccountSettingsModel @AssistedInject constructor(
 
     fun updateContactsSyncInterval(syncInterval: Long) {
         CoroutineScope(Dispatchers.Default).launch {
-            accountSettings.setSyncInterval(ContactsContract.AUTHORITY, syncInterval)
+            accountSettings.setSyncInterval(context.getString(R.string.address_books_authority), syncInterval)
             reload()
         }
     }
@@ -180,7 +180,7 @@ class AccountSettingsModel @AssistedInject constructor(
         reload()
 
         resync(
-            authority = ContactsContract.AUTHORITY,
+            authority = context.getString(R.string.address_books_authority),
             fullResync = true
         )
     }

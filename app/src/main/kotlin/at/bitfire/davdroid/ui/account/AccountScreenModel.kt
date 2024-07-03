@@ -7,7 +7,6 @@ package at.bitfire.davdroid.ui.account
 import android.accounts.Account
 import android.app.Application
 import android.provider.CalendarContract
-import android.provider.ContactsContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -90,7 +89,7 @@ class AccountScreenModel @AssistedInject constructor(
     val cardDavProgress: Flow<AccountProgress> = accountProgressUseCase(
         account = account,
         serviceFlow = cardDavSvc,
-        authoritiesFlow = flowOf(listOf(ContactsContract.AUTHORITY))
+        authoritiesFlow = flowOf(listOf(context.getString(R.string.address_books_authority)))
     )
     val addressBooks = getServiceCollectionPager(cardDavSvc, Collection.TYPE_ADDRESSBOOK, showOnlyPersonal)
 

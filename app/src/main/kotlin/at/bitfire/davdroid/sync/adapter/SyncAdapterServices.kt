@@ -13,8 +13,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.os.Bundle
+import android.provider.ContactsContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
@@ -78,10 +80,18 @@ abstract class SyncAdapterService: Service() {
                 return
             }
 
+            /* Special case for contacts: because address books are separate accounts, changed contacts cause
+            this method to be called with authority = ContactsContract.AUTHORITY. However the sync worker shall be run for the
+            address book authority instead. */
             val workerAccount = accountSettings.account         // main account in case of an address book account
+            val workerAuthority =
+                if (authority == ContactsContract.AUTHORITY)
+                    context.getString(R.string.address_books_authority)
+                else
+                    authority
 
-            Logger.log.fine("Starting OneTimeSyncWorker for $workerAccount $authority and waiting for it")
-            val workerName = OneTimeSyncWorker.enqueue(context, workerAccount, authority, upload = upload)
+            Logger.log.fine("Starting OneTimeSyncWorker for $workerAccount $workerAuthority and waiting for it")
+            val workerName = OneTimeSyncWorker.enqueue(context, workerAccount, workerAuthority, upload = upload)
 
             // Because we are not allowed to observe worker state on a background thread, we can not
             // use it to block the sync adapter. Instead we check periodically whether the sync has

@@ -565,7 +565,7 @@ class DebugInfoModel @AssistedInject constructor(
     private fun dumpSyncWorkersInfo(account: Account): String {
         val table = TextTable("Tags", "Authority", "State", "Next run", "Retries", "Generation", "Periodicity")
         listOf(
-            ContactsContract.AUTHORITY,
+            context.getString(R.string.address_books_authority),
             CalendarContract.AUTHORITY,
             TaskProvider.ProviderName.JtxBoard.authority,
             TaskProvider.ProviderName.OpenTasks.authority,
@@ -608,6 +608,7 @@ data class AccountDumpInfo(
     companion object {
 
         fun mainAccount(context: Context, account: Account) = listOf(
+            AccountDumpInfo(account, context.getString(R.string.address_books_authority), null, null),
             AccountDumpInfo(account, CalendarContract.AUTHORITY, CalendarContract.Events.CONTENT_URI.asCalendarSyncAdapter(account), "event(s)"),
             AccountDumpInfo(account, TaskProvider.ProviderName.JtxBoard.authority, JtxContract.JtxICalObject.CONTENT_URI.asJtxSyncAdapter(account), "jtx Board ICalObject(s)"),
             AccountDumpInfo(account, TaskProvider.ProviderName.OpenTasks.authority, TaskContract.Tasks.getContentUri(

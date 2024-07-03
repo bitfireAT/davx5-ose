@@ -6,7 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.content.Context
 import android.provider.CalendarContract
-import android.provider.ContactsContract
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.TaskUtils
@@ -41,7 +41,7 @@ object SyncUtils {
     fun syncAuthorities(context: Context): List<String> {
         val result = mutableListOf(
             CalendarContract.AUTHORITY,
-            ContactsContract.AUTHORITY
+            context.getString(R.string.address_books_authority)
         )
         TaskUtils.currentProvider(context)?.let { taskProvider ->
             result += taskProvider.authority
