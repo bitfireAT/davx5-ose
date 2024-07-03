@@ -7,7 +7,9 @@ package at.bitfire.davdroid.ui.webdav
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.FileUtils
 import android.provider.DocumentsContract
+import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -71,7 +73,6 @@ import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl
-import org.apache.commons.io.FileUtils
 
 @Composable
 fun WebdavMountsScreen(
@@ -295,11 +296,12 @@ fun WebdavMountsItem(
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                 )
+                val context = LocalContext.current
                 Text(
                     text = stringResource(
                         R.string.webdav_mounts_quota_used_available,
-                        FileUtils.byteCountToDisplaySize(quotaUsed),
-                        FileUtils.byteCountToDisplaySize(quotaAvailable)
+                        Formatter.formatFileSize(context, quotaUsed),
+                        Formatter.formatFileSize(context, quotaAvailable)
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )

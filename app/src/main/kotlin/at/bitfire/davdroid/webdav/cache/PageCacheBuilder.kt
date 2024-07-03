@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.webdav.cache
 
 import okhttp3.HttpUrl
-import org.apache.commons.io.FileUtils
 import java.lang.ref.WeakReference
 
 /**
@@ -17,7 +16,7 @@ typealias PageCache = ExtendedLruCache<PageCacheBuilder.PageIdentifier, ByteArra
 
 object PageCacheBuilder {
 
-    const val MAX_PAGE_SIZE = 2 * FileUtils.ONE_MB.toInt()
+    const val MAX_PAGE_SIZE = 2 * 1024*1024     // 2 MB
     private const val MAX_ENTRIES = 3   // cache up to 3 pages (6 MB in total) in memory
 
     private var _cache: WeakReference<PageCache>? = null

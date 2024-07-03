@@ -186,11 +186,11 @@ dependencies {
     // third-party libs
     implementation(libs.commons.collections)
     @Suppress("RedundantSuppression")
-    implementation(libs.commons.io)
     implementation(libs.commons.lang)
     implementation(libs.commons.text)
     @Suppress("RedundantSuppression")
     implementation(libs.dnsjava)
+    implementation(libs.guava)
     implementation(libs.mikepenz.aboutLibraries)
     implementation(libs.nsk90.kstatemachine)
     implementation(libs.okhttp.base)

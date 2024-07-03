@@ -8,12 +8,12 @@ import android.app.Application
 import android.graphics.Point
 import android.os.Build
 import android.os.storage.StorageManager
+import android.text.format.Formatter
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.webdav.WebdavScoped
 import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.FileUtils
 import java.io.File
 import javax.inject.Inject
 
@@ -31,8 +31,8 @@ class ThumbnailCache @Inject constructor(context: Application) {
         val maxBytes = if (Build.VERSION.SDK_INT >= 26)
             storageManager.getCacheQuotaBytes(storageManager.getUuidForPath(cacheDir)) / 2
         else
-            50*FileUtils.ONE_MB
-        Logger.log.info("Initializing WebDAV thumbnail cache with ${FileUtils.byteCountToDisplaySize(maxBytes)}")
+            50 * 1024*1024  // 50 MB
+        Logger.log.info("Initializing WebDAV thumbnail cache with ${Formatter.formatFileSize(context, maxBytes)}")
 
         storage = DiskCache(cacheDir, maxBytes)
     }

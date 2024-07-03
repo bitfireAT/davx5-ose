@@ -7,6 +7,7 @@ package at.bitfire.davdroid.webdav
 import android.content.Context
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
+import android.text.format.Formatter
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -27,7 +28,6 @@ import okhttp3.MediaType
 import okhttp3.RequestBody
 import okhttp3.internal.headersContentLength
 import okio.BufferedSink
-import org.apache.commons.io.FileUtils
 import java.io.IOException
 import java.util.logging.Level
 
@@ -45,7 +45,7 @@ class StreamingFileDescriptor(
 
     companion object {
         /** 1 MB transfer buffer */
-        private const val BUFFER_SIZE = FileUtils.ONE_MB.toInt()
+        private const val BUFFER_SIZE = 1024*1024
     }
 
     val dav = DavResource(client.okHttpClient, url)
@@ -123,7 +123,7 @@ class StreamingFileDescriptor(
                         )
                     else
                         // known file size
-                        notification.setSubText(FileUtils.byteCountToDisplaySize(length))
+                        notification.setSubText(Formatter.formatFileSize(context, length))
 
                     ParcelFileDescriptor.AutoCloseOutputStream(writeFd).use { output ->
                         val buffer = ByteArray(BUFFER_SIZE)

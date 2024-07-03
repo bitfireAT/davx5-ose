@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.webdav.cache
 
 import at.bitfire.davdroid.log.Logger
-import org.apache.commons.io.FileUtils
 import java.io.File
 
 /**
@@ -71,7 +70,9 @@ class DiskCache(
 
     @Synchronized
     fun clear() {
-        FileUtils.cleanDirectory(cacheDir)
+        cacheDir.listFiles()?.forEach { entry ->
+            entry.delete()
+        }
     }
 
     @Synchronized

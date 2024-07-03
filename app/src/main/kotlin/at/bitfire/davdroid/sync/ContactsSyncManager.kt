@@ -10,6 +10,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncResult
 import android.os.Build
+import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavAddressBook
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
@@ -53,7 +54,6 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.apache.commons.io.FileUtils
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.Reader
@@ -168,7 +168,7 @@ class ContactsSyncManager @AssistedInject constructor(
             it.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        Logger.log.info("Address book accepts vCards up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                        Logger.log.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
 
                     response[SupportedAddressData::class.java]?.let { supported ->
