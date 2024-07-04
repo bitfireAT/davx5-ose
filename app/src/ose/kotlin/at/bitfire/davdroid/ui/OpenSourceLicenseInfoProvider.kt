@@ -18,10 +18,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
+import com.google.common.io.CharStreams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.apache.commons.io.IOUtils
 import javax.inject.Inject
 
 class OpenSourceLicenseInfoProvider @Inject constructor(): AboutActivity.AppLicenseInfoProvider {
@@ -47,7 +47,7 @@ class OpenSourceLicenseInfoProvider @Inject constructor(): AboutActivity.AppLice
         init {
             viewModelScope.launch(Dispatchers.IO) {
                 app.resources.assets.open("gplv3.html").use { inputStream ->
-                    val raw = IOUtils.toString(inputStream, Charsets.UTF_8)
+                    val raw = CharStreams.toString(inputStream.bufferedReader())
                     gpl = HtmlCompat.fromHtml(raw, HtmlCompat.FROM_HTML_MODE_LEGACY)
                 }
             }

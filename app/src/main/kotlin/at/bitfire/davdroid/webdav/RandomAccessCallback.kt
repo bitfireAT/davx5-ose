@@ -12,6 +12,7 @@ import android.os.HandlerThread
 import android.os.ProxyFileDescriptorCallback
 import android.system.ErrnoException
 import android.system.OsConstants
+import android.text.format.Formatter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
@@ -35,7 +36,6 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.MediaType
-import org.apache.commons.io.FileUtils
 import ru.nsk.kstatemachine.event.Event
 import ru.nsk.kstatemachine.state.State
 import ru.nsk.kstatemachine.state.finalState
@@ -76,7 +76,7 @@ class RandomAccessCallback private constructor(
         .setCategory(NotificationCompat.CATEGORY_STATUS)
         .setContentTitle(context.getString(R.string.webdav_notification_access))
         .setContentText(dav.fileName())
-        .setSubText(FileUtils.byteCountToDisplaySize(fileSize))
+        .setSubText(Formatter.formatFileSize(context, fileSize))
         .setSmallIcon(R.drawable.ic_storage_notify)
         .setOngoing(true)
     private val notificationTag = url.toString()

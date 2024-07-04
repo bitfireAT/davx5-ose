@@ -24,6 +24,7 @@ import android.os.StatFs
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.text.format.DateUtils
+import android.text.format.Formatter
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -48,20 +49,18 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.ical4android.TaskProvider
 import at.techbee.jtx.JtxContract
+import com.google.common.io.ByteStreams
+import com.google.common.io.Files
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.apache.commons.io.ByteOrderMark
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.dmfs.tasks.contract.TaskContract
 import java.io.File
 import java.io.IOException
-import java.io.StringReader
 import java.io.Writer
 import java.util.TimeZone
 import java.util.logging.Level
@@ -129,8 +128,8 @@ class DebugInfoModel @AssistedInject constructor(
             if (details.logs != null) {
                 val file = File(debugDir, FILE_LOGS)
                 if (!file.exists() || file.canWrite()) {
-                    file.writer().buffered().use { writer ->
-                        IOUtils.copy(StringReader(details.logs), writer)
+                    file.printWriter().use { writer ->
+                        writer.write(details.logs)
                     }
                     uiState = uiState.copy(logFile = file)
                 } else
@@ -164,7 +163,6 @@ class DebugInfoModel @AssistedInject constructor(
     private fun generateDebugInfo(syncAccount: Account?, syncAuthority: String?, cause: Throwable?, localResource: String?, remoteResource: String?) {
         val debugInfoFile = File(Logger.debugDir(), FILE_DEBUG_INFO)
         debugInfoFile.writer().buffered().use { writer ->
-            writer.append(ByteOrderMark.UTF_BOM)
             writer.append("--- BEGIN DEBUG INFO ---\n\n")
 
             // begin with most specific information
@@ -262,9 +260,9 @@ class DebugInfoModel @AssistedInject constructor(
             val filesPath = Environment.getDataDirectory()
             val statFs = StatFs(filesPath.path)
             writer.append("Internal memory ($filesPath): ")
-                .append(FileUtils.byteCountToDisplaySize(statFs.availableBytes))
+                .append(Formatter.formatFileSize(context, statFs.availableBytes))
                 .append(" free of ")
-                .append(FileUtils.byteCountToDisplaySize(statFs.totalBytes))
+                .append(Formatter.formatFileSize(context, statFs.totalBytes))
                 .append("\n\n")
 
             // power saving
@@ -431,9 +429,7 @@ class DebugInfoModel @AssistedInject constructor(
                 zip.setLevel(9)
                 uiState.debugInfo?.let { debugInfo ->
                     zip.putNextEntry(ZipEntry("debug-info.txt"))
-                    debugInfo.inputStream().use {
-                        IOUtils.copy(it, zip)
-                    }
+                    Files.copy(debugInfo, zip)
                     zip.closeEntry()
                 }
 
@@ -441,16 +437,14 @@ class DebugInfoModel @AssistedInject constructor(
                 if (logs != null) {
                     // verbose logs available
                     zip.putNextEntry(ZipEntry(logs.name))
-                    logs.inputStream().use {
-                        IOUtils.copy(it, zip)
-                    }
+                    Files.copy(logs, zip)
                     zip.closeEntry()
                 } else {
                     // logcat (short logs)
                     try {
                         Runtime.getRuntime().exec("logcat -d").also { logcat ->
                             zip.putNextEntry(ZipEntry("logcat.txt"))
-                            IOUtils.copy(logcat.inputStream, zip)
+                            ByteStreams.copy(logcat.inputStream, zip)
                         }
                     } catch (e: Exception) {
                         Logger.log.log(Level.SEVERE, "Couldn't attach logcat", e)

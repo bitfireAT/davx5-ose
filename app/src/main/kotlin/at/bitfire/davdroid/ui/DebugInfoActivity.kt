@@ -16,7 +16,6 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl
-import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.StringUtils
 import java.io.File
 
@@ -129,7 +128,7 @@ class DebugInfoActivity : AppCompatActivity() {
     class IntentBuilder(context: Context) {
 
         companion object {
-            const val MAX_ELEMENT_SIZE = 800 * FileUtils.ONE_KB.toInt()
+            const val MAX_ELEMENT_SIZE = 800 * 1024     // 800 kB
         }
 
         val intent = Intent(context, DebugInfoActivity::class.java)

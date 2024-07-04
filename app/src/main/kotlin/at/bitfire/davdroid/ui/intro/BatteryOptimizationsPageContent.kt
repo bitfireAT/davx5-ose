@@ -35,7 +35,6 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
-import org.apache.commons.text.WordUtils
 import java.util.Locale
 
 @Composable
@@ -154,7 +153,7 @@ fun BatteryOptimizationsPageContent(
                     Text(
                         text = stringResource(
                             R.string.intro_autostart_title,
-                            WordUtils.capitalize(Build.MANUFACTURER)
+                            Build.MANUFACTURER.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
                         ),
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.fillMaxWidth()

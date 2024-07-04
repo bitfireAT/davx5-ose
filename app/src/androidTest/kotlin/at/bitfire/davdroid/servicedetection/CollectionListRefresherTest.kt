@@ -24,7 +24,6 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.apache.commons.lang3.StringUtils
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -625,7 +624,7 @@ class CollectionListRefresherTest {
     class TestDispatcher: Dispatcher() {
 
         override fun dispatch(request: RecordedRequest): MockResponse {
-            val path = StringUtils.removeEnd(request.path!!, "/")
+            val path = request.path!!.trimEnd('/')
 
             if (request.method.equals("PROPFIND", true)) {
                 val properties = when (path) {

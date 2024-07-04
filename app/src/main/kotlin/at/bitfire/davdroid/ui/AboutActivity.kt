@@ -65,7 +65,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.apache.commons.io.IOUtils
 import org.json.JSONObject
 import java.text.Collator
 import java.time.LocalDateTime
@@ -207,7 +206,7 @@ class AboutActivity: AppCompatActivity() {
             val context = getApplication<Application>()
             try {
                 context.resources.assets.open("translators.json").use { stream ->
-                    val jsonTranslations = JSONObject(IOUtils.toString(stream, Charsets.UTF_8))
+                    val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
                     val result = LinkedList<Translation>()
                     for (langCode in jsonTranslations.keys()) {
                         val jsonTranslators = jsonTranslations.getJSONArray(langCode)

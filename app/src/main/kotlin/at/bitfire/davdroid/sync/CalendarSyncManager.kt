@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.Context
 import android.content.SyncResult
+import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
@@ -42,7 +43,6 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.apache.commons.io.FileUtils
 import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
@@ -97,7 +97,7 @@ class CalendarSyncManager @AssistedInject constructor(
             it.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        Logger.log.info("Calendar accepts events up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
+                        Logger.log.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
 
                     response[SupportedReportSet::class.java]?.let { supported ->
