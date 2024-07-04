@@ -219,8 +219,7 @@ class AccountSettings(
     fun getSyncInterval(authority: String): Long? {
         val addrBookAuthority = context.getString(R.string.address_books_authority)
 
-        if (ContentResolver.getIsSyncable(account, authority) <= 0
-            && authority != addrBookAuthority)
+        if (ContentResolver.getIsSyncable(account, authority) <= 0 && authority != addrBookAuthority)
             return null
 
         val key = when {

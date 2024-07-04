@@ -90,23 +90,18 @@ class AccountRepository @Inject constructor(
                 // insert CardDAV service
                 val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
 
-                // initial CardDAV account settings
+                // initial CardDAV account settings and sync intervals
                 accountSettings.setGroupMethod(groupMethod)
+                accountSettings.setSyncInterval(addrBookAuthority, defaultSyncInterval)
 
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
-
-                // set default sync interval for address books
-                accountSettings.setSyncInterval(addrBookAuthority, defaultSyncInterval)
             }
 
             // Configure CalDAV service
             if (config.calDAV != null) {
                 // insert CalDAV service
                 val id = insertService(accountName, Service.TYPE_CALDAV, config.calDAV)
-
-                // start CalDAV service detection (refresh collections)
-                RefreshCollectionsWorker.enqueue(context, id)
 
                 // set default sync interval and enable sync regardless of permissions
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
@@ -121,6 +116,9 @@ class AccountRepository @Inject constructor(
                     Logger.log.info("Tasks provider ${taskProvider.authority} found. Tasks sync enabled.")
                 } else
                     Logger.log.info("No tasks provider found. Did not enable tasks sync.")
+
+                // start CalDAV service detection (refresh collections)
+                RefreshCollectionsWorker.enqueue(context, id)
             } else
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
 
