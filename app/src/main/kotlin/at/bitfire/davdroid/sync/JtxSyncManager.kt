@@ -30,6 +30,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.ical4android.UsesThreadContextClassLoader
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -43,6 +44,7 @@ import java.io.Reader
 import java.io.StringReader
 import java.util.logging.Level
 
+@UsesThreadContextClassLoader
 class JtxSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted accountSettings: AccountSettings,

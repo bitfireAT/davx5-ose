@@ -78,7 +78,22 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
 
-@UsesThreadContextClassLoader
+/**
+ * Synchronizes a local collection with a remote collection.
+ *
+ * @param ResourceType      type of local resources
+ * @param CollectionType    type of local collection
+ * @param RemoteType        type of remote collection
+ *
+ * @param account           account to synchronize
+ * @param accountSettings   account settings of account to synchronize
+ * @param httpClient        HTTP client to use for network requests, already authenticated with credentials from [account]
+ * @param extras            additional sync parameters
+ * @param authority         authority of the content provider the collection shall be synchronized with
+ * @param syncResult        receiver for result of the synchronization (will be updated by [performSync])
+ * @param localCollection   local collection to synchronize (interface to content provider)
+ * @param collection        collection info in the database
+ */
 abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: LocalCollection<ResourceType>, RemoteType: DavCollection>(
     val account: Account,
     val accountSettings: AccountSettings,
@@ -325,10 +340,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      */
     private fun saveSyncTime() {
         val serviceType = when (authority) {
-            ContactsContract.AUTHORITY,
-            context.getString(R.string.address_books_authority) ->      // Contacts and Address books
+            ContactsContract.AUTHORITY ->       // contacts
                 Service.TYPE_CARDDAV
-            else ->                                    // Calendars + other (ie. tasks
+            else ->                             // calendars and tasks
                 Service.TYPE_CALDAV
         }
 
