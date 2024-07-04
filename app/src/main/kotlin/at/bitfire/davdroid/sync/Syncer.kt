@@ -9,6 +9,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.DeadObjectException
+import androidx.work.ListenableWorker.Result
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
@@ -69,13 +70,26 @@ abstract class Syncer(val context: Context) {
         account: Account,
         extras: Array<String>,
         authority: String,
-        provider: ContentProviderClient,
         syncResult: SyncResult
     ) {
         Logger.log.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
 
         val accountSettings by lazy { AccountSettings(context, account) }
         val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
+
+        // acquire ContentProviderClient of authority to be synced
+        val provider = try {
+            context.contentResolver.acquireContentProviderClient(authority)
+        } catch (e: SecurityException) {
+            Logger.log.log(Level.WARNING, "Missing permissions to acquire ContentProviderClient for $authority", e)
+            null
+        }
+
+        if (provider == null) {
+            Logger.log.warning("Couldn't acquire ContentProviderClient for $authority")
+            syncResult.stats.numParseExceptions++ // Hard sync error
+            return
+        }
 
         try {
             val runSync = /* ose */ true
@@ -94,7 +108,7 @@ abstract class Syncer(val context: Context) {
 
         } catch (e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't sync $authority", e)
-            syncResult.stats.numParseExceptions++
+            syncResult.stats.numParseExceptions++ // Hard sync error
 
         } finally {
             if (httpClient.isInitialized())
