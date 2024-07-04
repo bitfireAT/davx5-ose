@@ -37,6 +37,10 @@ import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -47,10 +51,10 @@ import java.util.Collections
 import java.util.logging.Level
 
 abstract class BaseSyncWorker(
-    appContext: Context,
+    context: Context,
     private val workerParams: WorkerParameters,
     private val syncDispatcher: CoroutineDispatcher,
-) : CoroutineWorker(appContext, workerParams) {
+) : CoroutineWorker(context, workerParams) {
 
     companion object {
 
@@ -185,6 +189,17 @@ abstract class BaseSyncWorker(
 
     }
 
+    // We don't inject the Syncers in our constructor because that would generate
+    // every syncer object regardless of whether it's even used for the synced authority (useless overhead).
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface BaseSyncWorkerEntryPoint {
+        fun addressBookSyncer(): AddressBookSyncer
+        fun calendarSyncer(): CalendarSyncer
+        fun jtxSyncer(): JtxSyncer
+        fun taskSyncer(): TaskSyncer
+    }
+    private val entryPoint = EntryPointAccessors.fromApplication<BaseSyncWorkerEntryPoint>(context)
 
     private val notificationManager = NotificationManagerCompat.from(applicationContext)
 
@@ -253,14 +268,14 @@ abstract class BaseSyncWorker(
         // What are we going to sync? Select syncer based on authority
         val syncer: Syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                AddressBookSyncer(applicationContext)
+                entryPoint.addressBookSyncer()
             CalendarContract.AUTHORITY ->
-                CalendarSyncer(applicationContext)
+                entryPoint.calendarSyncer()
             TaskProvider.ProviderName.JtxBoard.authority ->
-                JtxSyncer(applicationContext)
+                entryPoint.jtxSyncer()
             TaskProvider.ProviderName.OpenTasks.authority,
             TaskProvider.ProviderName.TasksOrg.authority ->
-                TaskSyncer(applicationContext)
+                entryPoint.taskSyncer()
             else ->
                 throw IllegalArgumentException("Invalid authority $authority")
         }
