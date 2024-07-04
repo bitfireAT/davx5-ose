@@ -10,6 +10,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.Build
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
@@ -19,27 +20,20 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
+import javax.inject.Inject
 
 /**
  * Sync logic for jtx board
  */
-class JtxSyncer(context: Context): Syncer(context) {
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface JtxSyncerEntryPoint {
-        fun jtxSyncManagerFactory(): JtxSyncManager.Factory
-    }
-
-    private val entryPoint = EntryPointAccessors.fromApplication<JtxSyncerEntryPoint>(context)
-
+class JtxSyncer @Inject constructor(
+    @ApplicationContext context: Context,
+    db: AppDatabase,
+    private val jtxSyncManagerFactory: JtxSyncManager.Factory
+): Syncer(context, db) {
 
     override fun sync(
         account: Account,
@@ -73,8 +67,7 @@ class JtxSyncer(context: Context): Syncer(context) {
             for (collection in collections) {
                 Logger.log.info("Synchronizing $collection")
 
-                val syncManagerFactory = entryPoint.jtxSyncManagerFactory()
-                val syncManager = syncManagerFactory.jtxSyncManager(account, accountSettings, extras, httpClient.value, authority, syncResult, collection)
+                val syncManager = jtxSyncManagerFactory.jtxSyncManager(account, accountSettings, extras, httpClient.value, authority, syncResult, collection)
                 syncManager.performSync()
             }
 
