@@ -48,7 +48,8 @@ import javax.inject.Singleton
     AutoMigration(from = 9, to = 10),
     AutoMigration(from = 10, to = 11),
     AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class),
-    AutoMigration(from = 12, to = 13)
+    AutoMigration(from = 12, to = 13),
+    AutoMigration(from = 13, to = 14)
 ])
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
