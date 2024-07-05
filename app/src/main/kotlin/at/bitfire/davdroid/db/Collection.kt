@@ -36,6 +36,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
     indices = [
         Index("serviceId","type"),
         Index("homeSetId","type"),
+        Index("ownerId", "type"),
         Index("url")
     ]
 )
