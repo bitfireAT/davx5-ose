@@ -12,6 +12,7 @@ import android.content.SyncResult
 import android.content.pm.PackageManager
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
@@ -21,35 +22,25 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
+import javax.inject.Inject
 
 /**
  * Sync logic for address books
  */
-class AddressBookSyncer(
-    context: Context
-) : Syncer(context) {
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface AddressBooksSyncerEntryPoint {
-        fun contactsSyncManagerFactory(): ContactsSyncManager.Factory
-        fun settingsManager(): SettingsManager
-    }
+class AddressBookSyncer @Inject constructor(
+    @ApplicationContext context: Context,
+    db: AppDatabase,
+    private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
+    private val settingsManager: SettingsManager
+) : Syncer(context, db) {
 
     companion object {
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"
     }
-
-    private val entryPoint = EntryPointAccessors.fromApplication<AddressBooksSyncerEntryPoint>(context)
-    val settingsManager = entryPoint.settingsManager()
-
 
     override fun sync(
         account: Account,
@@ -164,8 +155,7 @@ class AddressBookSyncer(
             Logger.log.info("Synchronizing address book: ${addressBook.url}")
             Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
 
-            val syncManagerFactory = entryPoint.contactsSyncManagerFactory()
-            val syncManager = syncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
+            val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
             syncManager.performSync()
 
         } catch(e: Exception) {

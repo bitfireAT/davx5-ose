@@ -10,6 +10,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.Build
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
@@ -19,29 +20,21 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
+import javax.inject.Inject
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
-class TaskSyncer(context: Context): Syncer(context) {
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface TaskSyncerEntryPoint {
-        fun tasksSyncManagerFactory(): TasksSyncManager.Factory
-    }
-
-    private val entryPoint = EntryPointAccessors.fromApplication<TaskSyncerEntryPoint>(context)
-
-
+class TaskSyncer @Inject constructor(
+    @ApplicationContext context: Context,
+    db: AppDatabase,
+    private val tasksSyncManagerFactory: TasksSyncManager.Factory
+): Syncer(context, db) {
 
     override fun sync(
         account: Account,
@@ -109,8 +102,7 @@ class TaskSyncer(context: Context): Syncer(context) {
 
                 val url = localTaskList.syncId?.toHttpUrl()
                 remoteTaskLists[url]?.let { collection ->
-                    val syncManagerFactory = entryPoint.tasksSyncManagerFactory()
-                    val syncManager = syncManagerFactory.tasksSyncManager(
+                    val syncManager = tasksSyncManagerFactory.tasksSyncManager(
                         account,
                         accountSettings,
                         httpClient.value,
