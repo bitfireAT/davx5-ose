@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Konto nicht (mehr) vorhanden</string>
-  <string name="account_title_address_book">DAVx⁵-Adressbuch</string>
+  <string name="account_title_address_book">TISync-Adressbuch</string>
   <string name="address_books_authority_title">Adressbücher</string>
   <string name="dialog_delete">Löschen</string>
   <string name="dialog_remove">Entfernen</string>
@@ -416,7 +416,7 @@
   <string name="webdav_notification_upload">WebDAV-Upload</string>
   <string name="webdav_provider_root_title">WebDAV-Zugang</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵-Berechtigungen</string>
+  <string name="sync_error_permissions">TISync-Berechtigungen</string>
   <string name="sync_error_permissions_text">Zusätzliche Berechtigungen benötigt</string>
   <string name="sync_error_tasks_too_old">%s zu alt</string>
   <string name="sync_error_tasks_required_version">Benötigte Mindestversion: %1$s</string>
