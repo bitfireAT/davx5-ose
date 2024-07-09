@@ -40,21 +40,22 @@ class CalendarSyncer @Inject constructor(
         provider: ContentProviderClient,
         syncResult: SyncResult
     ) {
-        val accountSettings = AccountSettings(context, account)
 
+        // 0. preparations
+        val accountSettings = AccountSettings(context, account)
         if (accountSettings.getEventColors())
             AndroidCalendar.insertColors(provider, account)
         else
             AndroidCalendar.removeColors(provider, account)
 
-        // Sync remote collection info (DB) to local calendars (content provider)
+        // 1. find calendar collections to be synced
         val remoteCalendars = mutableMapOf<HttpUrl, Collection>()
         val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
         if (service != null)
-            for (collection in db.collectionDao().getSyncCalendars(service.id)) {
+            for (collection in db.collectionDao().getSyncCalendars(service.id))
                 remoteCalendars[collection.url] = collection
-            }
 
+        // 2. update/delete local calendars
         val updateColors = accountSettings.getManageCalendarColors()
         for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null))
             calendar.name?.let {
@@ -72,13 +73,13 @@ class CalendarSyncer @Inject constructor(
                 }
             }
 
-        // create new local calendars
+        // 3. create new local calendars
         for ((_, info) in remoteCalendars) {
             Logger.log.log(Level.INFO, "Adding local calendar", info)
             LocalCalendar.create(account, provider, info)
         }
 
-        // Sync local calendars
+        // 4. sync local calendars
         val calendars = AndroidCalendar
             .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
         for (calendar in calendars) {

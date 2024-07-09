@@ -50,14 +50,15 @@ class AddressBookSyncer @Inject constructor(
         provider: ContentProviderClient,        // for noop address book provider (not for contacts provider)
         syncResult: SyncResult
     ) {
-        // update local address books
-        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)
 
+        // 1. find address book collections to be synced
         val remoteAddressBooks = mutableMapOf<HttpUrl, Collection>()
+        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)
         if (service != null)
             for (collection in db.collectionDao().getByServiceAndSync(service.id))
                 remoteAddressBooks[collection.url] = collection
 
+        // permission check
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             if (remoteAddressBooks.isEmpty())
                 Logger.log.info("No contacts permission, but no address book selected for synchronization")
@@ -73,9 +74,8 @@ class AddressBookSyncer @Inject constructor(
                 return // Don't sync
             }
 
+            // 2. update/delete local address books
             val forceAllReadOnly = settingsManager.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
-
-            // delete/update local address books
             for (addressBook in LocalAddressBook.findAll(context, contactsProvider, account)) {
                 val url = addressBook.url.toHttpUrl()
                 val collection = remoteAddressBooks[url]
@@ -95,14 +95,14 @@ class AddressBookSyncer @Inject constructor(
                 }
             }
 
-            // create new local address books
+            // 3. create new local address books
             for ((_, info) in remoteAddressBooks) {
                 Logger.log.log(Level.INFO, "Adding local address book", info)
                 LocalAddressBook.create(context, contactsProvider, account, info, forceAllReadOnly)
             }
         }
 
-        // Sync address books
+        // 4. sync local address books
         context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { contactsProvider ->
             for (addressBook in LocalAddressBook.findAll(context, null, account)) {
                 Logger.log.info("Synchronizing address book $addressBook")

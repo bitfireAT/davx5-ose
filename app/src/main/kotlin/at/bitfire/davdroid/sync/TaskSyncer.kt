@@ -60,18 +60,15 @@ class TaskSyncer @Inject constructor(
 
             val accountSettings = AccountSettings(context, account)
 
-            // update local task list
-            val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
-
+            // 1. find task collections to be synced
             val remoteTaskLists = mutableMapOf<HttpUrl, Collection>()
+            val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
             if (service != null)
-                for (collection in db.collectionDao().getSyncTaskLists(service.id)) {
+                for (collection in db.collectionDao().getSyncTaskLists(service.id))
                     remoteTaskLists[collection.url] = collection
-                }
 
-            // delete/update local task lists
+            // 2. delete/update local task lists
             val updateColors = accountSettings.getManageCalendarColors()
-
             for (list in DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, null, null))
                 list.syncId?.let {
                     val url = it.toHttpUrl()
@@ -88,13 +85,13 @@ class TaskSyncer @Inject constructor(
                     }
                 }
 
-            // create new local task lists
+            // 3. create new local task lists
             for ((_,info) in remoteTaskLists) {
                 Logger.log.log(Level.INFO, "Adding local task list", info)
                 LocalTaskList.create(account, taskProvider, info)
             }
 
-            // Sync tasks
+            // 4. sync local task lists
             val localTaskLists = DmfsTaskList
                 .find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
             for (localTaskList in localTaskLists) {
