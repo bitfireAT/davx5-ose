@@ -28,7 +28,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import io.mockk.mockk
 import okhttp3.Protocol
 import okhttp3.internal.http.StatusLine
 import okhttp3.mockwebserver.MockResponse
@@ -103,7 +103,7 @@ class SyncManagerTest {
     private fun syncManager(
         localCollection: LocalTestCollection,
         syncResult: SyncResult = SyncResult(),
-        collection: Collection = Collection(0,0, type = "", url = "http://a".toHttpUrl())
+        collection: Collection = mockk<Collection>()
     ) =
         TestSyncManager(
             account,
