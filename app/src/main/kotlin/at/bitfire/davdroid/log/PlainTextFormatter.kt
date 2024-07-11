@@ -6,7 +6,8 @@ package at.bitfire.davdroid.log
 
 import com.google.common.base.Ascii
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.apache.commons.lang3.time.DateFormatUtils
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import java.util.logging.Formatter
 import java.util.logging.LogRecord
@@ -19,6 +20,8 @@ class PlainTextFormatter private constructor(
         val LOGCAT = PlainTextFormatter(true)
         val DEFAULT = PlainTextFormatter(false)
 
+        val timeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
+
         const val MAX_MESSAGE_LENGTH = 20000
     }
 
@@ -26,7 +29,7 @@ class PlainTextFormatter private constructor(
         val builder = StringBuilder()
 
         if (!logcat)
-            builder .append(DateFormatUtils.format(r.millis, "yyyy-MM-dd HH:mm:ss", Locale.ROOT))
+            builder .append(timeFormat.format(Date(r.millis)))
                     .append(" ").append(r.threadID).append(" ")
 
         val className = shortClassName(r.sourceClassName)
