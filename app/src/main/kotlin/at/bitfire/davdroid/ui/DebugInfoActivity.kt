@@ -14,9 +14,9 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
+import com.google.common.base.Ascii
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl
-import org.apache.commons.lang3.StringUtils
 import java.io.File
 
 /**
@@ -160,7 +160,7 @@ class DebugInfoActivity : AppCompatActivity() {
             if (dump != null)
                 intent.putExtra(
                     EXTRA_LOCAL_RESOURCE,
-                    StringUtils.abbreviate(dump, MAX_ELEMENT_SIZE)
+                    Ascii.truncate(dump, MAX_ELEMENT_SIZE, "…")
                 )
             return this
         }
@@ -169,7 +169,7 @@ class DebugInfoActivity : AppCompatActivity() {
             if (logs != null)
                 intent.putExtra(
                     EXTRA_LOGS,
-                    StringUtils.abbreviate(logs, MAX_ELEMENT_SIZE)
+                    Ascii.truncate(logs, MAX_ELEMENT_SIZE, "…")
                 )
             return this
         }

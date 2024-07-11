@@ -15,9 +15,10 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.sync.SyncUtils
+import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.util.setAndVerifyUserData
+import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.EntryPoint
@@ -25,7 +26,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import net.openid.appauth.AuthState
-import org.apache.commons.lang3.StringUtils
 import java.util.logging.Level
 
 /**
@@ -345,7 +345,7 @@ class AccountSettings(
         } else
             null
     fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
-        accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
+        accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY_SSIDS, ssids?.joinToString(",").trimToNull())
 
     fun getIgnoreVpns(): Boolean =
         when (accountManager.getUserData(account, KEY_IGNORE_VPNS)) {

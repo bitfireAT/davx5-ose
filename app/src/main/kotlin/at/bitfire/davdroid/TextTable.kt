@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid
 
-import org.apache.commons.lang3.StringUtils
 import java.util.Collections
 
 class TextTable(
@@ -41,7 +40,7 @@ class TextTable(
         // first line
         sb.append("\n┌")
         for (colIdx in headers.indices)
-            sb  .append(StringUtils.repeat('─', colWidths[colIdx] + 2))
+            sb  .append("─".repeat(colWidths[colIdx] + 2))
                 .append(if (colIdx == headers.size - 1) '┐' else '┬')
         sb.append('\n')
 
@@ -49,14 +48,14 @@ class TextTable(
         sb.append('│')
         for (colIdx in headers.indices)
             sb  .append(' ')
-                .append(StringUtils.rightPad(headers[colIdx], colWidths[colIdx] + 1))
+                .append(headers[colIdx].padEnd(colWidths[colIdx] + 1))
                 .append('│')
         sb.append('\n')
 
         // separator between header and body
         sb.append('├')
         for (colIdx in headers.indices) {
-            sb  .append(StringUtils.repeat('─', colWidths[colIdx] + 2))
+            sb  .append("─".repeat(colWidths[colIdx] + 2))
                 .append(if (colIdx == headers.size - 1) '┤' else '┼')
         }
         sb.append('\n')
@@ -65,7 +64,7 @@ class TextTable(
         for (line in lines) {
             for (colIdx in headers.indices)
                 sb  .append("│ ")
-                    .append(StringUtils.rightPad(line[colIdx], colWidths[colIdx] + 1))
+                    .append(line[colIdx].padEnd(colWidths[colIdx] + 1))
             sb.append("│\n")
         }
 

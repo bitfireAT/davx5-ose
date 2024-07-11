@@ -7,7 +7,6 @@ package at.bitfire.davdroid.ui.webdav
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.FileUtils
 import android.provider.DocumentsContract
 import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult

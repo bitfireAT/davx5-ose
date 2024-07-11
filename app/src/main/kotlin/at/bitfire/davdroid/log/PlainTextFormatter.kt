@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.log
 
-import org.apache.commons.lang3.StringUtils
+import com.google.common.base.Ascii
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.commons.lang3.time.DateFormatUtils
 import java.util.Locale
@@ -33,7 +33,7 @@ class PlainTextFormatter private constructor(
         if (className != r.loggerName)
             builder.append("[").append(className).append("] ")
 
-        builder.append(StringUtils.abbreviate(r.message, MAX_MESSAGE_LENGTH))
+        builder.append(Ascii.truncate(r.message, MAX_MESSAGE_LENGTH, "…"))
 
         r.thrown?.let {
             builder .append("\nEXCEPTION ")

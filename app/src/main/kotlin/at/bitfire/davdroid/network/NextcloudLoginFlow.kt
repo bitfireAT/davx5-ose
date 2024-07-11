@@ -9,6 +9,7 @@ import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.ui.setup.LoginInfo
+import at.bitfire.davdroid.util.withTrailingSlash
 import at.bitfire.vcard4android.GroupMethod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
@@ -20,7 +21,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.apache.commons.lang3.StringUtils
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URI
@@ -101,7 +101,7 @@ class NextcloudLoginFlow(
         val json = postForJson(pollUrl, "token=$token".toRequestBody("application/x-www-form-urlencoded".toMediaType()))
 
         // make sure server URL ends with a slash so that DAV_PATH can be appended
-        val serverUrl = StringUtils.appendIfMissing(json.getString("server"), "/")
+        val serverUrl = json.getString("server").withTrailingSlash()
 
         return LoginInfo(
             baseUri = URI(serverUrl).resolve(DAV_PATH),
