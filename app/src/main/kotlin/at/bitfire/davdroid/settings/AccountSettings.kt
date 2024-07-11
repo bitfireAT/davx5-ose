@@ -217,11 +217,13 @@ class AccountSettings(
      * @return sync interval in seconds; *[SYNC_INTERVAL_MANUALLY]* if manual sync; *null* if not set
      */
     fun getSyncInterval(authority: String): Long? {
-        if (ContentResolver.getIsSyncable(account, authority) <= 0)
+        val addrBookAuthority = context.getString(R.string.address_books_authority)
+
+        if (ContentResolver.getIsSyncable(account, authority) <= 0 && authority != addrBookAuthority)
             return null
 
         val key = when {
-            authority == context.getString(R.string.address_books_authority) ->
+            authority == addrBookAuthority ->
                 KEY_SYNC_INTERVAL_ADDRESSBOOKS
             authority == CalendarContract.AUTHORITY ->
                 KEY_SYNC_INTERVAL_CALENDARS

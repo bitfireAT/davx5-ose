@@ -9,7 +9,9 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.DeadObjectException
+import android.provider.ContactsContract
 import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -59,19 +61,44 @@ abstract class Syncer(
         account: Account,
         extras: Array<String>,
         authority: String,
-        provider: ContentProviderClient,
         syncResult: SyncResult
     ) {
         Logger.log.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
 
+        // use contacts provider for address books
+        val contentAuthority =
+            if (authority == context.getString(R.string.address_books_authority))
+                ContactsContract.AUTHORITY
+            else
+                authority
+
         val accountSettings by lazy { AccountSettings(context, account) }
         val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
+        // acquire ContentProviderClient of authority to be synced
+        val provider = try {
+            context.contentResolver.acquireContentProviderClient(contentAuthority)
+        } catch (e: SecurityException) {
+            Logger.log.log(Level.WARNING, "Missing permissions for authority $contentAuthority", e)
+            null
+        }
+
+        if (provider == null) {
+            /* Can happen if
+             - we're not allowed to access the content provider, or
+             - the content provider is not available at all, for instance because the respective
+               system app, like "contacts storage" is disabled */
+            Logger.log.warning("Couldn't connect to content provider of authority $contentAuthority")
+            syncResult.stats.numParseExceptions++ // hard sync error
+            return
+        }
+
+        // run sync
         try {
             val runSync = /* ose */ true
 
             if (runSync)
-                sync(account, extras, authority, httpClient, provider, syncResult)
+                sync(account, extras, contentAuthority, httpClient, provider, syncResult)
 
         } catch (e: DeadObjectException) {
             /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
@@ -83,15 +110,15 @@ abstract class Syncer(
             Logger.log.log(Level.WARNING, "Account was removed during synchronization", e)
 
         } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't sync $authority", e)
-            syncResult.stats.numParseExceptions++
+            Logger.log.log(Level.SEVERE, "Couldn't sync $contentAuthority", e)
+            syncResult.stats.numParseExceptions++ // Hard sync error
 
         } finally {
             if (httpClient.isInitialized())
                 httpClient.value.close()
             Logger.log.log(
                 Level.INFO,
-                "$authority sync of $account finished",
+                "$contentAuthority sync of $account finished",
                 extras.joinToString(", "))
         }
     }

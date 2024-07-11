@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
 
-package at.bitfire.davdroid.sync.adapter
+package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.app.Service
@@ -134,7 +134,6 @@ abstract class SyncAdapterService: Service() {
 }
 
 // exported sync adapter services; we need a separate class for each authority
-class AddressBooksSyncAdapterService: SyncAdapterService()
 class CalendarsSyncAdapterService: SyncAdapterService()
 class ContactsSyncAdapterService: SyncAdapterService()
 class JtxSyncAdapterService: SyncAdapterService()

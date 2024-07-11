@@ -34,7 +34,6 @@ class SyncerTest {
 
     /** use our WebDAV provider as a mock provider because it's our own and we don't need any permissions for it */
     private val mockAuthority = context.getString(R.string.webdav_authority)
-    private val mockProvider = context.contentResolver!!.acquireContentProviderClient(mockAuthority)!!
 
     val account = Account(javaClass.canonicalName, context.getString(R.string.account_type))
 
@@ -47,7 +46,7 @@ class SyncerTest {
     @Test
     fun testOnPerformSync_runsSyncAndSetsClassLoader() {
         val syncer = TestSyncer(context, db)
-        syncer.onPerformSync(account, arrayOf(), mockAuthority, mockProvider, SyncResult())
+        syncer.onPerformSync(account, arrayOf(), mockAuthority, SyncResult())
 
         // check whether onPerformSync() actually calls sync()
         assertEquals(1, syncer.syncCalled.get())

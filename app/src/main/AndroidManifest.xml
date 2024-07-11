@@ -177,7 +177,7 @@
                 android:resource="@xml/account_authenticator"/>
         </service>
         <service
-            android:name=".sync.adapter.CalendarsSyncAdapterService"
+            android:name=".sync.CalendarsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -188,7 +188,7 @@
                 android:resource="@xml/sync_calendars"/>
         </service>
         <service
-            android:name=".sync.adapter.JtxSyncAdapterService"
+            android:name=".sync.JtxSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -199,7 +199,7 @@
                 android:resource="@xml/sync_notes"/>
         </service>
         <service
-            android:name=".sync.adapter.OpenTasksSyncAdapterService"
+            android:name=".sync.OpenTasksSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -210,7 +210,7 @@
                 android:resource="@xml/sync_opentasks"/>
         </service>
         <service
-            android:name=".sync.adapter.TasksOrgSyncAdapterService"
+            android:name=".sync.TasksOrgSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -244,25 +244,8 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/account_authenticator_address_book"/>
         </service>
-        <provider
-            android:authorities="@string/address_books_authority"
-            android:exported="false"
-            android:label="@string/address_books_authority_title"
-            android:name=".sync.adapter.AddressBookProvider" />
         <service
-            android:name=".sync.adapter.AddressBooksSyncAdapterService"
-            android:exported="true"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_address_books"/>
-        </service>
-        <service
-            android:name=".sync.adapter.ContactsSyncAdapterService"
+            android:name=".sync.ContactsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
