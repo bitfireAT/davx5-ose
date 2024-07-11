@@ -53,7 +53,7 @@
     <string name="intro_tasks_opentasks">OpenTasks</string>
     <string name="intro_tasks_opentasks_info">Doesn\'t seem to be developed anymore – not recommended.</string>
     <string name="intro_tasks_tasks_org">Tasks.org</string>
-    <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">are not supported</a> (yet).]]></string>
+    <string name="intro_tasks_tasks_org_info"><![CDATA[Some features <a href="https://www.davx5.com/faq/tasks/advanced-task-features">are not supported</a>.]]></string>
     <string name="intro_tasks_no_app_store">No app store available</string>
     <string name="intro_tasks_dont_show">I don\'t need tasks support.*</string>
     <string name="intro_open_source_title">Open-source software</string>

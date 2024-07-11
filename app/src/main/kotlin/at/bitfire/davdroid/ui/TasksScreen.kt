@@ -149,7 +149,7 @@ fun TasksCard(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+                    .padding(top = 8.dp)
             )
 
             RadioWithSwitch(
@@ -170,7 +170,7 @@ fun TasksCard(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+                    .padding(top = 12.dp)
             )
 
             RadioWithSwitch(
@@ -187,14 +187,14 @@ fun TasksCard(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+                    .padding(top = 12.dp)
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+                    .padding(top = 12.dp)
             ) {
                 Checkbox(
                     checked = !showAgain,
