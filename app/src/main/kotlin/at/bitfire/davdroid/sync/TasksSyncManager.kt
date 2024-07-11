@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -29,6 +30,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.Task
+import at.bitfire.ical4android.UsesThreadContextClassLoader
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -45,6 +47,7 @@ import java.util.logging.Level
 /**
  * Synchronization manager for CalDAV collections; handles tasks (VTODO)
  */
+@UsesThreadContextClassLoader
 class TasksSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted accountSettings: AccountSettings,
@@ -53,9 +56,10 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTaskList,
+    @Assisted collection: Collection,
     @ApplicationContext context: Context,
     db: AppDatabase
-): SyncManager<LocalTask, LocalTaskList, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, context, db) {
+): SyncManager<LocalTask, LocalTaskList, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
 
     @AssistedFactory
     interface Factory {
@@ -66,7 +70,8 @@ class TasksSyncManager @AssistedInject constructor(
             extras: Array<String>,
             authority: String,
             syncResult: SyncResult,
-            localCollection: LocalTaskList
+            localCollection: LocalTaskList,
+            collection: Collection
         ): TasksSyncManager
     }
 

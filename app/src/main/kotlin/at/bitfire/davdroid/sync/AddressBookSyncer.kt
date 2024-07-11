@@ -50,60 +50,43 @@ class AddressBookSyncer @Inject constructor(
         provider: ContentProviderClient,        // for noop address book provider (not for contacts provider)
         syncResult: SyncResult
     ) {
-        if (updateLocalAddressBooks(account, syncResult)) {
-            context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { contactsProvider ->
-                for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
-                    Logger.log.info("Synchronizing address book $addressBookAccount")
-                    syncAddresBook(
-                        addressBookAccount,
-                        extras,
-                        ContactsContract.AUTHORITY,
-                        httpClient,
-                        contactsProvider,
-                        syncResult
-                    )
-                }
-            }
-        }
-    }
 
-    private fun updateLocalAddressBooks(account: Account, syncResult: SyncResult): Boolean {
-        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)
-
+        // 1. find address book collections to be synced
         val remoteAddressBooks = mutableMapOf<HttpUrl, Collection>()
+        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)
         if (service != null)
             for (collection in db.collectionDao().getByServiceAndSync(service.id))
                 remoteAddressBooks[collection.url] = collection
 
+        // permission check
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             if (remoteAddressBooks.isEmpty())
                 Logger.log.info("No contacts permission, but no address book selected for synchronization")
             else
                 Logger.log.warning("No contacts permission, but address books are selected for synchronization")
-            return false
+            return // Don't sync
         }
 
         context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY).use { contactsProvider ->
             if (contactsProvider == null) {
                 Logger.log.severe("Couldn't access contacts provider")
                 syncResult.databaseError = true
-                return false
+                return // Don't sync
             }
 
+            // 2. update/delete local address books
             val forceAllReadOnly = settingsManager.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
-
-            // delete/update local address books
             for (addressBook in LocalAddressBook.findAll(context, contactsProvider, account)) {
                 val url = addressBook.url.toHttpUrl()
-                val info = remoteAddressBooks[url]
-                if (info == null) {
+                val collection = remoteAddressBooks[url]
+                if (collection == null) {
                     Logger.log.log(Level.INFO, "Deleting obsolete local address book", url)
                     addressBook.delete()
                 } else {
                     // remote CollectionInfo found for this local collection, update data
                     try {
-                        Logger.log.log(Level.FINE, "Updating local address book $url", info)
-                        addressBook.update(info, forceAllReadOnly)
+                        Logger.log.log(Level.FINE, "Updating local address book $url", collection)
+                        addressBook.update(collection, forceAllReadOnly)
                     } catch (e: Exception) {
                         Logger.log.log(Level.WARNING, "Couldn't rename address book account", e)
                     }
@@ -112,24 +95,42 @@ class AddressBookSyncer @Inject constructor(
                 }
             }
 
-            // create new local address books
+            // 3. create new local address books
             for ((_, info) in remoteAddressBooks) {
                 Logger.log.log(Level.INFO, "Adding local address book", info)
                 LocalAddressBook.create(context, contactsProvider, account, info, forceAllReadOnly)
             }
         }
 
-        return true
+        // 4. sync local address books
+        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { contactsProvider ->
+            for (addressBook in LocalAddressBook.findAll(context, null, account)) {
+                Logger.log.info("Synchronizing address book $addressBook")
+
+                val url = addressBook.url.toHttpUrl()
+                remoteAddressBooks[url]?.let { collection ->
+                    syncAddressBook(
+                        addressBook.account,
+                        extras,
+                        ContactsContract.AUTHORITY,
+                        httpClient,
+                        contactsProvider,
+                        syncResult,
+                        collection
+                    )
+                }
+            }
+        }
     }
 
-
-    fun syncAddresBook(
+    fun syncAddressBook(
         account: Account,
         extras: Array<String>,
         authority: String,
         httpClient: Lazy<HttpClient>,
         provider: ContentProviderClient,
-        syncResult: SyncResult
+        syncResult: SyncResult,
+        collection: Collection
     ) {
         try {
             val accountSettings = AccountSettings(context, account)
@@ -154,7 +155,7 @@ class AddressBookSyncer @Inject constructor(
             Logger.log.info("Synchronizing address book: ${addressBook.url}")
             Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
 
-            val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook)
+            val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
             syncManager.performSync()
 
         } catch(e: Exception) {

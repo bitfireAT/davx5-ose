@@ -60,15 +60,57 @@ class TaskSyncer @Inject constructor(
 
             val accountSettings = AccountSettings(context, account)
 
-            updateLocalTaskLists(taskProvider, account, accountSettings)
+            // 1. find task collections to be synced
+            val remoteTaskLists = mutableMapOf<HttpUrl, Collection>()
+            val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
+            if (service != null)
+                for (collection in db.collectionDao().getSyncTaskLists(service.id))
+                    remoteTaskLists[collection.url] = collection
 
-            val taskLists = DmfsTaskList
+            // 2. delete/update local task lists
+            val updateColors = accountSettings.getManageCalendarColors()
+            for (list in DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, null, null))
+                list.syncId?.let {
+                    val url = it.toHttpUrl()
+                    val info = remoteTaskLists[url]
+                    if (info == null) {
+                        Logger.log.fine("Deleting obsolete local task list $url")
+                        list.delete()
+                    } else {
+                        // remote CollectionInfo found for this local collection, update data
+                        Logger.log.log(Level.FINE, "Updating local task list $url", info)
+                        list.update(info, updateColors)
+                        // we already have a local task list for this remote collection, don't take into consideration anymore
+                        remoteTaskLists -= url
+                    }
+                }
+
+            // 3. create new local task lists
+            for ((_,info) in remoteTaskLists) {
+                Logger.log.log(Level.INFO, "Adding local task list", info)
+                LocalTaskList.create(account, taskProvider, info)
+            }
+
+            // 4. sync local task lists
+            val localTaskLists = DmfsTaskList
                 .find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
-            for (taskList in taskLists) {
-                Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
+            for (localTaskList in localTaskLists) {
+                Logger.log.info("Synchronizing task list #${localTaskList.id} [${localTaskList.syncId}]")
 
-                val syncManager = tasksSyncManagerFactory.tasksSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, taskList)
-                syncManager.performSync()
+                val url = localTaskList.syncId?.toHttpUrl()
+                remoteTaskLists[url]?.let { collection ->
+                    val syncManager = tasksSyncManagerFactory.tasksSyncManager(
+                        account,
+                        accountSettings,
+                        httpClient.value,
+                        extras,
+                        authority,
+                        syncResult,
+                        localTaskList,
+                        collection
+                    )
+                    syncManager.performSync()
+                }
             }
         } catch (e: TaskProvider.ProviderTooOldException) {
             TaskUtils.notifyProviderTooOld(context, e)
@@ -79,40 +121,5 @@ class TaskSyncer @Inject constructor(
         }
 
         Logger.log.info("Task sync complete")
-    }
-
-    private fun updateLocalTaskLists(provider: TaskProvider, account: Account, settings: AccountSettings) {
-        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
-
-        val remoteTaskLists = mutableMapOf<HttpUrl, Collection>()
-        if (service != null)
-            for (collection in db.collectionDao().getSyncTaskLists(service.id)) {
-                remoteTaskLists[collection.url] = collection
-            }
-
-        // delete/update local task lists
-        val updateColors = settings.getManageCalendarColors()
-
-        for (list in DmfsTaskList.find(account, provider, LocalTaskList.Factory, null, null))
-            list.syncId?.let {
-                val url = it.toHttpUrl()
-                val info = remoteTaskLists[url]
-                if (info == null) {
-                    Logger.log.fine("Deleting obsolete local task list $url")
-                    list.delete()
-                } else {
-                    // remote CollectionInfo found for this local collection, update data
-                    Logger.log.log(Level.FINE, "Updating local task list $url", info)
-                    list.update(info, updateColors)
-                    // we already have a local task list for this remote collection, don't take into consideration anymore
-                    remoteTaskLists -= url
-                }
-            }
-
-        // create new local task lists
-        for ((_,info) in remoteTaskLists) {
-            Logger.log.log(Level.INFO, "Adding local task list", info)
-            LocalTaskList.create(account, provider, info)
-        }
     }
 }

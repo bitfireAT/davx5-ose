@@ -21,6 +21,7 @@ import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -31,6 +32,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
+import at.bitfire.ical4android.UsesThreadContextClassLoader
 import at.bitfire.ical4android.util.DateUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -51,8 +53,9 @@ import java.time.ZonedDateTime
 import java.util.logging.Level
 
 /**
- * Synchronization manager for CalDAV collections; handles events (VEVENT)
+ * Synchronization manager for CalDAV collections; handles events (VEVENT).
  */
+@UsesThreadContextClassLoader
 class CalendarSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted accountSettings: AccountSettings,
@@ -61,9 +64,10 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
+    @Assisted collection: Collection,
     @ApplicationContext context: Context,
     db: AppDatabase
-): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCalendar, context, db) {
+): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCalendar, collection, context, db) {
 
     @AssistedFactory
     interface Factory {
@@ -74,7 +78,8 @@ class CalendarSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             authority: String,
             syncResult: SyncResult,
-            localCalendar: LocalCalendar
+            localCalendar: LocalCalendar,
+            collection: Collection
         ): CalendarSyncManager
     }
 

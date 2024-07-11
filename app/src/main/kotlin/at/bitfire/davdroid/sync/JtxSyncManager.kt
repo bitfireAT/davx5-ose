@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
@@ -29,6 +30,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.ical4android.UsesThreadContextClassLoader
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -42,6 +44,7 @@ import java.io.Reader
 import java.io.StringReader
 import java.util.logging.Level
 
+@UsesThreadContextClassLoader
 class JtxSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted accountSettings: AccountSettings,
@@ -50,9 +53,10 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
+    @Assisted collection: Collection,
     @ApplicationContext context: Context,
     db: AppDatabase
-): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, context, db) {
+): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
 
     @AssistedFactory
     interface Factory {
@@ -63,7 +67,8 @@ class JtxSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             authority: String,
             syncResult: SyncResult,
-            localCollection: LocalJtxCollection
+            localCollection: LocalJtxCollection,
+            collection: Collection
         ): JtxSyncManager
     }
 
