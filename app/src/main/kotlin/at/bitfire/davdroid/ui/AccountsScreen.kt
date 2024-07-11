@@ -194,8 +194,8 @@ fun AccountsScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         if (showAddAccount == AccountsModel.FABStyle.WithText)
                             ExtendedFloatingActionButton(
-                                text = { Text(stringResource(R.string.login_create_account)) },
-                                icon = { Icon(Icons.Filled.Add, stringResource(R.string.login_create_account)) },
+                                text = { Text(stringResource(R.string.login_add_account)) },
+                                icon = { Icon(Icons.Filled.Add, stringResource(R.string.login_add_account)) },
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary,
                                 onClick = onAddAccount
@@ -206,7 +206,7 @@ fun AccountsScreen(
                                 containerColor = MaterialTheme.colorScheme.secondary,
                                 contentColor = MaterialTheme.colorScheme.onSecondary
                             ) {
-                                Icon(Icons.Filled.Add, stringResource(R.string.login_create_account))
+                                Icon(Icons.Filled.Add, stringResource(R.string.login_add_account))
                             }
 
                         if (showSyncAll)

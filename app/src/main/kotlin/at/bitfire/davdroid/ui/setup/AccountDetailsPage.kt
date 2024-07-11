@@ -59,7 +59,7 @@ fun AccountDetailsPage(
     val context = LocalContext.current
     LaunchedEffect(uiState.couldNotCreateAccount) {
         if (uiState.couldNotCreateAccount) {
-            snackbarHostState.showSnackbar(context.getString(R.string.login_account_not_created))
+            snackbarHostState.showSnackbar(context.getString(R.string.login_account_not_added))
             model.resetCouldNotCreateAccount()
         }
     }
@@ -93,7 +93,7 @@ fun AccountDetailsPageContent(
     creatingAccount: Boolean
 ) {
     Assistant(
-        nextLabel = stringResource(R.string.login_create_account),
+        nextLabel = stringResource(R.string.login_add_account),
         onNext = onCreateAccount,
         nextEnabled = !creatingAccount && accountName.isNotBlank() && !accountNameAlreadyExists
     ) {

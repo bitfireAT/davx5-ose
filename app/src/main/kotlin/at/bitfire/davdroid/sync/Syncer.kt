@@ -16,10 +16,6 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 import java.util.logging.Level
 
 /**
@@ -30,7 +26,10 @@ import java.util.logging.Level
  *
  * Also provides useful methods that can be used by derived syncers ie [CalendarSyncer], etc.
  */
-abstract class Syncer(val context: Context) {
+abstract class Syncer(
+    val context: Context,
+    val db: AppDatabase
+) {
 
     companion object {
 
@@ -54,15 +53,6 @@ abstract class Syncer(val context: Context) {
         const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
 
     }
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface SyncerEntryPoint {
-        fun appDatabase(): AppDatabase
-    }
-
-    private val syncAdapterEntryPoint = EntryPointAccessors.fromApplication(context, SyncerEntryPoint::class.java)
-    internal val db = syncAdapterEntryPoint.appDatabase()
 
 
     abstract fun sync(account: Account, extras: Array<String>, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult)
