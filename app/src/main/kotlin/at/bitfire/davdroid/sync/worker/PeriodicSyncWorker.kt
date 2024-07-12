@@ -21,7 +21,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.concurrent.TimeUnit
 
-
 /**
  * Handles scheduled sync requests.
  *
@@ -34,6 +33,9 @@ import java.util.concurrent.TimeUnit
  * Expedited: no (→ no [getForegroundInfo])
  *
  * Long-running: no
+ *
+ * **Important:** If this class is renamed (or its package is changed), already enqueued workers won't
+ * run anymore because WorkManager references the work by the full class name.
  */
 @HiltWorker
 class PeriodicSyncWorker @AssistedInject constructor(
