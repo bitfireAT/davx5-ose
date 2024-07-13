@@ -12,7 +12,10 @@ import java.util.logging.Handler
 import java.util.logging.Level
 import java.util.logging.LogRecord
 
-object LogcatHandler: Handler() {
+/**
+ * Logging handler to log to Android logcat.
+ */
+internal class LogcatHandler: Handler() {
 
     init {
         formatter = PlainTextFormatter.LOGCAT
