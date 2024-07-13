@@ -19,7 +19,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
@@ -38,6 +37,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
@@ -53,6 +53,8 @@ class AccountRepository @Inject constructor(
     private val serviceRepository: DavServiceRepository,
     private val collectionRepository: DavCollectionRepository
 ) {
+
+    private val logger = Logger.getGlobal()
 
     private val accountType = context.getString(R.string.account_type)
     private val accountManager = AccountManager.get(context)
@@ -73,13 +75,13 @@ class AccountRepository @Inject constructor(
 
         // create Android account
         val userData = AccountSettings.initialUserData(credentials)
-        Logger.log.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
+        logger.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
 
         if (!AccountUtils.createAccount(context, account, userData, credentials?.password))
             return null
 
         // add entries for account to service DB
-        Logger.log.log(Level.INFO, "Writing account configuration to database", config)
+        logger.log(Level.INFO, "Writing account configuration to database", config)
         try {
             val accountSettings = AccountSettings(context, account)
             val defaultSyncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
@@ -113,9 +115,9 @@ class AccountRepository @Inject constructor(
                     ContentResolver.setIsSyncable(account, taskProvider.authority, 1)
                     accountSettings.setSyncInterval(taskProvider.authority, defaultSyncInterval)
                     // further changes will be handled by TasksWatcher on app start or when tasks app is (un)installed
-                    Logger.log.info("Tasks provider ${taskProvider.authority} found. Tasks sync enabled.")
+                    logger.info("Tasks provider ${taskProvider.authority} found. Tasks sync enabled.")
                 } else
-                    Logger.log.info("No tasks provider found. Did not enable tasks sync.")
+                    logger.info("No tasks provider found. Did not enable tasks sync.")
 
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
@@ -123,7 +125,7 @@ class AccountRepository @Inject constructor(
                 ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 0)
 
         } catch(e: InvalidAccountException) {
-            Logger.log.log(Level.SEVERE, "Couldn't access account settings", e)
+            logger.log(Level.SEVERE, "Couldn't access account settings", e)
             return null
         }
         return account
@@ -147,7 +149,7 @@ class AccountRepository @Inject constructor(
 
             true
         } catch (e: Exception) {
-            Logger.log.log(Level.WARNING, "Couldn't remove account $accountName", e)
+            logger.log(Level.WARNING, "Couldn't remove account $accountName", e)
             false
         }
     }
@@ -251,7 +253,7 @@ class AccountRepository @Inject constructor(
                         }
                     }
                 } catch (e: Exception) {
-                    Logger.log.log(Level.SEVERE, "Couldn't update address book accounts", e)
+                    logger.log(Level.SEVERE, "Couldn't update address book accounts", e)
                     // Couldn't update address book accounts, but this is not a fatal error (will be fixed at next sync)
                 }
 
@@ -262,7 +264,7 @@ class AccountRepository @Inject constructor(
             try {
                 LocalTaskList.onRenameAccount(context, oldAccount.name, newName)
             } catch (e: Exception) {
-                Logger.log.log(Level.WARNING, "Couldn't propagate new account name to tasks provider", e)
+                logger.log(Level.WARNING, "Couldn't propagate new account name to tasks provider", e)
                 // Couldn't update task lists, but this is not a fatal error (will be fixed at next sync)
             }
 

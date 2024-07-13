@@ -8,7 +8,7 @@ import android.app.Application
 import android.os.StrictMode
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.log.LogManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -19,22 +19,33 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
 @HiltAndroidApp
 class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provider {
 
-    @Inject lateinit var workerFactory: HiltWorkerFactory
+    @Inject
+    lateinit var logger: Logger
+
+    /**
+     * Creates the [LogManager] singleton and thus initializes logging.
+     */
+    @Inject
+    lateinit var logManager: LogManager
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()
 
+
     override fun onCreate() {
         super.onCreate()
-        Logger.initialize(this)
 
         if (BuildConfig.DEBUG)
             // debug builds
@@ -71,7 +82,7 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
     }
 
     override fun uncaughtException(t: Thread, e: Throwable) {
-        Logger.log.log(Level.SEVERE, "Unhandled exception!", e)
+        logger.log(Level.SEVERE, "Unhandled exception!", e)
 
         val intent = DebugInfoActivity.IntentBuilder(this)
             .withCause(e)

@@ -59,10 +59,10 @@ class DavResourceFinderTest {
         private const val SUBPATH_ADDRESSBOOK = "/addressbooks/private-contacts"
     }
 
-    val server = MockWebServer()
+    private val server = MockWebServer()
 
-    lateinit var finder: DavResourceFinder
-    lateinit var client: HttpClient
+    private lateinit var finder: DavResourceFinder
+    private lateinit var client: HttpClient
 
     @Before
     fun initServerAndClient() {
