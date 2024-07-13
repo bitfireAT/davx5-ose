@@ -97,9 +97,9 @@ class CalendarSyncManager @AssistedInject constructor(
     }
 
     override fun queryCapabilities(): SyncState? =
-        remoteExceptionContext {
+        SyncException.wrapWithRemoteResource(collectionURL) {
             var syncState: SyncState? = null
-            it.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+            davCollection.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                         Logger.log.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
@@ -127,7 +127,9 @@ class CalendarSyncManager @AssistedInject constructor(
             var modified = false
             for (event in localCollection.findDeleted()) {
                 Logger.log.warning("Restoring locally deleted event (read-only calendar!)")
-                localExceptionContext(event) { it.resetDeleted() }
+                SyncException.wrapWithLocalResource(event) {
+                    event.resetDeleted()
+                }
                 modified = true
             }
 
@@ -148,7 +150,9 @@ class CalendarSyncManager @AssistedInject constructor(
         if (localCollection.readOnly) {
             for (event in localCollection.findDirty()) {
                 Logger.log.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
-                localExceptionContext(event) { it.clearDirty(null, null) }
+                SyncException.wrapWithLocalResource(event) {
+                    event.clearDirty(null, null)
+                }
                 modified = true
             }
 
@@ -166,15 +170,16 @@ class CalendarSyncManager @AssistedInject constructor(
         return modified or superModified
     }
 
-    override fun generateUpload(resource: LocalEvent): RequestBody = localExceptionContext(resource) {
-        val event = requireNotNull(resource.event)
-        Logger.log.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
+    override fun generateUpload(resource: LocalEvent): RequestBody =
+        SyncException.wrapWithLocalResource(resource) {
+            val event = requireNotNull(resource.event)
+            Logger.log.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
-        val os = ByteArrayOutputStream()
-        event.write(os)
+            val os = ByteArrayOutputStream()
+            event.write(os)
 
-        os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
-    }
+            os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+        }
 
     override fun listAllRemote(callback: MultiResponseCallback) {
         // calculate time range limits
@@ -182,20 +187,20 @@ class CalendarSyncManager @AssistedInject constructor(
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
-        return remoteExceptionContext { remote ->
+        return SyncException.wrapWithRemoteResource(collectionURL) {
             Logger.log.info("Querying events since $limitStart")
-            remote.calendarQuery(Component.VEVENT, limitStart, null, callback)
+            davCollection.calendarQuery(Component.VEVENT, limitStart, null, callback)
         }
     }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
-        remoteExceptionContext {
-            it.multiget(bunch) { response, _ ->
-                responseExceptionContext(response) {
+        SyncException.wrapWithRemoteResource(collectionURL) {
+            davCollection.multiget(bunch) { response, _ ->
+                SyncException.wrapWithRemoteResource(response.href) wrapResponse@ {
                     if (!response.isSuccess()) {
                         Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                        return@responseExceptionContext
+                        return@wrapResponse
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
@@ -248,7 +253,8 @@ class CalendarSyncManager @AssistedInject constructor(
             }
 
             // update local event, if it exists
-            localExceptionContext(localCollection.findByName(fileName)) { local ->
+            val local = localCollection.findByName(fileName)
+            SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
                     Logger.log.log(Level.INFO, "Updating $fileName in local calendar", event)
                     local.eTag = eTag
@@ -257,8 +263,9 @@ class CalendarSyncManager @AssistedInject constructor(
                     syncResult.stats.numUpdates++
                 } else {
                     Logger.log.log(Level.INFO, "Adding $fileName to local calendar", event)
-                    localExceptionContext(LocalEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
-                        it.add()
+                    val newLocal = LocalEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    SyncException.wrapWithLocalResource(newLocal) {
+                        newLocal.add()
                     }
                     syncResult.stats.numInserts++
                 }
