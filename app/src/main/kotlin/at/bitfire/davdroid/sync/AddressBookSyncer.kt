@@ -53,7 +53,28 @@ class AddressBookSyncer @AssistedInject constructor(
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"
     }
 
-    override fun sync(provider: ContentProviderClient) {
+    override fun sync() {
+
+        // use contacts provider for address books (not address book authority)
+        val contactsAuthority = ContactsContract.AUTHORITY
+
+        // acquire ContentProviderClient
+        val provider = try {
+            context.contentResolver.acquireContentProviderClient(contactsAuthority)
+        } catch (e: SecurityException) {
+            Logger.log.log(Level.WARNING, "Missing permissions for authority $contactsAuthority", e)
+            null
+        }
+
+        if (provider == null) {
+            /* Can happen if
+             - we're not allowed to access the content provider, or
+             - the content provider is not available at all, for instance because the respective
+               system app, like "contacts storage" is disabled */
+            Logger.log.warning("Couldn't connect to content provider of authority $contactsAuthority")
+            syncResult.stats.numParseExceptions++ // hard sync error
+            return
+        }
 
         // 1. find address book collections to be synced
         val remoteAddressBooks = mutableMapOf<HttpUrl, Collection>()

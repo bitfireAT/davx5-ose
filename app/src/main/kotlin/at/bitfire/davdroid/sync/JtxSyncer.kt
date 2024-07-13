@@ -45,9 +45,27 @@ class JtxSyncer @AssistedInject constructor(
         fun create(account: Account, extras: Array<String>, authority: String, syncResult: SyncResult): JtxSyncer
     }
 
-    override fun sync(provider: ContentProviderClient) {
+    override fun sync() {
 
         // 0. preparations
+
+        // acquire ContentProviderClient
+        val provider = try {
+            context.contentResolver.acquireContentProviderClient(authority)
+        } catch (e: SecurityException) {
+            Logger.log.log(Level.WARNING, "Missing permissions for authority $authority", e)
+            null
+        }
+
+        if (provider == null) {
+            /* Can happen if
+             - we're not allowed to access the content provider, or
+             - the content provider is not available at all, for instance because the respective
+               system app, like "calendar storage" is disabled */
+            Logger.log.warning("Couldn't connect to content provider of authority $authority")
+            syncResult.stats.numParseExceptions++ // hard sync error
+            return
+        }
 
         // check whether jtx Board is new enough
         try {

@@ -5,13 +5,11 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.network.HttpClient
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
@@ -67,7 +65,7 @@ class SyncerTest {
 
         val syncCalled = AtomicInteger()
 
-        override fun sync(provider: ContentProviderClient) {
+        override fun sync() {
             Thread.sleep(1000)
             syncCalled.incrementAndGet()
         }
