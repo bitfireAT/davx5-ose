@@ -40,9 +40,11 @@ class PlainTextFormatter private constructor(
             builder .append(DateFormatUtils.format(r.millis, "yyyy-MM-dd HH:mm:ss", Locale.ROOT))
                     .append(" ").append(r.threadID).append(" ")
 
-            val className = shortClassName(r.sourceClassName)
-            if (className != r.loggerName)
-                builder.append("[").append(className).append("] ")
+            if (r.sourceClassName != null) {
+                val className = shortClassName(r.sourceClassName)
+                if (className != r.loggerName)
+                    builder.append("[").append(className).append("] ")
+            }
         }
 
         builder.append(r.message)

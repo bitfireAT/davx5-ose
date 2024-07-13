@@ -4,9 +4,12 @@
 
 package at.bitfire.davdroid.log
 
+import java.util.logging.Logger
+
+@Deprecated("Remove as soon as all usages are replaced")
 object Logger {
 
-    @Deprecated("Use @Inject j.u.l.Logger or j.u.l.Logger.getGlobal() instead", ReplaceWith("Logger.getGlobal()", "java.util.logging.Logger"))
-    val log: java.util.logging.Logger = java.util.logging.Logger.getGlobal()
+    @Deprecated("See LogManager for preferred ways to get a Logger.", ReplaceWith("java.util.logging.Logger.getGlobal()", "java.util.logging.Logger"))
+    val log: Logger = Logger.getGlobal()
 
 }

@@ -25,7 +25,7 @@ import java.util.logging.LogRecord
 import java.util.logging.Logger
 
 /**
- * Logging handler to log to a verbose log file.
+ * Logging handler that logs to a debug log file.
  *
  * Shows a permanent notification as long as it's active (until [close] is called).
  *

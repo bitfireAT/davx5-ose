@@ -24,8 +24,21 @@ import javax.inject.Singleton
  * Handles logging configuration and which loggers are active at a moment.
  * To initialize, just make sure that the [LogManager] singleton is created.
  *
+ * Configures the root logger like this:
+ *
  * - Always logs to logcat.
  * - Watches the "log to file" preference and activates or deactivates file logging accordingly.
+ * - If "log to file" is enabled, log level is set to [Level.ALL].
+ * - Otherwise, log level is set to [Level.INFO].
+ *
+ * Preferred ways to get a [Logger] are:
+ *
+ * - `@Inject` [Logger] for a general-purpose logger when injection is possible
+ * - `Logger.getGlobal()` for a general-purpose logger
+ * - `Logger.getLogger(javaClass.name)` for a specific logger that can be customized
+ *
+ * When using the global logger, the class name of the logging calls will still be logged, so there's
+ * no need to always get a separate logger for each class (only if the class wants to customize it).
  */
 @Singleton
 class LogManager @Inject constructor(

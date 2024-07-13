@@ -6,6 +6,7 @@ package at.bitfire.davdroid.log
 
 import android.os.Build
 import android.util.Log
+import at.bitfire.davdroid.BuildConfig
 import com.google.common.base.Ascii
 
 import java.util.logging.Handler
@@ -13,7 +14,7 @@ import java.util.logging.Level
 import java.util.logging.LogRecord
 
 /**
- * Logging handler to log to Android logcat.
+ * Logging handler that logs to Android logcat.
  */
 internal class LogcatHandler: Handler() {
 
@@ -25,7 +26,13 @@ internal class LogcatHandler: Handler() {
         val level = r.level.intValue()
         val text = formatter.format(r)
 
-        val className = PlainTextFormatter.shortClassName(r.sourceClassName)
+        // get class name that calls the logger (or fall back to package name)
+        val className = if (r.sourceClassName != null)
+            PlainTextFormatter.shortClassName(r.sourceClassName)
+        else
+            BuildConfig.APPLICATION_ID
+
+        // truncate class name to 23 characters on Android <8, see Log documentation
         val tag = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             Ascii.truncate(className, 23, "")
         else

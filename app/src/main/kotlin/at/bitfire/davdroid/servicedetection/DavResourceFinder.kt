@@ -95,7 +95,7 @@ class DavResourceFinder(
 
         // add StringHandler to logger
         log.level = Level.ALL
-        log.addHandler(logBuffer)
+        log.addHandler(handler)
 
         return handler
     }

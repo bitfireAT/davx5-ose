@@ -8,9 +8,18 @@ import com.google.common.base.Ascii
 import java.util.logging.Handler
 import java.util.logging.LogRecord
 
+/**
+ * Handler that writes log messages to a string buffer.
+ *
+ * @param maxSize Maximum size of the buffer. If the buffer exceeds this size, it will be truncated.
+ */
 class StringHandler(
     private val maxSize: Int
 ): Handler() {
+
+    companion object {
+        const val TRUNCATION_MARKER = "[...]"
+    }
 
     val builder = StringBuilder()
 
@@ -22,10 +31,21 @@ class StringHandler(
         var text = formatter.format(record)
 
         val currentSize = builder.length
-        if (currentSize + text.length > maxSize)
-            text = Ascii.truncate(text, maxSize - currentSize, "[...]")
+        val sizeLeft = maxSize - currentSize
 
-        builder.append(text)
+        when {
+            // Append the text if there is enough space
+            sizeLeft > text.length ->
+                builder.append(text)
+
+            // Truncate the text if there is not enough space
+            sizeLeft > TRUNCATION_MARKER.length -> {
+                text = Ascii.truncate(text, maxSize - currentSize, TRUNCATION_MARKER)
+                builder.append(text)
+            }
+
+            // Do nothing if the buffer is already full
+        }
     }
 
     override fun flush() {}

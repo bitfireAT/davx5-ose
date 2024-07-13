@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
@@ -26,10 +27,10 @@ import kotlin.system.exitProcess
 class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provider {
 
     @Inject
-    lateinit var logger: java.util.logging.Logger
+    lateinit var logger: Logger
 
     /**
-     * Creates the LogManager singleton and thus initializes logging.
+     * Creates the [LogManager] singleton and thus initializes logging.
      */
     @Inject
     lateinit var logManager: LogManager
