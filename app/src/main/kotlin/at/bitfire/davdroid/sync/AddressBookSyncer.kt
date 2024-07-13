@@ -22,34 +22,38 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
-import javax.inject.Inject
 
 /**
  * Sync logic for address books
  */
-class AddressBookSyncer @Inject constructor(
+class AddressBookSyncer @AssistedInject constructor(
     @ApplicationContext context: Context,
-    db: AppDatabase,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
-    private val settingsManager: SettingsManager
-) : Syncer(context, db) {
+    private val settingsManager: SettingsManager,
+    db: AppDatabase,
+    @Assisted account: Account,
+    @Assisted extras: Array<String>,
+    @Assisted authority: String,
+    @Assisted syncResult: SyncResult,
+): Syncer(context, db, account, extras, authority, syncResult) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(account: Account, extras: Array<String>, authority: String, syncResult: SyncResult): AddressBookSyncer
+    }
 
     companion object {
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"
     }
 
-    override fun sync(
-        account: Account,
-        extras: Array<String>,
-        authority: String,
-        httpClient: Lazy<HttpClient>,
-        provider: ContentProviderClient,
-        syncResult: SyncResult
-    ) {
+    override fun sync(provider: ContentProviderClient) {
 
         // 1. find address book collections to be synced
         val remoteAddressBooks = mutableMapOf<HttpUrl, Collection>()

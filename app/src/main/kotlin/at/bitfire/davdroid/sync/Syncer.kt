@@ -28,7 +28,11 @@ import java.util.logging.Level
  */
 abstract class Syncer(
     val context: Context,
-    val db: AppDatabase
+    val db: AppDatabase,
+    protected val account: Account,
+    protected val extras: Array<String>,
+    protected val authority: String,
+    protected val syncResult: SyncResult
 ) {
 
     companion object {
@@ -54,20 +58,17 @@ abstract class Syncer(
 
     }
 
+    val accountSettings by lazy { AccountSettings(context, account) }
+    val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
     /**
      * Creates and/or deletes local collections (calendars, address books, etc) and updates them
      * with remote information. Then syncs the actual entries (events, tasks, contacts, etc) of all
      * collections.
      */
-    abstract fun sync(account: Account, extras: Array<String>, authority: String, httpClient: Lazy<HttpClient>, provider: ContentProviderClient, syncResult: SyncResult)
+    abstract fun sync(provider: ContentProviderClient)
 
-    fun onPerformSync(
-        account: Account,
-        extras: Array<String>,
-        authority: String,
-        syncResult: SyncResult
-    ) {
+    fun onPerformSync() {
         Logger.log.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
 
         // use contacts provider for address books
@@ -76,9 +77,6 @@ abstract class Syncer(
                 ContactsContract.AUTHORITY
             else
                 authority
-
-        val accountSettings by lazy { AccountSettings(context, account) }
-        val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
         // acquire ContentProviderClient of authority to be synced
         val provider = try {
@@ -101,9 +99,8 @@ abstract class Syncer(
         // run sync
         try {
             val runSync = /* ose */ true
-
             if (runSync)
-                sync(account, extras, contentAuthority, httpClient, provider, syncResult)
+                sync(provider)
 
         } catch (e: DeadObjectException) {
             /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)

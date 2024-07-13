@@ -13,33 +13,36 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
-import javax.inject.Inject
 
 /**
  * Sync logic for calendars
  */
-class CalendarSyncer @Inject constructor(
+class CalendarSyncer @AssistedInject constructor(
     @ApplicationContext context: Context,
     db: AppDatabase,
-    private val calendarSyncManagerFactory: CalendarSyncManager.Factory
-): Syncer(context, db) {
+    private val calendarSyncManagerFactory: CalendarSyncManager.Factory,
+    @Assisted account: Account,
+    @Assisted extras: Array<String>,
+    @Assisted authority: String,
+    @Assisted syncResult: SyncResult
+): Syncer(context, db, account, extras, authority, syncResult) {
 
-    override fun sync(
-        account: Account,
-        extras: Array<String>,
-        authority: String,
-        httpClient: Lazy<HttpClient>,
-        provider: ContentProviderClient,
-        syncResult: SyncResult
-    ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(account: Account, extras: Array<String>, authority: String, syncResult: SyncResult): CalendarSyncer
+    }
+
+    override fun sync(provider: ContentProviderClient) {
 
         // 0. preparations
         val accountSettings = AccountSettings(context, account)

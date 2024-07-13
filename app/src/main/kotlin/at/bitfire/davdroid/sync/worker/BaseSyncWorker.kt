@@ -48,7 +48,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import java.util.Collections
-import java.util.logging.Level
 
 abstract class BaseSyncWorker(
     context: Context,
@@ -189,15 +188,15 @@ abstract class BaseSyncWorker(
 
     }
 
-    // We don't inject the Syncers in our constructor because that would generate
+    // We don't inject the Syncer factories in our constructor because that would generate
     // every syncer object regardless of whether it's even used for the synced authority (useless overhead).
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface BaseSyncWorkerEntryPoint {
-        fun addressBookSyncer(): AddressBookSyncer
-        fun calendarSyncer(): CalendarSyncer
-        fun jtxSyncer(): JtxSyncer
-        fun taskSyncer(): TaskSyncer
+        fun addressBookSyncer(): AddressBookSyncer.Factory
+        fun calendarSyncer(): CalendarSyncer.Factory
+        fun jtxSyncer(): JtxSyncer.Factory
+        fun taskSyncer(): TaskSyncer.Factory
     }
     private val entryPoint = EntryPointAccessors.fromApplication<BaseSyncWorkerEntryPoint>(context)
 
@@ -265,36 +264,38 @@ abstract class BaseSyncWorker(
     ): Result = withContext(syncDispatcher) {
         Logger.log.info("Running ${javaClass.name}: account=$account, authority=$authority")
 
+        // pass possibly supplied flags to the selected syncer
+        val extrasList = mutableListOf<String>()
+        when (inputData.getInt(OneTimeSyncWorker.ARG_RESYNC, OneTimeSyncWorker.NO_RESYNC)) {
+            OneTimeSyncWorker.RESYNC ->      extrasList.add(Syncer.SYNC_EXTRAS_RESYNC)
+            OneTimeSyncWorker.FULL_RESYNC -> extrasList.add(Syncer.SYNC_EXTRAS_FULL_RESYNC)
+        }
+        if (inputData.getBoolean(OneTimeSyncWorker.ARG_UPLOAD, false))
+            // Comes in through SyncAdapterService and is used only by ContactsSyncManager for an Android 7 workaround.
+            extrasList.add(ContentResolver.SYNC_EXTRAS_UPLOAD)
+
+        val extras = extrasList.toTypedArray()
+        val result = SyncResult()
+
         // What are we going to sync? Select syncer based on authority
         val syncer: Syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                entryPoint.addressBookSyncer()
+                entryPoint.addressBookSyncer().create(account, extras, authority, result)
             CalendarContract.AUTHORITY ->
-                entryPoint.calendarSyncer()
+                entryPoint.calendarSyncer().create(account, extras, authority, result)
             TaskProvider.ProviderName.JtxBoard.authority ->
-                entryPoint.jtxSyncer()
+                entryPoint.jtxSyncer().create(account, extras, authority, result)
             TaskProvider.ProviderName.OpenTasks.authority,
             TaskProvider.ProviderName.TasksOrg.authority ->
-                entryPoint.taskSyncer()
+                entryPoint.taskSyncer().create(account, extras, authority, result)
             else ->
                 throw IllegalArgumentException("Invalid authority $authority")
         }
 
-        // pass possibly supplied flags to the selected syncer
-        val extras = mutableListOf<String>()
-        when (inputData.getInt(OneTimeSyncWorker.ARG_RESYNC, OneTimeSyncWorker.NO_RESYNC)) {
-            OneTimeSyncWorker.RESYNC ->      extras.add(Syncer.SYNC_EXTRAS_RESYNC)
-            OneTimeSyncWorker.FULL_RESYNC -> extras.add(Syncer.SYNC_EXTRAS_FULL_RESYNC)
-        }
-        if (inputData.getBoolean(OneTimeSyncWorker.ARG_UPLOAD, false))
-            // Comes in through SyncAdapterService and is used only by ContactsSyncManager for an Android 7 workaround.
-            extras.add(ContentResolver.SYNC_EXTRAS_UPLOAD)
-
-        val result = SyncResult()
         // Start syncing. We still use the sync adapter framework's SyncResult to pass the sync results, but this
         // is only for legacy reasons and can be replaced by an own result class in the future.
         runInterruptible {
-            syncer.onPerformSync(account, extras.toTypedArray(), authority, result)
+            syncer.onPerformSync()
         }
 
         // Check for errors

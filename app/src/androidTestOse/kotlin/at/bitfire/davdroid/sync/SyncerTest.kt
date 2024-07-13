@@ -45,8 +45,8 @@ class SyncerTest {
 
     @Test
     fun testOnPerformSync_runsSyncAndSetsClassLoader() {
-        val syncer = TestSyncer(context, db)
-        syncer.onPerformSync(account, arrayOf(), mockAuthority, SyncResult())
+        val syncer = TestSyncer(context, db, account, arrayOf(), mockAuthority, SyncResult())
+        syncer.onPerformSync()
 
         // check whether onPerformSync() actually calls sync()
         assertEquals(1, syncer.syncCalled.get())
@@ -56,18 +56,18 @@ class SyncerTest {
     }
 
 
-    class TestSyncer(context: Context, db: AppDatabase) : Syncer(context, db) {
+    class TestSyncer(
+        context: Context,
+        db: AppDatabase,
+        account: Account,
+        extras: Array<String>,
+        authority: String,
+        syncResult: SyncResult
+    ) : Syncer(context, db, account, extras, authority, syncResult) {
 
         val syncCalled = AtomicInteger()
 
-        override fun sync(
-            account: Account,
-            extras: Array<String>,
-            authority: String,
-            httpClient: Lazy<HttpClient>,
-            provider: ContentProviderClient,
-            syncResult: SyncResult
-        ) {
+        override fun sync(provider: ContentProviderClient) {
             Thread.sleep(1000)
             syncCalled.incrementAndGet()
         }

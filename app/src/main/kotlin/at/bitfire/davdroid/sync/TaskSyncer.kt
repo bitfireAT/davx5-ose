@@ -14,36 +14,39 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
-import javax.inject.Inject
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
-class TaskSyncer @Inject constructor(
+class TaskSyncer @AssistedInject constructor(
     @ApplicationContext context: Context,
     db: AppDatabase,
+    @Assisted account: Account,
+    @Assisted extras: Array<String>,
+    @Assisted authority: String,
+    @Assisted syncResult: SyncResult,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory
-): Syncer(context, db) {
+): Syncer(context, db, account, extras, authority, syncResult) {
 
-    override fun sync(
-        account: Account,
-        extras: Array<String>,
-        authority: String,
-        httpClient: Lazy<HttpClient>,
-        provider: ContentProviderClient,
-        syncResult: SyncResult
-    ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(account: Account, extras: Array<String>, authority: String, syncResult: SyncResult): TaskSyncer
+    }
+
+    override fun sync(provider: ContentProviderClient) {
 
         // 0. preparations
 
