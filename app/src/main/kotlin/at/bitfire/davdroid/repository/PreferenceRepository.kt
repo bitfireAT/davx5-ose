@@ -7,7 +7,6 @@ package at.bitfire.davdroid.repository
 import android.app.Application
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.preference.PreferenceManager
-import at.bitfire.davdroid.log.Logger
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -23,27 +22,36 @@ class PreferenceRepository @Inject constructor(
 ) {
 
     companion object {
+        const val LOG_TO_FILE = "log_to_file"
         const val UNIFIED_PUSH_ENDPOINT = "unified_push_endpoint"
     }
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
+
     /**
-     * Updates the "log to file" (verbose logging") setting.
+     * Updates the "log to file" (verbose logging") preference.
      */
     fun logToFile(logToFile: Boolean) {
         preferences
             .edit()
-            .putBoolean(Logger.LOG_TO_FILE, logToFile)
+            .putBoolean(LOG_TO_FILE, logToFile)
             .apply()
     }
 
     /**
-     * Gets the "log to file" (verbose logging) setting as a live value.
+    * Gets the "log to file" (verbose logging) preference.
+    */
+    fun logToFile(): Boolean =
+        preferences.getBoolean(LOG_TO_FILE, false)
+
+    /**
+     * Gets the "log to file" (verbose logging) preference as a live value.
      */
-    fun logToFileFlow(): Flow<Boolean> = observeAsFlow(Logger.LOG_TO_FILE) {
-        preferences.getBoolean(Logger.LOG_TO_FILE, false)
+    fun logToFileFlow(): Flow<Boolean> = observeAsFlow(LOG_TO_FILE) {
+        logToFile()
     }
+
 
     fun unifiedPushEndpoint() =
         preferences.getString(UNIFIED_PUSH_ENDPOINT, null)
@@ -59,6 +67,8 @@ class PreferenceRepository @Inject constructor(
             .apply()
     }
 
+
+    // helpers
 
     private fun<T> observeAsFlow(keyToObserve: String, getValue: () -> T): Flow<T> =
         callbackFlow {

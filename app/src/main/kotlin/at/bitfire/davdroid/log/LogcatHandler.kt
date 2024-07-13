@@ -4,38 +4,45 @@
 
 package at.bitfire.davdroid.log
 
+import android.os.Build
 import android.util.Log
-
+import at.bitfire.davdroid.BuildConfig
+import com.google.common.base.Ascii
 import java.util.logging.Handler
 import java.util.logging.Level
 import java.util.logging.LogRecord
-import kotlin.math.min
 
-object LogcatHandler: Handler() {
-
-    private const val MAX_LINE_LENGTH = 3000
+/**
+ * Logging handler that logs to Android logcat.
+ */
+internal class LogcatHandler: Handler() {
 
     init {
         formatter = PlainTextFormatter.LOGCAT
-        level = Level.ALL
     }
 
     override fun publish(r: LogRecord) {
-        val text = formatter.format(r)
         val level = r.level.intValue()
+        val text = formatter.format(r)
 
-        val end = text.length
-        var pos = 0
-        while (pos < end) {
-            val line = text.substring(pos, min(pos + MAX_LINE_LENGTH, end))
-            when {
-                level >= Level.SEVERE.intValue()  -> Log.e(r.loggerName, line)
-                level >= Level.WARNING.intValue() -> Log.w(r.loggerName, line)
-                level >= Level.CONFIG.intValue()  -> Log.i(r.loggerName, line)
-                level >= Level.FINER.intValue()   -> Log.d(r.loggerName, line)
-                else                              -> Log.v(r.loggerName, line)
-            }
-            pos += MAX_LINE_LENGTH
+        // get class name that calls the logger (or fall back to package name)
+        val className = if (r.sourceClassName != null)
+            PlainTextFormatter.shortClassName(r.sourceClassName)
+        else
+            BuildConfig.APPLICATION_ID
+
+        // truncate class name to 23 characters on Android <8, see Log documentation
+        val tag = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            Ascii.truncate(className, 23, "")
+        else
+            className
+
+        when {
+            level >= Level.SEVERE.intValue()  -> Log.e(tag, text, r.thrown)
+            level >= Level.WARNING.intValue() -> Log.w(tag, text, r.thrown)
+            level >= Level.CONFIG.intValue()  -> Log.i(tag, text, r.thrown)
+            level >= Level.FINER.intValue()   -> Log.d(tag, text, r.thrown)
+            else                              -> Log.v(tag, text, r.thrown)
         }
     }
 

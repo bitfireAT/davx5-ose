@@ -19,15 +19,18 @@ import android.provider.ContactsContract
 import android.util.Base64
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
+import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.SyncUtils
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker
+import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
@@ -51,6 +54,7 @@ import java.util.logging.Level
 class AccountSettingsMigrations @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val accountSettings: AccountSettings,
+    val accountRepository: AccountRepository,
     val context: Application,
     val db: AppDatabase,
     val settings: SettingsManager
@@ -63,6 +67,41 @@ class AccountSettingsMigrations @AssistedInject constructor(
 
 
     val accountManager: AccountManager = AccountManager.get(context)
+
+
+    /**
+     * Between DAVx5 4.4.1-beta.1 and 4.4.1-rc.1 (both v15), the periodic sync workers were renamed (moved to another
+     * package) and thus automatic synchronization stopped (because the enqueued workers rely on the full class
+     * name and no new workers were enqueued). Here we enqueue all periodic sync workers again with the correct class name.
+     */
+    @Suppress("unused","FunctionName")
+    fun update_15_16() {
+        for (authority in SyncUtils.syncAuthorities(context)) {
+            Logger.log.info("Re-enqueuing periodic sync workers for $account/$authority, if necessary")
+
+            /* A maybe existing periodic worker references the old class name (even if it failed and/or is not active). So
+            we need to explicitly disable and prune all workers. Just updating the worker is not enough – WorkManager will update
+            the work details, but not the class name. */
+            val disableOp = PeriodicSyncWorker.disable(context, account, authority)
+            disableOp.result.get()  // block until worker with old name is disabled
+
+            val pruneOp = WorkManager.getInstance(context).pruneWork()
+            pruneOp.result.get()    // block until worker with old name is removed from DB
+
+            val interval = accountSettings.getSyncInterval(authority)
+            if (interval != null && interval != AccountSettings.SYNC_INTERVAL_MANUALLY) {
+                // There's a sync interval for this account/authority; a periodic sync worker should be there, too.
+                val onlyWifi = accountSettings.getSyncWifiOnly()
+                PeriodicSyncWorker.enable(
+                    context,
+                    account,
+                    authority,
+                    interval,
+                    onlyWifi
+                )
+            }
+        }
+    }
 
 
     /**

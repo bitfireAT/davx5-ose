@@ -42,6 +42,7 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.log.LogFileHandler
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
@@ -121,7 +122,7 @@ class DebugInfoModel @AssistedInject constructor(
 
     init {
         // create debug info directory
-        val debugDir = Logger.debugDir() ?: throw IOException("Couldn't create debug info directory")
+        val debugDir = LogFileHandler.debugDir(context) ?: throw IOException("Couldn't create debug info directory")
 
         viewModelScope.launch(Dispatchers.Main) {
             // create log file from EXTRA_LOGS or log file
@@ -134,7 +135,7 @@ class DebugInfoModel @AssistedInject constructor(
                     uiState = uiState.copy(logFile = file)
                 } else
                     Logger.log.warning("Can't write logs to $file")
-            } else Logger.getDebugLogFile()?.let { debugLogFile ->
+            } else LogFileHandler.getDebugLogFile(context)?.let { debugLogFile ->
                 if (debugLogFile.isFile && debugLogFile.canRead())
                     uiState = uiState.copy(logFile = debugLogFile)
             }
@@ -161,7 +162,7 @@ class DebugInfoModel @AssistedInject constructor(
      * Note: Part of this method and all of it's helpers (listed below) should probably be extracted in the future
      */
     private fun generateDebugInfo(syncAccount: Account?, syncAuthority: String?, cause: Throwable?, localResource: String?, remoteResource: String?) {
-        val debugInfoFile = File(Logger.debugDir(), FILE_DEBUG_INFO)
+        val debugInfoFile = File(LogFileHandler.debugDir(context), FILE_DEBUG_INFO)
         debugInfoFile.writer().buffered().use { writer ->
             writer.append("--- BEGIN DEBUG INFO ---\n\n")
 
@@ -423,7 +424,7 @@ class DebugInfoModel @AssistedInject constructor(
         try {
             uiState = uiState.copy(zipInProgress = true)
 
-            val file = File(Logger.debugDir(), "davx5-debug.zip")
+            val file = File(LogFileHandler.debugDir(context), "davx5-debug.zip")
             Logger.log.fine("Writing debug info to ${file.absolutePath}")
             ZipOutputStream(file.outputStream().buffered()).use { zip ->
                 zip.setLevel(9)

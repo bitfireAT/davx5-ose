@@ -52,7 +52,7 @@ class AccountSettings(
 
     companion object {
 
-        const val CURRENT_VERSION = 15
+        const val CURRENT_VERSION = 16
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"

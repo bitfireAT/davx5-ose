@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.log
 
-import com.google.common.base.Ascii
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -13,49 +12,60 @@ import java.util.logging.Formatter
 import java.util.logging.LogRecord
 
 class PlainTextFormatter private constructor(
-        private val logcat: Boolean
+    private val forLogcat: Boolean
 ): Formatter() {
 
     companion object {
+
+        /**
+         * Formatter intended for logcat output.
+         */
         val LOGCAT = PlainTextFormatter(true)
+
+        /**
+         * Formatter intended for file output.
+         */
         val DEFAULT = PlainTextFormatter(false)
 
-        val timeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
-
-        const val MAX_MESSAGE_LENGTH = 20000
+        fun shortClassName(className: String) = className
+            .replace(Regex("^at\\.bitfire\\.(dav|cert4an|dav4an|ical4an|vcard4an)droid\\."), ".")
+            .replace(Regex("\\$.*$"), "")
     }
+
+    private val timeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
+
 
     override fun format(r: LogRecord): String {
         val builder = StringBuilder()
 
-        if (!logcat)
+        if (!forLogcat) {
             builder .append(timeFormat.format(Date(r.millis)))
                     .append(" ").append(r.threadID).append(" ")
 
-        val className = shortClassName(r.sourceClassName)
-        if (className != r.loggerName)
-            builder.append("[").append(className).append("] ")
-
-        builder.append(Ascii.truncate(r.message, MAX_MESSAGE_LENGTH, "…"))
-
-        r.thrown?.let {
-            builder .append("\nEXCEPTION ")
-                    .append(ExceptionUtils.getStackTrace(it))
+            if (r.sourceClassName != null) {
+                val className = shortClassName(r.sourceClassName)
+                if (className != r.loggerName)
+                    builder.append("[").append(className).append("] ")
+            }
         }
+
+        builder.append(r.message)
+
+        if (!forLogcat)
+            r.thrown?.let {
+                builder .append("\nEXCEPTION ")
+                        .append(ExceptionUtils.getStackTrace(it))
+            }
 
         r.parameters?.let {
             for ((idx, param) in it.withIndex())
                 builder.append("\n\tPARAMETER #").append(idx).append(" = ").append(param)
         }
 
-        if (!logcat)
+        if (!forLogcat)
             builder.append("\n")
 
         return builder.toString()
     }
-
-    private fun shortClassName(className: String) = className
-            .replace(Regex("^at\\.bitfire\\.(dav|cert4an|dav4an|ical4an|vcard4an)droid\\."), "")
-            .replace(Regex("\\$.*$"), "")
 
 }
