@@ -4,7 +4,8 @@
 
 package at.bitfire.davdroid.log
 
-import org.apache.commons.lang3.exception.ExceptionUtils
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,6 +31,13 @@ class PlainTextFormatter private constructor(
         fun shortClassName(className: String) = className
             .replace(Regex("^at\\.bitfire\\.(dav|cert4an|dav4an|ical4an|vcard4an)droid\\."), ".")
             .replace(Regex("\\$.*$"), "")
+
+        private fun stackTrace(ex: Throwable): String {
+            val writer = StringWriter()
+            ex.printStackTrace(PrintWriter(writer))
+            return writer.toString()
+        }
+
     }
 
     private val timeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
@@ -51,11 +59,12 @@ class PlainTextFormatter private constructor(
 
         builder.append(r.message)
 
-        if (!forLogcat)
-            r.thrown?.let {
-                builder .append("\nEXCEPTION ")
-                        .append(ExceptionUtils.getStackTrace(it))
-            }
+        if (!forLogcat && r.thrown != null) {
+            val indentedStackTrace = stackTrace(r.thrown)
+                .replace("\n", "\n\t")
+                .removeSuffix("\t")
+            builder.append("\n\tEXCEPTION ").append(indentedStackTrace)
+        }
 
         r.parameters?.let {
             for ((idx, param) in it.withIndex())
