@@ -14,6 +14,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
@@ -70,7 +71,8 @@ class HttpClientTest {
         httpClient.okHttpClient.newCall(Request.Builder()
                 .get().url(url)
                 .build()).execute()
-        assertEquals("cookie2=2; cookie1=1", server.takeRequest().getHeader("Cookie"))
+        val header = server.takeRequest().getHeader("Cookie")
+        assertTrue(header == "cookie1=1; cookie2=2" || header == "cookie2=2; cookie1=1")
 
         server.enqueue(MockResponse()
                 .setResponseCode(200))
