@@ -26,6 +26,10 @@ import java.util.logging.Logger
 
 /**
  * Logging handler to log to a verbose log file.
+ *
+ * Shows a permanent notification as long as it's active (until [close] is called).
+ *
+ * Only one [LogFileHandler] should be active at once, because the notification is shared.
  */
 internal class LogFileHandler(
     private val context: Context

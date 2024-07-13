@@ -3,7 +3,9 @@
  */
 package at.bitfire.davdroid.servicedetection
 
+import android.app.ActivityManager
 import android.content.Context
+import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.Response
@@ -68,14 +70,10 @@ class DavResourceFinder(
         override fun toString() = wellKnownName
     }
 
-    val log: Logger = Logger.getLogger("davx5.DavResourceFinder")
-    private val logBuffer = StringHandler()
-    init {
-        log.level = Level.FINEST
-        log.addHandler(logBuffer)
-    }
+    val log: Logger = Logger.getLogger(javaClass.name)
+    private val logBuffer: StringHandler = initLogging()
 
-    var encountered401 = false
+    private var encountered401 = false
 
     private val httpClient: HttpClient = HttpClient.Builder(context, logger = log).let {
         credentials?.let { credentials ->
@@ -87,6 +85,19 @@ class DavResourceFinder(
 
     override fun close() {
         httpClient.close()
+    }
+
+    private fun initLogging(): StringHandler {
+        // don't use more than 1/4 of the available memory for a log string
+        val activityManager = context.getSystemService<ActivityManager>()!!
+        val maxLogSize = activityManager.memoryClass * (1024 * 1024 / 8)
+        val handler = StringHandler(maxLogSize)
+
+        // add StringHandler to logger
+        log.level = Level.ALL
+        log.addHandler(logBuffer)
+
+        return handler
     }
 
 

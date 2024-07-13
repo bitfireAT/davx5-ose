@@ -4,10 +4,13 @@
 
 package at.bitfire.davdroid.log
 
+import com.google.common.base.Ascii
 import java.util.logging.Handler
 import java.util.logging.LogRecord
 
-class StringHandler: Handler() {
+class StringHandler(
+    private val maxSize: Int
+): Handler() {
 
     val builder = StringBuilder()
 
@@ -16,7 +19,13 @@ class StringHandler: Handler() {
     }
 
     override fun publish(record: LogRecord) {
-        builder.append(formatter.format(record))
+        var text = formatter.format(record)
+
+        val currentSize = builder.length
+        if (currentSize + text.length > maxSize)
+            text = Ascii.truncate(text, maxSize - currentSize, "[...]")
+
+        builder.append(text)
     }
 
     override fun flush() {}
