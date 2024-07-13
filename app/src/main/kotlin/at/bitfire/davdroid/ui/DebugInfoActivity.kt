@@ -160,7 +160,7 @@ class DebugInfoActivity : AppCompatActivity() {
             if (dump != null)
                 intent.putExtra(
                     EXTRA_LOCAL_RESOURCE,
-                    Ascii.truncate(dump, MAX_ELEMENT_SIZE, "…")
+                    Ascii.truncate(dump, MAX_ELEMENT_SIZE, "...")
                 )
             return this
         }
@@ -169,7 +169,7 @@ class DebugInfoActivity : AppCompatActivity() {
             if (logs != null)
                 intent.putExtra(
                     EXTRA_LOGS,
-                    Ascii.truncate(logs, MAX_ELEMENT_SIZE, "…")
+                    Ascii.truncate(logs, MAX_ELEMENT_SIZE, "...")
                 )
             return this
         }
