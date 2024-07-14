@@ -101,6 +101,5 @@ class CalendarSyncer @Inject constructor(
                 syncManager.performSync()
             }
         }
-
     }
 }

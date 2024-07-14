@@ -121,6 +121,10 @@ abstract class Syncer(
         } finally {
             if (httpClient.isInitialized())
                 httpClient.value.close()
+
+            // close content provider client which is acquired above
+            provider.close()
+
             Logger.log.log(
                 Level.INFO,
                 "$contentAuthority sync of $account finished",
