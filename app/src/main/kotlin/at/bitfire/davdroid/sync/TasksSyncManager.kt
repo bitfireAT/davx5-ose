@@ -84,49 +84,50 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
     override fun queryCapabilities() =
-            remoteExceptionContext {
-                var syncState: SyncState? = null
-                it.propfind(0, MaxResourceSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                    if (relation == Response.HrefRelation.SELF) {
-                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                            Logger.log.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
-                        }
-
-                        syncState = syncState(response)
+        SyncException.wrapWithRemoteResource(collectionURL) {
+            var syncState: SyncState? = null
+            davCollection.propfind(0, MaxResourceSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                if (relation == Response.HrefRelation.SELF) {
+                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                        Logger.log.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
-                }
 
-                syncState
+                    syncState = syncState(response)
+                }
             }
+
+            syncState
+        }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun generateUpload(resource: LocalTask): RequestBody = localExceptionContext(resource) {
-        val task = requireNotNull(resource.task)
-        Logger.log.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
+    override fun generateUpload(resource: LocalTask): RequestBody =
+        SyncException.wrapWithLocalResource(resource) {
+            val task = requireNotNull(resource.task)
+            Logger.log.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
 
-        val os = ByteArrayOutputStream()
-        task.write(os)
+            val os = ByteArrayOutputStream()
+            task.write(os)
 
-        os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
-    }
+            os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+        }
 
     override fun listAllRemote(callback: MultiResponseCallback) {
-        remoteExceptionContext { remote ->
+        SyncException.wrapWithRemoteResource(collectionURL) {
             Logger.log.info("Querying tasks")
-            remote.calendarQuery("VTODO", null, null, callback)
+            davCollection.calendarQuery("VTODO", null, null, callback)
         }
     }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        remoteExceptionContext {
-            it.multiget(bunch) { response, _ ->
-                responseExceptionContext(response) {
+        SyncException.wrapWithRemoteResource(collectionURL) {
+            davCollection.multiget(bunch) { response, _ ->
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
                         Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                        return@responseExceptionContext
+                        return@wrapResource
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
@@ -163,7 +164,8 @@ class TasksSyncManager @AssistedInject constructor(
             val newData = tasks.first()
 
             // update local task, if it exists
-            localExceptionContext(localCollection.findByName(fileName)) { local ->
+            val local = localCollection.findByName(fileName)
+            SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
                     Logger.log.log(Level.INFO, "Updating $fileName in local task list", newData)
                     local.eTag = eTag
@@ -171,8 +173,9 @@ class TasksSyncManager @AssistedInject constructor(
                     syncResult.stats.numUpdates++
                 } else {
                     Logger.log.log(Level.INFO, "Adding $fileName to local task list", newData)
-                    localExceptionContext(LocalTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) {
-                        it.add()
+                    val newLocal = LocalTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    SyncException.wrapWithLocalResource(newLocal) {
+                        newLocal.add()
                     }
                     syncResult.stats.numInserts++
                 }

@@ -18,7 +18,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
-import org.apache.commons.collections4.CollectionUtils
 import javax.inject.Inject
 
 class WebDavMountRepository @Inject constructor(
@@ -113,6 +112,8 @@ class WebDavMountRepository @Inject constructor(
     ): Boolean = withContext(Dispatchers.IO) {
         var supported = false
 
+        val validVersions = arrayOf("1", "2", "3")
+
         HttpClient.Builder(context, null, credentials)
             .setForeground(true)
             .build()
@@ -120,7 +121,7 @@ class WebDavMountRepository @Inject constructor(
                 val dav = DavResource(client.okHttpClient, url)
                 runInterruptible {
                     dav.options { davCapabilities, _ ->
-                        if (CollectionUtils.containsAny(davCapabilities, "1", "2", "3"))
+                        if (davCapabilities.any { it in validVersions })
                             supported = true
                     }
                 }

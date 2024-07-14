@@ -34,7 +34,6 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.util.DavUtils
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.Type
 import java.io.InterruptedIOException
@@ -490,11 +489,8 @@ class DavResourceFinder(
             val emails: MutableList<String> = LinkedList()
         )
 
-        override fun toString(): String {
-            val builder = ReflectionToStringBuilder(this)
-            builder.setExcludeFieldNames("logs")
-            return builder.toString()
-        }
+        override fun toString() =
+            "DavResourceFinder.Configuration(cardDAV=$cardDAV, calDAV=$calDAV, encountered401=$encountered401, logs=(${logs.length} chars))"
 
     }
 

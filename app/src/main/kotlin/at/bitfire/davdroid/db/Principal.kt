@@ -12,8 +12,8 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.davdroid.util.trimToNull
 import okhttp3.HttpUrl
-import org.apache.commons.lang3.StringUtils
 
 @Entity(tableName = "principal",
     foreignKeys = [
@@ -47,9 +47,7 @@ data class Principal(
                 return null
 
             // Try getting the display name of the principal
-            val displayName: String? = StringUtils.trimToNull(
-                dav[DisplayName::class.java]?.displayName
-            )
+            val displayName: String? = dav[DisplayName::class.java]?.displayName.trimToNull()
 
             // Create and return principal - even without it's display name
             return Principal(

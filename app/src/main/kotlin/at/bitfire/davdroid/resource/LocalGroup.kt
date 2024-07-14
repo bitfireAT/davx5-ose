@@ -15,6 +15,7 @@ import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
@@ -22,7 +23,6 @@ import at.bitfire.vcard4android.AndroidGroupFactory
 import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
-import org.apache.commons.lang3.StringUtils
 import java.util.LinkedList
 import java.util.UUID
 
@@ -134,7 +134,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
         var uid: String? = null
         addressBook.provider!!.query(groupSyncUri(), arrayOf(AndroidContact.COLUMN_UID), null, null, null)?.use { cursor ->
             if (cursor.moveToNext())
-                uid = StringUtils.trimToNull(cursor.getString(0))
+                uid = cursor.getString(0).trimToNull()
         }
 
         if (uid == null) {

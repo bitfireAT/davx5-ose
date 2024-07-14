@@ -17,6 +17,7 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.GoogleLogin
+import at.bitfire.davdroid.util.trimToNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -25,7 +26,6 @@ import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
-import org.apache.commons.lang3.StringUtils
 import java.util.Locale
 import java.util.logging.Level
 
@@ -82,7 +82,7 @@ class GoogleLoginModel @AssistedInject constructor(
     fun signIn() =
         googleLogin.signIn(
             email = uiState.emailWithDomain,
-            customClientId = StringUtils.trimToNull(uiState.customClientId),
+            customClientId = uiState.customClientId.trimToNull(),
             locale = Locale.getDefault().toLanguageTag()
         )
 

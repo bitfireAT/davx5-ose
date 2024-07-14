@@ -209,5 +209,6 @@ dependencies {
     androidTestImplementation(libs.room.testing)
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
     testImplementation(libs.okhttp.mockwebserver)
 }

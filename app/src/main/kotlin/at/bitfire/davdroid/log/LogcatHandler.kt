@@ -8,7 +8,6 @@ import android.os.Build
 import android.util.Log
 import at.bitfire.davdroid.BuildConfig
 import com.google.common.base.Ascii
-
 import java.util.logging.Handler
 import java.util.logging.Level
 import java.util.logging.LogRecord

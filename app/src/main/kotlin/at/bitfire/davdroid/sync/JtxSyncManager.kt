@@ -81,9 +81,9 @@ class JtxSyncManager @AssistedInject constructor(
     }
 
     override fun queryCapabilities() =
-        remoteExceptionContext {
+        SyncException.wrapWithRemoteResource(collectionURL) {
             var syncState: SyncState? = null
-            it.propfind(0, GetCTag.NAME, MaxResourceSize.NAME, SyncToken.NAME) { response, relation ->
+            davCollection.propfind(0, GetCTag.NAME, MaxResourceSize.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                         Logger.log.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
@@ -95,25 +95,26 @@ class JtxSyncManager @AssistedInject constructor(
             syncState
         }
 
-    override fun generateUpload(resource: LocalJtxICalObject): RequestBody = localExceptionContext(resource) {
-        Logger.log.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
-        val os = ByteArrayOutputStream()
-        resource.write(os)
-        os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
-    }
+    override fun generateUpload(resource: LocalJtxICalObject): RequestBody =
+        SyncException.wrapWithLocalResource(resource) {
+            Logger.log.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
+            val os = ByteArrayOutputStream()
+            resource.write(os)
+            os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+        }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
     override fun listAllRemote(callback: MultiResponseCallback) {
-        remoteExceptionContext { remote ->
+        SyncException.wrapWithRemoteResource(collectionURL) {
             if (localCollection.supportsVTODO) {
                 Logger.log.info("Querying tasks")
-                remote.calendarQuery("VTODO", null, null, callback)
+                davCollection.calendarQuery("VTODO", null, null, callback)
             }
 
             if (localCollection.supportsVJOURNAL) {
                 Logger.log.info("Querying journals")
-                remote.calendarQuery("VJOURNAL", null, null, callback)
+                davCollection.calendarQuery("VJOURNAL", null, null, callback)
             }
         }
     }
@@ -121,12 +122,12 @@ class JtxSyncManager @AssistedInject constructor(
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        remoteExceptionContext {
-            it.multiget(bunch) { response, _ ->
-                responseExceptionContext(response) {
+        SyncException.wrapWithRemoteResource(collectionURL) {
+            davCollection.multiget(bunch) { response, _ ->
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
                         Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                        return@responseExceptionContext
+                        return@wrapResource
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
@@ -167,22 +168,25 @@ class JtxSyncManager @AssistedInject constructor(
             // if the entry is a recurring entry (and therefore has a recurid)
             // we udpate the existing (generated) entry
             if(jtxICalObject.recurid != null) {
-                localExceptionContext(localCollection.findRecurring(jtxICalObject.uid, jtxICalObject.recurid!!, jtxICalObject.dtstart!!)) { local ->
+                val local = localCollection.findRecurring(jtxICalObject.uid, jtxICalObject.recurid!!, jtxICalObject.dtstart!!)
+                SyncException.wrapWithLocalResource(local) {
                     Logger.log.log(Level.INFO, "Updating $fileName with recur instance ${jtxICalObject.recurid} in local list", jtxICalObject)
                     if(local != null) {
                         local.update(jtxICalObject)
                         syncResult.stats.numUpdates++
                     } else {
-                        localExceptionContext(LocalJtxICalObject(localCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)) {
-                            it.applyNewData(jtxICalObject)
-                            it.add()
+                        val newLocal = LocalJtxICalObject(localCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)
+                        SyncException.wrapWithLocalResource(newLocal) {
+                            newLocal.applyNewData(jtxICalObject)
+                            newLocal.add()
                         }
                         syncResult.stats.numInserts++
                     }
                 }
             } else {
                 // otherwise we insert or update the main entry
-                localExceptionContext(localCollection.findByName(fileName)) { local ->
+                val local = localCollection.findByName(fileName)
+                SyncException.wrapWithLocalResource(local) {
                     if (local != null) {
                         Logger.log.log(Level.INFO, "Updating $fileName in local list", jtxICalObject)
                         local.eTag = eTag
@@ -191,9 +195,10 @@ class JtxSyncManager @AssistedInject constructor(
                     } else {
                         Logger.log.log(Level.INFO, "Adding $fileName to local list", jtxICalObject)
 
-                        localExceptionContext(LocalJtxICalObject(localCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)) {
-                            it.applyNewData(jtxICalObject)
-                            it.add()
+                        val newLocal = LocalJtxICalObject(localCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)
+                        SyncException.wrapWithLocalResource(newLocal) {
+                            newLocal.applyNewData(jtxICalObject)
+                            newLocal.add()
                         }
                         syncResult.stats.numInserts++
                     }

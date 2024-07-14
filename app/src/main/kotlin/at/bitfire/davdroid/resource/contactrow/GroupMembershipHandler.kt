@@ -8,10 +8,10 @@ import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalContact
+import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.vcard4android.contactrow.DataRowHandler
-import org.apache.commons.lang3.StringUtils
 import java.io.FileNotFoundException
 
 class GroupMembershipHandler(val localContact: LocalContact): DataRowHandler() {
@@ -27,7 +27,7 @@ class GroupMembershipHandler(val localContact: LocalContact): DataRowHandler() {
         if (localContact.addressBook.groupMethod == GroupMethod.CATEGORIES) {
             try {
                 val group = localContact.addressBook.findGroupById(groupId)
-                StringUtils.trimToNull(group.getContact().displayName)?.let { groupName ->
+                group.getContact().displayName.trimToNull()?.let { groupName ->
                     Logger.log.fine("Adding membership in group $groupName as category")
                     contact.categories.add(groupName)
                 }

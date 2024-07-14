@@ -10,11 +10,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
+import at.bitfire.davdroid.util.trimToNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import org.apache.commons.lang3.StringUtils
 
 @HiltViewModel(assistedFactory = UrlLoginModel.Factory::class)
 class UrlLoginModel @AssistedInject constructor(
@@ -45,8 +45,8 @@ class UrlLoginModel @AssistedInject constructor(
             LoginInfo(
                 baseUri = uri,
                 credentials = Credentials(
-                    username = StringUtils.trimToNull(username),
-                    password = StringUtils.trimToNull(password)
+                    username = username.trimToNull(),
+                    password = password.trimToNull()
                 )
             )
 

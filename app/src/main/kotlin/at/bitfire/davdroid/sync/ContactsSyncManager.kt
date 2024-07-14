@@ -166,9 +166,9 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override fun queryCapabilities(): SyncState? {
-        return remoteExceptionContext {
+        return SyncException.wrapWithRemoteResource(collectionURL) {
             var syncState: SyncState? = null
-            it.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+            davCollection.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                         Logger.log.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
@@ -206,13 +206,17 @@ class ContactsSyncManager @AssistedInject constructor(
                 var modified = false
                 for (group in localCollection.findDeletedGroups()) {
                     Logger.log.warning("Restoring locally deleted group (read-only address book!)")
-                    localExceptionContext(group) { it.resetDeleted() }
+                    SyncException.wrapWithLocalResource(group) {
+                        group.resetDeleted()
+                    }
                     modified = true
                 }
 
                 for (contact in localCollection.findDeletedContacts()) {
                     Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
-                    localExceptionContext(contact) { it.resetDeleted() }
+                    SyncException.wrapWithLocalResource(contact) {
+                        contact.resetDeleted()
+                    }
                     modified = true
                 }
 
@@ -233,13 +237,17 @@ class ContactsSyncManager @AssistedInject constructor(
         if (localCollection.readOnly) {
             for (group in localCollection.findDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
-                localExceptionContext(group) { it.clearDirty(null, null) }
+                SyncException.wrapWithLocalResource(group) {
+                    group.clearDirty(null, null)
+                }
                 modified = true
             }
 
             for (contact in localCollection.findDirtyContacts()) {
                 Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
-                localExceptionContext(contact) { it.clearDirty(null, null) }
+                SyncException.wrapWithLocalResource(contact) {
+                    contact.clearDirty(null, null)
+                }
                 modified = true
             }
 
@@ -259,7 +267,7 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override fun generateUpload(resource: LocalAddress): RequestBody =
-        localExceptionContext(resource) {
+        SyncException.wrapWithLocalResource(resource) {
             val contact: Contact = when (resource) {
                 is LocalContact -> resource.getContact()
                 is LocalGroup -> resource.getContact()
@@ -285,17 +293,17 @@ class ContactsSyncManager @AssistedInject constructor(
                 }
             }
 
-            return@localExceptionContext(os.toByteArray().toRequestBody(mimeType))
+            return@wrapWithLocalResource os.toByteArray().toRequestBody(mimeType)
         }
 
     override fun listAllRemote(callback: MultiResponseCallback) =
-            remoteExceptionContext {
-                it.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
-            }
+        SyncException.wrapWithRemoteResource(collectionURL) {
+            davCollection.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
+        }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} vCard(s): $bunch")
-        remoteExceptionContext {
+        SyncException.wrapWithRemoteResource(collectionURL) {
             val contentType: String?
             val version: String?
             when {
@@ -312,11 +320,11 @@ class ContactsSyncManager @AssistedInject constructor(
                     version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
                 }
             }
-            it.multiget(bunch, contentType, version) { response, _ ->
-                responseExceptionContext(response) {
+            davCollection.multiget(bunch, contentType, version) { response, _ ->
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
                         Logger.log.warning("Received non-successful multiget response for ${response.href}")
-                        return@responseExceptionContext
+                        return@wrapResource
                     }
 
                     val eTag = response[GetETag::class.java]?.eTag
@@ -371,8 +379,9 @@ class ContactsSyncManager @AssistedInject constructor(
         groupStrategy.verifyContactBeforeSaving(newData)
 
         // update local contact, if it exists
-        localExceptionContext(localCollection.findByName(fileName)) {
-            var local = it
+        val localOrNull = localCollection.findByName(fileName)
+        SyncException.wrapWithLocalResource(localOrNull) {
+            var local = localOrNull
             if (local != null) {
                 Logger.log.log(Level.INFO, "Updating $fileName in local address book", newData)
 
@@ -400,15 +409,17 @@ class ContactsSyncManager @AssistedInject constructor(
             if (local == null) {
                 if (newData.group) {
                     Logger.log.log(Level.INFO, "Creating local group", newData)
-                    localExceptionContext(LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) { group ->
-                        group.add()
-                        local = group
+                    val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    SyncException.wrapWithLocalResource(newGroup) {
+                        newGroup.add()
+                        local = newGroup
                     }
                 } else {
                     Logger.log.log(Level.INFO, "Creating local contact", newData)
-                    localExceptionContext(LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)) { contact ->
-                        contact.add()
-                        local = contact
+                    val newContact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
+                    SyncException.wrapWithLocalResource(newContact) {
+                        newContact.add()
+                        local = newContact
                     }
                 }
                 syncResult.stats.numInserts++
