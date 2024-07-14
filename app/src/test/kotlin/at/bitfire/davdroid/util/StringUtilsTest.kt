@@ -22,7 +22,7 @@ class StringUtilsTest {
 
     @Test
     fun trimToNull_Null() {
-        assertNull("".trimToNull())
+        assertNull(null.trimToNull())
     }
 
     @Test
