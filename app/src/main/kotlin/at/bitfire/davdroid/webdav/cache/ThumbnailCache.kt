@@ -11,11 +11,11 @@ import android.os.storage.StorageManager
 import android.text.format.Formatter
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.webdav.WebdavScoped
 import com.google.common.hash.Hashing
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
+import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
@@ -23,7 +23,8 @@ import javax.inject.Inject
  */
 @WebdavScoped
 class ThumbnailCache @Inject constructor(
-    @ApplicationContext context: Context
+    @ApplicationContext context: Context,
+    private val logger: Logger
 ) {
 
     val storage: DiskCache
@@ -35,7 +36,7 @@ class ThumbnailCache @Inject constructor(
             storageManager.getCacheQuotaBytes(storageManager.getUuidForPath(cacheDir)) / 2
         else
             50 * 1024*1024  // 50 MB
-        Logger.log.info("Initializing WebDAV thumbnail cache with ${Formatter.formatFileSize(context, maxBytes)}")
+        logger.info("Initializing WebDAV thumbnail cache with ${Formatter.formatFileSize(context, maxBytes)}")
 
         storage = DiskCache(cacheDir, maxBytes)
     }

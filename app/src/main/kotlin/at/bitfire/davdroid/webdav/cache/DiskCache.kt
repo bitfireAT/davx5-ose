@@ -4,8 +4,8 @@
 
 package at.bitfire.davdroid.webdav.cache
 
-import at.bitfire.davdroid.log.Logger
 import java.io.File
+import java.util.logging.Logger
 
 /**
  * Disk-based cache that maps [String]s to [ByteArray]s.
@@ -25,6 +25,7 @@ class DiskCache(
         const val CLEANUP_RATE = 15
     }
 
+    private val logger = Logger.getGlobal()
     private var writeCounter: Int = 0
 
     init {
@@ -49,10 +50,10 @@ class DiskCache(
         synchronized(this) {
             val file = File(cacheDir, key)
             if (file.exists()) {
-                // cache HIT
+                logger.fine("Cache hit: $key")
                 return file
             } else {
-                // file does't exist yet; cache MISS
+                logger.fine("Cache miss: $key → generating")
                 val result = generate() ?: return null
 
                 file.outputStream().use { output ->
@@ -88,14 +89,14 @@ class DiskCache(
     @Synchronized
     fun trim(): Int {
         var removed = 0
-        Logger.log.fine("Trimming disk cache to $maxSize bytes")
+        logger.fine("Trimming disk cache to $maxSize bytes")
 
         val files = cacheDir.listFiles()!!.toMutableList()
         files.sortBy { file -> file.lastModified() }    // sort by modification time (ascending)
 
         while (files.sumOf { file -> file.length() } > maxSize) {
             val file = files.removeFirst()      // take first (= oldest) file
-            Logger.log.finer("Removing $file")
+            logger.finer("Removing $file")
             file.delete()
             removed++
         }
