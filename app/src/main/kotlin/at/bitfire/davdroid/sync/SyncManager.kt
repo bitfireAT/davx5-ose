@@ -911,29 +911,4 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     protected abstract fun notifyInvalidResourceTitle(): String
 
-
-    private fun unwrapExceptions(body: () -> Unit, handler: (e: Throwable, local: LocalResource<*>?, remote: HttpUrl?) -> Unit) {
-        var ex: Throwable? = null
-        try {
-            body()
-        } catch(e: Throwable) {
-            ex = e
-        }
-
-        var local: LocalResource<*>? = null
-        var remote: HttpUrl? = null
-
-        if (ex is SyncException) {
-            // set local and remote from SyncException
-            local = ex.localResource
-            remote = ex.remoteResource
-
-            // set exception from SyncException cause
-            ex = ex.cause
-        }
-
-        if (ex != null)
-            handler(ex, local, remote)
-    }
-
 }
