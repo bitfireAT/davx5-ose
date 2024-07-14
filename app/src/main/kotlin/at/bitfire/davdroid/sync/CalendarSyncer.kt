@@ -49,18 +49,19 @@ class CalendarSyncer @Inject constructor(
             AndroidCalendar.removeColors(provider, account)
 
         // 1. find calendar collections to be synced
-        val remoteCalendars = mutableMapOf<HttpUrl, Collection>()
+        val remoteCollections = mutableMapOf<HttpUrl, Collection>()
         val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
         if (service != null)
             for (collection in db.collectionDao().getSyncCalendars(service.id))
-                remoteCalendars[collection.url] = collection
+                remoteCollections[collection.url] = collection
 
-        // 2. update/delete local calendars
+        // 2. update/delete local calendars and determine new remote collections
+        val newCollections = HashMap(remoteCollections)
         val updateColors = accountSettings.getManageCalendarColors()
         for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null))
             calendar.name?.let {
                 val url = it.toHttpUrl()
-                val collection = remoteCalendars[url]
+                val collection = remoteCollections[url]
                 if (collection == null) {
                     Logger.log.log(Level.INFO, "Deleting obsolete local calendar", url)
                     calendar.delete()
@@ -68,13 +69,13 @@ class CalendarSyncer @Inject constructor(
                     // remote CollectionInfo found for this local collection, update data
                     Logger.log.log(Level.FINE, "Updating local calendar $url", collection)
                     calendar.update(collection, updateColors)
-                    // we already have a local calendar for this remote collection, don't take into consideration anymore
-                    remoteCalendars -= url
+                    // we already have a local calendar for this remote collection, don't create a new local calendar
+                    newCollections -= url
                 }
             }
 
         // 3. create new local calendars
-        for ((_, info) in remoteCalendars) {
+        for ((_, info) in newCollections) {
             Logger.log.log(Level.INFO, "Adding local calendar", info)
             LocalCalendar.create(account, provider, info)
         }
@@ -84,7 +85,7 @@ class CalendarSyncer @Inject constructor(
             .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
         for (calendar in calendars) {
             val url = calendar.name?.toHttpUrl()
-            remoteCalendars[url]?.let { collection ->
+            remoteCollections[url]?.let { collection ->
                 Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
 
                 val syncManager = calendarSyncManagerFactory.calendarSyncManager(
