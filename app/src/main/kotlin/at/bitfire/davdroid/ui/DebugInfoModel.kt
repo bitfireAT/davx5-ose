@@ -61,7 +61,6 @@ import kotlinx.coroutines.launch
 import org.dmfs.tasks.contract.TaskContract
 import java.io.File
 import java.io.IOException
-import java.io.PrintWriter
 import java.io.Writer
 import java.util.TimeZone
 import java.util.logging.Level
@@ -163,8 +162,7 @@ class DebugInfoModel @AssistedInject constructor(
      */
     private fun generateDebugInfo(syncAccount: Account?, syncAuthority: String?, cause: Throwable?, localResource: String?, remoteResource: String?) {
         val debugInfoFile = File(LogFileHandler.debugDir(context), FILE_DEBUG_INFO)
-        debugInfoFile.writer().buffered().use { fileWriter ->
-            val writer = PrintWriter(fileWriter)
+        debugInfoFile.printWriter().use { writer ->
             writer.println("--- BEGIN DEBUG INFO ---")
             writer.println()
 
