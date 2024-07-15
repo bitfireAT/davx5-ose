@@ -71,7 +71,6 @@ abstract class Syncer(
     fun onPerformSync() {
         Logger.log.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
 
-
         // run sync
         try {
             val runSync = /* ose */ true
