@@ -6,7 +6,6 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.app.Application
 import android.app.usage.UsageStatsManager
 import android.content.ContentResolver
 import android.content.ContentUris
@@ -56,6 +55,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.dmfs.tasks.contract.TaskContract
@@ -73,9 +73,10 @@ import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 @HiltViewModel(assistedFactory = DebugInfoModel.Factory::class)
 class DebugInfoModel @AssistedInject constructor(
     @Assisted private val details: DebugInfoDetails,
-    val context: Application,
-    val db: AppDatabase,
-    val settings: SettingsManager
+    private val accountSettingsFactory: AccountSettings.Factory,
+    @ApplicationContext val context: Context,
+    private val db: AppDatabase,
+    private val settings: SettingsManager
 ) : ViewModel() {
 
     data class DebugInfoDetails(
@@ -474,7 +475,7 @@ class DebugInfoModel @AssistedInject constructor(
         writer.append("\n\n - Account: ${account.name}\n")
         writer.append(dumpAccount(account, AccountDumpInfo.mainAccount(context, account)))
         try {
-            val accountSettings = AccountSettings(context, account)
+            val accountSettings = accountSettingsFactory.forAccount(account)
 
             val credentials = accountSettings.credentials()
             val authStr = mutableListOf<String>()
@@ -547,7 +548,7 @@ class DebugInfoModel @AssistedInject constructor(
                 } catch (e: Exception) {
                     nrEntries = e.toString()
                 }
-            val accountSettings = AccountSettings(context, account)
+            val accountSettings = accountSettingsFactory.forAccount(account)
             table.addLine(
                 info.authority,
                 ContentResolver.getIsSyncable(account, info.authority),

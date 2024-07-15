@@ -1,7 +1,7 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
@@ -30,6 +30,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -43,8 +44,8 @@ import java.text.Collator
 @HiltViewModel(assistedFactory = AccountsModel.Factory::class)
 class AccountsModel @AssistedInject constructor(
     @Assisted val syncAccountsOnInit: Boolean,
-    private val context: Application,
     private val accountRepository: AccountRepository,
+    @ApplicationContext val context: Context,
     private val db: AppDatabase,
     introPageFactory: IntroPageFactory
 ): ViewModel() {

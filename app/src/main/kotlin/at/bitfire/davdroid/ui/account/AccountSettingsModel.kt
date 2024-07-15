@@ -1,7 +1,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import android.provider.CalendarContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,15 +22,17 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = AccountSettingsModel.Factory::class)
 class AccountSettingsModel @AssistedInject constructor(
-    val context: Application,
-    val settings: SettingsManager,
-    @Assisted val account: Account
+    @Assisted val account: Account,
+    private val accountSettingsFactory: AccountSettings.Factory,
+    @ApplicationContext val context: Context,
+    private val settings: SettingsManager
 ): ViewModel(), SettingsManager.OnChangeListener {
 
     @AssistedFactory
@@ -38,7 +40,7 @@ class AccountSettingsModel @AssistedInject constructor(
         fun create(account: Account): AccountSettingsModel
     }
 
-    private val accountSettings = AccountSettings(context, account)
+    private val accountSettings = accountSettingsFactory.forAccount(account)
 
     // settings
     var syncIntervalContacts by mutableStateOf<Long?>(null)

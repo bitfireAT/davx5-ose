@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,6 +16,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -24,7 +25,7 @@ import java.util.logging.Level
 @HiltViewModel(assistedFactory = NextcloudLoginModel.Factory::class)
 class NextcloudLoginModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
-    val context: Application
+    @ApplicationContext val context: Context
     //val state: SavedStateHandle
 ): ViewModel() {
 

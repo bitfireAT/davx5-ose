@@ -27,6 +27,7 @@ import java.util.logging.Level
  * Also provides useful methods that can be used by derived syncers ie [CalendarSyncer], etc.
  */
 abstract class Syncer(
+    protected val accountSettingsFactory: AccountSettings.Factory,
     val context: Context,
     val db: AppDatabase
 ) {
@@ -77,7 +78,7 @@ abstract class Syncer(
             else
                 authority
 
-        val accountSettings by lazy { AccountSettings(context, account) }
+        val accountSettings by lazy { accountSettingsFactory.forAccount(account) }
         val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
         // acquire ContentProviderClient of authority to be synced

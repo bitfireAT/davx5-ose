@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +22,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,9 +37,9 @@ class LoginScreenModel @AssistedInject constructor(
     @Assisted val initialLoginType: LoginType,
     @Assisted val skipLoginTypePage: Boolean,
     @Assisted val initialLoginInfo: LoginInfo,
-    val context: Application,
-    val loginTypesProvider: LoginTypesProvider,
     private val accountRepository: AccountRepository,
+    @ApplicationContext val context: Context,
+    val loginTypesProvider: LoginTypesProvider,
     settingsManager: SettingsManager
 ): ViewModel() {
 

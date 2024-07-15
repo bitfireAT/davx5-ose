@@ -13,6 +13,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.os.Bundle
+import android.os.IBinder
 import android.provider.ContactsContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
@@ -21,18 +22,31 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
+import javax.inject.Inject
 
 abstract class SyncAdapterService: Service() {
 
-    fun syncAdapter() = SyncAdapter(this)
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface SyncAdapterServiceEntryPoint {
+        fun syncAdapter(): SyncAdapter
+    }
 
-    override fun onBind(intent: Intent?) = syncAdapter().syncAdapterBinder!!
+    override fun onBind(intent: Intent?): IBinder {
+        val entryPoint = EntryPointAccessors.fromApplication<SyncAdapterServiceEntryPoint>(this)
+        return entryPoint.syncAdapter().syncAdapterBinder
+    }
 
     /**
      * Entry point for the sync adapter framework.
@@ -43,8 +57,9 @@ abstract class SyncAdapterService: Service() {
      * adapter to provide exported services, which allow android system components and calendar,
      * contacts or task apps to sync via DAVx5.
      */
-    class SyncAdapter(
-        context: Context
+    class SyncAdapter @Inject constructor(
+        private val accountSettingsFactory: AccountSettings.Factory,
+        @ApplicationContext context: Context
     ): AbstractThreadedSyncAdapter(
         context,
         true    // isSyncable shouldn't be -1 because DAVx5 sets it to 0 or 1.
@@ -60,7 +75,7 @@ abstract class SyncAdapterService: Service() {
          * In any case, the sync framework shouldn't be blocked anymore as soon as a
          * value is available.
          */
-        val finished = CompletableDeferred<Boolean>()
+        private val finished = CompletableDeferred<Boolean>()
 
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             // We seem to have to pass this old SyncFramework extra for an Android 7 workaround
@@ -68,7 +83,7 @@ abstract class SyncAdapterService: Service() {
             Logger.log.info("Sync request via sync framework for $account $authority (upload=$upload)")
 
             val accountSettings = try {
-                AccountSettings(context, account)
+                accountSettingsFactory.forAccount(account)
             } catch (e: InvalidAccountException) {
                 Logger.log.log(Level.WARNING, "Account doesn't exist anymore", e)
                 return

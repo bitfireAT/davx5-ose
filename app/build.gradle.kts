@@ -30,7 +30,7 @@ android {
 
         buildConfigField("String", "userAgent", "\"DAVx5\"")
 
-        testInstrumentationRunner = "at.bitfire.davdroid.CustomTestRunner"
+        testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }
 
     java {

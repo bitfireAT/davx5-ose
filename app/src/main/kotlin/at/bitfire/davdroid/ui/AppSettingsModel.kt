@@ -1,6 +1,6 @@
 package at.bitfire.davdroid.ui
 
-import android.app.Application
+import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.PowerManager
@@ -18,6 +18,7 @@ import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -25,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppSettingsModel @Inject constructor(
-    val context: Application,
+    @ApplicationContext val context: Context,
     private val preference: PreferenceRepository,
     private val settings: SettingsManager
 ) : ViewModel() {

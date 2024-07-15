@@ -24,6 +24,7 @@ import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDispatcher
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -43,8 +44,9 @@ import java.util.logging.Level
 class OneTimeSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
+    accountSettingsFactory: AccountSettings.Factory,
     syncDispatcher: SyncDispatcher
-) : BaseSyncWorker(appContext, workerParams, syncDispatcher.dispatcher) {
+) : BaseSyncWorker(appContext, workerParams, accountSettingsFactory, syncDispatcher.dispatcher) {
 
     companion object {
 

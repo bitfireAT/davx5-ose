@@ -30,10 +30,11 @@ import javax.inject.Inject
  * Sync logic for jtx board
  */
 class JtxSyncer @Inject constructor(
+    accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext context: Context,
     db: AppDatabase,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory
-): Syncer(context, db) {
+): Syncer(accountSettingsFactory, context, db) {
 
     override fun sync(
         account: Account,
@@ -57,7 +58,7 @@ class JtxSyncer @Inject constructor(
                     am.setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
             }
 
-            val accountSettings = AccountSettings(context, account)
+            val accountSettings = accountSettingsFactory.forAccount(account)
 
             // 1. find jtxCollection collections to be synced
             val remoteCollections = mutableMapOf<HttpUrl, Collection>()

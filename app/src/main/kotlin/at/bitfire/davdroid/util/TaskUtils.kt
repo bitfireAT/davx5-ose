@@ -22,8 +22,8 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.sync.SyncUtils
+import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.ical4android.TaskProvider
@@ -43,6 +43,7 @@ object TaskUtils {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface TaskUtilsEntryPoint {
+        fun accountSettingsFactory(): AccountSettings.Factory
         fun settingsManager(): SettingsManager
     }
 
@@ -175,7 +176,8 @@ object TaskUtils {
     private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean) {
         val settingsManager by lazy { EntryPointAccessors.fromApplication(context, SyncUtils.SyncUtilsEntryPoint::class.java).settingsManager() }
         try {
-            val settings = AccountSettings(context, account)
+            val entryPoint = EntryPointAccessors.fromApplication<TaskUtilsEntryPoint>(context)
+            val settings = entryPoint.accountSettingsFactory().forAccount(account)
             if (syncable) {
                 Logger.log.info("Enabling $authority sync for $account")
 

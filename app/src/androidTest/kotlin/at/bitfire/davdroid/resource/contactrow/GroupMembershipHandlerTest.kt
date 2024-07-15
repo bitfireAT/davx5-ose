@@ -7,6 +7,7 @@ package at.bitfire.davdroid.resource.contactrow
 import android.Manifest
 import android.content.ContentProviderClient
 import android.content.ContentValues
+import android.content.Context
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -15,44 +16,64 @@ import at.bitfire.davdroid.resource.LocalTestAddressBook
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
-import org.junit.*
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.AfterClass
+import org.junit.Assert
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.Test
+import javax.inject.Inject
 
+@HiltAndroidTest
 class GroupMembershipHandlerTest {
 
-    @JvmField
-    @Rule
-    val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
+    companion object {
 
-    private lateinit var provider: ContentProviderClient
+        @JvmField
+        @ClassRule
+        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-    private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
-    private var addressBookGroupsAsCategoriesGroup: Long = -1
+        private lateinit var provider: ContentProviderClient
 
-    private lateinit var addressBookGroupsAsVCards: LocalTestAddressBook
+        @BeforeClass
+        @JvmStatic
+        fun connect() {
+            val context: Context = InstrumentationRegistry.getInstrumentation().context
+            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            Assert.assertNotNull(provider)
+        }
 
-    @Before
-    fun connect() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-        Assert.assertNotNull(provider)
+        @AfterClass
+        @JvmStatic
+        fun disconnect() {
+            provider.close()
+        }
 
-        addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
-        addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
-
-        addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
     }
 
-    @After
-    fun disconnect() {
-        @Suppress("DEPRECATION")
-        provider.release()
+    @Inject @ApplicationContext
+    lateinit var context: Context
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
     }
 
 
     @Test
     fun testMembership_GroupsAsCategories() {
+        val addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
+        val addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
+
         val contact = Contact()
         val localContact = LocalContact(addressBookGroupsAsCategories, contact, null, null, 0)
         GroupMembershipHandler(localContact).handle(ContentValues().apply {
@@ -66,6 +87,8 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsVCards() {
+        val addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
+
         val contact = Contact()
         val localContact = LocalContact(addressBookGroupsAsVCards, contact, null, null, 0)
         GroupMembershipHandler(localContact).handle(ContentValues().apply {

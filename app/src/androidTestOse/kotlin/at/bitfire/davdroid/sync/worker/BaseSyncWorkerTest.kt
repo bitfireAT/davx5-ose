@@ -7,13 +7,13 @@ package at.bitfire.davdroid.sync.worker
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentResolver
+import android.content.Context
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.util.Log
 import androidx.core.content.getSystemService
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.R
@@ -23,6 +23,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.AccountUtils
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.util.PermissionUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
@@ -36,27 +37,31 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 @HiltAndroidTest
 class BaseSyncWorkerTest {
-
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
-
-    private val accountManager = AccountManager.get(context)
-    private val account = Account("Test Account", context.getString(R.string.account_type))
-    private val fakeCredentials = Credentials("test", "test")
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
     @get:Rule
     val mockkRule = MockKRule(this)
 
-    @Before
-    fun inject() = hiltRule.inject()
+    @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
 
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    private val accountManager by lazy { AccountManager.get(context) }
+    private val account by lazy { Account("Test Account", context.getString(R.string.account_type)) }
+    private val fakeCredentials = Credentials("test", "test")
 
     @Before
-    fun setUp() {
+    fun setup() {
+        hiltRule.inject()
+
         assertTrue(AccountUtils.createAccount(context, account, AccountSettings.initialUserData(fakeCredentials)))
         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
         ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0)
@@ -73,7 +78,7 @@ class BaseSyncWorkerTest {
     }
 
     @After
-    fun removeAccount() {
+    fun teardown() {
         accountManager.removeAccountExplicitly(account)
     }
 
@@ -87,7 +92,7 @@ class BaseSyncWorkerTest {
     
     @Test
     fun testWifiConditionsMet_anyWifi_wifiEnabled() {
-        val accountSettings = AccountSettings(context, account)
+        val accountSettings = accountSettingsFactory.forAccount(account)
         accountSettings.setSyncWiFiOnly(true)
 
         mockkObject(ConnectionUtils)
@@ -100,7 +105,7 @@ class BaseSyncWorkerTest {
 
     @Test
     fun testWifiConditionsMet_anyWifi_wifiDisabled() {
-        val accountSettings = AccountSettings(context, account)
+        val accountSettings = accountSettingsFactory.forAccount(account)
         accountSettings.setSyncWiFiOnly(true)
 
         mockkObject(ConnectionUtils)
@@ -114,7 +119,7 @@ class BaseSyncWorkerTest {
 
     @Test
     fun testCorrectWifiSsid_CorrectWiFiSsid() {
-        val accountSettings = AccountSettings(context, account)
+        val accountSettings = accountSettingsFactory.forAccount(account)
         mockkObject(accountSettings)
         every { accountSettings.getSyncWifiOnlySSIDs() } returns listOf("SampleWiFi1","ConnectedWiFi")
 
@@ -132,7 +137,7 @@ class BaseSyncWorkerTest {
 
     @Test
     fun testCorrectWifiSsid_WrongWiFiSsid() {
-        val accountSettings = AccountSettings(context, account)
+        val accountSettings = accountSettingsFactory.forAccount(account)
         mockkObject(accountSettings)
         every { accountSettings.getSyncWifiOnlySSIDs() } returns listOf("SampleWiFi1","SampleWiFi2")
 

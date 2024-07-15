@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.ui.webdav
 
-import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,13 +15,14 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.webdav.WebDavMountRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import javax.inject.Inject
 
 @HiltViewModel
 class AddWebdavMountModel @Inject constructor(
-    val context: Application,
+    @ApplicationContext val context: Context,
     val db: AppDatabase,
     private val mountRepository: WebDavMountRepository
 ): ViewModel() {

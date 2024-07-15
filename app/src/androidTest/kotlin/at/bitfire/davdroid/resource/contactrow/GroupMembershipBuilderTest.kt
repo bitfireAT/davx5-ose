@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource.contactrow
 
 import android.Manifest
 import android.content.ContentProviderClient
+import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
@@ -14,38 +15,54 @@ import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.resource.LocalTestAddressBook
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
-import org.junit.*
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.AfterClass
 import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.Test
+import javax.inject.Inject
 
+@HiltAndroidTest
 class GroupMembershipBuilderTest {
 
     companion object {
+
         @JvmField
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
         private lateinit var provider: ContentProviderClient
 
-        private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
-        private lateinit var addressBookGroupsAsVCards: LocalTestAddressBook
-
         @BeforeClass
         @JvmStatic
         fun connect() {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
             provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            Assert.assertNotNull(provider)
-
-            addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
-            addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
         }
 
         @AfterClass
         @JvmStatic
         fun disconnect() {
-            @Suppress("DEPRECATION")
-            provider.release()
+            provider.close()
         }
+
+    }
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Before
+    fun inject() {
+        hiltRule.inject()
     }
 
 
@@ -54,6 +71,7 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
+        val addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
         GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsCategories, false).build().also { result ->
             assertEquals(1, result.size)
             assertEquals(GroupMembership.CONTENT_ITEM_TYPE, result[0].values[GroupMembership.MIMETYPE])
@@ -66,6 +84,7 @@ class GroupMembershipBuilderTest {
         val contact = Contact().apply {
             categories += "TEST GROUP"
         }
+        val addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
         GroupMembershipBuilder(Uri.EMPTY, null, contact, addressBookGroupsAsVCards, false).build().also { result ->
             // group membership is constructed during post-processing
             assertEquals(0, result.size)

@@ -31,10 +31,11 @@ import javax.inject.Inject
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
 class TaskSyncer @Inject constructor(
+    accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext context: Context,
     db: AppDatabase,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory
-): Syncer(context, db) {
+): Syncer(accountSettingsFactory, context, db) {
 
     override fun sync(
         account: Account,
@@ -58,7 +59,7 @@ class TaskSyncer @Inject constructor(
                     am.setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
             }
 
-            val accountSettings = AccountSettings(context, account)
+            val accountSettings = accountSettingsFactory.forAccount(account)
 
             // 1. find task collections to be synced
             val remoteCollections = mutableMapOf<HttpUrl, Collection>()

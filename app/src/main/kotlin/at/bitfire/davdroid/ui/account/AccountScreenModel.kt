@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import android.provider.CalendarContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +30,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -44,9 +45,10 @@ import java.util.logging.Level
 @HiltViewModel(assistedFactory = AccountScreenModel.Factory::class)
 class AccountScreenModel @AssistedInject constructor(
     @Assisted val account: Account,
-    val context: Application,
     private val accountRepository: AccountRepository,
+    accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
+    @ApplicationContext val context: Context,
     serviceRepository: DavServiceRepository,
     accountProgressUseCase: AccountProgressUseCase,
     getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
@@ -63,7 +65,7 @@ class AccountScreenModel @AssistedInject constructor(
         !accounts.contains(account)
     }
 
-    private val settings = AccountSettings(context, account)
+    private val settings = accountSettingsFactory.forAccount(account)
     private val refreshSettingsSignal = MutableLiveData(Unit)
     val showOnlyPersonal = refreshSettingsSignal.switchMap<Unit, AccountSettings.ShowOnlyPersonal> {
         object : LiveData<AccountSettings.ShowOnlyPersonal>() {

@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.accounts.AccountManager
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
@@ -22,6 +21,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -32,8 +32,8 @@ import java.util.logging.Level
 @HiltViewModel(assistedFactory = GoogleLoginModel.Factory::class)
 class GoogleLoginModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
-    val context: Application,
-    val authService: AuthorizationService
+    val authService: AuthorizationService,
+    @ApplicationContext val context: Context
 ): ViewModel() {
 
     @AssistedFactory

@@ -27,10 +27,11 @@ import javax.inject.Inject
  * Sync logic for calendars
  */
 class CalendarSyncer @Inject constructor(
+    accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext context: Context,
     db: AppDatabase,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
-): Syncer(context, db) {
+): Syncer(accountSettingsFactory, context, db) {
 
     override fun sync(
         account: Account,
@@ -42,7 +43,7 @@ class CalendarSyncer @Inject constructor(
     ) {
 
         // 0. preparations
-        val accountSettings = AccountSettings(context, account)
+        val accountSettings = accountSettingsFactory.forAccount(account)
         if (accountSettings.getEventColors())
             AndroidCalendar.insertColors(provider, account)
         else

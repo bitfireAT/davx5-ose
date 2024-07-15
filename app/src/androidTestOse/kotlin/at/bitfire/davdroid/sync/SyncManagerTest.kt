@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.Context
 import android.content.SyncResult
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
@@ -26,6 +27,7 @@ import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.mockk
@@ -76,6 +78,13 @@ class SyncManagerTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
     lateinit var db: AppDatabase
 
     @Inject
@@ -107,9 +116,10 @@ class SyncManagerTest {
     ) =
         TestSyncManager(
             account,
+            accountSettingsFactory.forAccount(account),
             arrayOf(),
             "TestAuthority",
-            HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build(),
+            HttpClient.Builder(context).build(),
             syncResult,
             localCollection,
             collection,

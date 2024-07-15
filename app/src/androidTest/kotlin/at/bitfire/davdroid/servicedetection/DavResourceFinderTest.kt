@@ -4,9 +4,9 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import android.content.Context
 import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.webdav.ResourceType
@@ -15,6 +15,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.mockwebserver.Dispatcher
@@ -37,17 +38,6 @@ import javax.inject.Inject
 @HiltAndroidTest
 class DavResourceFinderTest {
 
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var settingsManager: SettingsManager
-
-    @Before
-    fun inject() {
-        hiltRule.inject()
-    }
-
     companion object {
         private const val PATH_NO_DAV = "/nodav"
         private const val PATH_CALDAV = "/caldav"
@@ -59,21 +49,33 @@ class DavResourceFinderTest {
         private const val SUBPATH_ADDRESSBOOK = "/addressbooks/private-contacts"
     }
 
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
+
     private val server = MockWebServer()
 
     private lateinit var finder: DavResourceFinder
     private lateinit var client: HttpClient
 
     @Before
-    fun initServerAndClient() {
+    fun setup() {
+        hiltRule.inject()
+
         server.dispatcher = TestDispatcher()
         server.start()
 
         val baseURI = URI.create("/")
         val credentials = Credentials("mock", "12345")
 
-        finder = DavResourceFinder(InstrumentationRegistry.getInstrumentation().targetContext, baseURI, credentials)
-        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext)
+        finder = DavResourceFinder(context, baseURI, credentials)
+        client = HttpClient.Builder(context)
                 .addAuthentication(null, credentials)
                 .build()
 
@@ -81,7 +83,7 @@ class DavResourceFinderTest {
     }
 
     @After
-    fun stopServer() {
+    fun teardown() {
         server.shutdown()
     }
 

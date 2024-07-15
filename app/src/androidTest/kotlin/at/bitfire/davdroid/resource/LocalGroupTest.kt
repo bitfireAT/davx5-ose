@@ -8,6 +8,7 @@ import android.Manifest
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import androidx.test.platform.app.InstrumentationRegistry
@@ -17,35 +18,32 @@ import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.*
-import org.junit.Assert.*
+import org.junit.AfterClass
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
 class LocalGroupTest {
 
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var settingsManager: SettingsManager
-
-    @Before
-    fun inject() {
-        hiltRule.inject()
-    }
-
     companion object {
+
         @JvmField
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
         private lateinit var provider: ContentProviderClient
-
-        private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
-        private lateinit var addressBookGroupsAsVCards: LocalTestAddressBook
 
         @BeforeClass
         @JvmStatic
@@ -53,32 +51,37 @@ class LocalGroupTest {
             val context = InstrumentationRegistry.getInstrumentation().targetContext
             provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
             assertNotNull(provider)
-
-            addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
-            addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
         }
 
         @AfterClass
         @JvmStatic
         fun disconnect() {
-            @Suppress("DEPRECATION")
-            provider.release()
+            provider.close()
         }
     }
 
-    private fun newGroup(addressBook: LocalAddressBook = addressBookGroupsAsCategories): LocalGroup =
-        LocalGroup(addressBook,
-            Contact().apply {
-                displayName = "Test Group"
-            }, null, null, 0
-        ).apply {
-            add()
-        }
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
 
+    private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
+    private lateinit var addressBookGroupsAsVCards: LocalTestAddressBook
 
     @Before
-    fun clearContacts() {
+    fun setup() {
+        hiltRule.inject()
+
+        addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
+        addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
+
+        // clear contacts
         addressBookGroupsAsCategories.clear()
         addressBookGroupsAsVCards.clear()
     }
@@ -263,5 +266,17 @@ class LocalGroupTest {
         assertNotNull(newUid)
         assertEquals("$newUid.vcf", fileName)
     }
+
+
+    // helpers
+
+    private fun newGroup(addressBook: LocalAddressBook = addressBookGroupsAsCategories): LocalGroup =
+        LocalGroup(addressBook,
+            Contact().apply {
+                displayName = "Test Group"
+            }, null, null, 0
+        ).apply {
+            add()
+        }
 
 }

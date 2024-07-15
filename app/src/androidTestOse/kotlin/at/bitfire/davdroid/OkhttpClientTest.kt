@@ -4,9 +4,10 @@
 
 package at.bitfire.davdroid
 
-import androidx.test.platform.app.InstrumentationRegistry
+import android.content.Context
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.Request
@@ -22,6 +23,10 @@ class OkhttpClientTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
     lateinit var settingsManager: SettingsManager
 
     @Before
@@ -32,8 +37,7 @@ class OkhttpClientTest {
 
     @Test
     fun testIcloudWithSettings() {
-        val client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext)
-                .build()
+        val client = HttpClient.Builder(context).build()
         client.okHttpClient.newCall(Request.Builder()
                 .get()
                 .url("https://icloud.com")

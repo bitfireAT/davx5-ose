@@ -6,7 +6,6 @@ package at.bitfire.davdroid.servicedetection
 
 import android.content.Context
 import android.security.NetworkSecurityPolicy
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
@@ -16,6 +15,7 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
@@ -36,22 +36,6 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class CollectionListRefresherTest {
-    
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
-
-    @Inject
-    lateinit var settings: SettingsManager
-
-    @Before
-    fun setUp() {
-        hiltRule.inject()
-    }
-
-    
-    // Test dependencies
 
     companion object {
         private const val PATH_CALDAV = "/caldav"
@@ -66,28 +50,40 @@ class CollectionListRefresherTest {
         private const val SUBPATH_ADDRESSBOOK_INACCESSIBLE = "/addressbooks/inaccessible-contacts"
     }
 
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
     @Inject
     lateinit var db: AppDatabase
 
     @Inject
     lateinit var refresherFactory: CollectionListRefresher.Factory
 
+    @Inject
+    lateinit var settings: SettingsManager
+
     private val mockServer = MockWebServer()
     private lateinit var client: HttpClient
 
     @Before
-    fun mockServerSetup() {
+    fun setup() {
+        hiltRule.inject()
+
         // Start mock web server
         mockServer.dispatcher = TestDispatcher()
         mockServer.start()
 
-        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build()
+        client = HttpClient.Builder(context).build()
 
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }
 
     @After
-    fun cleanUp() {
+    fun teardown() {
         mockServer.shutdown()
         db.close()
     }

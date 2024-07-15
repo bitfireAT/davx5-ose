@@ -1,11 +1,11 @@
 package at.bitfire.davdroid
 
-import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.push.PushRegistrationWorker
+import at.bitfire.davdroid.repository.DavCollectionRepository
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.Multibinds
 import dagger.hilt.testing.TestInstallIn
+import dagger.multibindings.Multibinds
 
 interface TestModules {
 
@@ -14,9 +14,10 @@ interface TestModules {
         components = [SingletonComponent::class],
         replaces = [PushRegistrationWorker.PushRegistrationWorkerModule::class]
     )
-    abstract class FakePushRegistrationWorkerModule {
-        // Provides empty set of listeners
+    abstract class TestPushRegistrationWorkerModule {
+        // provides empty set of listeners
         @Multibinds
         abstract fun defaultOnChangeListeners(): Set<DavCollectionRepository.OnChangeListener>
     }
+
 }

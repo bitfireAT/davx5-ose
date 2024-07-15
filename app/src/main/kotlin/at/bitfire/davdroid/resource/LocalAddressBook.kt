@@ -31,9 +31,14 @@ import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
 import at.bitfire.vcard4android.Constants
 import at.bitfire.vcard4android.GroupMethod
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import java.io.ByteArrayOutputStream
 import java.util.LinkedList
 import java.util.logging.Level
+import javax.inject.Inject
 
 /**
  * A local address book. Requires an own Android account, because Android manages contacts per
@@ -41,10 +46,10 @@ import java.util.logging.Level
  * address book" account for every CardDAV address book. These accounts are bound to a
  * DAVx5 main account.
  */
-open class LocalAddressBook(
-        private val context: Context,
-        account: Account,
-        provider: ContentProviderClient?
+open class LocalAddressBook @Inject constructor(
+    private val context: Context,
+    account: Account,
+    provider: ContentProviderClient?
 ): AndroidAddressBook<LocalContact, LocalGroup>(account, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
 
     companion object {
@@ -154,6 +159,15 @@ open class LocalAddressBook(
 
     }
 
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface LocalAddressBookEntryPoint {
+        fun accountSettingsFactory(): AccountSettings.Factory
+    }
+    private val entryPoint = EntryPointAccessors.fromApplication(context, LocalAddressBookEntryPoint::class.java)
+    private val accountSettingsFactory = entryPoint.accountSettingsFactory()
+
+
     override val tag: String
         get() = "contacts-${account.name}"
 
@@ -167,7 +181,7 @@ open class LocalAddressBook(
      * but if it is enabled, [findDirty] will find dirty [LocalContact]s and [LocalGroup]s.
      */
     open val groupMethod: GroupMethod by lazy {
-        val accountSettings = AccountSettings(context, requireMainAccount())
+        val accountSettings = accountSettingsFactory.forAccount(requireMainAccount())
         accountSettings.getGroupMethod()
     }
     val includeGroups

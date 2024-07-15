@@ -1,6 +1,5 @@
 package at.bitfire.davdroid.ui.intro
 
-import android.app.Application
 import android.content.Context
 import android.content.IntentFilter
 import android.os.Build
@@ -16,13 +15,14 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class BatteryOptimizationsPageModel @Inject constructor(
-    val context: Application,
+    @ApplicationContext val context: Context,
     private val settings: SettingsManager
 ): ViewModel() {
 
