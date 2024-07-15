@@ -4,17 +4,18 @@
 
 package at.bitfire.davdroid.repository
 
-import android.app.Application
+import android.content.Context
 import android.content.pm.PackageManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.text.Collator
 import javax.inject.Inject
 
 class DavSyncStatsRepository @Inject constructor(
-    val context: Application,
+    @ApplicationContext val context: Context,
     db: AppDatabase
 ) {
 

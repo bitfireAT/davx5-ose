@@ -1,6 +1,6 @@
 package at.bitfire.davdroid.ui
 
-import android.app.Application
+import android.content.Context
 import android.content.pm.PackageManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +12,7 @@ import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -19,8 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TasksModel @Inject constructor(
-    val context: Application,
-    val settings: SettingsManager
+    @ApplicationContext val context: Context,
+    private val settings: SettingsManager
 ) : ViewModel() {
 
     companion object {

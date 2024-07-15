@@ -7,10 +7,10 @@ package at.bitfire.davdroid.settings
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Parcel
 import android.os.RemoteException
@@ -43,6 +43,7 @@ import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.property.Url
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -55,7 +56,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val accountSettings: AccountSettings,
     val accountRepository: AccountRepository,
-    val context: Application,
+    @ApplicationContext val context: Context,
     val db: AppDatabase,
     val settings: SettingsManager
 ) {
