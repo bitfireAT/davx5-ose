@@ -74,8 +74,9 @@ import java.util.logging.Level
 class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
+    private val accountSettingsFactory: AccountSettings.Factory,
     serviceRepository: DavServiceRepository,
-    val collectionListRefresherFactory: CollectionListRefresher.Factory
+    private val collectionListRefresherFactory: CollectionListRefresher.Factory
 ): CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -179,7 +180,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
             // create authenticating OkHttpClient (credentials taken from account settings)
             runInterruptible {
-                HttpClient.Builder(applicationContext, AccountSettings(applicationContext, account))
+                HttpClient.Builder(applicationContext, accountSettingsFactory.forAccount(account))
                     .setForeground(true)
                     .build().use { client ->
                         val httpClient = client.okHttpClient

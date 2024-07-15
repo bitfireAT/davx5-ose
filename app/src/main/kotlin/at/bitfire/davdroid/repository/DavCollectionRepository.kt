@@ -49,10 +49,11 @@ import javax.inject.Inject
  * Implements an observer pattern that can be used to listen for changes of collections.
  */
 class DavCollectionRepository @Inject constructor(
+    private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
+    db: AppDatabase,
     defaultListeners: Set<@JvmSuppressWildcards OnChangeListener>,
-    val serviceRepository: DavServiceRepository,
-    db: AppDatabase
+    private val serviceRepository: DavServiceRepository
 ) {
 
     private val listeners = Collections.synchronizedSet(defaultListeners.toMutableSet())
@@ -165,7 +166,7 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        HttpClient.Builder(context, AccountSettings(context, account))
+        HttpClient.Builder(context, accountSettingsFactory.forAccount(account))
             .setForeground(true)
             .build().use { httpClient ->
                 withContext(Dispatchers.IO) {
@@ -250,7 +251,7 @@ class DavCollectionRepository @Inject constructor(
     // helpers
 
     private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
-        HttpClient.Builder(context, AccountSettings(context, account))
+        HttpClient.Builder(context, accountSettingsFactory.forAccount(account))
             .setForeground(true)
             .build().use { httpClient ->
                 withContext(Dispatchers.IO) {

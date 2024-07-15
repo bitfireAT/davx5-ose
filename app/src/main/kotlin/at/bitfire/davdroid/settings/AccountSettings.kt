@@ -21,33 +21,32 @@ import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import net.openid.appauth.AuthState
 import java.util.logging.Level
 
 /**
  * Manages settings of an account.
  *
- * @param context       Required to access account settings
- * @param argAccount    Account to take settings from. If this account is an address book account,
+ * @param account    Account to take settings from. If this account is an address book account,
  * settings will be taken from the corresponding main account instead.
  *
  * @throws InvalidAccountException on construction when the account doesn't exist (anymore)
  * @throws IllegalArgumentException when the account type is not _DAVx5_ or _DAVx5 address book_
  */
-class AccountSettings(
-    val context: Context,
-    argAccount: Account
+class AccountSettings @AssistedInject constructor(
+    @Assisted account: Account,
+    @ApplicationContext val context: Context,
+    val migrationsFactory: AccountSettingsMigrations.Factory,
+    val settingsManager: SettingsManager
 ) {
 
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface AccountSettingsEntryPoint {
-        fun migrationsFactory(): AccountSettingsMigrations.Factory
-        fun settingsManager(): SettingsManager
+    @AssistedFactory
+    interface Factory {
+        fun forAccount(account: Account): AccountSettings
     }
 
     companion object {
@@ -136,37 +135,36 @@ class AccountSettings(
     }
 
 
-    private val entryPoint = EntryPointAccessors.fromApplication<AccountSettingsEntryPoint>(context)
-    private val settings = entryPoint.settingsManager()
-
     val accountManager: AccountManager = AccountManager.get(context)
     val account: Account
 
     init {
-        account = when (argAccount.type) {
+        this.account = when (account.type) {
             context.getString(R.string.account_type_address_book) -> {
                 /* argAccount is an address book account, which is not a main account. However settings are
                        stored in the main account, so resolve and use the main account instead. */
-                LocalAddressBook.mainAccount(context, argAccount) ?: throw IllegalArgumentException("Main account of $argAccount not found")
+                LocalAddressBook.mainAccount(context, account) ?: throw IllegalArgumentException("Main account of $account not found")
             }
 
             context.getString(R.string.account_type) ->
-                argAccount
+                account
 
             else ->
-                throw IllegalArgumentException("Account type ${argAccount.type} not supported")
+                throw IllegalArgumentException("Account type ${account.type} not supported")
         }
 
         // synchronize because account migration must only be run one time
         synchronized(AccountSettings::class.java) {
-            val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
+            val versionStr = accountManager.getUserData(this.account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(
+                this.account
+            )
             var version = 0
             try {
                 version = Integer.parseInt(versionStr)
             } catch (e: NumberFormatException) {
                 Logger.log.log(Level.SEVERE, "Invalid account version: $versionStr", e)
             }
-            Logger.log.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
+            Logger.log.fine("Account ${this.account.name} has version $version, current version: $CURRENT_VERSION")
 
             if (version < CURRENT_VERSION) {
                 if (currentlyUpdating) {
@@ -322,8 +320,8 @@ class AccountSettings(
     }
 
     fun getSyncWifiOnly() =
-        if (settings.containsKey(KEY_WIFI_ONLY))
-            settings.getBoolean(KEY_WIFI_ONLY)
+        if (settingsManager.containsKey(KEY_WIFI_ONLY))
+            settingsManager.getBoolean(KEY_WIFI_ONLY)
         else
             accountManager.getUserData(account, KEY_WIFI_ONLY) != null
 
@@ -337,8 +335,8 @@ class AccountSettings(
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
         if (getSyncWifiOnly()) {
-            val strSsids = if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
-                settings.getString(KEY_WIFI_ONLY_SSIDS)
+            val strSsids = if (settingsManager.containsKey(KEY_WIFI_ONLY_SSIDS))
+                settingsManager.getString(KEY_WIFI_ONLY_SSIDS)
             else
                 accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS)
             strSsids?.split(',')
@@ -349,7 +347,7 @@ class AccountSettings(
 
     fun getIgnoreVpns(): Boolean =
         when (accountManager.getUserData(account, KEY_IGNORE_VPNS)) {
-            null -> settings.getBoolean(KEY_IGNORE_VPNS)
+            null -> settingsManager.getBoolean(KEY_IGNORE_VPNS)
             "0" -> false
             else -> true
         }
@@ -410,7 +408,7 @@ class AccountSettings(
      */
     fun getDefaultAlarm() =
             accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt() ?:
-            settings.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 }
+            settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 }
 
     /**
      * Sets the default alarm value in the local account settings, if the new value differs
@@ -423,21 +421,23 @@ class AccountSettings(
      */
     fun setDefaultAlarm(minBefore: Int?) =
             accountManager.setAndVerifyUserData(account, KEY_DEFAULT_ALARM,
-                    if (minBefore == settings.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 })
+                    if (minBefore == settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 })
                         null
                     else
                         minBefore?.toString())
 
-    fun getManageCalendarColors() = if (settings.containsKey(KEY_MANAGE_CALENDAR_COLORS))
-        settings.getBoolean(KEY_MANAGE_CALENDAR_COLORS)
-    else
-        accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS) == null
+    fun getManageCalendarColors() =
+        if (settingsManager.containsKey(KEY_MANAGE_CALENDAR_COLORS))
+            settingsManager.getBoolean(KEY_MANAGE_CALENDAR_COLORS)
+        else
+            accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS) == null
     fun setManageCalendarColors(manage: Boolean) =
             accountManager.setAndVerifyUserData(account, KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
 
-    fun getEventColors() = if (settings.containsKey(KEY_EVENT_COLORS))
-            settings.getBoolean(KEY_EVENT_COLORS)
-                else
+    fun getEventColors() =
+        if (settingsManager.containsKey(KEY_EVENT_COLORS))
+            settingsManager.getBoolean(KEY_EVENT_COLORS)
+        else
             accountManager.getUserData(account, KEY_EVENT_COLORS) != null
     fun setEventColors(useColors: Boolean) =
             accountManager.setAndVerifyUserData(account, KEY_EVENT_COLORS, if (useColors) "1" else null)
@@ -445,7 +445,7 @@ class AccountSettings(
     // CardDAV settings
 
     fun getGroupMethod(): GroupMethod {
-        val name = settings.getString(KEY_CONTACT_GROUP_METHOD) ?:
+        val name = settingsManager.getString(KEY_CONTACT_GROUP_METHOD) ?:
                 accountManager.getUserData(account, KEY_CONTACT_GROUP_METHOD)
         if (name != null)
             try {
@@ -484,7 +484,7 @@ class AccountSettings(
      */
     @Deprecated("Use getShowOnlyPersonal() instead", replaceWith = ReplaceWith("getShowOnlyPersonal()"))
     fun getShowOnlyPersonalPair(): Pair<Boolean, Boolean> =
-            when (settings.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+            when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
                 0 -> Pair(false, false)
                 1 -> Pair(true, false)
                 else /* including -1 */ -> Pair(accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null, true)
@@ -502,7 +502,6 @@ class AccountSettings(
             val fromVersion = toVersion-1
             Logger.log.info("Updating account ${account.name} from version $fromVersion to $toVersion")
             try {
-                val migrationsFactory = entryPoint.migrationsFactory()
                 val migrations = migrationsFactory.create(
                     account = account,
                     accountSettings = this

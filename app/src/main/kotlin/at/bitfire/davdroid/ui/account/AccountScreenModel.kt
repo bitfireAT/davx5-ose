@@ -46,6 +46,7 @@ class AccountScreenModel @AssistedInject constructor(
     @Assisted val account: Account,
     val context: Application,
     private val accountRepository: AccountRepository,
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     serviceRepository: DavServiceRepository,
     accountProgressUseCase: AccountProgressUseCase,
@@ -63,7 +64,7 @@ class AccountScreenModel @AssistedInject constructor(
         !accounts.contains(account)
     }
 
-    private val settings = AccountSettings(context, account)
+    private val settings = accountSettingsFactory.forAccount(account)
     private val refreshSettingsSignal = MutableLiveData(Unit)
     val showOnlyPersonal = refreshSettingsSignal.switchMap<Unit, AccountSettings.ShowOnlyPersonal> {
         object : LiveData<AccountSettings.ShowOnlyPersonal>() {

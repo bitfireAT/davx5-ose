@@ -48,12 +48,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import java.util.Collections
-import java.util.logging.Level
 
 abstract class BaseSyncWorker(
     context: Context,
     private val workerParams: WorkerParameters,
-    private val syncDispatcher: CoroutineDispatcher,
+    private val accountSettingsFactory: AccountSettings.Factory,
+    private val syncDispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParams) {
 
     companion object {
@@ -222,7 +222,7 @@ abstract class BaseSyncWorker(
 
         try {
             val accountSettings = try {
-                AccountSettings(applicationContext, account)
+                accountSettingsFactory.forAccount(account)
             } catch (e: InvalidAccountException) {
                 val workId = workerParams.id
                 Logger.log.warning("Account $account doesn't exist anymore, cancelling worker $workId")

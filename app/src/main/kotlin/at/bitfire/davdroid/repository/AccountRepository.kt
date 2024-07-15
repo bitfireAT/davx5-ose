@@ -8,8 +8,8 @@ import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
-import android.app.Application
 import android.content.ContentResolver
+import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
@@ -32,6 +32,7 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.vcard4android.GroupMethod
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -47,7 +48,8 @@ import javax.inject.Inject
  * [at.bitfire.davdroid.resource.LocalAddressBook].
  */
 class AccountRepository @Inject constructor(
-    val context: Application,
+    private val accountSettingsFactory: AccountSettings.Factory,
+    @ApplicationContext val context: Context,
     private val homeSetRepository: DavHomeSetRepository,
     private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
@@ -83,7 +85,7 @@ class AccountRepository @Inject constructor(
         // add entries for account to service DB
         logger.log(Level.INFO, "Writing account configuration to database", config)
         try {
-            val accountSettings = AccountSettings(context, account)
+            val accountSettings = accountSettingsFactory.forAccount(account)
             val defaultSyncInterval = settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
 
             // Configure CardDAV service
@@ -200,7 +202,7 @@ class AccountRepository @Inject constructor(
             throw IllegalArgumentException("Account with name \"$newName\" already exists")
 
         // remember sync intervals
-        val oldSettings = AccountSettings(context, oldAccount)
+        val oldSettings = accountSettingsFactory.forAccount(oldAccount)
         val authorities = mutableListOf(
             context.getString(R.string.address_books_authority),
             CalendarContract.AUTHORITY
@@ -269,7 +271,7 @@ class AccountRepository @Inject constructor(
             }
 
             // restore sync intervals
-            val newSettings = AccountSettings(context, newAccount)
+            val newSettings = accountSettingsFactory.forAccount(newAccount)
             for ((authority, interval) in syncIntervals) {
                 if (interval == null)
                     ContentResolver.setIsSyncable(newAccount, authority, 0)

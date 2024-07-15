@@ -55,6 +55,7 @@ import javax.inject.Inject
 class PushRegistrationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     private val preferenceRepository: PreferenceRepository,
     private val serviceRepository: DavServiceRepository
@@ -84,7 +85,7 @@ class PushRegistrationWorker @AssistedInject constructor(
 
 
     private suspend fun requestPushRegistration(collection: Collection, account: Account, endpoint: String) {
-        val settings = AccountSettings(applicationContext, account)
+        val settings = accountSettingsFactory.forAccount(account)
 
         runInterruptible {
             HttpClient.Builder(applicationContext, settings)

@@ -32,11 +32,12 @@ import javax.inject.Inject
  * Sync logic for address books
  */
 class AddressBookSyncer @Inject constructor(
+    accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext context: Context,
     db: AppDatabase,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     private val settingsManager: SettingsManager
-) : Syncer(context, db) {
+) : Syncer(accountSettingsFactory, context, db) {
 
     companion object {
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"
@@ -134,7 +135,7 @@ class AddressBookSyncer @Inject constructor(
         collection: Collection
     ) {
         try {
-            val accountSettings = AccountSettings(context, account)
+            val accountSettings = accountSettingsFactory.forAccount(account)
             val addressBook = LocalAddressBook(context, account, provider)
 
             // handle group method change
