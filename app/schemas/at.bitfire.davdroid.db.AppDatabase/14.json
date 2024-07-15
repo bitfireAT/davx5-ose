@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 14,
-    "identityHash": "279d3301d1adb09866b0b08b4bf8acfe",
+    "identityHash": "671ee7477dfeb0315a04f2c1c3359996",
     "entities": [
       {
         "tableName": "service",
@@ -302,6 +302,16 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_collection_ownerId_type` ON `${TABLE_NAME}` (`ownerId`, `type`)"
           },
           {
+            "name": "index_collection_pushTopic_type",
+            "unique": false,
+            "columnNames": [
+              "pushTopic",
+              "type"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_collection_pushTopic_type` ON `${TABLE_NAME}` (`pushTopic`, `type`)"
+          },
+          {
             "name": "index_collection_url",
             "unique": false,
             "columnNames": [
@@ -572,15 +582,23 @@
         },
         "indices": [
           {
-            "name": "index_webdav_document_mountId_parentId_name",
+            "name": "index_webdav_document_parentId",
+            "unique": true,
+            "columnNames": [
+              "parentId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_webdav_document_parentId` ON `${TABLE_NAME}` (`parentId`)"
+          },
+          {
+            "name": "index_webdav_document_mountId_name",
             "unique": true,
             "columnNames": [
               "mountId",
-              "parentId",
               "name"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_webdav_document_mountId_parentId_name` ON `${TABLE_NAME}` (`mountId`, `parentId`, `name`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_webdav_document_mountId_name` ON `${TABLE_NAME}` (`mountId`, `name`)"
           }
         ],
         "foreignKeys": [
@@ -644,7 +662,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '279d3301d1adb09866b0b08b4bf8acfe')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '671ee7477dfeb0315a04f2c1c3359996')"
     ]
   }
 }
