@@ -81,23 +81,21 @@ abstract class Syncer(
                 remoteCollections[collection.url] = collection
 
         // 2. update/delete local resources and determine new (unknown) remote collections
-        val newCollections = HashMap(remoteCollections)
+        val newFoundCollections = HashMap(remoteCollections)
         for (url in getLocalResourceUrls())
             remoteCollections[url].let { collection ->
-                if (collection == null) {
-                    Logger.log.log(Level.INFO, "Deleting obsolete local $authority resource", url)
+                if (collection == null)
+                    // Collection got deleted on server, delete obsolete local resource
                     deleteLocalResource(url)
-                } else {
-                    // remote CollectionInfo found for this local collection, update data
-                    Logger.log.log(Level.FINE, "Updating local $authority resource at $url", collection)
+                else {
+                    // Collection exists locally, update local resource and don't add it again
                     updateLocalResource(collection)
-                    // local resource for this remote collection exists, don't create a new one
-                    newCollections -= url
+                    newFoundCollections -= url
                 }
             }
 
         // 3. create new local resources for new found collections
-        for ((_, collection) in newCollections)
+        for ((_, collection) in newFoundCollections)
             createLocalResource(collection)
 
         // 4. sync local resources
