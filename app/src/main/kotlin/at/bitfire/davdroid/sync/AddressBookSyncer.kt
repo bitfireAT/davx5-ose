@@ -52,15 +52,15 @@ class AddressBookSyncer @Inject constructor(
     ) {
 
         // 1. find address book collections to be synced
-        val remoteAddressBooks = mutableMapOf<HttpUrl, Collection>()
+        val remoteCollections = mutableMapOf<HttpUrl, Collection>()
         val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)
         if (service != null)
             for (collection in db.collectionDao().getByServiceAndSync(service.id))
-                remoteAddressBooks[collection.url] = collection
+                remoteCollections[collection.url] = collection
 
         // permission check
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            if (remoteAddressBooks.isEmpty())
+            if (remoteCollections.isEmpty())
                 Logger.log.info("No contacts permission, but no address book selected for synchronization")
             else
                 Logger.log.warning("No contacts permission, but address books are selected for synchronization")
@@ -74,11 +74,12 @@ class AddressBookSyncer @Inject constructor(
                 return // Don't sync
             }
 
-            // 2. update/delete local address books
+            // 2. update/delete local address books and determine new remote collections
             val forceAllReadOnly = settingsManager.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
+            val newCollections = HashMap(remoteCollections)
             for (addressBook in LocalAddressBook.findAll(context, contactsProvider, account)) {
                 val url = addressBook.url.toHttpUrl()
-                val collection = remoteAddressBooks[url]
+                val collection = remoteCollections[url]
                 if (collection == null) {
                     Logger.log.log(Level.INFO, "Deleting obsolete local address book", url)
                     addressBook.delete()
@@ -90,13 +91,13 @@ class AddressBookSyncer @Inject constructor(
                     } catch (e: Exception) {
                         Logger.log.log(Level.WARNING, "Couldn't rename address book account", e)
                     }
-                    // we already have a local address book for this remote collection, don't take into consideration anymore
-                    remoteAddressBooks -= url
+                    // we already have a local address book for this remote collection, don't create a new local address book
+                    newCollections -= url
                 }
             }
 
             // 3. create new local address books
-            for ((_, info) in remoteAddressBooks) {
+            for ((_, info) in newCollections) {
                 Logger.log.log(Level.INFO, "Adding local address book", info)
                 LocalAddressBook.create(context, contactsProvider, account, info, forceAllReadOnly)
             }
@@ -108,7 +109,7 @@ class AddressBookSyncer @Inject constructor(
                 Logger.log.info("Synchronizing address book $addressBook")
 
                 val url = addressBook.url.toHttpUrl()
-                remoteAddressBooks[url]?.let { collection ->
+                remoteCollections[url]?.let { collection ->
                     syncAddressBook(
                         addressBook.account,
                         extras,

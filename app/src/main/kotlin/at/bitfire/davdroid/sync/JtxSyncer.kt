@@ -66,8 +66,9 @@ class JtxSyncer @Inject constructor(
                 for (collection in db.collectionDao().getSyncJtxCollections(service.id))
                     remoteCollections[collection.url] = collection
 
-            // 2. delete/update local jtxCollection lists
+            // 2. delete/update local jtxCollection lists and determine new remote collections
             val updateColors = accountSettings.getManageCalendarColors()
+            val newCollections = HashMap(remoteCollections)
             for (jtxCollection in JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null))
                 jtxCollection.url?.let { strUrl ->
                     val url = strUrl.toHttpUrl()
@@ -80,13 +81,13 @@ class JtxSyncer @Inject constructor(
                         Logger.log.log(Level.FINE, "Updating local collection $url", collection)
                         val owner = collection.ownerId?.let { db.principalDao().get(it) }
                         jtxCollection.updateCollection(collection, owner, updateColors)
-                        // we already have a local task list for this remote collection, don't take into consideration anymore
-                        remoteCollections -= url
+                        // we already have a local task list for this remote collection, don't create a new local task list
+                        newCollections -= url
                     }
                 }
 
             // 3. create new local jtxCollections
-            for ((_,info) in remoteCollections) {
+            for ((_,info) in newCollections) {
                 Logger.log.log(Level.INFO, "Adding local collections", info)
                 val owner = info.ownerId?.let { db.principalDao().get(it) }
                 LocalJtxCollection.create(account, provider, info, owner)
