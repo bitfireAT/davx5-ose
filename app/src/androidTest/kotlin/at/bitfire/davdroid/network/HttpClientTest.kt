@@ -4,8 +4,9 @@
 
 package at.bitfire.davdroid.network
 
+import android.content.Context
 import android.security.NetworkSecurityPolicy
-import androidx.test.platform.app.InstrumentationRegistry
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.Request
@@ -19,6 +20,7 @@ import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 @HiltAndroidTest
 class HttpClientTest {
@@ -29,11 +31,15 @@ class HttpClientTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
     @Before
     fun setUp() {
         hiltRule.inject()
 
-        httpClient = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build()
+        httpClient = HttpClient.Builder(context).build()
 
         server = MockWebServer()
         server.start(30000)

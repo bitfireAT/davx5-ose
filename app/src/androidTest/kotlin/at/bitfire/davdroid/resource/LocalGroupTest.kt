@@ -8,6 +8,7 @@ import android.Manifest
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import androidx.test.platform.app.InstrumentationRegistry
@@ -17,6 +18,7 @@ import at.bitfire.vcard4android.BatchOperation
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.AfterClass
@@ -37,8 +39,6 @@ class LocalGroupTest {
 
     companion object {
 
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-
         @JvmField
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
@@ -48,6 +48,7 @@ class LocalGroupTest {
         @BeforeClass
         @JvmStatic
         fun connect() {
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
             provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
             assertNotNull(provider)
         }
@@ -61,6 +62,10 @@ class LocalGroupTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
 
     @Inject
     lateinit var settingsManager: SettingsManager

@@ -21,11 +21,22 @@ import at.techbee.jtx.JtxContract.asSyncAdapter
 import net.fortuna.ical4j.model.Date
 import net.fortuna.ical4j.model.DateList
 import net.fortuna.ical4j.model.parameter.Value
-import net.fortuna.ical4j.model.property.*
-import org.junit.*
-import org.junit.Assert.*
+import net.fortuna.ical4j.model.property.DtStart
+import net.fortuna.ical4j.model.property.ExDate
+import net.fortuna.ical4j.model.property.RRule
+import net.fortuna.ical4j.model.property.RecurrenceId
+import net.fortuna.ical4j.model.property.Status
+import org.junit.After
+import org.junit.AfterClass
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.ClassRule
+import org.junit.Test
 import org.junit.rules.TestRule
-import java.util.*
+import java.util.UUID
 
 class LocalEventTest {
 

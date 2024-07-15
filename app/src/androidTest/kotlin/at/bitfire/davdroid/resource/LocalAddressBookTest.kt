@@ -6,15 +6,16 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.platform.app.InstrumentationRegistry
+import android.content.Context
 import at.bitfire.davdroid.R
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 @HiltAndroidTest
 class LocalAddressBookTest {
@@ -22,18 +23,20 @@ class LocalAddressBookTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
 
-    val mainAccountType = context.getString(R.string.account_type)
-    val mainAccount = Account("main", mainAccountType)
+    private val mainAccountType by lazy { context.getString(R.string.account_type) }
+    private val mainAccount by lazy { Account("main", mainAccountType) }
 
-    val addressBookAccountType = context.getString(R.string.account_type_address_book)
-    val addressBookAccount = Account("sub", addressBookAccountType)
+    private val addressBookAccountType by lazy { context.getString(R.string.account_type_address_book) }
+    private val addressBookAccount by lazy { Account("sub", addressBookAccountType) }
 
-    val accountManager = AccountManager.get(context)
+    private val accountManager by lazy { AccountManager.get(context) }
 
     @Before
-    fun setUp() {
+    fun setup() {
         hiltRule.inject()
 
         // TODO DOES NOT WORK: the account immediately starts to sync, which creates the sync adapter services.
@@ -42,7 +45,7 @@ class LocalAddressBookTest {
     }
 
     @After
-    fun cleanup() {
+    fun teardown() {
         accountManager.removeAccount(addressBookAccount, null, null)
         accountManager.removeAccount(mainAccount, null, null)
     }

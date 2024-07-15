@@ -6,17 +6,31 @@ package at.bitfire.davdroid.sync.worker
 
 import android.content.Context
 import android.provider.CalendarContract
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.sync.SyncManagerTest.Companion.account
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 @HiltAndroidTest
 class OneTimeSyncWorkerTest {
 
-    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Before
+    fun setup() {
+        hiltRule.inject()
+    }
 
     @Test
     fun testEnqueue_enqueuesWorker() {

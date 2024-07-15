@@ -6,13 +6,13 @@ package at.bitfire.davdroid.webdav
 
 import android.content.Context
 import android.security.NetworkSecurityPolicy
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.CookieJar
@@ -31,10 +31,16 @@ import javax.inject.Inject
 @HiltAndroidTest
 class DavDocumentsProviderTest {
 
+    companion object {
+        private const val PATH_WEBDAV_ROOT = "/webdav"
+    }
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
 
     @Inject lateinit var db: AppDatabase
 
@@ -43,13 +49,11 @@ class DavDocumentsProviderTest {
         hiltRule.inject()
     }
 
+
     private var mockServer =  MockWebServer()
 
     private lateinit var client: HttpClient
 
-    companion object {
-        private const val PATH_WEBDAV_ROOT = "/webdav"
-    }
 
     @Before
     fun mockServerSetup() {
@@ -57,7 +61,7 @@ class DavDocumentsProviderTest {
         mockServer.dispatcher = TestDispatcher()
         mockServer.start()
 
-        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build()
+        client = HttpClient.Builder(context).build()
 
         // mock server delivers HTTP without encryption
         assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)

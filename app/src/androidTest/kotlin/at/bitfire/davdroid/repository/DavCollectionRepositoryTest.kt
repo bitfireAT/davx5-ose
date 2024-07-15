@@ -1,10 +1,11 @@
 package at.bitfire.davdroid.repository
 
-import androidx.test.platform.app.InstrumentationRegistry
+import android.content.Context
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.settings.AccountSettings
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.mockk
@@ -27,12 +28,14 @@ class DavCollectionRepositoryTest {
     lateinit var accountSettingsFactory: AccountSettings.Factory
 
     @Inject
-    lateinit var serviceRepository: DavServiceRepository
+    @ApplicationContext
+    lateinit var context: Context
 
     @Inject
     lateinit var db: AppDatabase
 
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    @Inject
+    lateinit var serviceRepository: DavServiceRepository
 
     var service: Service? = null
 
@@ -47,6 +50,7 @@ class DavCollectionRepositoryTest {
         db.close()
         serviceRepository.deleteAll()
     }
+
 
     @Test
     fun testOnChangeListener_setForceReadOnly() = runBlocking {

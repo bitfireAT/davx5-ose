@@ -15,6 +15,7 @@ import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.resource.LocalTestAddressBook
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.AfterClass
@@ -24,13 +25,12 @@ import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 @HiltAndroidTest
 class GroupMembershipBuilderTest {
 
     companion object {
-
-        val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
         @JvmField
         @ClassRule
@@ -41,6 +41,7 @@ class GroupMembershipBuilderTest {
         @BeforeClass
         @JvmStatic
         fun connect() {
+            val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
             provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
         }
 
@@ -54,6 +55,10 @@ class GroupMembershipBuilderTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
 
     @Before
     fun inject() {

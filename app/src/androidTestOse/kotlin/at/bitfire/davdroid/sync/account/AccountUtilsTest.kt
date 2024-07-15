@@ -6,10 +6,11 @@ package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.Context
 import android.os.Bundle
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
@@ -27,6 +28,10 @@ class AccountUtilsTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
     lateinit var settingsManager: SettingsManager
 
     @Before
@@ -35,8 +40,8 @@ class AccountUtilsTest {
     }
 
 
-    val context by lazy { InstrumentationRegistry.getInstrumentation().targetContext }
     val account by lazy { Account("Test Account", context.getString(R.string.account_type)) }
+
 
     @Test
     fun testCreateAccount() {

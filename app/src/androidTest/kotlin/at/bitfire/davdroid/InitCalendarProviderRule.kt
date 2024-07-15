@@ -10,7 +10,6 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.os.Build
 import android.provider.CalendarContract
-import androidx.annotation.RequiresApi
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.log.Logger

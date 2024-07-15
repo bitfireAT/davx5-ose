@@ -8,11 +8,11 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
@@ -28,7 +28,9 @@ class SyncerTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
 
     @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
@@ -37,15 +39,15 @@ class SyncerTest {
     lateinit var db: AppDatabase
 
     /** use our WebDAV provider as a mock provider because it's our own and we don't need any permissions for it */
-    private val mockAuthority = context.getString(R.string.webdav_authority)
+    private val mockAuthority by lazy { context.getString(R.string.webdav_authority) }
 
-    val account = Account(javaClass.canonicalName, context.getString(R.string.account_type))
-
+    val account by lazy { Account(javaClass.canonicalName, context.getString(R.string.account_type)) }
 
     @Before
     fun setUp() {
         hiltRule.inject()
     }
+
 
     @Test
     fun testOnPerformSync_runsSyncAndSetsClassLoader() {
