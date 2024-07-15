@@ -38,6 +38,7 @@ import dagger.hilt.components.SingletonComponent
 import java.io.ByteArrayOutputStream
 import java.util.LinkedList
 import java.util.logging.Level
+import javax.inject.Inject
 
 /**
  * A local address book. Requires an own Android account, because Android manages contacts per
@@ -45,7 +46,7 @@ import java.util.logging.Level
  * address book" account for every CardDAV address book. These accounts are bound to a
  * DAVx5 main account.
  */
-open class LocalAddressBook(
+open class LocalAddressBook @Inject constructor(
     private val context: Context,
     account: Account,
     provider: ContentProviderClient?
@@ -163,7 +164,7 @@ open class LocalAddressBook(
     interface LocalAddressBookEntryPoint {
         fun accountSettingsFactory(): AccountSettings.Factory
     }
-    private val entryPoint = EntryPointAccessors.fromApplication<LocalAddressBookEntryPoint>(context)
+    private val entryPoint = EntryPointAccessors.fromApplication(context, LocalAddressBookEntryPoint::class.java)
     private val accountSettingsFactory = entryPoint.accountSettingsFactory()
 
 
