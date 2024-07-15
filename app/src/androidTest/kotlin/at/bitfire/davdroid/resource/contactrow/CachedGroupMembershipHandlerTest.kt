@@ -15,37 +15,55 @@ import at.bitfire.davdroid.resource.LocalTestAddressBook
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
-import org.junit.*
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.AfterClass
+import org.junit.Assert
 import org.junit.Assert.assertArrayEquals
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.Test
 
+@HiltAndroidTest
 class CachedGroupMembershipHandlerTest {
 
     companion object {
+
+        val context = InstrumentationRegistry.getInstrumentation().context
 
         @JvmField
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
         private lateinit var provider: ContentProviderClient
-        private lateinit var addressBook: LocalTestAddressBook
 
         @BeforeClass
         @JvmStatic
         fun connect() {
-            val context = InstrumentationRegistry.getInstrumentation().context
             provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
             Assert.assertNotNull(provider)
-
-            addressBook = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
         }
 
         @AfterClass
         @JvmStatic
         fun disconnect() {
-            @Suppress("DEPRECATION")
-            provider.release()
+            provider.close()
         }
 
+    }
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    private lateinit var addressBook: LocalTestAddressBook
+
+    @Before
+    fun setup() {
+        hiltRule.inject()
+
+        addressBook = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
     }
 
 

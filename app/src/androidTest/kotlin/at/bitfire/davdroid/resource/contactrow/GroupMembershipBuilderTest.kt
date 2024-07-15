@@ -14,9 +14,18 @@ import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.resource.LocalTestAddressBook
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
-import org.junit.*
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.AfterClass
+import org.junit.Assert
 import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.Test
 
+@HiltAndroidTest
 class GroupMembershipBuilderTest {
 
     companion object {
@@ -46,6 +55,14 @@ class GroupMembershipBuilderTest {
             @Suppress("DEPRECATION")
             provider.release()
         }
+    }
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Before
+    fun setup() {
+        hiltRule.inject()
     }
 
 

@@ -17,25 +17,46 @@ import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.After
+import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 
 @HiltAndroidTest
 class GroupMembershipHandlerTest {
 
+    companion object {
+
+        val context = InstrumentationRegistry.getInstrumentation().context
+
+        @JvmField
+        @ClassRule
+        val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
+
+        private lateinit var provider: ContentProviderClient
+
+        @BeforeClass
+        @JvmStatic
+        fun connect() {
+            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            Assert.assertNotNull(provider)
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun disconnect() {
+            provider.close()
+        }
+
+    }
+
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
-
-    @JvmField
-    @Rule
-    val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
-
-    private lateinit var provider: ContentProviderClient
 
     private lateinit var addressBookGroupsAsCategories: LocalTestAddressBook
     private var addressBookGroupsAsCategoriesGroup: Long = -1
@@ -46,19 +67,10 @@ class GroupMembershipHandlerTest {
     fun setup() {
         hiltRule.inject()
 
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-        Assert.assertNotNull(provider)
-
         addressBookGroupsAsCategories = LocalTestAddressBook(context, provider, GroupMethod.CATEGORIES)
         addressBookGroupsAsCategoriesGroup = addressBookGroupsAsCategories.findOrCreateGroup("TEST GROUP")
 
         addressBookGroupsAsVCards = LocalTestAddressBook(context, provider, GroupMethod.GROUP_VCARDS)
-    }
-
-    @After
-    fun teardown() {
-        provider.close()
     }
 
 
