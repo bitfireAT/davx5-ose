@@ -10,8 +10,10 @@ import android.content.SyncResult
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import okhttp3.HttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -69,6 +71,32 @@ class SyncerTest {
             Thread.sleep(1000)
             syncCalled.incrementAndGet()
         }
+
+        override fun getSyncCollections(serviceId: Long): List<Collection> {
+            return emptyList()
+        }
+
+        override fun preparation() {}
+
+        override fun getServiceType(): String {
+            return ""
+        }
+
+        override fun getLocalResourceUrls(): List<HttpUrl?> {
+            return emptyList()
+        }
+
+        override fun deleteLocalResource(url: HttpUrl?) {}
+
+        override fun updateLocalResource(collection: Collection) {}
+
+        override fun createLocalResource(collection: Collection) {}
+
+        override fun getLocalSyncableResourceUrls(): List<HttpUrl?> {
+            return emptyList()
+        }
+
+        override fun syncLocalResource(collection: Collection) {}
 
     }
 
