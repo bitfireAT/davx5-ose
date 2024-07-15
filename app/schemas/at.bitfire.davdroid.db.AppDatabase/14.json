@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 14,
-    "identityHash": "671ee7477dfeb0315a04f2c1c3359996",
+    "identityHash": "7bb54786c2206384c93e2911118f780f",
     "entities": [
       {
         "tableName": "service",
@@ -583,12 +583,12 @@
         "indices": [
           {
             "name": "index_webdav_document_parentId",
-            "unique": true,
+            "unique": false,
             "columnNames": [
               "parentId"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_webdav_document_parentId` ON `${TABLE_NAME}` (`parentId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_webdav_document_parentId` ON `${TABLE_NAME}` (`parentId`)"
           },
           {
             "name": "index_webdav_document_mountId_name",
@@ -662,7 +662,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '671ee7477dfeb0315a04f2c1c3359996')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7bb54786c2206384c93e2911118f780f')"
     ]
   }
 }

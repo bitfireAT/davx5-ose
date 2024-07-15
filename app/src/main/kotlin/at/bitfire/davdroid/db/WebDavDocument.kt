@@ -27,7 +27,7 @@ import java.time.Instant
         ForeignKey(entity = WebDavDocument::class, parentColumns = ["id"], childColumns = ["parentId"], onDelete = ForeignKey.CASCADE)
     ],
     indices = [
-        Index("parentId", unique = true),
+        Index("parentId", "name", unique = true),
         Index("mountId", "name", unique = true),
     ]
 )
