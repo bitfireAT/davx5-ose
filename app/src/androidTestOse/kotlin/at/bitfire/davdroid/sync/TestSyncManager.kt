@@ -26,6 +26,7 @@ import org.junit.Assert.assertEquals
 
 class TestSyncManager(
     account: Account,
+    accountSettings: AccountSettings,
     extras: Array<String>,
     authority: String,
     httpClient: HttpClient,
@@ -35,7 +36,7 @@ class TestSyncManager(
     val mockWebServer: MockWebServer,
     context: Context,
     db: AppDatabase
-): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(account, AccountSettings(context, account), httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
+): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
 
     override fun prepare(): Boolean {
         collectionURL = mockWebServer.url("/")

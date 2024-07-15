@@ -12,6 +12,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.settings.AccountSettings
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
@@ -30,6 +31,9 @@ class SyncerTest {
     val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
+
+    @Inject
     lateinit var db: AppDatabase
 
     /** use our WebDAV provider as a mock provider because it's our own and we don't need any permissions for it */
@@ -45,7 +49,7 @@ class SyncerTest {
 
     @Test
     fun testOnPerformSync_runsSyncAndSetsClassLoader() {
-        val syncer = TestSyncer(context, db)
+        val syncer = TestSyncer(accountSettingsFactory, context, db)
         syncer.onPerformSync(account, arrayOf(), mockAuthority, SyncResult())
 
         // check whether onPerformSync() actually calls sync()
@@ -56,7 +60,11 @@ class SyncerTest {
     }
 
 
-    class TestSyncer(context: Context, db: AppDatabase) : Syncer(context, db) {
+    class TestSyncer(
+        accountSettingsFactory: AccountSettings.Factory,
+        context: Context,
+        db: AppDatabase
+    ) : Syncer(accountSettingsFactory, context, db) {
 
         val syncCalled = AtomicInteger()
 

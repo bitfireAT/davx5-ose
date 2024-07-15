@@ -76,6 +76,9 @@ class SyncManagerTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
+
+    @Inject
     lateinit var db: AppDatabase
 
     @Inject
@@ -107,6 +110,7 @@ class SyncManagerTest {
     ) =
         TestSyncManager(
             account,
+            accountSettingsFactory.forAccount(account),
             arrayOf(),
             "TestAuthority",
             HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build(),

@@ -15,11 +15,21 @@ import at.bitfire.davdroid.resource.LocalTestAddressBook
 import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
-import org.junit.*
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 
+@HiltAndroidTest
 class GroupMembershipHandlerTest {
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
 
     @JvmField
     @Rule
@@ -33,7 +43,9 @@ class GroupMembershipHandlerTest {
     private lateinit var addressBookGroupsAsVCards: LocalTestAddressBook
 
     @Before
-    fun connect() {
+    fun setup() {
+        hiltRule.inject()
+
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
         Assert.assertNotNull(provider)
@@ -45,9 +57,8 @@ class GroupMembershipHandlerTest {
     }
 
     @After
-    fun disconnect() {
-        @Suppress("DEPRECATION")
-        provider.release()
+    fun teardown() {
+        provider.close()
     }
 
 

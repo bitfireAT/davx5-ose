@@ -4,6 +4,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.settings.AccountSettings
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.mockk
@@ -21,6 +22,9 @@ class DavCollectionRepositoryTest {
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
@@ -55,7 +59,7 @@ class DavCollectionRepositoryTest {
             )
         )
         val testObserver = mockk<DavCollectionRepository.OnChangeListener>(relaxed = true)
-        val collectionRepository = DavCollectionRepository(context, mutableSetOf(testObserver), serviceRepository, db)
+        val collectionRepository = DavCollectionRepository(accountSettingsFactory, context, db, mutableSetOf(testObserver), serviceRepository)
 
         assert(db.collectionDao().get(collectionId)?.forceReadOnly == false)
         verify(exactly = 0) {
@@ -76,4 +80,5 @@ class DavCollectionRepositoryTest {
         val serviceId = serviceRepository.insertOrReplace(service)
         return serviceRepository.get(serviceId)
     }
+
 }

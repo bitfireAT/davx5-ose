@@ -36,11 +36,15 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 @HiltAndroidTest
 class BaseSyncWorkerTest {
 
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    private val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+    @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
 
     private val accountManager = AccountManager.get(context)
     private val account = Account("Test Account", context.getString(R.string.account_type))
@@ -87,7 +91,7 @@ class BaseSyncWorkerTest {
     
     @Test
     fun testWifiConditionsMet_anyWifi_wifiEnabled() {
-        val accountSettings = AccountSettings(context, account)
+        val accountSettings = accountSettingsFactory.forAccount(account)
         accountSettings.setSyncWiFiOnly(true)
 
         mockkObject(ConnectionUtils)
@@ -100,7 +104,7 @@ class BaseSyncWorkerTest {
 
     @Test
     fun testWifiConditionsMet_anyWifi_wifiDisabled() {
-        val accountSettings = AccountSettings(context, account)
+        val accountSettings = accountSettingsFactory.forAccount(account)
         accountSettings.setSyncWiFiOnly(true)
 
         mockkObject(ConnectionUtils)
@@ -114,7 +118,7 @@ class BaseSyncWorkerTest {
 
     @Test
     fun testCorrectWifiSsid_CorrectWiFiSsid() {
-        val accountSettings = AccountSettings(context, account)
+        val accountSettings = accountSettingsFactory.forAccount(account)
         mockkObject(accountSettings)
         every { accountSettings.getSyncWifiOnlySSIDs() } returns listOf("SampleWiFi1","ConnectedWiFi")
 
@@ -132,7 +136,7 @@ class BaseSyncWorkerTest {
 
     @Test
     fun testCorrectWifiSsid_WrongWiFiSsid() {
-        val accountSettings = AccountSettings(context, account)
+        val accountSettings = accountSettingsFactory.forAccount(account)
         mockkObject(accountSettings)
         every { accountSettings.getSyncWifiOnlySSIDs() } returns listOf("SampleWiFi1","SampleWiFi2")
 
