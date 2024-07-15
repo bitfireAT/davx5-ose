@@ -147,6 +147,42 @@ class AddressBookSyncer @AssistedInject constructor(
         }
     }
 
+    override fun getSyncCollections(serviceId: Long): List<Collection> {
+        TODO("Not yet implemented")
+    }
+
+    override fun preparation() {
+        TODO("Not yet implemented")
+    }
+
+    override fun getServiceType(): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun getLocalResourceUrls(): List<HttpUrl?> {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteLocalResource(url: HttpUrl?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateLocalResource(collection: Collection) {
+        TODO("Not yet implemented")
+    }
+
+    override fun createLocalResource(collection: Collection) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getLocalSyncableResourceUrls(): List<HttpUrl?> {
+        TODO("Not yet implemented")
+    }
+
+    override fun syncLocalResource(collection: Collection) {
+        TODO("Not yet implemented")
+    }
+
     fun syncAddressBook(
         account: Account,
         extras: Array<String>,

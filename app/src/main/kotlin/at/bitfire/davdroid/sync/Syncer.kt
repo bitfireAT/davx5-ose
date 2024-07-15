@@ -9,13 +9,13 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.DeadObjectException
-import android.provider.ContactsContract
 import at.bitfire.davdroid.InvalidAccountException
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
+import okhttp3.HttpUrl
 import java.util.logging.Level
 
 /**
@@ -61,15 +61,93 @@ abstract class Syncer(
     val accountSettings by lazy { AccountSettings(context, account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
+    lateinit var provider: ContentProviderClient
+
     /**
-     * Creates and/or deletes local collections (calendars, address books, etc) and updates them
-     * with remote information. Then syncs the actual entries (events, tasks, contacts, etc) of all
-     * collections.
+     * Creates, updates and/or deletes local resources (calendars, address books, etc) according to
+     * remote collection information. Then syncs the actual entries (events, tasks, contacts, etc)
+     * of the remaining up-to-date resources.
      */
-    abstract fun sync()
+    open fun sync() {
+
+        // 0. resource specific preparations
+        preparation()
+
+        // 1. find resource collections to be synced
+        val remoteCollections = mutableMapOf<HttpUrl, Collection>()
+        val service = db.serviceDao().getByAccountAndType(account.name, getServiceType())
+        if (service != null)
+            for (collection in getSyncCollections(service.id))
+                remoteCollections[collection.url] = collection
+
+        // 2. update/delete local resources and determine new (unknown) remote collections
+        val newCollections = HashMap(remoteCollections)
+        for (url in getLocalResourceUrls())
+            remoteCollections[url].let { collection ->
+                if (collection == null) {
+                    Logger.log.log(Level.INFO, "Deleting obsolete local $authority resource", url)
+                    deleteLocalResource(url)
+                } else {
+                    // remote CollectionInfo found for this local collection, update data
+                    Logger.log.log(Level.FINE, "Updating local $authority resource at $url", collection)
+                    updateLocalResource(collection)
+                    // local resource for this remote collection exists, don't create a new one
+                    newCollections -= url
+                }
+            }
+
+        // 3. create new local resources for new found collections
+        for ((_, collection) in newCollections)
+            createLocalResource(collection)
+
+        // 4. sync local resources
+        for (url in getLocalSyncableResourceUrls())
+            remoteCollections[url]?.let { collection ->
+                syncLocalResource(collection)
+            }
+
+    }
+
+    abstract fun getSyncCollections(serviceId: Long): List<Collection>
+
+    abstract fun preparation()
+
+    abstract fun getServiceType(): String
+
+    abstract fun getLocalResourceUrls(): List<HttpUrl?>
+
+    abstract fun deleteLocalResource(url: HttpUrl?)
+
+    abstract fun updateLocalResource(collection: Collection)
+
+    abstract fun createLocalResource(collection: Collection)
+
+    abstract fun getLocalSyncableResourceUrls(): List<HttpUrl?>
+
+    abstract fun syncLocalResource(collection: Collection)
 
     fun onPerformSync() {
         Logger.log.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
+
+        // Acquire ContentProviderClient
+        val tryProvider = try {
+            context.contentResolver.acquireContentProviderClient(authority)
+        } catch (e: SecurityException) {
+            Logger.log.log(Level.WARNING, "Missing permissions for authority $authority", e)
+            null
+        }
+
+        if (tryProvider == null) {
+            /* Can happen if
+             - we're not allowed to access the content provider, or
+             - the content provider is not available at all, for instance because the respective
+               system app, like "calendar storage" is disabled */
+            Logger.log.warning("Couldn't connect to content provider of authority $authority")
+            syncResult.stats.numParseExceptions++ // hard sync error
+
+            return // Don't continue without provider
+        }
+        provider = tryProvider
 
         // run sync
         try {
@@ -93,6 +171,10 @@ abstract class Syncer(
         } finally {
             if (httpClient.isInitialized())
                 httpClient.value.close()
+
+            // close content provider client which was acquired above
+            provider.close()
+
             Logger.log.log(
                 Level.INFO,
                 "$authority sync of $account finished",
