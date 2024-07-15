@@ -31,17 +31,17 @@ import java.util.logging.Level
 /**
  * Manages settings of an account.
  *
- * @param account    Account to take settings from. If this account is an address book account,
+ * @param accountOrAddressBookAccount    Account to take settings from. If this account is an address book account,
  * settings will be taken from the corresponding main account instead.
  *
  * @throws InvalidAccountException on construction when the account doesn't exist (anymore)
  * @throws IllegalArgumentException when the account type is not _DAVx5_ or _DAVx5 address book_
  */
 class AccountSettings @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountOrAddressBookAccount: Account,
     @ApplicationContext val context: Context,
-    val migrationsFactory: AccountSettingsMigrations.Factory,
-    val settingsManager: SettingsManager
+    private val migrationsFactory: AccountSettingsMigrations.Factory,
+    private val settingsManager: SettingsManager
 ) {
 
     @AssistedFactory
@@ -136,23 +136,21 @@ class AccountSettings @AssistedInject constructor(
 
 
     val accountManager: AccountManager = AccountManager.get(context)
-    val account: Account
-
-    init {
-        this.account = when (account.type) {
+    val account: Account = when (accountOrAddressBookAccount.type) {
             context.getString(R.string.account_type_address_book) -> {
-                /* argAccount is an address book account, which is not a main account. However settings are
-                       stored in the main account, so resolve and use the main account instead. */
-                LocalAddressBook.mainAccount(context, account) ?: throw IllegalArgumentException("Main account of $account not found")
+                /* argument is an address book account, which is not a main account. However settings are
+                stored in the main account, so resolve and use the main account instead. */
+                LocalAddressBook.mainAccount(context, accountOrAddressBookAccount) ?: throw IllegalArgumentException("Main account of $accountOrAddressBookAccount not found")
             }
 
             context.getString(R.string.account_type) ->
-                account
+                accountOrAddressBookAccount
 
             else ->
-                throw IllegalArgumentException("Account type ${account.type} not supported")
+                throw IllegalArgumentException("Account type ${accountOrAddressBookAccount.type} not supported")
         }
 
+    init {
         // synchronize because account migration must only be run one time
         synchronized(AccountSettings::class.java) {
             val versionStr = accountManager.getUserData(this.account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(
