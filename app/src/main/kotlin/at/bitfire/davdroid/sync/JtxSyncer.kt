@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.Build
@@ -15,7 +14,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalJtxCollection
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
@@ -45,28 +43,13 @@ class JtxSyncer @AssistedInject constructor(
         fun create(account: Account, extras: Array<String>, authority: String, syncResult: SyncResult): JtxSyncer
     }
 
-    override fun sync() {
+    private val updateColors = accountSettings.getManageCalendarColors()
+    private val localJtxCollections = mutableMapOf<HttpUrl, LocalJtxCollection>()
 
-        // 0. preparations
+    override fun getSyncCollections(serviceId: Long): List<Collection> =
+        db.collectionDao().getSyncJtxCollections(serviceId)
 
-        // acquire ContentProviderClient
-        val provider = try {
-            context.contentResolver.acquireContentProviderClient(authority)
-        } catch (e: SecurityException) {
-            Logger.log.log(Level.WARNING, "Missing permissions for authority $authority", e)
-            null
-        }
-
-        if (provider == null) {
-            /* Can happen if
-             - we're not allowed to access the content provider, or
-             - the content provider is not available at all, for instance because the respective
-               system app, like "calendar storage" is disabled */
-            Logger.log.warning("Couldn't connect to content provider of authority $authority")
-            syncResult.stats.numParseExceptions++ // hard sync error
-            return
-        }
-
+    override fun beforeSync() {
         // check whether jtx Board is new enough
         try {
             TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
@@ -84,104 +67,57 @@ class JtxSyncer @AssistedInject constructor(
                 am.setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
         }
 
-        val accountSettings = AccountSettings(context, account)
-
-        // 1. find jtxCollection collections to be synced
-        val remoteCollections = mutableMapOf<HttpUrl, Collection>()
-        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
-        if (service != null)
-            for (collection in db.collectionDao().getSyncJtxCollections(service.id))
-                remoteCollections[collection.url] = collection
-
-            // 2. delete/update local jtxCollection lists and determine new remote collections
-            val updateColors = accountSettings.getManageCalendarColors()
-            val newCollections = HashMap(remoteCollections)
-            for (jtxCollection in JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null))
-                jtxCollection.url?.let { strUrl ->
-                    val url = strUrl.toHttpUrl()
-                    val collection = remoteCollections[url]
-                    if (collection == null) {
-                        Logger.log.fine("Deleting obsolete local collection $url")
-                        jtxCollection.delete()
-                    } else {
-                        // remote CollectionInfo found for this local collection, update data
-                        Logger.log.log(Level.FINE, "Updating local collection $url", collection)
-                        val owner = collection.ownerId?.let { db.principalDao().get(it) }
-                        jtxCollection.updateCollection(collection, owner, updateColors)
-                        // we already have a local task list for this remote collection, don't create a new local task list
-                        newCollections -= url
-                    }
+        // Find all task lists and sync-enabled task lists
+        JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
+            .forEach { localJtxCollection ->
+                localJtxCollection.url?.let { url ->
+                    localJtxCollections[url.toHttpUrl()] = localJtxCollection
                 }
-
-            // 3. create new local jtxCollections
-            for ((_,info) in newCollections) {
-                Logger.log.log(Level.INFO, "Adding local collections", info)
-                val owner = info.ownerId?.let { db.principalDao().get(it) }
-                LocalJtxCollection.create(account, provider, info, owner)
             }
-
-        // 4. sync local jtxCollection lists
-        val localCollections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
-        for (localCollection in localCollections) {
-            Logger.log.info("Synchronizing $localCollection")
-
-            val url = localCollection.url?.toHttpUrl()
-            remoteCollections[url]?.let { collection ->
-                val syncManager = jtxSyncManagerFactory.jtxSyncManager(
-                    account,
-                    accountSettings,
-                    extras,
-                    httpClient.value,
-                    authority,
-                    syncResult,
-                    localCollection,
-                    collection
-                )
-                syncManager.performSync()
-            }
-        }
-
-        // close content provider client which is acquired above
-        provider.close()
     }
 
-    override fun getSyncCollections(serviceId: Long): List<Collection> {
-        TODO("Not yet implemented")
-    }
+    override fun getServiceType(): String =
+        Service.TYPE_CALDAV
 
-    override fun beforeSync() {
-        TODO("Not yet implemented")
-    }
-
-    override fun afterSync() {
-        TODO("Not yet implemented")
-    }
-
-    override fun getServiceType(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLocalResourceUrls(): List<HttpUrl?> {
-        TODO("Not yet implemented")
-    }
+    override fun getLocalResourceUrls(): List<HttpUrl?> = localJtxCollections.keys.toList()
 
     override fun deleteLocalResource(url: HttpUrl?) {
-        TODO("Not yet implemented")
+        Logger.log.log(Level.INFO, "Deleting obsolete local jtx collection", url)
+        localJtxCollections[url]?.delete()
     }
 
     override fun updateLocalResource(collection: Collection) {
-        TODO("Not yet implemented")
+        Logger.log.log(Level.FINE, "Updating local collection ${collection.url}", collection)
+        val owner = collection.ownerId?.let { db.principalDao().get(it) }
+        localJtxCollections[collection.url]?.updateCollection(collection, owner, updateColors)
     }
 
     override fun createLocalResource(collection: Collection) {
-        TODO("Not yet implemented")
+        Logger.log.log(Level.INFO, "Adding local collections", collection)
+        val owner = collection.ownerId?.let { db.principalDao().get(it) }
+        LocalJtxCollection.create(account, provider, collection, owner)
     }
 
-    override fun getLocalSyncableResourceUrls(): List<HttpUrl?> {
-        TODO("Not yet implemented")
-    }
+    override fun getLocalSyncableResourceUrls(): List<HttpUrl?> = localJtxCollections.keys.toList()
 
     override fun syncLocalResource(collection: Collection) {
-        TODO("Not yet implemented")
+        val localJtxCollection = localJtxCollections[collection.url]
+            ?: return
+
+        Logger.log.info("Synchronizing jtx collection $localJtxCollection")
+
+        val syncManager = jtxSyncManagerFactory.jtxSyncManager(
+            account,
+            accountSettings,
+            extras,
+            httpClient.value,
+            authority,
+            syncResult,
+            localJtxCollection,
+            collection
+        )
+        syncManager.performSync()
     }
+
+    override fun afterSync() {}
 }
