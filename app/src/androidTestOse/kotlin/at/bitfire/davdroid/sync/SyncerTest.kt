@@ -76,7 +76,7 @@ class SyncerTest {
             return emptyList()
         }
 
-        override fun preparation() {}
+        override fun beforeSync() {}
 
         override fun getServiceType(): String {
             return ""

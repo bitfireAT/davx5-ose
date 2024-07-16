@@ -151,7 +151,11 @@ class AddressBookSyncer @AssistedInject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun preparation() {
+    override fun beforeSync() {
+        TODO("Not yet implemented")
+    }
+
+    override fun afterSync() {
         TODO("Not yet implemented")
     }
 

@@ -49,7 +49,7 @@ class CalendarSyncer @AssistedInject constructor(
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         db.collectionDao().getSyncCalendars(serviceId)
 
-    override fun preparation() {
+    override fun beforeSync() {
 
         // Update colors
         if (accountSettings.getEventColors())
@@ -109,5 +109,7 @@ class CalendarSyncer @AssistedInject constructor(
         Logger.log.log(Level.INFO, "Adding local calendar", collection)
         LocalCalendar.create(account, provider, collection)
     }
+
+    override fun afterSync() {}
 
 }

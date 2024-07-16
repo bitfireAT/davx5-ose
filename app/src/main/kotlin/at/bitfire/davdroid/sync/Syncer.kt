@@ -71,7 +71,7 @@ abstract class Syncer(
     open fun sync() {
 
         // 0. resource specific preparations
-        preparation()
+        beforeSync()
 
         // 1. find resource collections to be synced
         val remoteCollections = mutableMapOf<HttpUrl, Collection>()
@@ -104,11 +104,16 @@ abstract class Syncer(
                 syncLocalResource(collection)
             }
 
+        // 5. clean up
+        afterSync()
+
     }
 
     abstract fun getSyncCollections(serviceId: Long): List<Collection>
 
-    abstract fun preparation()
+    abstract fun beforeSync()
+
+    abstract fun afterSync()
 
     abstract fun getServiceType(): String
 

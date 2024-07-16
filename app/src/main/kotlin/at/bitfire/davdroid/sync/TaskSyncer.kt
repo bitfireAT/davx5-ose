@@ -52,7 +52,7 @@ class TaskSyncer @AssistedInject constructor(
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         db.collectionDao().getSyncTaskLists(serviceId)
 
-    override fun preparation() {
+    override fun beforeSync() {
 
         // Acquire task provider
         val providerName = TaskProvider.ProviderName.fromAuthority(authority)
@@ -128,5 +128,9 @@ class TaskSyncer @AssistedInject constructor(
             collection
         )
         syncManager.performSync()
+    }
+
+    override fun afterSync() {
+        taskProvider.close()
     }
 }
