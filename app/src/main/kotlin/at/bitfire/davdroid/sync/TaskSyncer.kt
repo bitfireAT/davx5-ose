@@ -11,7 +11,6 @@ import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -25,6 +24,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
@@ -33,11 +33,12 @@ class TaskSyncer @AssistedInject constructor(
     @ApplicationContext context: Context,
     serviceRepository: DavServiceRepository,
     collectionRepository: DavCollectionRepository,
+    private val tasksSyncManagerFactory: TasksSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
-    private val tasksSyncManagerFactory: TasksSyncManager.Factory
+    private val logger: Logger
 ): Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
     @AssistedFactory
@@ -93,17 +94,17 @@ class TaskSyncer @AssistedInject constructor(
         localTaskLists.keys.toList()
 
     override fun deleteLocalResource(url: HttpUrl?) {
-        Logger.log.log(Level.INFO, "Deleting obsolete local task list", url)
+        logger.log(Level.INFO, "Deleting obsolete local task list", url)
         localTaskLists[url]?.delete()
     }
 
     override fun updateLocalResource(collection: Collection) {
-        Logger.log.log(Level.FINE, "Updating local task list ${collection.url}", collection)
+        logger.log(Level.FINE, "Updating local task list ${collection.url}", collection)
         localTaskLists[collection.url]?.update(collection, updateColors)
     }
 
     override fun createLocalResource(collection: Collection) {
-        Logger.log.log(Level.INFO, "Adding local task list", collection)
+        logger.log(Level.INFO, "Adding local task list", collection)
         LocalTaskList.create(account, taskProvider, collection)
     }
 
@@ -114,7 +115,7 @@ class TaskSyncer @AssistedInject constructor(
         val taskList = localSyncTaskLists[collection.url]
             ?: return
 
-        Logger.log.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
+        logger.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
             account,

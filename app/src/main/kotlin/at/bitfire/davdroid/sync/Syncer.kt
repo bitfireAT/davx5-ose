@@ -11,13 +11,13 @@ import android.content.SyncResult
 import android.os.DeadObjectException
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import okhttp3.HttpUrl
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Base class for sync code.
@@ -59,6 +59,8 @@ abstract class Syncer(
         const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
 
     }
+
+    private val logger = Logger.getGlobal()
 
     val accountSettings by lazy { AccountSettings(context, account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
@@ -131,13 +133,13 @@ abstract class Syncer(
     abstract fun syncLocalResource(collection: Collection)
 
     fun onPerformSync() {
-        Logger.log.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
+        logger.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
 
         // Acquire ContentProviderClient
         val tryProvider = try {
             context.contentResolver.acquireContentProviderClient(authority)
         } catch (e: SecurityException) {
-            Logger.log.log(Level.WARNING, "Missing permissions for authority $authority", e)
+            logger.log(Level.WARNING, "Missing permissions for authority $authority", e)
             null
         }
 
@@ -146,7 +148,7 @@ abstract class Syncer(
              - we're not allowed to access the content provider, or
              - the content provider is not available at all, for instance because the respective
                system app, like "calendar storage" is disabled */
-            Logger.log.warning("Couldn't connect to content provider of authority $authority")
+            logger.warning("Couldn't connect to content provider of authority $authority")
             syncResult.stats.numParseExceptions++ // hard sync error
 
             return // Don't continue without provider
@@ -162,14 +164,14 @@ abstract class Syncer(
         } catch (e: DeadObjectException) {
             /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
             is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
-            Logger.log.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
+            logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
             syncResult.stats.numIoExceptions++
 
         } catch (e: InvalidAccountException) {
-            Logger.log.log(Level.WARNING, "Account was removed during synchronization", e)
+            logger.log(Level.WARNING, "Account was removed during synchronization", e)
 
         } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't sync $authority", e)
+            logger.log(Level.SEVERE, "Couldn't sync $authority", e)
             syncResult.stats.numParseExceptions++ // Hard sync error
 
         } finally {
@@ -179,7 +181,7 @@ abstract class Syncer(
             // close content provider client which was acquired above
             provider.close()
 
-            Logger.log.log(
+            logger.log(
                 Level.INFO,
                 "$authority sync of $account finished",
                 extras.joinToString(", "))

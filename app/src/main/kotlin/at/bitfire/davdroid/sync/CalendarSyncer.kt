@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.SyncResult
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCalendar
@@ -21,6 +20,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Sync logic for calendars
@@ -33,7 +33,8 @@ class CalendarSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted authority: String,
-    @Assisted syncResult: SyncResult
+    @Assisted syncResult: SyncResult,
+    private val logger: Logger
 ): Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
     @AssistedFactory
@@ -71,7 +72,7 @@ class CalendarSyncer @AssistedInject constructor(
     override fun getLocalResourceUrls() = localCalendars.keys.toList()
 
     override fun deleteLocalResource(url: HttpUrl?) {
-        Logger.log.log(Level.INFO, "Deleting obsolete local calendar", url)
+        logger.log(Level.INFO, "Deleting obsolete local calendar", url)
         localCalendars[url]?.delete()
     }
 
@@ -81,7 +82,7 @@ class CalendarSyncer @AssistedInject constructor(
         val calendar = localSyncCalendars[collection.url]
             ?: return
 
-        Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
+        logger.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
             account,
@@ -97,12 +98,12 @@ class CalendarSyncer @AssistedInject constructor(
     }
 
     override fun updateLocalResource(collection: Collection) {
-        Logger.log.log(Level.FINE, "Updating local calendar ${collection.url}", collection)
+        logger.log(Level.FINE, "Updating local calendar ${collection.url}", collection)
         localCalendars[collection.url]?.update(collection, updateColors)
     }
 
     override fun createLocalResource(collection: Collection) {
-        Logger.log.log(Level.INFO, "Adding local calendar", collection)
+        logger.log(Level.INFO, "Adding local calendar", collection)
         LocalCalendar.create(account, provider, collection)
     }
 

@@ -24,7 +24,6 @@ import androidx.work.WorkQuery
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.ConnectionUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AddressBookSyncer
@@ -49,6 +48,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import java.util.Collections
+import java.util.logging.Logger
 
 abstract class BaseSyncWorker(
     context: Context,
@@ -77,6 +77,8 @@ abstract class BaseSyncWorker(
          * Set of currently running syncs, identified by their [commonTag].
          */
         private val runningSyncs = Collections.synchronizedSet(HashSet<String>())
+
+        private val logger = Logger.getGlobal()
 
         /**
          * Stops running sync workers and removes pending sync workers from queue, for all authorities.
@@ -143,7 +145,7 @@ abstract class BaseSyncWorker(
             // WiFi required, is it available?
             val connectivityManager = context.getSystemService<ConnectivityManager>()!!
             if (!ConnectionUtils.wifiAvailable(connectivityManager)) {
-                Logger.log.info("Not on connected WiFi, stopping")
+                logger.info("Not on connected WiFi, stopping")
                 return false
             }
             // If execution reaches this point, we're on a connected WiFi
@@ -172,22 +174,24 @@ abstract class BaseSyncWorker(
                     intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, accountSettings.account)
                     PermissionUtils.notifyPermissions(context, intent)
 
-                    Logger.log.warning("Can't access WiFi SSID, aborting sync")
+                    logger.warning("Can't access WiFi SSID, aborting sync")
                     return false
                 }
 
                 val wifi = context.getSystemService<WifiManager>()!!
                 val info = wifi.connectionInfo
                 if (info == null || !onlySSIDs.contains(info.ssid.trim('"'))) {
-                    Logger.log.info("Connected to wrong WiFi network (${info.ssid}), aborting sync")
+                    logger.info("Connected to wrong WiFi network (${info.ssid}), aborting sync")
                     return false
                 }
-                Logger.log.fine("Connected to WiFi network ${info.ssid}")
+                logger.fine("Connected to WiFi network ${info.ssid}")
             }
             return true
         }
 
     }
+
+    private val logger = Logger.getGlobal()
 
     // We don't inject the Syncer factories in our constructor because that would generate
     // every syncer object regardless of whether it's even used for the synced authority (useless overhead).
@@ -213,10 +217,10 @@ abstract class BaseSyncWorker(
         val authority = inputData.getString(INPUT_AUTHORITY) ?: throw IllegalArgumentException("$INPUT_AUTHORITY required")
 
         val syncTag = commonTag(account, authority)
-        Logger.log.info("${javaClass.simpleName} called for $syncTag")
+        logger.info("${javaClass.simpleName} called for $syncTag")
 
         if (!runningSyncs.add(syncTag)) {
-            Logger.log.info("There's already another worker running for $syncTag, skipping")
+            logger.info("There's already another worker running for $syncTag, skipping")
             return Result.success()
         }
 
@@ -225,7 +229,7 @@ abstract class BaseSyncWorker(
                 AccountSettings(applicationContext, account)
             } catch (e: InvalidAccountException) {
                 val workId = workerParams.id
-                Logger.log.warning("Account $account doesn't exist anymore, cancelling worker $workId")
+                logger.warning("Account $account doesn't exist anymore, cancelling worker $workId")
 
                 val workManager = WorkManager.getInstance(applicationContext)
                 workManager.cancelWorkById(workId)
@@ -234,26 +238,26 @@ abstract class BaseSyncWorker(
             }
 
             if (inputData.getBoolean(INPUT_MANUAL, false))
-                Logger.log.info("Manual sync, skipping network checks")
+                logger.info("Manual sync, skipping network checks")
             else {
                 // check internet connection
                 val ignoreVpns = accountSettings.getIgnoreVpns()
                 val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
                 if (!ConnectionUtils.internetAvailable(connectivityManager, ignoreVpns)) {
-                    Logger.log.info("WorkManager started SyncWorker without Internet connection. Aborting.")
+                    logger.info("WorkManager started SyncWorker without Internet connection. Aborting.")
                     return Result.success()
                 }
 
                 // check WiFi restriction
                 if (!wifiConditionsMet(applicationContext, accountSettings)) {
-                    Logger.log.info("WiFi conditions not met. Won't run periodic sync.")
+                    logger.info("WiFi conditions not met. Won't run periodic sync.")
                     return Result.success()
                 }
             }
 
             return doSyncWork(account, authority, accountSettings)
         } finally {
-            Logger.log.info("${javaClass.simpleName} finished for $syncTag")
+            logger.info("${javaClass.simpleName} finished for $syncTag")
             runningSyncs -= syncTag
         }
     }
@@ -263,7 +267,7 @@ abstract class BaseSyncWorker(
         authority: String,
         accountSettings: AccountSettings
     ): Result = withContext(syncDispatcher) {
-        Logger.log.info("Running ${javaClass.name}: account=$account, authority=$authority")
+        logger.info("Running ${javaClass.name}: account=$account, authority=$authority")
 
         // pass possibly supplied flags to the selected syncer
         val extrasList = mutableListOf<String>()
@@ -310,21 +314,21 @@ abstract class BaseSyncWorker(
 
             // On soft errors the sync is retried a few times before considered failed
             if (result.hasSoftError()) {
-                Logger.log.warning("Soft error while syncing: result=$result, stats=${result.stats}")
+                logger.warning("Soft error while syncing: result=$result, stats=${result.stats}")
                 if (runAttemptCount < MAX_RUN_ATTEMPTS) {
                     val blockDuration = result.delayUntil - System.currentTimeMillis() / 1000
-                    Logger.log.warning("Waiting for $blockDuration seconds, before retrying ...")
+                    logger.warning("Waiting for $blockDuration seconds, before retrying ...")
 
                     // We block the SyncWorker here so that it won't be started by the sync framework immediately again.
                     // This should be replaced by proper work scheduling as soon as we don't depend on the sync framework anymore.
                     if (blockDuration > 0)
                         delay(blockDuration * 1000)
 
-                    Logger.log.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
+                    logger.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
                     return@withContext Result.retry()
                 }
 
-                Logger.log.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
+                logger.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
 
                 notificationManager.notifyIfPossible(
                     softErrorNotificationTag,
@@ -352,7 +356,7 @@ abstract class BaseSyncWorker(
             // On a hard error - fail with an error message
             // Note: SyncManager should have notified the user
             if (result.hasHardError()) {
-                Logger.log.warning("Hard error while syncing: result=$result, stats=${result.stats}")
+                logger.warning("Hard error while syncing: result=$result, stats=${result.stats}")
                 return@withContext Result.failure(syncResult)
             }
         }

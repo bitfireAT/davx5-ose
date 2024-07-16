@@ -11,7 +11,6 @@ import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PrincipalRepository
@@ -26,6 +25,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Sync logic for jtx board
@@ -39,7 +39,8 @@ class JtxSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted authority: String,
-    @Assisted syncResult: SyncResult
+    @Assisted syncResult: SyncResult,
+    private val logger: Logger
 ): Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
     @AssistedFactory
@@ -83,18 +84,18 @@ class JtxSyncer @AssistedInject constructor(
     override fun getLocalResourceUrls(): List<HttpUrl?> = localJtxCollections.keys.toList()
 
     override fun deleteLocalResource(url: HttpUrl?) {
-        Logger.log.log(Level.INFO, "Deleting obsolete local jtx collection", url)
+        logger.log(Level.INFO, "Deleting obsolete local jtx collection", url)
         localJtxCollections[url]?.delete()
     }
 
     override fun updateLocalResource(collection: Collection) {
-        Logger.log.log(Level.FINE, "Updating local collection ${collection.url}", collection)
+        logger.log(Level.FINE, "Updating local collection ${collection.url}", collection)
         val owner = collection.ownerId?.let { principalRepository.get(it) }
         localJtxCollections[collection.url]?.updateCollection(collection, owner, updateColors)
     }
 
     override fun createLocalResource(collection: Collection) {
-        Logger.log.log(Level.INFO, "Adding local collections", collection)
+        logger.log(Level.INFO, "Adding local collections", collection)
         val owner = collection.ownerId?.let { principalRepository.get(it) }
         LocalJtxCollection.create(account, provider, collection, owner)
     }
@@ -105,7 +106,7 @@ class JtxSyncer @AssistedInject constructor(
         val localJtxCollection = localJtxCollections[collection.url]
             ?: return
 
-        Logger.log.info("Synchronizing jtx collection $localJtxCollection")
+        logger.info("Synchronizing jtx collection $localJtxCollection")
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account,
