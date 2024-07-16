@@ -9,10 +9,11 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.content.SyncResult
 import android.os.Build
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.DmfsTaskList
@@ -30,13 +31,14 @@ import java.util.logging.Level
  */
 class TaskSyncer @AssistedInject constructor(
     @ApplicationContext context: Context,
-    db: AppDatabase,
+    serviceRepository: DavServiceRepository,
+    collectionRepository: DavCollectionRepository,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory
-): Syncer(context, db, account, extras, authority, syncResult) {
+): Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -48,9 +50,6 @@ class TaskSyncer @AssistedInject constructor(
     private var updateColors = accountSettings.getManageCalendarColors()
     private val localTaskLists = mutableMapOf<HttpUrl, LocalTaskList>()
     private val localSyncTaskLists = mutableMapOf<HttpUrl, LocalTaskList>()
-
-    override fun getSyncCollections(serviceId: Long): List<Collection> =
-        db.collectionDao().getSyncTaskLists(serviceId)
 
     override fun beforeSync() {
 

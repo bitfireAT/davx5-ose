@@ -9,10 +9,12 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.content.SyncResult
 import android.os.Build
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.JtxCollection
@@ -30,13 +32,15 @@ import java.util.logging.Level
  */
 class JtxSyncer @AssistedInject constructor(
     @ApplicationContext context: Context,
-    db: AppDatabase,
+    serviceRepository: DavServiceRepository,
+    collectionRepository: DavCollectionRepository,
+    private val principalRepository: PrincipalRepository,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult
-): Syncer(context, db, account, extras, authority, syncResult) {
+): Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -45,9 +49,6 @@ class JtxSyncer @AssistedInject constructor(
 
     private val updateColors = accountSettings.getManageCalendarColors()
     private val localJtxCollections = mutableMapOf<HttpUrl, LocalJtxCollection>()
-
-    override fun getSyncCollections(serviceId: Long): List<Collection> =
-        db.collectionDao().getSyncJtxCollections(serviceId)
 
     override fun beforeSync() {
         // check whether jtx Board is new enough
@@ -88,13 +89,13 @@ class JtxSyncer @AssistedInject constructor(
 
     override fun updateLocalResource(collection: Collection) {
         Logger.log.log(Level.FINE, "Updating local collection ${collection.url}", collection)
-        val owner = collection.ownerId?.let { db.principalDao().get(it) }
+        val owner = collection.ownerId?.let { principalRepository.get(it) }
         localJtxCollections[collection.url]?.updateCollection(collection, owner, updateColors)
     }
 
     override fun createLocalResource(collection: Collection) {
         Logger.log.log(Level.INFO, "Adding local collections", collection)
-        val owner = collection.ownerId?.let { db.principalDao().get(it) }
+        val owner = collection.ownerId?.let { principalRepository.get(it) }
         LocalJtxCollection.create(account, provider, collection, owner)
     }
 

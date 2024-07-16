@@ -5,16 +5,14 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
-import android.provider.CalendarContract
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCalendar
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -29,13 +27,14 @@ import java.util.logging.Level
  */
 class CalendarSyncer @AssistedInject constructor(
     @ApplicationContext context: Context,
-    db: AppDatabase,
+    serviceRepository: DavServiceRepository,
+    collectionRepository: DavCollectionRepository,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult
-): Syncer(context, db, account, extras, authority, syncResult) {
+): Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -45,9 +44,6 @@ class CalendarSyncer @AssistedInject constructor(
     private var updateColors = accountSettings.getManageCalendarColors()
     private val localCalendars = mutableMapOf<HttpUrl, LocalCalendar>()
     private val localSyncCalendars = mutableMapOf<HttpUrl, LocalCalendar>()
-
-    override fun getSyncCollections(serviceId: Long): List<Collection> =
-        db.collectionDao().getSyncCalendars(serviceId)
 
     override fun beforeSync() {
 

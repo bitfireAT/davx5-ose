@@ -12,11 +12,12 @@ import android.content.SyncResult
 import android.content.pm.PackageManager
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
@@ -35,14 +36,15 @@ import java.util.logging.Level
  */
 class AddressBookSyncer @AssistedInject constructor(
     @ApplicationContext context: Context,
-    private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     settingsManager: SettingsManager,
-    db: AppDatabase,
+    serviceRepository: DavServiceRepository,
+    collectionRepository: DavCollectionRepository,
+    private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
-): Syncer(context, db, account, extras, authority, syncResult) {
+): Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -55,9 +57,6 @@ class AddressBookSyncer @AssistedInject constructor(
 
     private val forceAllReadOnly = settingsManager.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
     private val localAddressBooks = mutableMapOf<HttpUrl, LocalAddressBook>()
-
-    override fun getSyncCollections(serviceId: Long): List<Collection> =
-        db.collectionDao().getByServiceAndSync(serviceId)
 
     override fun beforeSync() {
         // permission check

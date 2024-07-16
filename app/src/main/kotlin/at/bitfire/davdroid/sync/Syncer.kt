@@ -10,10 +10,11 @@ import android.content.Context
 import android.content.SyncResult
 import android.os.DeadObjectException
 import at.bitfire.davdroid.InvalidAccountException
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import okhttp3.HttpUrl
 import java.util.logging.Level
@@ -28,7 +29,8 @@ import java.util.logging.Level
  */
 abstract class Syncer(
     val context: Context,
-    val db: AppDatabase,
+    val serviceRepository: DavServiceRepository,
+    val collectionRepository: DavCollectionRepository,
     protected val account: Account,
     protected val extras: Array<String>,
     protected val authority: String,
@@ -76,9 +78,9 @@ abstract class Syncer(
         beforeSync()
 
         // 1. find resource collections to be synced
-        val service = db.serviceDao().getByAccountAndType(account.name, getServiceType())
+        val service = serviceRepository.getByAccountAndType(account.name, getServiceType())
         if (service != null)
-            for (collection in getSyncCollections(service.id))
+            for (collection in collectionRepository.getSyncCollections(service.id, authority))
                 remoteCollections[collection.url] = collection
 
         // 2. update/delete local resources and determine new (unknown) remote collections
@@ -109,8 +111,6 @@ abstract class Syncer(
         afterSync()
 
     }
-
-    abstract fun getSyncCollections(serviceId: Long): List<Collection>
 
     abstract fun beforeSync()
 

@@ -35,4 +35,7 @@ class DavServiceRepository @Inject constructor(
         dao.renameAccount(oldName, newName)
     }
 
+    fun getByAccountAndType(name: String, serviceType: String): Service? =
+        dao.getByAccountAndType(name, serviceType)
+
 }

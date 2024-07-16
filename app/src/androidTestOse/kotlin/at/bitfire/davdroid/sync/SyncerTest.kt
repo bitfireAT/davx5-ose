@@ -9,17 +9,18 @@ import android.content.Context
 import android.content.SyncResult
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.mockk
 import okhttp3.HttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
-import javax.inject.Inject
 
 @HiltAndroidTest
 class SyncerTest {
@@ -29,8 +30,8 @@ class SyncerTest {
 
     val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
-    @Inject
-    lateinit var db: AppDatabase
+    private val serviceRepository = mockk<DavServiceRepository>()
+    private val collectionRepository = mockk<DavCollectionRepository>()
 
     /** use our WebDAV provider as a mock provider because it's our own and we don't need any permissions for it */
     private val mockAuthority = context.getString(R.string.webdav_authority)
@@ -45,7 +46,7 @@ class SyncerTest {
 
     @Test
     fun testOnPerformSync_runsSyncAndSetsClassLoader() {
-        val syncer = TestSyncer(context, db, account, arrayOf(), mockAuthority, SyncResult())
+        val syncer = TestSyncer(context, serviceRepository, collectionRepository, account, arrayOf(), mockAuthority, SyncResult())
         syncer.onPerformSync()
 
         // check whether onPerformSync() actually calls sync()
@@ -58,12 +59,13 @@ class SyncerTest {
 
     class TestSyncer(
         context: Context,
-        db: AppDatabase,
+        serviceRepository: DavServiceRepository,
+        collectionRepository: DavCollectionRepository,
         account: Account,
         extras: Array<String>,
         authority: String,
         syncResult: SyncResult
-    ) : Syncer(context, db, account, extras, authority, syncResult) {
+    ) : Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
         val syncCalled = AtomicInteger()
 
@@ -72,11 +74,9 @@ class SyncerTest {
             syncCalled.incrementAndGet()
         }
 
-        override fun getSyncCollections(serviceId: Long): List<Collection> {
-            return emptyList()
-        }
-
         override fun beforeSync() {}
+
+        override fun afterSync() {}
 
         override fun getServiceType(): String {
             return ""

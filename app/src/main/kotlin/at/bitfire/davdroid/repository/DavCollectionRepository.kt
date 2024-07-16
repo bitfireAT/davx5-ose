@@ -6,6 +6,8 @@ package at.bitfire.davdroid.repository
 
 import android.accounts.Account
 import android.content.Context
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
@@ -27,6 +29,7 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.DateUtils
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -182,6 +185,22 @@ class DavCollectionRepository @Inject constructor(
     fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
 
     fun getFlow(id: Long) = dao.getFlow(id)
+
+    /** Returns sync enabled collections for specific authority of given service/account */
+    fun getSyncCollections(serviceId: Long, authority: String) = when (authority) {
+        ContactsContract.AUTHORITY,
+        context.getString(R.string.address_books_authority) ->
+            dao.getByServiceAndSync(serviceId)
+        CalendarContract.AUTHORITY ->
+            dao.getSyncCalendars(serviceId)
+        TaskProvider.ProviderName.JtxBoard.authority ->
+            dao.getSyncJtxCollections(serviceId)
+        TaskProvider.ProviderName.OpenTasks.authority,
+        TaskProvider.ProviderName.TasksOrg.authority ->
+            dao.getSyncTaskLists(serviceId)
+        else ->
+            throw IllegalArgumentException("Invalid authority $authority")
+    }
 
     /** Returns all collections that are both selected for synchronization and push-capable. */
     suspend fun getSyncableAndPushCapable(): List<Collection> =
@@ -377,7 +396,6 @@ class DavCollectionRepository @Inject constructor(
             listener.onCollectionsChanged()
         }
     }
-
 
     fun interface OnChangeListener {
         /**
