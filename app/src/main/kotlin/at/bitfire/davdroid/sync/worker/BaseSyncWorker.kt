@@ -12,6 +12,7 @@ import android.content.SyncResult
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.provider.CalendarContract
+import android.provider.ContactsContract
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
@@ -280,7 +281,7 @@ abstract class BaseSyncWorker(
         // What are we going to sync? Select syncer based on authority
         val syncer: Syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                entryPoint.addressBookSyncer().create(account, extras, authority, result)
+                entryPoint.addressBookSyncer().create(account, extras, ContactsContract.AUTHORITY, result)
             CalendarContract.AUTHORITY ->
                 entryPoint.calendarSyncer().create(account, extras, authority, result)
             TaskProvider.ProviderName.JtxBoard.authority ->
