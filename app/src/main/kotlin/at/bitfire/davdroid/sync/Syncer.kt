@@ -61,6 +61,8 @@ abstract class Syncer(
     val accountSettings by lazy { AccountSettings(context, account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
+    val remoteCollections = mutableMapOf<HttpUrl, Collection>()
+
     lateinit var provider: ContentProviderClient
 
     /**
@@ -74,7 +76,6 @@ abstract class Syncer(
         beforeSync()
 
         // 1. find resource collections to be synced
-        val remoteCollections = mutableMapOf<HttpUrl, Collection>()
         val service = db.serviceDao().getByAccountAndType(account.name, getServiceType())
         if (service != null)
             for (collection in getSyncCollections(service.id))
