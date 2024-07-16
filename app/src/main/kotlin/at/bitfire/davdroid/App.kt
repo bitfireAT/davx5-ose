@@ -9,6 +9,7 @@ import android.os.StrictMode
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import at.bitfire.davdroid.log.LogManager
+import at.bitfire.davdroid.startup.StartupPlugin
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -34,6 +35,9 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
      */
     @Inject
     lateinit var logManager: LogManager
+
+    @Inject
+    lateinit var plugins: Set<@JvmSuppressWildcards StartupPlugin>
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -67,17 +71,26 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
         UiUtils.updateTheme(this)   // when this is called in the asynchronous thread below, it recreates
                                  // some current activity and causes an IllegalStateException in rare cases
 
+        // run startup plugins (sync)
+        for (plugin in plugins.sortedBy { it.priority() }) {
+            logger.fine("Running startup plugin: $plugin (onAppCreate)")
+            plugin.onAppCreate()
+        }
+
         // don't block UI for some background checks
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch(Dispatchers.Default) {
             // clean up orphaned accounts in DB from time to time
             AccountsCleanupWorker.enqueue(this@App)
 
-            // watch installed/removed tasks apps over whole app lifetime and update sync settings accordingly
-            TasksAppWatcher.watchInstalledTaskApps(this@App, this)
-
             // create/update app shortcuts
             UiUtils.updateShortcuts(this@App)
+
+            // run startup plugins (async)
+            for (plugin in plugins.sortedBy { it.priorityAsync() }) {
+                logger.fine("Running startup plugin: $plugin (onAppCreateAsync)")
+                plugin.onAppCreateAsync()
+            }
         }
     }
 
