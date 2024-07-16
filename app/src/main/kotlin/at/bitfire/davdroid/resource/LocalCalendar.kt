@@ -25,9 +25,9 @@ import java.util.LinkedList
 import java.util.logging.Level
 
 class LocalCalendar private constructor(
-        account: Account,
-        provider: ContentProviderClient,
-        id: Long
+    account: Account,
+    provider: ContentProviderClient,
+    id: Long
 ): AndroidCalendar<LocalEvent>(account, provider, LocalEvent.Factory, id), LocalCollection<LocalEvent> {
 
     companion object {

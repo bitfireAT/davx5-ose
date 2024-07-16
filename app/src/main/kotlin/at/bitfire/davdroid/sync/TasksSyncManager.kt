@@ -77,14 +77,13 @@ class TasksSyncManager @AssistedInject constructor(
 
 
     override fun prepare(): Boolean {
-        collectionURL = (localCollection.syncId ?: return false).toHttpUrlOrNull() ?: return false
-        davCollection = DavCalendar(httpClient.okHttpClient, collectionURL)
+        davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
 
         return true
     }
 
     override fun queryCapabilities() =
-        SyncException.wrapWithRemoteResource(collectionURL) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
             davCollection.propfind(0, MaxResourceSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
@@ -113,7 +112,7 @@ class TasksSyncManager @AssistedInject constructor(
         }
 
     override fun listAllRemote(callback: MultiResponseCallback) {
-        SyncException.wrapWithRemoteResource(collectionURL) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             Logger.log.info("Querying tasks")
             davCollection.calendarQuery("VTODO", null, null, callback)
         }
@@ -122,7 +121,7 @@ class TasksSyncManager @AssistedInject constructor(
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        SyncException.wrapWithRemoteResource(collectionURL) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {

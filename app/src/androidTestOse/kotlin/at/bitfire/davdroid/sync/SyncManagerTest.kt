@@ -11,7 +11,6 @@ import android.content.SyncResult
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.dav4jvm.PropStat
@@ -30,18 +29,17 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.every
 import io.mockk.mockk
 import okhttp3.Protocol
 import okhttp3.internal.http.StatusLine
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import java.time.Instant
@@ -50,29 +48,6 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class SyncManagerTest {
-
-    companion object {
-
-        private val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val account = Account("SyncManagerTest", context.getString(R.string.account_type))
-
-        @BeforeClass
-        @JvmStatic
-        fun createAccount() {
-            assertTrue(AccountManager.get(context).addAccountExplicitly(account, "test", AccountSettings.initialUserData(Credentials("test", "test"))))
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun removeAccount() {
-            assertTrue(AccountManager.get(context).removeAccount(account, null, null).getResult(10, TimeUnit.SECONDS))
-
-            // clear annoying syncError notifications
-            NotificationManagerCompat.from(context).cancelAll()
-        }
-
-    }
-
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -90,6 +65,8 @@ class SyncManagerTest {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    private val accountManager by lazy { AccountManager.get(context) }
+    private val account by lazy { Account("SyncManagerTest", context.getString(R.string.account_type)) }
     private val server = MockWebServer()
 
     @Before
@@ -106,13 +83,26 @@ class SyncManagerTest {
             .setWorkerFactory(workerFactory)
             .build()
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
+
+        // create account
+        assertTrue(accountManager.addAccountExplicitly(account, "test", AccountSettings.initialUserData(Credentials("test", "test"))))
+    }
+
+    @After
+    fun teardown() {
+        assertTrue(accountManager.removeAccount(account, null, null).getResult(10, TimeUnit.SECONDS))
+
+        // clear annoying syncError notifications
+        NotificationManagerCompat.from(context).cancelAll()
     }
 
 
     private fun syncManager(
         localCollection: LocalTestCollection,
         syncResult: SyncResult = SyncResult(),
-        collection: Collection = mockk<Collection>()
+        collection: Collection = mockk<Collection>() {
+            every { url } returns server.url("/")
+        }
     ) =
         TestSyncManager(
             account,
@@ -123,7 +113,6 @@ class SyncManagerTest {
             syncResult,
             localCollection,
             collection,
-            server,
             context, db
         )
 

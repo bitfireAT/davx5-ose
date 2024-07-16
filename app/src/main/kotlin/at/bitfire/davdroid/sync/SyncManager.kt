@@ -161,7 +161,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected val notificationManager = NotificationManagerCompat.from(context)
     protected val notificationTag = localCollection.tag
 
-    protected lateinit var collectionURL: HttpUrl
     protected lateinit var davCollection: RemoteType
 
     protected var hasCollectionSync = false
@@ -349,7 +348,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         db.runInTransaction {
             val service = db.serviceDao().getByAccountAndType(accountName, serviceType)
                 ?: return@runInTransaction
-            val collection = db.collectionDao().getByServiceAndUrl(service.id, collectionURL.toString())
+            val collection = db.collectionDao().getByServiceAndUrl(service.id, collection.url.toString())
                 ?: return@runInTransaction
             db.syncStatsDao().insertOrReplace(
                 SyncStats(0, collection.id, authority, System.currentTimeMillis())
@@ -359,7 +358,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
 
     /**
-     * Prepares synchronization. Sets the lateinit properties [collectionURL] and [davCollection].
+     * Prepares synchronization. Sets the lateinit property [davCollection].
      *
      * @return whether synchronization shall be performed
      */
@@ -397,7 +396,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     Logger.log.info("$fileName has been deleted locally -> deleting from server (ETag $lastETag / schedule-tag $lastScheduleTag)")
 
-                    val url = collectionURL.newBuilder().addPathSegment(fileName).build()
+                    val url = collection.url.newBuilder().addPathSegment(fileName).build()
                     val remote = DavResource(httpClient.okHttpClient, url)
                     SyncException.wrapWithRemoteResource(url) {
                         try {
@@ -458,7 +457,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             if (existingFileName == null) {             // new resource
                 newFileName = local.prepareForUpload()
 
-                val uploadUrl = collectionURL.newBuilder().addPathSegment(newFileName).build()
+                val uploadUrl = collection.url.newBuilder().addPathSegment(newFileName).build()
                 val remote = DavResource(httpClient.okHttpClient, uploadUrl)
                 SyncException.wrapWithRemoteResource(uploadUrl) {
                     Logger.log.info("Uploading new record ${local.id} -> $newFileName")
@@ -468,7 +467,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             } else /* existingFileName != null */ {     // updated resource
                 local.prepareForUpload()
 
-                val uploadUrl = collectionURL.newBuilder().addPathSegment(existingFileName).build()
+                val uploadUrl = collection.url.newBuilder().addPathSegment(existingFileName).build()
                 val remote = DavResource(httpClient.okHttpClient, uploadUrl)
                 SyncException.wrapWithRemoteResource(uploadUrl) {
                     val lastScheduleTag = local.scheduleTag
@@ -895,7 +894,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     protected fun notifyInvalidResource(e: Throwable, fileName: String) {
-        val intent = buildDebugInfoIntent(e, null, collectionURL.resolve(fileName))
+        val intent = buildDebugInfoIntent(e, null, collection.url.resolve(fileName))
 
         val builder = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_WARNINGS)
         builder .setSmallIcon(R.drawable.ic_warning_notify)

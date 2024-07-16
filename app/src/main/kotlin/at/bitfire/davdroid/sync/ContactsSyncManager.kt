@@ -156,8 +156,7 @@ class ContactsSyncManager @AssistedInject constructor(
             }
         }
 
-        collectionURL = localCollection.url.toHttpUrlOrNull() ?: return false
-        davCollection = DavAddressBook(httpClient.okHttpClient, collectionURL)
+        davCollection = DavAddressBook(httpClient.okHttpClient, collection.url)
 
         resourceDownloader = ResourceDownloader(davCollection.location)
 
@@ -166,7 +165,7 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override fun queryCapabilities(): SyncState? {
-        return SyncException.wrapWithRemoteResource(collectionURL) {
+        return SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
             davCollection.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
@@ -297,13 +296,13 @@ class ContactsSyncManager @AssistedInject constructor(
         }
 
     override fun listAllRemote(callback: MultiResponseCallback) =
-        SyncException.wrapWithRemoteResource(collectionURL) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.propfind(1, ResourceType.NAME, GetETag.NAME, callback = callback)
         }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} vCard(s): $bunch")
-        SyncException.wrapWithRemoteResource(collectionURL) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             val contentType: String?
             val version: String?
             when {

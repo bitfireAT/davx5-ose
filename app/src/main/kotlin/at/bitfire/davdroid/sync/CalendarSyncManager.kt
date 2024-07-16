@@ -84,8 +84,7 @@ class CalendarSyncManager @AssistedInject constructor(
     }
 
     override fun prepare(): Boolean {
-        collectionURL = (localCollection.name ?: return false).toHttpUrlOrNull() ?: return false
-        davCollection = DavCalendar(httpClient.okHttpClient, collectionURL)
+        davCollection = DavCalendar(httpClient.okHttpClient, collection.url)
 
         // if there are dirty exceptions for events, mark their master events as dirty, too
         localCollection.processDirtyExceptions()
@@ -97,7 +96,7 @@ class CalendarSyncManager @AssistedInject constructor(
     }
 
     override fun queryCapabilities(): SyncState? =
-        SyncException.wrapWithRemoteResource(collectionURL) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
             davCollection.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
@@ -187,7 +186,7 @@ class CalendarSyncManager @AssistedInject constructor(
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
-        return SyncException.wrapWithRemoteResource(collectionURL) {
+        return SyncException.wrapWithRemoteResource(collection.url) {
             Logger.log.info("Querying events since $limitStart")
             davCollection.calendarQuery(Component.VEVENT, limitStart, null, callback)
         }
@@ -195,7 +194,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
         Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
-        SyncException.wrapWithRemoteResource(collectionURL) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 SyncException.wrapWithRemoteResource(response.href) wrapResponse@ {
                     if (!response.isSuccess()) {
