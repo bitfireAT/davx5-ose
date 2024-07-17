@@ -19,7 +19,8 @@ import java.io.IOException
 import java.time.Duration
 
 /**
- * dnsjava Resolver that uses Android's [DnsResolver] API, which is available since Android 10.
+ * dnsjava [Resolver] that uses Android's [DnsResolver] API, which can resolve raw queries and
+ * is available since Android 10.
  */
 @RequiresApi(Build.VERSION_CODES.Q)
 class Android10Resolver : Resolver {

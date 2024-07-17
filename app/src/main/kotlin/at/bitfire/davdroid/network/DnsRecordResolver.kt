@@ -22,6 +22,9 @@ import java.util.TreeMap
 import java.util.logging.Logger
 import javax.inject.Inject
 
+/**
+ * Allows to resolve SRV/TXT records. Chooses the correct resolver, DNS servers etc.
+ */
 class DnsRecordResolver @Inject constructor(
     @ApplicationContext val context: Context,
     private val logger: Logger
@@ -29,10 +32,20 @@ class DnsRecordResolver @Inject constructor(
 
     // resolving
 
-    private val DNS_QUAD9 = InetAddress.getByAddress(byteArrayOf(9,9,9,9))
+    /**
+     * Fallback DNS server that will be used when other DNS are not known or working.
+     * `9.9.9.9` belongs to Cloudflare who promise good privacy.
+     */
+    private val DNS_FALLBACK = InetAddress.getByAddress(byteArrayOf(9,9,9,9))
 
     private val resolver by lazy { chooseResolver() }
 
+    /**
+     * Creates a matching Resolver, depending on the Android version:
+     *
+     * Android 10+: Android10Resolver, which uses the raw DNS resolver that comes with Android
+     * Android <10: ExtendedResolver, which uses the known DNS servers to resolve DNS queries
+     */
     private fun chooseResolver(): Resolver =
         if (Build.VERSION.SDK_INT >= 29) {
             /* Since Android 10, there's a native DnsResolver API that allows to send SRV queries without
@@ -61,7 +74,7 @@ class DnsRecordResolver @Inject constructor(
             }
 
             // fallback: add Quad9 DNS in case that no other DNS works
-            dnsServers.add(DNS_QUAD9)
+            dnsServers.add(DNS_FALLBACK)
 
             val uniqueDnsServers = LinkedHashSet<InetAddress>(dnsServers)
             val simpleResolvers = uniqueDnsServers.map { dns ->
