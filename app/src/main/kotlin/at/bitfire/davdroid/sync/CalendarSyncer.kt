@@ -33,20 +33,21 @@ class CalendarSyncer @AssistedInject constructor(
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     private val logger: Logger
-): Syncer<LocalCalendar>(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
+): Syncer<LocalCalendar>(context, serviceRepository, collectionRepository, account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, extras: Array<String>, authority: String, syncResult: SyncResult): CalendarSyncer
+        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): CalendarSyncer
     }
 
     private var updateColors = accountSettings.getManageCalendarColors()
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
+    override val authority: String
+        get() = CalendarContract.AUTHORITY
     override val localCollections: List<LocalCalendar>
         get() = AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null)
     override val localSyncCollections: List<LocalCalendar>

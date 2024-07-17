@@ -31,7 +31,6 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     val collectionRepository: DavCollectionRepository,
     protected val account: Account,
     protected val extras: Array<String>,
-    protected val authority: String,
     protected val syncResult: SyncResult
 ) {
 
@@ -59,6 +58,8 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     }
 
     abstract val serviceType: String
+
+    abstract val authority: String
 
     /** All local collections of a specific type (calendar, address book, etc) */
     abstract val localCollections: List<CollectionType>

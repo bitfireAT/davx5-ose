@@ -42,14 +42,13 @@ class AddressBookSyncer @AssistedInject constructor(
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     private val logger: Logger
-): Syncer<LocalAddressBook>(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
+): Syncer<LocalAddressBook>(context, serviceRepository, collectionRepository, account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, extras: Array<String>, authority: String, syncResult: SyncResult): AddressBookSyncer
+        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): AddressBookSyncer
     }
 
     companion object {
@@ -60,6 +59,8 @@ class AddressBookSyncer @AssistedInject constructor(
 
     override val serviceType: String
         get() = Service.TYPE_CARDDAV
+    override val authority: String
+        get() = ContactsContract.AUTHORITY // Address books use the contacts authority for sync
     override val localCollections: List<LocalAddressBook>
         get() = LocalAddressBook.findAll(context, provider, account)
     override val localSyncCollections: List<LocalAddressBook>
@@ -103,7 +104,6 @@ class AddressBookSyncer @AssistedInject constructor(
         syncAddressBook(
             localCollection.account,
             extras,
-            ContactsContract.AUTHORITY,
             httpClient,
             provider,
             syncResult,
@@ -116,7 +116,6 @@ class AddressBookSyncer @AssistedInject constructor(
     private fun syncAddressBook(
         account: Account,
         extras: Array<String>,
-        authority: String,
         httpClient: Lazy<HttpClient>,
         provider: ContentProviderClient,
         syncResult: SyncResult,

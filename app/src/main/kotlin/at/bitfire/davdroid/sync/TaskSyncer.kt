@@ -37,10 +37,10 @@ class TaskSyncer @AssistedInject constructor(
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
+    @Assisted override val authority: String,
     private val logger: Logger
-): Syncer<LocalTaskList>(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
+): Syncer<LocalTaskList>(context, serviceRepository, collectionRepository, account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {

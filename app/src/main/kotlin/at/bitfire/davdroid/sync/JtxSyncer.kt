@@ -38,20 +38,21 @@ class JtxSyncer @AssistedInject constructor(
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
-    @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     private val logger: Logger
-): Syncer<LocalJtxCollection>(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
+): Syncer<LocalJtxCollection>(context, serviceRepository, collectionRepository, account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, extras: Array<String>, authority: String, syncResult: SyncResult): JtxSyncer
+        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): JtxSyncer
     }
 
     private val updateColors = accountSettings.getManageCalendarColors()
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
+    override val authority: String
+        get() = TaskProvider.ProviderName.JtxBoard.authority
     override val localCollections: List<LocalJtxCollection>
         get() = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
     override val localSyncCollections: List<LocalJtxCollection>
