@@ -14,6 +14,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.settings.AccountSettings
 import okhttp3.HttpUrl
 import java.util.logging.Level
@@ -22,12 +23,9 @@ import java.util.logging.Logger
 /**
  * Base class for sync code.
  *
- * Contains generic sync code, equal for all sync authorities, checks sync conditions and does
- * validation.
- *
- * Also provides useful methods that can be used by derived syncers ie [CalendarSyncer], etc.
+ * Contains generic sync code, equal for all sync authorities
  */
-abstract class Syncer(
+abstract class Syncer<CollectionType: LocalCollection<*>>(
     val context: Context,
     val serviceRepository: DavServiceRepository,
     val collectionRepository: DavCollectionRepository,
@@ -60,12 +58,18 @@ abstract class Syncer(
 
     }
 
-    private val logger = Logger.getGlobal()
+    abstract val serviceType: String
 
+    /** All local collections of a specific type (calendar, address book, etc) */
+    abstract val localCollections: List<CollectionType>
+
+    /** Sync enabled local collections of specific type */
+    abstract val localSyncCollections: List<CollectionType>
+
+    private val logger = Logger.getGlobal()
+    val remoteCollections = mutableMapOf<HttpUrl, Collection>()
     val accountSettings by lazy { AccountSettings(context, account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
-
-    val remoteCollections = mutableMapOf<HttpUrl, Collection>()
 
     lateinit var provider: ContentProviderClient
 
@@ -74,39 +78,39 @@ abstract class Syncer(
      * remote collection information. Then syncs the actual entries (events, tasks, contacts, etc)
      * of the remaining up-to-date resources.
      */
-    open fun sync() {
+    fun sync() {
 
         // 0. resource specific preparations
         beforeSync()
 
         // 1. find resource collections to be synced
-        val service = serviceRepository.getByAccountAndType(account.name, getServiceType())
+        val service = serviceRepository.getByAccountAndType(account.name, serviceType)
         if (service != null)
-            for (collection in collectionRepository.getSyncCollections(service.id, authority))
-                remoteCollections[collection.url] = collection
+            for (remoteCollection in collectionRepository.getSyncCollections(service.id, authority))
+                remoteCollections[remoteCollection.url] = remoteCollection
 
         // 2. update/delete local resources and determine new (unknown) remote collections
-        val newFoundCollections = HashMap(remoteCollections)
-        for (url in getLocalResourceUrls())
-            remoteCollections[url].let { collection ->
-                if (collection == null)
-                    // Collection got deleted on server, delete obsolete local resource
-                    deleteLocalResource(url)
-                else {
-                    // Collection exists locally, update local resource and don't add it again
-                    updateLocalResource(collection)
-                    newFoundCollections -= url
-                }
+        val newRemoteCollections = HashMap(remoteCollections)
+        for (localCollection in localCollections) {
+            val remoteCollection = remoteCollections[getUrl(localCollection)]
+            if (remoteCollection == null)
+                // Collection got deleted on server, delete obsolete local resource
+                delete(localCollection)
+            else {
+                // Collection exists locally, update local resource and don't add it again
+                update(localCollection, remoteCollection)
+                newRemoteCollections -= remoteCollection.url
             }
+        }
 
-        // 3. create new local resources for new found collections
-        for ((_, collection) in newFoundCollections)
-            createLocalResource(collection)
+        // 3. create new local collections for newly found remote collections
+        for ((_, collection) in newRemoteCollections)
+            create(collection)
 
         // 4. sync local resources
-        for (url in getLocalSyncableResourceUrls())
-            remoteCollections[url]?.let { collection ->
-                syncLocalResource(collection)
+        for (localCollection in localSyncCollections)
+            remoteCollections[getUrl(localCollection)]?.let { remoteCollection ->
+                syncCollection(localCollection, remoteCollection)
             }
 
         // 5. clean up
@@ -116,21 +120,17 @@ abstract class Syncer(
 
     abstract fun beforeSync()
 
+    abstract fun getUrl(localCollection: CollectionType): HttpUrl?
+
+    abstract fun delete(localCollection: CollectionType)
+
+    abstract fun update(localCollection: CollectionType, remoteCollection: Collection)
+
+    abstract fun create(remoteCollection: Collection)
+
+    abstract fun syncCollection(localCollection: CollectionType, remoteCollection: Collection)
+
     abstract fun afterSync()
-
-    abstract fun getServiceType(): String
-
-    abstract fun getLocalResourceUrls(): List<HttpUrl?>
-
-    abstract fun deleteLocalResource(url: HttpUrl?)
-
-    abstract fun updateLocalResource(collection: Collection)
-
-    abstract fun createLocalResource(collection: Collection)
-
-    abstract fun getLocalSyncableResourceUrls(): List<HttpUrl?>
-
-    abstract fun syncLocalResource(collection: Collection)
 
     fun onPerformSync() {
         logger.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))

@@ -23,6 +23,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -39,7 +40,7 @@ class TaskSyncer @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     private val logger: Logger
-): Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
+): Syncer<LocalTaskList>(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -49,8 +50,13 @@ class TaskSyncer @AssistedInject constructor(
     private lateinit var taskProvider: TaskProvider
 
     private var updateColors = accountSettings.getManageCalendarColors()
-    private val localTaskLists = mutableMapOf<HttpUrl, LocalTaskList>()
-    private val localSyncTaskLists = mutableMapOf<HttpUrl, LocalTaskList>()
+
+    override val serviceType: String
+        get() = Service.TYPE_CALDAV
+    override val localCollections: List<LocalTaskList>
+        get() = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, null, null)
+    override val localSyncCollections: List<LocalTaskList>
+        get() = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
 
     override fun beforeSync() {
 
@@ -73,49 +79,28 @@ class TaskSyncer @AssistedInject constructor(
             if (am.getAccountVisibility(account, providerName.packageName) != AccountManager.VISIBILITY_VISIBLE)
                 am.setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
         }
-
-        // Find all task lists and sync-enabled task lists
-        DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, null, null)
-            .forEach { localTaskList ->
-                localTaskList.syncId?.let { url ->
-                    localTaskLists[url.toHttpUrl()] = localTaskList
-                }
-            }
-        localTaskLists.forEach { (url, localCalendar) ->
-            if (localCalendar.isSynced)
-                localSyncTaskLists[url] = localCalendar
-        }
     }
 
-    override fun getServiceType(): String =
-        Service.TYPE_CALDAV
+    override fun getUrl(localCollection: LocalTaskList): HttpUrl? =
+        localCollection.syncId?.toHttpUrl()
 
-    override fun getLocalResourceUrls(): List<HttpUrl?> =
-        localTaskLists.keys.toList()
-
-    override fun deleteLocalResource(url: HttpUrl?) {
-        logger.log(Level.INFO, "Deleting obsolete local task list", url)
-        localTaskLists[url]?.delete()
+    override fun delete(localCollection: LocalTaskList) {
+        logger.log(Level.INFO, "Deleting obsolete local task list", localCollection.syncId)
+        localCollection.delete()
     }
 
-    override fun updateLocalResource(collection: Collection) {
-        logger.log(Level.FINE, "Updating local task list ${collection.url}", collection)
-        localTaskLists[collection.url]?.update(collection, updateColors)
+    override fun update(localCollection: LocalTaskList, remoteCollection: Collection) {
+        logger.log(Level.FINE, "Updating local task list ${remoteCollection.url}", remoteCollection)
+        localCollection.update(remoteCollection, updateColors)
     }
 
-    override fun createLocalResource(collection: Collection) {
-        logger.log(Level.INFO, "Adding local task list", collection)
-        LocalTaskList.create(account, taskProvider, collection)
+    override fun create(remoteCollection: Collection) {
+        logger.log(Level.INFO, "Adding local task list", remoteCollection)
+        LocalTaskList.create(account, taskProvider, remoteCollection)
     }
 
-    override fun getLocalSyncableResourceUrls(): List<HttpUrl?> =
-        localSyncTaskLists.keys.toList()
-
-    override fun syncLocalResource(collection: Collection) {
-        val taskList = localSyncTaskLists[collection.url]
-            ?: return
-
-        logger.info("Synchronizing task list #${taskList.id} [${taskList.syncId}]")
+    override fun syncCollection(localCollection: LocalTaskList, remoteCollection: Collection) {
+        logger.info("Synchronizing task list #${localCollection.id} [${localCollection.syncId}]")
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
             account,
@@ -124,8 +109,8 @@ class TaskSyncer @AssistedInject constructor(
             extras,
             authority,
             syncResult,
-            taskList,
-            collection
+            localCollection,
+            remoteCollection
         )
         syncManager.performSync()
     }

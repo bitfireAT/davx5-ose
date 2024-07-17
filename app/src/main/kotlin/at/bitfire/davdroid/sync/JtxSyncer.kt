@@ -41,7 +41,7 @@ class JtxSyncer @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     private val logger: Logger
-): Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
+): Syncer<LocalJtxCollection>(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -49,7 +49,13 @@ class JtxSyncer @AssistedInject constructor(
     }
 
     private val updateColors = accountSettings.getManageCalendarColors()
-    private val localJtxCollections = mutableMapOf<HttpUrl, LocalJtxCollection>()
+
+    override val serviceType: String
+        get() = Service.TYPE_CALDAV
+    override val localCollections: List<LocalJtxCollection>
+        get() = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
+    override val localSyncCollections: List<LocalJtxCollection>
+        get() = localCollections
 
     override fun beforeSync() {
         // check whether jtx Board is new enough
@@ -69,44 +75,30 @@ class JtxSyncer @AssistedInject constructor(
                 am.setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
         }
 
-        // Find all task lists and sync-enabled task lists
-        JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
-            .forEach { localJtxCollection ->
-                localJtxCollection.url?.let { url ->
-                    localJtxCollections[url.toHttpUrl()] = localJtxCollection
-                }
-            }
     }
 
-    override fun getServiceType(): String =
-        Service.TYPE_CALDAV
+    override fun getUrl(localCollection: LocalJtxCollection): HttpUrl? =
+        localCollection.url?.toHttpUrl()
 
-    override fun getLocalResourceUrls(): List<HttpUrl?> = localJtxCollections.keys.toList()
-
-    override fun deleteLocalResource(url: HttpUrl?) {
-        logger.log(Level.INFO, "Deleting obsolete local jtx collection", url)
-        localJtxCollections[url]?.delete()
+    override fun delete(localCollection: LocalJtxCollection) {
+        logger.log(Level.INFO, "Deleting obsolete local jtx collection", localCollection.url)
+        localCollection.delete()
     }
 
-    override fun updateLocalResource(collection: Collection) {
-        logger.log(Level.FINE, "Updating local collection ${collection.url}", collection)
-        val owner = collection.ownerId?.let { principalRepository.get(it) }
-        localJtxCollections[collection.url]?.updateCollection(collection, owner, updateColors)
+    override fun update(localCollection: LocalJtxCollection, remoteCollection: Collection) {
+        logger.log(Level.FINE, "Updating local jtx collection ${remoteCollection.url}", remoteCollection)
+        val owner = remoteCollection.ownerId?.let { principalRepository.get(it) }
+        localCollection.updateCollection(remoteCollection, owner, updateColors)
     }
 
-    override fun createLocalResource(collection: Collection) {
-        logger.log(Level.INFO, "Adding local collections", collection)
-        val owner = collection.ownerId?.let { principalRepository.get(it) }
-        LocalJtxCollection.create(account, provider, collection, owner)
+    override fun create(remoteCollection: Collection) {
+        logger.log(Level.INFO, "Adding local jtx collection", remoteCollection)
+        val owner = remoteCollection.ownerId?.let { principalRepository.get(it) }
+        LocalJtxCollection.create(account, provider, remoteCollection, owner)
     }
 
-    override fun getLocalSyncableResourceUrls(): List<HttpUrl?> = localJtxCollections.keys.toList()
-
-    override fun syncLocalResource(collection: Collection) {
-        val localJtxCollection = localJtxCollections[collection.url]
-            ?: return
-
-        logger.info("Synchronizing jtx collection $localJtxCollection")
+    override fun syncCollection(localCollection: LocalJtxCollection, remoteCollection: Collection) {
+        logger.info("Synchronizing jtx collection $localCollection")
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account,
@@ -115,8 +107,8 @@ class JtxSyncer @AssistedInject constructor(
             httpClient.value,
             authority,
             syncResult,
-            localJtxCollection,
-            collection
+            localCollection,
+            remoteCollection
         )
         syncManager.performSync()
     }

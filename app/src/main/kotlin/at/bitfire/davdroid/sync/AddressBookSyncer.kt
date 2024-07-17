@@ -45,7 +45,7 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     private val logger: Logger
-): Syncer(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
+): Syncer<LocalAddressBook>(context, serviceRepository, collectionRepository, account, extras, authority, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -57,7 +57,13 @@ class AddressBookSyncer @AssistedInject constructor(
     }
 
     private val forceAllReadOnly = settingsManager.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
-    private val localAddressBooks = mutableMapOf<HttpUrl, LocalAddressBook>()
+
+    override val serviceType: String
+        get() = Service.TYPE_CARDDAV
+    override val localCollections: List<LocalAddressBook>
+        get() = LocalAddressBook.findAll(context, provider, account)
+    override val localSyncCollections: List<LocalAddressBook>
+        get() = localCollections
 
     override fun beforeSync() {
         // permission check
@@ -68,58 +74,40 @@ class AddressBookSyncer @AssistedInject constructor(
                 logger.warning("No contacts permission, but address books are selected for synchronization")
             return // Don't sync
         }
-
-        // Find all task lists and sync-enabled task lists
-        LocalAddressBook.findAll(context, provider, account)
-            .forEach { localAddressBook ->
-                localAddressBook.url.let { url ->
-                    localAddressBooks[url.toHttpUrl()] = localAddressBook
-                }
-            }
     }
 
-    override fun getServiceType(): String =
-        Service.TYPE_CARDDAV
+    override fun getUrl(localCollection: LocalAddressBook): HttpUrl =
+        localCollection.url.toHttpUrl()
 
-    override fun getLocalResourceUrls(): List<HttpUrl?> =
-        localAddressBooks.keys.toList()
-
-    override fun deleteLocalResource(url: HttpUrl?) {
-        logger.log(Level.INFO, "Deleting obsolete local address book", url)
-        localAddressBooks[url]?.delete()
+    override fun delete(localCollection: LocalAddressBook) {
+        logger.log(Level.INFO, "Deleting obsolete local address book", localCollection.url)
+        localCollection.delete()
     }
 
-    override fun updateLocalResource(collection: Collection) {
+    override fun update(localCollection: LocalAddressBook, remoteCollection: Collection) {
         try {
-            logger.log(Level.FINE, "Updating local address book ${collection.url}", collection)
-            localAddressBooks[collection.url]?.update(collection, forceAllReadOnly)
+            logger.log(Level.FINE, "Updating local address book ${remoteCollection.url}", remoteCollection)
+            localCollection.update(remoteCollection, forceAllReadOnly)
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't rename address book account", e)
         }
     }
 
-    override fun createLocalResource(collection: Collection) {
-        logger.log(Level.INFO, "Adding local address book", collection)
-        LocalAddressBook.create(context, provider, account, collection, forceAllReadOnly)
+    override fun create(remoteCollection: Collection) {
+        logger.log(Level.INFO, "Adding local address book", remoteCollection)
+        LocalAddressBook.create(context, provider, account, remoteCollection, forceAllReadOnly)
     }
 
-    override fun getLocalSyncableResourceUrls(): List<HttpUrl?> =
-        localAddressBooks.keys.toList()
-
-    override fun syncLocalResource(collection: Collection) {
-        val addressBook = localAddressBooks[collection.url]
-            ?: return
-
-        logger.info("Synchronizing address book $addressBook")
-
+    override fun syncCollection(localCollection: LocalAddressBook, remoteCollection: Collection) {
+        logger.info("Synchronizing address book $localCollection")
         syncAddressBook(
-            addressBook.account,
+            localCollection.account,
             extras,
             ContactsContract.AUTHORITY,
             httpClient,
             provider,
             syncResult,
-            collection
+            remoteCollection
         )
     }
 

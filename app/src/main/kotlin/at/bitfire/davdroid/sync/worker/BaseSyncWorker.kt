@@ -283,7 +283,7 @@ abstract class BaseSyncWorker(
         val result = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
-        val syncer: Syncer = when (authority) {
+        val syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
                 entryPoint.addressBookSyncer().create(account, extras, ContactsContract.AUTHORITY, result)
             CalendarContract.AUTHORITY ->
