@@ -96,7 +96,7 @@ class DnsRecordResolver @Inject constructor(
     // record selection
 
     fun bestSRVRecord(records: Array<out Record>): SRVRecord? {
-        val srvRecords = records.filterIsInstance(SRVRecord::class.java)
+        val srvRecords = records.filterIsInstance<SRVRecord>()
         if (srvRecords.size <= 1)
             return srvRecords.firstOrNull()
 
@@ -120,8 +120,11 @@ class DnsRecordResolver @Inject constructor(
                 the random number selected. The target host specified in the
                 selected SRV RR is the next one to be contacted by the client.
         */
+
+        // Select records which have the minimum priority
         val minPriority = srvRecords.minOfOrNull { it.priority }
-        val useableRecords = srvRecords.filter { it.priority == minPriority }.sortedBy { it.weight != 0 }
+        val useableRecords = srvRecords.filter { it.priority == minPriority }
+            .sortedBy { it.weight != 0 }    // and put those with weight 0 first
 
         val map = TreeMap<Int, SRVRecord>()
         var runningWeight = 0

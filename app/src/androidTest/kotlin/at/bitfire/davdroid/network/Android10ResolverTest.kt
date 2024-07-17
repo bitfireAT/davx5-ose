@@ -21,10 +21,10 @@ class Android10ResolverTest {
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
     fun testResolveA() {
-        val www = InetAddress.getAllByName(FQDN_DAVX5).filterIsInstance(Inet4Address::class.java).first()
+        val www = InetAddress.getAllByName(FQDN_DAVX5).filterIsInstance<Inet4Address>().first()
 
         val srvLookup = Lookup(FQDN_DAVX5, Type.A)
-        srvLookup.setResolver(Android10Resolver)
+        srvLookup.setResolver(Android10Resolver())
         val resultGeneric = srvLookup.run()
         assertEquals(1, resultGeneric.size)
 

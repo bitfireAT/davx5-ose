@@ -57,6 +57,9 @@ class DavResourceFinderTest {
     lateinit var context: Context
 
     @Inject
+    lateinit var resourceFinderFactory: DavResourceFinder.Factory
+
+    @Inject
     lateinit var settingsManager: SettingsManager
 
     private val server = MockWebServer()
@@ -74,7 +77,7 @@ class DavResourceFinderTest {
         val baseURI = URI.create("/")
         val credentials = Credentials("mock", "12345")
 
-        finder = DavResourceFinder(context, baseURI, credentials)
+        finder = resourceFinderFactory.resourceFinder(baseURI, credentials)
         client = HttpClient.Builder(context)
                 .addAuthentication(null, credentials)
                 .build()
