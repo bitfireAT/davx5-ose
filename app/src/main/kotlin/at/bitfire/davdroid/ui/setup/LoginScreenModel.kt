@@ -40,6 +40,7 @@ class LoginScreenModel @AssistedInject constructor(
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
     val loginTypesProvider: LoginTypesProvider,
+    private val resourceFinderFactory: DavResourceFinder.Factory,
     settingsManager: SettingsManager
 ): ViewModel() {
 
@@ -188,10 +189,10 @@ class LoginScreenModel @AssistedInject constructor(
         detectResourcesJob = viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
                  runInterruptible {
-                    DavResourceFinder(context, loginInfo.baseUri!!, loginInfo.credentials).use { finder ->
-                        finder.findInitialConfiguration()
-                    }
-                }
+                     resourceFinderFactory.resourceFinder(loginInfo.baseUri!!, loginInfo.credentials).use { finder ->
+                         finder.findInitialConfiguration()
+                     }
+                 }
             }
 
             if (result.calDAV != null || result.cardDAV != null) {
