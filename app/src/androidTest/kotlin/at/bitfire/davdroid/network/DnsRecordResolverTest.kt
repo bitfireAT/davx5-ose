@@ -6,6 +6,7 @@ package at.bitfire.davdroid.network
 
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -15,6 +16,7 @@ import org.junit.Test
 import org.xbill.DNS.DClass
 import org.xbill.DNS.Name
 import org.xbill.DNS.SRVRecord
+import org.xbill.DNS.TXTRecord
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -92,6 +94,29 @@ class DnsRecordResolverTest {
         )
         val result = dnsRecordResolver.bestSRVRecord(arrayOf(dns1010))
         assertEquals(dns1010, result)
+    }
+
+
+    @Test
+    fun testPathsFromTXTRecords_Empty() {
+        assertTrue(dnsRecordResolver.pathsFromTXTRecords(arrayOf()).isEmpty())
+    }
+
+    @Test
+    fun testPathsFromTXTRecords_OnePath() {
+        val result = dnsRecordResolver.pathsFromTXTRecords(arrayOf(
+            TXTRecord(Name.fromString("example.com."), 0, 0L, listOf("something=else", "path=/path1"))
+        )).toTypedArray()
+        assertArrayEquals(arrayOf("/path1"), result)
+    }
+
+    @Test
+    fun testPathsFromTXTRecords_TwoPaths() {
+        val result = dnsRecordResolver.pathsFromTXTRecords(arrayOf(
+            TXTRecord(Name.fromString("example.com."), 0, 0L, listOf("path=/path1", "something-else", "path=/path2"))
+        )).toTypedArray()
+        result.sort()
+        assertArrayEquals(arrayOf("/path1", "/path2"), result)
     }
 
 }

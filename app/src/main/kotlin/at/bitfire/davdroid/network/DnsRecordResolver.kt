@@ -142,10 +142,8 @@ class DnsRecordResolver @Inject constructor(
         val paths = LinkedList<String>()
         records.filterIsInstance<TXTRecord>().forEach { txt ->
             for (segment in txt.strings as List<String>)
-                if (segment.startsWith("path=")) {
+                if (segment.startsWith("path="))
                     paths.add(segment.substring(5))
-                    break
-                }
         }
         return paths
     }
