@@ -22,8 +22,9 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.util.DavUtils
-import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -51,7 +52,7 @@ class RandomAccessCallback @AssistedInject constructor(
     @Assisted private val cancellationSignal: CancellationSignal?,
     @ApplicationContext val context: Context,
     private val logger: Logger
-): ProxyFileDescriptorCallback(), PagingReader.PageLoader {
+): ProxyFileDescriptorCallback() {
 
     companion object {
 
@@ -88,19 +89,18 @@ class RandomAccessCallback @AssistedInject constructor(
         .setOngoing(true)
     private val notificationTag = url.toString()
 
-    private val pagingReader = PagingReader(fileSize, MAX_PAGE_SIZE, this)
-    private var loadPageJobs: Set<Deferred<ByteArray>> = emptySet()
-
-    private val pageCache: Cache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
+    private val pageLoader = PageLoader()
+    private val pageCache: LoadingCache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
         .maximumSize(10)    // don't cache more than 10 entries (MAX_PAGE_SIZE each)
         .softValues()       // use SoftReference for the page contents so they will be garbage collected if memory is needed
-        .build()
+        .build(pageLoader)  // fetch actual content using pageLoader
+
+    private val pagingReader = PagingReader(fileSize, MAX_PAGE_SIZE, pageCache)
 
     init {
         cancellationSignal?.let {
-            logger.info("Cancelling random access to $url")
-            for (job in loadPageJobs)
-                job.cancel()
+            logger.fine("Cancelling random access to $url")
+            pageLoader.cancelAll()
         }
     }
 
@@ -136,64 +136,6 @@ class RandomAccessCallback @AssistedInject constructor(
         notificationManager.cancel(notificationTag, NotificationUtils.NOTIFY_WEBDAV_ACCESS)
     }
 
-
-    override fun loadPage(offset: Long, size: Int): ByteArray {
-        logger.fine("Loading page $url $offset/$size")
-
-        // update notification
-        val progress =
-            if (fileSize == 0L)     // avoid division by zero
-                100
-            else
-                (offset * 100 / fileSize).toInt()
-        notificationManager.notifyIfPossible(
-            notificationTag,
-            NotificationUtils.NOTIFY_WEBDAV_ACCESS,
-            notification.setProgress(100, progress, false).build()
-        )
-
-        // create async job that can be cancelled (and cancellation interrupts I/O)
-        val job = CoroutineScope(Dispatchers.IO).async {
-            runInterruptible {
-                pageCache.get(PageIdentifier(offset, size)) {
-                    val ifMatch: Headers =
-                        documentState.eTag?.let { eTag ->
-                            Headers.headersOf("If-Match", "\"$eTag\"")
-                        } ?: documentState.lastModified?.let { lastModified ->
-                            Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
-                        } ?: throw IllegalStateException("ETag/Last-Modified required for random access")
-
-                    var result: ByteArray? = null
-                    dav.getRange(
-                        DavUtils.acceptAnything(preferred = mimeType),
-                        offset,
-                        size,
-                        ifMatch
-                    ) { response ->
-                        if (response.code == 200)       // server doesn't support ranged requests
-                            throw PartialContentNotSupportedException()
-                        else if (response.code != 206)
-                            throw HttpException(response)
-
-                        result = response.body?.bytes()
-                    }
-                    return@get result ?: throw DavException("No response body")
-                }
-            }
-        }
-
-        try {
-            loadPageJobs += job
-
-            // wait for result
-            return runBlocking {
-                job.await()
-            }
-        } finally {
-            loadPageJobs -= job
-        }
-    }
-
     private fun throwIfCancelled(functionName: String) {
         if (cancellationSignal?.isCanceled == true) {
             logger.warning("Random file access cancelled, throwing ErrnoException(EINTR)")
@@ -220,7 +162,80 @@ class RandomAccessCallback @AssistedInject constructor(
         )
 
 
-    class PartialContentNotSupportedException: Exception()
+    /**
+     * Responsible for loading (= downloading) a single page from the WebDAV resource.
+     */
+    inner class PageLoader: CacheLoader<PageIdentifier, ByteArray>() {
 
+        private val jobs = mutableSetOf<Deferred<ByteArray>>()
+
+        fun cancelAll() {
+            for (job in jobs)
+                job.cancel()
+        }
+
+        override fun load(key: PageIdentifier): ByteArray {
+            val offset = key.offset
+            val size = key.size
+            logger.fine("Loading page $url $offset/$size")
+
+            // update notification
+            val progress =
+                if (fileSize == 0L)     // avoid division by zero
+                    100
+                else
+                    (offset * 100 / fileSize).toInt()
+            notificationManager.notifyIfPossible(
+                notificationTag,
+                NotificationUtils.NOTIFY_WEBDAV_ACCESS,
+                notification.setProgress(100, progress, false).build()
+            )
+
+            // create async job that can be cancelled (and cancellation interrupts I/O)
+            val job = CoroutineScope(Dispatchers.IO).async {
+                runInterruptible {
+                    val ifMatch: Headers =
+                        documentState.eTag?.let { eTag ->
+                            Headers.headersOf("If-Match", "\"$eTag\"")
+                        } ?: documentState.lastModified?.let { lastModified ->
+                            Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
+                        } ?: throw IllegalStateException("ETag/Last-Modified required for random access")
+
+                    var result: ByteArray? = null
+                    dav.getRange(
+                        DavUtils.acceptAnything(preferred = mimeType),
+                        offset,
+                        size,
+                        ifMatch
+                    ) { response ->
+                        if (response.code == 200)       // server doesn't support ranged requests
+                            throw PartialContentNotSupportedException()
+                        else if (response.code != 206)
+                            throw HttpException(response)
+
+                        result = response.body?.bytes()
+                    }
+                    return@runInterruptible result ?: throw DavException("No response body")
+                }
+            }
+
+            try {
+                // register job in set so that it can be cancelled
+                jobs += job
+
+                // wait for result
+                return runBlocking {
+                    job.await()
+                }
+            } finally {
+                jobs -= job
+            }
+
+        }
+
+    }
+
+
+    class PartialContentNotSupportedException: Exception()
 
 }
