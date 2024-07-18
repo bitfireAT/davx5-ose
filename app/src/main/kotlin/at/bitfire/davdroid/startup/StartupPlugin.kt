@@ -6,6 +6,11 @@ package at.bitfire.davdroid.startup
 
 interface StartupPlugin {
 
+    companion object {
+        const val PRIORITY_DEFAULT = 100
+        const val PRIORITY_HIGHEST = 0
+    }
+
     /**
      * Runs synchronously during [at.bitfire.davdroid.App.onCreate]. Use only for tasks that must be completed before
      * the app can run. Causes the app to start slower.

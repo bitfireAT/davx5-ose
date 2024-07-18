@@ -5,13 +5,11 @@
 package at.bitfire.davdroid
 
 import android.app.Application
-import android.os.StrictMode
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import at.bitfire.davdroid.log.LogManager
 import at.bitfire.davdroid.startup.StartupPlugin
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
-import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
 import dagger.hilt.android.HiltAndroidApp
@@ -19,13 +17,11 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import kotlin.system.exitProcess
 
 @HiltAndroidApp
-class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provider {
+class App: Application(), Configuration.Provider {
 
     @Inject
     lateinit var logger: Logger
@@ -51,19 +47,7 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
     override fun onCreate() {
         super.onCreate()
 
-        if (BuildConfig.DEBUG)
-            // debug builds
-            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
-                    .detectActivityLeaks()
-                    .detectFileUriExposure()
-                    .detectLeakedClosableObjects()
-                    .detectLeakedRegistrationObjects()
-                    .detectLeakedSqlLiteObjects()
-                    .penaltyLog()
-                    .build())
-        else // if (BuildConfig.FLAVOR == FLAVOR_STANDARD)
-            // handle uncaught exceptions in non-debug standard flavor
-            Thread.setDefaultUncaughtExceptionHandler(this)
+        logger.fine("Logging using LogManager $logManager")
 
         NotificationUtils.createChannels(this)
 
@@ -92,18 +76,6 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
                 plugin.onAppCreateAsync()
             }
         }
-    }
-
-    override fun uncaughtException(t: Thread, e: Throwable) {
-        logger.log(Level.SEVERE, "Unhandled exception!", e)
-
-        val intent = DebugInfoActivity.IntentBuilder(this)
-            .withCause(e)
-            .newTask()
-            .build()
-        startActivity(intent)
-
-        exitProcess(1)
     }
 
 }
