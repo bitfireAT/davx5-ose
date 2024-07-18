@@ -26,7 +26,8 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.webdav.RandomAccessCallback.Wrapper.Companion.TIMEOUT_INTERVAL
-import at.bitfire.davdroid.webdav.cache.PageCacheBuilder
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -65,6 +66,20 @@ class RandomAccessCallback private constructor(
     private val cancellationSignal: CancellationSignal?
 ): ProxyFileDescriptorCallback(), PagingReader.PageLoader {
 
+    companion object {
+
+        /**
+         * WebDAV resources will be read in chunks of this size (or less at the end of the file).
+         */
+        const val MAX_PAGE_SIZE = 2 * 1024*1024     // 2 MB
+
+    }
+
+    data class PageIdentifier(
+        val offset: Long,
+        val size: Int
+    )
+
     private val dav = DavResource(httpClient.okHttpClient, url)
 
     private val fileSize = headResponse.size ?: throw IllegalArgumentException("Can only be used with given file size")
@@ -81,9 +96,13 @@ class RandomAccessCallback private constructor(
         .setOngoing(true)
     private val notificationTag = url.toString()
 
-    private val pagingReader = PagingReader(fileSize, PageCacheBuilder.MAX_PAGE_SIZE, this)
-    private val pageCache = PageCacheBuilder.getInstance()
+    private val pagingReader = PagingReader(fileSize, MAX_PAGE_SIZE, this)
     private var loadPageJobs: Set<Deferred<ByteArray>> = emptySet()
+
+    private val pageCache: Cache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
+        .weakKeys()
+        .weakValues()
+        .build()
 
     init {
         cancellationSignal?.let {
@@ -144,7 +163,7 @@ class RandomAccessCallback private constructor(
         // create async job that can be cancelled (and cancellation interrupts I/O)
         val job = CoroutineScope(Dispatchers.IO).async {
             runInterruptible {
-                pageCache.getOrPut(PageCacheBuilder.PageIdentifier(url, offset, size)) {
+                pageCache.get(PageIdentifier(offset, size)) {
                     val ifMatch: Headers =
                         documentState.eTag?.let { eTag ->
                             Headers.headersOf("If-Match", "\"$eTag\"")
@@ -166,7 +185,7 @@ class RandomAccessCallback private constructor(
 
                         result = response.body?.bytes()
                     }
-                    return@getOrPut result ?: throw DavException("No response body")
+                    return@get result ?: throw DavException("No response body")
                 }
             }
         }
