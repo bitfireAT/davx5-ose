@@ -79,11 +79,11 @@ class DnsRecordResolverTest {
         }
 
         /* We had weights 10 and 20, so the distribution of 1000 tries should be roughly
-            weight 10       fraction 1/3    expected count 333
-            weight 20       fraction 2/3    expected count 667
+            weight 10   fraction 1/3   expected count 333   binomial distribution (p=1/3) with 99.99% in [275..393]
+            weight 20   fraction 2/3   expected count 667   binomial distribution (p=2/3) with 99.99% in [607..725]
          */
-        assertTrue(counts[0] in 300..366)
-        assertTrue(counts[1] in 633..700)
+        assertTrue(counts[0] in 275..393)
+        assertTrue(counts[1] in 607..725)
     }
 
     @Test
