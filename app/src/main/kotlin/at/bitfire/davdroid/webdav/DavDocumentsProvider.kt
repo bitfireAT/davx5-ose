@@ -87,6 +87,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     interface DavDocumentsProviderEntryPoint {
         fun appDatabase(): AppDatabase
         fun logger(): Logger
+        fun randomAccessCallbackWrapperFactory(): RandomAccessCallbackWrapper.Factory
         fun webdavComponentBuilder(): WebdavComponentBuilder
     }
 
@@ -527,7 +528,8 @@ class DavDocumentsProvider: DocumentsProvider() {
             fileInfo.supportsPartial == true    // WebDAV server must support random access
         ) {
             logger.fine("Creating RandomAccessCallback for $url")
-            val accessor = RandomAccessCallback.Wrapper(ourContext, client, url, doc.mimeType, fileInfo, signal)
+            val factory = globalEntryPoint.randomAccessCallbackWrapperFactory()
+            val accessor = factory.create(client, url, doc.mimeType, fileInfo, signal)
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
             logger.fine("Creating StreamingFileDescriptor for $url")
