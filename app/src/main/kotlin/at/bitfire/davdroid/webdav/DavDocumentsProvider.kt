@@ -88,6 +88,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         fun appDatabase(): AppDatabase
         fun logger(): Logger
         fun randomAccessCallbackWrapperFactory(): RandomAccessCallbackWrapper.Factory
+        fun streamingFileDescriptorFactory(): StreamingFileDescriptor.Factory
         fun webdavComponentBuilder(): WebdavComponentBuilder
     }
 
@@ -533,7 +534,8 @@ class DavDocumentsProvider: DocumentsProvider() {
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
             logger.fine("Creating StreamingFileDescriptor for $url")
-            val fd = StreamingFileDescriptor(ourContext, client, url, doc.mimeType, signal) { transferred ->
+            val factory = globalEntryPoint.streamingFileDescriptorFactory()
+            val fd = factory.create(client, url, doc.mimeType, signal) { transferred ->
                 // called when transfer is finished
 
                 val now = System.currentTimeMillis()
