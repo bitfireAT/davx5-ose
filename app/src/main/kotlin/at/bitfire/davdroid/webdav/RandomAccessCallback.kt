@@ -191,16 +191,16 @@ class RandomAccessCallback @AssistedInject constructor(
                 notification.setProgress(100, progress, false).build()
             )
 
+            val ifMatch: Headers =
+                documentState.eTag?.let { eTag ->
+                    Headers.headersOf("If-Match", "\"$eTag\"")
+                } ?: documentState.lastModified?.let { lastModified ->
+                    Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
+                } ?: throw DavException("ETag/Last-Modified required for random access")
+
             // create async job that can be cancelled (and cancellation interrupts I/O)
             val job = CoroutineScope(Dispatchers.IO).async {
                 runInterruptible {
-                    val ifMatch: Headers =
-                        documentState.eTag?.let { eTag ->
-                            Headers.headersOf("If-Match", "\"$eTag\"")
-                        } ?: documentState.lastModified?.let { lastModified ->
-                            Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
-                        } ?: throw IllegalStateException("ETag/Last-Modified required for random access")
-
                     var result: ByteArray? = null
                     dav.getRange(
                         DavUtils.acceptAnything(preferred = mimeType),
