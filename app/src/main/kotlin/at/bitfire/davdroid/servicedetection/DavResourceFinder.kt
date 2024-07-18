@@ -68,7 +68,7 @@ class DavResourceFinder @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun resourceFinder(baseURI: URI, credentials: Credentials?): DavResourceFinder
+        fun create(baseURI: URI, credentials: Credentials?): DavResourceFinder
     }
 
     enum class Service(val wellKnownName: String) {

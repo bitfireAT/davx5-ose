@@ -77,7 +77,7 @@ class DavResourceFinderTest {
         val baseURI = URI.create("/")
         val credentials = Credentials("mock", "12345")
 
-        finder = resourceFinderFactory.resourceFinder(baseURI, credentials)
+        finder = resourceFinderFactory.create(baseURI, credentials)
         client = HttpClient.Builder(context)
                 .addAuthentication(null, credentials)
                 .build()

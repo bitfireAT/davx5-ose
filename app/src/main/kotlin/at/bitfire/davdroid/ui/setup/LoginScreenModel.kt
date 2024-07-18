@@ -189,7 +189,7 @@ class LoginScreenModel @AssistedInject constructor(
         detectResourcesJob = viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
                  runInterruptible {
-                     resourceFinderFactory.resourceFinder(loginInfo.baseUri!!, loginInfo.credentials).use { finder ->
+                     resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials).use { finder ->
                          finder.findInitialConfiguration()
                      }
                  }
