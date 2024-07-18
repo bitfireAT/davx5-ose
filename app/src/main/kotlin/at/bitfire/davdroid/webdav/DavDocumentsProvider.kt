@@ -44,7 +44,6 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
@@ -74,6 +73,7 @@ import java.io.FileNotFoundException
 import java.net.HttpURLConnection
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Provides functionality on WebDav documents.
@@ -86,6 +86,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     @InstallIn(SingletonComponent::class)
     interface DavDocumentsProviderEntryPoint {
         fun appDatabase(): AppDatabase
+        fun logger(): Logger
         fun webdavComponentBuilder(): WebdavComponentBuilder
     }
 
@@ -128,6 +129,8 @@ class DavDocumentsProvider: DocumentsProvider() {
         )
     }
 
+    private val logger by lazy { globalEntryPoint.logger() }
+
     private val db by lazy { globalEntryPoint.appDatabase() }
     private val mountDao by lazy { db.webDavMountDao() }
     private val documentDao by lazy { db.webDavDocumentDao() }
@@ -147,7 +150,7 @@ class DavDocumentsProvider: DocumentsProvider() {
      */
     private val runningQueryChildren = ConcurrentHashMap<Long, Boolean>()
 
-    private val actor by lazy { DavDocumentsActor(ourContext, db, cookieStore, credentialsStore, authority) }
+    private val actor by lazy { DavDocumentsActor(ourContext, db, logger, cookieStore, credentialsStore, authority) }
 
     override fun onCreate() = true
 
@@ -155,7 +158,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     /*** query ***/
 
     override fun queryRoots(projection: Array<out String>?): Cursor {
-        Logger.log.fine("WebDAV queryRoots")
+        logger.fine("WebDAV queryRoots")
         val roots = MatrixCursor(projection ?: arrayOf(
             Root.COLUMN_ROOT_ID,
             Root.COLUMN_ICON,
@@ -167,7 +170,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         for (mount in mountDao.getAll()) {
             val rootDocument = documentDao.getOrCreateRoot(mount)
-            Logger.log.info("Root ID: $rootDocument")
+            logger.info("Root ID: $rootDocument")
 
             roots.newRow().apply {
                 add(Root.COLUMN_ROOT_ID, mount.id)
@@ -191,7 +194,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     }
 
     override fun queryDocument(documentId: String, projection: Array<out String>?): Cursor {
-        Logger.log.fine("WebDAV queryDocument $documentId ${projection?.joinToString("+")}")
+        logger.fine("WebDAV queryDocument $documentId ${projection?.joinToString("+")}")
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
         val parent = doc.parentId?.let { parentId ->
@@ -209,7 +212,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             Document.COLUMN_SUMMARY
         )).apply {
             val bundle = doc.toBundle(parent)
-            Logger.log.fine("queryDocument($documentId) = $bundle")
+            logger.fine("queryDocument($documentId) = $bundle")
 
             // override display names of root documents
             if (parent == null) {
@@ -231,7 +234,7 @@ class DavDocumentsProvider: DocumentsProvider() {
      */
     @Synchronized
     override fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?): Cursor {
-        Logger.log.fine("WebDAV queryChildDocuments $parentDocumentId $projection $sortOrder")
+        logger.fine("WebDAV queryChildDocuments $parentDocumentId $projection $sortOrder")
         val parentId = parentDocumentId.toLong()
         val parent = documentDao.get(parentId) ?: throw FileNotFoundException()
 
@@ -276,7 +279,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     }
 
     override fun isChildDocument(parentDocumentId: String, documentId: String): Boolean {
-        Logger.log.fine("WebDAV isChildDocument $parentDocumentId $documentId")
+        logger.fine("WebDAV isChildDocument $parentDocumentId $documentId")
         val parent = documentDao.get(parentDocumentId.toLong()) ?: throw FileNotFoundException()
 
         var iter: WebDavDocument? = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
@@ -297,7 +300,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     /*** copy/create/delete/move/rename ***/
 
     override fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String): String {
-        Logger.log.fine("WebDAV copyDocument $sourceDocumentId $targetParentDocumentId")
+        logger.fine("WebDAV copyDocument $sourceDocumentId $targetParentDocumentId")
         val srcDoc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstFolder = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
         val name = srcDoc.name
@@ -338,7 +341,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     }
 
     override fun createDocument(parentDocumentId: String, mimeType: String, displayName: String): String? {
-        Logger.log.fine("WebDAV createDocument $parentDocumentId $mimeType $displayName")
+        logger.fine("WebDAV createDocument $parentDocumentId $mimeType $displayName")
         val parent = documentDao.get(parentDocumentId.toLong()) ?: throw FileNotFoundException()
         val parentUrl = parent.toHttpUrl(db)
         val createDirectory = mimeType == Document.MIME_TYPE_DIR
@@ -381,7 +384,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     }
 
     override fun deleteDocument(documentId: String) {
-        Logger.log.fine("WebDAV removeDocument $documentId")
+        logger.fine("WebDAV removeDocument $documentId")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
         actor.httpClient(doc.mountId).use { client ->
             val dav = DavResource(client.okHttpClient, doc.toHttpUrl(db))
@@ -389,7 +392,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                 dav.delete {
                     // successfully deleted
                 }
-                Logger.log.fine("Successfully removed")
+                logger.fine("Successfully removed")
                 documentDao.delete(doc)
 
                 actor.notifyFolderChanged(doc.parentId)
@@ -400,7 +403,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     }
 
     override fun moveDocument(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String): String {
-        Logger.log.fine("WebDAV moveDocument $sourceDocumentId $sourceParentDocumentId $targetParentDocumentId")
+        logger.fine("WebDAV moveDocument $sourceDocumentId $sourceParentDocumentId $targetParentDocumentId")
         val doc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstParent = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
 
@@ -432,7 +435,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     }
 
     override fun renameDocument(documentId: String, displayName: String): String? {
-        Logger.log.fine("WebDAV renameDocument $documentId $displayName")
+        logger.fine("WebDAV renameDocument $documentId $displayName")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
         val oldUrl = doc.toHttpUrl(db)
         actor.httpClient(doc.mountId).use { client ->
@@ -492,7 +495,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     }
 
     override fun openDocument(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor {
-        Logger.log.fine("WebDAV openDocument $documentId $mode $signal")
+        logger.fine("WebDAV openDocument $documentId $mode $signal")
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
         val url = doc.toHttpUrl(db)
@@ -513,7 +516,7 @@ class DavDocumentsProvider: DocumentsProvider() {
         else
             // don't try cache
             headRequest(client, url, signal)
-        Logger.log.fine("Received file info: $fileInfo")
+        logger.fine("Received file info: $fileInfo")
 
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
         return if (
@@ -523,11 +526,11 @@ class DavDocumentsProvider: DocumentsProvider() {
             (fileInfo.eTag != null || fileInfo.lastModified != null) &&     // we need a method to determine whether the document has changed during access
             fileInfo.supportsPartial == true    // WebDAV server must support random access
         ) {
-            Logger.log.fine("Creating RandomAccessCallback for $url")
+            logger.fine("Creating RandomAccessCallback for $url")
             val accessor = RandomAccessCallback.Wrapper(ourContext, client, url, doc.mimeType, fileInfo, signal)
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
-            Logger.log.fine("Creating StreamingFileDescriptor for $url")
+            logger.fine("Creating StreamingFileDescriptor for $url")
             val fd = StreamingFileDescriptor(ourContext, client, url, doc.mimeType, signal) { transferred ->
                 // called when transfer is finished
 
@@ -550,7 +553,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     }
 
     override fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?): AssetFileDescriptor? {
-        Logger.log.info("openDocumentThumbnail documentId=$documentId sizeHint=$sizeHint signal=$signal")
+        logger.info("openDocumentThumbnail documentId=$documentId sizeHint=$sizeHint signal=$signal")
 
         if (connectivityManager.isActiveNetworkMetered)
             // don't download the large images just to create a thumbnail on metered networks
@@ -558,7 +561,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         if (signal == null) {
             // see https://github.com/zhanghai/MaterialFiles/issues/588
-            Logger.log.warning("openDocumentThumbnail without cancellationSignal causes too much problems, please fix calling app")
+            logger.warning("openDocumentThumbnail without cancellationSignal causes too much problems, please fix calling app")
             return null
         }
 
@@ -566,7 +569,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         val docCacheKey = doc.cacheKey()
         if (docCacheKey == null) {
-            Logger.log.warning("openDocumentThumbnail won't generate thumbnails when document state (ETag/Last-Modified) is unknown")
+            logger.warning("openDocumentThumbnail won't generate thumbnails when document state (ETag/Last-Modified) is unknown")
             return null
         }
 
@@ -596,7 +599,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             }
 
             signal.setOnCancelListener {
-                Logger.log.fine("Cancelling thumbnail for ${doc.name}")
+                logger.fine("Cancelling thumbnail for ${doc.name}")
                 job.cancel("Cancelled by signal")
             }
 
@@ -605,7 +608,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                     job.await()
                 }
             } catch (e: Exception) {
-                Logger.log.log(Level.WARNING, "Couldn't generate thumbnail", e)
+                logger.log(Level.WARNING, "Couldn't generate thumbnail", e)
                 null
             }
         }
@@ -633,6 +636,7 @@ class DavDocumentsProvider: DocumentsProvider() {
     class DavDocumentsActor(
         private val context: Context,
         private val db: AppDatabase,
+        private val logger: Logger,
         private val cookieStore: MutableMap<Long, CookieJar>,
         private val credentialsStore: CredentialsStore,
         private val authority: String
@@ -658,7 +662,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
                 try {
                     folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
-                        Logger.log.fine("$relation $response")
+                        logger.fine("$relation $response")
 
                         val resource: WebDavDocument =
                             when (relation) {
@@ -668,7 +672,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                                     WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = response.hrefName())
                                 else -> {
                                     // we didn't request this; log a warning and ignore it
-                                    Logger.log.warning("Ignoring unexpected $response $relation in $parentUrl")
+                                    logger.warning("Ignoring unexpected $response $relation in $parentUrl")
                                     return@propfind
                                 }
                             }
@@ -705,7 +709,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                         oldChildren.remove(resource.name)
                     }
                 } catch (e: Exception) {
-                    Logger.log.log(Level.WARNING, "Couldn't query children", e)
+                    logger.log(Level.WARNING, "Couldn't query children", e)
                 }
             }
 
