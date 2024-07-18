@@ -65,6 +65,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withTimeout
 import okhttp3.CookieJar
+import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -476,6 +477,20 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     /*** read/write ***/
 
+    private fun headRequest(client: HttpClient, url: HttpUrl, signal: CancellationSignal?): HeadResponse {
+        val response = CoroutineScope(Dispatchers.IO).async {
+            runInterruptible {
+                HeadResponse.fromUrl(client, url)
+            }
+        }
+        signal?.setOnCancelListener {
+            response.cancel("Cancelled by signal")
+        }
+        return runBlocking {
+            response.await()
+        }
+    }
+
     override fun openDocument(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor {
         Logger.log.fine("WebDAV openDocument $documentId $mode $signal")
 
@@ -490,19 +505,14 @@ class DavDocumentsProvider: DocumentsProvider() {
             else -> throw UnsupportedOperationException("Mode $mode not supported by WebDAV")
         }
 
-        val fileInfo = headResponseCache.getOrPutIfNotNull(doc.cacheKey()) {
-            val response = CoroutineScope(Dispatchers.IO).async {
-                runInterruptible {
-                    HeadResponse.fromUrl(client, url)
-                }
+        val cacheKey = doc.cacheKey()
+        val fileInfo = if (cacheKey != null)
+            headResponseCache.get(cacheKey) {
+                headRequest(client, url, signal)
             }
-            signal?.setOnCancelListener {
-                response.cancel("Cancelled by signal")
-            }
-            runBlocking {
-                response.await()
-            }
-        }
+        else
+            // don't try cache
+            headRequest(client, url, signal)
         Logger.log.fine("Received file info: $fileInfo")
 
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient

@@ -100,8 +100,8 @@ class RandomAccessCallback private constructor(
     private var loadPageJobs: Set<Deferred<ByteArray>> = emptySet()
 
     private val pageCache: Cache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
-        .weakKeys()
-        .weakValues()
+        .maximumSize(10)    // don't cache more than 10 entries (MAX_PAGE_SIZE each)
+        .softValues()       // use SoftReference for the page contents so they will be garbage collected if memory is needed
         .build()
 
     init {
