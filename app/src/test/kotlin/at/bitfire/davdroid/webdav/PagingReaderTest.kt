@@ -4,6 +4,9 @@
 
 package at.bitfire.davdroid.webdav
 
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -19,7 +22,7 @@ class PagingReaderTest {
     @Test
     fun testRead_AcrossThreePages() {
         var idx = 0
-        val reader = PagingReader(350, 100) { offset, size ->
+        val reader = pagingReader(350, 100) { offset, size ->
             assertEquals(idx * 100L, offset)
             assertEquals(
                 when (idx) {
@@ -42,7 +45,7 @@ class PagingReaderTest {
 
     @Test
     fun testRead_AtBeginning_FewBytes() {
-        val reader = PagingReader(200, 100) { offset, size ->
+        val reader = pagingReader(200, 100) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -54,7 +57,7 @@ class PagingReaderTest {
 
     @Test
     fun testRead_AtEOF() {
-        val reader = PagingReader(200, 100) { _, _ ->
+        val reader = pagingReader(200, 100) { _, _ ->
             throw AssertionError("Must not be called with size=0")
         }
         assertEquals(0, reader.read(200, 10, ByteArray(10)))
@@ -63,7 +66,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_LargeFile_FromMid_ToMid() {
-        val reader = PagingReader(200, 100) { offset, size ->
+        val reader = pagingReader(200, 100) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -75,7 +78,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_LargeFile_FromMid_BeyondPage() {
-        val reader = PagingReader(200, 100) { offset, size ->
+        val reader = pagingReader(200, 100) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -87,7 +90,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_LargeFile_FromStart_LessThanAPage() {
-        val reader = PagingReader(200, 100) { offset, size ->
+        val reader = pagingReader(200, 100) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -99,7 +102,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_LargeFile_FromStart_OnePage() {
-        val reader = PagingReader(200, 100) { offset, size ->
+        val reader = pagingReader(200, 100) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -111,7 +114,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_LargeFile_FromStart_MoreThanAvailable() {
-        val reader = PagingReader(200, 100) { offset, size ->
+        val reader = pagingReader(200, 100) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -124,7 +127,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_PageSizedFile_FromEnd() {
-        val reader = PagingReader(100, 100) { _, _ ->
+        val reader = pagingReader(100, 100) { _, _ ->
             throw AssertionError()
         }
         val dst = ByteArray(100)
@@ -134,7 +137,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_PageSizedFile_FromStart_Complete() {
-        val reader = PagingReader(100, 100) { offset, size ->
+        val reader = pagingReader(100, 100) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -146,7 +149,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_PageSizedFile_FromStart_MoreThanAvailable() {
-        val reader = PagingReader(100, 100) { offset, size ->
+        val reader = pagingReader(100, 100) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -159,7 +162,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_SmallFile_FromStart_Partial() {
-        val reader = PagingReader(100, 1000) { offset, size ->
+        val reader = pagingReader(100, 1000) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -171,7 +174,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_SmallFile_FromStart_Complete() {
-        val reader = PagingReader(100, 1000) { offset, size ->
+        val reader = pagingReader(100, 1000) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -183,7 +186,7 @@ class PagingReaderTest {
 
     @Test
     fun testReadPage_SmallFile_FromStart_MoreThanAvailable() {
-        val reader = PagingReader(100, 1000) { offset, size ->
+        val reader = pagingReader(100, 1000) { offset, size ->
             assertEquals(0, offset)
             assertEquals(100, size)
             ByteArray(100) { 1 }
@@ -192,5 +195,15 @@ class PagingReaderTest {
         assertEquals(100, reader.readPage(0, 200, dst, 100))
         assertArrayEquals(ByteArray(100) { 1 }, dst.copyOfRange(100, 200))
     }
+
+
+    private fun pageCache(loader: (offset: Long, size: Int) -> ByteArray): LoadingCache<RandomAccessCallback.PageIdentifier, ByteArray> =
+        CacheBuilder.newBuilder()
+            .build(object: CacheLoader<RandomAccessCallback.PageIdentifier, ByteArray>() {
+                override fun load(key: RandomAccessCallback.PageIdentifier) = loader(key.offset, key.size)
+            })
+
+    private fun pagingReader(fileSize: Long, pageSize: Int, loader: (offset: Long, size: Int) -> ByteArray) =
+        PagingReader(fileSize, pageSize, pageCache(loader))
 
 }
