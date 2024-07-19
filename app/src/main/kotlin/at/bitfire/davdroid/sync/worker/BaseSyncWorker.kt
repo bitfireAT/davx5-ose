@@ -7,14 +7,10 @@ package at.bitfire.davdroid.sync.worker
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
-import android.content.Intent
 import android.content.SyncResult
-import android.net.ConnectivityManager
-import android.net.wifi.WifiManager
 import android.provider.CalendarContract
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.getSystemService
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkInfo
@@ -24,17 +20,15 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.network.ConnectionUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
+import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.ui.NotificationRegistry
-import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -53,6 +47,7 @@ abstract class BaseSyncWorker(
     private val workerParams: WorkerParameters,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val notificationRegistry: NotificationRegistry,
+    private val syncConditionsFactory: SyncConditions.Factory,
     private val syncDispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParams) {
 
@@ -176,16 +171,16 @@ abstract class BaseSyncWorker(
             if (inputData.getBoolean(INPUT_MANUAL, false))
                 Logger.log.info("Manual sync, skipping network checks")
             else {
+                val syncConditions = syncConditionsFactory.create(accountSettings)
+
                 // check internet connection
-                val ignoreVpns = accountSettings.getIgnoreVpns()
-                val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
-                if (!ConnectionUtils.internetAvailable(connectivityManager, ignoreVpns)) {
+                if (!syncConditions.internetAvailable()) {
                     Logger.log.info("WorkManager started SyncWorker without Internet connection. Aborting.")
                     return Result.success()
                 }
 
                 // check WiFi restriction
-                if (!wifiConditionsMet(accountSettings)) {
+                if (!syncConditions.wifiConditionsMet()) {
                     Logger.log.info("WiFi conditions not met. Won't run periodic sync.")
                     return Result.success()
                 }
@@ -294,69 +289,6 @@ abstract class BaseSyncWorker(
         }
 
         return@withContext Result.success()
-    }
-
-
-    // sync conditions
-
-    /**
-     * Checks whether we are connected to the correct wifi (SSID) defined by user in the
-     * account settings.
-     *
-     * Note: Should be connected to some wifi before calling.
-     *
-     * @param accountSettings Settings of account to check
-     * @return *true* if connected to the correct wifi OR no wifi names were specified in
-     * account settings; *false* otherwise
-     */
-    internal fun correctWifiSsid(accountSettings: AccountSettings): Boolean {
-        accountSettings.getSyncWifiOnlySSIDs()?.let { onlySSIDs ->
-            // check required permissions and location status
-            if (!PermissionUtils.canAccessWifiSsid(applicationContext)) {
-                // not all permissions granted; show notification
-                val intent = Intent(applicationContext, WifiPermissionsActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, accountSettings.account)
-                notificationRegistry.notifyPermissions(intent)
-
-                Logger.log.warning("Can't access WiFi SSID, aborting sync")
-                return false
-            }
-
-            val wifi = applicationContext.getSystemService<WifiManager>()!!
-            val info = wifi.connectionInfo
-            if (info == null || !onlySSIDs.contains(info.ssid.trim('"'))) {
-                Logger.log.info("Connected to wrong WiFi network (${info.ssid}), aborting sync")
-                return false
-            }
-            Logger.log.fine("Connected to WiFi network ${info.ssid}")
-        }
-        return true
-    }
-
-    /**
-     * Checks whether user imposed sync conditions from settings are met:
-     * - Sync only on WiFi?
-     * - Sync only on specific WiFi (SSID)?
-     *
-     * @param accountSettings Account settings of the account to check (and is to be synced)
-     * @return *true* if conditions are met; *false* if not
-     */
-    fun wifiConditionsMet(accountSettings: AccountSettings): Boolean {
-        // May we sync without WiFi?
-        if (!accountSettings.getSyncWifiOnly())
-            return true     // yes, continue
-
-        // WiFi required, is it available?
-        val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
-        if (!ConnectionUtils.wifiAvailable(connectivityManager)) {
-            Logger.log.info("Not on connected WiFi, stopping")
-            return false
-        }
-        // If execution reaches this point, we're on a connected WiFi
-
-        // Check whether we are connected to the correct WiFi (in case SSID was provided)
-        return correctWifiSsid(accountSettings)
     }
 
 }
