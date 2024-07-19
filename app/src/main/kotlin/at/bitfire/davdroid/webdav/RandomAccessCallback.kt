@@ -20,8 +20,6 @@ import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.NotificationRegistry
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.util.DavUtils
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
@@ -52,7 +50,8 @@ class RandomAccessCallback @AssistedInject constructor(
     @Assisted headResponse: HeadResponse,
     @Assisted private val cancellationSignal: CancellationSignal?,
     @ApplicationContext val context: Context,
-    private val logger: Logger
+    private val logger: Logger,
+    private val notificationRegistry: NotificationRegistry
 ): ProxyFileDescriptorCallback() {
 
     companion object {
@@ -134,7 +133,7 @@ class RandomAccessCallback @AssistedInject constructor(
 
     override fun onRelease() {
         logger.fine("onRelease")
-        notificationManager.cancel(notificationTag, NotificationUtils.NOTIFY_WEBDAV_ACCESS)
+        notificationManager.cancel(notificationTag, NotificationRegistry.NOTIFY_WEBDAV_ACCESS)
     }
 
     private fun throwIfCancelled(functionName: String) {
@@ -181,16 +180,14 @@ class RandomAccessCallback @AssistedInject constructor(
             logger.fine("Loading page $url $offset/$size")
 
             // update notification
-            val progress =
-                if (fileSize == 0L)     // avoid division by zero
-                    100
-                else
-                    (offset * 100 / fileSize).toInt()
-            notificationManager.notifyIfPossible(
-                notificationTag,
-                NotificationUtils.NOTIFY_WEBDAV_ACCESS,
+            notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_WEBDAV_ACCESS, tag = notificationTag) {
+                val progress =
+                    if (fileSize == 0L)     // avoid division by zero
+                        100
+                    else
+                        (offset * 100 / fileSize).toInt()
                 notification.setProgress(100, progress, false).build()
-            )
+            }
 
             val ifMatch: Headers =
                 documentState.eTag?.let { eTag ->
