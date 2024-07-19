@@ -18,6 +18,7 @@ import java.io.Closeable
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
 
 /**
@@ -43,6 +44,7 @@ import javax.inject.Singleton
 @Singleton
 class LogManager @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val logFileHandler: Provider<LogFileHandler>,
     private val logger: Logger,
     private val prefs: PreferenceRepository
 ) : AutoCloseable {
@@ -83,7 +85,7 @@ class LogManager @Inject constructor(
         rootLogger.addHandler(LogcatHandler())
 
         if (logToFile)
-            rootLogger.addHandler(LogFileHandler(context))
+            rootLogger.addHandler(logFileHandler.get())
     }
 
 }

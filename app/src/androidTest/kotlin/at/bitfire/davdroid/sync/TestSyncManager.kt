@@ -17,6 +17,7 @@ import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.lastSegment
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
@@ -33,8 +34,21 @@ class TestSyncManager(
     localCollection: LocalTestCollection,
     collection: Collection,
     context: Context,
-    db: AppDatabase
-): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
+    db: AppDatabase,
+    notificationRegistry: NotificationRegistry
+): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
+    account,
+    accountSettings,
+    httpClient,
+    extras,
+    authority,
+    syncResult,
+    localCollection,
+    collection,
+    context,
+    db,
+    notificationRegistry
+) {
 
     override fun prepare(): Boolean {
         davCollection = DavCollection(httpClient.okHttpClient, collection.url)

@@ -27,6 +27,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.Task
@@ -36,7 +37,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -58,8 +58,21 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted localCollection: LocalTaskList,
     @Assisted collection: Collection,
     @ApplicationContext context: Context,
-    db: AppDatabase
-): SyncManager<LocalTask, LocalTaskList, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
+    db: AppDatabase,
+    notificationRegistry: NotificationRegistry
+): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
+    account,
+    accountSettings,
+    httpClient,
+    extras,
+    authority,
+    syncResult,
+    localCollection,
+    collection,
+    context,
+    db,
+    notificationRegistry
+) {
 
     @AssistedFactory
     interface Factory {

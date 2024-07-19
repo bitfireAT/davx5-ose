@@ -20,7 +20,6 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -59,7 +58,8 @@ abstract class SyncAdapterService: Service() {
      */
     class SyncAdapter @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        private val syncConditionsFactory: SyncConditions.Factory
     ): AbstractThreadedSyncAdapter(
         context,
         true    // isSyncable shouldn't be -1 because DAVx5 sets it to 0 or 1.
@@ -89,8 +89,9 @@ abstract class SyncAdapterService: Service() {
                 return
             }
 
+            val syncConditions = syncConditionsFactory.create(accountSettings)
             // Should we run the sync at all?
-            if (!BaseSyncWorker.wifiConditionsMet(context, accountSettings)) {
+            if (!syncConditions.wifiConditionsMet()) {
                 Logger.log.info("Sync conditions not met. Aborting sync framework initiated sync")
                 return
             }

@@ -25,7 +25,7 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -63,6 +63,9 @@ class SyncManagerTest {
     lateinit var db: AppDatabase
 
     @Inject
+    lateinit var notificationRegistry: NotificationRegistry
+
+    @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
     private val accountManager by lazy { AccountManager.get(context) }
@@ -72,10 +75,6 @@ class SyncManagerTest {
     @Before
     fun inject() {
         hiltRule.inject()
-
-        // The test application is an instance of HiltTestApplication, which doesn't initialize notification channels.
-        // However, we need notification channels for the ongoing work notifications.
-        NotificationUtils.createChannels(context)
 
         // Initialize WorkManager for instrumentation tests.
         val config = Configuration.Builder()
@@ -113,7 +112,7 @@ class SyncManagerTest {
             syncResult,
             localCollection,
             collection,
-            context, db
+            context, db, notificationRegistry
         )
 
     @Before

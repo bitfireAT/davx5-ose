@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteQueryBuilder
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.database.getStringOrNull
 import androidx.room.AutoMigration
 import androidx.room.Database
@@ -27,8 +26,7 @@ import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.ui.AccountsActivity
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -60,24 +58,27 @@ abstract class AppDatabase: RoomDatabase() {
     object AppDatabaseModule {
         @Provides
         @Singleton
-        fun appDatabase(@ApplicationContext context: Context): AppDatabase =
+        fun appDatabase(
+            @ApplicationContext context: Context,
+            notificationRegistry: NotificationRegistry
+        ): AppDatabase =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
                 .addMigrations(*migrations)
                 .addAutoMigrationSpec(AutoMigration11_12(context))
                 .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
                 .addCallback(object: Callback() {
                     override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
-                        val nm = NotificationManagerCompat.from(context)
-                        val launcherIntent = Intent(context, AccountsActivity::class.java)
-                        val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_GENERAL)
-                            .setSmallIcon(R.drawable.ic_warning_notify)
-                            .setContentTitle(context.getString(R.string.database_destructive_migration_title))
-                            .setContentText(context.getString(R.string.database_destructive_migration_text))
-                            .setCategory(NotificationCompat.CATEGORY_ERROR)
-                            .setContentIntent(PendingIntent.getActivity(context, 0, launcherIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-                            .setAutoCancel(true)
-                            .build()
-                        nm.notifyIfPossible(NotificationUtils.NOTIFY_DATABASE_CORRUPTED, notify)
+                        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_DATABASE_CORRUPTED) {
+                            val launcherIntent = Intent(context, AccountsActivity::class.java)
+                            NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_GENERAL)
+                                .setSmallIcon(R.drawable.ic_warning_notify)
+                                .setContentTitle(context.getString(R.string.database_destructive_migration_title))
+                                .setContentText(context.getString(R.string.database_destructive_migration_text))
+                                .setCategory(NotificationCompat.CATEGORY_ERROR)
+                                .setContentIntent(PendingIntent.getActivity(context, 0, launcherIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                                .setAutoCancel(true)
+                                .build()
+                        }
 
                         // remove all accounts because they're unfortunately useless without database
                         val am = AccountManager.get(context)

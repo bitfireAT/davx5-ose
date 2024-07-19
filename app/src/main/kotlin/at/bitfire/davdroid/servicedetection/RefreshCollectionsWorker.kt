@@ -42,8 +42,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -75,8 +74,9 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val accountSettingsFactory: AccountSettings.Factory,
-    serviceRepository: DavServiceRepository,
-    private val collectionListRefresherFactory: CollectionListRefresher.Factory
+    private val collectionListRefresherFactory: CollectionListRefresher.Factory,
+    private val notificationRegistry: NotificationRegistry,
+    serviceRepository: DavServiceRepository
 ): CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -176,7 +176,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
             // cancel previous notification
             NotificationManagerCompat.from(applicationContext)
-                .cancel(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS)
+                .cancel(serviceId.toString(), NotificationRegistry.NOTIFY_REFRESH_COLLECTIONS)
 
             // create authenticating OkHttpClient (credentials taken from account settings)
             runInterruptible {
@@ -238,7 +238,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
      * Used by WorkManager to show a foreground service notification for expedited jobs on Android <12.
      */
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
+        val notification = NotificationCompat.Builder(applicationContext, NotificationRegistry.CHANNEL_STATUS)
             .setSmallIcon(R.drawable.ic_foreground_notify)
             .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
             .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
@@ -247,20 +247,27 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
-        return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
+        return ForegroundInfo(NotificationRegistry.NOTIFY_SYNC_EXPEDITED, notification)
     }
 
     private fun notifyRefreshError(contentText: String, contentIntent: Intent) {
-        val notify = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_GENERAL)
-            .setSmallIcon(R.drawable.ic_sync_problem_notify)
-            .setContentTitle(applicationContext.getString(R.string.refresh_collections_worker_refresh_failed))
-            .setContentText(contentText)
-            .setContentIntent(PendingIntent.getActivity(applicationContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-            .setSubText(account?.name)
-            .setCategory(NotificationCompat.CATEGORY_ERROR)
-            .build()
-        NotificationManagerCompat.from(applicationContext)
-            .notifyIfPossible(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS, notify)
+        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_REFRESH_COLLECTIONS, tag = serviceId.toString()) {
+            NotificationCompat.Builder(applicationContext, NotificationRegistry.CHANNEL_GENERAL)
+                .setSmallIcon(R.drawable.ic_sync_problem_notify)
+                .setContentTitle(applicationContext.getString(R.string.refresh_collections_worker_refresh_failed))
+                .setContentText(contentText)
+                .setContentIntent(
+                    PendingIntent.getActivity(
+                        applicationContext,
+                        0,
+                        contentIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
+                .setSubText(account?.name)
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
+                .build()
+        }
     }
 
 }

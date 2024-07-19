@@ -52,8 +52,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.Ical4Android
@@ -103,7 +102,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     val collection: Collection,
     // injected
     val context: Context,
-    val db: AppDatabase
+    val db: AppDatabase,
+    val notificationRegistry: NotificationRegistry
 ) {
 
     enum class SyncAlgorithm {
@@ -158,7 +158,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     else
         account
 
-    protected val notificationManager = NotificationManagerCompat.from(context)
     protected val notificationTag = localCollection.tag
 
     protected lateinit var davCollection: RemoteType
@@ -168,7 +167,8 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     fun performSync() {
         // dismiss previous error notifications
-        notificationManager.cancel(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR)
+        val nm = NotificationManagerCompat.from(context)
+        nm.cancel(notificationTag, NotificationRegistry.NOTIFY_SYNC_ERROR)
 
         try {
             Logger.log.info("Preparing synchronization")
@@ -782,78 +782,92 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     // exception helpers
 
     private fun notifyException(e: Throwable, local: LocalResource<*>?, remote: HttpUrl?) {
-        val message: String
+        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
+            val message: String
 
-        when (e) {
-            is IOException,
-            is InterruptedIOException -> {
-                Logger.log.log(Level.WARNING, "I/O error", e)
-                message = context.getString(R.string.sync_error_io, e.localizedMessage)
-                syncResult.stats.numIoExceptions++
-            }
-            is UnauthorizedException -> {
-                Logger.log.log(Level.SEVERE, "Not authorized anymore", e)
-                message = context.getString(R.string.sync_error_authentication_failed)
-                syncResult.stats.numAuthExceptions++
-            }
-            is HttpException, is DavException -> {
-                Logger.log.log(Level.SEVERE, "HTTP/DAV exception", e)
-                message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
-                syncResult.stats.numParseExceptions++       // numIoExceptions would indicate a soft error
-            }
-            is CalendarStorageException, is ContactsStorageException, is RemoteException -> {
-                Logger.log.log(Level.SEVERE, "Couldn't access local storage", e)
-                message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
-                syncResult.databaseError = true
-            }
-            else -> {
-                Logger.log.log(Level.SEVERE, "Unclassified sync error", e)
-                message = e.localizedMessage ?: e::class.java.simpleName
-                syncResult.stats.numParseExceptions++
-            }
-        }
+            when (e) {
+                is IOException -> {
+                    Logger.log.log(Level.WARNING, "I/O error", e)
+                    message = context.getString(R.string.sync_error_io, e.localizedMessage)
+                    syncResult.stats.numIoExceptions++
+                }
 
-        val contentIntent: Intent
-        var viewItemAction: NotificationCompat.Action? = null
-        if (e is UnauthorizedException) {
-            contentIntent = Intent(context, AccountSettingsActivity::class.java)
-            contentIntent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT,
+                is UnauthorizedException -> {
+                    Logger.log.log(Level.SEVERE, "Not authorized anymore", e)
+                    message = context.getString(R.string.sync_error_authentication_failed)
+                    syncResult.stats.numAuthExceptions++
+                }
+
+                is HttpException, is DavException -> {
+                    Logger.log.log(Level.SEVERE, "HTTP/DAV exception", e)
+                    message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
+                    syncResult.stats.numParseExceptions++       // numIoExceptions would indicate a soft error
+                }
+
+                is CalendarStorageException, is ContactsStorageException, is RemoteException -> {
+                    Logger.log.log(Level.SEVERE, "Couldn't access local storage", e)
+                    message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
+                    syncResult.databaseError = true
+                }
+
+                else -> {
+                    Logger.log.log(Level.SEVERE, "Unclassified sync error", e)
+                    message = e.localizedMessage ?: e::class.java.simpleName
+                    syncResult.stats.numParseExceptions++
+                }
+            }
+
+            val contentIntent: Intent
+            var viewItemAction: NotificationCompat.Action? = null
+            if (e is UnauthorizedException) {
+                contentIntent = Intent(context, AccountSettingsActivity::class.java)
+                contentIntent.putExtra(
+                    AccountSettingsActivity.EXTRA_ACCOUNT,
                     if (authority == ContactsContract.AUTHORITY)
                         mainAccount
                     else
-                        account)
-        } else {
-            contentIntent = buildDebugInfoIntent(e, local, remote)
-            if (local != null)
-                viewItemAction = buildViewItemAction(local)
-        }
+                        account
+                )
+            } else {
+                contentIntent = buildDebugInfoIntent(e, local, remote)
+                if (local != null)
+                    viewItemAction = buildViewItemAction(local)
+            }
 
-        // to make the PendingIntent unique
-        contentIntent.data = Uri.parse("davdroid:exception/${e.hashCode()}")
+            // to make the PendingIntent unique
+            contentIntent.data = Uri.parse("davdroid:exception/${e.hashCode()}")
 
-        val channel: String
-        val priority: Int
-        if (e is IOException) {
-            channel = NotificationUtils.CHANNEL_SYNC_IO_ERRORS
-            priority = NotificationCompat.PRIORITY_MIN
-        } else {
-            channel = NotificationUtils.CHANNEL_SYNC_ERRORS
-            priority = NotificationCompat.PRIORITY_DEFAULT
-        }
+            val channel: String
+            val priority: Int
+            if (e is IOException) {
+                channel = NotificationRegistry.CHANNEL_SYNC_IO_ERRORS
+                priority = NotificationCompat.PRIORITY_MIN
+            } else {
+                channel = NotificationRegistry.CHANNEL_SYNC_ERRORS
+                priority = NotificationCompat.PRIORITY_DEFAULT
+            }
 
-        val builder = NotificationUtils.newBuilder(context, channel)
-        builder .setSmallIcon(R.drawable.ic_sync_problem_notify)
+            val builder = NotificationCompat.Builder(context, channel)
+            builder.setSmallIcon(R.drawable.ic_sync_problem_notify)
                 .setContentTitle(localCollection.title)
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
                 .setSubText(mainAccount.name)
                 .setOnlyAlertOnce(true)
-                .setContentIntent(PendingIntent.getActivity(context, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                .setContentIntent(
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        contentIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
                 .setPriority(priority)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
-        viewItemAction?.let { builder.addAction(it) }
+            viewItemAction?.let { builder.addAction(it) }
 
-        notificationManager.notifyIfPossible(notificationTag, NotificationUtils.NOTIFY_SYNC_ERROR, builder.build())
+            builder.build()
+        }
     }
 
     private fun buildDebugInfoIntent(e: Throwable, local: LocalResource<*>?, remote: HttpUrl?) =
@@ -894,18 +908,27 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     }
 
     protected fun notifyInvalidResource(e: Throwable, fileName: String) {
-        val intent = buildDebugInfoIntent(e, null, collection.url.resolve(fileName))
+        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
+            val intent = buildDebugInfoIntent(e, null, collection.url.resolve(fileName))
 
-        val builder = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_WARNINGS)
-        builder .setSmallIcon(R.drawable.ic_warning_notify)
+            val builder = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_SYNC_WARNINGS)
+            builder.setSmallIcon(R.drawable.ic_warning_notify)
                 .setContentTitle(notifyInvalidResourceTitle())
                 .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
                 .setSubText(mainAccount.name)
-                .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                .setContentIntent(
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
                 .priority = NotificationCompat.PRIORITY_LOW
-        notificationManager.notifyIfPossible(notificationTag, NotificationUtils.NOTIFY_INVALID_RESOURCE, builder.build())
+            builder.build()
+        }
     }
 
     protected abstract fun notifyInvalidResourceTitle(): String

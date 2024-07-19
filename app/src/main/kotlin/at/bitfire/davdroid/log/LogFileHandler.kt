@@ -13,8 +13,8 @@ import androidx.core.app.NotificationManagerCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.NotificationRegistry
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.Closeable
 import java.io.File
 import java.util.Date
@@ -23,6 +23,7 @@ import java.util.logging.Handler
 import java.util.logging.Level
 import java.util.logging.LogRecord
 import java.util.logging.Logger
+import javax.inject.Inject
 
 /**
  * Logging handler that logs to a debug log file.
@@ -31,8 +32,9 @@ import java.util.logging.Logger
  *
  * Only one [LogFileHandler] should be active at once, because the notification is shared.
  */
-internal class LogFileHandler(
-    private val context: Context
+class LogFileHandler @Inject constructor(
+    @ApplicationContext val context: Context,
+    private val notificationRegistry: NotificationRegistry
 ): Handler(), Closeable {
 
     companion object {
@@ -117,45 +119,54 @@ internal class LogFileHandler(
     // notifications
 
     private fun showNotification() {
-        val builder = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_DEBUG)
-        builder.setSmallIcon(R.drawable.ic_sd_card_notify)
-            .setContentTitle(context.getString(R.string.app_settings_logging))
-            .setCategory(NotificationCompat.CATEGORY_STATUS)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentText(
-                context.getString(
-                    R.string.logging_notification_text, context.getString(
-                        R.string.app_name)))
-            .setOngoing(true)
+        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_VERBOSE_LOGGING) {
+            val builder = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_DEBUG)
+            builder.setSmallIcon(R.drawable.ic_sd_card_notify)
+                .setContentTitle(context.getString(R.string.app_settings_logging))
+                .setCategory(NotificationCompat.CATEGORY_STATUS)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentText(
+                    context.getString(
+                        R.string.logging_notification_text, context.getString(
+                            R.string.app_name
+                        )
+                    )
+                )
+                .setOngoing(true)
 
-        // add action to view/share the logs
-        val shareIntent = DebugInfoActivity.IntentBuilder(context)
-            .newTask()
-            .share()
-        val pendingShare = PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        builder.addAction(
-            NotificationCompat.Action.Builder(
-            R.drawable.ic_share,
-            context.getString(R.string.logging_notification_view_share),
-            pendingShare
-        ).build())
+            // add action to view/share the logs
+            val shareIntent = DebugInfoActivity.IntentBuilder(context)
+                .newTask()
+                .share()
+            val pendingShare =
+                PendingIntent.getActivity(context, 0, shareIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            builder.addAction(
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_share,
+                    context.getString(R.string.logging_notification_view_share),
+                    pendingShare
+                ).build()
+            )
 
-        // add action to disable verbose logging
-        val prefIntent = Intent(context, AppSettingsActivity::class.java)
-        prefIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        val pendingPref = PendingIntent.getActivity(context, 0, prefIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        builder.addAction(
-            NotificationCompat.Action.Builder(
-            R.drawable.ic_settings,
-            context.getString(R.string.logging_notification_disable),
-            pendingPref
-        ).build())
+            // add action to disable verbose logging
+            val prefIntent = Intent(context, AppSettingsActivity::class.java)
+            prefIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val pendingPref =
+                PendingIntent.getActivity(context, 0, prefIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            builder.addAction(
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_settings,
+                    context.getString(R.string.logging_notification_disable),
+                    pendingPref
+                ).build()
+            )
 
-        notificationManager.notifyIfPossible(NotificationUtils.NOTIFY_VERBOSE_LOGGING, builder.build())
+            builder.build()
+        }
    }
 
     private fun removeNotification() {
-        notificationManager.cancel(NotificationUtils.NOTIFY_VERBOSE_LOGGING)
+        notificationManager.cancel(NotificationRegistry.NOTIFY_VERBOSE_LOGGING)
     }
 
 }

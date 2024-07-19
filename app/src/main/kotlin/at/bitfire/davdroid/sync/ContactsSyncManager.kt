@@ -38,6 +38,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.sameTypeAs
 import at.bitfire.davdroid.util.lastSegment
@@ -107,10 +108,20 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted localAddressBook: LocalAddressBook,
     @Assisted collection: Collection,
     @ApplicationContext context: Context,
-    db: AppDatabase
+    db: AppDatabase,
+    notificationRegistry: NotificationRegistry
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
-    account, accountSettings, httpClient, extras, authority, syncResult, localAddressBook,  collection,
-    context, db
+    account,
+    accountSettings,
+    httpClient,
+    extras,
+    authority,
+    syncResult,
+    localAddressBook,
+    collection,
+    context,
+    db,
+    notificationRegistry
 ) {
 
     @AssistedFactory
