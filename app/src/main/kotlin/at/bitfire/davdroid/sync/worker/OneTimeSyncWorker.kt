@@ -45,11 +45,8 @@ import java.util.logging.Level
 class OneTimeSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    accountSettingsFactory: AccountSettings.Factory,
-    notificationRegistry: NotificationRegistry,
-    syncConditionsFactory: SyncConditions.Factory,
     syncDispatcher: SyncDispatcher
-) : BaseSyncWorker(appContext, workerParams, accountSettingsFactory, notificationRegistry, syncConditionsFactory, syncDispatcher.dispatcher) {
+) : BaseSyncWorker(appContext, workerParams, syncDispatcher.dispatcher) {
 
     companion object {
 

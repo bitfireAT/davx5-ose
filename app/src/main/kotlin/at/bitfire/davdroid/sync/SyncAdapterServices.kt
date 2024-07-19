@@ -21,11 +21,8 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
@@ -33,18 +30,15 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
 import javax.inject.Inject
+import javax.inject.Provider
 
 abstract class SyncAdapterService: Service() {
 
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface SyncAdapterServiceEntryPoint {
-        fun syncAdapter(): SyncAdapter
-    }
+    @Inject
+    lateinit var syncAdapter: Provider<SyncAdapter>
 
     override fun onBind(intent: Intent?): IBinder {
-        val entryPoint = EntryPointAccessors.fromApplication<SyncAdapterServiceEntryPoint>(this)
-        return entryPoint.syncAdapter().syncAdapterBinder
+        return syncAdapter.get().syncAdapterBinder
     }
 
     /**
@@ -150,8 +144,18 @@ abstract class SyncAdapterService: Service() {
 }
 
 // exported sync adapter services; we need a separate class for each authority
+
+@AndroidEntryPoint
 class CalendarsSyncAdapterService: SyncAdapterService()
+
+@AndroidEntryPoint
 class ContactsSyncAdapterService: SyncAdapterService()
+
+@AndroidEntryPoint
 class JtxSyncAdapterService: SyncAdapterService()
+
+@AndroidEntryPoint
 class OpenTasksSyncAdapterService: SyncAdapterService()
+
+@AndroidEntryPoint
 class TasksOrgSyncAdapterService: SyncAdapterService()

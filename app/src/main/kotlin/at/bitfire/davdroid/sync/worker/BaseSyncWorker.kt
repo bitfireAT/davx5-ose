@@ -19,7 +19,6 @@ import androidx.work.WorkQuery
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
@@ -30,10 +29,6 @@ import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -41,13 +36,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import java.util.Collections
+import java.util.logging.Logger
+import javax.inject.Inject
+import javax.inject.Provider
 
 abstract class BaseSyncWorker(
     context: Context,
     private val workerParams: WorkerParameters,
-    private val accountSettingsFactory: AccountSettings.Factory,
-    private val notificationRegistry: NotificationRegistry,
-    private val syncConditionsFactory: SyncConditions.Factory,
     private val syncDispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParams) {
 
@@ -124,19 +119,29 @@ abstract class BaseSyncWorker(
 
     }
 
-    // We don't inject the Syncers in our constructor because that would generate
-    // every syncer object regardless of whether it's even used for the synced authority (useless overhead).
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface BaseSyncWorkerEntryPoint {
-        fun addressBookSyncer(): AddressBookSyncer
-        fun calendarSyncer(): CalendarSyncer
-        fun jtxSyncer(): JtxSyncer
-        fun taskSyncer(): TaskSyncer
-    }
-    private val entryPoint = EntryPointAccessors.fromApplication<BaseSyncWorkerEntryPoint>(context)
+    @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
 
-    private val notificationManager = NotificationManagerCompat.from(applicationContext)
+    @Inject
+    lateinit var addressBookSyncer: Provider<AddressBookSyncer>
+
+    @Inject
+    lateinit var calendarSyncer: Provider<CalendarSyncer>
+
+    @Inject
+    lateinit var jtxSyncer: Provider<JtxSyncer>
+    
+    @Inject
+    lateinit var logger: Logger
+
+    @Inject
+    lateinit var notificationRegistry: NotificationRegistry
+
+    @Inject
+    lateinit var syncConditionsFactory: SyncConditions.Factory
+
+    @Inject
+    lateinit var taskSyncer: Provider<TaskSyncer>
 
 
     override suspend fun doWork(): Result {
@@ -148,10 +153,10 @@ abstract class BaseSyncWorker(
         val authority = inputData.getString(INPUT_AUTHORITY) ?: throw IllegalArgumentException("$INPUT_AUTHORITY required")
 
         val syncTag = commonTag(account, authority)
-        Logger.log.info("${javaClass.simpleName} called for $syncTag")
+        logger.info("${javaClass.simpleName} called for $syncTag")
 
         if (!runningSyncs.add(syncTag)) {
-            Logger.log.info("There's already another worker running for $syncTag, skipping")
+            logger.info("There's already another worker running for $syncTag, skipping")
             return Result.success()
         }
 
@@ -160,7 +165,7 @@ abstract class BaseSyncWorker(
                 accountSettingsFactory.forAccount(account)
             } catch (e: InvalidAccountException) {
                 val workId = workerParams.id
-                Logger.log.warning("Account $account doesn't exist anymore, cancelling worker $workId")
+                logger.warning("Account $account doesn't exist anymore, cancelling worker $workId")
 
                 val workManager = WorkManager.getInstance(applicationContext)
                 workManager.cancelWorkById(workId)
@@ -169,26 +174,26 @@ abstract class BaseSyncWorker(
             }
 
             if (inputData.getBoolean(INPUT_MANUAL, false))
-                Logger.log.info("Manual sync, skipping network checks")
+                logger.info("Manual sync, skipping network checks")
             else {
                 val syncConditions = syncConditionsFactory.create(accountSettings)
 
                 // check internet connection
                 if (!syncConditions.internetAvailable()) {
-                    Logger.log.info("WorkManager started SyncWorker without Internet connection. Aborting.")
+                    logger.info("WorkManager started SyncWorker without Internet connection. Aborting.")
                     return Result.success()
                 }
 
                 // check WiFi restriction
                 if (!syncConditions.wifiConditionsMet()) {
-                    Logger.log.info("WiFi conditions not met. Won't run periodic sync.")
+                    logger.info("WiFi conditions not met. Won't run periodic sync.")
                     return Result.success()
                 }
             }
 
             return doSyncWork(account, authority, accountSettings)
         } finally {
-            Logger.log.info("${javaClass.simpleName} finished for $syncTag")
+            logger.info("${javaClass.simpleName} finished for $syncTag")
             runningSyncs -= syncTag
         }
     }
@@ -198,19 +203,19 @@ abstract class BaseSyncWorker(
         authority: String,
         accountSettings: AccountSettings
     ): Result = withContext(syncDispatcher) {
-        Logger.log.info("Running ${javaClass.name}: account=$account, authority=$authority")
+        logger.info("Running ${javaClass.name}: account=$account, authority=$authority")
 
         // What are we going to sync? Select syncer based on authority
         val syncer: Syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                entryPoint.addressBookSyncer()
+                addressBookSyncer.get()
             CalendarContract.AUTHORITY ->
-                entryPoint.calendarSyncer()
+                calendarSyncer.get()
             TaskProvider.ProviderName.JtxBoard.authority ->
-                entryPoint.jtxSyncer()
+                jtxSyncer.get()
             TaskProvider.ProviderName.OpenTasks.authority,
             TaskProvider.ProviderName.TasksOrg.authority ->
-                entryPoint.taskSyncer()
+                taskSyncer.get()
             else ->
                 throw IllegalArgumentException("Invalid authority $authority")
         }
@@ -243,21 +248,21 @@ abstract class BaseSyncWorker(
 
             // On soft errors the sync is retried a few times before considered failed
             if (result.hasSoftError()) {
-                Logger.log.warning("Soft error while syncing: result=$result, stats=${result.stats}")
+                logger.warning("Soft error while syncing: result=$result, stats=${result.stats}")
                 if (runAttemptCount < MAX_RUN_ATTEMPTS) {
                     val blockDuration = result.delayUntil - System.currentTimeMillis() / 1000
-                    Logger.log.warning("Waiting for $blockDuration seconds, before retrying ...")
+                    logger.warning("Waiting for $blockDuration seconds, before retrying ...")
 
                     // We block the SyncWorker here so that it won't be started by the sync framework immediately again.
                     // This should be replaced by proper work scheduling as soon as we don't depend on the sync framework anymore.
                     if (blockDuration > 0)
                         delay(blockDuration * 1000)
 
-                    Logger.log.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
+                    logger.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
                     return@withContext Result.retry()
                 }
 
-                Logger.log.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
+                logger.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
 
                 notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = softErrorNotificationTag) {
                     NotificationCompat.Builder(applicationContext, NotificationRegistry.CHANNEL_SYNC_IO_ERRORS)
@@ -275,6 +280,7 @@ abstract class BaseSyncWorker(
             }
 
             // If no soft error found, dismiss sync error notification
+            val notificationManager = NotificationManagerCompat.from(applicationContext)
             notificationManager.cancel(
                 softErrorNotificationTag,
                 NotificationRegistry.NOTIFY_SYNC_ERROR
@@ -283,7 +289,7 @@ abstract class BaseSyncWorker(
             // On a hard error - fail with an error message
             // Note: SyncManager should have notified the user
             if (result.hasHardError()) {
-                Logger.log.warning("Hard error while syncing: result=$result, stats=${result.stats}")
+                logger.warning("Hard error while syncing: result=$result, stats=${result.stats}")
                 return@withContext Result.failure(syncResult)
             }
         }
