@@ -10,7 +10,6 @@ import androidx.work.Configuration
 import at.bitfire.davdroid.log.LogManager
 import at.bitfire.davdroid.startup.StartupPlugin
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
-import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -48,8 +47,6 @@ class App: Application(), Configuration.Provider {
         super.onCreate()
 
         logger.fine("Logging using LogManager $logManager")
-
-        NotificationUtils.createChannels(this)
 
         // set light/dark mode
         UiUtils.updateTheme(this)   // when this is called in the asynchronous thread below, it recreates

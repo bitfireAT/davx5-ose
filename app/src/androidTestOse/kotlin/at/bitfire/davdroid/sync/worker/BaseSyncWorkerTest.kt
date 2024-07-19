@@ -21,7 +21,6 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.network.ConnectionUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.AccountUtils
-import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.util.PermissionUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -51,6 +50,9 @@ class BaseSyncWorkerTest {
     lateinit var accountSettingsFactory: AccountSettings.Factory
 
     @Inject
+    lateinit var baseSyncWorker: BaseSyncWorker
+
+    @Inject
     @ApplicationContext
     lateinit var context: Context
 
@@ -65,10 +67,6 @@ class BaseSyncWorkerTest {
         assertTrue(AccountUtils.createAccount(context, account, AccountSettings.initialUserData(fakeCredentials)))
         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
         ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 0)
-
-        // The test application is an instance of HiltTestApplication, which doesn't initialize notification channels.
-        // However, we need notification channels for the ongoing work notifications.
-        NotificationUtils.createChannels(context)
 
         // Initialize WorkManager for instrumentation tests.
         val config = Configuration.Builder()
@@ -87,7 +85,7 @@ class BaseSyncWorkerTest {
     fun testWifiConditionsMet_withoutWifi() {
         val accountSettings = mockk<AccountSettings>()
         every { accountSettings.getSyncWifiOnly() } returns false
-        assertTrue(BaseSyncWorker.wifiConditionsMet(context, accountSettings))
+        assertTrue(baseSyncWorker.wifiConditionsMet(accountSettings))
     }
     
     @Test
@@ -98,9 +96,9 @@ class BaseSyncWorkerTest {
         mockkObject(ConnectionUtils)
         every { ConnectionUtils.wifiAvailable(any()) } returns true
         mockkObject(BaseSyncWorker.Companion)
-        every { BaseSyncWorker.correctWifiSsid(any(), any()) } returns true
+        every { baseSyncWorker.correctWifiSsid(any()) } returns true
 
-        assertTrue(BaseSyncWorker.wifiConditionsMet(context, accountSettings))
+        assertTrue(baseSyncWorker.wifiConditionsMet(accountSettings))
     }
 
     @Test
@@ -111,9 +109,9 @@ class BaseSyncWorkerTest {
         mockkObject(ConnectionUtils)
         every { ConnectionUtils.wifiAvailable(any()) } returns false
         mockkObject(BaseSyncWorker.Companion)
-        every { BaseSyncWorker.correctWifiSsid(any(), any()) } returns true
+        every { baseSyncWorker.correctWifiSsid(any()) } returns true
 
-        assertFalse(BaseSyncWorker.wifiConditionsMet(context, accountSettings))
+        assertFalse(baseSyncWorker.wifiConditionsMet(accountSettings))
     }
 
 
@@ -132,7 +130,7 @@ class BaseSyncWorkerTest {
             every { ssid } returns "ConnectedWiFi"
         }
 
-        assertTrue(BaseSyncWorker.correctWifiSsid(context, accountSettings))
+        assertTrue(baseSyncWorker.correctWifiSsid(accountSettings))
     }
 
     @Test
@@ -150,7 +148,7 @@ class BaseSyncWorkerTest {
             every { ssid } returns "ConnectedWiFi"
         }
 
-        assertFalse(BaseSyncWorker.correctWifiSsid(context, accountSettings))
+        assertFalse(baseSyncWorker.correctWifiSsid(accountSettings))
     }
 
 }

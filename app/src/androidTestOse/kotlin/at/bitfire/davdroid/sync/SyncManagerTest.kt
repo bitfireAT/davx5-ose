@@ -25,7 +25,6 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -72,10 +71,6 @@ class SyncManagerTest {
     @Before
     fun inject() {
         hiltRule.inject()
-
-        // The test application is an instance of HiltTestApplication, which doesn't initialize notification channels.
-        // However, we need notification channels for the ongoing work notifications.
-        NotificationUtils.createChannels(context)
 
         // Initialize WorkManager for instrumentation tests.
         val config = Configuration.Builder()

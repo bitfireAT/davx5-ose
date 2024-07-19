@@ -14,7 +14,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Service
@@ -24,8 +23,7 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import dagger.hilt.EntryPoint
@@ -44,6 +42,7 @@ object TaskUtils {
     @InstallIn(SingletonComponent::class)
     interface TaskUtilsEntryPoint {
         fun accountSettingsFactory(): AccountSettings.Factory
+        fun notificationRegistry(): NotificationRegistry
         fun settingsManager(): SettingsManager
     }
 
@@ -94,35 +93,37 @@ object TaskUtils {
      * @param e   the TaskProvider.ProviderTooOldException to be shown
      */
     fun notifyProviderTooOld(context: Context, e: TaskProvider.ProviderTooOldException) {
-        val nm = NotificationManagerCompat.from(context)
-        val message = context.getString(R.string.sync_error_tasks_required_version, e.provider.minVersionName)
+        val registry = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).notificationRegistry()
+        registry.notifyIfPossible(NotificationRegistry.NOTIFY_TASKS_PROVIDER_TOO_OLD) {
+            val message = context.getString(R.string.sync_error_tasks_required_version, e.provider.minVersionName)
 
-        val pm = context.packageManager
-        val tasksAppInfo = pm.getPackageInfo(e.provider.packageName, 0)
-        val tasksAppLabel = tasksAppInfo.applicationInfo.loadLabel(pm)
+            val pm = context.packageManager
+            val tasksAppInfo = pm.getPackageInfo(e.provider.packageName, 0)
+            val tasksAppLabel = tasksAppInfo.applicationInfo.loadLabel(pm)
 
-        val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
-            .setSmallIcon(R.drawable.ic_sync_problem_notify)
-            .setContentTitle(context.getString(R.string.sync_error_tasks_too_old, tasksAppLabel))
-            .setContentText(message)
-            .setSubText("$tasksAppLabel ${e.installedVersionName}")
-            .setCategory(NotificationCompat.CATEGORY_ERROR)
+            val notify = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_SYNC_ERRORS)
+                .setSmallIcon(R.drawable.ic_sync_problem_notify)
+                .setContentTitle(context.getString(R.string.sync_error_tasks_too_old, tasksAppLabel))
+                .setContentText(message)
+                .setSubText("$tasksAppLabel ${e.installedVersionName}")
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
 
-        try {
-            val icon = pm.getApplicationIcon(e.provider.packageName)
-            if (icon is BitmapDrawable)
-                notify.setLargeIcon(icon.bitmap)
-        } catch (ignored: PackageManager.NameNotFoundException) {
-            // couldn't get provider app icon
+            try {
+                val icon = pm.getApplicationIcon(e.provider.packageName)
+                if (icon is BitmapDrawable)
+                    notify.setLargeIcon(icon.bitmap)
+            } catch (ignored: PackageManager.NameNotFoundException) {
+                // couldn't get provider app icon
+            }
+
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+
+            if (intent.resolveActivity(pm) != null)
+                notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))
+
+            notify.build()
         }
-
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
-        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-
-        if (intent.resolveActivity(pm) != null)
-            notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))
-
-        nm.notifyIfPossible(NotificationUtils.NOTIFY_TASKS_PROVIDER_TOO_OLD, notify.build())
     }
 
     /**
@@ -169,7 +170,9 @@ object TaskUtils {
 
         if (permissionsRequired) {
             Logger.log.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
-            PermissionUtils.notifyPermissions(context, null)
+
+            val notificationRegistry = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).notificationRegistry()
+            notificationRegistry.notifyPermissions()
         }
     }
 

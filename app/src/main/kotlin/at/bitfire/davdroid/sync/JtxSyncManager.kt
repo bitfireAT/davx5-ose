@@ -27,6 +27,7 @@ import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.JtxICalObject
@@ -55,8 +56,21 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
     @ApplicationContext context: Context,
-    db: AppDatabase
-): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(account, accountSettings, httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
+    db: AppDatabase,
+    notificationRegistry: NotificationRegistry
+): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
+    account,
+    accountSettings,
+    httpClient,
+    extras,
+    authority,
+    syncResult,
+    localCollection,
+    collection,
+    context,
+    db,
+    notificationRegistry
+) {
 
     @AssistedFactory
     interface Factory {

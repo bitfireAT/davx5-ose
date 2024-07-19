@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.util.DavUtils
@@ -79,7 +80,7 @@ class RandomAccessCallback @AssistedInject constructor(
     private val documentState = headResponse.toDocumentState() ?: throw IllegalArgumentException("Can only be used with ETag/Last-Modified")
 
     private val notificationManager = NotificationManagerCompat.from(context)
-    private val notification = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_STATUS)
+    private val notification = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_STATUS)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setCategory(NotificationCompat.CATEGORY_STATUS)
         .setContentTitle(context.getString(R.string.webdav_notification_access))

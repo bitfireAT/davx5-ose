@@ -25,7 +25,6 @@ import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.AccountUtils
-import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.assisted.AssistedFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -57,10 +56,6 @@ class PeriodicSyncWorkerTest {
         @BeforeClass
         @JvmStatic
         fun setUp() {
-            // The test application is an instance of HiltTestApplication, which doesn't initialize notification channels.
-            // However, we need notification channels for the ongoing work notifications.
-            NotificationUtils.createChannels(context)
-
             // Initialize WorkManager for instrumentation tests.
             val config = Configuration.Builder()
                 .setMinimumLoggingLevel(Log.DEBUG)
