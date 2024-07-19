@@ -24,7 +24,7 @@ import javax.inject.Inject
 @WebdavScoped
 class ThumbnailCache @Inject constructor(
     @ApplicationContext context: Context,
-    private val logger: Logger
+    logger: Logger
 ) {
 
     val storage: DiskCache

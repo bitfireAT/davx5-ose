@@ -14,11 +14,14 @@ import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.util.DavUtils
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,22 +33,29 @@ import okhttp3.internal.headersContentLength
 import okio.BufferedSink
 import java.io.IOException
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * @param client    HTTP client– [StreamingFileDescriptor] is responsible to close it
  */
-class StreamingFileDescriptor(
-    val context: Context,
-    val client: HttpClient,
-    val url: HttpUrl,
-    val mimeType: MediaType?,
-    val cancellationSignal: CancellationSignal?,
-    val finishedCallback: OnSuccessCallback
+class StreamingFileDescriptor @AssistedInject constructor(
+    @Assisted val client: HttpClient,
+    @Assisted val url: HttpUrl,
+    @Assisted val mimeType: MediaType?,
+    @Assisted val cancellationSignal: CancellationSignal?,
+    @Assisted val finishedCallback: OnSuccessCallback,
+    @ApplicationContext val context: Context,
+    private val logger: Logger
 ) {
 
     companion object {
         /** 1 MB transfer buffer */
         private const val BUFFER_SIZE = 1024*1024
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(client: HttpClient, url: HttpUrl, mimeType: MediaType?, cancellationSignal: CancellationSignal?, finishedCallback: OnSuccessCallback): StreamingFileDescriptor
     }
 
     val dav = DavResource(client.okHttpClient, url)
@@ -74,10 +84,10 @@ class StreamingFileDescriptor(
                 else
                     downloadNow(writeFd)
             } catch (e: HttpException) {
-                Logger.log.log(Level.WARNING, "HTTP error when opening remote file", e)
+                logger.log(Level.WARNING, "HTTP error when opening remote file", e)
                 writeFd.closeWithError("${e.code} ${e.message}")
             } catch (e: Exception) {
-                Logger.log.log(Level.INFO, "Couldn't serve file (not necessesarily an error)", e)
+                logger.log(Level.INFO, "Couldn't serve file (not necessesarily an error)", e)
                 writeFd.closeWithError(e.message)
             } finally {
                 client.close()
@@ -94,7 +104,7 @@ class StreamingFileDescriptor(
         }
 
         cancellationSignal?.setOnCancelListener {
-            Logger.log.fine("Cancelling transfer of $url")
+            logger.fine("Cancelling transfer of $url")
             result.cancel()
         }
 
@@ -148,7 +158,7 @@ class StreamingFileDescriptor(
                                 // read next chunk
                                 bytes = source.read(buffer)
                             }
-                            Logger.log.finer("Downloaded $transferred byte(s) from $url")
+                            logger.finer("Downloaded $transferred byte(s) from $url")
                         }
                     }
 
@@ -185,7 +195,7 @@ class StreamingFileDescriptor(
                         // read next chunk
                         size = input.read(buffer)
                     }
-                    Logger.log.finer("Uploaded $transferred byte(s) to $url")
+                    logger.finer("Uploaded $transferred byte(s) to $url")
                 }
             }
         }

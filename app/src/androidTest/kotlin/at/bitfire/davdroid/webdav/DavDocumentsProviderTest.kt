@@ -10,7 +10,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -42,7 +41,11 @@ class DavDocumentsProviderTest {
     @ApplicationContext
     lateinit var context: Context
 
-    @Inject lateinit var db: AppDatabase
+    @Inject
+    lateinit var db: AppDatabase
+
+    @Inject
+    lateinit var logger: java.util.logging.Logger
 
     @Before
     fun setUp() {
@@ -58,7 +61,7 @@ class DavDocumentsProviderTest {
     @Before
     fun mockServerSetup() {
         // Start mock web server
-        mockServer.dispatcher = TestDispatcher()
+        mockServer.dispatcher = TestDispatcher(logger)
         mockServer.start()
 
         client = HttpClient.Builder(context).build()
@@ -83,7 +86,7 @@ class DavDocumentsProviderTest {
         val cookieStore = mutableMapOf<Long, CookieJar>()
 
         // Query
-        DavDocumentsProvider.DavDocumentsActor(context, db, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent)
 
         // Assert new children were inserted into db
@@ -117,7 +120,7 @@ class DavDocumentsProviderTest {
         assertEquals("My Books", db.webDavDocumentDao().get(folderId)!!.displayName)
 
         // Query - should update the parent displayname and folder name
-        DavDocumentsProvider.DavDocumentsActor(context, db, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent)
 
         // Assert parent and children were updated in database
@@ -142,7 +145,7 @@ class DavDocumentsProviderTest {
         assertEquals("deleteme", db.webDavDocumentDao().get(folderId)!!.name)
 
         // Query - discovers serverside deletion
-        DavDocumentsProvider.DavDocumentsActor(context, db, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent)
 
         // Assert folder got deleted
@@ -166,9 +169,9 @@ class DavDocumentsProviderTest {
         assertEquals("parent2", parent2.name)
 
         // Query - find children of two nodes simultaneously
-        DavDocumentsProvider.DavDocumentsActor(context, db, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent1)
-        DavDocumentsProvider.DavDocumentsActor(context, db, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent2)
 
         // Assert the two folders names have changed
@@ -179,7 +182,9 @@ class DavDocumentsProviderTest {
 
     // mock server
 
-    class TestDispatcher: Dispatcher() {
+    class TestDispatcher(
+        private val logger: java.util.logging.Logger
+    ): Dispatcher() {
 
         data class Resource(
             val name: String,
@@ -234,8 +239,8 @@ class DavDocumentsProviderTest {
                         responses +
                     "</multistatus>"
 
-                Logger.log.info("Query path: $requestPath")
-                Logger.log.info("Response: $multistatus")
+                logger.info("Query path: $requestPath")
+                logger.info("Response: $multistatus")
                 return MockResponse()
                     .setResponseCode(207)
                     .setBody(multistatus)

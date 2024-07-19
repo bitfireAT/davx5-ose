@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
+import com.google.common.cache.LoadingCache
 import java.io.IOException
 import java.util.logging.Logger
 import kotlin.math.min
@@ -16,40 +17,19 @@ import kotlin.math.min
  * from within the cache. For requests between 2 MB and 3 MB, the second page (and in this case last)
  * is loaded and used.
  *
- * @param fileSize  file size (must not change between read operations)
- * @param pageSize  page size (big enough to cache efficiently, small enough to avoid unnecessary traffic and spare memory)
- * @param loader    loads page content from the actual data source
+ * @param fileSize     file size (must not change between read operations)
+ * @param pageSize     page size (big enough to cache efficiently, small enough to avoid unnecessary traffic and spare memory)
+ * @param pageCache    [LoadingCache] that loads page content from the actual data source
  */
 @Suppress("LocalVariableName")
 class PagingReader(
     private val fileSize: Long,
     private val pageSize: Int,
-    private val loader: PageLoader
+    private val pageCache: LoadingCache<RandomAccessCallback.PageIdentifier, ByteArray>
 ) {
 
     val logger: Logger = Logger.getLogger(javaClass.name)
 
-    /**
-     * Interface for loading a page from the data source (like a local file
-     * or a WebDAV resource).
-     */
-    fun interface PageLoader {
-        /**
-         * Loads the requested data from the data source. For instance this could cause
-         *
-         * - a file seek + read or
-         * - a ranged WebDAV request.
-         *
-         * This function will not be called by multiple threads at the same time, so
-         * thread-safety is not required.
-         *
-         * @param offset    position to start
-         * @param size      number of bytes to load
-         *
-         * @return array with bytes fetched from data source
-         */
-        fun loadPage(offset: Long, size: Int): ByteArray
-    }
 
     /**
      * Represents a loaded page (meta information + data).
@@ -101,7 +81,7 @@ class PagingReader(
      * from this page.
      *
      * This method is synchronized so that no concurrent modifications of [currentPage]
-     * and no concurrent calls to [loader] will be made.
+     * and no concurrent calls to [pageCache] will be made.
      *
      * @param position      starting position
      * @param size          number of bytes requested
@@ -126,7 +106,7 @@ class PagingReader(
                 if (pgSize == 0)
                     ByteArray(0)        // don't load 0-byte pages
                 else
-                    loader.loadPage(pgStart, pgSize)
+                    pageCache.get(RandomAccessCallback.PageIdentifier(offset = pgStart, size = pgSize))
             if (pageData.size != pgSize)
                 throw IOException("Couldn't fetch whole file segment (expected $pgSize bytes, got ${pageData.size} bytes)")
 
