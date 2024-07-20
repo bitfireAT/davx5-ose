@@ -39,7 +39,6 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.db.SyncStats
 import at.bitfire.davdroid.log.Logger
@@ -58,12 +57,6 @@ import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import okhttp3.HttpUrl
-import okhttp3.RequestBody
-import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.HttpURLConnection
@@ -74,6 +67,12 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl
+import okhttp3.RequestBody
+import org.dmfs.tasks.contract.TaskContract
 
 /**
  * Synchronizes a local collection with a remote collection.
@@ -332,24 +331,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * Saves the sync time of the synced account and service.
      */
     private fun saveSyncTime() {
-        val serviceType = when (authority) {
-            ContactsContract.AUTHORITY ->       // contacts
-                Service.TYPE_CARDDAV
-            else ->                             // calendars and tasks
-                Service.TYPE_CALDAV
-        }
-
-        val accountName =
-            if (localCollection is LocalAddressBook)
-                localCollection.requireMainAccount().name
-            else
-                account.name
-
         db.runInTransaction {
-            val service = db.serviceDao().getByAccountAndType(accountName, serviceType)
-                ?: return@runInTransaction
-            val collection = db.collectionDao().getByServiceAndUrl(service.id, collection.url.toString())
-                ?: return@runInTransaction
             db.syncStatsDao().insertOrReplace(
                 SyncStats(0, collection.id, authority, System.currentTimeMillis())
             )
