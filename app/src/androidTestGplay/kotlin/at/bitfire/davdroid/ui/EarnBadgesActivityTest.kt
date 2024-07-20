@@ -4,10 +4,11 @@
 
 package at.bitfire.davdroid.ui
 
+import android.content.Context
 import androidx.test.core.app.launchActivity
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.settings.SettingsManager
 import com.google.android.play.core.review.testing.FakeReviewManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
@@ -20,23 +21,25 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 @HiltAndroidTest
 class EarnBadgesActivityTest {
 
-    companion object {
-        val targetContext = InstrumentationRegistry.getInstrumentation().targetContext
-    }
-
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    val settings = mockk<SettingsManager>(relaxed = true)
+
     @Before
-    fun inject() {
+    fun setup() {
         hiltRule.inject()
     }
 
-    private val settings = mockk<SettingsManager>()
 
     @Test
     fun testShowRatingRequest() {
@@ -54,44 +57,44 @@ class EarnBadgesActivityTest {
     @Test
     fun testShouldShowRatingRequest_firstInstallTimeIntervalPassed() {
         // Interval is two weeks
-        mockkObject(EarnBadgesActivity, settings) {
+        mockkObject(EarnBadgesActivity) {
             every { EarnBadgesActivity.currentTime() } returns 1652343892058 // "now" = 12.05.22
-            every { EarnBadgesActivity.installTime(targetContext) } returns 1651087147000 // "15 days ago" = 27.04.2022
+            every { EarnBadgesActivity.installTime(context) } returns 1651087147000 // "15 days ago" = 27.04.2022
             every { settings.getLongOrNull(EarnBadgesActivity.LAST_REVIEW_PROMPT) } returns 0 // "never" = 0
-            assertTrue(EarnBadgesActivity.shouldShowRatingRequest(targetContext, settings)) // 15 > 14 => true
+            assertTrue(EarnBadgesActivity.shouldShowRatingRequest(context, settings)) // 15 > 14 => true
         }
     }
 
     @Test
     fun testShouldShowRatingRequest_firstInstallTimeIntervalNotPassed() {
         // Interval is two weeks
-        mockkObject(EarnBadgesActivity, settings) {
+        mockkObject(EarnBadgesActivity) {
             every { EarnBadgesActivity.currentTime() } returns 1652306400000 // "now" = 12.05.22
-            every { EarnBadgesActivity.installTime(targetContext) } returns 1652133600000 // "2 days ago" = 10.05.2022
+            every { EarnBadgesActivity.installTime(context) } returns 1652133600000 // "2 days ago" = 10.05.2022
             every { settings.getLongOrNull(EarnBadgesActivity.LAST_REVIEW_PROMPT) } returns 0 // "never" = 0
-            assertFalse(EarnBadgesActivity.shouldShowRatingRequest(targetContext, settings)) // 2 > 14 => false
+            assertFalse(EarnBadgesActivity.shouldShowRatingRequest(context, settings)) // 2 > 14 => false
         }
     }
 
     @Test
     fun testShouldShowRatingRequest_firstInstallTimeAndLastReviewPromptIntervalPassed() {
         // Interval is two weeks
-        mockkObject(EarnBadgesActivity, settings) {
+        mockkObject(EarnBadgesActivity) {
             every { EarnBadgesActivity.currentTime() } returns 1652306400000 // "now" = 12.05.22
-            every { EarnBadgesActivity.installTime(targetContext) } returns 1651087147000 // "15 days ago" = 27.04.2022
+            every { EarnBadgesActivity.installTime(context) } returns 1651087147000 // "15 days ago" = 27.04.2022
             every { settings.getLongOrNull(EarnBadgesActivity.LAST_REVIEW_PROMPT) } returns 1651087147000 // "15 days ago" = 27.04.2022
-            assertTrue(EarnBadgesActivity.shouldShowRatingRequest(targetContext, settings)) // 15 > 14 => true
+            assertTrue(EarnBadgesActivity.shouldShowRatingRequest(context, settings)) // 15 > 14 => true
         }
     }
 
     @Test
     fun testShouldShowRatingRequest_lastReviewPromptIntervalNotPassed() {
         // Interval is two weeks
-        mockkObject(EarnBadgesActivity, settings) {
+        mockkObject(EarnBadgesActivity) {
             every { EarnBadgesActivity.currentTime() } returns 1652306400000 // "now" = 12.05.22
-            every { EarnBadgesActivity.installTime(targetContext) } returns 1652343892058 // "15 days ago" = 27.04.2022
+            every { EarnBadgesActivity.installTime(context) } returns 1652343892058 // "15 days ago" = 27.04.2022
             every { settings.getLongOrNull(EarnBadgesActivity.LAST_REVIEW_PROMPT) } returns 1652306400000 // "now" = 12.05.22
-            assertFalse(EarnBadgesActivity.shouldShowRatingRequest(targetContext, settings)) // 0 > 14 => false
+            assertFalse(EarnBadgesActivity.shouldShowRatingRequest(context, settings)) // 0 > 14 => false
         }
     }
 }
