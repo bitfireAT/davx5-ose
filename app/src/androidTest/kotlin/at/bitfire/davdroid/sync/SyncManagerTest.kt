@@ -25,7 +25,6 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -63,7 +62,7 @@ class SyncManagerTest {
     lateinit var db: AppDatabase
 
     @Inject
-    lateinit var notificationRegistry: NotificationRegistry
+    lateinit var syncManagerFactory: TestSyncManager.Factory
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -73,7 +72,7 @@ class SyncManagerTest {
     private val server = MockWebServer()
 
     @Before
-    fun inject() {
+    fun setup() {
         hiltRule.inject()
 
         // Initialize WorkManager for instrumentation tests.
@@ -85,6 +84,8 @@ class SyncManagerTest {
 
         // create account
         assertTrue(accountManager.addAccountExplicitly(account, "test", AccountSettings.initialUserData(Credentials("test", "test"))))
+
+        server.start()
     }
 
     @After
@@ -93,35 +94,7 @@ class SyncManagerTest {
 
         // clear annoying syncError notifications
         NotificationManagerCompat.from(context).cancelAll()
-    }
 
-
-    private fun syncManager(
-        localCollection: LocalTestCollection,
-        syncResult: SyncResult = SyncResult(),
-        collection: Collection = mockk<Collection>() {
-            every { url } returns server.url("/")
-        }
-    ) =
-        TestSyncManager(
-            account,
-            accountSettingsFactory.forAccount(account),
-            arrayOf(),
-            "TestAuthority",
-            HttpClient.Builder(context).build(),
-            syncResult,
-            localCollection,
-            collection,
-            context, db, notificationRegistry
-        )
-
-    @Before
-    fun startServer() {
-        server.start()
-    }
-
-    @After
-    fun stopServer() {
         server.close()
     }
 
@@ -532,5 +505,25 @@ class SyncManagerTest {
         assertFalse(syncManager.syncResult.hasError())
         assertTrue(collection.entries.isEmpty())
     }
+
+
+    // helpers
+
+    private fun syncManager(
+        localCollection: LocalTestCollection,
+        syncResult: SyncResult = SyncResult(),
+        collection: Collection = mockk<Collection>() {
+            every { url } returns server.url("/")
+        }
+    ) = syncManagerFactory.create(
+        account,
+        accountSettingsFactory.forAccount(account),
+        arrayOf(),
+        "TestAuthority",
+        HttpClient.Builder(context).build(),
+        syncResult,
+        localCollection,
+        collection
+    )
 
 }
