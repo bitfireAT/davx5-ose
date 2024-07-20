@@ -46,20 +46,31 @@ class CrashHandlerSetup @Inject constructor(
     override fun onAppCreate() {
         if (BuildConfig.DEBUG) {
             logger.info("Debug build, enabling StrictMode with logging")
+
+            StrictMode.setThreadPolicy(
+                StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyFlashScreen()
+                    .penaltyLog()
+                    .build()
+            )
+
             StrictMode.setVmPolicy(
                 StrictMode.VmPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
                     .build()
             )
-        }
 
-        val handler = crashHandler.getOrNull()
-        if (handler != null) {
-            logger.info("Setting uncaught exception handler: ${handler.javaClass.name}")
-            Thread.setDefaultUncaughtExceptionHandler(handler)
-        } else
-            logger.info("Using default uncaught exception handler")
+        } else {
+            // release build
+            val handler = crashHandler.getOrNull()
+            if (handler != null) {
+                logger.info("Setting uncaught exception handler: ${handler.javaClass.name}")
+                Thread.setDefaultUncaughtExceptionHandler(handler)
+            } else
+                logger.info("Using default uncaught exception handler")
+        }
    }
 
     override fun priority() = PRIORITY_HIGHEST
