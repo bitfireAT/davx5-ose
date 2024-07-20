@@ -16,7 +16,9 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Level
+import javax.inject.Inject
 
 /**
  * Base class for sync code.
@@ -26,11 +28,7 @@ import java.util.logging.Level
  *
  * Also provides useful methods that can be used by derived syncers ie [CalendarSyncer], etc.
  */
-abstract class Syncer(
-    protected val accountSettingsFactory: AccountSettings.Factory,
-    val context: Context,
-    val db: AppDatabase
-) {
+abstract class Syncer {
 
     companion object {
 
@@ -54,6 +52,17 @@ abstract class Syncer(
         const val SYNC_EXTRAS_FULL_RESYNC = "full_resync"
 
     }
+
+
+    @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var db: AppDatabase
 
 
     /**

@@ -7,22 +7,18 @@ package at.bitfire.davdroid.sync
 import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.Context
 import android.content.SyncResult
 import android.content.pm.PackageManager
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
@@ -32,12 +28,9 @@ import javax.inject.Inject
  * Sync logic for address books
  */
 class AddressBookSyncer @Inject constructor(
-    accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext context: Context,
-    db: AppDatabase,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     private val settingsManager: SettingsManager
-) : Syncer(accountSettingsFactory, context, db) {
+) : Syncer() {
 
     companion object {
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"

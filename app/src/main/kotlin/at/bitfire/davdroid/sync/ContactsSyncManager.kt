@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentResolver
-import android.content.Context
 import android.content.SyncResult
 import android.os.Build
 import android.text.format.Formatter
@@ -25,7 +24,6 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
@@ -38,7 +36,6 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
-import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.sameTypeAs
 import at.bitfire.davdroid.util.lastSegment
@@ -47,7 +44,6 @@ import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
 import okhttp3.HttpUrl
@@ -106,10 +102,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
     @Assisted localAddressBook: LocalAddressBook,
-    @Assisted collection: Collection,
-    @ApplicationContext context: Context,
-    db: AppDatabase,
-    notificationRegistry: NotificationRegistry
+    @Assisted collection: Collection
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
     accountSettings,
@@ -118,10 +111,7 @@ class ContactsSyncManager @AssistedInject constructor(
     authority,
     syncResult,
     localAddressBook,
-    collection,
-    context,
-    db,
-    notificationRegistry
+    collection
 ) {
 
     @AssistedFactory
