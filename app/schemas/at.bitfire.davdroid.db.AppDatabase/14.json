@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 14,
-    "identityHash": "bf5cc1e7fdd76f57cb1999545dabce38",
+    "identityHash": "9a0eb47f27473eab254db568081a4585",
     "entities": [
       {
         "tableName": "service",
@@ -582,13 +582,15 @@
         },
         "indices": [
           {
-            "name": "index_webdav_document_mountId",
-            "unique": false,
+            "name": "index_webdav_document_mountId_parentId_name",
+            "unique": true,
             "columnNames": [
-              "mountId"
+              "mountId",
+              "parentId",
+              "name"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_webdav_document_mountId` ON `${TABLE_NAME}` (`mountId`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_webdav_document_mountId_parentId_name` ON `${TABLE_NAME}` (`mountId`, `parentId`, `name`)"
           },
           {
             "name": "index_webdav_document_parentId",
@@ -598,15 +600,6 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_webdav_document_parentId` ON `${TABLE_NAME}` (`parentId`)"
-          },
-          {
-            "name": "index_webdav_document_name",
-            "unique": true,
-            "columnNames": [
-              "name"
-            ],
-            "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_webdav_document_name` ON `${TABLE_NAME}` (`name`)"
           }
         ],
         "foreignKeys": [
@@ -670,7 +663,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bf5cc1e7fdd76f57cb1999545dabce38')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9a0eb47f27473eab254db568081a4585')"
     ]
   }
 }

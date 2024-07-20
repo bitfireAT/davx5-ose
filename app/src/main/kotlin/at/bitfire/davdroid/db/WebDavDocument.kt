@@ -14,11 +14,11 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import at.bitfire.davdroid.webdav.DocumentState
+import java.io.FileNotFoundException
+import java.time.Instant
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import java.io.FileNotFoundException
-import java.time.Instant
 
 @Entity(
     tableName = "webdav_document",
@@ -27,9 +27,8 @@ import java.time.Instant
         ForeignKey(entity = WebDavDocument::class, parentColumns = ["id"], childColumns = ["parentId"], onDelete = ForeignKey.CASCADE)
     ],
     indices = [
-        Index("mountId"),
-        Index("parentId"),
-        Index("name", unique = true),
+        Index("mountId", "parentId", "name", unique = true),
+        Index("parentId")
     ]
 )
 data class WebDavDocument(
