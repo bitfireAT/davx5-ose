@@ -30,7 +30,6 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
-import at.bitfire.ical4android.UsesThreadContextClassLoader
 import at.bitfire.ical4android.util.DateUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -51,7 +50,6 @@ import java.util.logging.Level
 /**
  * Synchronization manager for CalDAV collections; handles events (VEVENT).
  */
-@UsesThreadContextClassLoader
 class CalendarSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted accountSettings: AccountSettings,
