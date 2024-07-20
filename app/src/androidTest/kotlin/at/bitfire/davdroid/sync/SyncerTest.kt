@@ -21,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltAndroidTest
 class SyncerTest {
@@ -38,6 +39,9 @@ class SyncerTest {
     @Inject
     lateinit var db: AppDatabase
 
+    @Inject
+    lateinit var testSyncer: Provider<TestSyncer>
+
     /** use our WebDAV provider as a mock provider because it's our own and we don't need any permissions for it */
     private val mockAuthority by lazy { context.getString(R.string.webdav_authority) }
 
@@ -51,7 +55,7 @@ class SyncerTest {
 
     @Test
     fun testOnPerformSync_runsSyncAndSetsClassLoader() {
-        val syncer = TestSyncer(accountSettingsFactory, context, db)
+        val syncer = testSyncer.get()
         syncer.onPerformSync(account, arrayOf(), mockAuthority, SyncResult())
 
         // check whether onPerformSync() actually calls sync()
@@ -62,11 +66,7 @@ class SyncerTest {
     }
 
 
-    class TestSyncer(
-        accountSettingsFactory: AccountSettings.Factory,
-        context: Context,
-        db: AppDatabase
-    ) : Syncer(accountSettingsFactory, context, db) {
+    class TestSyncer @Inject constructor() : Syncer() {
 
         val syncCalled = AtomicInteger()
 
@@ -78,7 +78,6 @@ class SyncerTest {
             provider: ContentProviderClient,
             syncResult: SyncResult
         ) {
-            Thread.sleep(1000)
             syncCalled.incrementAndGet()
         }
 

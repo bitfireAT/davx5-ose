@@ -7,20 +7,16 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.Context
 import android.content.SyncResult
 import android.os.Build
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
@@ -31,11 +27,8 @@ import javax.inject.Inject
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
 class TaskSyncer @Inject constructor(
-    accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext context: Context,
-    db: AppDatabase,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory
-): Syncer(accountSettingsFactory, context, db) {
+): Syncer() {
 
     override fun sync(
         account: Account,

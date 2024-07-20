@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.Context
 import android.content.SyncResult
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavCalendar
@@ -20,7 +19,6 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
@@ -29,7 +27,6 @@ import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
@@ -38,12 +35,10 @@ import at.bitfire.ical4android.util.DateUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -65,10 +60,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
-    @Assisted collection: Collection,
-    @ApplicationContext context: Context,
-    db: AppDatabase,
-    notificationRegistry: NotificationRegistry
+    @Assisted collection: Collection
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     accountSettings,
@@ -77,10 +69,7 @@ class CalendarSyncManager @AssistedInject constructor(
     authority,
     syncResult,
     localCalendar,
-    collection,
-    context,
-    db,
-    notificationRegistry
+    collection
 ) {
 
     @AssistedFactory

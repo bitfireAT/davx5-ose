@@ -6,18 +6,14 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.Context
 import android.content.SyncResult
 import android.provider.CalendarContract
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.ical4android.AndroidCalendar
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
@@ -27,11 +23,8 @@ import javax.inject.Inject
  * Sync logic for calendars
  */
 class CalendarSyncer @Inject constructor(
-    accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext context: Context,
-    db: AppDatabase,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
-): Syncer(accountSettingsFactory, context, db) {
+): Syncer() {
 
     override fun sync(
         account: Account,

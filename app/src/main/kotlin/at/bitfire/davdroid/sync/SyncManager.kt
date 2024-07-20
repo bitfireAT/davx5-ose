@@ -58,6 +58,7 @@ import at.bitfire.ical4android.CalendarStorageException
 import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.ContactsStorageException
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -73,6 +74,7 @@ import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
+import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
 
 /**
@@ -99,11 +101,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     val authority: String,
     val syncResult: SyncResult,
     val localCollection: CollectionType,
-    val collection: Collection,
-    // injected
-    val context: Context,
-    val db: AppDatabase,
-    val notificationRegistry: NotificationRegistry
+    val collection: Collection
 ) {
 
     enum class SyncAlgorithm {
@@ -147,6 +145,18 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         }
 
     }
+
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var db: AppDatabase
+
+    @Inject
+    lateinit var notificationRegistry: NotificationRegistry
+
 
     init {
         // required for ServiceLoader -> ical4j -> ical4android

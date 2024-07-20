@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.Context
 import android.content.SyncResult
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavCalendar
@@ -18,7 +17,6 @@ import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
@@ -27,7 +25,6 @@ import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.JtxICalObject
@@ -35,9 +32,7 @@ import at.bitfire.ical4android.UsesThreadContextClassLoader
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -54,10 +49,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
-    @Assisted collection: Collection,
-    @ApplicationContext context: Context,
-    db: AppDatabase,
-    notificationRegistry: NotificationRegistry
+    @Assisted collection: Collection
 ): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
     account,
     accountSettings,
@@ -66,10 +58,7 @@ class JtxSyncManager @AssistedInject constructor(
     authority,
     syncResult,
     localCollection,
-    collection,
-    context,
-    db,
-    notificationRegistry
+    collection
 ) {
 
     @AssistedFactory
