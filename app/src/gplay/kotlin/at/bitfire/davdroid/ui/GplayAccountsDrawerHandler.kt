@@ -20,15 +20,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import com.google.android.play.core.review.ReviewManagerFactory
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
  * Overrides some navigationd drawer actions for Google Play
  */
-class GplayAccountsDrawerHandler @Inject constructor() : StandardAccountsDrawerHandler() {
+class GplayAccountsDrawerHandler @Inject constructor(
+    private val logger: Logger
+) : StandardAccountsDrawerHandler() {
 
     @Composable
     override fun Contribute(onContribute: () -> Unit) {
@@ -60,7 +62,7 @@ class GplayAccountsDrawerHandler @Inject constructor() : StandardAccountsDrawerH
         val request = manager.requestReviewFlow()
         request.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                Logger.log.info("Launching in-app review flow")
+                logger.info("Launching in-app review flow")
 
                 if (context is Activity)
                     manager.launchReviewFlow(context, task.result)
@@ -76,7 +78,7 @@ class GplayAccountsDrawerHandler @Inject constructor() : StandardAccountsDrawerH
                     }
                 )
             } else {
-                Logger.log.log(Level.WARNING, "Couldn't start in-app review flow", task.exception)
+                logger.log(Level.WARNING, "Couldn't start in-app review flow", task.exception)
                 openInStore(context)
             }
         }

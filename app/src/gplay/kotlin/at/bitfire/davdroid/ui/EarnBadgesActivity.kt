@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -56,13 +55,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.SettingsManager
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
@@ -84,6 +82,8 @@ import com.android.billingclient.api.queryPurchasesAsync
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -92,6 +92,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -139,7 +140,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             val firstInstall = installTime(context)
             val lastPrompt = settings.getLongOrNull(LAST_REVIEW_PROMPT) ?: now
             val shouldShowRatingRequest = (now > firstInstall + RATING_INTERVAL) && (now > lastPrompt + RATING_INTERVAL)
-            Logger.log.info("now=$now, firstInstall=$firstInstall, lastPrompt=$lastPrompt, shouldShowRatingRequest=$shouldShowRatingRequest")
+            Logger.getGlobal().info("now=$now, firstInstall=$firstInstall, lastPrompt=$lastPrompt, shouldShowRatingRequest=$shouldShowRatingRequest")
             if (shouldShowRatingRequest)
                 settings.putLong(LAST_REVIEW_PROMPT, now)
             return shouldShowRatingRequest
@@ -149,7 +150,12 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         fun installTime(context: Context) = context.packageManager.getPackageInfo(context.packageName, 0).firstInstallTime
     }
 
-    @Inject lateinit var settingsManager: SettingsManager
+
+    @Inject
+    lateinit var logger: Logger
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
     val model by viewModels<Model>()
 
@@ -198,7 +204,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
     fun showRatingRequest(manager: ReviewManager) {
         // Try prompting for review/rating
         manager.requestReviewFlow().addOnSuccessListener { reviewInfo ->
-            Logger.log.log(Level.INFO, "Launching app rating flow")
+            logger.log(Level.INFO, "Launching app rating flow")
             manager.launchReviewFlow(this, reviewInfo)
         }
     }
@@ -217,9 +223,13 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
     }
 
 
-    class Model(app: Application) : AndroidViewModel(app) {
+    @HiltViewModel
+    class Model @Inject constructor(
+        @ApplicationContext val context: Context,
+        private val logger: Logger
+    ) : ViewModel() {
 
-        internal val playClient = PlayClient(app)
+        internal val playClient = PlayClient(context, logger)
 
         val errorMessage = playClient.errorMessage
 
@@ -245,9 +255,9 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                 val nonNullProductDetails = nullableProductDetails ?: return
                 val nonNullPurchases = nullablePurchases ?: return
 
-                Logger.log.info("Creating new list of badges from product details and purchases")
-                Logger.log.info("Product IDs: ${nonNullProductDetails.map {"\n" + it.productId}}")
-                Logger.log.info("Purchases: ${nonNullPurchases.map { "\nPurchase: ${it.products}"}}")
+                logger.info("Creating new list of badges from product details and purchases")
+                logger.info("Product IDs: ${nonNullProductDetails.map {"\n" + it.productId}}")
+                logger.info("Purchases: ${nonNullPurchases.map { "\nPurchase: ${it.products}"}}")
 
                 // Create badges from old livedata value if available
                 val oldBadgesList: List<Badge> = this.value ?: mutableListOf()
@@ -267,7 +277,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
 
                     // Create and add/update the badge
                     val badge = Badge(productDetails, yearBought, count)
-                    Logger.log.info("Created badge: $badge")
+                    logger.info("Created badge: $badge")
                     badgesList[productDetails.productId] = badge
                 }
 
@@ -291,7 +301,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             private fun findBoughtBadges() {
                 val nonNullBadges = nullableBadges ?: return
 
-                Logger.log.info("Finding bought badges")
+                logger.info("Finding bought badges")
 
                 // Filter for the bought badges
                 val filteredBadges = nonNullBadges.filter { badge ->
@@ -319,7 +329,8 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
     }
 
     class PlayClient(
-        val context: Context
+        val context: Context,
+        val logger: Logger
     ) : Closeable, PurchasesUpdatedListener, BillingClientStateListener,
         ProductDetailsResponseListener, PurchasesResponseListener {
 
@@ -344,7 +355,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
          */
         init {
             if (!billingClient.isReady) {
-                Logger.log.fine("Start connection...")
+                logger.fine("Start connection...")
                 billingClient.startConnection(this)
             }
         }
@@ -354,7 +365,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
          */
         override fun close() {
             if (!billingClient.isReady) {
-                Logger.log.fine("Closing connection...")
+                logger.fine("Closing connection...")
                 billingClient.endConnection()
             }
         }
@@ -365,17 +376,17 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         override fun onBillingSetupFinished(billingResult: BillingResult) {
             val responseCode = billingResult.responseCode
             val debugMessage = billingResult.debugMessage
-            Logger.log.warning("onBillingSetupFinished: $responseCode $debugMessage")
+            logger.warning("onBillingSetupFinished: $responseCode $debugMessage")
             when (responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
-                    Logger.log.fine("ready")
+                    logger.fine("ready")
 
                     // Purchases are stored locally by gplay app
                     queryPurchases()
 
                     // Only request product details if not found already
                     if (productDetailsList.value.isNullOrEmpty()) {
-                        Logger.log.fine("No products loaded yet, requesting")
+                        logger.fine("No products loaded yet, requesting")
                         queryProductDetailsAsync()
                     }
                 }
@@ -395,9 +406,9 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         override fun onBillingServiceDisconnected() {
             connectionTriesCount++
             val maxTries = BILLINGCLIENT_CONNECTION_MAX_RETRIES
-            Logger.log.warning("Connecting to BillingService failed. Retrying $connectionTriesCount/$maxTries times")
+            logger.warning("Connecting to BillingService failed. Retrying $connectionTriesCount/$maxTries times")
             if (connectionTriesCount > maxTries) {
-                Logger.log.warning("Failed to connect to BillingService. Given up on re-trying")
+                logger.warning("Failed to connect to BillingService. Given up on re-trying")
                 return
             }
 
@@ -410,7 +421,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
          * This is an asynchronous call that will receive a result in [onProductDetailsResponse].
          */
         private fun queryProductDetailsAsync() {
-            Logger.log.fine("queryProductDetailsAsync")
+            logger.fine("queryProductDetailsAsync")
             val productList = PRODUCT_IDS.map {
                 QueryProductDetailsParams.Product.newBuilder()
                     .setProductId(it)
@@ -431,17 +442,17 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             val debugMessage = billingResult.debugMessage
             if (responseCode == BillingClient.BillingResponseCode.OK) {
                 if (productDetails.size == PRODUCT_IDS.size) {
-                    Logger.log.log(Level.FINE, "BillingClient: Got product details!", productDetails)
+                    logger.log(Level.FINE, "BillingClient: Got product details!", productDetails)
                 } else
-                    Logger.log.warning("Oh no! Expected ${PRODUCT_IDS.size}, but got ${productDetails.size} product details from server.")
+                    logger.warning("Oh no! Expected ${PRODUCT_IDS.size}, but got ${productDetails.size} product details from server.")
                 productDetailsList.postValue(productDetails)
             } else
-                Logger.log.warning("Failed to query for product details:\n $responseCode $debugMessage")
+                logger.warning("Failed to query for product details:\n $responseCode $debugMessage")
         }
 
         fun purchaseProduct(activity: Activity, badge: Badge) {
             if (!billingClient.isReady) {
-                Logger.log.warning("BillingClient is not ready")
+                logger.warning("BillingClient is not ready")
                 return
             }
             val params = BillingFlowParams.newBuilder().setProductDetailsParamsList(listOf(
@@ -452,7 +463,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             val billingResult = billingClient.launchBillingFlow(activity, params)
             val responseCode = billingResult.responseCode
             val debugMessage = billingResult.debugMessage
-            Logger.log.fine("BillingResponse $responseCode $debugMessage")
+            logger.fine("BillingResponse $responseCode $debugMessage")
         }
 
         /**
@@ -463,7 +474,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
          */
         internal fun queryPurchases() {
             if (!billingClient.isReady) {
-                Logger.log.warning("BillingClient is not ready")
+                logger.warning("BillingClient is not ready")
                 return
             }
             billingClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder()
@@ -483,16 +494,16 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?) {
             val responseCode = billingResult.responseCode
             val debugMessage = billingResult.debugMessage
-            Logger.log.fine("$responseCode $debugMessage")
+            logger.fine("$responseCode $debugMessage")
             when (responseCode) {
                 BillingClient.BillingResponseCode.OK ->
                     if (!purchases.isNullOrEmpty()) processPurchases(purchases)
                 BillingClient.BillingResponseCode.USER_CANCELED ->
-                    Logger.log.info("User canceled the purchase")
+                    logger.info("User canceled the purchase")
                 BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED ->
-                    Logger.log.info("The user already owns this item")
+                    logger.info("The user already owns this item")
                 BillingClient.BillingResponseCode.DEVELOPER_ERROR ->
-                    Logger.log.warning("Google Play does not recognize the application configuration." +
+                    logger.warning("Google Play does not recognize the application configuration." +
                             "Do the product IDs match and is the APK in use signed with release keys?")
             }
         }
@@ -503,7 +514,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
         private fun processPurchases(purchasesList: MutableList<Purchase>) {
             val initialCount = purchasesList.size
             if (purchasesList == purchases.value) {
-                Logger.log.fine("Purchase list has not changed")
+                logger.fine("Purchase list has not changed")
                 return
             }
 
@@ -511,16 +522,16 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             logPurchaseStatus(purchasesList)
             runBlocking {
                 for (purchase in purchasesList) {
-                    Logger.log.info("Handling purchase with state: ${purchase.purchaseState}")
+                    logger.info("Handling purchase with state: ${purchase.purchaseState}")
                     if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
                         if (!purchase.isAcknowledged) {
-                            Logger.log.info("Acknowledging purchase")
+                            logger.info("Acknowledging purchase")
                             acknowledgePurchase(purchase) { ackPurchaseResult ->
                                 val responseCode = ackPurchaseResult.responseCode
                                 val debugMessage = ackPurchaseResult.debugMessage
                                 if (responseCode != BillingClient.BillingResponseCode.OK) {
-                                    Logger.log.warning("Acknowledging Purchase failed!")
-                                    Logger.log.warning("AcknowledgePurchaseResult: $responseCode $debugMessage")
+                                    logger.warning("Acknowledging Purchase failed!")
+                                    logger.warning("AcknowledgePurchaseResult: $responseCode $debugMessage")
                                     purchasesList.remove(purchase)
                                 }
                             }
@@ -534,11 +545,11 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                         consumePurchase(purchase) { result ->
                             when (result.billingResult.responseCode) {
                                 BillingClient.BillingResponseCode.OK ->
-                                    Logger.log.info("Successfully consumed item with purchase token: '${result.purchaseToken}'")
+                                    logger.info("Successfully consumed item with purchase token: '${result.purchaseToken}'")
                                 BillingClient.BillingResponseCode.ITEM_NOT_OWNED ->
-                                    Logger.log.info("Failed to consume item with purchase token: '${result.purchaseToken}'. Item not owned")
+                                    logger.info("Failed to consume item with purchase token: '${result.purchaseToken}'. Item not owned")
                                 else ->
-                                    Logger.log.info("Failed to consume item with purchase token: '${result.purchaseToken}'. BillingResult: $result")
+                                    logger.info("Failed to consume item with purchase token: '${result.purchaseToken}'. BillingResult: $result")
                             }
                             }*/
                 }
@@ -550,7 +561,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                 throw BillingException("Some purchase could not be acknowledged")
 
             // Update list
-            Logger.log.info("posting ${purchasesList.size} purchases")
+            logger.info("posting ${purchasesList.size} purchases")
             purchases.value?.let { purchasesList.addAll(it) }
             purchases.postValue(purchasesList)
 
@@ -562,7 +573,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
          */
         @Suppress("unused")
         private suspend fun consumePurchase(purchase: Purchase, runAfter: (billingResult: ConsumeResult) -> Unit) {
-            Logger.log.info("Trying to consume purchase with token: ${purchase.purchaseToken}")
+            logger.info("Trying to consume purchase with token: ${purchase.purchaseToken}")
             val consumeParams = ConsumeParams.newBuilder()
                 .setPurchaseToken(purchase.purchaseToken)
                 .build()
@@ -593,7 +604,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
             var ackNo = 0
             for (purchase in purchasesList)
                 if (purchase.isAcknowledged) ackYes++ else ackNo++
-            Logger.log.info("logAcknowledgementStatus: acknowledged=$ackYes unacknowledged=$ackNo")
+            logger.info("logAcknowledgementStatus: acknowledged=$ackYes unacknowledged=$ackNo")
         }
 
         /**
@@ -609,7 +620,7 @@ class EarnBadgesActivity : AppCompatActivity(), LifecycleOwner {
                     Purchase.PurchaseState.PURCHASED -> purchased++
                     Purchase.PurchaseState.PENDING -> pending++
                 }
-            Logger.log.info("logPurchaseStatus: purchased=$purchased pending=$pending undefined=$undefined")
+            logger.info("logPurchaseStatus: purchased=$purchased pending=$pending undefined=$undefined")
         }
 
     }
