@@ -91,30 +91,30 @@ class SyncConditions @AssistedInject constructor(
         val connectivityManager = context.getSystemService<ConnectivityManager>()!!
         return connectivityManager.allNetworks.any { network ->
             val capabilities = connectivityManager.getNetworkCapabilities(network)
-            at.bitfire.davdroid.log.Logger.log.log(
+            logger.log(
                 Level.FINE, "Looking for validated Internet over this connection.",
                 arrayOf(connectivityManager.getNetworkInfo(network), capabilities)
             )
 
             if (capabilities != null) {
                 if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-                    at.bitfire.davdroid.log.Logger.log.fine("Missing network capability: INTERNET")
+                    logger.fine("Missing network capability: INTERNET")
                     return@any false
                 }
 
                 if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
-                    at.bitfire.davdroid.log.Logger.log.fine("Missing network capability: VALIDATED")
+                    logger.fine("Missing network capability: VALIDATED")
                     return@any false
                 }
 
                 val ignoreVpns = accountSettings.getIgnoreVpns()
                 if (ignoreVpns)
                     if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)) {
-                        at.bitfire.davdroid.log.Logger.log.fine("Missing network capability: NOT_VPN")
+                        logger.fine("Missing network capability: NOT_VPN")
                         return@any false
                     }
 
-                at.bitfire.davdroid.log.Logger.log.fine("This connection can be used.")
+                logger.fine("This connection can be used.")
                 /* return@any */ true
             } else
             // no network capabilities available, we can't use this connection

@@ -11,13 +11,13 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxCollectionFactory
 import at.bitfire.ical4android.JtxICalObject
 import at.techbee.jtx.JtxContract
 import java.util.logging.Level
+import java.util.logging.Logger
 
 class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Long):
     JtxCollection<JtxICalObject>(account, client, LocalJtxICalObject.Factory, id),
@@ -40,7 +40,8 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
                 put(JtxContract.JtxCollection.DESCRIPTION, info.description)
                 if (owner != null)
                     put(JtxContract.JtxCollection.OWNER, owner.url.toString())
-                else Logger.log.log(Level.SEVERE, "No collection owner given. Will create jtx collection without owner")
+                else
+                    Logger.getGlobal().warning("No collection owner given. Will create jtx collection without owner")
                 put(JtxContract.JtxCollection.OWNER_DISPLAYNAME, owner?.displayName)
                 if (withColor)
                     put(JtxContract.JtxCollection.COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)

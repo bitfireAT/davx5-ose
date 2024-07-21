@@ -23,7 +23,6 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.ui.AccountsActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -33,6 +32,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.io.Writer
+import java.util.logging.Logger
 import javax.inject.Singleton
 
 @Suppress("ClassName")
@@ -96,7 +96,7 @@ abstract class AppDatabase: RoomDatabase() {
     @DeleteColumn(tableName = "collection", columnName = "owner")
     class AutoMigration11_12(val context: Context): AutoMigrationSpec {
         override fun onPostMigrate(db: SupportSQLiteDatabase) {
-            Logger.log.info("Database update to v12, refreshing services to get display names of owners")
+            Logger.getGlobal().info("Database update to v12, refreshing services to get display names of owners")
             db.query("SELECT id FROM service", arrayOf()).use { cursor ->
                 while (cursor.moveToNext()) {
                     val serviceId = cursor.getLong(0)
@@ -217,7 +217,7 @@ abstract class AppDatabase: RoomDatabase() {
                 override fun migrate(db: SupportSQLiteDatabase) {
                     // We don't have access to the context in a Room migration now, so
                     // we will just drop those settings from old DAVx5 versions.
-                    Logger.log.warning("Dropping settings distrustSystemCerts and overrideProxy*")
+                    Logger.getGlobal().warning("Dropping settings distrustSystemCerts and overrideProxy*")
 
                     /*val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
                     try {

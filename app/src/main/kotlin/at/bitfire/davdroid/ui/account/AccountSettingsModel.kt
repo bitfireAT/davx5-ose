@@ -10,7 +10,6 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.Syncer
@@ -26,12 +25,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountSettingsModel.Factory::class)
 class AccountSettingsModel @AssistedInject constructor(
     @Assisted val account: Account,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
+    private val logger: Logger,
     private val settings: SettingsManager
 ): ViewModel(), SettingsManager.OnChangeListener {
 
@@ -78,7 +79,7 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
     private fun reload() {
-        Logger.log.info("Reloading settings")
+        logger.info("Reloading settings")
 
         Snapshot.withMutableSnapshot {
             syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority))

@@ -49,11 +49,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.setup.GoogleLogin.GOOGLE_POLICY_URL
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import java.util.logging.Level
+import java.util.logging.Logger
 
 object GoogleLogin : LoginType {
 
@@ -126,7 +126,7 @@ object GoogleLogin : LoginType {
                     try {
                         authRequestContract.launch(authRequest)
                     } catch (e: ActivityNotFoundException) {
-                        Logger.log.log(Level.WARNING, "Couldn't start OAuth intent", e)
+                        Logger.getGlobal().log(Level.WARNING, "Couldn't start OAuth intent", e)
                         model.signInFailed()
                     }
                 }

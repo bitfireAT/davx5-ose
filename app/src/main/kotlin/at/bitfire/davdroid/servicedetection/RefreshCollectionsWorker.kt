@@ -36,7 +36,6 @@ import at.bitfire.dav4jvm.property.webdav.Owner
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
@@ -49,6 +48,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Refreshes list of home sets and their respective collections of a service type (CardDAV or CalDAV).
@@ -75,6 +75,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionListRefresherFactory: CollectionListRefresher.Factory,
+    private val logger: Logger,
     private val notificationRegistry: NotificationRegistry,
     serviceRepository: DavServiceRepository
 ): CoroutineWorker(appContext, workerParams) {
@@ -167,12 +168,12 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         if (service == null || account == null) {
-            Logger.log.warning("Missing service or account with service ID: $serviceId")
+            logger.warning("Missing service or account with service ID: $serviceId")
             return Result.failure()
         }
 
         try {
-            Logger.log.info("Refreshing ${service.type} collections of service #$service")
+            logger.info("Refreshing ${service.type} collections of service #$service")
 
             // cancel previous notification
             NotificationManagerCompat.from(applicationContext)
@@ -188,7 +189,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
                         // refresh home set list (from principal url)
                         service.principal?.let { principalUrl ->
-                            Logger.log.fine("Querying principal $principalUrl for home sets")
+                            logger.fine("Querying principal $principalUrl for home sets")
                             refresher.discoverHomesets(principalUrl)
                         }
 
@@ -204,10 +205,10 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             }
 
         } catch(e: InvalidAccountException) {
-            Logger.log.log(Level.SEVERE, "Invalid account", e)
+            logger.log(Level.SEVERE, "Invalid account", e)
             return Result.failure()
         } catch (e: UnauthorizedException) {
-            Logger.log.log(Level.SEVERE, "Not authorized (anymore)", e)
+            logger.log(Level.SEVERE, "Not authorized (anymore)", e)
             // notify that we need to re-authenticate in the account settings
             val settingsIntent = Intent(applicationContext, AccountSettingsActivity::class.java)
                 .putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
@@ -217,7 +218,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             )
             return Result.failure()
         } catch(e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
+            logger.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
             val debugIntent = DebugInfoActivity.IntentBuilder(applicationContext)
                 .withCause(e)

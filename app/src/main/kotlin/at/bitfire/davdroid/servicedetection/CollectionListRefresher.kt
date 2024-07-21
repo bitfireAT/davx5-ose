@@ -24,7 +24,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.davdroid.settings.Settings
@@ -36,6 +35,7 @@ import dagger.assisted.AssistedInject
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Logic for refreshing the list of collections and home-sets and related information.
@@ -44,8 +44,9 @@ class CollectionListRefresher @AssistedInject constructor(
     @Assisted val service: Service,
     @Assisted val httpClient: OkHttpClient,
     private val db: AppDatabase,
-    private val homeSetRepository: DavHomeSetRepository,
     private val collectionRepository: DavCollectionRepository,
+    private val homeSetRepository: DavHomeSetRepository,
+    private val logger: Logger,
     private val settings: SettingsManager
 ) {
 
@@ -72,7 +73,7 @@ class CollectionListRefresher @AssistedInject constructor(
      * @throws at.bitfire.dav4jvm.exception.DavException
      */
     internal fun discoverHomesets(principalUrl: HttpUrl, level: Int = 0) {
-        Logger.log.fine("Discovering homesets of $principalUrl")
+        logger.fine("Discovering homesets of $principalUrl")
         val relatedResources = mutableSetOf<HttpUrl>()
 
         // Define homeset class and properties to look for
@@ -149,7 +150,7 @@ class CollectionListRefresher @AssistedInject constructor(
             }
         } catch (e: HttpException) {
             if (e.code/100 == 4)
-                Logger.log.log(Level.INFO, "Ignoring Client Error 4xx while looking for ${service.type} home sets", e)
+                logger.log(Level.INFO, "Ignoring Client Error 4xx while looking for ${service.type} home sets", e)
             else
                 throw e
         }
@@ -158,7 +159,7 @@ class CollectionListRefresher @AssistedInject constructor(
         if (level <= 1)
             for (resource in relatedResources)
                 if (alreadyQueried.contains(resource))
-                    Logger.log.warning("$resource already queried, skipping")
+                    logger.warning("$resource already queried, skipping")
                 else
                     discoverHomesets(resource, level + 1)
     }
@@ -175,7 +176,7 @@ class CollectionListRefresher @AssistedInject constructor(
     internal fun refreshHomesetsAndTheirCollections() {
         val homesets = homeSetRepository.getByService(service.id).associateBy { it.url }.toMutableMap()
         for((homeSetUrl, localHomeset) in homesets) {
-            Logger.log.fine("Listing home set $homeSetUrl")
+            logger.fine("Listing home set $homeSetUrl")
 
             // To find removed collections in this homeset: create a queue from existing collections and remove every collection that
             // is successfully rediscovered. If there are collections left, after processing is done, these are marked homeless.
@@ -213,7 +214,7 @@ class CollectionListRefresher @AssistedInject constructor(
                             collection.ownerId = id
                         }
 
-                    Logger.log.log(Level.FINE, "Found collection", collection)
+                    logger.log(Level.FINE, "Found collection", collection)
 
                     // save or update collection if usable (ignore it otherwise)
                     if (isUsableCollection(collection))
@@ -288,18 +289,18 @@ class CollectionListRefresher @AssistedInject constructor(
         val principals = db.principalDao().getByService(service.id)
         for (oldPrincipal in principals) {
             val principalUrl = oldPrincipal.url
-            Logger.log.fine("Querying principal $principalUrl")
+            logger.fine("Querying principal $principalUrl")
             try {
                 DavResource(httpClient, principalUrl).propfind(0, *RefreshCollectionsWorker.DAV_PRINCIPAL_PROPERTIES) { response, _ ->
                     if (!response.isSuccess())
                         return@propfind
                     Principal.fromDavResponse(service.id, response)?.let { principal ->
-                        Logger.log.fine("Got principal: $principal")
+                        logger.fine("Got principal: $principal")
                         db.principalDao().insertOrUpdate(service.id, principal)
                     }
                 }
             } catch (e: HttpException) {
-                Logger.log.info("Principal update failed with response code ${e.code}. principalUrl=$principalUrl")
+                logger.info("Principal update failed with response code ${e.code}. principalUrl=$principalUrl")
             }
         }
 

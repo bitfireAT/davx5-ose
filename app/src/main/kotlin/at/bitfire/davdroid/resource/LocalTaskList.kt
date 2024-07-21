@@ -12,13 +12,13 @@ import android.net.Uri
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.DmfsTaskListFactory
 import at.bitfire.ical4android.TaskProvider
 import org.dmfs.tasks.contract.TaskContract.*
 import java.util.logging.Level
+import java.util.logging.Logger
 
 class LocalTaskList private constructor(
         account: Account,
@@ -68,6 +68,8 @@ class LocalTaskList private constructor(
         }
 
     }
+    
+    private val logger = Logger.getGlobal()
 
     private var accessLevel: Int = TaskListColumns.ACCESS_LEVEL_UNDEFINED
     override val readOnly
@@ -92,7 +94,7 @@ class LocalTaskList private constructor(
                         }
                 }
             } catch (e: Exception) {
-                Logger.log.log(Level.WARNING, "Couldn't read sync state", e)
+                logger.log(Level.WARNING, "Couldn't read sync state", e)
             }
             return null
         }
@@ -125,7 +127,7 @@ class LocalTaskList private constructor(
                 else                    // task was modified, increase sequence
                     task.sequence = sequence + 1
             } catch(e: Exception) {
-                Logger.log.log(Level.WARNING, "Couldn't check/increase sequence", e)
+                logger.log(Level.WARNING, "Couldn't check/increase sequence", e)
             }
         }
         return tasks

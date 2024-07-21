@@ -10,7 +10,6 @@ import android.content.SyncResult
 import android.provider.CalendarContract
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.ical4android.AndroidCalendar
@@ -57,11 +56,11 @@ class CalendarSyncer @Inject constructor(
                 val url = it.toHttpUrl()
                 val collection = remoteCollections[url]
                 if (collection == null) {
-                    Logger.log.log(Level.INFO, "Deleting obsolete local calendar", url)
+                    logger.log(Level.INFO, "Deleting obsolete local calendar", url)
                     calendar.delete()
                 } else {
                     // remote CollectionInfo found for this local collection, update data
-                    Logger.log.log(Level.FINE, "Updating local calendar $url", collection)
+                    logger.log(Level.FINE, "Updating local calendar $url", collection)
                     calendar.update(collection, updateColors)
                     // we already have a local calendar for this remote collection, don't create a new local calendar
                     newCollections -= url
@@ -70,7 +69,7 @@ class CalendarSyncer @Inject constructor(
 
         // 3. create new local calendars
         for ((_, info) in newCollections) {
-            Logger.log.log(Level.INFO, "Adding local calendar", info)
+            logger.log(Level.INFO, "Adding local calendar", info)
             LocalCalendar.create(account, provider, info)
         }
 
@@ -80,7 +79,7 @@ class CalendarSyncer @Inject constructor(
         for (calendar in calendars) {
             val url = calendar.name?.toHttpUrl()
             remoteCollections[url]?.let { collection ->
-                Logger.log.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
+                logger.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
 
                 val syncManager = calendarSyncManagerFactory.calendarSyncManager(
                     account,
