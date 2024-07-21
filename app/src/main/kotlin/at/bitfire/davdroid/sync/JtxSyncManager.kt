@@ -19,7 +19,6 @@ import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxICalObject
@@ -86,7 +85,7 @@ class JtxSyncManager @AssistedInject constructor(
             davCollection.propfind(0, GetCTag.NAME, MaxResourceSize.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        Logger.log.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
+                        logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
 
                     syncState = syncState(response)
@@ -97,7 +96,7 @@ class JtxSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalJtxICalObject): RequestBody =
         SyncException.wrapWithLocalResource(resource) {
-            Logger.log.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
+            logger.log(Level.FINE, "Preparing upload of icalobject ${resource.fileName}", resource)
             val os = ByteArrayOutputStream()
             resource.write(os)
             os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
@@ -108,25 +107,25 @@ class JtxSyncManager @AssistedInject constructor(
     override fun listAllRemote(callback: MultiResponseCallback) {
         SyncException.wrapWithRemoteResource(collection.url) {
             if (localCollection.supportsVTODO) {
-                Logger.log.info("Querying tasks")
+                logger.info("Querying tasks")
                 davCollection.calendarQuery("VTODO", null, null, callback)
             }
 
             if (localCollection.supportsVJOURNAL) {
-                Logger.log.info("Querying journals")
+                logger.info("Querying journals")
                 davCollection.calendarQuery("VJOURNAL", null, null, callback)
             }
         }
     }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
-        Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
+        logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
         SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
-                        Logger.log.warning("Received non-successful multiget response for ${response.href}")
+                        logger.warning("Received non-successful multiget response for ${response.href}")
                         return@wrapResource
                     }
 
@@ -157,12 +156,12 @@ class JtxSyncManager @AssistedInject constructor(
             // parse the reader content and return the list of ICalObjects
             icalobjects.addAll(JtxICalObject.fromReader(reader, localCollection))
         } catch (e: InvalidCalendarException) {
-            Logger.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
+            logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return
         }
 
-        Logger.log.log(Level.INFO, "Found ${icalobjects.size} entries in $fileName", icalobjects)
+        logger.log(Level.INFO, "Found ${icalobjects.size} entries in $fileName", icalobjects)
 
         icalobjects.forEach { jtxICalObject ->
             // if the entry is a recurring entry (and therefore has a recurid)
@@ -170,7 +169,7 @@ class JtxSyncManager @AssistedInject constructor(
             if(jtxICalObject.recurid != null) {
                 val local = localCollection.findRecurring(jtxICalObject.uid, jtxICalObject.recurid!!, jtxICalObject.dtstart!!)
                 SyncException.wrapWithLocalResource(local) {
-                    Logger.log.log(Level.INFO, "Updating $fileName with recur instance ${jtxICalObject.recurid} in local list", jtxICalObject)
+                    logger.log(Level.INFO, "Updating $fileName with recur instance ${jtxICalObject.recurid} in local list", jtxICalObject)
                     if(local != null) {
                         local.update(jtxICalObject)
                         syncResult.stats.numUpdates++
@@ -188,12 +187,12 @@ class JtxSyncManager @AssistedInject constructor(
                 val local = localCollection.findByName(fileName)
                 SyncException.wrapWithLocalResource(local) {
                     if (local != null) {
-                        Logger.log.log(Level.INFO, "Updating $fileName in local list", jtxICalObject)
+                        logger.log(Level.INFO, "Updating $fileName in local list", jtxICalObject)
                         local.eTag = eTag
                         local.update(jtxICalObject)
                         syncResult.stats.numUpdates++
                     } else {
-                        Logger.log.log(Level.INFO, "Adding $fileName to local list", jtxICalObject)
+                        logger.log(Level.INFO, "Adding $fileName to local list", jtxICalObject)
 
                         val newLocal = LocalJtxICalObject(localCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newLocal) {

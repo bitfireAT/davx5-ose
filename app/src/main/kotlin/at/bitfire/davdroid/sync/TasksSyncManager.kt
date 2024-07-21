@@ -19,7 +19,6 @@ import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
@@ -89,7 +88,7 @@ class TasksSyncManager @AssistedInject constructor(
             davCollection.propfind(0, MaxResourceSize.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        Logger.log.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
+                        logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
 
                     syncState = syncState(response)
@@ -104,7 +103,7 @@ class TasksSyncManager @AssistedInject constructor(
     override fun generateUpload(resource: LocalTask): RequestBody =
         SyncException.wrapWithLocalResource(resource) {
             val task = requireNotNull(resource.task)
-            Logger.log.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
+            logger.log(Level.FINE, "Preparing upload of task ${resource.fileName}", task)
 
             val os = ByteArrayOutputStream()
             task.write(os)
@@ -114,19 +113,19 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun listAllRemote(callback: MultiResponseCallback) {
         SyncException.wrapWithRemoteResource(collection.url) {
-            Logger.log.info("Querying tasks")
+            logger.info("Querying tasks")
             davCollection.calendarQuery("VTODO", null, null, callback)
         }
     }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
-        Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
+        logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
         SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
-                        Logger.log.warning("Received non-successful multiget response for ${response.href}")
+                        logger.warning("Received non-successful multiget response for ${response.href}")
                         return@wrapResource
                     }
 
@@ -145,7 +144,7 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun postProcess() {
         val touched = localCollection.touchRelations()
-        Logger.log.info("Touched $touched relations")
+        logger.info("Touched $touched relations")
     }
 
     // helpers
@@ -155,7 +154,7 @@ class TasksSyncManager @AssistedInject constructor(
         try {
             tasks = Task.tasksFromReader(reader)
         } catch (e: InvalidCalendarException) {
-            Logger.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
+            logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return
         }
@@ -167,12 +166,12 @@ class TasksSyncManager @AssistedInject constructor(
             val local = localCollection.findByName(fileName)
             SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
-                    Logger.log.log(Level.INFO, "Updating $fileName in local task list", newData)
+                    logger.log(Level.INFO, "Updating $fileName in local task list", newData)
                     local.eTag = eTag
                     local.update(newData)
                     syncResult.stats.numUpdates++
                 } else {
-                    Logger.log.log(Level.INFO, "Adding $fileName to local task list", newData)
+                    logger.log(Level.INFO, "Adding $fileName to local task list", newData)
                     val newLocal = LocalTask(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()
@@ -181,7 +180,7 @@ class TasksSyncManager @AssistedInject constructor(
                 }
             }
         } else
-            Logger.log.info("Received VCALENDAR with not exactly one VTODO; ignoring $fileName")
+            logger.info("Received VCALENDAR with not exactly one VTODO; ignoring $fileName")
     }
 
     override fun notifyInvalidResourceTitle(): String =

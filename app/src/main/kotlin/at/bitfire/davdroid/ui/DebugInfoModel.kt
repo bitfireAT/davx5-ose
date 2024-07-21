@@ -42,7 +42,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.LogFileHandler
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -64,6 +63,7 @@ import java.io.IOException
 import java.io.Writer
 import java.util.TimeZone
 import java.util.logging.Level
+import java.util.logging.Logger
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
@@ -76,6 +76,7 @@ class DebugInfoModel @AssistedInject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
     private val db: AppDatabase,
+    private val logger: Logger,
     private val settings: SettingsManager
 ) : ViewModel() {
 
@@ -134,7 +135,7 @@ class DebugInfoModel @AssistedInject constructor(
                     }
                     uiState = uiState.copy(logFile = file)
                 } else
-                    Logger.log.warning("Can't write logs to $file")
+                    logger.warning("Can't write logs to $file")
             } else LogFileHandler.getDebugLogFile(context)?.let { debugLogFile ->
                 if (debugLogFile.isFile && debugLogFile.canRead())
                     uiState = uiState.copy(logFile = debugLogFile)
@@ -157,7 +158,7 @@ class DebugInfoModel @AssistedInject constructor(
     }
 
     /**
-     * Creates debug info and saves it to [Logger.debugDir]/[FILE_DEBUG_INFO]
+     * Creates debug info and saves it to [FILE_DEBUG_INFO] in [LogFileHandler.debugDir]
      *
      * Note: Part of this method and all of it's helpers (listed below) should probably be extracted in the future
      */
@@ -248,7 +249,7 @@ class DebugInfoModel @AssistedInject constructor(
                     }
                 writer.append(table.toString())
             } catch (e: Exception) {
-                Logger.log.log(Level.SEVERE, "Couldn't get software information", e)
+                logger.log(Level.SEVERE, "Couldn't get software information", e)
             }
 
             // system info
@@ -427,7 +428,7 @@ class DebugInfoModel @AssistedInject constructor(
             uiState = uiState.copy(zipInProgress = true)
 
             val file = File(LogFileHandler.debugDir(context), "davx5-debug.zip")
-            Logger.log.fine("Writing debug info to ${file.absolutePath}")
+            logger.fine("Writing debug info to ${file.absolutePath}")
             ZipOutputStream(file.outputStream().buffered()).use { zip ->
                 zip.setLevel(9)
                 uiState.debugInfo?.let { debugInfo ->
@@ -450,7 +451,7 @@ class DebugInfoModel @AssistedInject constructor(
                             ByteStreams.copy(logcat.inputStream, zip)
                         }
                     } catch (e: Exception) {
-                        Logger.log.log(Level.SEVERE, "Couldn't attach logcat", e)
+                        logger.log(Level.SEVERE, "Couldn't attach logcat", e)
                     }
                 }
             }
@@ -458,7 +459,7 @@ class DebugInfoModel @AssistedInject constructor(
             // success, show ZIP file
             uiState = uiState.copy(zipFile = file)
         } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't generate debug info ZIP", e)
+            logger.log(Level.SEVERE, "Couldn't generate debug info ZIP", e)
             uiState = uiState.copy(error = e.localizedMessage)
         } finally {
             uiState = uiState.copy(zipInProgress = false)

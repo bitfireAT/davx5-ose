@@ -11,7 +11,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -32,6 +31,7 @@ import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -61,6 +61,9 @@ class CollectionListRefresherTest {
     lateinit var db: AppDatabase
 
     @Inject
+    lateinit var logger: Logger
+
+    @Inject
     lateinit var refresherFactory: CollectionListRefresher.Factory
 
     @Inject
@@ -74,7 +77,7 @@ class CollectionListRefresherTest {
         hiltRule.inject()
 
         // Start mock web server
-        mockServer.dispatcher = TestDispatcher()
+        mockServer.dispatcher = TestDispatcher(logger)
         mockServer.start()
 
         client = HttpClient.Builder(context).build()
@@ -617,7 +620,10 @@ class CollectionListRefresherTest {
         return db.serviceDao().get(serviceId)
     }
 
-    class TestDispatcher: Dispatcher() {
+
+    class TestDispatcher(
+        private val logger: Logger
+    ): Dispatcher() {
 
         override fun dispatch(request: RecordedRequest): MockResponse {
             val path = request.path!!.trimEnd('/')
@@ -698,8 +704,8 @@ class CollectionListRefresherTest {
                             "</multistatus>"
                 }
 
-                Logger.log.info("Queried: $path")
-                Logger.log.info("Response: $responseBody")
+                logger.info("Queried: $path")
+                logger.info("Response: $responseBody")
                 return MockResponse()
                     .setResponseCode(responseCode)
                     .setBody(responseBody)

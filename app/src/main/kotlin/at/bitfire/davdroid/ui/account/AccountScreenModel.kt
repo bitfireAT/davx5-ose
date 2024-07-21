@@ -18,7 +18,6 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -41,18 +40,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.logging.Level
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountScreenModel.Factory::class)
 class AccountScreenModel @AssistedInject constructor(
     @Assisted val account: Account,
     private val accountRepository: AccountRepository,
+    accountProgressUseCase: AccountProgressUseCase,
     accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
-    serviceRepository: DavServiceRepository,
-    accountProgressUseCase: AccountProgressUseCase,
     getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
-    getServiceCollectionPager: GetServiceCollectionPagerUseCase
+    getServiceCollectionPager: GetServiceCollectionPagerUseCase,
+    private val logger: Logger,
+    serviceRepository: DavServiceRepository,
 ): ViewModel() {
 
     @AssistedFactory
@@ -162,7 +163,7 @@ class AccountScreenModel @AssistedInject constructor(
                 val newAccount = Account(context.getString(R.string.account_type), newName)
                 OneTimeSyncWorker.enqueueAllAuthorities(context, newAccount, manual = true)
             } catch (e: Exception) {
-                Logger.log.log(Level.SEVERE, "Couldn't rename account", e)
+                logger.log(Level.SEVERE, "Couldn't rename account", e)
                 error = e.localizedMessage
             }
         }

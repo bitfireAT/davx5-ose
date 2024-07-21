@@ -35,12 +35,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Used when "Manage permissions" is selected in the settings.
@@ -106,7 +106,7 @@ fun PermissionsScreen(
                     context.startActivity(intent)
                     Toast.makeText(context, R.string.permissions_autoreset_instruction, Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {
-                    Logger.log.log(Level.WARNING, "Couldn't start Keep Permissions activity", e)
+                    Logger.getGlobal().log(Level.WARNING, "Couldn't start Keep Permissions activity", e)
                 }
             }
         },

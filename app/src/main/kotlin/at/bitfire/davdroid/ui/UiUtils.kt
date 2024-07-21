@@ -37,7 +37,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.getSpans
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.EntryPoint
@@ -45,6 +44,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import java.util.logging.Level
+import java.util.logging.Logger
 
 object UiUtils {
 
@@ -55,6 +55,10 @@ object UiUtils {
     }
 
     const val SHORTCUT_SYNC_ALL = "syncAllAccounts"
+    
+    private val logger: Logger
+        get() = Logger.getGlobal()
+    
 
     @Composable
     fun adaptiveIconPainterResource(@DrawableRes id: Int): Painter {
@@ -89,7 +93,7 @@ object UiUtils {
                             .build()
                     )
                 } catch(e: Exception) {
-                    Logger.log.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
+                    logger.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
                 }
             }
     }
@@ -130,7 +134,7 @@ object UiUtils {
                     )
                 }
                 else ->
-                    Logger.log.warning("Ignoring unknown span type ${span.javaClass.name}")
+                    logger.warning("Ignoring unknown span type ${span.javaClass.name}")
             }
         }
     }

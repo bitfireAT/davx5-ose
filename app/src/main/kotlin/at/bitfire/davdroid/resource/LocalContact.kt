@@ -11,7 +11,6 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts.Data
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.contactrow.CachedGroupMembershipHandler
 import at.bitfire.davdroid.resource.contactrow.GroupMembershipBuilder
 import at.bitfire.davdroid.resource.contactrow.GroupMembershipHandler
@@ -26,13 +25,12 @@ import at.bitfire.vcard4android.Contact
 import ezvcard.Ezvcard
 import java.io.FileNotFoundException
 import java.util.UUID
+import java.util.logging.Logger
 
 class LocalContact: AndroidContact, LocalAddress {
 
-    override val addressBook: LocalAddressBook
-        get() = super.addressBook as LocalAddressBook
-
     companion object {
+
         init {
             Contact.productID = "+//IDN bitfire.at//${BuildConfig.userAgent}/${BuildConfig.VERSION_NAME} ez-vcard/" + Ezvcard.VERSION
         }
@@ -40,6 +38,11 @@ class LocalContact: AndroidContact, LocalAddress {
         const val COLUMN_FLAGS = ContactsContract.RawContacts.SYNC4
         const val COLUMN_HASHCODE = ContactsContract.RawContacts.SYNC3
     }
+
+    private val logger: Logger = Logger.getGlobal()
+
+    override val addressBook: LocalAddressBook
+        get() = super.addressBook as LocalAddressBook
 
     internal val cachedGroupMemberships = HashSet<Long>()
     internal val groupMemberships = HashSet<Long>()
@@ -102,7 +105,7 @@ class LocalContact: AndroidContact, LocalAddress {
             // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
             val hashCode = dataHashCode()
             values.put(COLUMN_HASHCODE, hashCode)
-            Logger.log.finer("Clearing dirty flag with eTag = $eTag, contact hash = $hashCode")
+            logger.finer("Clearing dirty flag with eTag = $eTag, contact hash = $hashCode")
         }
 
         addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
@@ -148,7 +151,7 @@ class LocalContact: AndroidContact, LocalAddress {
         // groupMemberships is filled by getContact()
         val dataHash = getContact().hashCode()
         val groupHash = groupMemberships.hashCode()
-        Logger.log.finest("Calculated data hash = $dataHash, group memberships hash = $groupHash")
+        logger.finest("Calculated data hash = $dataHash, group memberships hash = $groupHash")
         return dataHash xor groupHash
     }
 
@@ -157,7 +160,7 @@ class LocalContact: AndroidContact, LocalAddress {
             throw IllegalStateException("updateHashCode() should not be called on Android != 7")
 
         val hashCode = dataHashCode()
-        Logger.log.fine("Storing contact hash = $hashCode")
+        logger.fine("Storing contact hash = $hashCode")
 
         if (batch == null) {
             val values = ContentValues(1)

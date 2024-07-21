@@ -24,12 +24,12 @@ import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.log.Logger
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import java.util.logging.Logger
 
 object PermissionUtils {
 
@@ -152,7 +152,7 @@ object PermissionUtils {
         if (intent.resolveActivity(context.packageManager) != null)
             context.startActivity(intent)
         else
-            Logger.log.warning("App settings Intent not resolvable")
+            Logger.getGlobal().warning("App settings Intent not resolvable")
     }
 
 }

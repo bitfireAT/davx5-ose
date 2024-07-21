@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.network
 
-import at.bitfire.davdroid.log.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
@@ -14,6 +13,7 @@ import net.openid.appauth.AuthorizationService
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Sends an OAuth Bearer token authorization as described in RFC 6750.
@@ -23,6 +23,9 @@ class BearerAuthInterceptor(
 ): Interceptor {
 
     companion object {
+
+        val logger: Logger
+            get() = Logger.getGlobal()
 
         fun fromAuthState(authService: AuthorizationService, authState: AuthState, callback: AuthStateUpdateCallback? = null): BearerAuthInterceptor? {
             return runBlocking {
@@ -37,7 +40,7 @@ class BearerAuthInterceptor(
                         accessTokenFuture.complete(accessToken)
                     }
                     else {
-                        Logger.log.log(Level.WARNING, "Couldn't obtain access token", ex)
+                        logger.log(Level.WARNING, "Couldn't obtain access token", ex)
                         accessTokenFuture.cancel()
                     }
                 }
@@ -54,7 +57,7 @@ class BearerAuthInterceptor(
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        Logger.log.finer("Authenticating request with access token")
+        logger.finer("Authenticating request with access token")
         val rq = chain.request().newBuilder()
             .header("Authorization", "Bearer $accessToken")
             .build()

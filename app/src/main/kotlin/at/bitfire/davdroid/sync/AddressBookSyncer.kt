@@ -13,7 +13,6 @@ import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.Settings
@@ -55,15 +54,15 @@ class AddressBookSyncer @Inject constructor(
         // permission check
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             if (remoteCollections.isEmpty())
-                Logger.log.info("No contacts permission, but no address book selected for synchronization")
+                logger.info("No contacts permission, but no address book selected for synchronization")
             else
-                Logger.log.warning("No contacts permission, but address books are selected for synchronization")
+                logger.warning("No contacts permission, but address books are selected for synchronization")
             return // Don't sync
         }
 
         context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY).use { contactsProvider ->
             if (contactsProvider == null) {
-                Logger.log.severe("Couldn't access contacts provider")
+                logger.severe("Couldn't access contacts provider")
                 syncResult.databaseError = true
                 return // Don't sync
             }
@@ -75,15 +74,15 @@ class AddressBookSyncer @Inject constructor(
                 val url = addressBook.url.toHttpUrl()
                 val collection = remoteCollections[url]
                 if (collection == null) {
-                    Logger.log.log(Level.INFO, "Deleting obsolete local address book", url)
+                    logger.log(Level.INFO, "Deleting obsolete local address book", url)
                     addressBook.delete()
                 } else {
                     // remote CollectionInfo found for this local collection, update data
                     try {
-                        Logger.log.log(Level.FINE, "Updating local address book $url", collection)
+                        logger.log(Level.FINE, "Updating local address book $url", collection)
                         addressBook.update(collection, forceAllReadOnly)
                     } catch (e: Exception) {
-                        Logger.log.log(Level.WARNING, "Couldn't rename address book account", e)
+                        logger.log(Level.WARNING, "Couldn't rename address book account", e)
                     }
                     // we already have a local address book for this remote collection, don't create a new local address book
                     newCollections -= url
@@ -92,7 +91,7 @@ class AddressBookSyncer @Inject constructor(
 
             // 3. create new local address books
             for ((_, info) in newCollections) {
-                Logger.log.log(Level.INFO, "Adding local address book", info)
+                logger.log(Level.INFO, "Adding local address book", info)
                 LocalAddressBook.create(context, contactsProvider, account, info, forceAllReadOnly)
             }
         }
@@ -100,7 +99,7 @@ class AddressBookSyncer @Inject constructor(
         // 4. sync local address books
         context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { contactsProvider ->
             for (addressBook in LocalAddressBook.findAll(context, null, account)) {
-                Logger.log.info("Synchronizing address book $addressBook")
+                logger.info("Synchronizing address book $addressBook")
 
                 val url = addressBook.url.toHttpUrl()
                 remoteCollections[url]?.let { collection ->
@@ -135,7 +134,7 @@ class AddressBookSyncer @Inject constructor(
             val groupMethod = accountSettings.getGroupMethod().name
             accountSettings.accountManager.getUserData(account, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
                 if (previousGroupMethod != groupMethod) {
-                    Logger.log.info("Group method changed, deleting all local contacts/groups")
+                    logger.info("Group method changed, deleting all local contacts/groups")
 
                     // delete all local contacts and groups so that they will be downloaded again
                     provider.delete(addressBook.syncAdapterURI(ContactsContract.RawContacts.CONTENT_URI), null, null)
@@ -147,16 +146,16 @@ class AddressBookSyncer @Inject constructor(
             }
             accountSettings.accountManager.setAndVerifyUserData(account, PREVIOUS_GROUP_METHOD, groupMethod)
 
-            Logger.log.info("Synchronizing address book: ${addressBook.url}")
-            Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
+            logger.info("Synchronizing address book: ${addressBook.url}")
+            logger.info("Taking settings from: ${addressBook.mainAccount}")
 
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
             syncManager.performSync()
 
         } catch(e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't sync contacts", e)
+            logger.log(Level.SEVERE, "Couldn't sync contacts", e)
         }
-        Logger.log.info("Contacts sync complete")
+        logger.info("Contacts sync complete")
     }
 
 }

@@ -16,7 +16,6 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.sync.SyncUtils
@@ -40,6 +39,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.text.Collator
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountsModel.Factory::class)
 class AccountsModel @AssistedInject constructor(
@@ -47,7 +47,8 @@ class AccountsModel @AssistedInject constructor(
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
     private val db: AppDatabase,
-    introPageFactory: IntroPageFactory
+    introPageFactory: IntroPageFactory,
+    private val logger: Logger
 ): ViewModel() {
 
     @AssistedFactory
@@ -119,7 +120,7 @@ class AccountsModel @AssistedInject constructor(
     val showAppIntro: Flow<Boolean> = flow<Boolean> {
         val anyShowAlwaysPage = introPageFactory.introPages.any { introPage ->
             val policy = introPage.getShowPolicy()
-            Logger.log.fine("Intro page ${introPage::class.java.name} policy = $policy")
+            logger.fine("Intro page ${introPage::class.java.name} policy = $policy")
 
             policy == IntroPage.ShowPolicy.SHOW_ALWAYS
         }
