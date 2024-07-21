@@ -12,8 +12,12 @@ import java.util.Locale
 import java.util.logging.Formatter
 import java.util.logging.LogRecord
 
-class PlainTextFormatter private constructor(
-    private val forLogcat: Boolean
+class PlainTextFormatter(
+    private val withTime: Boolean,
+    private val withSource: Boolean,
+    private val padSource: Int = 30,
+    private val withException: Boolean,
+    private val lineSeparator: String?
 ): Formatter() {
 
     companion object {
@@ -21,12 +25,22 @@ class PlainTextFormatter private constructor(
         /**
          * Formatter intended for logcat output.
          */
-        val LOGCAT = PlainTextFormatter(true)
+        val LOGCAT = PlainTextFormatter(
+            withTime = false,
+            withSource = false,
+            withException = false,
+            lineSeparator = null
+        )
 
         /**
          * Formatter intended for file output.
          */
-        val DEFAULT = PlainTextFormatter(false)
+        val DEFAULT = PlainTextFormatter(
+            withTime = true,
+            withSource = true,
+            withException = true,
+            lineSeparator = System.lineSeparator()
+        )
 
         fun shortClassName(className: String) = className
             .replace(Regex("^at\\.bitfire\\.(dav|cert4an|dav4an|ical4an|vcard4an)droid\\."), ".")
@@ -46,20 +60,21 @@ class PlainTextFormatter private constructor(
     override fun format(r: LogRecord): String {
         val builder = StringBuilder()
 
-        if (!forLogcat) {
+        if (withTime)
             builder .append(timeFormat.format(Date(r.millis)))
                     .append(" ").append(r.threadID).append(" ")
 
-            if (r.sourceClassName != null) {
-                val className = shortClassName(r.sourceClassName)
-                if (className != r.loggerName)
-                    builder.append("[").append(className).append("] ")
+        if (withSource && r.sourceClassName != null) {
+            val className = shortClassName(r.sourceClassName)
+            if (className != r.loggerName) {
+                val classNameColumn = "[$className] ".padEnd(padSource)
+                builder.append(classNameColumn)
             }
         }
 
         builder.append(r.message)
 
-        if (!forLogcat && r.thrown != null) {
+        if (withException && r.thrown != null) {
             val indentedStackTrace = stackTrace(r.thrown)
                 .replace("\n", "\n\t")
                 .removeSuffix("\t")
@@ -71,8 +86,8 @@ class PlainTextFormatter private constructor(
                 builder.append("\n\tPARAMETER #").append(idx).append(" = ").append(param)
         }
 
-        if (!forLogcat)
-            builder.append("\n")
+        if (lineSeparator != null)
+            builder.append(lineSeparator)
 
         return builder.toString()
     }
