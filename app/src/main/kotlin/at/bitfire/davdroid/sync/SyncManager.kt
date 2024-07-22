@@ -75,12 +75,6 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import okhttp3.HttpUrl
-import okhttp3.RequestBody
-import org.dmfs.tasks.contract.TaskContract
 
 /**
  * Synchronizes a local collection with a remote collection.
