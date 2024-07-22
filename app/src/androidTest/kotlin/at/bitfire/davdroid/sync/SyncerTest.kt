@@ -72,10 +72,6 @@ class SyncerTest {
             TODO("Not yet implemented")
         }
 
-        override fun afterSync() {
-            TODO("Not yet implemented")
-        }
-
         override fun syncCollection(
             localCollection: LocalTestCollection,
             remoteCollection: Collection

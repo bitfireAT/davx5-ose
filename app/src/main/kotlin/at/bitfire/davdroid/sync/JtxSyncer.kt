@@ -105,5 +105,4 @@ class JtxSyncer @AssistedInject constructor(
         syncManager.performSync()
     }
 
-    override fun afterSync() {}
 }

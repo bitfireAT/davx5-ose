@@ -128,9 +128,6 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
                 syncCollection(localCollection, remoteCollection)
             }
 
-        // 5. clean up
-        afterSync()
-
     }
 
     abstract fun beforeSync()
@@ -144,8 +141,6 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     abstract fun create(remoteCollection: Collection)
 
     abstract fun syncCollection(localCollection: CollectionType, remoteCollection: Collection)
-
-    abstract fun afterSync()
 
     fun onPerformSync() {
         logger.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))

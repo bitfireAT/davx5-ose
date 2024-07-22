@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.Context
 import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
@@ -18,7 +17,6 @@ import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
@@ -108,7 +106,4 @@ class TaskSyncer @AssistedInject constructor(
         syncManager.performSync()
     }
 
-    override fun afterSync() {
-        taskProvider.close()
-    }
 }

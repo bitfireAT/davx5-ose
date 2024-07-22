@@ -101,8 +101,6 @@ class AddressBookSyncer @AssistedInject constructor(
         )
     }
 
-    override fun afterSync() {}
-
     private fun syncAddressBook(
         account: Account,
         extras: Array<String>,
@@ -140,9 +138,6 @@ class AddressBookSyncer @AssistedInject constructor(
         } catch(e: Exception) {
             logger.log(Level.SEVERE, "Couldn't sync contacts", e)
         }
-
-        // close content provider client which is acquired above
-        provider.close()
 
         logger.info("Contacts sync complete")
     }

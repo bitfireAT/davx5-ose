@@ -87,6 +87,4 @@ class CalendarSyncer @AssistedInject constructor(
         LocalCalendar.create(account, provider, remoteCollection)
     }
 
-    override fun afterSync() {}
-
 }
