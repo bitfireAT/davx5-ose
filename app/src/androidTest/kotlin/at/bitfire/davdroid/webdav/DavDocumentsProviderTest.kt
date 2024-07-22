@@ -6,13 +6,12 @@ package at.bitfire.davdroid.webdav
 
 import android.content.Context
 import android.security.NetworkSecurityPolicy
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.CookieJar
@@ -31,33 +30,41 @@ import javax.inject.Inject
 @HiltAndroidTest
 class DavDocumentsProviderTest {
 
+    companion object {
+        private const val PATH_WEBDAV_ROOT = "/webdav"
+    }
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
 
-    @Inject lateinit var db: AppDatabase
+    @Inject
+    lateinit var db: AppDatabase
+
+    @Inject
+    lateinit var logger: java.util.logging.Logger
 
     @Before
     fun setUp() {
         hiltRule.inject()
     }
 
+
     private var mockServer =  MockWebServer()
 
     private lateinit var client: HttpClient
 
-    companion object {
-        private const val PATH_WEBDAV_ROOT = "/webdav"
-    }
 
     @Before
     fun mockServerSetup() {
         // Start mock web server
-        mockServer.dispatcher = TestDispatcher()
+        mockServer.dispatcher = TestDispatcher(logger)
         mockServer.start()
 
-        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build()
+        client = HttpClient.Builder(context).build()
 
         // mock server delivers HTTP without encryption
         assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
@@ -79,7 +86,7 @@ class DavDocumentsProviderTest {
         val cookieStore = mutableMapOf<Long, CookieJar>()
 
         // Query
-        DavDocumentsProvider.DavDocumentsActor(context, db, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent)
 
         // Assert new children were inserted into db
@@ -113,7 +120,7 @@ class DavDocumentsProviderTest {
         assertEquals("My Books", db.webDavDocumentDao().get(folderId)!!.displayName)
 
         // Query - should update the parent displayname and folder name
-        DavDocumentsProvider.DavDocumentsActor(context, db, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent)
 
         // Assert parent and children were updated in database
@@ -138,7 +145,7 @@ class DavDocumentsProviderTest {
         assertEquals("deleteme", db.webDavDocumentDao().get(folderId)!!.name)
 
         // Query - discovers serverside deletion
-        DavDocumentsProvider.DavDocumentsActor(context, db, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent)
 
         // Assert folder got deleted
@@ -162,9 +169,9 @@ class DavDocumentsProviderTest {
         assertEquals("parent2", parent2.name)
 
         // Query - find children of two nodes simultaneously
-        DavDocumentsProvider.DavDocumentsActor(context, db, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent1)
-        DavDocumentsProvider.DavDocumentsActor(context, db, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
+        DavDocumentsProvider.DavDocumentsActor(context, db, logger, cookieStore, CredentialsStore(context), context.getString(R.string.webdav_authority))
             .queryChildren(parent2)
 
         // Assert the two folders names have changed
@@ -175,7 +182,9 @@ class DavDocumentsProviderTest {
 
     // mock server
 
-    class TestDispatcher: Dispatcher() {
+    class TestDispatcher(
+        private val logger: java.util.logging.Logger
+    ): Dispatcher() {
 
         data class Resource(
             val name: String,
@@ -230,8 +239,8 @@ class DavDocumentsProviderTest {
                         responses +
                     "</multistatus>"
 
-                Logger.log.info("Query path: $requestPath")
-                Logger.log.info("Response: $multistatus")
+                logger.info("Query path: $requestPath")
+                logger.info("Response: $multistatus")
                 return MockResponse()
                     .setResponseCode(207)
                     .setBody(multistatus)

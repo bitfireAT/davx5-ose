@@ -7,7 +7,6 @@ package at.bitfire.davdroid.network
 import android.net.Uri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.log.Logger
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,10 +19,14 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import net.openid.appauth.TokenResponse
 import java.net.URI
+import java.util.logging.Logger
 
 class GoogleLogin(
     val authService: AuthorizationService
 ) {
+    
+    private val logger: Logger = Logger.getGlobal()
+
 
     companion object {
 
@@ -72,7 +75,7 @@ class GoogleLogin(
 
         withContext(Dispatchers.IO) {
             authService.performTokenRequest(authResponse.createTokenExchangeRequest()) { tokenResponse: TokenResponse?, refreshTokenException: AuthorizationException? ->
-                Logger.log.info("Refresh token response: ${tokenResponse?.jsonSerializeString()}")
+                logger.info("Refresh token response: ${tokenResponse?.jsonSerializeString()}")
 
                 if (tokenResponse != null) {
                     // success, save authState (= refresh token)

@@ -10,10 +10,8 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.os.Build
 import android.provider.CalendarContract
-import androidx.annotation.RequiresApi
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.ical4android.AndroidCalendar
@@ -24,6 +22,7 @@ import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import java.util.logging.Logger
 
 /**
  * JUnit ClassRule which initializes the AOSP CalendarProvider.
@@ -40,6 +39,8 @@ import org.junit.runners.model.Statement
  */
 class InitCalendarProviderRule private constructor(): TestRule {
 
+    private val logger = Logger.getLogger(InitCalendarProviderRule::javaClass.name)
+
     companion object {
         fun getInstance() = RuleChain
             .outerRule(GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR))
@@ -47,16 +48,18 @@ class InitCalendarProviderRule private constructor(): TestRule {
     }
 
     override fun apply(base: Statement, description: Description): Statement {
-        Logger.log.info("Initializing calendar provider before running ${description.displayName}")
+        logger.info("Initializing calendar provider before running ${description.displayName}")
         return InitCalendarProviderStatement(base)
     }
 
 
     class InitCalendarProviderStatement(val base: Statement): Statement() {
 
+        private val logger = Logger.getLogger(InitCalendarProviderRule::javaClass.name)
+
         override fun evaluate() {
             if (Build.VERSION.SDK_INT < 31)
-                Logger.log.warning("Calendar provider initialization may or may not work. See InitCalendarProviderRule")
+                logger.warning("Calendar provider initialization may or may not work. See InitCalendarProviderRule")
             initCalendarProvider()
 
             base.evaluate()

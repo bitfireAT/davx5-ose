@@ -1,13 +1,14 @@
 package at.bitfire.davdroid.ui.intro
 
 import androidx.lifecycle.ViewModel
-import at.bitfire.davdroid.log.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltViewModel
 class IntroModel @Inject constructor(
-    introPageFactory: IntroPageFactory
+    introPageFactory: IntroPageFactory,
+    private val logger: Logger
 ): ViewModel() {
 
     private val introPages = introPageFactory.introPages
@@ -19,13 +20,13 @@ class IntroModel @Inject constructor(
 
     private fun calculatePages(): List<IntroPage> {
         for (page in introPages)
-            Logger.log.fine("Found intro page ${page::class.java} with order ${page.getShowPolicy()}")
+            logger.fine("Found intro page ${page::class.java} with order ${page.getShowPolicy()}")
 
         // Calculate which intro pages shall be shown
         val activePages: Map<IntroPage, IntroPage.ShowPolicy> = introPages
             .associateWith { page ->
                 page.getShowPolicy().also { policy ->
-                    Logger.log.fine("IntroActivity: found intro page ${page::class.java} with $policy")
+                    logger.fine("IntroActivity: found intro page ${page::class.java} with $policy")
                 }
             }
             .filterValues { it != IntroPage.ShowPolicy.DONT_SHOW }

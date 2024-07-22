@@ -9,8 +9,8 @@ import android.widget.Toast
 import androidx.compose.ui.platform.AndroidUriHandler
 import androidx.compose.ui.platform.UriHandler
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import java.util.logging.Level
+import java.util.logging.Logger
 
 class SafeAndroidUriHandler(
     val context: Context
@@ -20,7 +20,7 @@ class SafeAndroidUriHandler(
         try {
             AndroidUriHandler(context).openUri(uri)
         } catch (e: Exception) {
-            Logger.log.log(Level.WARNING, "No browser available", e)
+            Logger.getGlobal().log(Level.WARNING, "No browser available", e)
             // no browser available
             Toast.makeText(context, R.string.install_browser, Toast.LENGTH_LONG).show()
         }

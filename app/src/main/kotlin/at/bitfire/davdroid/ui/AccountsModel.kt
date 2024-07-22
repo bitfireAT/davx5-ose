@@ -1,7 +1,7 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
@@ -16,7 +16,6 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.sync.SyncUtils
@@ -30,6 +29,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -39,14 +39,16 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.text.Collator
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountsModel.Factory::class)
 class AccountsModel @AssistedInject constructor(
     @Assisted val syncAccountsOnInit: Boolean,
-    private val context: Application,
     private val accountRepository: AccountRepository,
+    @ApplicationContext val context: Context,
     private val db: AppDatabase,
-    introPageFactory: IntroPageFactory
+    introPageFactory: IntroPageFactory,
+    private val logger: Logger
 ): ViewModel() {
 
     @AssistedFactory
@@ -118,7 +120,7 @@ class AccountsModel @AssistedInject constructor(
     val showAppIntro: Flow<Boolean> = flow<Boolean> {
         val anyShowAlwaysPage = introPageFactory.introPages.any { introPage ->
             val policy = introPage.getShowPolicy()
-            Logger.log.fine("Intro page ${introPage::class.java.name} policy = $policy")
+            logger.fine("Intro page ${introPage::class.java.name} policy = $policy")
 
             policy == IntroPage.ShowPolicy.SHOW_ALWAYS
         }

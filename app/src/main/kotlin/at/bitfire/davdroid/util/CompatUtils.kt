@@ -6,7 +6,7 @@ package at.bitfire.davdroid.util
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import at.bitfire.davdroid.log.Logger
+import java.util.logging.Logger
 
 /**
  * [AccountManager.setUserData] has been found to be unreliable at times. This extension function
@@ -15,6 +15,7 @@ import at.bitfire.davdroid.log.Logger
  * Note: In the future we want to store accounts + associated data in the database, never calling
  * so this method will become obsolete then.
  */
+@Deprecated("Don't use AccountManager to store user data; use DB instead")
 fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: String?) {
     for (i in 1..10) {
         setUserData(account, key, value)
@@ -23,5 +24,5 @@ fun AccountManager.setAndVerifyUserData(account: Account, key: String, value: St
 
         Thread.sleep(100)
     }
-    Logger.log.warning("AccountManager failed to set $account user data $key := $value")
+    Logger.getGlobal().warning("AccountManager failed to set $account user data $key := $value")
 }

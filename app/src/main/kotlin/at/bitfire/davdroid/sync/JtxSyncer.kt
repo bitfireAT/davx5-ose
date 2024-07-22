@@ -6,13 +6,10 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.Context
 import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.util.TaskUtils
@@ -21,26 +18,20 @@ import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * Sync logic for jtx board
  */
 class JtxSyncer @AssistedInject constructor(
-    @ApplicationContext context: Context,
-    serviceRepository: DavServiceRepository,
-    collectionRepository: DavCollectionRepository,
     private val principalRepository: PrincipalRepository,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
-    private val logger: Logger
-): Syncer<LocalJtxCollection>(context, serviceRepository, collectionRepository, account, extras, syncResult) {
+): Syncer<LocalJtxCollection>(account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {

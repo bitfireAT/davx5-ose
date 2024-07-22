@@ -25,8 +25,8 @@ import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.AccountUtils
-import at.bitfire.davdroid.ui.NotificationUtils
 import dagger.assisted.AssistedFactory
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
@@ -47,7 +47,7 @@ class PeriodicSyncWorkerTest {
 
     companion object {
 
-        val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        private val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
         private val accountManager = AccountManager.get(context)
         private val account = Account("Test Account", context.getString(R.string.account_type))
@@ -56,10 +56,6 @@ class PeriodicSyncWorkerTest {
         @BeforeClass
         @JvmStatic
         fun setUp() {
-            // The test application is an instance of HiltTestApplication, which doesn't initialize notification channels.
-            // However, we need notification channels for the ongoing work notifications.
-            NotificationUtils.createChannels(context)
-
             // Initialize WorkManager for instrumentation tests.
             val config = Configuration.Builder()
                 .setMinimumLoggingLevel(Log.DEBUG)
@@ -84,13 +80,17 @@ class PeriodicSyncWorkerTest {
         fun create(appContext: Context, workerParams: WorkerParameters): PeriodicSyncWorker
     }
 
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var syncWorkerFactory: PeriodicSyncWorkerFactory
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
     @get:Rule
     val mockkRule = MockKRule(this)
-
-    @Inject
-    lateinit var syncWorkerFactory: PeriodicSyncWorkerFactory
 
     @Before
     fun inject() {

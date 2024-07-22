@@ -16,9 +16,11 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.settings.AccountSettings
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Inject
 
 /**
  * Base class for sync code.
@@ -26,9 +28,6 @@ import java.util.logging.Logger
  * Contains generic sync code, equal for all sync authorities
  */
 abstract class Syncer<CollectionType: LocalCollection<*>>(
-    val context: Context,
-    val serviceRepository: DavServiceRepository,
-    val collectionRepository: DavCollectionRepository,
     protected val account: Account,
     protected val extras: Array<String>,
     protected val syncResult: SyncResult
@@ -57,6 +56,22 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     }
 
+    @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var serviceRepository: DavServiceRepository
+
+    @Inject
+    lateinit var collectionRepository: DavCollectionRepository
+
+    @Inject
+    lateinit var logger: Logger
+
     abstract val serviceType: String
 
     abstract val authority: String
@@ -67,9 +82,8 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     /** Sync enabled local collections of specific type */
     abstract val localSyncCollections: List<CollectionType>
 
-    private val logger = Logger.getGlobal()
     val remoteCollections = mutableMapOf<HttpUrl, Collection>()
-    val accountSettings by lazy { AccountSettings(context, account) }
+    val accountSettings by lazy { accountSettingsFactory.forAccount(account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
     lateinit var provider: ContentProviderClient

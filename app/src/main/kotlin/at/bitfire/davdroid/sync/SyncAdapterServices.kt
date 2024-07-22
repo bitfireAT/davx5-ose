@@ -13,26 +13,33 @@ import android.content.Context
 import android.content.Intent
 import android.content.SyncResult
 import android.os.Bundle
+import android.os.IBinder
 import android.provider.ContactsContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
+import java.util.logging.Logger
+import javax.inject.Inject
+import javax.inject.Provider
 
 abstract class SyncAdapterService: Service() {
 
-    fun syncAdapter() = SyncAdapter(this)
+    @Inject
+    lateinit var syncAdapter: Provider<SyncAdapter>
 
-    override fun onBind(intent: Intent?) = syncAdapter().syncAdapterBinder!!
+    override fun onBind(intent: Intent?): IBinder {
+        return syncAdapter.get().syncAdapterBinder
+    }
 
     /**
      * Entry point for the sync adapter framework.
@@ -43,8 +50,11 @@ abstract class SyncAdapterService: Service() {
      * adapter to provide exported services, which allow android system components and calendar,
      * contacts or task apps to sync via DAVx5.
      */
-    class SyncAdapter(
-        context: Context
+    class SyncAdapter @Inject constructor(
+        private val accountSettingsFactory: AccountSettings.Factory,
+        @ApplicationContext context: Context,
+        private val logger: Logger,
+        private val syncConditionsFactory: SyncConditions.Factory
     ): AbstractThreadedSyncAdapter(
         context,
         true    // isSyncable shouldn't be -1 because DAVx5 sets it to 0 or 1.
@@ -60,23 +70,24 @@ abstract class SyncAdapterService: Service() {
          * In any case, the sync framework shouldn't be blocked anymore as soon as a
          * value is available.
          */
-        val finished = CompletableDeferred<Boolean>()
+        private val finished = CompletableDeferred<Boolean>()
 
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             // We seem to have to pass this old SyncFramework extra for an Android 7 workaround
             val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
-            Logger.log.info("Sync request via sync framework for $account $authority (upload=$upload)")
+            logger.info("Sync request via sync framework for $account $authority (upload=$upload)")
 
             val accountSettings = try {
-                AccountSettings(context, account)
+                accountSettingsFactory.forAccount(account)
             } catch (e: InvalidAccountException) {
-                Logger.log.log(Level.WARNING, "Account doesn't exist anymore", e)
+                logger.log(Level.WARNING, "Account doesn't exist anymore", e)
                 return
             }
 
+            val syncConditions = syncConditionsFactory.create(accountSettings)
             // Should we run the sync at all?
-            if (!BaseSyncWorker.wifiConditionsMet(context, accountSettings)) {
-                Logger.log.info("Sync conditions not met. Aborting sync framework initiated sync")
+            if (!syncConditions.wifiConditionsMet()) {
+                logger.info("Sync conditions not met. Aborting sync framework initiated sync")
                 return
             }
 
@@ -90,7 +101,7 @@ abstract class SyncAdapterService: Service() {
                 else
                     authority
 
-            Logger.log.fine("Starting OneTimeSyncWorker for $workerAccount $workerAuthority and waiting for it")
+            logger.fine("Starting OneTimeSyncWorker for $workerAccount $workerAuthority and waiting for it")
             val workerName = OneTimeSyncWorker.enqueue(context, workerAccount, workerAuthority, upload = upload)
 
             // Because we are not allowed to observe worker state on a background thread, we can not
@@ -110,18 +121,18 @@ abstract class SyncAdapterService: Service() {
                 }
             } catch (e: CancellationException) {
                 // waiting for work was cancelled, either by timeout or because the worker has finished
-                Logger.log.log(Level.FINE, "Not waiting for OneTimeSyncWorker anymore (this is not an error)", e)
+                logger.log(Level.FINE, "Not waiting for OneTimeSyncWorker anymore (this is not an error)", e)
             }
 
-            Logger.log.fine("Returning to sync framework")
+            logger.fine("Returning to sync framework")
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
-            Logger.log.log(Level.WARNING, "Security exception for $account/$authority")
+            logger.log(Level.WARNING, "Security exception for $account/$authority")
         }
 
         override fun onSyncCanceled() {
-            Logger.log.info("Sync adapter requested cancellation – won't cancel sync, but also won't block sync framework anymore")
+            logger.info("Sync adapter requested cancellation – won't cancel sync, but also won't block sync framework anymore")
 
             // unblock sync framework
             finished.complete(false)
@@ -134,8 +145,18 @@ abstract class SyncAdapterService: Service() {
 }
 
 // exported sync adapter services; we need a separate class for each authority
+
+@AndroidEntryPoint
 class CalendarsSyncAdapterService: SyncAdapterService()
+
+@AndroidEntryPoint
 class ContactsSyncAdapterService: SyncAdapterService()
+
+@AndroidEntryPoint
 class JtxSyncAdapterService: SyncAdapterService()
+
+@AndroidEntryPoint
 class OpenTasksSyncAdapterService: SyncAdapterService()
+
+@AndroidEntryPoint
 class TasksOrgSyncAdapterService: SyncAdapterService()

@@ -36,20 +36,19 @@ import at.bitfire.dav4jvm.property.webdav.Owner
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runInterruptible
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Refreshes list of home sets and their respective collections of a service type (CardDAV or CalDAV).
@@ -74,8 +73,11 @@ import java.util.logging.Level
 class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    serviceRepository: DavServiceRepository,
-    val collectionListRefresherFactory: CollectionListRefresher.Factory
+    private val accountSettingsFactory: AccountSettings.Factory,
+    private val collectionListRefresherFactory: CollectionListRefresher.Factory,
+    private val logger: Logger,
+    private val notificationRegistry: NotificationRegistry,
+    serviceRepository: DavServiceRepository
 ): CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -166,20 +168,20 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         if (service == null || account == null) {
-            Logger.log.warning("Missing service or account with service ID: $serviceId")
+            logger.warning("Missing service or account with service ID: $serviceId")
             return Result.failure()
         }
 
         try {
-            Logger.log.info("Refreshing ${service.type} collections of service #$service")
+            logger.info("Refreshing ${service.type} collections of service #$service")
 
             // cancel previous notification
             NotificationManagerCompat.from(applicationContext)
-                .cancel(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS)
+                .cancel(serviceId.toString(), NotificationRegistry.NOTIFY_REFRESH_COLLECTIONS)
 
             // create authenticating OkHttpClient (credentials taken from account settings)
             runInterruptible {
-                HttpClient.Builder(applicationContext, AccountSettings(applicationContext, account))
+                HttpClient.Builder(applicationContext, accountSettingsFactory.forAccount(account))
                     .setForeground(true)
                     .build().use { client ->
                         val httpClient = client.okHttpClient
@@ -187,7 +189,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
                         // refresh home set list (from principal url)
                         service.principal?.let { principalUrl ->
-                            Logger.log.fine("Querying principal $principalUrl for home sets")
+                            logger.fine("Querying principal $principalUrl for home sets")
                             refresher.discoverHomesets(principalUrl)
                         }
 
@@ -203,10 +205,10 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             }
 
         } catch(e: InvalidAccountException) {
-            Logger.log.log(Level.SEVERE, "Invalid account", e)
+            logger.log(Level.SEVERE, "Invalid account", e)
             return Result.failure()
         } catch (e: UnauthorizedException) {
-            Logger.log.log(Level.SEVERE, "Not authorized (anymore)", e)
+            logger.log(Level.SEVERE, "Not authorized (anymore)", e)
             // notify that we need to re-authenticate in the account settings
             val settingsIntent = Intent(applicationContext, AccountSettingsActivity::class.java)
                 .putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
@@ -216,7 +218,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             )
             return Result.failure()
         } catch(e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't refresh collection list", e)
+            logger.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
             val debugIntent = DebugInfoActivity.IntentBuilder(applicationContext)
                 .withCause(e)
@@ -237,7 +239,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
      * Used by WorkManager to show a foreground service notification for expedited jobs on Android <12.
      */
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
+        val notification = NotificationCompat.Builder(applicationContext, NotificationRegistry.CHANNEL_STATUS)
             .setSmallIcon(R.drawable.ic_foreground_notify)
             .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
             .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
@@ -246,20 +248,27 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
-        return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
+        return ForegroundInfo(NotificationRegistry.NOTIFY_SYNC_EXPEDITED, notification)
     }
 
     private fun notifyRefreshError(contentText: String, contentIntent: Intent) {
-        val notify = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_GENERAL)
-            .setSmallIcon(R.drawable.ic_sync_problem_notify)
-            .setContentTitle(applicationContext.getString(R.string.refresh_collections_worker_refresh_failed))
-            .setContentText(contentText)
-            .setContentIntent(PendingIntent.getActivity(applicationContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-            .setSubText(account?.name)
-            .setCategory(NotificationCompat.CATEGORY_ERROR)
-            .build()
-        NotificationManagerCompat.from(applicationContext)
-            .notifyIfPossible(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS, notify)
+        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_REFRESH_COLLECTIONS, tag = serviceId.toString()) {
+            NotificationCompat.Builder(applicationContext, NotificationRegistry.CHANNEL_GENERAL)
+                .setSmallIcon(R.drawable.ic_sync_problem_notify)
+                .setContentTitle(applicationContext.getString(R.string.refresh_collections_worker_refresh_failed))
+                .setContentText(contentText)
+                .setContentIntent(
+                    PendingIntent.getActivity(
+                        applicationContext,
+                        0,
+                        contentIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
+                .setSubText(account?.name)
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
+                .build()
+        }
     }
 
 }

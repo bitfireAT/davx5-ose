@@ -7,7 +7,6 @@ package at.bitfire.davdroid.log
 import android.content.Context
 import android.util.Log
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.log.Logger.log
 import at.bitfire.davdroid.repository.PreferenceRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +17,7 @@ import java.io.Closeable
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
 
 /**
@@ -43,6 +43,7 @@ import javax.inject.Singleton
 @Singleton
 class LogManager @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val logFileHandler: Provider<LogFileHandler>,
     private val logger: Logger,
     private val prefs: PreferenceRepository
 ) : AutoCloseable {
@@ -67,7 +68,7 @@ class LogManager @Inject constructor(
     @Synchronized
     fun reloadConfig() {
         val logToFile = prefs.logToFile()
-        val logVerbose = logToFile || BuildConfig.DEBUG || Log.isLoggable(log.name, Log.DEBUG)
+        val logVerbose = logToFile || BuildConfig.DEBUG || Log.isLoggable(logger.name, Log.DEBUG)
         logger.info("Verbose logging = $logVerbose; log to file = $logToFile")
 
         // root logger: remove all existing handlers
@@ -83,7 +84,7 @@ class LogManager @Inject constructor(
         rootLogger.addHandler(LogcatHandler())
 
         if (logToFile)
-            rootLogger.addHandler(LogFileHandler(context))
+            rootLogger.addHandler(logFileHandler.get())
     }
 
 }

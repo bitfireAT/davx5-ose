@@ -4,13 +4,14 @@
 
 package at.bitfire.davdroid.db
 
+import android.content.Context
 import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -34,25 +35,25 @@ class CollectionTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
     lateinit var settingsManager: SettingsManager
-
-    @Before
-    fun inject() {
-        hiltRule.inject()
-    }
-
 
     private lateinit var httpClient: HttpClient
     private val server = MockWebServer()
 
     @Before
-    fun setUp() {
-        httpClient = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build()
+    fun setup() {
+        hiltRule.inject()
+
+        httpClient = HttpClient.Builder(context).build()
         Assume.assumeTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
     }
 
     @After
-    fun shutDown() {
+    fun teardown() {
         httpClient.close()
     }
 

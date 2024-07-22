@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import android.provider.CalendarContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,7 +18,6 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -30,6 +29,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -40,17 +40,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.logging.Level
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountScreenModel.Factory::class)
 class AccountScreenModel @AssistedInject constructor(
     @Assisted val account: Account,
-    val context: Application,
     private val accountRepository: AccountRepository,
-    private val collectionRepository: DavCollectionRepository,
-    serviceRepository: DavServiceRepository,
     accountProgressUseCase: AccountProgressUseCase,
+    accountSettingsFactory: AccountSettings.Factory,
+    private val collectionRepository: DavCollectionRepository,
+    @ApplicationContext val context: Context,
     getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
-    getServiceCollectionPager: GetServiceCollectionPagerUseCase
+    getServiceCollectionPager: GetServiceCollectionPagerUseCase,
+    private val logger: Logger,
+    serviceRepository: DavServiceRepository,
 ): ViewModel() {
 
     @AssistedFactory
@@ -63,7 +66,7 @@ class AccountScreenModel @AssistedInject constructor(
         !accounts.contains(account)
     }
 
-    private val settings = AccountSettings(context, account)
+    private val settings = accountSettingsFactory.forAccount(account)
     private val refreshSettingsSignal = MutableLiveData(Unit)
     val showOnlyPersonal = refreshSettingsSignal.switchMap<Unit, AccountSettings.ShowOnlyPersonal> {
         object : LiveData<AccountSettings.ShowOnlyPersonal>() {
@@ -160,7 +163,7 @@ class AccountScreenModel @AssistedInject constructor(
                 val newAccount = Account(context.getString(R.string.account_type), newName)
                 OneTimeSyncWorker.enqueueAllAuthorities(context, newAccount, manual = true)
             } catch (e: Exception) {
-                Logger.log.log(Level.SEVERE, "Couldn't rename account", e)
+                logger.log(Level.SEVERE, "Couldn't rename account", e)
                 error = e.localizedMessage
             }
         }

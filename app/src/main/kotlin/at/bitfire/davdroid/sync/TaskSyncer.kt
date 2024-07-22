@@ -11,8 +11,6 @@ import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.DmfsTaskList
@@ -25,22 +23,17 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
 class TaskSyncer @AssistedInject constructor(
-    @ApplicationContext context: Context,
-    serviceRepository: DavServiceRepository,
-    collectionRepository: DavCollectionRepository,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
     @Assisted override val authority: String,
-    private val logger: Logger
-): Syncer<LocalTaskList>(context, serviceRepository, collectionRepository, account, extras, syncResult) {
+): Syncer<LocalTaskList>(account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {

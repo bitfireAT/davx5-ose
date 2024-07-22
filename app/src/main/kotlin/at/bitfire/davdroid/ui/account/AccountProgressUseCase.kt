@@ -5,12 +5,13 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import androidx.work.WorkInfo
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 class AccountProgressUseCase @Inject constructor(
-    val context: Application
+    @ApplicationContext val context: Context
 ) {
 
     operator fun invoke(

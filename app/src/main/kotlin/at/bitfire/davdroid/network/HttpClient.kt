@@ -12,7 +12,6 @@ import at.bitfire.dav4jvm.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -48,6 +47,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.net.ssl.KeyManager
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
@@ -108,7 +108,7 @@ class HttpClient @AssistedInject constructor(
     class Builder(
         val context: Context,
         accountSettings: AccountSettings? = null,
-        val logger: java.util.logging.Logger? = Logger.log,
+        val logger: Logger = Logger.getGlobal(),
         val loggerLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
     ) {
 
@@ -116,7 +116,7 @@ class HttpClient @AssistedInject constructor(
         @InstallIn(SingletonComponent::class)
         interface HttpClientBuilderEntryPoint {
             fun authorizationService(): AuthorizationService
-            fun httpClientFactory(): HttpClient.Factory
+            fun httpClientFactory(): Factory
             fun settingsManager(): SettingsManager
         }
 
@@ -140,7 +140,7 @@ class HttpClient @AssistedInject constructor(
 
         init {
             // add network logging, if requested
-            if (logger != null && logger.isLoggable(Level.FINEST)) {
+            if (logger.isLoggable(Level.FINEST)) {
                 val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
                 loggingInterceptor.level = loggerLevel
                 orig.addNetworkInterceptor(loggingInterceptor)
@@ -167,10 +167,10 @@ class HttpClient @AssistedInject constructor(
                             else -> throw IllegalArgumentException("Invalid proxy type")
                         }
                     orig.proxy(proxy)
-                    Logger.log.log(Level.INFO, "Using proxy setting", proxy)
+                    logger.log(Level.INFO, "Using proxy setting", proxy)
                 }
             } catch (e: Exception) {
-                Logger.log.log(Level.SEVERE, "Can't set proxy, ignoring", e)
+                logger.log(Level.SEVERE, "Can't set proxy, ignoring", e)
             }
 
             customCertManager {
@@ -239,7 +239,7 @@ class HttpClient @AssistedInject constructor(
                 if (dir.exists() && dir.canWrite()) {
                     val cacheDir = File(dir, "HttpClient")
                     cacheDir.mkdir()
-                    Logger.log.fine("Using disk cache: $cacheDir")
+                    logger.fine("Using disk cache: $cacheDir")
                     orig.cache(Cache(cacheDir, DISK_CACHE_MAX_SIZE))
                     break
                 }
@@ -326,7 +326,7 @@ class HttpClient @AssistedInject constructor(
                 "okhttp/${OkHttp.VERSION}) Android/${Build.VERSION.RELEASE}"
 
         init {
-            Logger.log.info("Will set \"User-Agent: $userAgent\" for further requests")
+            Logger.getGlobal().info("Will set User-Agent: $userAgent")
         }
 
         override fun intercept(chain: Interceptor.Chain): Response {

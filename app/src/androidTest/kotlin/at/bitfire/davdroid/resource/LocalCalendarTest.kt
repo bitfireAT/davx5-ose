@@ -15,14 +15,19 @@ import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.Event
-import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
+import at.bitfire.ical4android.util.MiscUtils.closeCompat
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Status
-import org.junit.*
+import org.junit.After
+import org.junit.AfterClass
 import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.ClassRule
+import org.junit.Test
 import org.junit.rules.TestRule
 
 class LocalCalendarTest {

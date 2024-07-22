@@ -7,10 +7,10 @@ package at.bitfire.davdroid.settings
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Parcel
 import android.os.RemoteException
@@ -24,7 +24,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
@@ -43,6 +42,7 @@ import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.property.Url
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -50,14 +50,16 @@ import org.dmfs.tasks.contract.TaskContract
 import java.io.ByteArrayInputStream
 import java.io.ObjectInputStream
 import java.util.logging.Level
+import java.util.logging.Logger
 
 class AccountSettingsMigrations @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val accountSettings: AccountSettings,
-    val accountRepository: AccountRepository,
-    val context: Application,
-    val db: AppDatabase,
-    val settings: SettingsManager
+    private val accountRepository: AccountRepository,
+    @ApplicationContext val context: Context,
+    private val db: AppDatabase,
+    private val logger: Logger,
+    private val settings: SettingsManager
 ) {
 
     @AssistedFactory
@@ -77,7 +79,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
     @Suppress("unused","FunctionName")
     fun update_15_16() {
         for (authority in SyncUtils.syncAuthorities(context)) {
-            Logger.log.info("Re-enqueuing periodic sync workers for $account/$authority, if necessary")
+            logger.info("Re-enqueuing periodic sync workers for $account/$authority, if necessary")
 
             /* A maybe existing periodic worker references the old class name (even if it failed and/or is not active). So
             we need to explicitly disable and prune all workers. Just updating the worker is not enough – WorkManager will update
@@ -146,7 +148,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
         val enabled = accountSettings.getSyncInterval(authority)?.let { syncInterval ->
             accountSettings.setSyncInterval(authority, syncInterval)
         } ?: false
-        Logger.log.info("PeriodicSyncWorker for $account/$authority enabled=$enabled")
+        logger.info("PeriodicSyncWorker for $account/$authority enabled=$enabled")
     }
     private fun v14_disableSyncFramework(authority: String) {
         // Disable periodic syncs (sync adapter framework)
@@ -159,7 +161,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
             // check whether syncs are really disabled
             var result = true
             for (sync in ContentResolver.getPeriodicSyncs(account, authority)) {
-                Logger.log.info("Sync framework still has a periodic sync for $account/$authority: $sync")
+                logger.info("Sync framework still has a periodic sync for $account/$authority: $sync")
                 result = false
             }
             result
@@ -172,7 +174,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                 break
             Thread.sleep(200)
         }
-        Logger.log.info("Sync framework periodic syncs for $account/$authority disabled=$success")
+        logger.info("Sync framework periodic syncs for $account/$authority disabled=$success")
     }
 
     @Suppress("unused","FunctionName")
@@ -253,7 +255,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                                         provider.update(uri, newValues, null, null)
                                     }
                                 } catch (e: Exception) {
-                                    Logger.log.log(
+                                    logger.log(
                                         Level.WARNING,
                                         "Couldn't rewrite URL from unknown property to ${AndroidEvent.EXTNAME_URL}",
                                         e
@@ -275,7 +277,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                                         }
                                     }
                                 } catch (e: Exception) {
-                                    Logger.log.log(Level.WARNING, "Couldn't rewrite deprecated unknown property to current format", e)
+                                    logger.log(Level.WARNING, "Couldn't rewrite deprecated unknown property to current format", e)
                                 }
                             }
 
@@ -337,7 +339,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
     private fun update_8_9() {
         val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
         if (!hasCalDAV && ContentResolver.getIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority) != 0) {
-            Logger.log.info("Disabling OpenTasks sync for $account")
+            logger.info("Disabling OpenTasks sync for $account")
             ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0)
         }
     }
@@ -365,7 +367,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                     values.put(TaskContract.Tasks.SYNC_VERSION, eTag)
                     values.putNull(TaskContract.Tasks.SYNC1)
                     values.putNull(TaskContract.Tasks.SYNC2)
-                    Logger.log.log(Level.FINER, "Updating task $id", values)
+                    logger.log(Level.FINER, "Updating task $id", values)
                     provider.client.update(
                         ContentUris.withAppendedId(provider.tasksUri(), id).asSyncAdapter(account),
                         values, null, null)
@@ -402,18 +404,18 @@ class AccountSettingsMigrations @AssistedInject constructor(
                 // get previous address book settings (including URL)
                 val raw = ContactsContract.SyncState.get(provider, account)
                 if (raw == null)
-                    Logger.log.info("No contacts sync state, ignoring account")
+                    logger.info("No contacts sync state, ignoring account")
                 else {
                     parcel.unmarshall(raw, 0, raw.size)
                     parcel.setDataPosition(0)
                     val params = parcel.readBundle()!!
                     val url = params.getString("url")?.toHttpUrlOrNull()
                     if (url == null)
-                        Logger.log.info("No address book URL, ignoring account")
+                        logger.info("No address book URL, ignoring account")
                     else {
                         // create new address book
                         val info = Collection(url = url, type = Collection.TYPE_ADDRESSBOOK, displayName = account.name)
-                        Logger.log.log(Level.INFO, "Creating new address book account", url)
+                        logger.log(Level.INFO, "Creating new address book account", url)
                         val addressBookAccount = Account(
                             LocalAddressBook.accountName(account, info), context.getString(
                                 R.string.account_type_address_book))
@@ -421,7 +423,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                             throw ContactsStorageException("Couldn't create address book account")
 
                         // move contacts to new address book
-                        Logger.log.info("Moving contacts from $account to $addressBookAccount")
+                        logger.info("Moving contacts from $account to $addressBookAccount")
                         val newAccount = ContentValues(2)
                         newAccount.put(ContactsContract.RawContacts.ACCOUNT_NAME, addressBookAccount.name)
                         newAccount.put(ContactsContract.RawContacts.ACCOUNT_TYPE, addressBookAccount.type)
@@ -433,7 +435,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                             newAccount,
                             "${ContactsContract.RawContacts.ACCOUNT_NAME}=? AND ${ContactsContract.RawContacts.ACCOUNT_TYPE}=?",
                             arrayOf(account.name, account.type))
-                        Logger.log.info("$affected contacts moved to new address book")
+                        logger.info("$affected contacts moved to new address book")
                     }
 
                     ContactsContract.SyncState.set(provider, account, null)

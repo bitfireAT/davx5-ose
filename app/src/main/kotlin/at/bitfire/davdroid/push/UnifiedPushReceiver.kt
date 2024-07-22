@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.push
 
 import android.content.Context
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -14,6 +13,7 @@ import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
 import org.unifiedpush.android.connector.MessagingReceiver
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,6 +24,9 @@ class UnifiedPushReceiver: MessagingReceiver() {
 
     @Inject
     lateinit var collectionRepository: DavCollectionRepository
+    
+    @Inject
+    lateinit var logger: Logger
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
@@ -50,14 +53,14 @@ class UnifiedPushReceiver: MessagingReceiver() {
 
     override fun onMessage(context: Context, message: ByteArray, instance: String) {
         val messageXml = message.toString(Charsets.UTF_8)
-        Logger.log.log(Level.INFO, "Received push message", messageXml)
+        logger.log(Level.INFO, "Received push message", messageXml)
 
         // parse push notification
         val topic = parsePushMessage(messageXml)
 
         // sync affected collection
         if (topic != null) {
-            Logger.log.info("Got push notification for topic $topic")
+            logger.info("Got push notification for topic $topic")
 
             // Sync all authorities of account that the collection belongs to
             // Later: only sync affected collection and authorities
@@ -69,7 +72,7 @@ class UnifiedPushReceiver: MessagingReceiver() {
             }
 
         } else {
-            Logger.log.warning("Got push message without topic, syncing all accounts")
+            logger.warning("Got push message without topic, syncing all accounts")
             for (account in accountRepository.getAll())
                 OneTimeSyncWorker.enqueueAllAuthorities(context, account)
 

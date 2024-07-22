@@ -1,7 +1,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import android.provider.CalendarContract
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +10,6 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.Syncer
@@ -22,15 +21,19 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountSettingsModel.Factory::class)
 class AccountSettingsModel @AssistedInject constructor(
-    val context: Application,
-    val settings: SettingsManager,
-    @Assisted val account: Account
+    @Assisted val account: Account,
+    accountSettingsFactory: AccountSettings.Factory,
+    @ApplicationContext val context: Context,
+    private val logger: Logger,
+    private val settings: SettingsManager
 ): ViewModel(), SettingsManager.OnChangeListener {
 
     @AssistedFactory
@@ -38,7 +41,7 @@ class AccountSettingsModel @AssistedInject constructor(
         fun create(account: Account): AccountSettingsModel
     }
 
-    private val accountSettings = AccountSettings(context, account)
+    private val accountSettings = accountSettingsFactory.forAccount(account)
 
     // settings
     var syncIntervalContacts by mutableStateOf<Long?>(null)
@@ -76,7 +79,7 @@ class AccountSettingsModel @AssistedInject constructor(
     }
 
     private fun reload() {
-        Logger.log.info("Reloading settings")
+        logger.info("Reloading settings")
 
         Snapshot.withMutableSnapshot {
             syncIntervalContacts = accountSettings.getSyncInterval(context.getString(R.string.address_books_authority))

@@ -6,11 +6,11 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.Context
 import android.content.SyncResult
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.dav4jvm.PropStat
@@ -25,21 +25,20 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.every
 import io.mockk.mockk
 import okhttp3.Protocol
 import okhttp3.internal.http.StatusLine
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import java.time.Instant
@@ -49,47 +48,32 @@ import javax.inject.Inject
 @HiltAndroidTest
 class SyncManagerTest {
 
-    companion object {
-
-        private val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val account = Account("SyncManagerTest", context.getString(R.string.account_type))
-
-        @BeforeClass
-        @JvmStatic
-        fun createAccount() {
-            assertTrue(AccountManager.get(context).addAccountExplicitly(account, "test", AccountSettings.initialUserData(Credentials("test", "test"))))
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun removeAccount() {
-            assertTrue(AccountManager.get(context).removeAccount(account, null, null).getResult(10, TimeUnit.SECONDS))
-
-            // clear annoying syncError notifications
-            NotificationManagerCompat.from(context).cancelAll()
-        }
-
-    }
-
-
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var accountSettingsFactory: AccountSettings.Factory
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
 
     @Inject
     lateinit var db: AppDatabase
 
     @Inject
+    lateinit var syncManagerFactory: TestSyncManager.Factory
+
+    @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    private val accountManager by lazy { AccountManager.get(context) }
+    private val account by lazy { Account("SyncManagerTest", context.getString(R.string.account_type)) }
     private val server = MockWebServer()
 
     @Before
-    fun inject() {
+    fun setup() {
         hiltRule.inject()
-
-        // The test application is an instance of HiltTestApplication, which doesn't initialize notification channels.
-        // However, we need notification channels for the ongoing work notifications.
-        NotificationUtils.createChannels(context)
 
         // Initialize WorkManager for instrumentation tests.
         val config = Configuration.Builder()
@@ -97,33 +81,20 @@ class SyncManagerTest {
             .setWorkerFactory(workerFactory)
             .build()
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
-    }
 
+        // create account
+        assertTrue(accountManager.addAccountExplicitly(account, "test", AccountSettings.initialUserData(Credentials("test", "test"))))
 
-    private fun syncManager(
-        localCollection: LocalTestCollection,
-        syncResult: SyncResult = SyncResult(),
-        collection: Collection = mockk<Collection>()
-    ) =
-        TestSyncManager(
-            account,
-            arrayOf(),
-            "TestAuthority",
-            HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext).build(),
-            syncResult,
-            localCollection,
-            collection,
-            server,
-            context, db
-        )
-
-    @Before
-    fun startServer() {
         server.start()
     }
 
     @After
-    fun stopServer() {
+    fun teardown() {
+        assertTrue(accountManager.removeAccount(account, null, null).getResult(10, TimeUnit.SECONDS))
+
+        // clear annoying syncError notifications
+        NotificationManagerCompat.from(context).cancelAll()
+
         server.close()
     }
 
@@ -534,5 +505,25 @@ class SyncManagerTest {
         assertFalse(syncManager.syncResult.hasError())
         assertTrue(collection.entries.isEmpty())
     }
+
+
+    // helpers
+
+    private fun syncManager(
+        localCollection: LocalTestCollection,
+        syncResult: SyncResult = SyncResult(),
+        collection: Collection = mockk<Collection>() {
+            every { url } returns server.url("/")
+        }
+    ) = syncManagerFactory.create(
+        account,
+        accountSettingsFactory.forAccount(account),
+        arrayOf(),
+        "TestAuthority",
+        HttpClient.Builder(context).build(),
+        syncResult,
+        localCollection,
+        collection
+    )
 
 }

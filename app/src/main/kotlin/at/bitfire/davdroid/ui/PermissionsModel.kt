@@ -1,6 +1,6 @@
 package at.bitfire.davdroid.ui
 
-import android.app.Application
+import android.content.Context
 import android.os.Build
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,12 +10,13 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PermissionsModel @Inject constructor(
-    val context: Application
+    @ApplicationContext val context: Context,
 ): ViewModel() {
 
     var needKeepPermissions by mutableStateOf(false)

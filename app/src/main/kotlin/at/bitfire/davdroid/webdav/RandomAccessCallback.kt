@@ -7,8 +7,6 @@ package at.bitfire.davdroid.webdav
 import android.annotation.TargetApi
 import android.content.Context
 import android.os.CancellationSignal
-import android.os.Handler
-import android.os.HandlerThread
 import android.os.ProxyFileDescriptorCallback
 import android.system.ErrnoException
 import android.system.OsConstants
@@ -19,14 +17,17 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.HttpUtils
 import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.davdroid.*
-import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.davdroid.webdav.RandomAccessCallback.Wrapper.Companion.TIMEOUT_INTERVAL
-import at.bitfire.davdroid.webdav.cache.PageCacheBuilder
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.LoadingCache
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -36,34 +37,41 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.MediaType
-import ru.nsk.kstatemachine.event.Event
-import ru.nsk.kstatemachine.state.State
-import ru.nsk.kstatemachine.state.finalState
-import ru.nsk.kstatemachine.state.initialState
-import ru.nsk.kstatemachine.state.onEntry
-import ru.nsk.kstatemachine.state.onExit
-import ru.nsk.kstatemachine.state.onFinished
-import ru.nsk.kstatemachine.state.state
-import ru.nsk.kstatemachine.state.transitionOn
-import ru.nsk.kstatemachine.statemachine.StateMachine
-import ru.nsk.kstatemachine.statemachine.createStdLibStateMachine
-import ru.nsk.kstatemachine.statemachine.processEventBlocking
 import java.io.InterruptedIOException
 import java.net.HttpURLConnection
-import java.util.Timer
-import java.util.TimerTask
 import java.util.logging.Level
-import kotlin.concurrent.schedule
+import java.util.logging.Logger
 
 @TargetApi(26)
-class RandomAccessCallback private constructor(
-    val context: Context,
-    val httpClient: HttpClient,
-    val url: HttpUrl,
-    val mimeType: MediaType?,
-    headResponse: HeadResponse,
-    private val cancellationSignal: CancellationSignal?
-): ProxyFileDescriptorCallback(), PagingReader.PageLoader {
+class RandomAccessCallback @AssistedInject constructor(
+    @Assisted val httpClient: HttpClient,
+    @Assisted val url: HttpUrl,
+    @Assisted val mimeType: MediaType?,
+    @Assisted headResponse: HeadResponse,
+    @Assisted private val cancellationSignal: CancellationSignal?,
+    @ApplicationContext val context: Context,
+    private val logger: Logger,
+    private val notificationRegistry: NotificationRegistry
+): ProxyFileDescriptorCallback() {
+
+    companion object {
+
+        /**
+         * WebDAV resources will be read in chunks of this size (or less at the end of the file).
+         */
+        const val MAX_PAGE_SIZE = 2 * 1024*1024     // 2 MB
+
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(httpClient: HttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, cancellationSignal: CancellationSignal?): RandomAccessCallback
+    }
+
+    data class PageIdentifier(
+        val offset: Long,
+        val size: Int
+    )
 
     private val dav = DavResource(httpClient.okHttpClient, url)
 
@@ -71,7 +79,7 @@ class RandomAccessCallback private constructor(
     private val documentState = headResponse.toDocumentState() ?: throw IllegalArgumentException("Can only be used with ETag/Last-Modified")
 
     private val notificationManager = NotificationManagerCompat.from(context)
-    private val notification = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_STATUS)
+    private val notification = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_STATUS)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setCategory(NotificationCompat.CATEGORY_STATUS)
         .setContentTitle(context.getString(R.string.webdav_notification_access))
@@ -81,15 +89,18 @@ class RandomAccessCallback private constructor(
         .setOngoing(true)
     private val notificationTag = url.toString()
 
-    private val pagingReader = PagingReader(fileSize, PageCacheBuilder.MAX_PAGE_SIZE, this)
-    private val pageCache = PageCacheBuilder.getInstance()
-    private var loadPageJobs: Set<Deferred<ByteArray>> = emptySet()
+    private val pageLoader = PageLoader()
+    private val pageCache: LoadingCache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
+        .maximumSize(10)    // don't cache more than 10 entries (MAX_PAGE_SIZE each)
+        .softValues()       // use SoftReference for the page contents so they will be garbage collected if memory is needed
+        .build(pageLoader)  // fetch actual content using pageLoader
+
+    private val pagingReader = PagingReader(fileSize, MAX_PAGE_SIZE, pageCache)
 
     init {
         cancellationSignal?.let {
-            Logger.log.info("Cancelling random access to $url")
-            for (job in loadPageJobs)
-                job.cancel()
+            logger.fine("Cancelling random access to $url")
+            pageLoader.cancelAll()
         }
     }
 
@@ -97,95 +108,37 @@ class RandomAccessCallback private constructor(
     override fun onFsync() { /* not used */ }
 
     override fun onGetSize(): Long {
-        Logger.log.fine("onGetFileSize $url")
+        logger.fine("onGetFileSize $url")
         throwIfCancelled("onGetFileSize")
         return fileSize
     }
 
     override fun onRead(offset: Long, size: Int, data: ByteArray): Int {
-        Logger.log.fine("onRead $url $offset $size")
+        logger.fine("onRead $url $offset $size")
         throwIfCancelled("onRead")
 
         try {
             return pagingReader.read(offset, size, data)
         } catch (e: Exception) {
-            Logger.log.log(Level.WARNING, "Couldn't read from WebDAV resource", e)
+            logger.log(Level.WARNING, "Couldn't read from WebDAV resource", e)
             throw e.toErrNoException("onRead")
         }
     }
 
     override fun onWrite(offset: Long, size: Int, data: ByteArray): Int {
-        Logger.log.fine("onWrite $url $offset $size")
+        logger.fine("onWrite $url $offset $size")
         // ranged write requests not supported by WebDAV (yet)
         throw ErrnoException("onWrite", OsConstants.EROFS)
     }
 
     override fun onRelease() {
-        Logger.log.fine("onRelease")
-        notificationManager.cancel(notificationTag, NotificationUtils.NOTIFY_WEBDAV_ACCESS)
-    }
-
-
-    override fun loadPage(offset: Long, size: Int): ByteArray {
-        Logger.log.fine("Loading page $url $offset/$size")
-
-        // update notification
-        val progress =
-            if (fileSize == 0L)     // avoid division by zero
-                100
-            else
-                (offset * 100 / fileSize).toInt()
-        notificationManager.notifyIfPossible(
-            notificationTag,
-            NotificationUtils.NOTIFY_WEBDAV_ACCESS,
-            notification.setProgress(100, progress, false).build()
-        )
-
-        // create async job that can be cancelled (and cancellation interrupts I/O)
-        val job = CoroutineScope(Dispatchers.IO).async {
-            runInterruptible {
-                pageCache.getOrPut(PageCacheBuilder.PageIdentifier(url, offset, size)) {
-                    val ifMatch: Headers =
-                        documentState.eTag?.let { eTag ->
-                            Headers.headersOf("If-Match", "\"$eTag\"")
-                        } ?: documentState.lastModified?.let { lastModified ->
-                            Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
-                        } ?: throw IllegalStateException("ETag/Last-Modified required for random access")
-
-                    var result: ByteArray? = null
-                    dav.getRange(
-                        DavUtils.acceptAnything(preferred = mimeType),
-                        offset,
-                        size,
-                        ifMatch
-                    ) { response ->
-                        if (response.code == 200)       // server doesn't support ranged requests
-                            throw PartialContentNotSupportedException()
-                        else if (response.code != 206)
-                            throw HttpException(response)
-
-                        result = response.body?.bytes()
-                    }
-                    return@getOrPut result ?: throw DavException("No response body")
-                }
-            }
-        }
-
-        try {
-            loadPageJobs += job
-
-            // wait for result
-            return runBlocking {
-                job.await()
-            }
-        } finally {
-            loadPageJobs -= job
-        }
+        logger.fine("onRelease")
+        notificationManager.cancel(notificationTag, NotificationRegistry.NOTIFY_WEBDAV_ACCESS)
     }
 
     private fun throwIfCancelled(functionName: String) {
         if (cancellationSignal?.isCanceled == true) {
-            Logger.log.warning("Random file access cancelled, throwing ErrnoException(EINTR)")
+            logger.warning("Random file access cancelled, throwing ErrnoException(EINTR)")
             throw ErrnoException(functionName, OsConstants.EINTR)
         }
     }
@@ -209,150 +162,78 @@ class RandomAccessCallback private constructor(
         )
 
 
-    class PartialContentNotSupportedException: Exception()
-
-
     /**
-     * (2021/12/02) Currently Android's [StorageManager.openProxyFileDescriptor] has a memory leak:
-     * the given callback is registered in [com.android.internal.os.AppFuseMount] (which adds it to
-     * a [Map]), but is not unregistered anymore. So it stays in the memory until the whole mount
-     * is unloaded. See https://issuetracker.google.com/issues/208788568
-     *
-     * Use this wrapper to
-     *
-     * - ensure that all memory is released as soon as [onRelease] is called,
-     * - provide timeout functionality: [RandomAccessCallback] will be closed when not
-     * used for more than [TIMEOUT_INTERVAL] ms and re-created when necessary.
-     *
-     * @param httpClient    HTTP client – [Wrapper] is responsible to close it
+     * Responsible for loading (= downloading) a single page from the WebDAV resource.
      */
-    class Wrapper(
-        val context: Context,
-        val httpClient: HttpClient,
-        val url: HttpUrl,
-        val mimeType: MediaType?,
-        val headResponse: HeadResponse,
-        val cancellationSignal: CancellationSignal?
-    ): ProxyFileDescriptorCallback() {
+    inner class PageLoader: CacheLoader<PageIdentifier, ByteArray>() {
 
-        companion object {
-            const val TIMEOUT_INTERVAL = 15000L
+        private val jobs = mutableSetOf<Deferred<ByteArray>>()
+
+        fun cancelAll() {
+            for (job in jobs)
+                job.cancel()
         }
 
-        sealed class Events {
-            object Transfer : Event
-            object NowIdle : Event
-            object GoStandby : Event
-            object Close : Event
-        }
-        /* We don't use a sealed class for states here because the states would then be singletons, while we can have
-        multiple instances of the state machine (which require multiple instances of the states, too). */
-        val machine = createStdLibStateMachine {
-            lateinit var activeIdleState: State
-            lateinit var activeTransferringState: State
-            lateinit var standbyState: State
-            lateinit var closedState: State
+        override fun load(key: PageIdentifier): ByteArray {
+            val offset = key.offset
+            val size = key.size
+            logger.fine("Loading page $url $offset/$size")
 
-            initialState("active") {
-                onEntry {
-                    _callback = RandomAccessCallback(context, httpClient, url, mimeType, headResponse, cancellationSignal)
-                }
-                onExit {
-                    _callback?.onRelease()
-                    _callback = null
-                }
+            // update notification
+            notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_WEBDAV_ACCESS, tag = notificationTag) {
+                val progress =
+                    if (fileSize == 0L)     // avoid division by zero
+                        100
+                    else
+                        (offset * 100 / fileSize).toInt()
+                notification.setProgress(100, progress, false).build()
+            }
 
-                transitionOn<Events.GoStandby> { targetState = { standbyState } }
-                transitionOn<Events.Close> { targetState = { closedState } }
+            val ifMatch: Headers =
+                documentState.eTag?.let { eTag ->
+                    Headers.headersOf("If-Match", "\"$eTag\"")
+                } ?: documentState.lastModified?.let { lastModified ->
+                    Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
+                } ?: throw DavException("ETag/Last-Modified required for random access")
 
-                // active has two nested states: transferring (I/O running) and idle (starts timeout timer)
-                activeIdleState = initialState("idle") {
-                    val timer: Timer = Timer(true)
-                    var timeout: TimerTask? = null
+            // create async job that can be cancelled (and cancellation interrupts I/O)
+            val job = CoroutineScope(Dispatchers.IO).async {
+                runInterruptible {
+                    var result: ByteArray? = null
+                    dav.getRange(
+                        DavUtils.acceptAnything(preferred = mimeType),
+                        offset,
+                        size,
+                        ifMatch
+                    ) { response ->
+                        if (response.code == 200)       // server doesn't support ranged requests
+                            throw PartialContentNotSupportedException()
+                        else if (response.code != 206)
+                            throw HttpException(response)
 
-                    onEntry {
-                        timeout = timer.schedule(TIMEOUT_INTERVAL) {
-                            machine.processEventBlocking(Events.GoStandby)
-                        }
+                        result = response.body?.bytes()
                     }
-                    onExit {
-                        timeout?.cancel()
-                        timeout = null
-                    }
-                    onFinished {
-                        timer.cancel()
-                    }
-
-                    transitionOn<Events.Transfer> { targetState = { activeTransferringState } }
-                }
-
-                activeTransferringState = state("transferring") {
-                    transitionOn<Events.NowIdle> { targetState = { activeIdleState } }
+                    return@runInterruptible result ?: throw DavException("No response body")
                 }
             }
 
-            standbyState = state("standby") {
-                transitionOn<Events.Transfer> { targetState = { activeTransferringState } }
-                transitionOn<Events.NowIdle> { targetState = { activeIdleState } }
-                transitionOn<Events.Close> { targetState = { closedState } }
-            }
-
-            closedState = finalState("closed")
-            onFinished {
-                shutdown()
-            }
-
-            logger = StateMachine.Logger { message ->
-                Logger.log.fine(message())
-            }
-        }
-
-        private val workerThread = HandlerThread(javaClass.simpleName).apply { start() }
-        val workerHandler: Handler = Handler(workerThread.looper)
-
-        private var _callback: RandomAccessCallback? = null
-
-        fun<T> requireCallback(block: (callback: RandomAccessCallback) -> T): T {
-            machine.processEventBlocking(Events.Transfer)
             try {
-                return block(_callback ?: throw IllegalStateException())
+                // register job in set so that it can be cancelled
+                jobs += job
+
+                // wait for result
+                return runBlocking {
+                    job.await()
+                }
             } finally {
-                machine.processEventBlocking(Events.NowIdle)
+                jobs -= job
             }
-        }
 
-
-        /// states ///
-
-        @Synchronized
-        private fun shutdown() {
-            httpClient.close()
-            workerThread.quit()
-        }
-
-
-        /// delegating implementation of ProxyFileDescriptorCallback ///
-
-        @Synchronized
-        override fun onFsync() { /* not used */ }
-
-        @Synchronized
-        override fun onGetSize() =
-            requireCallback { it.onGetSize() }
-
-        @Synchronized
-        override fun onRead(offset: Long, size: Int, data: ByteArray) =
-            requireCallback { it.onRead(offset, size, data) }
-
-        @Synchronized
-        override fun onWrite(offset: Long, size: Int, data: ByteArray) =
-            requireCallback { it.onWrite(offset, size, data) }
-
-        @Synchronized
-        override fun onRelease() {
-            machine.processEventBlocking(Events.Close)
         }
 
     }
+
+
+    class PartialContentNotSupportedException: Exception()
 
 }

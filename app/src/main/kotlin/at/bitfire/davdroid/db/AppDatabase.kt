@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteQueryBuilder
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.database.getStringOrNull
 import androidx.room.AutoMigration
 import androidx.room.Database
@@ -24,17 +23,16 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.ui.AccountsActivity
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.io.Writer
+import java.util.logging.Logger
 import javax.inject.Singleton
 
 @Suppress("ClassName")
@@ -46,11 +44,12 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 13, autoMigrations = [
+], exportSchema = true, version = 14, autoMigrations = [
     AutoMigration(from = 9, to = 10),
     AutoMigration(from = 10, to = 11),
     AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class),
-    AutoMigration(from = 12, to = 13)
+    AutoMigration(from = 12, to = 13),
+    AutoMigration(from = 13, to = 14)
 ])
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
@@ -60,24 +59,27 @@ abstract class AppDatabase: RoomDatabase() {
     object AppDatabaseModule {
         @Provides
         @Singleton
-        fun appDatabase(@ApplicationContext context: Context): AppDatabase =
+        fun appDatabase(
+            @ApplicationContext context: Context,
+            notificationRegistry: NotificationRegistry
+        ): AppDatabase =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "services.db")
                 .addMigrations(*migrations)
                 .addAutoMigrationSpec(AutoMigration11_12(context))
                 .fallbackToDestructiveMigration()   // as a last fallback, recreate database instead of crashing
                 .addCallback(object: Callback() {
                     override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
-                        val nm = NotificationManagerCompat.from(context)
-                        val launcherIntent = Intent(context, AccountsActivity::class.java)
-                        val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_GENERAL)
-                            .setSmallIcon(R.drawable.ic_warning_notify)
-                            .setContentTitle(context.getString(R.string.database_destructive_migration_title))
-                            .setContentText(context.getString(R.string.database_destructive_migration_text))
-                            .setCategory(NotificationCompat.CATEGORY_ERROR)
-                            .setContentIntent(PendingIntent.getActivity(context, 0, launcherIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-                            .setAutoCancel(true)
-                            .build()
-                        nm.notifyIfPossible(NotificationUtils.NOTIFY_DATABASE_CORRUPTED, notify)
+                        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_DATABASE_CORRUPTED) {
+                            val launcherIntent = Intent(context, AccountsActivity::class.java)
+                            NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_GENERAL)
+                                .setSmallIcon(R.drawable.ic_warning_notify)
+                                .setContentTitle(context.getString(R.string.database_destructive_migration_title))
+                                .setContentText(context.getString(R.string.database_destructive_migration_text))
+                                .setCategory(NotificationCompat.CATEGORY_ERROR)
+                                .setContentIntent(PendingIntent.getActivity(context, 0, launcherIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                                .setAutoCancel(true)
+                                .build()
+                        }
 
                         // remove all accounts because they're unfortunately useless without database
                         val am = AccountManager.get(context)
@@ -94,7 +96,7 @@ abstract class AppDatabase: RoomDatabase() {
     @DeleteColumn(tableName = "collection", columnName = "owner")
     class AutoMigration11_12(val context: Context): AutoMigrationSpec {
         override fun onPostMigrate(db: SupportSQLiteDatabase) {
-            Logger.log.info("Database update to v12, refreshing services to get display names of owners")
+            Logger.getGlobal().info("Database update to v12, refreshing services to get display names of owners")
             db.query("SELECT id FROM service", arrayOf()).use { cursor ->
                 while (cursor.moveToNext()) {
                     val serviceId = cursor.getLong(0)
@@ -215,7 +217,7 @@ abstract class AppDatabase: RoomDatabase() {
                 override fun migrate(db: SupportSQLiteDatabase) {
                     // We don't have access to the context in a Room migration now, so
                     // we will just drop those settings from old DAVx5 versions.
-                    Logger.log.warning("Dropping settings distrustSystemCerts and overrideProxy*")
+                    Logger.getGlobal().warning("Dropping settings distrustSystemCerts and overrideProxy*")
 
                     /*val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
                     try {

@@ -5,41 +5,61 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.Context
 import android.content.SyncResult
 import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.property.caldav.GetCTag
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.lastSegment
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
 
-class TestSyncManager(
-    account: Account,
-    extras: Array<String>,
-    authority: String,
-    httpClient: HttpClient,
-    syncResult: SyncResult,
-    localCollection: LocalTestCollection,
-    collection: Collection,
-    val mockWebServer: MockWebServer,
-    context: Context,
-    db: AppDatabase
-): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(account, AccountSettings(context, account), httpClient, extras, authority, syncResult, localCollection, collection, context, db) {
+class TestSyncManager @AssistedInject constructor(
+    @Assisted account: Account,
+    @Assisted accountSettings: AccountSettings,
+    @Assisted extras: Array<String>,
+    @Assisted authority: String,
+    @Assisted httpClient: HttpClient,
+    @Assisted syncResult: SyncResult,
+    @Assisted localCollection: LocalTestCollection,
+    @Assisted collection: Collection
+): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
+    account,
+    accountSettings,
+    httpClient,
+    extras,
+    authority,
+    syncResult,
+    localCollection,
+    collection
+) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            account: Account,
+            accountSettings: AccountSettings,
+            extras: Array<String>,
+            authority: String,
+            httpClient: HttpClient,
+            syncResult: SyncResult,
+            localCollection: LocalTestCollection,
+            collection: Collection
+        ): TestSyncManager
+    }
 
     override fun prepare(): Boolean {
-        collectionURL = mockWebServer.url("/")
-        davCollection = DavCollection(httpClient.okHttpClient, collectionURL)
+        davCollection = DavCollection(httpClient.okHttpClient, collection.url)
         return true
     }
 

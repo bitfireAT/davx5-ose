@@ -14,7 +14,6 @@ import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
@@ -23,16 +22,20 @@ import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import java.util.LinkedList
 import java.util.logging.Level
+import java.util.logging.Logger
 
 class LocalCalendar private constructor(
-        account: Account,
-        provider: ContentProviderClient,
-        id: Long
+    account: Account,
+    provider: ContentProviderClient,
+    id: Long
 ): AndroidCalendar<LocalEvent>(account, provider, LocalEvent.Factory, id), LocalCollection<LocalEvent> {
 
     companion object {
 
         private const val COLUMN_SYNC_STATE = Calendars.CAL_SYNC1
+
+        private val logger: Logger
+            get() = Logger.getGlobal()
 
         fun create(account: Account, provider: ContentProviderClient, info: Collection): Uri {
             val values = valuesFromCollectionInfo(info, true)
@@ -74,7 +77,7 @@ class LocalCalendar private constructor(
                         values.put(Calendars.CALENDAR_TIME_ZONE, DateUtils.findAndroidTimezoneID(tzId.value))
                     }
                 } catch(e: IllegalArgumentException) {
-                    Logger.log.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
+                    logger.log(Level.WARNING, "Couldn't parse calendar default time zone", e)
                 }
             }
 
@@ -145,7 +148,7 @@ class LocalCalendar private constructor(
                     event.sequence = sequence + 1
 
             } catch(e: Exception) {
-                Logger.log.log(Level.WARNING, "Couldn't check/increase sequence", e)
+                logger.log(Level.WARNING, "Couldn't check/increase sequence", e)
             }
             dirty += localEvent
         }
@@ -194,14 +197,14 @@ class LocalCalendar private constructor(
 
     fun processDirtyExceptions() {
         // process deleted exceptions
-        Logger.log.info("Processing deleted exceptions")
+        logger.info("Processing deleted exceptions")
         provider.query(
                 Events.CONTENT_URI.asSyncAdapter(account),
                 arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
                 "${Events.CALENDAR_ID}=? AND ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NOT NULL",
                 arrayOf(id.toString()), null)?.use { cursor ->
             while (cursor.moveToNext()) {
-                Logger.log.fine("Found deleted exception, removing and re-scheduling original event (if available)")
+                logger.fine("Found deleted exception, removing and re-scheduling original event (if available)")
                 val id = cursor.getLong(0)             // can't be null (by definition)
                 val originalID = cursor.getLong(1)     // can't be null (by query)
 
@@ -231,14 +234,14 @@ class LocalCalendar private constructor(
         }
 
         // process dirty exceptions
-        Logger.log.info("Processing dirty exceptions")
+        logger.info("Processing dirty exceptions")
         provider.query(
                 Events.CONTENT_URI.asSyncAdapter(account),
                 arrayOf(Events._ID, Events.ORIGINAL_ID, LocalEvent.COLUMN_SEQUENCE),
                 "${Events.CALENDAR_ID}=? AND ${Events.DIRTY} AND ${Events.ORIGINAL_ID} IS NOT NULL",
                 arrayOf(id.toString()), null)?.use { cursor ->
             while (cursor.moveToNext()) {
-                Logger.log.fine("Found dirty exception, increasing SEQUENCE to re-schedule")
+                logger.fine("Found dirty exception, increasing SEQUENCE to re-schedule")
                 val id = cursor.getLong(0)             // can't be null (by definition)
                 val originalID = cursor.getLong(1)     // can't be null (by query)
                 val sequence = if (cursor.isNull(2)) 0 else cursor.getInt(2)
@@ -278,7 +281,7 @@ class LocalCalendar private constructor(
 
                 // delete event if there are no instances
                 if (numEventInstances == 0) {
-                    Logger.log.info("Marking event #$eventID without instances as deleted")
+                    logger.info("Marking event #$eventID without instances as deleted")
                     LocalEvent.markAsDeleted(provider, account, eventID)
                 }
             }

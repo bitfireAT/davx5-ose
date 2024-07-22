@@ -21,7 +21,6 @@ import android.util.Base64
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.AccountUtils
 import at.bitfire.davdroid.util.lastSegment
@@ -31,9 +30,15 @@ import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
 import at.bitfire.vcard4android.Constants
 import at.bitfire.vcard4android.GroupMethod
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import java.io.ByteArrayOutputStream
 import java.util.LinkedList
 import java.util.logging.Level
+import java.util.logging.Logger
+import javax.inject.Inject
 
 /**
  * A local address book. Requires an own Android account, because Android manages contacts per
@@ -41,13 +46,16 @@ import java.util.logging.Level
  * address book" account for every CardDAV address book. These accounts are bound to a
  * DAVx5 main account.
  */
-open class LocalAddressBook(
-        private val context: Context,
-        account: Account,
-        provider: ContentProviderClient?
+open class LocalAddressBook @Inject constructor(
+    private val context: Context,
+    account: Account,
+    provider: ContentProviderClient?
 ): AndroidAddressBook<LocalContact, LocalGroup>(account, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
 
     companion object {
+        
+        private val logger
+            get() = Logger.getGlobal()
 
         const val USER_DATA_MAIN_ACCOUNT_TYPE = "real_account_type"
         const val USER_DATA_MAIN_ACCOUNT_NAME = "real_account_name"
@@ -66,7 +74,7 @@ open class LocalAddressBook(
         fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: Collection, forceReadOnly: Boolean): LocalAddressBook {
             val account = Account(accountName(mainAccount, info), context.getString(R.string.account_type_address_book))
             val userData = initialUserData(mainAccount, info.url.toString())
-            Logger.log.log(Level.INFO, "Creating local address book $account", userData)
+            logger.log(Level.INFO, "Creating local address book $account", userData)
             if (!AccountUtils.createAccount(context, account, userData))
                 throw IllegalStateException("Couldn't create address book account")
 
@@ -154,6 +162,15 @@ open class LocalAddressBook(
 
     }
 
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface LocalAddressBookEntryPoint {
+        fun accountSettingsFactory(): AccountSettings.Factory
+    }
+    private val entryPoint = EntryPointAccessors.fromApplication(context, LocalAddressBookEntryPoint::class.java)
+    private val accountSettingsFactory = entryPoint.accountSettingsFactory()
+
+
     override val tag: String
         get() = "contacts-${account.name}"
 
@@ -167,7 +184,7 @@ open class LocalAddressBook(
      * but if it is enabled, [findDirty] will find dirty [LocalContact]s and [LocalGroup]s.
      */
     open val groupMethod: GroupMethod by lazy {
-        val accountSettings = AccountSettings(context, requireMainAccount())
+        val accountSettings = accountSettingsFactory.forAccount(requireMainAccount())
         accountSettings.getGroupMethod()
     }
     val includeGroups
@@ -403,10 +420,10 @@ open class LocalAddressBook(
             val currentHash = contact.dataHashCode()
             if (lastHash == currentHash) {
                 // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
-                Logger.log.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
+                logger.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
                 contact.resetDirty()
             } else {
-                Logger.log.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
+                logger.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
                 reallyDirty++
             }
         }
@@ -444,7 +461,7 @@ open class LocalAddressBook(
         // find groups without members
         /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */
         queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
-            Logger.log.log(Level.FINE, "Deleting group", group)
+            logger.log(Level.FINE, "Deleting group", group)
             group.delete()
         }
     }

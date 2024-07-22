@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
-import android.app.Application
+import android.content.Context
 import android.provider.DocumentsContract
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.DavResource
@@ -13,6 +13,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.network.HttpClient
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runInterruptible
@@ -21,7 +22,7 @@ import okhttp3.HttpUrl
 import javax.inject.Inject
 
 class WebDavMountRepository @Inject constructor(
-    val context: Application,
+    @ApplicationContext val context: Context,
     val db: AppDatabase
 ) {
 

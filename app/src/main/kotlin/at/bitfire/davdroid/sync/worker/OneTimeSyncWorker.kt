@@ -23,14 +23,14 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.sync.SyncDispatcher
 import at.bitfire.davdroid.sync.SyncUtils
-import at.bitfire.davdroid.ui.NotificationUtils
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * One-time sync worker.
@@ -138,7 +138,7 @@ class OneTimeSyncWorker @AssistedInject constructor(
             // enqueue and start syncing
             val name = workerName(account, authority)
             val request = workRequest.build()
-            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name, tags = ${request.tags}")
+            Logger.getGlobal().log(Level.INFO, "Enqueueing unique worker: $name, tags = ${request.tags}")
             WorkManager.getInstance(context).enqueueUniqueWork(
                 name,
                 /* If sync is already running, just continue.
@@ -157,7 +157,7 @@ class OneTimeSyncWorker @AssistedInject constructor(
      * Used by WorkManager to show a foreground service notification for expedited jobs on Android <12.
      */
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
+        val notification = NotificationCompat.Builder(applicationContext, NotificationRegistry.CHANNEL_STATUS)
             .setSmallIcon(R.drawable.ic_foreground_notify)
             .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
             .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
@@ -167,7 +167,7 @@ class OneTimeSyncWorker @AssistedInject constructor(
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_DEFERRED)
             .build()
-        return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
+        return ForegroundInfo(NotificationRegistry.NOTIFY_SYNC_EXPEDITED, notification)
     }
 
 }

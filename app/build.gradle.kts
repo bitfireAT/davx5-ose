@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404010101
-        versionName = "4.4.1.1"
+        versionCode = 404020000
+        versionName = "4.4.2-alpha.1"
 
         buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
 
@@ -30,7 +30,7 @@ android {
 
         buildConfigField("String", "userAgent", "\"DAVx5\"")
 
-        testInstrumentationRunner = "at.bitfire.davdroid.CustomTestRunner"
+        testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }
 
     java {
@@ -40,7 +40,9 @@ android {
     }
 
     compileOptions {
-        // enable because ical4android requires desugaring
+        // required for
+        // - dnsjava 3.x: java.nio.file.Path
+        // - ical4android: time API
         isCoreLibraryDesugaringEnabled = true
     }
 

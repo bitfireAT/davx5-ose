@@ -6,10 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import androidx.core.content.ContextCompat
-import at.bitfire.davdroid.log.Logger
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import java.util.logging.Logger
 
 /**
  * Creates a flow that emits the respective [Intent] when a broadcast is received.
@@ -29,9 +29,11 @@ fun broadcastReceiverFlow(
     flags: Int? = null,
     immediate: Boolean
 ): Flow<Intent> = callbackFlow {
+    val logger = Logger.getGlobal()
+
     val receiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Logger.log.fine("broadcastReceiverFlow received $intent")
+            logger.fine("broadcastReceiverFlow received $intent")
             trySend(intent)
         }
     }
@@ -39,7 +41,7 @@ fun broadcastReceiverFlow(
     // register receiver
     var filterDump = filter.toString()
     filter.dump({ filterDump = it }, "")
-    Logger.log.fine("Registering broadcast receiver for $filterDump (flags=$flags)")
+    logger.fine("Registering broadcast receiver for $filterDump (flags=$flags)")
     if (flags != null)
         ContextCompat.registerReceiver(context, receiver, filter, flags)
     else
@@ -51,7 +53,7 @@ fun broadcastReceiverFlow(
 
     // wait until flow is cancelled, then clean up
     awaitClose {
-        Logger.log.fine("Unregistering broadcast receiver for $filterDump")
+        logger.fine("Unregistering broadcast receiver for $filterDump")
         context.unregisterReceiver(receiver)
     }
 }

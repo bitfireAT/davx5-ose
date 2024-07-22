@@ -7,10 +7,11 @@ package at.bitfire.davdroid.push
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import java.util.logging.Logger
 
 class PushMessageParserTest {
 
-    private val parse = PushMessageParser()
+    private val parse = PushMessageParser(logger = Logger.getGlobal())
 
     @Test
     fun testInvalidXml() {

@@ -6,15 +6,17 @@ package at.bitfire.davdroid.resource.contactrow
 
 import android.content.ContentValues
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.vcard4android.contactrow.DataRowHandler
 import java.io.FileNotFoundException
+import java.util.logging.Logger
 
 class GroupMembershipHandler(val localContact: LocalContact): DataRowHandler() {
+    
+    private val logger: Logger = Logger.getGlobal()
 
     override fun forMimeType() = GroupMembership.CONTENT_ITEM_TYPE
 
@@ -28,11 +30,11 @@ class GroupMembershipHandler(val localContact: LocalContact): DataRowHandler() {
             try {
                 val group = localContact.addressBook.findGroupById(groupId)
                 group.getContact().displayName.trimToNull()?.let { groupName ->
-                    Logger.log.fine("Adding membership in group $groupName as category")
+                    logger.fine("Adding membership in group $groupName as category")
                     contact.categories.add(groupName)
                 }
             } catch (ignored: FileNotFoundException) {
-                Logger.log.warning("Contact is member in group $groupId which doesn't exist anymore")
+                logger.warning("Contact is member in group $groupId which doesn't exist anymore")
             }
         }
     }

@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
-import android.content.Context
 import android.content.SyncResult
 import android.content.pm.PackageManager
 import android.provider.ContactsContract
@@ -15,36 +14,27 @@ import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * Sync logic for address books
  */
 class AddressBookSyncer @AssistedInject constructor(
-    @ApplicationContext context: Context,
     settingsManager: SettingsManager,
-    serviceRepository: DavServiceRepository,
-    collectionRepository: DavCollectionRepository,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
-    private val logger: Logger
-): Syncer<LocalAddressBook>(context, serviceRepository, collectionRepository, account, extras, syncResult) {
+): Syncer<LocalAddressBook>(account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {
@@ -122,7 +112,7 @@ class AddressBookSyncer @AssistedInject constructor(
         collection: Collection
     ) {
         try {
-            val accountSettings = AccountSettings(context, account)
+            val accountSettings = accountSettingsFactory.forAccount(account)
             val addressBook = LocalAddressBook(context, account, provider)
 
             // handle group method change

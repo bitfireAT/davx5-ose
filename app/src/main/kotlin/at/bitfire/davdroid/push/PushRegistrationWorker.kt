@@ -22,7 +22,6 @@ import at.bitfire.dav4jvm.XmlUtils.insertTag
 import at.bitfire.dav4jvm.property.push.NS_WEBDAV_PUSH
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -41,6 +40,7 @@ import kotlinx.coroutines.runInterruptible
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.StringWriter
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
@@ -55,7 +55,9 @@ import javax.inject.Inject
 class PushRegistrationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
+    private val logger: Logger,
     private val preferenceRepository: PreferenceRepository,
     private val serviceRepository: DavServiceRepository
 ) : CoroutineWorker(context, workerParameters) {
@@ -75,7 +77,7 @@ class PushRegistrationWorker @AssistedInject constructor(
                 .setInitialDelay(5, TimeUnit.SECONDS)
                 .setConstraints(constraints)
                 .build()
-            Logger.log.info("Enqueueing push registration worker")
+            Logger.getGlobal().info("Enqueueing push registration worker")
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(UNIQUE_WORK_NAME, ExistingWorkPolicy.REPLACE, workRequest)
         }
@@ -84,7 +86,7 @@ class PushRegistrationWorker @AssistedInject constructor(
 
 
     private suspend fun requestPushRegistration(collection: Collection, account: Account, endpoint: String) {
-        val settings = AccountSettings(applicationContext, account)
+        val settings = accountSettingsFactory.forAccount(account)
 
         runInterruptible {
             HttpClient.Builder(applicationContext, settings)
@@ -115,27 +117,27 @@ class PushRegistrationWorker @AssistedInject constructor(
                                 collectionRepository.updatePushSubscription(collection.id, subscriptionUrl)
                             }
                         } else
-                            Logger.log.warning("Couldn't register push for ${collection.url}: $response")
+                            logger.warning("Couldn't register push for ${collection.url}: $response")
                     }
                 }
         }
     }
 
     override suspend fun doWork(): Result {
-        Logger.log.info("Running push registration worker")
+        logger.info("Running push registration worker")
 
         val endpoint = preferenceRepository.unifiedPushEndpoint()
 
         if (endpoint != null)
             for (collection in collectionRepository.getSyncableAndPushCapable()) {
-                Logger.log.info("Registering push for ${collection.url}")
+                logger.info("Registering push for ${collection.url}")
                 val service = serviceRepository.get(collection.serviceId) ?: continue
                 val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
 
                 requestPushRegistration(collection, account, endpoint)
             }
         else
-            Logger.log.info("No UnifiedPush endpoint configured")
+            logger.info("No UnifiedPush endpoint configured")
 
         return Result.success()
     }

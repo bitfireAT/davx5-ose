@@ -14,18 +14,15 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.sync.SyncUtils
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import dagger.hilt.EntryPoint
@@ -37,14 +34,20 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.util.logging.Logger
 
 object TaskUtils {
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface TaskUtilsEntryPoint {
+        fun accountSettingsFactory(): AccountSettings.Factory
+        fun notificationRegistry(): NotificationRegistry
         fun settingsManager(): SettingsManager
     }
+
+    private val logger: Logger
+        get() = Logger.getGlobal()
 
     /**
      * Returns the currently selected tasks provider (if it's still available = installed).
@@ -93,35 +96,37 @@ object TaskUtils {
      * @param e   the TaskProvider.ProviderTooOldException to be shown
      */
     fun notifyProviderTooOld(context: Context, e: TaskProvider.ProviderTooOldException) {
-        val nm = NotificationManagerCompat.from(context)
-        val message = context.getString(R.string.sync_error_tasks_required_version, e.provider.minVersionName)
+        val registry = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).notificationRegistry()
+        registry.notifyIfPossible(NotificationRegistry.NOTIFY_TASKS_PROVIDER_TOO_OLD) {
+            val message = context.getString(R.string.sync_error_tasks_required_version, e.provider.minVersionName)
 
-        val pm = context.packageManager
-        val tasksAppInfo = pm.getPackageInfo(e.provider.packageName, 0)
-        val tasksAppLabel = tasksAppInfo.applicationInfo.loadLabel(pm)
+            val pm = context.packageManager
+            val tasksAppInfo = pm.getPackageInfo(e.provider.packageName, 0)
+            val tasksAppLabel = tasksAppInfo.applicationInfo.loadLabel(pm)
 
-        val notify = NotificationUtils.newBuilder(context, NotificationUtils.CHANNEL_SYNC_ERRORS)
-            .setSmallIcon(R.drawable.ic_sync_problem_notify)
-            .setContentTitle(context.getString(R.string.sync_error_tasks_too_old, tasksAppLabel))
-            .setContentText(message)
-            .setSubText("$tasksAppLabel ${e.installedVersionName}")
-            .setCategory(NotificationCompat.CATEGORY_ERROR)
+            val notify = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_SYNC_ERRORS)
+                .setSmallIcon(R.drawable.ic_sync_problem_notify)
+                .setContentTitle(context.getString(R.string.sync_error_tasks_too_old, tasksAppLabel))
+                .setContentText(message)
+                .setSubText("$tasksAppLabel ${e.installedVersionName}")
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
 
-        try {
-            val icon = pm.getApplicationIcon(e.provider.packageName)
-            if (icon is BitmapDrawable)
-                notify.setLargeIcon(icon.bitmap)
-        } catch (ignored: PackageManager.NameNotFoundException) {
-            // couldn't get provider app icon
+            try {
+                val icon = pm.getApplicationIcon(e.provider.packageName)
+                if (icon is BitmapDrawable)
+                    notify.setLargeIcon(icon.bitmap)
+            } catch (ignored: PackageManager.NameNotFoundException) {
+                // couldn't get provider app icon
+            }
+
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+
+            if (intent.resolveActivity(pm) != null)
+                notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))
+
+            notify.build()
         }
-
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
-        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-
-        if (intent.resolveActivity(pm) != null)
-            notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))
-
-        nm.notifyIfPossible(NotificationUtils.NOTIFY_TASKS_PROVIDER_TOO_OLD, notify.build())
     }
 
     /**
@@ -137,7 +142,7 @@ object TaskUtils {
      * - when there previously was no (usable) tasks app and [at.bitfire.davdroid.TasksAppWatcher] detected a new one.
      */
     fun selectProvider(context: Context, selectedProvider: ProviderName?) {
-        Logger.log.info("Selecting tasks app: $selectedProvider")
+        logger.info("Selecting tasks app: $selectedProvider")
 
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
         settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedProvider?.authority)
@@ -167,17 +172,20 @@ object TaskUtils {
         }
 
         if (permissionsRequired) {
-            Logger.log.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
-            PermissionUtils.notifyPermissions(context, null)
+            logger.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
+
+            val notificationRegistry = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).notificationRegistry()
+            notificationRegistry.notifyPermissions()
         }
     }
 
     private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean) {
         val settingsManager by lazy { EntryPointAccessors.fromApplication(context, SyncUtils.SyncUtilsEntryPoint::class.java).settingsManager() }
         try {
-            val settings = AccountSettings(context, account)
+            val entryPoint = EntryPointAccessors.fromApplication<TaskUtilsEntryPoint>(context)
+            val settings = entryPoint.accountSettingsFactory().forAccount(account)
             if (syncable) {
-                Logger.log.info("Enabling $authority sync for $account")
+                logger.info("Enabling $authority sync for $account")
 
                 // make account syncable by sync framework
                 ContentResolver.setIsSyncable(account, authority, 1)
@@ -186,7 +194,7 @@ object TaskUtils {
                 val interval = settings.getTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
                 settings.setSyncInterval(authority, interval)
             } else {
-                Logger.log.info("Disabling $authority sync for $account")
+                logger.info("Disabling $authority sync for $account")
 
                 // make account not syncable by sync framework
                 ContentResolver.setIsSyncable(account, authority, 0)

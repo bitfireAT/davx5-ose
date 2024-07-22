@@ -5,14 +5,13 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
-import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
@@ -22,6 +21,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,15 +30,18 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = LoginScreenModel.Factory::class)
 class LoginScreenModel @AssistedInject constructor(
     @Assisted val initialLoginType: LoginType,
     @Assisted val skipLoginTypePage: Boolean,
     @Assisted val initialLoginInfo: LoginInfo,
-    val context: Application,
-    val loginTypesProvider: LoginTypesProvider,
     private val accountRepository: AccountRepository,
+    @ApplicationContext val context: Context,
+    private val logger: Logger,
+    val loginTypesProvider: LoginTypesProvider,
+    private val resourceFinderFactory: DavResourceFinder.Factory,
     settingsManager: SettingsManager
 ): ViewModel() {
 
@@ -187,10 +190,10 @@ class LoginScreenModel @AssistedInject constructor(
         detectResourcesJob = viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
                  runInterruptible {
-                    DavResourceFinder(context, loginInfo.baseUri!!, loginInfo.credentials).use { finder ->
-                        finder.findInitialConfiguration()
-                    }
-                }
+                     resourceFinderFactory.create(loginInfo.baseUri!!, loginInfo.credentials).use { finder ->
+                         finder.findInitialConfiguration()
+                     }
+                 }
             }
 
             if (result.calDAV != null || result.cardDAV != null) {
@@ -237,7 +240,7 @@ class LoginScreenModel @AssistedInject constructor(
                 try {
                     GroupMethod.valueOf(groupMethodName)
                 } catch (e: IllegalArgumentException) {
-                    Logger.log.warning("Invalid forced group method: $groupMethodName")
+                    logger.warning("Invalid forced group method: $groupMethodName")
                     null
                 }
             else

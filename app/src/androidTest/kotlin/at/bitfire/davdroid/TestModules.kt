@@ -1,22 +1,38 @@
 package at.bitfire.davdroid
 
-import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.push.PushRegistrationWorker
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.startup.StartupPlugin
+import at.bitfire.davdroid.startup.TasksAppWatcher
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.Multibinds
 import dagger.hilt.testing.TestInstallIn
+import dagger.multibindings.Multibinds
 
 interface TestModules {
 
+    // remove PushRegistrationWorkerModule from Android tests
     @Module
     @TestInstallIn(
         components = [SingletonComponent::class],
         replaces = [PushRegistrationWorker.PushRegistrationWorkerModule::class]
     )
-    abstract class FakePushRegistrationWorkerModule {
-        // Provides empty set of listeners
+    abstract class TestPushRegistrationWorkerModule {
+        // provides empty set of listeners
         @Multibinds
-        abstract fun defaultOnChangeListeners(): Set<DavCollectionRepository.OnChangeListener>
+        abstract fun empty(): Set<DavCollectionRepository.OnChangeListener>
     }
+
+    // remove TasksAppWatcherModule from Android tests
+    @Module
+    @TestInstallIn(
+        components = [SingletonComponent::class],
+        replaces = [TasksAppWatcher.TasksAppWatcherModule::class]
+    )
+    abstract class TestTasksAppWatcherModuleModule {
+        // provides empty set of plugins
+        @Multibinds
+        abstract fun empty(): Set<StartupPlugin>
+    }
+
 }

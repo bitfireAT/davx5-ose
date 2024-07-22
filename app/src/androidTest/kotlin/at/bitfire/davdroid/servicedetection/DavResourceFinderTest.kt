@@ -4,17 +4,17 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import android.content.Context
 import android.security.NetworkSecurityPolicy
 import androidx.test.filters.SmallTest
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import okhttp3.mockwebserver.Dispatcher
@@ -32,21 +32,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.net.URI
+import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltAndroidTest
 class DavResourceFinderTest {
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var settingsManager: SettingsManager
-
-    @Before
-    fun inject() {
-        hiltRule.inject()
-    }
 
     companion object {
         private const val PATH_NO_DAV = "/nodav"
@@ -59,21 +49,39 @@ class DavResourceFinderTest {
         private const val SUBPATH_ADDRESSBOOK = "/addressbooks/private-contacts"
     }
 
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var logger: Logger
+
+    @Inject
+    lateinit var resourceFinderFactory: DavResourceFinder.Factory
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
+
     private val server = MockWebServer()
 
     private lateinit var finder: DavResourceFinder
     private lateinit var client: HttpClient
 
     @Before
-    fun initServerAndClient() {
-        server.dispatcher = TestDispatcher()
+    fun setup() {
+        hiltRule.inject()
+
+        server.dispatcher = TestDispatcher(logger)
         server.start()
 
         val baseURI = URI.create("/")
         val credentials = Credentials("mock", "12345")
 
-        finder = DavResourceFinder(InstrumentationRegistry.getInstrumentation().targetContext, baseURI, credentials)
-        client = HttpClient.Builder(InstrumentationRegistry.getInstrumentation().targetContext)
+        finder = resourceFinderFactory.create(baseURI, credentials)
+        client = HttpClient.Builder(context)
                 .addAuthentication(null, credentials)
                 .build()
 
@@ -81,7 +89,7 @@ class DavResourceFinderTest {
     }
 
     @After
-    fun stopServer() {
+    fun teardown() {
         server.shutdown()
     }
 
@@ -156,7 +164,9 @@ class DavResourceFinderTest {
 
     // mock server
 
-    class TestDispatcher: Dispatcher() {
+    class TestDispatcher(
+        private val logger: Logger
+    ): Dispatcher() {
 
         override fun dispatch(request: RecordedRequest): MockResponse {
             if (!checkAuth(request)) {
@@ -205,7 +215,7 @@ class DavResourceFinderTest {
 
                     else -> props = null
                 }
-                Logger.log.info("Sending props: $props")
+                logger.info("Sending props: $props")
                 return MockResponse()
                         .setResponseCode(207)
                         .setBody("<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav' xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +

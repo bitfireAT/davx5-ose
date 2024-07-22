@@ -5,37 +5,28 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.Context
 import android.content.SyncResult
 import android.provider.CalendarContract
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.ical4android.AndroidCalendar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * Sync logic for calendars
  */
 class CalendarSyncer @AssistedInject constructor(
-    @ApplicationContext context: Context,
-    serviceRepository: DavServiceRepository,
-    collectionRepository: DavCollectionRepository,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
-    private val logger: Logger
-): Syncer<LocalCalendar>(context, serviceRepository, collectionRepository, account, extras, syncResult) {
+): Syncer<LocalCalendar>(account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {

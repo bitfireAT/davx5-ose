@@ -14,7 +14,6 @@ import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.Data
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.trimToNull
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
@@ -25,10 +24,14 @@ import at.bitfire.vcard4android.CachedGroupMembership
 import at.bitfire.vcard4android.Contact
 import java.util.LinkedList
 import java.util.UUID
+import java.util.logging.Logger
 
 class LocalGroup: AndroidGroup, LocalAddress {
 
     companion object {
+        
+        private val logger: Logger
+            get() = Logger.getGlobal()
 
         const val COLUMN_FLAGS = Groups.SYNC4
 
@@ -44,7 +47,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
          * @param addressBook    address book to take groups from
          */
         fun applyPendingMemberships(addressBook: LocalAddressBook) {
-            Logger.log.info("Assigning memberships of contact groups")
+            logger.info("Assigning memberships of contact groups")
 
             addressBook.allGroups { group ->
                 val groupId = group.id!!
@@ -59,7 +62,7 @@ class LocalGroup: AndroidGroup, LocalAddress {
                     val uid = addressBook.getContactUidFromId(currentMemberId) ?: continue
 
                     if (!pendingMemberUids.contains(uid)) {
-                        Logger.log.fine("$currentMemberId removed from group $groupId; removing group membership")
+                        logger.fine("$currentMemberId removed from group $groupId; removing group membership")
                         val currentMember = addressBook.findContactById(currentMemberId)
                         currentMember.removeGroupMemberships(batch)
 
@@ -76,11 +79,11 @@ class LocalGroup: AndroidGroup, LocalAddress {
                 for (missingMemberUid in pendingMemberUids) {
                     val missingMember = addressBook.findContactByUid(missingMemberUid)
                     if (missingMember == null) {
-                        Logger.log.warning("Group $groupId has member $missingMemberUid which is not found in the address book; ignoring")
+                        logger.warning("Group $groupId has member $missingMemberUid which is not found in the address book; ignoring")
                         continue
                     }
 
-                    Logger.log.fine("Assigning member $missingMember to group $groupId")
+                    logger.fine("Assigning member $missingMember to group $groupId")
                     missingMember.addToGroup(batch, groupId)
 
                     // Android 7 hack

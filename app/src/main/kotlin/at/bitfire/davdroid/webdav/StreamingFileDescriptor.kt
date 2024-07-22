@@ -14,11 +14,13 @@ import androidx.core.app.NotificationManagerCompat
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.ui.NotificationUtils
-import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
+import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.DavUtils
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,17 +32,20 @@ import okhttp3.internal.headersContentLength
 import okio.BufferedSink
 import java.io.IOException
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * @param client    HTTP client– [StreamingFileDescriptor] is responsible to close it
  */
-class StreamingFileDescriptor(
-    val context: Context,
-    val client: HttpClient,
-    val url: HttpUrl,
-    val mimeType: MediaType?,
-    val cancellationSignal: CancellationSignal?,
-    val finishedCallback: OnSuccessCallback
+class StreamingFileDescriptor @AssistedInject constructor(
+    @Assisted val client: HttpClient,
+    @Assisted val url: HttpUrl,
+    @Assisted val mimeType: MediaType?,
+    @Assisted val cancellationSignal: CancellationSignal?,
+    @Assisted val finishedCallback: OnSuccessCallback,
+    @ApplicationContext val context: Context,
+    private val logger: Logger,
+    private val notificationRegistry: NotificationRegistry
 ) {
 
     companion object {
@@ -48,11 +53,16 @@ class StreamingFileDescriptor(
         private const val BUFFER_SIZE = 1024*1024
     }
 
+    @AssistedFactory
+    interface Factory {
+        fun create(client: HttpClient, url: HttpUrl, mimeType: MediaType?, cancellationSignal: CancellationSignal?, finishedCallback: OnSuccessCallback): StreamingFileDescriptor
+    }
+
     val dav = DavResource(client.okHttpClient, url)
     var transferred: Long = 0
 
     private val notificationManager = NotificationManagerCompat.from(context)
-    private val notification = NotificationCompat.Builder(context, NotificationUtils.CHANNEL_STATUS)
+    private val notification = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_STATUS)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setCategory(NotificationCompat.CATEGORY_STATUS)
         .setContentText(dav.fileName())
@@ -74,10 +84,10 @@ class StreamingFileDescriptor(
                 else
                     downloadNow(writeFd)
             } catch (e: HttpException) {
-                Logger.log.log(Level.WARNING, "HTTP error when opening remote file", e)
+                logger.log(Level.WARNING, "HTTP error when opening remote file", e)
                 writeFd.closeWithError("${e.code} ${e.message}")
             } catch (e: Exception) {
-                Logger.log.log(Level.INFO, "Couldn't serve file (not necessesarily an error)", e)
+                logger.log(Level.INFO, "Couldn't serve file (not necessesarily an error)", e)
                 writeFd.closeWithError(e.message)
             } finally {
                 client.close()
@@ -88,13 +98,13 @@ class StreamingFileDescriptor(
                 writeFd.close()
             } catch (ignored: IOException) {}
 
-            notificationManager.cancel(notificationTag, NotificationUtils.NOTIFY_WEBDAV_ACCESS)
+            notificationManager.cancel(notificationTag, NotificationRegistry.NOTIFY_WEBDAV_ACCESS)
 
             finishedCallback.onSuccess(transferred)
         }
 
         cancellationSignal?.setOnCancelListener {
-            Logger.log.fine("Cancelling transfer of $url")
+            logger.fine("Cancelling transfer of $url")
             result.cancel()
         }
 
@@ -114,13 +124,11 @@ class StreamingFileDescriptor(
                     notification.setContentTitle(context.getString(R.string.webdav_notification_download))
                     if (length == -1L)
                         // unknown file size, show notification now (no updates on progress)
-                        notificationManager.notifyIfPossible(
-                            notificationTag,
-                            NotificationUtils.NOTIFY_WEBDAV_ACCESS,
+                        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_WEBDAV_ACCESS, notificationTag) {
                             notification
                                 .setProgress(100, 0, true)
                                 .build()
-                        )
+                        }
                     else
                         // known file size
                         notification.setSubText(Formatter.formatFileSize(context, length))
@@ -132,14 +140,13 @@ class StreamingFileDescriptor(
                             var bytes = source.read(buffer)
                             while (bytes != -1) {
                                 // update notification (if file size is known)
-                                if (length != -1L)
-                                    notificationManager.notifyIfPossible(
-                                        notificationTag,
-                                        NotificationUtils.NOTIFY_WEBDAV_ACCESS,
+                                if (length > 0)
+                                    notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_WEBDAV_ACCESS, notificationTag) {
+                                        val progress = (transferred*100/length).toInt()
                                         notification
-                                            .setProgress(100, (transferred*100/length).toInt(), false)
+                                            .setProgress(100, progress, false)
                                             .build()
-                                    )
+                                    }
 
                                 // write chunk
                                 output.write(buffer, 0, bytes)
@@ -148,7 +155,7 @@ class StreamingFileDescriptor(
                                 // read next chunk
                                 bytes = source.read(buffer)
                             }
-                            Logger.log.finer("Downloaded $transferred byte(s) from $url")
+                            logger.finer("Downloaded $transferred byte(s) from $url")
                         }
                     }
 
@@ -164,13 +171,11 @@ class StreamingFileDescriptor(
             override fun contentType(): MediaType? = mimeType
             override fun isOneShot() = true
             override fun writeTo(sink: BufferedSink) {
-                notificationManager.notifyIfPossible(
-                    notificationTag,
-                    NotificationUtils.NOTIFY_WEBDAV_ACCESS,
+                notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_WEBDAV_ACCESS, notificationTag) {
                     notification
                         .setContentTitle(context.getString(R.string.webdav_notification_upload))
                         .build()
-                )
+                }
 
                 ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
                     val buffer = ByteArray(BUFFER_SIZE)
@@ -185,7 +190,7 @@ class StreamingFileDescriptor(
                         // read next chunk
                         size = input.read(buffer)
                     }
-                    Logger.log.finer("Uploaded $transferred byte(s) to $url")
+                    logger.finer("Uploaded $transferred byte(s) to $url")
                 }
             }
         }
