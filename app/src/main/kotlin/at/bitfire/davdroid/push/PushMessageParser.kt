@@ -6,13 +6,15 @@ package at.bitfire.davdroid.push
 
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.property.push.PushMessage
-import at.bitfire.davdroid.log.Logger
 import org.xmlpull.v1.XmlPullParserException
 import java.io.StringReader
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 
-class PushMessageParser @Inject constructor() {
+class PushMessageParser @Inject constructor(
+    private val logger: Logger
+) {
 
     /**
      * Parses a WebDAV-Push message and returns the `topic` that the message is about.
@@ -31,7 +33,7 @@ class PushMessageParser @Inject constructor() {
                 topic = pushMessage.topic
             }
         } catch (e: XmlPullParserException) {
-            Logger.log.log(Level.WARNING, "Couldn't parse push message", e)
+            logger.log(Level.WARNING, "Couldn't parse push message", e)
         }
 
         return topic

@@ -13,7 +13,6 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
@@ -27,6 +26,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import net.openid.appauth.AuthState
 import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Manages settings of an account.
@@ -135,6 +135,8 @@ class AccountSettings @AssistedInject constructor(
     }
 
 
+    private val logger: Logger = Logger.getGlobal()
+
     val accountManager: AccountManager = AccountManager.get(context)
     val account: Account = when (accountOrAddressBookAccount.type) {
             context.getString(R.string.account_type_address_book) -> {
@@ -160,13 +162,13 @@ class AccountSettings @AssistedInject constructor(
             try {
                 version = Integer.parseInt(versionStr)
             } catch (e: NumberFormatException) {
-                Logger.log.log(Level.SEVERE, "Invalid account version: $versionStr", e)
+                logger.log(Level.SEVERE, "Invalid account version: $versionStr", e)
             }
-            Logger.log.fine("Account ${this.account.name} has version $version, current version: $CURRENT_VERSION")
+            logger.fine("Account ${this.account.name} has version $version, current version: $CURRENT_VERSION")
 
             if (version < CURRENT_VERSION) {
                 if (currentlyUpdating) {
-                    Logger.log.severe("Redundant call: migration created AccountSettings(). This must never happen.")
+                    logger.severe("Redundant call: migration created AccountSettings(). This must never happen.")
                     throw IllegalStateException("Redundant call: migration created AccountSettings()")
                 } else {
                     currentlyUpdating = true
@@ -260,7 +262,7 @@ class AccountSettings @AssistedInject constructor(
             TaskProvider.ProviderName.entries.any { it.authority == authority } ->
                 KEY_SYNC_INTERVAL_TASKS
             else -> {
-                Logger.log.warning("Sync interval not applicable to authority $authority")
+                logger.warning("Sync interval not applicable to authority $authority")
                 return
             }
         }
@@ -295,14 +297,14 @@ class AccountSettings @AssistedInject constructor(
             /* Ugly hack: because there is no callback for when the sync status/interval has been
             updated, we need to make this call blocking. */
             if (enable) {{
-                Logger.log.fine("Enabling content-triggered sync of $account/$authority")
+                logger.fine("Enabling content-triggered sync of $account/$authority")
                 ContentResolver.setSyncAutomatically(account, authority, true) // enables content triggers
                 // Remove unwanted sync framework periodic syncs created by setSyncAutomatically
                 for (periodicSync in ContentResolver.getPeriodicSyncs(account, authority))
                     ContentResolver.removePeriodicSync(periodicSync.account, periodicSync.authority, periodicSync.extras)
                 /* return */ ContentResolver.getSyncAutomatically(account, authority)
             }} else {{
-                Logger.log.fine("Disabling content-triggered sync of $account/$authority")
+                logger.fine("Disabling content-triggered sync of $account/$authority")
                 ContentResolver.setSyncAutomatically(account, authority, false) // disables content triggers
                 /* return */ !ContentResolver.getSyncAutomatically(account, authority)
             }}
@@ -366,14 +368,14 @@ class AccountSettings @AssistedInject constructor(
     fun updatePeriodicSyncWorker(authority: String, seconds: Long?, wiFiOnly: Boolean) {
         try {
             if (seconds == null || seconds == SYNC_INTERVAL_MANUALLY) {
-                Logger.log.fine("Disabling periodic sync of $account/$authority")
+                logger.fine("Disabling periodic sync of $account/$authority")
                 PeriodicSyncWorker.disable(context, account, authority)
             } else {
-                Logger.log.fine("Setting periodic sync of $account/$authority to $seconds seconds (wifiOnly=$wiFiOnly)")
+                logger.fine("Setting periodic sync of $account/$authority to $seconds seconds (wifiOnly=$wiFiOnly)")
                 PeriodicSyncWorker.enable(context, account, authority, seconds, wiFiOnly)
             }.result.get() // On operation (enable/disable) failure exception is thrown
         } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Failed to set sync interval of $account/$authority to $seconds seconds", e)
+            logger.log(Level.SEVERE, "Failed to set sync interval of $account/$authority to $seconds seconds", e)
         }
     }
 
@@ -498,7 +500,7 @@ class AccountSettings @AssistedInject constructor(
     private fun update(baseVersion: Int) {
         for (toVersion in baseVersion+1 ..CURRENT_VERSION) {
             val fromVersion = toVersion-1
-            Logger.log.info("Updating account ${account.name} from version $fromVersion to $toVersion")
+            logger.info("Updating account ${account.name} from version $fromVersion to $toVersion")
             try {
                 val migrations = migrationsFactory.create(
                     account = account,
@@ -507,10 +509,10 @@ class AccountSettings @AssistedInject constructor(
                 val updateProc = AccountSettingsMigrations::class.java.getDeclaredMethod("update_${fromVersion}_$toVersion")
                 updateProc.invoke(migrations)
 
-                Logger.log.info("Account version update successful")
+                logger.info("Account version update successful")
                 accountManager.setAndVerifyUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
             } catch (e: Exception) {
-                Logger.log.log(Level.SEVERE, "Couldn't update account settings", e)
+                logger.log(Level.SEVERE, "Couldn't update account settings", e)
             }
         }
     }

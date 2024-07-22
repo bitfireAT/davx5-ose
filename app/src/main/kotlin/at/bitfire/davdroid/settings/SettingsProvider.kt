@@ -15,6 +15,17 @@ import java.io.Writer
  */
 interface SettingsProvider {
 
+    fun interface OnChangeListener {
+        /**
+         * Called when a setting has changed.
+         *
+         * @param key The key of the setting that has changed, or null if the key is not
+         * available. In this case, the listener should reload all settings.
+         */
+        fun onSettingsChanged(key: String?)
+    }
+
+
     /**
      * Whether this provider can write settings.
      *
@@ -25,10 +36,20 @@ interface SettingsProvider {
      */
     fun canWrite(): Boolean
 
+    /**
+     * Closes the provider and releases resources.
+     */
     fun close()
+
+    /**
+     * Sets an on-changed listener. The provider calls the listener whenever a setting
+     * has changed.
+     */
+    fun setOnChangeListener(listener: OnChangeListener)
 
     @AnyThread
     fun forceReload()
+
 
     fun contains(key: String): Boolean
 

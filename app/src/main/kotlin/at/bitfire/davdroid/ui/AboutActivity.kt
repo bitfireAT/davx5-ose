@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.ui
 
-import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -46,14 +46,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.composable.PixelBoxes
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
@@ -63,6 +62,8 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -75,6 +76,7 @@ import java.util.LinkedList
 import java.util.Locale
 import java.util.Optional
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
 
@@ -187,7 +189,11 @@ class AboutActivity: AppCompatActivity() {
     }
 
 
-    class Model(application: Application) : AndroidViewModel(application) {
+    @HiltViewModel
+    class Model @Inject constructor(
+        @ApplicationContext val context: Context,
+        private val logger: Logger
+    ): ViewModel() {
 
         data class Translation(
             val language: String,
@@ -203,7 +209,6 @@ class AboutActivity: AppCompatActivity() {
         }
 
         private fun loadTranslations() {
-            val context = getApplication<Application>()
             try {
                 context.resources.assets.open("translators.json").use { stream ->
                     val jsonTranslations = JSONObject(stream.readBytes().decodeToString())
@@ -228,7 +233,7 @@ class AboutActivity: AppCompatActivity() {
                     translations.postValue(result)
                 }
             } catch (e: Exception) {
-                Logger.log.log(Level.WARNING, "Couldn't load translators", e)
+                logger.log(Level.WARNING, "Couldn't load translators", e)
             }
         }
 

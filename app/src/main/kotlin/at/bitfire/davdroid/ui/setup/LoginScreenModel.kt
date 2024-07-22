@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
@@ -31,6 +30,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = LoginScreenModel.Factory::class)
 class LoginScreenModel @AssistedInject constructor(
@@ -39,6 +39,7 @@ class LoginScreenModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
+    private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
     settingsManager: SettingsManager
@@ -239,7 +240,7 @@ class LoginScreenModel @AssistedInject constructor(
                 try {
                     GroupMethod.valueOf(groupMethodName)
                 } catch (e: IllegalArgumentException) {
-                    Logger.log.warning("Invalid forced group method: $groupMethodName")
+                    logger.warning("Invalid forced group method: $groupMethodName")
                     null
                 }
             else

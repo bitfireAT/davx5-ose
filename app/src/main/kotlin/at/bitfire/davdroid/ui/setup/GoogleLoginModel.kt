@@ -14,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.GoogleLogin
 import at.bitfire.davdroid.util.trimToNull
 import dagger.assisted.Assisted
@@ -28,12 +27,14 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import java.util.Locale
 import java.util.logging.Level
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = GoogleLoginModel.Factory::class)
 class GoogleLoginModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
-    val authService: AuthorizationService,
-    @ApplicationContext val context: Context
+    private val authService: AuthorizationService,
+    @ApplicationContext val context: Context,
+    private val logger: Logger
 ): ViewModel() {
 
     @AssistedFactory
@@ -104,7 +105,7 @@ class GoogleLoginModel @AssistedInject constructor(
                     )
                 )
             } catch (e: Exception) {
-                Logger.log.log(Level.WARNING, "Google authentication failed", e)
+                logger.log(Level.WARNING, "Google authentication failed", e)
                 uiState = uiState.copy(error = e.message)
             }
         }

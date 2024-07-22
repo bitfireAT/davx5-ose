@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.NextcloudLoginFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -21,11 +20,13 @@ import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
+import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = NextcloudLoginModel.Factory::class)
 class NextcloudLoginModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
+    private val logger: Logger
     //val state: SavedStateHandle
 ): ViewModel() {
 
@@ -131,7 +132,7 @@ class NextcloudLoginModel @AssistedInject constructor(
                 )
 
             } catch (e: Exception) {
-                Logger.log.log(Level.WARNING, "Initiating Login Flow failed", e)
+                logger.log(Level.WARNING, "Initiating Login Flow failed", e)
 
                 uiState = uiState.copy(
                     inProgress = false,
@@ -157,7 +158,7 @@ class NextcloudLoginModel @AssistedInject constructor(
         val loginInfo = try {
             loginFlow.fetchLoginInfo()
         } catch (e: Exception) {
-            Logger.log.log(Level.WARNING, "Fetching login info failed", e)
+            logger.log(Level.WARNING, "Fetching login info failed", e)
             uiState = uiState.copy(
                 inProgress = false,
                 error = e.toString()
