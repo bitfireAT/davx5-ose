@@ -38,8 +38,6 @@ class JtxSyncer @AssistedInject constructor(
         fun create(account: Account, extras: Array<String>, syncResult: SyncResult): JtxSyncer
     }
 
-    private val updateColors = accountSettings.getManageCalendarColors()
-
     override val serviceType: String
         get() = Service.TYPE_CALDAV
     override val authority: String
@@ -80,7 +78,7 @@ class JtxSyncer @AssistedInject constructor(
     override fun update(localCollection: LocalJtxCollection, remoteCollection: Collection) {
         logger.log(Level.FINE, "Updating local jtx collection ${remoteCollection.url}", remoteCollection)
         val owner = remoteCollection.ownerId?.let { principalRepository.get(it) }
-        localCollection.updateCollection(remoteCollection, owner, updateColors)
+        localCollection.updateCollection(remoteCollection, owner, accountSettings.getManageCalendarColors())
     }
 
     override fun create(remoteCollection: Collection) {

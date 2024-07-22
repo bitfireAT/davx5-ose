@@ -40,8 +40,6 @@ class TaskSyncer @AssistedInject constructor(
 
     private lateinit var taskProvider: TaskProvider
 
-    private var updateColors = accountSettings.getManageCalendarColors()
-
     override val serviceType: String
         get() = Service.TYPE_CALDAV
     override val localCollections: List<LocalTaskList>
@@ -82,7 +80,7 @@ class TaskSyncer @AssistedInject constructor(
 
     override fun update(localCollection: LocalTaskList, remoteCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list ${remoteCollection.url}", remoteCollection)
-        localCollection.update(remoteCollection, updateColors)
+        localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
     }
 
     override fun create(remoteCollection: Collection) {

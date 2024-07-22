@@ -33,8 +33,6 @@ class CalendarSyncer @AssistedInject constructor(
         fun create(account: Account, extras: Array<String>, syncResult: SyncResult): CalendarSyncer
     }
 
-    private var updateColors = accountSettings.getManageCalendarColors()
-
     override val serviceType: String
         get() = Service.TYPE_CALDAV
     override val authority: String
@@ -79,7 +77,7 @@ class CalendarSyncer @AssistedInject constructor(
 
     override fun update(localCollection: LocalCalendar, remoteCollection: Collection) {
         logger.log(Level.FINE, "Updating local calendar ${remoteCollection.url}", remoteCollection)
-        localCollection.update(remoteCollection, updateColors)
+        localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
     }
 
     override fun create(remoteCollection: Collection) {
