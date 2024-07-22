@@ -7,7 +7,6 @@ package at.bitfire.davdroid.log
 import android.content.Context
 import android.util.Log
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.log.Logger.log
 import at.bitfire.davdroid.repository.PreferenceRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -69,7 +68,7 @@ class LogManager @Inject constructor(
     @Synchronized
     fun reloadConfig() {
         val logToFile = prefs.logToFile()
-        val logVerbose = logToFile || BuildConfig.DEBUG || Log.isLoggable(log.name, Log.DEBUG)
+        val logVerbose = logToFile || BuildConfig.DEBUG || Log.isLoggable(logger.name, Log.DEBUG)
         logger.info("Verbose logging = $logVerbose; log to file = $logToFile")
 
         // root logger: remove all existing handlers

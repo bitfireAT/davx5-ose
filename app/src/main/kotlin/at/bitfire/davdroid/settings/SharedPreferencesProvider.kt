@@ -9,19 +9,20 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import at.bitfire.davdroid.TextTable
-import at.bitfire.davdroid.log.Logger
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import java.io.Writer
+import java.util.logging.Logger
 import javax.inject.Inject
 
-class SharedPreferencesProvider(
-    val context: Context,
-    val settingsManager: SettingsManager
+class SharedPreferencesProvider @Inject constructor(
+    @ApplicationContext val context: Context,
+    private val logger: Logger
 ): SettingsProvider, SharedPreferences.OnSharedPreferenceChangeListener {
 
     companion object {
@@ -29,6 +30,7 @@ class SharedPreferencesProvider(
         private const val CURRENT_VERSION = 0
     }
 
+    private var onChangeListener: SettingsProvider.OnChangeListener? = null
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     init {
@@ -50,11 +52,12 @@ class SharedPreferencesProvider(
         preferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
+    override fun setOnChangeListener(listener: SettingsProvider.OnChangeListener) {
+        onChangeListener = listener
+    }
+
     override fun canWrite() = true
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-        settingsManager.onSettingsChanged()
-    }
 
 
     override fun contains(key: String) = preferences.contains(key)
@@ -86,7 +89,7 @@ class SharedPreferencesProvider(
         if (value == null)
             remove(key)
         else {
-            Logger.log.fine("Writing setting $key = $value")
+            logger.fine("Writing setting $key = $value")
             val edit = preferences.edit()
             writer(edit, value)
             edit.apply()
@@ -106,7 +109,7 @@ class SharedPreferencesProvider(
             putValue(key, value) { editor, v -> editor.putString(key, v) }
 
     override fun remove(key: String) {
-        Logger.log.fine("Removing setting $key")
+        logger.fine("Removing setting $key")
         preferences.edit().remove(key).apply()
     }
 
@@ -116,6 +119,11 @@ class SharedPreferencesProvider(
         for ((key, value) in preferences.all.toSortedMap())
             table.addLine(key, value)
         writer.write(table.toString())
+    }
+
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
+        onChangeListener?.onSettingsChanged(key)
     }
 
 
@@ -130,16 +138,13 @@ class SharedPreferencesProvider(
     }
 
 
-    class Factory @Inject constructor() : SettingsProviderFactory {
-        override fun getProviders(context: Context, settingsManager: SettingsManager) = listOf(SharedPreferencesProvider(context, settingsManager))
-    }
-
     @Module
     @InstallIn(SingletonComponent::class)
-    abstract class SharedPreferencesProviderFactoryModule {
+    abstract class SharedPreferencesProviderModule {
         @Binds
-        @IntoMap @IntKey(/* priority */ 10)
-        abstract fun factory(impl: Factory): SettingsProviderFactory
+        @IntoMap
+        @IntKey(/* priority */ 10)
+        abstract fun sharedPreferencesProvider(impl: SharedPreferencesProvider): SettingsProvider
     }
 
 }

@@ -17,7 +17,6 @@ import androidx.core.app.NotificationCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -35,6 +34,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.util.logging.Logger
 
 object TaskUtils {
 
@@ -45,6 +45,9 @@ object TaskUtils {
         fun notificationRegistry(): NotificationRegistry
         fun settingsManager(): SettingsManager
     }
+
+    private val logger: Logger
+        get() = Logger.getGlobal()
 
     /**
      * Returns the currently selected tasks provider (if it's still available = installed).
@@ -139,7 +142,7 @@ object TaskUtils {
      * - when there previously was no (usable) tasks app and [at.bitfire.davdroid.TasksAppWatcher] detected a new one.
      */
     fun selectProvider(context: Context, selectedProvider: ProviderName?) {
-        Logger.log.info("Selecting tasks app: $selectedProvider")
+        logger.info("Selecting tasks app: $selectedProvider")
 
         val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
         settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedProvider?.authority)
@@ -169,7 +172,7 @@ object TaskUtils {
         }
 
         if (permissionsRequired) {
-            Logger.log.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
+            logger.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
 
             val notificationRegistry = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).notificationRegistry()
             notificationRegistry.notifyPermissions()
@@ -182,7 +185,7 @@ object TaskUtils {
             val entryPoint = EntryPointAccessors.fromApplication<TaskUtilsEntryPoint>(context)
             val settings = entryPoint.accountSettingsFactory().forAccount(account)
             if (syncable) {
-                Logger.log.info("Enabling $authority sync for $account")
+                logger.info("Enabling $authority sync for $account")
 
                 // make account syncable by sync framework
                 ContentResolver.setIsSyncable(account, authority, 1)
@@ -191,7 +194,7 @@ object TaskUtils {
                 val interval = settings.getTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
                 settings.setSyncInterval(authority, interval)
             } else {
-                Logger.log.info("Disabling $authority sync for $account")
+                logger.info("Disabling $authority sync for $account")
 
                 // make account not syncable by sync framework
                 ContentResolver.setIsSyncable(account, authority, 0)

@@ -7,20 +7,15 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.Context
 import android.content.SyncResult
 import android.os.Build
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalJtxCollection
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
@@ -30,11 +25,8 @@ import javax.inject.Inject
  * Sync logic for jtx board
  */
 class JtxSyncer @Inject constructor(
-    accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext context: Context,
-    db: AppDatabase,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory
-): Syncer(accountSettingsFactory, context, db) {
+): Syncer() {
 
     override fun sync(
         account: Account,
@@ -75,11 +67,11 @@ class JtxSyncer @Inject constructor(
                     val url = strUrl.toHttpUrl()
                     val collection = remoteCollections[url]
                     if (collection == null) {
-                        Logger.log.fine("Deleting obsolete local collection $url")
+                        logger.fine("Deleting obsolete local collection $url")
                         jtxCollection.delete()
                     } else {
                         // remote CollectionInfo found for this local collection, update data
-                        Logger.log.log(Level.FINE, "Updating local collection $url", collection)
+                        logger.log(Level.FINE, "Updating local collection $url", collection)
                         val owner = collection.ownerId?.let { db.principalDao().get(it) }
                         jtxCollection.updateCollection(collection, owner, updateColors)
                         // we already have a local task list for this remote collection, don't create a new local task list
@@ -89,7 +81,7 @@ class JtxSyncer @Inject constructor(
 
             // 3. create new local jtxCollections
             for ((_,info) in newCollections) {
-                Logger.log.log(Level.INFO, "Adding local collections", info)
+                logger.log(Level.INFO, "Adding local collections", info)
                 val owner = info.ownerId?.let { db.principalDao().get(it) }
                 LocalJtxCollection.create(account, provider, info, owner)
             }
@@ -97,7 +89,7 @@ class JtxSyncer @Inject constructor(
             // 4. sync local jtxCollection lists
             val localCollections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
             for (localCollection in localCollections) {
-                Logger.log.info("Synchronizing $localCollection")
+                logger.info("Synchronizing $localCollection")
 
                 val url = localCollection.url?.toHttpUrl()
                 remoteCollections[url]?.let { collection ->

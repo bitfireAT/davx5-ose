@@ -11,7 +11,6 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.SettingsManager
@@ -33,6 +32,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.net.URI
+import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -57,6 +57,9 @@ class DavResourceFinderTest {
     lateinit var context: Context
 
     @Inject
+    lateinit var logger: Logger
+
+    @Inject
     lateinit var resourceFinderFactory: DavResourceFinder.Factory
 
     @Inject
@@ -71,7 +74,7 @@ class DavResourceFinderTest {
     fun setup() {
         hiltRule.inject()
 
-        server.dispatcher = TestDispatcher()
+        server.dispatcher = TestDispatcher(logger)
         server.start()
 
         val baseURI = URI.create("/")
@@ -161,7 +164,9 @@ class DavResourceFinderTest {
 
     // mock server
 
-    class TestDispatcher: Dispatcher() {
+    class TestDispatcher(
+        private val logger: Logger
+    ): Dispatcher() {
 
         override fun dispatch(request: RecordedRequest): MockResponse {
             if (!checkAuth(request)) {
@@ -210,7 +215,7 @@ class DavResourceFinderTest {
 
                     else -> props = null
                 }
-                Logger.log.info("Sending props: $props")
+                logger.info("Sending props: $props")
                 return MockResponse()
                         .setResponseCode(207)
                         .setBody("<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav' xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +

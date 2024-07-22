@@ -4,11 +4,9 @@
 
 package at.bitfire.davdroid.settings
 
-import android.app.Application
 import android.util.NoSuchPropertyException
 import androidx.annotation.AnyThread
 import androidx.annotation.VisibleForTesting
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.SettingsManager.OnChangeListener
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +15,7 @@ import java.io.Writer
 import java.lang.ref.WeakReference
 import java.util.LinkedList
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,9 +25,9 @@ import javax.inject.Singleton
  */
 @Singleton
 class SettingsManager @Inject constructor(
-    context: Application,
-    factoryMap: Map<Int, @JvmSuppressWildcards SettingsProviderFactory>
-) {
+    private val logger: Logger,
+    providerMap: Map<Int, @JvmSuppressWildcards SettingsProvider>
+): SettingsProvider.OnChangeListener {
 
     private val providers = LinkedList<SettingsProvider>()
     private var writeProvider: SettingsProvider? = null
@@ -36,16 +35,22 @@ class SettingsManager @Inject constructor(
     private val observers = LinkedList<WeakReference<OnChangeListener>>()
 
     init {
-        val factories = factoryMap  // get factories from Hilt
+        providerMap                 // get providers from Hilt
             .toSortedMap()          // sort by Int key
             .values.reversed()      // take reverse-sorted values (because high priority numbers shall be processed first)
-        for (factory in factories) {
-            Logger.log.fine("Loading settings providers from $factory")
-            providers.addAll(factory.getProviders(context, this))
+            .forEach { provider ->
+            logger.info("Loading settings provider: ${provider.javaClass.name}")
+
+            // register for changes
+            provider.setOnChangeListener(this)
+
+            // add to list of available providers
+            providers += provider
         }
 
+        // settings will be written to the first writable provider
         writeProvider = providers.firstOrNull { it.canWrite() }
-        Logger.log.fine("Changed settings are handled by $writeProvider")
+        logger.info("Changed settings are handled by $writeProvider")
     }
 
     /**
@@ -55,7 +60,9 @@ class SettingsManager @Inject constructor(
     fun forceReload() {
         for (provider in providers)
             provider.forceReload()
-        onSettingsChanged()
+
+        // notify possible listeners
+        onSettingsChanged(null)
     }
 
 
@@ -75,10 +82,10 @@ class SettingsManager @Inject constructor(
 
     /**
      * Notifies registered listeners about changes in the configuration.
-     * Should be called by config providers when settings have changed.
+     * Called by config providers when settings have changed.
      */
     @AnyThread
-    fun onSettingsChanged() {
+    override fun onSettingsChanged(key: String?) {
         synchronized(observers) {
             for (observer in observers.mapNotNull { it.get() })
                 observer.onSettingsChanged()
@@ -115,20 +122,20 @@ class SettingsManager @Inject constructor(
     fun containsKeyFlow(key: String): Flow<Boolean> = observerFlow { containsKey(key) }
 
     private fun<T> getValue(key: String, reader: (SettingsProvider) -> T?): T? {
-        Logger.log.fine("Looking up setting $key")
+        logger.fine("Looking up setting $key")
         val result: T? = null
         for (provider in providers)
             try {
                 val value = reader(provider)
-                Logger.log.finer("${provider::class.java.simpleName}: $key = $value")
+                logger.finer("${provider::class.java.simpleName}: $key = $value")
                 if (value != null) {
-                    Logger.log.fine("Looked up setting $key -> $value")
+                    logger.fine("Looked up setting $key -> $value")
                     return value
                 }
             } catch(e: Exception) {
-                Logger.log.log(Level.SEVERE, "Couldn't read setting from $provider", e)
+                logger.log(Level.SEVERE, "Couldn't read setting from $provider", e)
             }
-        Logger.log.fine("Looked up setting $key -> no result")
+        logger.fine("Looked up setting $key -> no result")
         return result
     }
 
@@ -160,12 +167,12 @@ class SettingsManager @Inject constructor(
     }
 
     private fun<T> putValue(key: String, value: T?, writer: (SettingsProvider) -> Unit) {
-        Logger.log.fine("Trying to write setting $key = $value")
+        logger.fine("Trying to write setting $key = $value")
         val provider = writeProvider ?: return
         try {
             writer(provider)
         } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't write setting to $writeProvider", e)
+            logger.log(Level.SEVERE, "Couldn't write setting to $writeProvider", e)
         }
     }
 

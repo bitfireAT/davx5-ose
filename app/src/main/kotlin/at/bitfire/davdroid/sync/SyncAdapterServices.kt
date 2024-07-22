@@ -18,7 +18,6 @@ import android.provider.ContactsContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,6 +28,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -53,6 +53,7 @@ abstract class SyncAdapterService: Service() {
     class SyncAdapter @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
         @ApplicationContext context: Context,
+        private val logger: Logger,
         private val syncConditionsFactory: SyncConditions.Factory
     ): AbstractThreadedSyncAdapter(
         context,
@@ -74,19 +75,19 @@ abstract class SyncAdapterService: Service() {
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
             // We seem to have to pass this old SyncFramework extra for an Android 7 workaround
             val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
-            Logger.log.info("Sync request via sync framework for $account $authority (upload=$upload)")
+            logger.info("Sync request via sync framework for $account $authority (upload=$upload)")
 
             val accountSettings = try {
                 accountSettingsFactory.forAccount(account)
             } catch (e: InvalidAccountException) {
-                Logger.log.log(Level.WARNING, "Account doesn't exist anymore", e)
+                logger.log(Level.WARNING, "Account doesn't exist anymore", e)
                 return
             }
 
             val syncConditions = syncConditionsFactory.create(accountSettings)
             // Should we run the sync at all?
             if (!syncConditions.wifiConditionsMet()) {
-                Logger.log.info("Sync conditions not met. Aborting sync framework initiated sync")
+                logger.info("Sync conditions not met. Aborting sync framework initiated sync")
                 return
             }
 
@@ -100,7 +101,7 @@ abstract class SyncAdapterService: Service() {
                 else
                     authority
 
-            Logger.log.fine("Starting OneTimeSyncWorker for $workerAccount $workerAuthority and waiting for it")
+            logger.fine("Starting OneTimeSyncWorker for $workerAccount $workerAuthority and waiting for it")
             val workerName = OneTimeSyncWorker.enqueue(context, workerAccount, workerAuthority, upload = upload)
 
             // Because we are not allowed to observe worker state on a background thread, we can not
@@ -120,18 +121,18 @@ abstract class SyncAdapterService: Service() {
                 }
             } catch (e: CancellationException) {
                 // waiting for work was cancelled, either by timeout or because the worker has finished
-                Logger.log.log(Level.FINE, "Not waiting for OneTimeSyncWorker anymore (this is not an error)", e)
+                logger.log(Level.FINE, "Not waiting for OneTimeSyncWorker anymore (this is not an error)", e)
             }
 
-            Logger.log.fine("Returning to sync framework")
+            logger.fine("Returning to sync framework")
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
-            Logger.log.log(Level.WARNING, "Security exception for $account/$authority")
+            logger.log(Level.WARNING, "Security exception for $account/$authority")
         }
 
         override fun onSyncCanceled() {
-            Logger.log.info("Sync adapter requested cancellation – won't cancel sync, but also won't block sync framework anymore")
+            logger.info("Sync adapter requested cancellation – won't cancel sync, but also won't block sync framework anymore")
 
             // unblock sync framework
             finished.complete(false)

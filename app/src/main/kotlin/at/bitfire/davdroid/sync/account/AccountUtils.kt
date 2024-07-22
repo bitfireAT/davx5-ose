@@ -8,8 +8,8 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.setAndVerifyUserData
+import java.util.logging.Logger
 
 object AccountUtils {
 
@@ -57,7 +57,7 @@ object AccountUtils {
             val stored = accountManager.getUserData(account, key)
             val expected = userData.getString(key)
             if (stored != expected) {
-                Logger.log.warning("Stored user data \"$stored\" differs from expected data \"$expected\" for $key")
+                Logger.getGlobal().warning("Stored user data \"$stored\" differs from expected data \"$expected\" for $key")
                 return false
             }
         }

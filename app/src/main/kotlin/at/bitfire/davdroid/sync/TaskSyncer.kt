@@ -7,20 +7,15 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.content.Context
 import android.content.SyncResult
 import android.os.Build
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
@@ -31,11 +26,8 @@ import javax.inject.Inject
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
 class TaskSyncer @Inject constructor(
-    accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext context: Context,
-    db: AppDatabase,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory
-): Syncer(accountSettingsFactory, context, db) {
+): Syncer() {
 
     override fun sync(
         account: Account,
@@ -76,11 +68,11 @@ class TaskSyncer @Inject constructor(
                     val url = it.toHttpUrl()
                     val info = remoteCollections[url]
                     if (info == null) {
-                        Logger.log.fine("Deleting obsolete local task list $url")
+                        logger.fine("Deleting obsolete local task list $url")
                         list.delete()
                     } else {
                         // remote CollectionInfo found for this local collection, update data
-                        Logger.log.log(Level.FINE, "Updating local task list $url", info)
+                        logger.log(Level.FINE, "Updating local task list $url", info)
                         list.update(info, updateColors)
                         // we already have a local task list for this remote collection, don't create a new local task list
                         newCollections -= url
@@ -89,7 +81,7 @@ class TaskSyncer @Inject constructor(
 
             // 3. create new local task lists
             for ((_,info) in newCollections) {
-                Logger.log.log(Level.INFO, "Adding local task list", info)
+                logger.log(Level.INFO, "Adding local task list", info)
                 LocalTaskList.create(account, taskProvider, info)
             }
 
@@ -97,7 +89,7 @@ class TaskSyncer @Inject constructor(
             val localTaskLists = DmfsTaskList
                 .find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
             for (localTaskList in localTaskLists) {
-                Logger.log.info("Synchronizing task list #${localTaskList.id} [${localTaskList.syncId}]")
+                logger.info("Synchronizing task list #${localTaskList.id} [${localTaskList.syncId}]")
 
                 val url = localTaskList.syncId?.toHttpUrl()
                 remoteCollections[url]?.let { collection ->
@@ -118,10 +110,10 @@ class TaskSyncer @Inject constructor(
             TaskUtils.notifyProviderTooOld(context, e)
             syncResult.databaseError = true
         } catch (e: Exception) {
-            Logger.log.log(Level.SEVERE, "Couldn't sync task lists", e)
+            logger.log(Level.SEVERE, "Couldn't sync task lists", e)
             syncResult.databaseError = true
         }
 
-        Logger.log.info("Task sync complete")
+        logger.info("Task sync complete")
     }
 }

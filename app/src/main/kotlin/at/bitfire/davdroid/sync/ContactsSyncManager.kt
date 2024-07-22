@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentResolver
-import android.content.Context
 import android.content.SyncResult
 import android.os.Build
 import android.text.format.Formatter
@@ -25,10 +24,8 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -38,7 +35,6 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
-import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.sameTypeAs
 import at.bitfire.davdroid.util.lastSegment
@@ -47,7 +43,6 @@ import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
 import okhttp3.HttpUrl
@@ -106,10 +101,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
     @Assisted localAddressBook: LocalAddressBook,
-    @Assisted collection: Collection,
-    @ApplicationContext context: Context,
-    db: AppDatabase,
-    notificationRegistry: NotificationRegistry
+    @Assisted collection: Collection
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
     accountSettings,
@@ -118,10 +110,7 @@ class ContactsSyncManager @AssistedInject constructor(
     authority,
     syncResult,
     localAddressBook,
-    collection,
-    context,
-    db,
-    notificationRegistry
+    collection
 ) {
 
     @AssistedFactory
@@ -162,7 +151,7 @@ class ContactsSyncManager @AssistedInject constructor(
             val reallyDirty = localCollection.verifyDirty()
             val deleted = localCollection.findDeleted().size
             if (extras.contains(ContentResolver.SYNC_EXTRAS_UPLOAD) && reallyDirty == 0 && deleted == 0) {
-                Logger.log.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
+                logger.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
                 return false
             }
         }
@@ -171,7 +160,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
         resourceDownloader = ResourceDownloader(davCollection.location)
 
-        Logger.log.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
+        logger.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
         return true
     }
 
@@ -181,7 +170,7 @@ class ContactsSyncManager @AssistedInject constructor(
             davCollection.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        Logger.log.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
+                        logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
 
                     response[SupportedAddressData::class.java]?.let { supported ->
@@ -197,9 +186,9 @@ class ContactsSyncManager @AssistedInject constructor(
                 }
             }
 
-            // Logger.log.info("Server supports jCard: $hasJCard")
-            Logger.log.info("Address book supports vCard4: $hasVCard4")
-            Logger.log.info("Address book supports Collection Sync: $hasCollectionSync")
+            // logger.info("Server supports jCard: $hasJCard")
+            logger.info("Address book supports vCard4: $hasVCard4")
+            logger.info("Address book supports Collection Sync: $hasCollectionSync")
 
             syncState
         }
@@ -215,7 +204,7 @@ class ContactsSyncManager @AssistedInject constructor(
             if (localCollection.readOnly) {
                 var modified = false
                 for (group in localCollection.findDeletedGroups()) {
-                    Logger.log.warning("Restoring locally deleted group (read-only address book!)")
+                    logger.warning("Restoring locally deleted group (read-only address book!)")
                     SyncException.wrapWithLocalResource(group) {
                         group.resetDeleted()
                     }
@@ -223,7 +212,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 }
 
                 for (contact in localCollection.findDeletedContacts()) {
-                    Logger.log.warning("Restoring locally deleted contact (read-only address book!)")
+                    logger.warning("Restoring locally deleted contact (read-only address book!)")
                     SyncException.wrapWithLocalResource(contact) {
                         contact.resetDeleted()
                     }
@@ -246,7 +235,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
         if (localCollection.readOnly) {
             for (group in localCollection.findDirtyGroups()) {
-                Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
+                logger.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 SyncException.wrapWithLocalResource(group) {
                     group.clearDirty(null, null)
                 }
@@ -254,7 +243,7 @@ class ContactsSyncManager @AssistedInject constructor(
             }
 
             for (contact in localCollection.findDirtyContacts()) {
-                Logger.log.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
+                logger.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
                 SyncException.wrapWithLocalResource(contact) {
                     contact.clearDirty(null, null)
                 }
@@ -284,7 +273,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
             }
 
-            Logger.log.log(Level.FINE, "Preparing upload of vCard ${resource.fileName}", contact)
+            logger.log(Level.FINE, "Preparing upload of vCard ${resource.fileName}", contact)
 
             val os = ByteArrayOutputStream()
             val mimeType: MediaType
@@ -312,7 +301,7 @@ class ContactsSyncManager @AssistedInject constructor(
         }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
-        Logger.log.info("Downloading ${bunch.size} vCard(s): $bunch")
+        logger.info("Downloading ${bunch.size} vCard(s): $bunch")
         SyncException.wrapWithRemoteResource(collection.url) {
             val contentType: String?
             val version: String?
@@ -333,7 +322,7 @@ class ContactsSyncManager @AssistedInject constructor(
             davCollection.multiget(bunch, contentType, version) { response, _ ->
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@ {
                     if (!response.isSuccess()) {
-                        Logger.log.warning("Received non-successful multiget response for ${response.href}")
+                        logger.warning("Received non-successful multiget response for ${response.href}")
                         return@wrapResource
                     }
 
@@ -369,21 +358,21 @@ class ContactsSyncManager @AssistedInject constructor(
     // helpers
 
     private fun processCard(fileName: String, eTag: String, reader: Reader, jCard: Boolean, downloader: Contact.Downloader) {
-        Logger.log.info("Processing CardDAV resource $fileName")
+        logger.info("Processing CardDAV resource $fileName")
 
         val contacts = try {
             Contact.fromReader(reader, jCard, downloader)
         } catch (e: CannotParseException) {
-            Logger.log.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
+            logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
             notifyInvalidResource(e, fileName)
             return
         }
 
         if (contacts.isEmpty()) {
-            Logger.log.warning("Received vCard without data, ignoring")
+            logger.warning("Received vCard without data, ignoring")
             return
         } else if (contacts.size > 1)
-            Logger.log.warning("Received multiple vCards, using first one")
+            logger.warning("Received multiple vCards, using first one")
 
         val newData = contacts.first()
         groupStrategy.verifyContactBeforeSaving(newData)
@@ -393,7 +382,7 @@ class ContactsSyncManager @AssistedInject constructor(
         SyncException.wrapWithLocalResource(localOrNull) {
             var local = localOrNull
             if (local != null) {
-                Logger.log.log(Level.INFO, "Updating $fileName in local address book", newData)
+                logger.log(Level.INFO, "Updating $fileName in local address book", newData)
 
                 if (local is LocalGroup && newData.group) {
                     // update group
@@ -418,14 +407,14 @@ class ContactsSyncManager @AssistedInject constructor(
 
             if (local == null) {
                 if (newData.group) {
-                    Logger.log.log(Level.INFO, "Creating local group", newData)
+                    logger.log(Level.INFO, "Creating local group", newData)
                     val newGroup = LocalGroup(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                     SyncException.wrapWithLocalResource(newGroup) {
                         newGroup.add()
                         local = newGroup
                     }
                 } else {
-                    Logger.log.log(Level.INFO, "Creating local contact", newData)
+                    logger.log(Level.INFO, "Creating local contact", newData)
                     val newContact = LocalContact(localCollection, newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                     SyncException.wrapWithLocalResource(newContact) {
                         newContact.add()
@@ -451,7 +440,7 @@ class ContactsSyncManager @AssistedInject constructor(
         override fun download(url: String, accepts: String): ByteArray? {
             val httpUrl = url.toHttpUrlOrNull()
             if (httpUrl == null) {
-                Logger.log.log(Level.SEVERE, "Invalid external resource URL", url)
+                logger.log(Level.SEVERE, "Invalid external resource URL", url)
                 return null
             }
 
@@ -469,9 +458,9 @@ class ContactsSyncManager @AssistedInject constructor(
                 if (response.isSuccessful)
                     return response.body?.bytes()
                 else
-                    Logger.log.warning("Couldn't download external resource")
+                    logger.warning("Couldn't download external resource")
             } catch(e: IOException) {
-                Logger.log.log(Level.SEVERE, "Couldn't download external resource", e)
+                logger.log(Level.SEVERE, "Couldn't download external resource", e)
             } finally {
                 client.close()
             }

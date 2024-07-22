@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.Context
 import android.content.SyncResult
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.DavCalendar
@@ -20,30 +19,24 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
-import at.bitfire.ical4android.UsesThreadContextClassLoader
 import at.bitfire.ical4android.util.DateUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
 import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
@@ -56,7 +49,6 @@ import java.util.logging.Level
 /**
  * Synchronization manager for CalDAV collections; handles events (VEVENT).
  */
-@UsesThreadContextClassLoader
 class CalendarSyncManager @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted accountSettings: AccountSettings,
@@ -65,10 +57,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted authority: String,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
-    @Assisted collection: Collection,
-    @ApplicationContext context: Context,
-    db: AppDatabase,
-    notificationRegistry: NotificationRegistry
+    @Assisted collection: Collection
 ): SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     accountSettings,
@@ -77,10 +66,7 @@ class CalendarSyncManager @AssistedInject constructor(
     authority,
     syncResult,
     localCalendar,
-    collection,
-    context,
-    db,
-    notificationRegistry
+    collection
 ) {
 
     @AssistedFactory
@@ -115,7 +101,7 @@ class CalendarSyncManager @AssistedInject constructor(
             davCollection.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        Logger.log.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
+                        logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
 
                     response[SupportedReportSet::class.java]?.let { supported ->
@@ -125,7 +111,7 @@ class CalendarSyncManager @AssistedInject constructor(
                 }
             }
 
-            Logger.log.info("Calendar supports Collection Sync: $hasCollectionSync")
+            logger.info("Calendar supports Collection Sync: $hasCollectionSync")
             syncState
         }
 
@@ -139,7 +125,7 @@ class CalendarSyncManager @AssistedInject constructor(
         if (localCollection.readOnly) {
             var modified = false
             for (event in localCollection.findDeleted()) {
-                Logger.log.warning("Restoring locally deleted event (read-only calendar!)")
+                logger.warning("Restoring locally deleted event (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
                     event.resetDeleted()
                 }
@@ -162,7 +148,7 @@ class CalendarSyncManager @AssistedInject constructor(
         var modified = false
         if (localCollection.readOnly) {
             for (event in localCollection.findDirty()) {
-                Logger.log.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
+                logger.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
                     event.clearDirty(null, null)
                 }
@@ -186,7 +172,7 @@ class CalendarSyncManager @AssistedInject constructor(
     override fun generateUpload(resource: LocalEvent): RequestBody =
         SyncException.wrapWithLocalResource(resource) {
             val event = requireNotNull(resource.event)
-            Logger.log.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
+            logger.log(Level.FINE, "Preparing upload of event ${resource.fileName}", event)
 
             val os = ByteArrayOutputStream()
             event.write(os)
@@ -201,18 +187,18 @@ class CalendarSyncManager @AssistedInject constructor(
         }
 
         return SyncException.wrapWithRemoteResource(collection.url) {
-            Logger.log.info("Querying events since $limitStart")
+            logger.info("Querying events since $limitStart")
             davCollection.calendarQuery(Component.VEVENT, limitStart, null, callback)
         }
     }
 
     override fun downloadRemote(bunch: List<HttpUrl>) {
-        Logger.log.info("Downloading ${bunch.size} iCalendars: $bunch")
+        logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 SyncException.wrapWithRemoteResource(response.href) wrapResponse@ {
                     if (!response.isSuccess()) {
-                        Logger.log.warning("Received non-successful multiget response for ${response.href}")
+                        logger.warning("Received non-successful multiget response for ${response.href}")
                         return@wrapResponse
                     }
 
@@ -245,7 +231,7 @@ class CalendarSyncManager @AssistedInject constructor(
         try {
             events = Event.eventsFromReader(reader)
         } catch (e: InvalidCalendarException) {
-            Logger.log.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
+            logger.log(Level.SEVERE, "Received invalid iCalendar, ignoring", e)
             notifyInvalidResource(e, fileName)
             return
         }
@@ -261,7 +247,7 @@ class CalendarSyncManager @AssistedInject constructor(
                     // Needed for calendars to actually show a notification.
                     properties += Action.DISPLAY
                 }
-                Logger.log.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
+                logger.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
                 event.alarms += alarm
             }
 
@@ -269,13 +255,13 @@ class CalendarSyncManager @AssistedInject constructor(
             val local = localCollection.findByName(fileName)
             SyncException.wrapWithLocalResource(local) {
                 if (local != null) {
-                    Logger.log.log(Level.INFO, "Updating $fileName in local calendar", event)
+                    logger.log(Level.INFO, "Updating $fileName in local calendar", event)
                     local.eTag = eTag
                     local.scheduleTag = scheduleTag
                     local.update(event)
                     syncResult.stats.numUpdates++
                 } else {
-                    Logger.log.log(Level.INFO, "Adding $fileName to local calendar", event)
+                    logger.log(Level.INFO, "Adding $fileName to local calendar", event)
                     val newLocal = LocalEvent(localCollection, event, fileName, eTag, scheduleTag, LocalResource.FLAG_REMOTELY_PRESENT)
                     SyncException.wrapWithLocalResource(newLocal) {
                         newLocal.add()
@@ -284,7 +270,7 @@ class CalendarSyncManager @AssistedInject constructor(
                 }
             }
         } else
-            Logger.log.info("Received VCALENDAR with not exactly one VEVENT with UID and without RECURRENCE-ID; ignoring $fileName")
+            logger.info("Received VCALENDAR with not exactly one VEVENT with UID and without RECURRENCE-ID; ignoring $fileName")
     }
 
     override fun notifyInvalidResourceTitle(): String =

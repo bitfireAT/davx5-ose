@@ -15,19 +15,20 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.time.Duration
 import java.util.concurrent.Semaphore
 import java.util.logging.Level
+import java.util.logging.Logger
 
 @HiltWorker
 class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
-    val db: AppDatabase
+    private val db: AppDatabase,
+    private val logger: Logger
 ): Worker(appContext, workerParameters) {
 
     companion object {
@@ -65,7 +66,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
     }
 
     private fun cleanupAccounts(context: Context, accounts: Array<out Account>) {
-        Logger.log.log(Level.INFO, "Cleaning up accounts. Current accounts:", accounts)
+        logger.log(Level.INFO, "Cleaning up accounts. Current accounts:", accounts)
 
         val mainAccountType = context.getString(R.string.account_type)
         val mainAccountNames = accounts
@@ -83,7 +84,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
                     // the main account for this address book doesn't exist anymore
                     addressBook.delete()
             } catch(e: Exception) {
-                Logger.log.log(Level.SEVERE, "Couldn't delete address book account", e)
+                logger.log(Level.SEVERE, "Couldn't delete address book account", e)
             }
         }
 

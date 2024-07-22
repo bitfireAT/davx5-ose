@@ -11,7 +11,7 @@ import dagger.multibindings.Multibinds
 
 interface TestModules {
 
-    // remove PushRegistrationWorkerModule from the component for Android tests
+    // remove PushRegistrationWorkerModule from Android tests
     @Module
     @TestInstallIn(
         components = [SingletonComponent::class],
@@ -23,14 +23,14 @@ interface TestModules {
         abstract fun empty(): Set<DavCollectionRepository.OnChangeListener>
     }
 
-    // remove TasksAppWatcherModule from the component for Android tests
+    // remove TasksAppWatcherModule from Android tests
     @Module
     @TestInstallIn(
         components = [SingletonComponent::class],
         replaces = [TasksAppWatcher.TasksAppWatcherModule::class]
     )
     abstract class TestTasksAppWatcherModuleModule {
-        // provides empty set of listeners
+        // provides empty set of plugins
         @Multibinds
         abstract fun empty(): Set<StartupPlugin>
     }
