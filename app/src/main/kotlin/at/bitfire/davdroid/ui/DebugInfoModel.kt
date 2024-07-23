@@ -554,7 +554,7 @@ class DebugInfoModel @AssistedInject constructor(
                 info.authority,
                 ContentResolver.getIsSyncable(account, info.authority),
                 ContentResolver.getSyncAutomatically(account, info.authority),  // content-triggered sync
-                accountSettings.getSyncInterval(info.authority)?.let {"${it/60} min"},
+                accountSettings.getSyncInterval(info.authority)?.takeIf { it >= 0 }?.let {"${it/60} min"},
                 nrEntries
             )
         }
