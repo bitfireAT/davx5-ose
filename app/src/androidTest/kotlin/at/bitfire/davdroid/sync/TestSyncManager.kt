@@ -15,7 +15,7 @@ import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.util.lastSegment
+import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

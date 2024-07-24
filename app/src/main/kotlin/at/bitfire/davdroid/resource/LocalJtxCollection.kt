@@ -11,12 +11,11 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.util.lastSegment
+import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.JtxCollectionFactory
 import at.bitfire.ical4android.JtxICalObject
 import at.techbee.jtx.JtxContract
-import java.util.logging.Level
 import java.util.logging.Logger
 
 class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Long):

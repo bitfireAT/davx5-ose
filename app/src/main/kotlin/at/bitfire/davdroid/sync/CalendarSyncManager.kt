@@ -26,7 +26,7 @@ import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.util.lastSegment
+import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.util.DateUtils

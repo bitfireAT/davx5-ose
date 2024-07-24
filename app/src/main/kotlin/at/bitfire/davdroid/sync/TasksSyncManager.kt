@@ -24,7 +24,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.util.lastSegment
+import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.Task
 import dagger.assisted.Assisted

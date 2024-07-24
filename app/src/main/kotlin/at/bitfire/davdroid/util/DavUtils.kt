@@ -46,6 +46,9 @@ object DavUtils {
 
     // extension methods
 
+    val HttpUrl.lastSegment: String
+        get() = pathSegments.lastOrNull { it.isNotEmpty() } ?: "/"
+
     /**
      * Returns parent URL (parent folder). Always with trailing slash
      */

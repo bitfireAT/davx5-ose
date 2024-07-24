@@ -23,7 +23,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.AccountUtils
-import at.bitfire.davdroid.util.lastSegment
+import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
