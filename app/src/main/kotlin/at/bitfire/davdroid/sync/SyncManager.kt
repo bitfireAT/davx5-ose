@@ -39,6 +39,7 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.db.SyncStats
 import at.bitfire.davdroid.network.HttpClient
@@ -344,7 +345,25 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
      * Saves the sync time of the synced account and service.
      */
     private fun saveSyncTime() {
+        val serviceType = when (authority) {
+            ContactsContract.AUTHORITY ->       // contacts
+                Service.TYPE_CARDDAV
+            else ->                             // calendars and tasks
+                Service.TYPE_CALDAV
+        }
+
+        val accountName =
+            if (localCollection is LocalAddressBook)
+                localCollection.requireMainAccount().name
+            else
+                account.name
+
         db.runInTransaction {
+            // Make sure the passed collection's service is the one from the account
+            val service = db.serviceDao().getByAccountAndType(accountName, serviceType)
+            if (collection.serviceId != service?.id) {
+                return@runInTransaction
+            }
             db.syncStatsDao().insertOrReplace(
                 SyncStats(0, collection.id, authority, System.currentTimeMillis())
             )
