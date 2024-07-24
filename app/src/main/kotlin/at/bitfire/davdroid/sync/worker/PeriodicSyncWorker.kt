@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync.worker
 import android.accounts.Account
 import android.content.Context
 import android.provider.CalendarContract
+import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
 import androidx.work.Constraints
 import androidx.work.Data
@@ -18,6 +19,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.sync.SyncDispatcher
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.util.concurrent.TimeUnit
 
@@ -105,6 +107,12 @@ class PeriodicSyncWorker @AssistedInject constructor(
             WorkManager.getInstance(context)
                 .cancelUniqueWork(workerName(account, authority))
 
+    }
+
+    @AssistedFactory
+    @VisibleForTesting
+    interface Factory {
+        fun create(appContext: Context, workerParams: WorkerParameters): PeriodicSyncWorker
     }
 
 }
