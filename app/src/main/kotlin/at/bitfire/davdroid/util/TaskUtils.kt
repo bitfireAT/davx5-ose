@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.util
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Context
@@ -17,6 +16,7 @@ import androidx.core.app.NotificationCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -41,6 +41,7 @@ object TaskUtils {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface TaskUtilsEntryPoint {
+        fun accountRepository(): AccountRepository
         fun accountSettingsFactory(): AccountSettings.Factory
         fun notificationRegistry(): NotificationRegistry
         fun settingsManager(): SettingsManager
@@ -151,8 +152,8 @@ object TaskUtils {
 
         // check all accounts and (de)activate task provider(s) if a CalDAV service is defined
         val db = EntryPointAccessors.fromApplication(context, SyncUtils.SyncUtilsEntryPoint::class.java).appDatabase()
-        val accountManager = AccountManager.get(context)
-        for (account in accountManager.getAccountsByType(context.getString(R.string.account_type))) {
+        val accountRepository = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).accountRepository()
+        for (account in accountRepository.getAll()) {
             val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
             for (providerName in TaskProvider.ProviderName.entries) {
                 val syncable = hasCalDAV && providerName == selectedProvider

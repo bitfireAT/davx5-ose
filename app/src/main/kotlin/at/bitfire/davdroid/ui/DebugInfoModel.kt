@@ -42,6 +42,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TextTable
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.LogFileHandler
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -73,6 +74,7 @@ import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 @HiltViewModel(assistedFactory = DebugInfoModel.Factory::class)
 class DebugInfoModel @AssistedInject constructor(
     @Assisted private val details: DebugInfoDetails,
+    private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
     private val db: AppDatabase,
@@ -377,12 +379,11 @@ class DebugInfoModel @AssistedInject constructor(
             }
             writer.append('\n')
 
-            // main accounts
+            // accounts (grouped by main account)
             writer.append("\nACCOUNTS\n\n")
             val accountManager = AccountManager.get(context)
-            val mainAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type))
             val addressBookAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).toMutableList()
-            for (account in mainAccounts) {
+            for (account in accountRepository.getAll()) {
                 dumpMainAccount(account, writer)
 
                 val iter = addressBookAccounts.iterator()

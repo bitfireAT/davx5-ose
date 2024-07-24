@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.widget
 
-import android.accounts.AccountManager
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Composable
@@ -29,22 +28,47 @@ import androidx.glance.layout.size
 import androidx.glance.text.Text
 import androidx.glance.text.TextDefaults
 import androidx.glance.unit.ColorProvider
+import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.ui.M3ColorScheme
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+/**
+ * A widget with a "Sync all" button.
+ */
 class SyncButtonWidget : GlanceAppWidget() {
+
+    // Hilt over @AndroidEntryPoint is not available for widgets
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface SyncButtonWidgetEntryPoint {
+        fun model(): Model
+    }
+
+
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        // initial data
+        val entryPoint = EntryPointAccessors.fromApplication<SyncButtonWidgetEntryPoint>(context)
+        val model = entryPoint.model()
+
+        // will be called when the widget is updated
         provideContent {
-            WidgetContent()
+            WidgetContent(model)
         }
     }
 
     @Composable
-    private fun WidgetContent() {
+    private fun WidgetContent(model: Model) {
         val context = LocalContext.current
 
         Row(
@@ -54,7 +78,8 @@ class SyncButtonWidget : GlanceAppWidget() {
                 .cornerRadius(16.dp)
                 .padding(4.dp)
                 .clickable {
-                    requestSync(context)
+                    model.requestSync()
+                    Toast.makeText(context, R.string.sync_started, Toast.LENGTH_SHORT).show()
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -80,16 +105,20 @@ class SyncButtonWidget : GlanceAppWidget() {
         }
     }
 
-    private fun requestSync(context: Context) {
-        CoroutineScope(Dispatchers.Default).launch {
-            val accountType = context.getString(R.string.account_type)
-            val accounts = AccountManager.get(context).getAccountsByType(accountType)
-            for (account in accounts) {
-                OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
+
+    class Model @Inject constructor(
+        @ApplicationContext val context: Context,
+        private val accountRepository: AccountRepository
+    ): ViewModel() {
+
+        fun requestSync() {
+            CoroutineScope(Dispatchers.Default).launch {
+                for (account in accountRepository.getAll()) {
+                    OneTimeSyncWorker.enqueueAllAuthorities(context, account, manual = true)
+                }
             }
         }
 
-        Toast.makeText(context, R.string.sync_started, Toast.LENGTH_SHORT).show()
     }
 
 }
