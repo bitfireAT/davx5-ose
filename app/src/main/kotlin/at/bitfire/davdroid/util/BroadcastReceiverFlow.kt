@@ -43,7 +43,7 @@ fun broadcastReceiverFlow(
     filter.dump({ filterDump = it }, "")
     logger.fine("Registering broadcast receiver for $filterDump (flags=$flags)")
     if (flags != null)
-        ContextCompat.registerReceiver(context, receiver, filter, flags)
+        ContextCompat.registerReceiver(context, receiver, filter, null, null, flags)
     else
         context.registerReceiver(receiver, filter)
 

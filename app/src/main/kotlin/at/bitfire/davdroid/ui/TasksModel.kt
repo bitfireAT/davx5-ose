@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.util.TaskUtils
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TasksModel @Inject constructor(
     @ApplicationContext val context: Context,
-    private val settings: SettingsManager
+    private val settings: SettingsManager,
+    private val tasksAppManager: TasksAppManager
 ) : ViewModel() {
 
     companion object {
@@ -43,7 +44,7 @@ class TasksModel @Inject constructor(
             settings.putBoolean(HINT_OPENTASKS_NOT_INSTALLED, false)
     }
 
-    val currentProvider = TaskUtils.currentProviderFlow(context, viewModelScope)
+    val currentProvider = tasksAppManager.currentProviderFlow(viewModelScope)
     val jtxSelected = currentProvider.map { it == TaskProvider.ProviderName.JtxBoard }
     val tasksOrgSelected = currentProvider.map { it == TaskProvider.ProviderName.TasksOrg }
     val openTasksSelected = currentProvider.map { it == TaskProvider.ProviderName.OpenTasks }
@@ -71,7 +72,7 @@ class TasksModel @Inject constructor(
         }
 
     fun selectProvider(provider: TaskProvider.ProviderName) = viewModelScope.launch(Dispatchers.Default) {
-        TaskUtils.selectProvider(context, provider)
+        tasksAppManager.selectProvider(provider)
     }
 
 }

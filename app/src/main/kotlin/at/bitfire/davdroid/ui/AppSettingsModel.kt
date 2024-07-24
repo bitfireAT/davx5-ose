@@ -12,10 +12,10 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageModel
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.util.PermissionUtils
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,7 +28,8 @@ import javax.inject.Inject
 class AppSettingsModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val preference: PreferenceRepository,
-    private val settings: SettingsManager
+    private val settings: SettingsManager,
+    private val tasksAppManager: TasksAppManager
 ) : ViewModel() {
 
     // debugging
@@ -93,7 +94,7 @@ class AppSettingsModel @Inject constructor(
     // tasks
 
     val pm: PackageManager = context.packageManager
-    private val appInfoFlow = TaskUtils.currentProviderFlow(context, viewModelScope).map { tasksProvider ->
+    private val appInfoFlow = tasksAppManager.currentProviderFlow(viewModelScope).map { tasksProvider ->
         tasksProvider?.packageName?.let { pkgName ->
             pm.getApplicationInfo(pkgName, 0)
         }

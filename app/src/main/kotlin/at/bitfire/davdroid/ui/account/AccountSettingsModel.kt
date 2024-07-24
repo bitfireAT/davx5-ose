@@ -13,8 +13,8 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.Syncer
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import dagger.assisted.Assisted
@@ -33,7 +33,8 @@ class AccountSettingsModel @AssistedInject constructor(
     accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
     private val logger: Logger,
-    private val settings: SettingsManager
+    private val settings: SettingsManager,
+    private val tasksAppManager: TasksAppManager
 ): ViewModel(), SettingsManager.OnChangeListener {
 
     @AssistedFactory
@@ -47,7 +48,7 @@ class AccountSettingsModel @AssistedInject constructor(
     var syncIntervalContacts by mutableStateOf<Long?>(null)
     var syncIntervalCalendars by mutableStateOf<Long?>(null)
 
-    private val tasksProvider = TaskUtils.currentProvider(context)
+    private val tasksProvider = tasksAppManager.currentProvider()
     var syncIntervalTasks by mutableStateOf<Long?>(null)
 
     var syncWifiOnly by mutableStateOf(false)

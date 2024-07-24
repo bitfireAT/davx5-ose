@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.util
+package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.app.PendingIntent
@@ -15,71 +15,64 @@ import android.net.Uri
 import androidx.core.app.NotificationCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
+import dagger.Lazy
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.util.logging.Logger
+import javax.inject.Inject
 
-object TaskUtils {
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface TaskUtilsEntryPoint {
-        fun accountRepository(): AccountRepository
-        fun accountSettingsFactory(): AccountSettings.Factory
-        fun notificationRegistry(): NotificationRegistry
-        fun settingsManager(): SettingsManager
-    }
-
-    private val logger: Logger
-        get() = Logger.getGlobal()
+/**
+ * Responsible for setting/getting the currently used tasks app, and for communicating with it.
+ */
+class TasksAppManager @Inject constructor(
+    @ApplicationContext val context: Context,
+    private val accountRepository: Lazy<AccountRepository>,
+    private val accountSettingsFactory: AccountSettings.Factory,
+    private val db: AppDatabase,
+    private val logger: Logger,
+    private val notificationRegistry: Lazy<NotificationRegistry>,
+    private val settingsManager: SettingsManager
+) {
 
     /**
-     * Returns the currently selected tasks provider (if it's still available = installed).
+     * Gets the currently selected tasks app.
      *
-     * @return the currently selected tasks provider, or null if none is available
+     * @return currently selected tasks app, or `null` if no tasks app is selected or the selected app is not installed
      */
-    fun currentProvider(context: Context): ProviderName? {
-        val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
+    fun currentProvider(): ProviderName? {
         val preferredAuthority = settingsManager.getString(Settings.SELECTED_TASKS_PROVIDER) ?: return null
-        return preferredAuthorityToProviderName(preferredAuthority, context.packageManager)
+        return preferredAuthorityToProviderName(preferredAuthority)
     }
 
     /**
-     * Returns the currently selected tasks provider (if it's still available = installed).
-     *
-     * @return flow with the currently selected tasks provider
+     * Like [currentProvider, but as a [StateFlow].
      */
-    fun currentProviderFlow(context: Context, externalScope: CoroutineScope): StateFlow<ProviderName?> {
-        val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
+    fun currentProviderFlow(externalScope: CoroutineScope): StateFlow<ProviderName?> {
         return settingsManager.getStringFlow(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
             if (preferred != null)
-                preferredAuthorityToProviderName(preferred, context.packageManager)
+                preferredAuthorityToProviderName(preferred)
             else
                 null
         }.stateIn(scope = externalScope, started = SharingStarted.WhileSubscribed(), initialValue = null)
     }
 
-    private fun preferredAuthorityToProviderName(
-        preferredAuthority: String,
-        packageManager: PackageManager
-    ): ProviderName? {
+    private fun preferredAuthorityToProviderName(preferredAuthority: String): ProviderName? {
+        val packageManager = context.packageManager
         ProviderName.entries.toTypedArray()
             .sortedByDescending { it.authority == preferredAuthority }
             .forEach { providerName ->
@@ -89,15 +82,87 @@ object TaskUtils {
         return null
     }
 
-    fun isAvailable(context: Context) = currentProvider(context) != null
 
     /**
-     * Starts an Intent and redirects the user to the package in the market to update the app
+     * Sets up sync for the current TaskProvider (and disables sync for unavailable task providers):
+     *
+     * 1. Makes selected tasks authority _syncable_ in the sync framework, all other authorities _not syncable_.
+     * 2. Creates periodic sync worker for selected authority, disables periodic sync workers for all other authorities.
+     * 3. If the permissions don't allow synchronizing with the selected tasks app, a notification is shown.
+     *
+     * Called
+     *
+     * - when a user explicitly selects another task app, or
+     * - when there previously was no (usable) tasks app and [at.bitfire.davdroid.TasksAppWatcher] detected a new one.
+     */
+    fun selectProvider(selectedProvider: ProviderName?) {
+        logger.info("Selecting tasks app: $selectedProvider")
+
+        settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedProvider?.authority)
+
+        var permissionsRequired = false     // whether additional permissions are required
+
+        // check all accounts and (de)activate task provider(s) if a CalDAV service is defined
+        for (account in accountRepository.get().getAll()) {
+            val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
+            for (providerName in TaskProvider.ProviderName.entries) {
+                val syncable = hasCalDAV && providerName == selectedProvider
+
+                // enable/disable sync for the given account and authority
+                setSyncable(
+                    context,
+                    account,
+                    providerName.authority,
+                    syncable
+                )
+
+                // if sync has just been enabled: check whether additional permissions are required
+                if (syncable && !PermissionUtils.havePermissions(context, providerName.permissions))
+                    permissionsRequired = true
+            }
+        }
+
+        if (permissionsRequired) {
+            logger.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
+                notificationRegistry.get().notifyPermissions()
+        }
+    }
+
+    private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean) {
+        try {
+            val settings = accountSettingsFactory.forAccount(account)
+            if (syncable) {
+                logger.info("Enabling $authority sync for $account")
+
+                // make account syncable by sync framework
+                ContentResolver.setIsSyncable(account, authority, 1)
+
+                // set sync interval according to settings; also updates periodic sync workers and sync framework on-content-change
+                val interval = settings.getTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
+                settings.setSyncInterval(authority, interval)
+            } else {
+                logger.info("Disabling $authority sync for $account")
+
+                // make account not syncable by sync framework
+                ContentResolver.setIsSyncable(account, authority, 0)
+
+                // disable periodic sync worker
+                PeriodicSyncWorker.disable(context, account, authority)
+            }
+        } catch (e: InvalidAccountException) {
+            // account has already been removed, make sure periodic sync is disabled, too
+            PeriodicSyncWorker.disable(context, account, authority)
+        }
+    }
+
+
+    /**
+     * Show a notification that starts an Intent and redirects the user to the tasks app in the app store.
      *
      * @param e   the TaskProvider.ProviderTooOldException to be shown
      */
-    fun notifyProviderTooOld(context: Context, e: TaskProvider.ProviderTooOldException) {
-        val registry = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).notificationRegistry()
+    fun notifyProviderTooOld(e: TaskProvider.ProviderTooOldException) {
+        val registry = notificationRegistry.get()
         registry.notifyIfPossible(NotificationRegistry.NOTIFY_TASKS_PROVIDER_TOO_OLD) {
             val message = context.getString(R.string.sync_error_tasks_required_version, e.provider.minVersionName)
 
@@ -127,85 +192,6 @@ object TaskUtils {
                 notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))
 
             notify.build()
-        }
-    }
-
-    /**
-     * Sets up sync for the current TaskProvider (and disables sync for unavailable task providers):
-     *
-     * 1. Makes selected tasks authority _syncable_ in the sync framework, all other authorities _not syncable_.
-     * 2. Creates periodic sync worker for selected authority, disables periodic sync workers for all other authorities.
-     * 3. If the permissions don't allow synchronizing with the selected tasks app, a notification is shown.
-     *
-     * Called
-     *
-     * - when a user explicitly selects another task app, or
-     * - when there previously was no (usable) tasks app and [at.bitfire.davdroid.TasksAppWatcher] detected a new one.
-     */
-    fun selectProvider(context: Context, selectedProvider: ProviderName?) {
-        logger.info("Selecting tasks app: $selectedProvider")
-
-        val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
-        settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedProvider?.authority)
-
-        var permissionsRequired = false     // whether additional permissions are required
-
-        // check all accounts and (de)activate task provider(s) if a CalDAV service is defined
-        val db = EntryPointAccessors.fromApplication(context, SyncUtils.SyncUtilsEntryPoint::class.java).appDatabase()
-        val accountRepository = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).accountRepository()
-        for (account in accountRepository.getAll()) {
-            val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
-            for (providerName in TaskProvider.ProviderName.entries) {
-                val syncable = hasCalDAV && providerName == selectedProvider
-
-                // enable/disable sync for the given account and authority
-                setSyncable(
-                    context,
-                    account,
-                    providerName.authority,
-                    syncable
-                )
-
-                // if sync has just been enabled: check whether additional permissions are required
-                if (syncable && !PermissionUtils.havePermissions(context, providerName.permissions))
-                    permissionsRequired = true
-            }
-        }
-
-        if (permissionsRequired) {
-            logger.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
-
-            val notificationRegistry = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).notificationRegistry()
-            notificationRegistry.notifyPermissions()
-        }
-    }
-
-    private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean) {
-        val settingsManager by lazy { EntryPointAccessors.fromApplication(context, SyncUtils.SyncUtilsEntryPoint::class.java).settingsManager() }
-        try {
-            val entryPoint = EntryPointAccessors.fromApplication<TaskUtilsEntryPoint>(context)
-            val settings = entryPoint.accountSettingsFactory().forAccount(account)
-            if (syncable) {
-                logger.info("Enabling $authority sync for $account")
-
-                // make account syncable by sync framework
-                ContentResolver.setIsSyncable(account, authority, 1)
-
-                // set sync interval according to settings; also updates periodic sync workers and sync framework on-content-change
-                val interval = settings.getTasksSyncInterval() ?: settingsManager.getLong(Settings.DEFAULT_SYNC_INTERVAL)
-                settings.setSyncInterval(authority, interval)
-            } else {
-                logger.info("Disabling $authority sync for $account")
-
-                // make account not syncable by sync framework
-                ContentResolver.setIsSyncable(account, authority, 0)
-
-                // disable periodic sync worker
-                PeriodicSyncWorker.disable(context, account, authority)
-            }
-        } catch (e: InvalidAccountException) {
-            // account has already been removed, make sure periodic sync is disabled, too
-            PeriodicSyncWorker.disable(context, account, authority)
         }
     }
 
