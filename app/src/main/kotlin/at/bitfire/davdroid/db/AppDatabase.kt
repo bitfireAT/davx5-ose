@@ -71,7 +71,7 @@ abstract class AppDatabase: RoomDatabase() {
                     override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
                         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_DATABASE_CORRUPTED) {
                             val launcherIntent = Intent(context, AccountsActivity::class.java)
-                            NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_GENERAL)
+                            NotificationCompat.Builder(context, notificationRegistry.CHANNEL_GENERAL)
                                 .setSmallIcon(R.drawable.ic_warning_notify)
                                 .setContentTitle(context.getString(R.string.database_destructive_migration_title))
                                 .setContentText(context.getString(R.string.database_destructive_migration_text))

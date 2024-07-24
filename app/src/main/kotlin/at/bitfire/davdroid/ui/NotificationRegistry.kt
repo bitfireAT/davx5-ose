@@ -41,7 +41,6 @@ class NotificationRegistry @Inject constructor(
     companion object {
 
         // notification IDs
-
         const val NOTIFY_VERBOSE_LOGGING = 1
         const val NOTIFY_REFRESH_COLLECTIONS = 2
         const val NOTIFY_DATABASE_CORRUPTED = 4
@@ -52,49 +51,50 @@ class NotificationRegistry @Inject constructor(
         const val NOTIFY_TASKS_PROVIDER_TOO_OLD = 20
         const val NOTIFY_PERMISSIONS = 21
 
-
-        // notification channels
-
-        /**
-         * For notifications that don't fit into another channel.
-         */
-        const val CHANNEL_GENERAL = "general"
-
-        /**
-         * For debugging notifications. High priority because a debugging session
-         * has been activated by the user and they should know all the time.
-         *
-         * Currently only used for the "verbose logging active" notification.
-         */
-        const val CHANNEL_DEBUG = "debug"
-
-        /**
-         * Used to show progress, like that a service detection or WebDAV file access is running.
-         */
-        const val CHANNEL_STATUS = "status"
-
-        /**
-         * For sync-related notifications. Use the appropriate sub-channels for different types of sync problems.
-         */
-        private const val CHANNEL_SYNC = "sync"
-
-        /**
-         * For sync errors that are not IO errors. Shown as normal priority.
-         */
-        const val CHANNEL_SYNC_ERRORS = "syncProblems"
-
-        /**
-         * For sync warnings. Shown as low priority.
-         */
-        const val CHANNEL_SYNC_WARNINGS = "syncWarnings"
-
-        /**
-         * For sync IO errors. Shown as minimal priority because they might go away automatically, for instance
-         * when the connection is working again.
-         */
-        const val CHANNEL_SYNC_IO_ERRORS = "syncIoErrors"
-
     }
+
+
+    // notification channel names, accessible only when instance (and thus the channels) has been created
+
+    /**
+     * For notifications that don't fit into another channel.
+     */
+    val CHANNEL_GENERAL = "general"
+
+    /**
+     * For debugging notifications. High priority because a debugging session
+     * has been activated by the user and they should know all the time.
+     *
+     * Currently only used for the "verbose logging active" notification.
+     */
+    val CHANNEL_DEBUG = "debug"
+
+    /**
+     * Used to show progress, like that a service detection or WebDAV file access is running.
+     */
+    val CHANNEL_STATUS = "status"
+
+    /**
+     * For sync-related notifications. Use the appropriate sub-channels for different types of sync problems.
+     */
+    val CHANNEL_SYNC = "sync"
+
+    /**
+     * For sync errors that are not IO errors. Shown as normal priority.
+     */
+    val CHANNEL_SYNC_ERRORS = "syncProblems"
+
+    /**
+     * For sync warnings. Shown as low priority.
+     */
+    val CHANNEL_SYNC_WARNINGS = "syncWarnings"
+
+    /**
+     * For sync IO errors. Shown as minimal priority because they might go away automatically, for instance
+     * when the connection is working again.
+     */
+    val CHANNEL_SYNC_IO_ERRORS = "syncIoErrors"
+
 
     init {
         createChannels()

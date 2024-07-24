@@ -120,7 +120,7 @@ class LogFileHandler @Inject constructor(
 
     private fun showNotification() {
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_VERBOSE_LOGGING) {
-            val builder = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_DEBUG)
+            val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_DEBUG)
             builder.setSmallIcon(R.drawable.ic_sd_card_notify)
                 .setContentTitle(context.getString(R.string.app_settings_logging))
                 .setCategory(NotificationCompat.CATEGORY_STATUS)

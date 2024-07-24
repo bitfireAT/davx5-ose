@@ -157,7 +157,7 @@ class OneTimeSyncWorker @AssistedInject constructor(
      * Used by WorkManager to show a foreground service notification for expedited jobs on Android <12.
      */
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notification = NotificationCompat.Builder(applicationContext, NotificationRegistry.CHANNEL_STATUS)
+        val notification = NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_STATUS)
             .setSmallIcon(R.drawable.ic_foreground_notify)
             .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
             .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))

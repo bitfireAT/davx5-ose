@@ -105,7 +105,7 @@ object TaskUtils {
             val tasksAppInfo = pm.getPackageInfo(e.provider.packageName, 0)
             val tasksAppLabel = tasksAppInfo.applicationInfo.loadLabel(pm)
 
-            val notify = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_SYNC_ERRORS)
+            val notify = NotificationCompat.Builder(context, registry.CHANNEL_SYNC_ERRORS)
                 .setSmallIcon(R.drawable.ic_sync_problem_notify)
                 .setContentTitle(context.getString(R.string.sync_error_tasks_too_old, tasksAppLabel))
                 .setContentText(message)
