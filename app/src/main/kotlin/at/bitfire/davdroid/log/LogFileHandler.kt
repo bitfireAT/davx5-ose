@@ -34,6 +34,7 @@ import javax.inject.Inject
  */
 class LogFileHandler @Inject constructor(
     @ApplicationContext val context: Context,
+    private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
 ): Handler(), Closeable {
 
@@ -71,7 +72,6 @@ class LogFileHandler @Inject constructor(
     }
 
     private var fileHandler: FileHandler? = null
-    private val logger = Logger.getGlobal()
     private val notificationManager = NotificationManagerCompat.from(context)
 
     private val logFile = getDebugLogFile(context)

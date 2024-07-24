@@ -40,6 +40,7 @@ import java.util.logging.Logger
 class AccountSettings @AssistedInject constructor(
     @Assisted accountOrAddressBookAccount: Account,
     @ApplicationContext val context: Context,
+    private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager
 ) {
@@ -134,8 +135,6 @@ class AccountSettings @AssistedInject constructor(
 
     }
 
-
-    private val logger: Logger = Logger.getGlobal()
 
     val accountManager: AccountManager = AccountManager.get(context)
     val account: Account = when (accountOrAddressBookAccount.type) {

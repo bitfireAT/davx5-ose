@@ -51,12 +51,11 @@ class AccountRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
     private val homeSetRepository: DavHomeSetRepository,
+    private val logger: Logger,
     private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
     private val collectionRepository: DavCollectionRepository
 ) {
-
-    private val logger = Logger.getGlobal()
 
     private val accountType = context.getString(R.string.account_type)
     private val accountManager = AccountManager.get(context)
