@@ -8,8 +8,9 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
-import at.bitfire.davdroid.R
+import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.test.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -18,7 +19,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -30,17 +30,20 @@ class AccountUtilsTest {
     @Inject
     @ApplicationContext
     lateinit var context: Context
+    val testContext = InstrumentationRegistry.getInstrumentation().context
 
     @Inject
     lateinit var settingsManager: SettingsManager
 
+    val account = Account(
+        "AccountUtilsTest",
+        testContext.getString(R.string.account_type_test)
+    )
+
     @Before
-    fun inject() {
+    fun setUp() {
         hiltRule.inject()
     }
-
-
-    val account by lazy { Account("Test Account", context.getString(R.string.account_type)) }
 
 
     @Test
@@ -48,16 +51,16 @@ class AccountUtilsTest {
         val userData = Bundle(2)
         userData.putString("int", "1")
         userData.putString("string", "abc/\"-")
+
+        val manager = AccountManager.get(context)
         try {
             assertTrue(AccountUtils.createAccount(context, account, userData))
 
             // validate user data
-            val manager = AccountManager.get(context)
             assertEquals("1", manager.getUserData(account, "int"))
             assertEquals("abc/\"-", manager.getUserData(account, "string"))
         } finally {
-            val futureResult = AccountManager.get(context).removeAccount(account, {}, null)
-            assertTrue(futureResult.getResult(10, TimeUnit.SECONDS))
+            assertTrue(manager.removeAccountExplicitly(account))
         }
     }
 

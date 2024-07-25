@@ -144,7 +144,8 @@ class AccountSettings @AssistedInject constructor(
                 LocalAddressBook.mainAccount(context, accountOrAddressBookAccount) ?: throw IllegalArgumentException("Main account of $accountOrAddressBookAccount not found")
             }
 
-            context.getString(R.string.account_type) ->
+            context.getString(R.string.account_type),
+            "at.bitfire.davdroid.test" /* defined in androidTest/strings/account_type_test */ ->
                 accountOrAddressBookAccount
 
             else ->

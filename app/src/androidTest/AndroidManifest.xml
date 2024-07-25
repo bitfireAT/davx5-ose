@@ -7,4 +7,22 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" android:maxSdkVersion="22"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" android:maxSdkVersion="22"/>
 
+
+    <application>
+
+        <!-- test account type (without associated sync adapters) -->
+        <service
+            android:name="at.bitfire.davdroid.sync.account.TestAccountAuthenticator"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/test_account_authenticator"/>
+        </service>
+
+    </application>
+
 </manifest>

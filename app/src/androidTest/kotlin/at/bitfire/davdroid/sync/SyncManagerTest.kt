@@ -5,26 +5,25 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.Context
 import android.content.SyncResult
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.dav4jvm.PropStat
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.Response.HrefRelation
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -42,7 +41,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.time.Instant
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -57,6 +55,7 @@ class SyncManagerTest {
     @Inject
     @ApplicationContext
     lateinit var context: Context
+    val testContext = InstrumentationRegistry.getInstrumentation().context
 
     @Inject
     lateinit var db: AppDatabase
@@ -67,12 +66,11 @@ class SyncManagerTest {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    private val accountManager by lazy { AccountManager.get(context) }
-    private val account by lazy { Account("SyncManagerTest", context.getString(R.string.account_type)) }
+    lateinit var account: Account
     private val server = MockWebServer()
 
     @Before
-    fun setup() {
+    fun setUp() {
         hiltRule.inject()
 
         // Initialize WorkManager for instrumentation tests.
@@ -82,15 +80,14 @@ class SyncManagerTest {
             .build()
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
 
-        // create account
-        assertTrue(accountManager.addAccountExplicitly(account, "test", AccountSettings.initialUserData(Credentials("test", "test"))))
+        account = TestAccountAuthenticator.create()
 
         server.start()
     }
 
     @After
-    fun teardown() {
-        assertTrue(accountManager.removeAccount(account, null, null).getResult(10, TimeUnit.SECONDS))
+    fun tearDown() {
+        TestAccountAuthenticator.remove(account)
 
         // clear annoying syncError notifications
         NotificationManagerCompat.from(context).cancelAll()
