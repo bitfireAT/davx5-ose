@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" android:maxSdkVersion="22"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" android:maxSdkVersion="22"/>
 
-
     <application>
 
         <!-- test account type (without associated sync adapters) -->
