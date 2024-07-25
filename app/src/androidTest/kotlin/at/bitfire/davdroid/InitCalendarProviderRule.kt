@@ -6,6 +6,7 @@ package at.bitfire.davdroid
 
 import android.Manifest
 import android.accounts.Account
+import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.os.Build
@@ -18,10 +19,9 @@ import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.Event
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.RRule
+import org.junit.Assert.assertNotNull
+import org.junit.rules.ExternalResource
 import org.junit.rules.RuleChain
-import org.junit.rules.TestRule
-import org.junit.runner.Description
-import org.junit.runners.model.Statement
 import java.util.logging.Logger
 
 /**
@@ -36,63 +36,69 @@ import java.util.logging.Logger
  *
  * If you run tests manually, just make sure to ignore the first run after the calendar
  * provider has been accessed the first time.
+ *
+ * See [at.bitfire.davdroid.resource.LocalCalendarTest] for how to use this rule.
  */
-class InitCalendarProviderRule private constructor(): TestRule {
-
-    private val logger = Logger.getLogger(InitCalendarProviderRule::javaClass.name)
+class InitCalendarProviderRule private constructor(): ExternalResource() {
 
     companion object {
-        fun getInstance() = RuleChain
-            .outerRule(GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR))
-            .around(InitCalendarProviderRule())
-    }
 
-    override fun apply(base: Statement, description: Description): Statement {
-        logger.info("Initializing calendar provider before running ${description.displayName}")
-        return InitCalendarProviderStatement(base)
-    }
-
-
-    class InitCalendarProviderStatement(val base: Statement): Statement() {
-
+        private var isInitialized = false
         private val logger = Logger.getLogger(InitCalendarProviderRule::javaClass.name)
 
-        override fun evaluate() {
+        fun getInstance(): RuleChain = RuleChain
+            .outerRule(GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR))
+            .around(InitCalendarProviderRule())
+
+    }
+
+    override fun before() {
+        if (!isInitialized) {
+            logger.info("Initializing calendar provider")
             if (Build.VERSION.SDK_INT < 31)
                 logger.warning("Calendar provider initialization may or may not work. See InitCalendarProviderRule")
-            initCalendarProvider()
 
-            base.evaluate()
-        }
-
-        private fun initCalendarProvider() {
-            val account = Account("LocalCalendarTest", CalendarContract.ACCOUNT_TYPE_LOCAL)
             val context = InstrumentationRegistry.getInstrumentation().targetContext
-            val provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
-            val uri = AndroidCalendar.create(account, provider, ContentValues())
-            val calendar = AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
-            try {
-                // single event init
-                val normalEvent = Event().apply {
-                    dtStart = DtStart("20220120T010203Z")
-                    summary = "Event with 1 instance"
-                }
-                val normalLocalEvent = LocalEvent(calendar, normalEvent, null, null, null, 0)
-                normalLocalEvent.add()
-                LocalEvent.numInstances(provider, account, normalLocalEvent.id!!)
+            val client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)
+            assertNotNull("Couldn't acquire calendar provider", client)
 
-                // recurring event init
-                val recurringEvent = Event().apply {
-                    dtStart = DtStart("20220120T010203Z")
-                    summary = "Event over 22 years"
-                    rRules.add(RRule("FREQ=YEARLY;UNTIL=20740119T010203Z"))     // year needs to be  >2074 (not supported by Android <11 Calendar Storage)
-                }
-                val localRecurringEvent = LocalEvent(calendar, recurringEvent, null, null, null, 0)
-                localRecurringEvent.add()
-                LocalEvent.numInstances(provider, account, localRecurringEvent.id!!)
-            } finally {
-                calendar.delete()
+            client!!.use {
+                initCalendarProvider(client)
+                isInitialized = true
             }
+        }
+    }
+
+    private fun initCalendarProvider(provider: ContentProviderClient) {
+        val account = Account("LocalCalendarTest", CalendarContract.ACCOUNT_TYPE_LOCAL)
+        val uri = AndroidCalendar.create(account, provider, ContentValues())
+        val calendar = AndroidCalendar.findByID(
+            account,
+            provider,
+            LocalCalendar.Factory,
+            ContentUris.parseId(uri)
+        )
+        try {
+            // single event init
+            val normalEvent = Event().apply {
+                dtStart = DtStart("20220120T010203Z")
+                summary = "Event with 1 instance"
+            }
+            val normalLocalEvent = LocalEvent(calendar, normalEvent, null, null, null, 0)
+            normalLocalEvent.add()
+            LocalEvent.numInstances(provider, account, normalLocalEvent.id!!)
+
+            // recurring event init
+            val recurringEvent = Event().apply {
+                dtStart = DtStart("20220120T010203Z")
+                summary = "Event over 22 years"
+                rRules.add(RRule("FREQ=YEARLY;UNTIL=20740119T010203Z"))     // year needs to be  >2074 (not supported by Android <11 Calendar Storage)
+            }
+            val localRecurringEvent = LocalEvent(calendar, recurringEvent, null, null, null, 0)
+            localRecurringEvent.add()
+            LocalEvent.numInstances(provider, account, localRecurringEvent.id!!)
+        } finally {
+            calendar.delete()
         }
     }
 
