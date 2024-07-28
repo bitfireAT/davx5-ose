@@ -8,7 +8,6 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -32,8 +31,12 @@ interface WebDavMountDao {
 
     // complex queries
 
-    @Query("SELECT * FROM webdav_mount ORDER BY name, url")
-    @Transaction
-    fun getAllWithRootDocumentFlow(): Flow<List<WebDavMountWithRootDocument>>
+    /**
+     * Gets a list of mounts with the quotas of their root document, if available.
+     */
+    @Query("SELECT webdav_mount.*, quotaAvailable, quotaUsed FROM webdav_mount " +
+            "LEFT JOIN webdav_document ON (webdav_mount.id=webdav_document.mountId AND webdav_document.parentId IS NULL) " +
+            "ORDER BY webdav_mount.name, webdav_mount.url")
+    fun getAllWithQuotaFlow(): Flow<List<WebDavMountWithQuota>>
 
 }

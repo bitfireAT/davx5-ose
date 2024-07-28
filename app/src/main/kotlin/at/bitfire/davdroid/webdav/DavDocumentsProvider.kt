@@ -501,7 +501,7 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
         val url = doc.toHttpUrl(db)
-        val client = actor.httpClient(doc.mountId)
+        val client = actor.httpClient(doc.mountId, logBody = false)
 
         val modeFlags = ParcelFileDescriptor.parseMode(mode)
         val readAccess = when (mode) {
@@ -581,7 +581,7 @@ class DavDocumentsProvider: DocumentsProvider() {
             // create thumbnail
             val job = CoroutineScope(Dispatchers.IO).async {
                 withTimeout(THUMBNAIL_TIMEOUT_MS) {
-                    actor.httpClient(doc.mountId).use { client ->
+                    actor.httpClient(doc.mountId, logBody = false).use { client ->
                         val url = doc.toHttpUrl(db)
                         val dav = DavResource(client.okHttpClient, url)
                         var result: ByteArray? = null
@@ -725,9 +725,19 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         // helpers
 
-        internal fun httpClient(mountId: Long): HttpClient {
-            val builder = HttpClient.Builder(context, loggerLevel = HttpLoggingInterceptor.Level.HEADERS)
-                .cookieStore(cookieStore.getOrPut(mountId) { MemoryCookieStore() })
+        /**
+         * Creates a HTTP client that can be used to access resources in the given mount.
+         *
+         * @param mountId    ID of the mount to access
+         * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
+         */
+        internal fun httpClient(mountId: Long, logBody: Boolean = true): HttpClient {
+            val builder = HttpClient.Builder(
+                context = context,
+                loggerLevel = if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS
+            ).cookieStore(
+                cookieStore.getOrPut(mountId) { MemoryCookieStore() }
+            )
 
             credentialsStore.getCredentials(mountId)?.let { credentials ->
                 builder.addAuthentication(null, credentials, true)
