@@ -54,6 +54,7 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+-dontwarn org.xbill.DNS.spi.DnsjavaInetAddressResolverProvider      # dnsjava
 -dontwarn org.xmlpull.**
 -dontwarn sun.net.spi.nameservice.NameService
 -dontwarn sun.net.spi.nameservice.NameServiceDescriptor
