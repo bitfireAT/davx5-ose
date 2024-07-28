@@ -28,8 +28,6 @@ android {
         minSdk = 24        // Android 7.0
         targetSdk = 34     // Android 14
 
-        buildConfigField("String", "userAgent", "\"DAVx5\"")
-
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }
 
