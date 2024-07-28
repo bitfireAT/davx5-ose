@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import java.io.Closeable
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -71,18 +70,18 @@ class LogManager @Inject constructor(
         val logVerbose = logToFile || BuildConfig.DEBUG || Log.isLoggable(logger.name, Log.DEBUG)
         logger.info("Verbose logging = $logVerbose; log to file = $logToFile")
 
-        // root logger: remove all existing handlers
-        val rootLogger = Logger.getLogger("")
-        for (handler in rootLogger.handlers) {
-            rootLogger.removeHandler(handler)
-            if (handler is Closeable)     // gracefully close previous verbose-logging handlers
-                handler.close()
+        // reset existing loggers and initialize from assets/logging.properties
+        context.assets.open("logging.properties").use {
+            val javaLogManager = java.util.logging.LogManager.getLogManager()
+            javaLogManager.readConfiguration(it)
         }
 
-        // set log level and always log to logcat
+        // root logger: set default log level and always log to logcat
+        val rootLogger = Logger.getLogger("")
         rootLogger.level = if (logVerbose) Level.ALL else Level.INFO
         rootLogger.addHandler(LogcatHandler())
 
+        // log to file, if requested
         if (logToFile)
             rootLogger.addHandler(logFileHandler.get())
     }
