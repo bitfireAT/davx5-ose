@@ -28,7 +28,7 @@ class WebdavMountsModel @Inject constructor(
         private set
 
     init {
-        // refresh quota as soon as (new) mounts are available
+        // refresh quota as soon as mounts are available
         viewModelScope.launch {
             mounts.collect {
                 refreshQuota()

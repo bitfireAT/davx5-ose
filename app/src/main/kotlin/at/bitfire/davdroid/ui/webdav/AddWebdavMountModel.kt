@@ -92,8 +92,12 @@ class AddWebdavMountModel @Inject constructor(
             try {
                 if (!mountRepository.addMount(url, displayName, credentials))
                     error = context.getString(R.string.webdav_add_mount_no_support)
-                else
+                else {
                     uiState = uiState.copy(success = true)
+
+                    // refresh quota
+                    mountRepository.refreshAllQuota()
+                }
             } catch (e: Exception) {
                 error = e.localizedMessage
             }

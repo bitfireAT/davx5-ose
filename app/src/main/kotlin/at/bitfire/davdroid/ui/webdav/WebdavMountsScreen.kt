@@ -63,9 +63,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
-import at.bitfire.davdroid.db.WebDavMountWithRootDocument
+import at.bitfire.davdroid.db.WebDavMountWithQuota
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ProgressBar
@@ -100,7 +99,7 @@ fun WebdavMountsScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun WebdavMountsScreen(
-    mountInfos: List<WebDavMountWithRootDocument>,
+    mountInfos: List<WebDavMountWithQuota>,
     refreshingQuota: Boolean = false,
     onRefreshQuota: () -> Unit = {},
     onAddMount: () -> Unit = {},
@@ -233,7 +232,7 @@ fun HintText() {
 
 @Composable
 fun WebdavMountsItem(
-    info: WebDavMountWithRootDocument,
+    info: WebDavMountWithQuota,
     onRemoveMount: (WebDavMount) -> Unit = {},
 ) {
     var showingDialog by remember { mutableStateOf(false) }
@@ -284,8 +283,8 @@ fun WebdavMountsItem(
                 style = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace)
             )
 
-            val quotaUsed = info.rootDocument?.quotaUsed
-            val quotaAvailable = info.rootDocument?.quotaAvailable
+            val quotaUsed = info.quotaUsed
+            val quotaAvailable = info.quotaAvailable
             if (quotaUsed != null && quotaAvailable != null) {
                 val quotaTotal = quotaUsed + quotaAvailable
                 val progress = quotaUsed.toFloat() / quotaTotal
@@ -368,7 +367,7 @@ fun WebdavMountsScreen_Preview_Empty() {
 fun WebdavMountsScreen_Preview_TwoMounts() {
     WebdavMountsScreen(
         mountInfos = listOf(
-            WebDavMountWithRootDocument(
+            WebDavMountWithQuota(
                 mount = WebDavMount(
                     id = 0,
                     name = "Preview Webdav Mount 1",
@@ -377,15 +376,10 @@ fun WebdavMountsScreen_Preview_TwoMounts() {
                         .host("example.com")
                         .build()
                 ),
-                rootDocument = WebDavDocument(
-                    mountId = 0,
-                    parentId = null,
-                    name = "Root",
-                    quotaAvailable = 1024 * 1024 * 1024,
-                    quotaUsed = 512 * 1024 * 1024
-                )
+                quotaAvailable = 1024 * 1024 * 1024,
+                quotaUsed = 512 * 1024 * 1024
             ),
-            WebDavMountWithRootDocument(
+            WebDavMountWithQuota(
                 mount = WebDavMount(
                     id = 1,
                     name = "Preview Webdav Mount 2",
@@ -394,13 +388,8 @@ fun WebdavMountsScreen_Preview_TwoMounts() {
                         .host("example.com")
                         .build()
                 ),
-                rootDocument = WebDavDocument(
-                    mountId = 1,
-                    parentId = null,
-                    name = "Root",
-                    quotaAvailable = 1024 * 1024 * 1024,
-                    quotaUsed = 512 * 1024 * 1024
-                )
+                quotaAvailable = 1024 * 1024 * 1024,
+                quotaUsed = 512 * 1024 * 1024
             )
         ),
         refreshingQuota = true
@@ -411,7 +400,7 @@ fun WebdavMountsScreen_Preview_TwoMounts() {
 @Preview
 fun WebdavMountsItem_Preview() {
     WebdavMountsItem(
-        info = WebDavMountWithRootDocument(
+        info = WebDavMountWithQuota(
             mount = WebDavMount(
                 id = 0,
                 name = "Preview Webdav Mount",
@@ -420,13 +409,8 @@ fun WebdavMountsItem_Preview() {
                     .host("example.com")
                     .build()
             ),
-            rootDocument = WebDavDocument(
-                mountId = 0,
-                parentId = null,
-                name = "Root",
-                quotaAvailable = 1024 * 1024 * 1024,
-                quotaUsed = 512 * 1024 * 1024
-            )
+            quotaAvailable = 1024 * 1024 * 1024,
+            quotaUsed = 512 * 1024 * 1024
         )
     )
 }

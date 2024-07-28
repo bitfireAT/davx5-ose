@@ -5,18 +5,14 @@
 package at.bitfire.davdroid.db
 
 import androidx.room.Embedded
-import androidx.room.Relation
 
 /**
  * A [WebDavMount] with an optional root document (that contains information like quota).
  */
-data class WebDavMountWithRootDocument(
+data class WebDavMountWithQuota(
     @Embedded
     val mount: WebDavMount,
 
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "mountId"
-    )
-    val rootDocument: WebDavDocument?
+    val quotaAvailable: Long? = null,
+    val quotaUsed: Long? = null
 )
