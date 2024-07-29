@@ -167,10 +167,11 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // run sync
         try {
-            val runSync = /* ose */ true
-            if (runSync)
-                sync()
-
+            provider.use {
+                val runSync = /* ose */ true
+                if (runSync)
+                    sync()
+            }
         } catch (e: DeadObjectException) {
             /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
             is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
@@ -187,10 +188,6 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         } finally {
             if (httpClient.isInitialized())
                 httpClient.value.close()
-
-            // close content provider client which was acquired above
-            provider.close()
-
             logger.log(
                 Level.INFO,
                 "$authority sync of $account finished",
