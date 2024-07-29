@@ -6,7 +6,7 @@ package at.bitfire.davdroid.startup
 
 import android.content.Context
 import at.bitfire.davdroid.startup.StartupPlugin.Companion.PRIORITY_DEFAULT
-import at.bitfire.davdroid.util.TaskUtils
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.ical4android.TaskProvider
 import dagger.Binds
@@ -17,6 +17,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import java.util.logging.Logger
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * Watches whether a tasks app has been installed or uninstalled and updates
@@ -24,7 +25,8 @@ import javax.inject.Inject
  */
 class TasksAppWatcher @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val logger: Logger
+    private val logger: Logger,
+    private val tasksAppManager: Provider<TasksAppManager>
 ): StartupPlugin {
 
     @Module
@@ -52,7 +54,8 @@ class TasksAppWatcher @Inject constructor(
 
 
     private fun onPackageChanged() {
-        val currentProvider = TaskUtils.currentProvider(context)
+        val manager = tasksAppManager.get()
+        val currentProvider = manager.currentProvider()
         logger.info("App launched or package (un)installed; current tasks provider = $currentProvider")
 
         if (currentProvider == null) {
@@ -62,7 +65,7 @@ class TasksAppWatcher @Inject constructor(
                 val available = context.packageManager.resolveContentProvider(provider.authority, 0) != null
                 if (available) {
                     logger.info("Selecting new tasks provider: $provider")
-                    TaskUtils.selectProvider(context, provider)
+                    manager.selectProvider(provider)
                     providerSelected = true
                     break
                 }
@@ -70,7 +73,7 @@ class TasksAppWatcher @Inject constructor(
 
             if (!providerSelected)
                 // no provider available (anymore), also clear setting and sync
-                TaskUtils.selectProvider(context, null)
+                manager.selectProvider(null)
         }
     }
 

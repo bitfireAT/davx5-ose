@@ -9,7 +9,6 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
 import at.bitfire.davdroid.util.setAndVerifyUserData
-import java.util.logging.Logger
 
 object AccountUtils {
 
@@ -39,30 +38,11 @@ object AccountUtils {
         if (!manager.addAccountExplicitly(account, password, userData))
             return false
 
-        // Android seems to lose the initial user data sometimes, so set it a second time if that happens
-        // https://forums.bitfire.at/post/11644
-        if (!verifyUserData(context, account, userData))
-            for (key in userData.keySet())
-                manager.setAndVerifyUserData(account, key, userData.getString(key))
-
-        if (!verifyUserData(context, account, userData))
-            throw IllegalStateException("Android doesn't store user data in account")
+        // Android seems to lose the initial user data sometimes, so make sure that the values are set
+        for (key in userData.keySet())
+            manager.setAndVerifyUserData(account, key, userData.getString(key))
 
         return true
     }
-
-    private fun verifyUserData(context: Context, account: Account, userData: Bundle): Boolean {
-        val accountManager = AccountManager.get(context)
-        userData.keySet().forEach { key ->
-            val stored = accountManager.getUserData(account, key)
-            val expected = userData.getString(key)
-            if (stored != expected) {
-                Logger.getGlobal().warning("Stored user data \"$stored\" differs from expected data \"$expected\" for $key")
-                return false
-            }
-        }
-        return true
-    }
-
 
 }

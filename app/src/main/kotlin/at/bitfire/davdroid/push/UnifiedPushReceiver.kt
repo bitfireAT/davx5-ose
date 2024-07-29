@@ -11,6 +11,9 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.unifiedpush.android.connector.MessagingReceiver
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -52,30 +55,32 @@ class UnifiedPushReceiver: MessagingReceiver() {
     }
 
     override fun onMessage(context: Context, message: ByteArray, instance: String) {
-        val messageXml = message.toString(Charsets.UTF_8)
-        logger.log(Level.INFO, "Received push message", messageXml)
+        CoroutineScope(Dispatchers.Default).launch {
+            val messageXml = message.toString(Charsets.UTF_8)
+            logger.log(Level.INFO, "Received push message", messageXml)
 
-        // parse push notification
-        val topic = parsePushMessage(messageXml)
+            // parse push notification
+            val topic = parsePushMessage(messageXml)
 
-        // sync affected collection
-        if (topic != null) {
-            logger.info("Got push notification for topic $topic")
+            // sync affected collection
+            if (topic != null) {
+                logger.info("Got push notification for topic $topic")
 
-            // Sync all authorities of account that the collection belongs to
-            // Later: only sync affected collection and authorities
-            collectionRepository.getSyncableByTopic(topic)?.let { collection ->
-                serviceRepository.get(collection.serviceId)?.let { service ->
-                    val account = accountRepository.fromName(service.accountName)
-                    OneTimeSyncWorker.enqueueAllAuthorities(context, account)
+                // Sync all authorities of account that the collection belongs to
+                // Later: only sync affected collection and authorities
+                collectionRepository.getSyncableByTopic(topic)?.let { collection ->
+                    serviceRepository.get(collection.serviceId)?.let { service ->
+                        val account = accountRepository.fromName(service.accountName)
+                        OneTimeSyncWorker.enqueueAllAuthorities(context, account)
+                    }
                 }
+
+            } else {
+                logger.warning("Got push message without topic, syncing all accounts")
+                for (account in accountRepository.getAll())
+                    OneTimeSyncWorker.enqueueAllAuthorities(context, account)
+
             }
-
-        } else {
-            logger.warning("Got push message without topic, syncing all accounts")
-            for (account in accountRepository.getAll())
-                OneTimeSyncWorker.enqueueAllAuthorities(context, account)
-
         }
     }
 

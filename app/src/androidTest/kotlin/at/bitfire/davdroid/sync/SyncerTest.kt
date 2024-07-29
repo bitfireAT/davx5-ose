@@ -7,13 +7,13 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.Context
 import android.content.SyncResult
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.internal.Provider
 import okhttp3.HttpUrl
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -31,11 +31,21 @@ class SyncerTest {
     @ApplicationContext
     lateinit var context: Context
 
-    val account by lazy { Account(javaClass.canonicalName, context.getString(R.string.account_type)) }
+    /** (ab)use our WebDAV provider as a mock provider because it's our own and we don't need any permissions for it */
+    private val mockAuthority by lazy { context.getString(at.bitfire.davdroid.R.string.webdav_authority) }
+
+    lateinit var account: Account
 
     @Before
     fun setUp() {
         hiltRule.inject()
+
+        account = TestAccountAuthenticator.create()
+    }
+
+    @After
+    fun tearDown() {
+        TestAccountAuthenticator.remove(account)
     }
 
 

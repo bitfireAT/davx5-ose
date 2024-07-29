@@ -5,13 +5,10 @@
 package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.Context
 import android.provider.CalendarContract
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
-import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -20,7 +17,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -33,20 +29,18 @@ class OneTimeSyncWorkerTest {
     @ApplicationContext
     lateinit var context: Context
 
-    private val accountManager by lazy { AccountManager.get(context) }
-    private val account by lazy { Account("SyncManagerTest", context.getString(R.string.account_type)) }
+    lateinit var account: Account
 
     @Before
-    fun setup() {
+    fun setUp() {
         hiltRule.inject()
 
-        // Create test account
-        assertTrue(accountManager.addAccountExplicitly(account, "test", AccountSettings.initialUserData(Credentials("test", "test"))))
+        account = TestAccountAuthenticator.create()
     }
 
     @After
-    fun teardown() {
-        assertTrue(accountManager.removeAccount(account, null, null).getResult(10, TimeUnit.SECONDS))
+    fun tearDown() {
+        TestAccountAuthenticator.remove(account)
     }
 
 

@@ -40,6 +40,7 @@ import java.util.logging.Logger
 class AccountSettings @AssistedInject constructor(
     @Assisted accountOrAddressBookAccount: Account,
     @ApplicationContext val context: Context,
+    private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager
 ) {
@@ -135,8 +136,6 @@ class AccountSettings @AssistedInject constructor(
     }
 
 
-    private val logger: Logger = Logger.getGlobal()
-
     val accountManager: AccountManager = AccountManager.get(context)
     val account: Account = when (accountOrAddressBookAccount.type) {
             context.getString(R.string.account_type_address_book) -> {
@@ -145,7 +144,8 @@ class AccountSettings @AssistedInject constructor(
                 LocalAddressBook.mainAccount(context, accountOrAddressBookAccount) ?: throw IllegalArgumentException("Main account of $accountOrAddressBookAccount not found")
             }
 
-            context.getString(R.string.account_type) ->
+            context.getString(R.string.account_type),
+            "at.bitfire.davdroid.test" /* defined in androidTest/strings/account_type_test */ ->
                 accountOrAddressBookAccount
 
             else ->

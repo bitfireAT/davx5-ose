@@ -2,10 +2,9 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.util
+package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Context
@@ -16,69 +15,64 @@ import android.net.Uri
 import androidx.core.app.NotificationCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
+import dagger.Lazy
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.util.logging.Logger
+import javax.inject.Inject
 
-object TaskUtils {
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface TaskUtilsEntryPoint {
-        fun accountSettingsFactory(): AccountSettings.Factory
-        fun notificationRegistry(): NotificationRegistry
-        fun settingsManager(): SettingsManager
-    }
-
-    private val logger: Logger
-        get() = Logger.getGlobal()
+/**
+ * Responsible for setting/getting the currently used tasks app, and for communicating with it.
+ */
+class TasksAppManager @Inject constructor(
+    @ApplicationContext val context: Context,
+    private val accountRepository: Lazy<AccountRepository>,
+    private val accountSettingsFactory: AccountSettings.Factory,
+    private val db: AppDatabase,
+    private val logger: Logger,
+    private val notificationRegistry: Lazy<NotificationRegistry>,
+    private val settingsManager: SettingsManager
+) {
 
     /**
-     * Returns the currently selected tasks provider (if it's still available = installed).
+     * Gets the currently selected tasks app.
      *
-     * @return the currently selected tasks provider, or null if none is available
+     * @return currently selected tasks app, or `null` if no tasks app is selected or the selected app is not installed
      */
-    fun currentProvider(context: Context): ProviderName? {
-        val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
+    fun currentProvider(): ProviderName? {
         val preferredAuthority = settingsManager.getString(Settings.SELECTED_TASKS_PROVIDER) ?: return null
-        return preferredAuthorityToProviderName(preferredAuthority, context.packageManager)
+        return preferredAuthorityToProviderName(preferredAuthority)
     }
 
     /**
-     * Returns the currently selected tasks provider (if it's still available = installed).
-     *
-     * @return flow with the currently selected tasks provider
+     * Like [currentProvider, but as a [StateFlow].
      */
-    fun currentProviderFlow(context: Context, externalScope: CoroutineScope): StateFlow<ProviderName?> {
-        val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
+    fun currentProviderFlow(externalScope: CoroutineScope): StateFlow<ProviderName?> {
         return settingsManager.getStringFlow(Settings.SELECTED_TASKS_PROVIDER).map { preferred ->
             if (preferred != null)
-                preferredAuthorityToProviderName(preferred, context.packageManager)
+                preferredAuthorityToProviderName(preferred)
             else
                 null
         }.stateIn(scope = externalScope, started = SharingStarted.WhileSubscribed(), initialValue = null)
     }
 
-    private fun preferredAuthorityToProviderName(
-        preferredAuthority: String,
-        packageManager: PackageManager
-    ): ProviderName? {
+    private fun preferredAuthorityToProviderName(preferredAuthority: String): ProviderName? {
+        val packageManager = context.packageManager
         ProviderName.entries.toTypedArray()
             .sortedByDescending { it.authority == preferredAuthority }
             .forEach { providerName ->
@@ -88,46 +82,6 @@ object TaskUtils {
         return null
     }
 
-    fun isAvailable(context: Context) = currentProvider(context) != null
-
-    /**
-     * Starts an Intent and redirects the user to the package in the market to update the app
-     *
-     * @param e   the TaskProvider.ProviderTooOldException to be shown
-     */
-    fun notifyProviderTooOld(context: Context, e: TaskProvider.ProviderTooOldException) {
-        val registry = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).notificationRegistry()
-        registry.notifyIfPossible(NotificationRegistry.NOTIFY_TASKS_PROVIDER_TOO_OLD) {
-            val message = context.getString(R.string.sync_error_tasks_required_version, e.provider.minVersionName)
-
-            val pm = context.packageManager
-            val tasksAppInfo = pm.getPackageInfo(e.provider.packageName, 0)
-            val tasksAppLabel = tasksAppInfo.applicationInfo.loadLabel(pm)
-
-            val notify = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_SYNC_ERRORS)
-                .setSmallIcon(R.drawable.ic_sync_problem_notify)
-                .setContentTitle(context.getString(R.string.sync_error_tasks_too_old, tasksAppLabel))
-                .setContentText(message)
-                .setSubText("$tasksAppLabel ${e.installedVersionName}")
-                .setCategory(NotificationCompat.CATEGORY_ERROR)
-
-            try {
-                val icon = pm.getApplicationIcon(e.provider.packageName)
-                if (icon is BitmapDrawable)
-                    notify.setLargeIcon(icon.bitmap)
-            } catch (ignored: PackageManager.NameNotFoundException) {
-                // couldn't get provider app icon
-            }
-
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
-            val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-
-            if (intent.resolveActivity(pm) != null)
-                notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))
-
-            notify.build()
-        }
-    }
 
     /**
      * Sets up sync for the current TaskProvider (and disables sync for unavailable task providers):
@@ -141,18 +95,15 @@ object TaskUtils {
      * - when a user explicitly selects another task app, or
      * - when there previously was no (usable) tasks app and [at.bitfire.davdroid.TasksAppWatcher] detected a new one.
      */
-    fun selectProvider(context: Context, selectedProvider: ProviderName?) {
+    fun selectProvider(selectedProvider: ProviderName?) {
         logger.info("Selecting tasks app: $selectedProvider")
 
-        val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
         settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedProvider?.authority)
 
         var permissionsRequired = false     // whether additional permissions are required
 
         // check all accounts and (de)activate task provider(s) if a CalDAV service is defined
-        val db = EntryPointAccessors.fromApplication(context, SyncUtils.SyncUtilsEntryPoint::class.java).appDatabase()
-        val accountManager = AccountManager.get(context)
-        for (account in accountManager.getAccountsByType(context.getString(R.string.account_type))) {
+        for (account in accountRepository.get().getAll()) {
             val hasCalDAV = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
             for (providerName in TaskProvider.ProviderName.entries) {
                 val syncable = hasCalDAV && providerName == selectedProvider
@@ -173,17 +124,13 @@ object TaskUtils {
 
         if (permissionsRequired) {
             logger.warning("Tasks synchronization is now enabled for at least one account, but permissions are not granted")
-
-            val notificationRegistry = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).notificationRegistry()
-            notificationRegistry.notifyPermissions()
+                notificationRegistry.get().notifyPermissions()
         }
     }
 
     private fun setSyncable(context: Context, account: Account, authority: String, syncable: Boolean) {
-        val settingsManager by lazy { EntryPointAccessors.fromApplication(context, SyncUtils.SyncUtilsEntryPoint::class.java).settingsManager() }
         try {
-            val entryPoint = EntryPointAccessors.fromApplication<TaskUtilsEntryPoint>(context)
-            val settings = entryPoint.accountSettingsFactory().forAccount(account)
+            val settings = accountSettingsFactory.forAccount(account)
             if (syncable) {
                 logger.info("Enabling $authority sync for $account")
 
@@ -205,6 +152,46 @@ object TaskUtils {
         } catch (e: InvalidAccountException) {
             // account has already been removed, make sure periodic sync is disabled, too
             PeriodicSyncWorker.disable(context, account, authority)
+        }
+    }
+
+
+    /**
+     * Show a notification that starts an Intent and redirects the user to the tasks app in the app store.
+     *
+     * @param e   the TaskProvider.ProviderTooOldException to be shown
+     */
+    fun notifyProviderTooOld(e: TaskProvider.ProviderTooOldException) {
+        val registry = notificationRegistry.get()
+        registry.notifyIfPossible(NotificationRegistry.NOTIFY_TASKS_PROVIDER_TOO_OLD) {
+            val message = context.getString(R.string.sync_error_tasks_required_version, e.provider.minVersionName)
+
+            val pm = context.packageManager
+            val tasksAppInfo = pm.getPackageInfo(e.provider.packageName, 0)
+            val tasksAppLabel = tasksAppInfo.applicationInfo.loadLabel(pm)
+
+            val notify = NotificationCompat.Builder(context, registry.CHANNEL_SYNC_ERRORS)
+                .setSmallIcon(R.drawable.ic_sync_problem_notify)
+                .setContentTitle(context.getString(R.string.sync_error_tasks_too_old, tasksAppLabel))
+                .setContentText(message)
+                .setSubText("$tasksAppLabel ${e.installedVersionName}")
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
+
+            try {
+                val icon = pm.getApplicationIcon(e.provider.packageName)
+                if (icon is BitmapDrawable)
+                    notify.setLargeIcon(icon.bitmap)
+            } catch (ignored: PackageManager.NameNotFoundException) {
+                // couldn't get provider app icon
+            }
+
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${e.provider.packageName}"))
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+
+            if (intent.resolveActivity(pm) != null)
+                notify.setContentIntent(PendingIntent.getActivity(context, 0, intent, flags))
+
+            notify.build()
         }
     }
 

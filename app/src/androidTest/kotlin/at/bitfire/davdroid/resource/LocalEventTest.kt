@@ -46,27 +46,28 @@ class LocalEventTest {
         @ClassRule
         val initCalendarProviderRule: TestRule = InitCalendarProviderRule.getInstance()
 
-        private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
-
         private lateinit var provider: ContentProviderClient
-        private lateinit var calendar: LocalCalendar
 
         @BeforeClass
         @JvmStatic
-        fun connect() {
+        fun setUpClass() {
             val context = InstrumentationRegistry.getInstrumentation().targetContext
             provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
         }
 
         @AfterClass
         @JvmStatic
-        fun disconnect() {
+        fun tearDownClass() {
             provider.closeCompat()
         }
+
     }
 
+    private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
+    private lateinit var calendar: LocalCalendar
+
     @Before
-    fun createCalendar() {
+    fun setUp() {
         val uri = AndroidCalendar.create(account, provider, ContentValues())
         calendar = AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
     }

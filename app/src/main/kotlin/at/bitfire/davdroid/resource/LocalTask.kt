@@ -9,7 +9,6 @@ import at.bitfire.ical4android.BatchOperation
 import at.bitfire.ical4android.DmfsTask
 import at.bitfire.ical4android.DmfsTaskFactory
 import at.bitfire.ical4android.DmfsTaskList
-import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.Task
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.UUID
@@ -79,7 +78,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
 
     override fun clearDirty(fileName: String?, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
-            Ical4Android.log.fine("Schedule-Tag for tasks not supported yet, won't save")
+            logger.fine("Schedule-Tag for tasks not supported yet, won't save")
 
         val values = ContentValues(4)
         if (fileName != null)

@@ -76,7 +76,7 @@ import at.bitfire.davdroid.ui.account.CollectionsList
 import at.bitfire.davdroid.ui.account.RenameAccountDialog
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.util.TaskUtils
+import at.bitfire.ical4android.TaskProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
@@ -102,6 +102,7 @@ fun AccountScreen(
 
     val calDavService by model.calDavSvc.collectAsStateWithLifecycle()
     val calendars = model.calendars.collectAsLazyPagingItems()
+    val currentTasksApp by model.tasksProvider.collectAsStateWithLifecycle()
     val subscriptions = model.subscriptions.collectAsLazyPagingItems()
 
     val context = LocalContext.current
@@ -122,6 +123,7 @@ fun AccountScreen(
         canCreateCalendar = model.canCreateCalendar.collectAsStateWithLifecycle(false).value,
         calDavProgress = model.calDavProgress.collectAsStateWithLifecycle(AccountProgress.Idle).value,
         calendars = calendars,
+        currentTasksProvider = currentTasksApp,
         hasWebcal = subscriptions.itemCount != 0,
         subscriptions = subscriptions,
         onUpdateCollectionSync = model::setCollectionSync,
@@ -174,6 +176,7 @@ fun AccountScreen(
     canCreateCalendar: Boolean,
     calDavProgress: AccountProgress,
     calendars: LazyPagingItems<Collection>?,
+    currentTasksProvider: TaskProvider.ProviderName?,
     hasWebcal: Boolean,
     subscriptions: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
@@ -371,10 +374,8 @@ fun AccountScreen(
 
                                 idxCalDav -> {
                                     val permissions = mutableListOf(Manifest.permission.WRITE_CALENDAR)
-                                    if (!LocalInspectionMode.current)   // TaskUtils.currentProvider prevents preview
-                                        TaskUtils.currentProvider(context)?.let { tasksProvider ->
-                                            permissions += tasksProvider.permissions
-                                        }
+                                    if (currentTasksProvider != null)
+                                        permissions += currentTasksProvider.permissions
                                     AccountScreen_ServiceTab(
                                         requiredPermissions = permissions,
                                         progress = calDavProgress,
@@ -661,6 +662,7 @@ fun AccountScreen_Preview() {
         canCreateCalendar = true,
         calDavProgress = AccountProgress.Pending,
         calendars = null,
+        currentTasksProvider = TaskProvider.ProviderName.JtxBoard,
         hasWebcal = true,
         subscriptions = null
     )

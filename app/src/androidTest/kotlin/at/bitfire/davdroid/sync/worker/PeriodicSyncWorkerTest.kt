@@ -5,11 +5,8 @@
 package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
-import android.accounts.AccountManager
-import android.content.ContentResolver
 import android.content.Context
 import android.provider.CalendarContract
-import android.provider.ContactsContract
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
@@ -20,24 +17,19 @@ import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.testing.WorkManagerTestInitHelper
 import androidx.work.workDataOf
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
-import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.sync.account.AccountUtils
-import dagger.assisted.AssistedFactory
+import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import at.bitfire.davdroid.test.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
-import org.junit.AfterClass
+import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
@@ -45,56 +37,35 @@ import javax.inject.Inject
 @HiltAndroidTest
 class PeriodicSyncWorkerTest {
 
-    companion object {
-
-        private val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
-
-        private val accountManager = AccountManager.get(context)
-        private val account = Account("Test Account", context.getString(R.string.account_type))
-        private val fakeCredentials = Credentials("test", "test")
-
-        @BeforeClass
-        @JvmStatic
-        fun setUp() {
-            // Initialize WorkManager for instrumentation tests.
-            val config = Configuration.Builder()
-                .setMinimumLoggingLevel(Log.DEBUG)
-                .build()
-            WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
-
-            assertTrue(AccountUtils.createAccount(context, account, AccountSettings.initialUserData(fakeCredentials)))
-            ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
-            ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1)
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun removeAccount() {
-            accountManager.removeAccountExplicitly(account)
-        }
-
-    }
-
-    @AssistedFactory
-    interface PeriodicSyncWorkerFactory {
-        fun create(appContext: Context, workerParams: WorkerParameters): PeriodicSyncWorker
-    }
-
     @Inject
     @ApplicationContext
     lateinit var context: Context
+    val testContext = InstrumentationRegistry.getInstrumentation().context
 
     @Inject
-    lateinit var syncWorkerFactory: PeriodicSyncWorkerFactory
+    lateinit var syncWorkerFactory: PeriodicSyncWorker.Factory
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
-    @get:Rule
-    val mockkRule = MockKRule(this)
+
+    lateinit var account: Account
 
     @Before
-    fun inject() {
+    fun setUp() {
         hiltRule.inject()
+
+        // Initialize WorkManager for instrumentation tests.
+        val config = Configuration.Builder()
+            .setMinimumLoggingLevel(Log.DEBUG)
+            .build()
+        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
+
+        account = TestAccountAuthenticator.create()
+    }
+
+    @After
+    fun tearDown() {
+        TestAccountAuthenticator.remove(account)
     }
 
 
@@ -115,7 +86,7 @@ class PeriodicSyncWorkerTest {
 
     @Test
     fun doWork_cancelsItselfOnInvalidAccount() {
-        val invalidAccount = Account("invalid", context.getString(R.string.account_type))
+        val invalidAccount = Account("invalid", testContext.getString(R.string.account_type_test))
 
         // Run PeriodicSyncWorker as TestWorker
         val inputData = workDataOf(

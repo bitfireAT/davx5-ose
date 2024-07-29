@@ -62,7 +62,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
     var transferred: Long = 0
 
     private val notificationManager = NotificationManagerCompat.from(context)
-    private val notification = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_STATUS)
+    private val notification = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_STATUS)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setCategory(NotificationCompat.CATEGORY_STATUS)
         .setContentText(dav.fileName())

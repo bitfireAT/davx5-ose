@@ -11,7 +11,6 @@ import android.os.Build
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
@@ -27,6 +26,7 @@ import java.util.logging.Level
  */
 class TaskSyncer @AssistedInject constructor(
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
+    private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
@@ -54,7 +54,7 @@ class TaskSyncer @AssistedInject constructor(
         taskProvider = try {
             TaskProvider.fromProviderClient(context, providerName, provider)
         } catch (e: TaskProvider.ProviderTooOldException) {
-            TaskUtils.notifyProviderTooOld(context, e)
+            tasksAppManager.get().notifyProviderTooOld(e)
             syncResult.databaseError = true
             return // Don't sync
         }

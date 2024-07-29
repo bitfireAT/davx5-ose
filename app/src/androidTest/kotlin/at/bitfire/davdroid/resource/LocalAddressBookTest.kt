@@ -7,11 +7,16 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
+import android.os.Bundle
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -27,8 +32,7 @@ class LocalAddressBookTest {
     @ApplicationContext
     lateinit var context: Context
 
-    private val mainAccountType by lazy { context.getString(R.string.account_type) }
-    private val mainAccount by lazy { Account("main", mainAccountType) }
+    lateinit var mainAccount: Account
 
     private val addressBookAccountType by lazy { context.getString(R.string.account_type_address_book) }
     private val addressBookAccount by lazy { Account("sub", addressBookAccountType) }
@@ -36,26 +40,23 @@ class LocalAddressBookTest {
     private val accountManager by lazy { AccountManager.get(context) }
 
     @Before
-    fun setup() {
+    fun setUp() {
         hiltRule.inject()
 
-        // TODO DOES NOT WORK: the account immediately starts to sync, which creates the sync adapter services.
-        // The services however can't be created because Hilt is "not ready" (although it has been initialized in the line above).
-        // assertTrue(AccountUtils.createAccount(context, mainAccount, AccountSettings.initialUserData(null)))
+        mainAccount = TestAccountAuthenticator.create()
     }
 
     @After
-    fun teardown() {
-        accountManager.removeAccount(addressBookAccount, null, null)
-        accountManager.removeAccount(mainAccount, null, null)
+    fun tearDown() {
+        accountManager.removeAccountExplicitly(addressBookAccount)
+        TestAccountAuthenticator.remove(mainAccount)
     }
 
 
-    // TODO see above
-    /*@Test
+    @Test
     fun testMainAccount_AddressBookAccount_WithMainAccount() {
         // create address book account
-        assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, Bundle().apply {
+        assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, Bundle(2).apply {
             putString(LocalAddressBook.USER_DATA_MAIN_ACCOUNT_NAME, mainAccount.name)
             putString(LocalAddressBook.USER_DATA_MAIN_ACCOUNT_TYPE, mainAccount.type)
         }))
@@ -64,14 +65,13 @@ class LocalAddressBookTest {
         assertEquals(mainAccount, LocalAddressBook.mainAccount(context, addressBookAccount))
     }
 
-    @Test(expected = IllegalArgumentException::class)
     fun testMainAccount_AddressBookAccount_WithoutMainAccount() {
         // create address book account
-        assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, Bundle()))
+        assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, Bundle.EMPTY))
 
         // check mainAccount(); should fail because there's no main account
-        LocalAddressBook.mainAccount(context, addressBookAccount)
-    }*/
+        assertNull(LocalAddressBook.mainAccount(context, addressBookAccount))
+    }
 
     @Test(expected = IllegalArgumentException::class)
     fun testMainAccount_OtherAccount() {

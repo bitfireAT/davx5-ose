@@ -12,7 +12,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
@@ -28,6 +27,7 @@ import java.util.logging.Level
 class JtxSyncer @AssistedInject constructor(
     private val principalRepository: PrincipalRepository,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
+    private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
@@ -52,7 +52,7 @@ class JtxSyncer @AssistedInject constructor(
         try {
             TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
         } catch (e: TaskProvider.ProviderTooOldException) {
-            TaskUtils.notifyProviderTooOld(context, e)
+            tasksAppManager.get().notifyProviderTooOld(e)
         }
 
         // make sure account can be seen by task provider

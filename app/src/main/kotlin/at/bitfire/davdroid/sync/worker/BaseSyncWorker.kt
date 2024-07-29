@@ -266,7 +266,7 @@ abstract class BaseSyncWorker(
                 logger.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
 
                 notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = softErrorNotificationTag) {
-                    NotificationCompat.Builder(applicationContext, NotificationRegistry.CHANNEL_SYNC_IO_ERRORS)
+                    NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_SYNC_IO_ERRORS)
                         .setSmallIcon(R.drawable.ic_sync_problem_notify)
                         .setContentTitle(account.name)
                         .setContentText(applicationContext.getString(R.string.sync_error_retry_limit_reached))
