@@ -67,6 +67,9 @@ class AddressBookSyncer @AssistedInject constructor(
         }
     }
 
+    override fun getSyncCollections(serviceId: Long): List<Collection> =
+        collectionRepository.getByServiceAndSync(serviceId)
+
     override fun getUrl(localCollection: LocalAddressBook): HttpUrl =
         localCollection.url.toHttpUrl()
 

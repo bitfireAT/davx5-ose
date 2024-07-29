@@ -78,6 +78,10 @@ class SyncerTest {
             syncCalled.incrementAndGet()
         }
 
+        override fun getSyncCollections(serviceId: Long): List<Collection> {
+            TODO("Not yet implemented")
+        }
+
         override fun create(remoteCollection: Collection) {
             TODO("Not yet implemented")
         }

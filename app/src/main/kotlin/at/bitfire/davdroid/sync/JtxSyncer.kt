@@ -67,6 +67,9 @@ class JtxSyncer @AssistedInject constructor(
 
     }
 
+    override fun getSyncCollections(serviceId: Long): List<Collection> =
+        collectionRepository.getSyncJtxCollections(serviceId)
+
     override fun getUrl(localCollection: LocalJtxCollection): HttpUrl? =
         localCollection.url?.toHttpUrl()
 

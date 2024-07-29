@@ -50,6 +50,9 @@ class CalendarSyncer @AssistedInject constructor(
             AndroidCalendar.removeColors(provider, account)
     }
 
+    override fun getSyncCollections(serviceId: Long): List<Collection> =
+        collectionRepository.getSyncCalendars(serviceId)
+
     override fun getUrl(localCollection: LocalCalendar): HttpUrl? =
         localCollection.name?.toHttpUrl()
 

@@ -187,21 +187,13 @@ class DavCollectionRepository @Inject constructor(
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
-    /** Returns sync enabled collections for specific authority of given service/account */
-    fun getSyncCollections(serviceId: Long, authority: String) = when (authority) {
-        ContactsContract.AUTHORITY,
-        context.getString(R.string.address_books_authority) ->
-            dao.getByServiceAndSync(serviceId)
-        CalendarContract.AUTHORITY ->
-            dao.getSyncCalendars(serviceId)
-        TaskProvider.ProviderName.JtxBoard.authority ->
-            dao.getSyncJtxCollections(serviceId)
-        TaskProvider.ProviderName.OpenTasks.authority,
-        TaskProvider.ProviderName.TasksOrg.authority ->
-            dao.getSyncTaskLists(serviceId)
-        else ->
-            throw IllegalArgumentException("Invalid authority $authority")
-    }
+    fun getByServiceAndSync(serviceId: Long) = dao.getByServiceAndSync(serviceId)
+
+    fun getSyncCalendars(serviceId: Long) = dao.getSyncCalendars(serviceId)
+
+    fun getSyncJtxCollections(serviceId: Long) = dao.getSyncJtxCollections(serviceId)
+
+    fun getSyncTaskLists(serviceId: Long) = dao.getSyncTaskLists(serviceId)
 
     /** Returns all collections that are both selected for synchronization and push-capable. */
     suspend fun getSyncableAndPushCapable(): List<Collection> =

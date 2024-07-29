@@ -101,7 +101,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         // 1. find resource collections to be synced
         val service = serviceRepository.getByAccountAndType(account.name, serviceType)
         if (service != null)
-            for (remoteCollection in collectionRepository.getSyncCollections(service.id, authority))
+            for (remoteCollection in getSyncCollections(service.id))
                 remoteCollections[remoteCollection.url] = remoteCollection
 
         // 2. update/delete local resources and determine new (unknown) remote collections
@@ -131,6 +131,8 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     }
 
     abstract fun beforeSync()
+
+    abstract fun getSyncCollections(serviceId: Long): List<Collection>
 
     abstract fun getUrl(localCollection: CollectionType): HttpUrl?
 

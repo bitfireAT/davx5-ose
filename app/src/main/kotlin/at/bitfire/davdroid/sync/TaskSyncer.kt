@@ -70,6 +70,9 @@ class TaskSyncer @AssistedInject constructor(
         }
     }
 
+    override fun getSyncCollections(serviceId: Long): List<Collection> =
+        collectionRepository.getSyncTaskLists(serviceId)
+
     override fun getUrl(localCollection: LocalTaskList): HttpUrl? =
         localCollection.syncId?.toHttpUrl()
 
