@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync.account
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -15,6 +14,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -27,6 +27,7 @@ import java.util.logging.Logger
 class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
+    private val accountRepository: AccountRepository,
     private val db: AppDatabase,
     private val logger: Logger
 ): Worker(appContext, workerParameters) {
@@ -57,26 +58,27 @@ class AccountsCleanupWorker @AssistedInject constructor(
     override fun doWork(): Result {
         lockAccountsCleanup()
         try {
-            val accountManager = AccountManager.get(applicationContext)
-            cleanupAccounts(applicationContext, accountManager.accounts)
+            cleanupAccounts(accountRepository.getAll())
         } finally {
             unlockAccountsCleanup()
         }
         return Result.success()
     }
 
-    private fun cleanupAccounts(context: Context, accounts: Array<out Account>) {
-        logger.log(Level.INFO, "Cleaning up accounts. Current accounts:", accounts)
+    private fun cleanupAccounts(accounts: Array<out Account>) {
+        logger.log(Level.INFO, "Cleaning up accounts. Current accounts in DB:", accounts)
 
-        val mainAccountType = context.getString(R.string.account_type)
+        // Later, accounts which are not in the DB should be deleted here
+
+        val mainAccountType = applicationContext.getString(R.string.account_type)
         val mainAccountNames = accounts
             .filter { account -> account.type == mainAccountType }
             .map { it.name }
 
-        val addressBookAccountType = context.getString(R.string.account_type_address_book)
+        val addressBookAccountType = applicationContext.getString(R.string.account_type_address_book)
         val addressBooks = accounts
             .filter { account -> account.type == addressBookAccountType }
-            .map { addressBookAccount -> LocalAddressBook(context, addressBookAccount, null) }
+            .map { addressBookAccount -> LocalAddressBook(applicationContext, addressBookAccount, null) }
         for (addressBook in addressBooks) {
             try {
                 val mainAccount = addressBook.mainAccount

@@ -26,12 +26,13 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountUtils
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.vcard4android.GroupMethod
+import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -50,13 +51,13 @@ import javax.inject.Inject
 class AccountRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext val context: Context,
+    private val collectionRepository: DavCollectionRepository,
     private val homeSetRepository: DavHomeSetRepository,
+    private val logger: Logger,
     private val settingsManager: SettingsManager,
     private val serviceRepository: DavServiceRepository,
-    private val collectionRepository: DavCollectionRepository
+    private val tasksAppManager: Lazy<TasksAppManager>
 ) {
-
-    private val logger = Logger.getGlobal()
 
     private val accountType = context.getString(R.string.account_type)
     private val accountManager = AccountManager.get(context)
@@ -112,7 +113,7 @@ class AccountRepository @Inject constructor(
                 accountSettings.setSyncInterval(CalendarContract.AUTHORITY, defaultSyncInterval)
 
                 // if task provider present, set task sync interval and enable sync
-                val taskProvider = TaskUtils.currentProvider(context)
+                val taskProvider = tasksAppManager.get().currentProvider()
                 if (taskProvider != null) {
                     ContentResolver.setIsSyncable(account, taskProvider.authority, 1)
                     accountSettings.setSyncInterval(taskProvider.authority, defaultSyncInterval)
@@ -207,7 +208,7 @@ class AccountRepository @Inject constructor(
             context.getString(R.string.address_books_authority),
             CalendarContract.AUTHORITY
         )
-        val tasksProvider = TaskUtils.currentProvider(context)
+        val tasksProvider = tasksAppManager.get().currentProvider()
         tasksProvider?.authority?.let { authorities.add(it) }
         val syncIntervals = authorities.map { Pair(it, oldSettings.getSyncInterval(it)) }
 

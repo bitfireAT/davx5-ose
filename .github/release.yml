@@ -12,6 +12,9 @@ changelog:
     - title: Refactoring
       labels:
         - refactoring
+    - title: Dependencies
+      labels:
+        - dependencies
     - title: Other changes
       labels:
         - "*"

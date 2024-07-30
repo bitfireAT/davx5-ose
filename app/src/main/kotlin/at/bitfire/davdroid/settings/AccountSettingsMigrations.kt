@@ -24,13 +24,12 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.sync.SyncUtils
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
@@ -39,6 +38,7 @@ import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
 import at.techbee.jtx.JtxContract.asSyncAdapter
+import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -55,11 +55,10 @@ import java.util.logging.Logger
 class AccountSettingsMigrations @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val accountSettings: AccountSettings,
-    private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
-    private val settings: SettingsManager
+    private val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
     @AssistedFactory
@@ -300,7 +299,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
      * again when the tasks provider is switched.
      */
     private fun update_10_11() {
-        TaskUtils.currentProvider(context)?.let { provider ->
+        tasksAppManager.get().currentProvider()?.let { provider ->
             val interval = accountSettings.getSyncInterval(provider.authority)
             if (interval != null)
                 accountManager.setAndVerifyUserData(account,
@@ -459,7 +458,8 @@ class AccountSettingsMigrations @AssistedInject constructor(
     @Suppress("unused")
     private fun update_4_5() {
         // call PackageChangedReceiver which then enables/disables OpenTasks sync when it's (not) available
-        TaskUtils.selectProvider(context, TaskUtils.currentProvider(context))
+        val manager = tasksAppManager.get()
+        manager.selectProvider(manager.currentProvider())
     }
 
     @Suppress("unused")

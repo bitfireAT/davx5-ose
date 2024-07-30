@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.Assistant
@@ -52,9 +53,8 @@ fun AccountDetailsPage(
     onAccountCreated: (Account) -> Unit,
     model: LoginScreenModel = viewModel()
 ) {
-    val uiState = model.accountDetailsUiState
-    if (uiState.createdAccount != null)
-        onAccountCreated(uiState.createdAccount)
+    val uiState by model.accountDetailsUiState.collectAsStateWithLifecycle()
+    uiState.createdAccount?.let(onAccountCreated)
 
     val context = LocalContext.current
     LaunchedEffect(uiState.couldNotCreateAccount) {

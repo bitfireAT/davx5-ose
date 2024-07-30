@@ -79,7 +79,7 @@ class WebDavMountRepository @Inject constructor(
 
     fun getAllFlow() = mountDao.getAllFlow()
 
-    fun getAllWithRootFlow() = mountDao.getAllWithRootDocumentFlow()
+    fun getAllWithRootFlow() = mountDao.getAllWithQuotaFlow()
 
     suspend fun refreshAllQuota() {
         val resolver = context.contentResolver

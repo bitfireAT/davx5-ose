@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404020001
-        versionName = "4.4.2-alpha.2"
+        versionCode = 404020002
+        versionName = "4.4.2-beta.1"
 
         buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
 
@@ -27,8 +27,6 @@ android {
 
         minSdk = 24        // Android 7.0
         targetSdk = 34     // Android 14
-
-        buildConfigField("String", "userAgent", "\"DAVx5\"")
 
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }

@@ -322,7 +322,7 @@ class HttpClient @AssistedInject constructor(
         // use Locale.ROOT because numbers may be encoded as non-ASCII characters in other locales
         private val userAgentDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.ROOT)
         private val userAgentDate = userAgentDateFormat.format(Date(BuildConfig.buildTime))
-        val userAgent = "${BuildConfig.userAgent}/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4jvm; " +
+        val userAgent = "DAVx5/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4jvm; " +
                 "okhttp/${OkHttp.VERSION}) Android/${Build.VERSION.RELEASE}"
 
         init {

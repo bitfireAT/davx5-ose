@@ -34,6 +34,7 @@ import javax.inject.Inject
  */
 class LogFileHandler @Inject constructor(
     @ApplicationContext val context: Context,
+    private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
 ): Handler(), Closeable {
 
@@ -71,7 +72,6 @@ class LogFileHandler @Inject constructor(
     }
 
     private var fileHandler: FileHandler? = null
-    private val logger = Logger.getGlobal()
     private val notificationManager = NotificationManagerCompat.from(context)
 
     private val logFile = getDebugLogFile(context)
@@ -120,7 +120,7 @@ class LogFileHandler @Inject constructor(
 
     private fun showNotification() {
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_VERBOSE_LOGGING) {
-            val builder = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_DEBUG)
+            val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_DEBUG)
             builder.setSmallIcon(R.drawable.ic_sd_card_notify)
                 .setContentTitle(context.getString(R.string.app_settings_logging))
                 .setCategory(NotificationCompat.CATEGORY_STATUS)

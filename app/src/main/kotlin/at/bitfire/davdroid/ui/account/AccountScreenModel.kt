@@ -23,8 +23,8 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
-import at.bitfire.davdroid.util.TaskUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -54,6 +54,7 @@ class AccountScreenModel @AssistedInject constructor(
     getServiceCollectionPager: GetServiceCollectionPagerUseCase,
     private val logger: Logger,
     serviceRepository: DavServiceRepository,
+    private val tasksAppManager: TasksAppManager
 ): ViewModel() {
 
     @AssistedFactory
@@ -103,7 +104,7 @@ class AccountScreenModel @AssistedInject constructor(
     val canCreateCalendar = bindableCalendarHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
-    private val tasksProvider = TaskUtils.currentProviderFlow(context, viewModelScope)
+    val tasksProvider = tasksAppManager.currentProviderFlow(viewModelScope)
     private val calDavAuthorities = tasksProvider.map { tasks ->
         listOfNotNull(CalendarContract.AUTHORITY, tasks?.authority)
     }

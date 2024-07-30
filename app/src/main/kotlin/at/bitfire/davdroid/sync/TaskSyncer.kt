@@ -13,7 +13,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
@@ -26,7 +25,8 @@ import javax.inject.Inject
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
 class TaskSyncer @Inject constructor(
-    private val tasksSyncManagerFactory: TasksSyncManager.Factory
+    private val tasksSyncManagerFactory: TasksSyncManager.Factory,
+    private val tasksAppManager: dagger.Lazy<TasksAppManager>
 ): Syncer() {
 
     override fun sync(
@@ -107,7 +107,7 @@ class TaskSyncer @Inject constructor(
                 }
             }
         } catch (e: TaskProvider.ProviderTooOldException) {
-            TaskUtils.notifyProviderTooOld(context, e)
+            tasksAppManager.get().notifyProviderTooOld(e)
             syncResult.databaseError = true
         } catch (e: Exception) {
             logger.log(Level.SEVERE, "Couldn't sync task lists", e)

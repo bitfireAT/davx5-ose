@@ -1,4 +1,6 @@
 
+Please delete this paragraph and other repeating text (like the examples) after reading and before submitting the PR.
+
 The PR should be in _Draft_ state during development. As soon as it's finished, it should be marked as _Ready for review_ and a reviewer should be chosen.
 
 See also: [Writing A Great Pull Request Description](https://www.pullrequest.com/blog/writing-a-great-pull-request-description/)

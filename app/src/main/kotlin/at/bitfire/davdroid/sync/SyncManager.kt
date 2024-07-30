@@ -854,10 +854,10 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             val channel: String
             val priority: Int
             if (e is IOException) {
-                channel = NotificationRegistry.CHANNEL_SYNC_IO_ERRORS
+                channel = notificationRegistry.CHANNEL_SYNC_IO_ERRORS
                 priority = NotificationCompat.PRIORITY_MIN
             } else {
-                channel = NotificationRegistry.CHANNEL_SYNC_ERRORS
+                channel = notificationRegistry.CHANNEL_SYNC_ERRORS
                 priority = NotificationCompat.PRIORITY_DEFAULT
             }
 
@@ -925,7 +925,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
             val intent = buildDebugInfoIntent(e, null, collection.url.resolve(fileName))
 
-            val builder = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_SYNC_WARNINGS)
+            val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
             builder.setSmallIcon(R.drawable.ic_warning_notify)
                 .setContentTitle(notifyInvalidResourceTitle())
                 .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))

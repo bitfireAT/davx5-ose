@@ -79,7 +79,7 @@ class RandomAccessCallback @AssistedInject constructor(
     private val documentState = headResponse.toDocumentState() ?: throw IllegalArgumentException("Can only be used with ETag/Last-Modified")
 
     private val notificationManager = NotificationManagerCompat.from(context)
-    private val notification = NotificationCompat.Builder(context, NotificationRegistry.CHANNEL_STATUS)
+    private val notification = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_STATUS)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setCategory(NotificationCompat.CATEGORY_STATUS)
         .setContentTitle(context.getString(R.string.webdav_notification_access))

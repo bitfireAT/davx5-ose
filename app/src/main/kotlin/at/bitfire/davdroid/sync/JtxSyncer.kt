@@ -13,7 +13,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalJtxCollection
-import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
 import okhttp3.HttpUrl
@@ -25,7 +24,8 @@ import javax.inject.Inject
  * Sync logic for jtx board
  */
 class JtxSyncer @Inject constructor(
-    private val jtxSyncManagerFactory: JtxSyncManager.Factory
+    private val jtxSyncManagerFactory: JtxSyncManager.Factory,
+    private val tasksAppManager: dagger.Lazy<TasksAppManager>
 ): Syncer() {
 
     override fun sync(
@@ -108,7 +108,7 @@ class JtxSyncer @Inject constructor(
             }
 
         } catch (e: TaskProvider.ProviderTooOldException) {
-            TaskUtils.notifyProviderTooOld(context, e)
+            tasksAppManager.get().notifyProviderTooOld(e)
         }
     }
 }

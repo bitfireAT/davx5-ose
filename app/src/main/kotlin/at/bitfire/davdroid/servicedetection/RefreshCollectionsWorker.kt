@@ -239,7 +239,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
      * Used by WorkManager to show a foreground service notification for expedited jobs on Android <12.
      */
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notification = NotificationCompat.Builder(applicationContext, NotificationRegistry.CHANNEL_STATUS)
+        val notification = NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_STATUS)
             .setSmallIcon(R.drawable.ic_foreground_notify)
             .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
             .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
@@ -253,7 +253,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
     private fun notifyRefreshError(contentText: String, contentIntent: Intent) {
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_REFRESH_COLLECTIONS, tag = serviceId.toString()) {
-            NotificationCompat.Builder(applicationContext, NotificationRegistry.CHANNEL_GENERAL)
+            NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_GENERAL)
                 .setSmallIcon(R.drawable.ic_sync_problem_notify)
                 .setContentTitle(applicationContext.getString(R.string.refresh_collections_worker_refresh_failed))
                 .setContentText(contentText)
