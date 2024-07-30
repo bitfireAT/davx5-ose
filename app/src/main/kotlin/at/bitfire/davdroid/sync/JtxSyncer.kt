@@ -31,7 +31,7 @@ class JtxSyncer @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     private val principalRepository: PrincipalRepository,
-    private val tasksAppManager: dagger.Lazy<TasksAppManager>,
+    private val tasksAppManager: dagger.Lazy<TasksAppManager>
 ): Syncer<LocalJtxCollection>(account, extras, syncResult) {
 
     @AssistedFactory

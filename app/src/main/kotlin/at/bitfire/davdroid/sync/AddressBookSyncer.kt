@@ -33,7 +33,7 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
-    settingsManager: SettingsManager,
+    settingsManager: SettingsManager
 ): Syncer<LocalAddressBook>(account, extras, syncResult) {
 
     @AssistedFactory

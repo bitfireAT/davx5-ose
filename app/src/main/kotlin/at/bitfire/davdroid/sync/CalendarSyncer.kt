@@ -26,7 +26,7 @@ class CalendarSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
-    private val calendarSyncManagerFactory: CalendarSyncManager.Factory,
+    private val calendarSyncManagerFactory: CalendarSyncManager.Factory
 ): Syncer<LocalCalendar>(account, extras, syncResult) {
 
     @AssistedFactory
