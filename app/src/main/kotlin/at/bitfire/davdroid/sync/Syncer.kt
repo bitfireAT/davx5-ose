@@ -168,9 +168,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         // run sync
         try {
             provider.use {
-                val runSync = /* ose */ true
-                if (runSync)
-                    sync(provider)
+                sync(provider)
             }
         } catch (e: DeadObjectException) {
             /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
