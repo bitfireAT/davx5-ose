@@ -51,12 +51,12 @@ class AddressBookSyncer @AssistedInject constructor(
         get() = Service.TYPE_CARDDAV
     override val authority: String
         get() = ContactsContract.AUTHORITY // Address books use the contacts authority for sync
-    override val localCollections: List<LocalAddressBook>
-        get() = LocalAddressBook.findAll(context, provider, account)
-    override val localSyncCollections: List<LocalAddressBook>
-        get() = localCollections
+    override fun localCollections(provider: ContentProviderClient): List<LocalAddressBook>
+        = LocalAddressBook.findAll(context, provider, account)
+    override fun localSyncCollections(provider: ContentProviderClient): List<LocalAddressBook>
+        = localCollections(provider)
 
-    override fun beforeSync() {
+    override fun beforeSync(provider: ContentProviderClient) {
         // permission check
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             if (remoteCollections.isEmpty())
@@ -87,12 +87,12 @@ class AddressBookSyncer @AssistedInject constructor(
         }
     }
 
-    override fun create(remoteCollection: Collection) {
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
         logger.log(Level.INFO, "Adding local address book", remoteCollection)
         LocalAddressBook.create(context, provider, account, remoteCollection, forceAllReadOnly)
     }
 
-    override fun syncCollection(localCollection: LocalAddressBook, remoteCollection: Collection) {
+    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalAddressBook, remoteCollection: Collection) {
         logger.info("Synchronizing address book $localCollection")
         syncAddressBook(
             localCollection.account,

@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.ContentProviderClient
 import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
@@ -42,12 +43,12 @@ class TaskSyncer @AssistedInject constructor(
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
-    override val localCollections: List<LocalTaskList>
-        get() = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, null, null)
-    override val localSyncCollections: List<LocalTaskList>
-        get() = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
+    override fun localCollections(provider: ContentProviderClient): List<LocalTaskList>
+        = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, null, null)
+    override fun localSyncCollections(provider: ContentProviderClient): List<LocalTaskList>
+        = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
 
-    override fun beforeSync() {
+    override fun beforeSync(provider: ContentProviderClient) {
 
         // Acquire task provider
         val providerName = TaskProvider.ProviderName.fromAuthority(authority)
@@ -86,12 +87,12 @@ class TaskSyncer @AssistedInject constructor(
         localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
     }
 
-    override fun create(remoteCollection: Collection) {
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
         logger.log(Level.INFO, "Adding local task list", remoteCollection)
         LocalTaskList.create(account, taskProvider, remoteCollection)
     }
 
-    override fun syncCollection(localCollection: LocalTaskList, remoteCollection: Collection) {
+    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalTaskList, remoteCollection: Collection) {
         logger.info("Synchronizing task list #${localCollection.id} [${localCollection.syncId}]")
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(

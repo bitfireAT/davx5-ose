@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.ContentProviderClient
 import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
@@ -42,12 +43,12 @@ class JtxSyncer @AssistedInject constructor(
         get() = Service.TYPE_CALDAV
     override val authority: String
         get() = TaskProvider.ProviderName.JtxBoard.authority
-    override val localCollections: List<LocalJtxCollection>
-        get() = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
-    override val localSyncCollections: List<LocalJtxCollection>
-        get() = localCollections
+    override fun localCollections(provider: ContentProviderClient): List<LocalJtxCollection>
+        = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
+    override fun localSyncCollections(provider: ContentProviderClient): List<LocalJtxCollection>
+        = localCollections(provider)
 
-    override fun beforeSync() {
+    override fun beforeSync(provider: ContentProviderClient) {
         // check whether jtx Board is new enough
         try {
             TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
@@ -84,13 +85,13 @@ class JtxSyncer @AssistedInject constructor(
         localCollection.updateCollection(remoteCollection, owner, accountSettings.getManageCalendarColors())
     }
 
-    override fun create(remoteCollection: Collection) {
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
         logger.log(Level.INFO, "Adding local jtx collection", remoteCollection)
         val owner = remoteCollection.ownerId?.let { principalRepository.get(it) }
         LocalJtxCollection.create(account, provider, remoteCollection, owner)
     }
 
-    override fun syncCollection(localCollection: LocalJtxCollection, remoteCollection: Collection) {
+    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalJtxCollection, remoteCollection: Collection) {
         logger.info("Synchronizing jtx collection $localCollection")
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(

@@ -76,27 +76,19 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     abstract val authority: String
 
-    /** All local collections of a specific type (calendar, address book, etc) */
-    abstract val localCollections: List<CollectionType>
-
-    /** Sync enabled local collections of specific type */
-    abstract val localSyncCollections: List<CollectionType>
-
     val remoteCollections = mutableMapOf<HttpUrl, Collection>()
     val accountSettings by lazy { accountSettingsFactory.forAccount(account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
-
-    lateinit var provider: ContentProviderClient
 
     /**
      * Creates, updates and/or deletes local resources (calendars, address books, etc) according to
      * remote collection information. Then syncs the actual entries (events, tasks, contacts, etc)
      * of the remaining up-to-date resources.
      */
-    fun sync() {
+    fun sync(provider: ContentProviderClient) {
 
         // 0. resource specific preparations
-        beforeSync()
+        beforeSync(provider)
 
         // 1. find resource collections to be synced
         val service = serviceRepository.getByAccountAndType(account.name, serviceType)
@@ -106,7 +98,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // 2. update/delete local resources and determine new (unknown) remote collections
         val newRemoteCollections = HashMap(remoteCollections)
-        for (localCollection in localCollections) {
+        for (localCollection in localCollections(provider)) {
             val remoteCollection = remoteCollections[getUrl(localCollection)]
             if (remoteCollection == null)
                 // Collection got deleted on server, delete obsolete local resource
@@ -120,17 +112,24 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // 3. create new local collections for newly found remote collections
         for ((_, collection) in newRemoteCollections)
-            create(collection)
+            create(provider, collection)
 
         // 4. sync local resources
-        for (localCollection in localSyncCollections)
+        for (localCollection in localSyncCollections(provider))
             remoteCollections[getUrl(localCollection)]?.let { remoteCollection ->
-                syncCollection(localCollection, remoteCollection)
+                syncCollection(provider, localCollection, remoteCollection)
             }
 
     }
 
-    abstract fun beforeSync()
+
+    /** All local collections of a specific type (calendar, address book, etc) */
+    abstract fun localCollections(provider: ContentProviderClient): List<CollectionType>
+
+    /** Sync enabled local collections of specific type */
+    abstract fun localSyncCollections(provider: ContentProviderClient): List<CollectionType>
+
+    abstract fun beforeSync(provider: ContentProviderClient)
 
     abstract fun getSyncCollections(serviceId: Long): List<Collection>
 
@@ -140,22 +139,22 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     abstract fun update(localCollection: CollectionType, remoteCollection: Collection)
 
-    abstract fun create(remoteCollection: Collection)
+    abstract fun create(provider: ContentProviderClient, remoteCollection: Collection)
 
-    abstract fun syncCollection(localCollection: CollectionType, remoteCollection: Collection)
+    abstract fun syncCollection(provider: ContentProviderClient, localCollection: CollectionType, remoteCollection: Collection)
 
     fun onPerformSync() {
         logger.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
 
         // Acquire ContentProviderClient
-        val tryProvider = try {
+        val provider = try {
             context.contentResolver.acquireContentProviderClient(authority)
         } catch (e: SecurityException) {
             logger.log(Level.WARNING, "Missing permissions for authority $authority", e)
             null
         }
 
-        if (tryProvider == null) {
+        if (provider == null) {
             /* Can happen if
              - we're not allowed to access the content provider, or
              - the content provider is not available at all, for instance because the respective
@@ -165,14 +164,13 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
             return // Don't continue without provider
         }
-        provider = tryProvider
 
         // run sync
         try {
             provider.use {
                 val runSync = /* ose */ true
                 if (runSync)
-                    sync()
+                    sync(provider)
             }
         } catch (e: DeadObjectException) {
             /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)

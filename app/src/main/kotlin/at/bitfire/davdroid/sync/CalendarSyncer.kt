@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import android.content.ContentProviderClient
 import android.content.SyncResult
 import android.provider.CalendarContract
 import at.bitfire.davdroid.db.Collection
@@ -37,12 +38,14 @@ class CalendarSyncer @AssistedInject constructor(
         get() = Service.TYPE_CALDAV
     override val authority: String
         get() = CalendarContract.AUTHORITY
-    override val localCollections: List<LocalCalendar>
-        get() = AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null)
-    override val localSyncCollections: List<LocalCalendar>
-        get() = AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
 
-    override fun beforeSync() {
+    override fun localCollections(provider: ContentProviderClient): List<LocalCalendar>
+        = AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null)
+
+    override fun localSyncCollections(provider: ContentProviderClient): List<LocalCalendar>
+        = AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
+
+    override fun beforeSync(provider: ContentProviderClient) {
         // Update colors
         if (accountSettings.getEventColors())
             AndroidCalendar.insertColors(provider, account)
@@ -61,7 +64,7 @@ class CalendarSyncer @AssistedInject constructor(
         localCollection.delete()
     }
 
-    override fun syncCollection(localCollection: LocalCalendar, remoteCollection: Collection) {
+    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalCalendar, remoteCollection: Collection) {
         logger.info("Synchronizing calendar #${localCollection.id}, URL: ${localCollection.name}")
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
@@ -83,7 +86,7 @@ class CalendarSyncer @AssistedInject constructor(
         localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
     }
 
-    override fun create(remoteCollection: Collection) {
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
         logger.log(Level.INFO, "Adding local calendar", remoteCollection)
         LocalCalendar.create(account, provider, remoteCollection)
     }
