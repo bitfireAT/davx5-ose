@@ -26,17 +26,17 @@ import java.util.logging.Level
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
 class TaskSyncer @AssistedInject constructor(
-    private val tasksSyncManagerFactory: TasksSyncManager.Factory,
-    private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     @Assisted account: Account,
+    @Assisted override val authority: String,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
-    @Assisted override val authority: String,
+    private val tasksAppManager: dagger.Lazy<TasksAppManager>,
+    private val tasksSyncManagerFactory: TasksSyncManager.Factory,
 ): Syncer<LocalTaskList>(account, extras, syncResult) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, extras: Array<String>, authority: String, syncResult: SyncResult): TaskSyncer
+        fun create(account: Account, authority: String, extras: Array<String>, syncResult: SyncResult): TaskSyncer
     }
 
     private lateinit var taskProvider: TaskProvider

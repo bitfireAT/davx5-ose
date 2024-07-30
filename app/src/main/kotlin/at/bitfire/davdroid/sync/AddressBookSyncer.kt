@@ -29,11 +29,11 @@ import java.util.logging.Level
  * Sync logic for address books
  */
 class AddressBookSyncer @AssistedInject constructor(
-    settingsManager: SettingsManager,
-    private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
+    private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
+    settingsManager: SettingsManager,
 ): Syncer<LocalAddressBook>(account, extras, syncResult) {
 
     @AssistedFactory

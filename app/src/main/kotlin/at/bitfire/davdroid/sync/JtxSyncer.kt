@@ -26,12 +26,12 @@ import java.util.logging.Level
  * Sync logic for jtx board
  */
 class JtxSyncer @AssistedInject constructor(
-    private val principalRepository: PrincipalRepository,
-    private val jtxSyncManagerFactory: JtxSyncManager.Factory,
-    private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
+    private val jtxSyncManagerFactory: JtxSyncManager.Factory,
+    private val principalRepository: PrincipalRepository,
+    private val tasksAppManager: dagger.Lazy<TasksAppManager>,
 ): Syncer<LocalJtxCollection>(account, extras, syncResult) {
 
     @AssistedFactory

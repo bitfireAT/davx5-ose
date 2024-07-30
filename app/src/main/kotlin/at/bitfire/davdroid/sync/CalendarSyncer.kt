@@ -23,10 +23,10 @@ import java.util.logging.Level
  * Sync logic for calendars
  */
 class CalendarSyncer @AssistedInject constructor(
-    private val calendarSyncManagerFactory: CalendarSyncManager.Factory,
     @Assisted account: Account,
     @Assisted extras: Array<String>,
     @Assisted syncResult: SyncResult,
+    private val calendarSyncManagerFactory: CalendarSyncManager.Factory,
 ): Syncer<LocalCalendar>(account, extras, syncResult) {
 
     @AssistedFactory

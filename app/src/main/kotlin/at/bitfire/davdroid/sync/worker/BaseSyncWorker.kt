@@ -227,7 +227,7 @@ abstract class BaseSyncWorker(
                 jtxSyncer.create(account, extras, result)
             TaskProvider.ProviderName.OpenTasks.authority,
             TaskProvider.ProviderName.TasksOrg.authority ->
-                taskSyncer.create(account, extras, authority, result)
+                taskSyncer.create(account, authority, extras, result)
             else ->
                 throw IllegalArgumentException("Invalid authority $authority")
         }
