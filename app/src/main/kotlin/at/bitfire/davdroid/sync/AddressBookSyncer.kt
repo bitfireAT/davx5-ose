@@ -48,20 +48,21 @@ class AddressBookSyncer @AssistedInject constructor(
         get() = Service.TYPE_CARDDAV
     override val authority: String
         get() = ContactsContract.AUTHORITY // Address books use the contacts authority for sync
+    override val LocalAddressBook.collectionUrl: HttpUrl
+        get() = url.toHttpUrl()
+
     override fun localCollections(provider: ContentProviderClient): List<LocalAddressBook>
         = LocalAddressBook.findAll(context, provider, account)
+
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalAddressBook>
         = localCollections(provider)
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getByServiceAndSync(serviceId)
 
-    override fun getUrl(localCollection: LocalAddressBook): HttpUrl =
-        localCollection.url.toHttpUrl()
-
-    override fun delete(localCollection: LocalAddressBook) {
-        logger.log(Level.INFO, "Deleting obsolete local address book", localCollection.url)
-        localCollection.delete()
+    override fun LocalAddressBook.deleteCollection() {
+        logger.log(Level.INFO, "Deleting obsolete local address book", url)
+        delete()
     }
 
     override fun update(localCollection: LocalAddressBook, remoteCollection: Collection) {

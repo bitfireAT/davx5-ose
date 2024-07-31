@@ -43,6 +43,9 @@ class TaskSyncer @AssistedInject constructor(
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
+    override val LocalTaskList.collectionUrl: HttpUrl?
+        get() = syncId?.toHttpUrl()
+
     override fun localCollections(provider: ContentProviderClient): List<LocalTaskList>
         = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, null, null)
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalTaskList>
@@ -75,12 +78,9 @@ class TaskSyncer @AssistedInject constructor(
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncTaskLists(serviceId)
 
-    override fun getUrl(localCollection: LocalTaskList): HttpUrl? =
-        localCollection.syncId?.toHttpUrl()
-
-    override fun delete(localCollection: LocalTaskList) {
-        logger.log(Level.INFO, "Deleting obsolete local task list", localCollection.syncId)
-        localCollection.delete()
+    override fun LocalTaskList.deleteCollection() {
+        logger.log(Level.INFO, "Deleting obsolete local task list", syncId)
+        delete()
     }
 
     override fun update(localCollection: LocalTaskList, remoteCollection: Collection) {
