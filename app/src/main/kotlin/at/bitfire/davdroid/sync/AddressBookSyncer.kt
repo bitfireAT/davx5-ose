@@ -61,14 +61,14 @@ class AddressBookSyncer @AssistedInject constructor(
         collectionRepository.getByServiceAndSync(serviceId)
 
     override fun LocalAddressBook.deleteCollection() {
-        logger.log(Level.INFO, "Deleting obsolete local address book", url)
+        logger.log(Level.INFO, "Deleting obsolete local address book", collectionUrl)
         delete()
     }
 
-    override fun update(localCollection: LocalAddressBook, remoteCollection: Collection) {
+    override fun LocalAddressBook.updateCollection(remoteCollection: Collection) {
         try {
-            logger.log(Level.FINE, "Updating local address book ${remoteCollection.url}", remoteCollection)
-            localCollection.update(remoteCollection, forceAllReadOnly)
+            logger.log(Level.FINE, "Updating local address book $collectionUrl", remoteCollection)
+            update(remoteCollection, forceAllReadOnly)
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't rename address book account", e)
         }

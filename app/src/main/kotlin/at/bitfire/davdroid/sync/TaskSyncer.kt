@@ -79,13 +79,13 @@ class TaskSyncer @AssistedInject constructor(
         collectionRepository.getSyncTaskLists(serviceId)
 
     override fun LocalTaskList.deleteCollection() {
-        logger.log(Level.INFO, "Deleting obsolete local task list", syncId)
+        logger.log(Level.INFO, "Deleting obsolete local task list", collectionUrl)
         delete()
     }
 
-    override fun update(localCollection: LocalTaskList, remoteCollection: Collection) {
-        logger.log(Level.FINE, "Updating local task list ${remoteCollection.url}", remoteCollection)
-        localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
+    override fun LocalTaskList.updateCollection(remoteCollection: Collection) {
+        logger.log(Level.FINE, "Updating local task list $collectionUrl", remoteCollection)
+        update(remoteCollection, accountSettings.getManageCalendarColors())
     }
 
     override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
