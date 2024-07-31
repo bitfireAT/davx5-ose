@@ -143,7 +143,12 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     abstract fun syncCollection(provider: ContentProviderClient, localCollection: CollectionType, remoteCollection: Collection)
 
-    fun onPerformSync() {
+    /**
+     * Prepares the sync
+     * - acquires content provider
+     * - handles occurring sync errors
+     */
+    operator fun invoke() {
         logger.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
 
         // Acquire ContentProviderClient

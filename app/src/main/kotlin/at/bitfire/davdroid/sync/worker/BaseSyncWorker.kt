@@ -213,8 +213,10 @@ abstract class BaseSyncWorker(
         if (inputData.getBoolean(OneTimeSyncWorker.ARG_UPLOAD, false))
             // Comes in through SyncAdapterService and is used only by ContactsSyncManager for an Android 7 workaround.
             extrasList.add(ContentResolver.SYNC_EXTRAS_UPLOAD)
-
         val extras = extrasList.toTypedArray()
+
+        // We still use the sync adapter framework's SyncResult to pass the sync results, but this
+        // is only for legacy reasons and can be replaced by our own result class in the future.
         val result = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
@@ -232,10 +234,9 @@ abstract class BaseSyncWorker(
                 throw IllegalArgumentException("Invalid authority $authority")
         }
 
-        // Start syncing. We still use the sync adapter framework's SyncResult to pass the sync results, but this
-        // is only for legacy reasons and can be replaced by an own result class in the future.
+        // Start syncing
         runInterruptible {
-            syncer.onPerformSync()
+            syncer()
         }
 
         // Check for errors
