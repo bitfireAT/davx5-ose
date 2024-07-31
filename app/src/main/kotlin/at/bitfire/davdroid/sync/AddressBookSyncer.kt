@@ -79,10 +79,10 @@ class AddressBookSyncer @AssistedInject constructor(
         LocalAddressBook.create(context, provider, account, remoteCollection, forceAllReadOnly)
     }
 
-    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalAddressBook, remoteCollection: Collection) {
-        logger.info("Synchronizing address book $localCollection")
+    override fun LocalAddressBook.syncCollection(provider: ContentProviderClient, remoteCollection: Collection) {
+        logger.info("Synchronizing address book $this")
         syncAddressBook(
-            localCollection.account,
+            account,
             extras,
             httpClient,
             provider,
