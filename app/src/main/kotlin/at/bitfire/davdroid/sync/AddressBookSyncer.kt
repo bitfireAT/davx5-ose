@@ -4,13 +4,10 @@
 
 package at.bitfire.davdroid.sync
 
-import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.SyncResult
-import android.content.pm.PackageManager
 import android.provider.ContactsContract
-import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
@@ -55,18 +52,6 @@ class AddressBookSyncer @AssistedInject constructor(
         = LocalAddressBook.findAll(context, provider, account)
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalAddressBook>
         = localCollections(provider)
-
-    override fun prepare(provider: ContentProviderClient): Boolean {
-        // permission check
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            if (remoteCollections.isEmpty())
-                logger.info("No contacts permission, but no address book selected for synchronization")
-            else
-                logger.warning("No contacts permission, but address books are selected for synchronization")
-            return false // Don't sync
-        }
-        return true
-    }
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getByServiceAndSync(serviceId)

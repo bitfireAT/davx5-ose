@@ -134,9 +134,10 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     /**
      * For collection specific sync preparations.
+     * @param provider Content provider for syncer specific authority
      * @return *true* to run the sync; *false* to abort
      */
-    abstract fun prepare(provider: ContentProviderClient): Boolean
+    open fun prepare(provider: ContentProviderClient): Boolean = true
 
     abstract fun getSyncCollections(serviceId: Long): List<Collection>
 
