@@ -14,13 +14,13 @@ class DavServiceRepository @Inject constructor(
 
     private val dao = db.serviceDao()
 
+
+    // Read
+
     fun get(id: Long): Service? = dao.get(id)
 
-    fun deleteAll() = dao.deleteAll()
-
-    suspend fun deleteByAccount(accountName: String) {
-        dao.deleteByAccount(accountName)
-    }
+    fun getByAccountAndType(name: String, serviceType: String): Service? =
+        dao.getByAccountAndType(name, serviceType)
 
     fun getCalDavServiceFlow(accountName: String) =
         dao.getByAccountAndTypeFlow(accountName, Service.TYPE_CALDAV)
@@ -28,14 +28,21 @@ class DavServiceRepository @Inject constructor(
     fun getCardDavServiceFlow(accountName: String) =
         dao.getByAccountAndTypeFlow(accountName, Service.TYPE_CARDDAV)
 
+
+    // Create & update
+
     fun insertOrReplace(service: Service) =
         dao.insertOrReplace(service)
 
-    suspend fun renameAccount(oldName: String, newName: String) {
+    suspend fun renameAccount(oldName: String, newName: String) =
         dao.renameAccount(oldName, newName)
-    }
 
-    fun getByAccountAndType(name: String, serviceType: String): Service? =
-        dao.getByAccountAndType(name, serviceType)
+
+    // Delete
+
+    suspend fun deleteByAccount(accountName: String) =
+        dao.deleteByAccount(accountName)
+
+    fun deleteAll() = dao.deleteAll()
 
 }
