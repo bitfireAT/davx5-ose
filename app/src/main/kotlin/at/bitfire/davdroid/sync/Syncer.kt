@@ -117,7 +117,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // 3. create new local collections for newly found remote collections
         for ((_, collection) in newRemoteCollections)
-            create(provider, collection)
+            createCollection(provider, collection)
 
         // 4. sync local resources
         for (localCollection in localSyncCollections(provider))
@@ -147,7 +147,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     abstract fun CollectionType.updateCollection(remoteCollection: Collection)
 
-    abstract fun create(provider: ContentProviderClient, remoteCollection: Collection)
+    abstract fun createCollection(provider: ContentProviderClient, remoteCollection: Collection)
 
     abstract fun CollectionType.syncCollection(provider: ContentProviderClient, remoteCollection: Collection)
 

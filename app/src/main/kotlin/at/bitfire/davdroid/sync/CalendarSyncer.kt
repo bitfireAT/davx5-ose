@@ -85,7 +85,7 @@ class CalendarSyncer @AssistedInject constructor(
         update(remoteCollection, accountSettings.getManageCalendarColors())
     }
 
-    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
+    override fun createCollection(provider: ContentProviderClient, remoteCollection: Collection) {
         logger.log(Level.INFO, "Adding local calendar", remoteCollection)
         LocalCalendar.create(account, provider, remoteCollection)
     }
