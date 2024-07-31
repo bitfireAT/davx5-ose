@@ -45,12 +45,13 @@ class CalendarSyncer @AssistedInject constructor(
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalCalendar>
         = AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
 
-    override fun beforeSync(provider: ContentProviderClient) {
+    override fun prepare(provider: ContentProviderClient): Boolean {
         // Update colors
         if (accountSettings.getEventColors())
             AndroidCalendar.insertColors(provider, account)
         else
             AndroidCalendar.removeColors(provider, account)
+        return true
     }
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =

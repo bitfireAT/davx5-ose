@@ -56,15 +56,16 @@ class AddressBookSyncer @AssistedInject constructor(
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalAddressBook>
         = localCollections(provider)
 
-    override fun beforeSync(provider: ContentProviderClient) {
+    override fun prepare(provider: ContentProviderClient): Boolean {
         // permission check
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             if (remoteCollections.isEmpty())
                 logger.info("No contacts permission, but no address book selected for synchronization")
             else
                 logger.warning("No contacts permission, but address books are selected for synchronization")
-            return // Don't sync
+            return false // Don't sync
         }
+        return true
     }
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =

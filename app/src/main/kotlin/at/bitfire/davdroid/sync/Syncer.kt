@@ -88,7 +88,10 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     fun sync(provider: ContentProviderClient) {
 
         // 0. resource specific preparations
-        beforeSync(provider)
+        if(!prepare(provider)) {
+            logger.log(Level.WARNING, "Failed to prepare sync. Won't run sync.")
+            return
+        }
 
         // 1. find resource collections to be synced
         val service = serviceRepository.getByAccountAndType(account.name, serviceType)
@@ -129,7 +132,11 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     /** Sync enabled local collections of specific type */
     abstract fun localSyncCollections(provider: ContentProviderClient): List<CollectionType>
 
-    abstract fun beforeSync(provider: ContentProviderClient)
+    /**
+     * For collection specific sync preparations.
+     * @return *true* to run the sync; *false* to abort
+     */
+    abstract fun prepare(provider: ContentProviderClient): Boolean
 
     abstract fun getSyncCollections(serviceId: Long): List<Collection>
 

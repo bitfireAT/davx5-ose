@@ -48,7 +48,7 @@ class TaskSyncer @AssistedInject constructor(
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalTaskList>
         = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
 
-    override fun beforeSync(provider: ContentProviderClient) {
+    override fun prepare(provider: ContentProviderClient): Boolean {
 
         // Acquire task provider
         val providerName = TaskProvider.ProviderName.fromAuthority(authority)
@@ -57,7 +57,7 @@ class TaskSyncer @AssistedInject constructor(
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
             syncResult.databaseError = true
-            return // Don't sync
+            return false // Don't sync
         }
 
         // make sure account can be seen by task provider
@@ -69,6 +69,7 @@ class TaskSyncer @AssistedInject constructor(
             if (am.getAccountVisibility(account, providerName.packageName) != AccountManager.VISIBILITY_VISIBLE)
                 am.setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
         }
+        return true
     }
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =

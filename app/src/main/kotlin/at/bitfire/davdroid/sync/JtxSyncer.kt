@@ -48,12 +48,13 @@ class JtxSyncer @AssistedInject constructor(
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalJtxCollection>
         = localCollections(provider)
 
-    override fun beforeSync(provider: ContentProviderClient) {
+    override fun prepare(provider: ContentProviderClient): Boolean {
         // check whether jtx Board is new enough
         try {
             TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
+            return false // Don't sync
         }
 
         // make sure account can be seen by task provider
@@ -65,7 +66,7 @@ class JtxSyncer @AssistedInject constructor(
             if (am.getAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName) != AccountManager.VISIBILITY_VISIBLE)
                 am.setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
         }
-
+        return true
     }
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =
