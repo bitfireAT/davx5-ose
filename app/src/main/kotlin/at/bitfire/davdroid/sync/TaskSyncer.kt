@@ -88,7 +88,7 @@ class TaskSyncer @AssistedInject constructor(
         update(remoteCollection, accountSettings.getManageCalendarColors())
     }
 
-    override fun createCollection(provider: ContentProviderClient, remoteCollection: Collection) {
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
         logger.log(Level.INFO, "Adding local task list", remoteCollection)
         LocalTaskList.create(account, taskProvider, remoteCollection)
     }

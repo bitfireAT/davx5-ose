@@ -87,7 +87,7 @@ class JtxSyncer @AssistedInject constructor(
         updateCollection(remoteCollection, owner, accountSettings.getManageCalendarColors())
     }
 
-    override fun createCollection(provider: ContentProviderClient, remoteCollection: Collection) {
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
         logger.log(Level.INFO, "Adding local jtx collection", remoteCollection)
         val owner = remoteCollection.ownerId?.let { principalRepository.get(it) }
         LocalJtxCollection.create(account, provider, remoteCollection, owner)
