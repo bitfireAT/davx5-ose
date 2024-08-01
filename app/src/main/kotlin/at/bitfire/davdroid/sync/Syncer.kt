@@ -18,6 +18,7 @@ import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.settings.AccountSettings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -76,7 +77,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     abstract val authority: String
 
-    val remoteCollections = mutableMapOf<HttpUrl, Collection>()
+    private val remoteCollections = mutableMapOf<HttpUrl, Collection>()
     val accountSettings by lazy { accountSettingsFactory.forAccount(account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
@@ -102,7 +103,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         // 2. update/delete local resources and determine new (unknown) remote collections
         val newRemoteCollections = HashMap(remoteCollections)
         for (localCollection in localCollections(provider)) {
-            val remoteCollection = remoteCollections[getUrl(localCollection)]
+            val remoteCollection = remoteCollections[localCollection.url?.toHttpUrl()]
             if (remoteCollection == null)
                 // Collection got deleted on server, delete obsolete local resource
                 localCollection.delete()
@@ -119,7 +120,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // 4. sync local resources
         for (localCollection in localSyncCollections(provider))
-            remoteCollections[getUrl(localCollection)]?.let { remoteCollection ->
+            remoteCollections[localCollection.url?.toHttpUrl()]?.let { remoteCollection ->
                 syncCollection(provider, localCollection, remoteCollection)
             }
 
@@ -140,8 +141,6 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     open fun prepare(provider: ContentProviderClient): Boolean = true
 
     abstract fun getSyncCollections(serviceId: Long): List<Collection>
-
-    abstract fun getUrl(localCollection: CollectionType): HttpUrl?
 
     abstract fun update(localCollection: CollectionType, remoteCollection: Collection)
 

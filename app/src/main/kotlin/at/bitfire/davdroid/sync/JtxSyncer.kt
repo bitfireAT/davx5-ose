@@ -18,8 +18,6 @@ import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
 
 /**
@@ -71,9 +69,6 @@ class JtxSyncer @AssistedInject constructor(
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncJtxCollections(serviceId)
-
-    override fun getUrl(localCollection: LocalJtxCollection): HttpUrl? =
-        localCollection.url?.toHttpUrl()
 
     override fun update(localCollection: LocalJtxCollection, remoteCollection: Collection) {
         logger.log(Level.FINE, "Updating local jtx collection ${remoteCollection.url}", remoteCollection)

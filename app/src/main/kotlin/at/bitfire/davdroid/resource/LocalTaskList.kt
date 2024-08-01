@@ -77,6 +77,9 @@ class LocalTaskList private constructor(
             accessLevel != TaskListColumns.ACCESS_LEVEL_UNDEFINED &&
             accessLevel <= TaskListColumns.ACCESS_LEVEL_READ
 
+    override val url: String?
+        get() = syncId
+
     override val tag: String
         get() = "tasks-${account.name}-$id"
 

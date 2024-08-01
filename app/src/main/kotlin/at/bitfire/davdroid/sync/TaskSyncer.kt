@@ -17,8 +17,6 @@ import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
 
@@ -74,9 +72,6 @@ class TaskSyncer @AssistedInject constructor(
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncTaskLists(serviceId)
-
-    override fun getUrl(localCollection: LocalTaskList): HttpUrl? =
-        localCollection.syncId?.toHttpUrl()
 
     override fun update(localCollection: LocalTaskList, remoteCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list ${remoteCollection.url}", remoteCollection)

@@ -18,8 +18,6 @@ import at.bitfire.davdroid.util.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
 
 /**
@@ -55,9 +53,6 @@ class AddressBookSyncer @AssistedInject constructor(
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getByServiceAndSync(serviceId)
-
-    override fun getUrl(localCollection: LocalAddressBook): HttpUrl =
-        localCollection.url.toHttpUrl()
 
     override fun update(localCollection: LocalAddressBook, remoteCollection: Collection) {
         try {

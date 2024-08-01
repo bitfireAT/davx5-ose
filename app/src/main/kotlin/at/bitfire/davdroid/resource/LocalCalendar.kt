@@ -89,6 +89,9 @@ class LocalCalendar private constructor(
 
     }
 
+    override val url: String?
+        get() = name
+
     override val tag: String
         get() = "events-${account.name}-$id"
 

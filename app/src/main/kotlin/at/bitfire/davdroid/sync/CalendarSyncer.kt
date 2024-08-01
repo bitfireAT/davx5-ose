@@ -15,8 +15,6 @@ import at.bitfire.ical4android.AndroidCalendar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.util.logging.Level
 
 /**
@@ -56,9 +54,6 @@ class CalendarSyncer @AssistedInject constructor(
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncCalendars(serviceId)
-
-    override fun getUrl(localCollection: LocalCalendar): HttpUrl? =
-        localCollection.name?.toHttpUrl()
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalCalendar, remoteCollection: Collection) {
         logger.info("Synchronizing calendar #${localCollection.id}, URL: ${localCollection.name}")

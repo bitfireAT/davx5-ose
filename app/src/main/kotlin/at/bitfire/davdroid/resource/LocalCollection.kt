@@ -12,6 +12,9 @@ interface LocalCollection<out T: LocalResource<*>> {
     /** a tag that uniquely identifies the collection (DAVx5-wide) */
     val tag: String
 
+    /** Address of the remote collection  */
+    val url: String?
+
     /** collection title (used for user notifications etc.) **/
     val title: String
 
