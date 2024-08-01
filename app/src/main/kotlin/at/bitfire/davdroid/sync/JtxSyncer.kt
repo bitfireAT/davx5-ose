@@ -75,11 +75,6 @@ class JtxSyncer @AssistedInject constructor(
     override fun getUrl(localCollection: LocalJtxCollection): HttpUrl? =
         localCollection.url?.toHttpUrl()
 
-    override fun delete(localCollection: LocalJtxCollection) {
-        logger.log(Level.INFO, "Deleting obsolete local jtx collection", localCollection.url)
-        localCollection.delete()
-    }
-
     override fun update(localCollection: LocalJtxCollection, remoteCollection: Collection) {
         logger.log(Level.FINE, "Updating local jtx collection ${remoteCollection.url}", remoteCollection)
         val owner = remoteCollection.ownerId?.let { principalRepository.get(it) }

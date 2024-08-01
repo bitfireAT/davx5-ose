@@ -24,6 +24,13 @@ interface LocalCollection<out T: LocalResource<*>> {
     val readOnly: Boolean
 
     /**
+     * Deletes the local collection.
+     *
+     * @return true if the collection was deleted, false otherwise
+     */
+    fun delete(): Boolean
+
+    /**
      * Finds local resources of this collection which have been marked as *deleted* by the user
      * or an app acting on their behalf.
      *

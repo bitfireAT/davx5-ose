@@ -60,11 +60,6 @@ class CalendarSyncer @AssistedInject constructor(
     override fun getUrl(localCollection: LocalCalendar): HttpUrl? =
         localCollection.name?.toHttpUrl()
 
-    override fun delete(localCollection: LocalCalendar) {
-        logger.log(Level.INFO, "Deleting obsolete local calendar", localCollection.name)
-        localCollection.delete()
-    }
-
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalCalendar, remoteCollection: Collection) {
         logger.info("Synchronizing calendar #${localCollection.id}, URL: ${localCollection.name}")
 
@@ -80,7 +75,6 @@ class CalendarSyncer @AssistedInject constructor(
         )
         syncManager.performSync()
     }
-
 
     override fun update(localCollection: LocalCalendar, remoteCollection: Collection) {
         logger.log(Level.FINE, "Updating local calendar ${remoteCollection.url}", remoteCollection)

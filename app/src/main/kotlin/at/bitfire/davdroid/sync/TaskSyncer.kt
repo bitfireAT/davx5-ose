@@ -78,11 +78,6 @@ class TaskSyncer @AssistedInject constructor(
     override fun getUrl(localCollection: LocalTaskList): HttpUrl? =
         localCollection.syncId?.toHttpUrl()
 
-    override fun delete(localCollection: LocalTaskList) {
-        logger.log(Level.INFO, "Deleting obsolete local task list", localCollection.syncId)
-        localCollection.delete()
-    }
-
     override fun update(localCollection: LocalTaskList, remoteCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list ${remoteCollection.url}", remoteCollection)
         localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())

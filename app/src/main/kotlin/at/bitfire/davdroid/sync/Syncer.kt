@@ -25,7 +25,7 @@ import javax.inject.Inject
 /**
  * Base class for sync code.
  *
- * Contains generic sync code, equal for all sync authorities
+ * Contains generic sync code, equal for all sync authorities.
  */
 abstract class Syncer<CollectionType: LocalCollection<*>>(
     protected val account: Account,
@@ -105,7 +105,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
             val remoteCollection = remoteCollections[getUrl(localCollection)]
             if (remoteCollection == null)
                 // Collection got deleted on server, delete obsolete local resource
-                delete(localCollection)
+                localCollection.delete()
             else {
                 // Collection exists locally, update local resource and don't add it again
                 update(localCollection, remoteCollection)
@@ -142,8 +142,6 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     abstract fun getSyncCollections(serviceId: Long): List<Collection>
 
     abstract fun getUrl(localCollection: CollectionType): HttpUrl?
-
-    abstract fun delete(localCollection: CollectionType)
 
     abstract fun update(localCollection: CollectionType, remoteCollection: Collection)
 

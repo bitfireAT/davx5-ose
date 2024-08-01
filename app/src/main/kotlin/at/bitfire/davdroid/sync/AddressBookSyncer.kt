@@ -59,11 +59,6 @@ class AddressBookSyncer @AssistedInject constructor(
     override fun getUrl(localCollection: LocalAddressBook): HttpUrl =
         localCollection.url.toHttpUrl()
 
-    override fun delete(localCollection: LocalAddressBook) {
-        logger.log(Level.INFO, "Deleting obsolete local address book", localCollection.url)
-        localCollection.delete()
-    }
-
     override fun update(localCollection: LocalAddressBook, remoteCollection: Collection) {
         try {
             logger.log(Level.FINE, "Updating local address book ${remoteCollection.url}", remoteCollection)
