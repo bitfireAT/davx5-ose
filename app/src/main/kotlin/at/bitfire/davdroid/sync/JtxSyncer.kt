@@ -93,8 +93,8 @@ class JtxSyncer @AssistedInject constructor(
         LocalJtxCollection.create(account, provider, remoteCollection, owner)
     }
 
-    override fun LocalJtxCollection.syncCollection(provider: ContentProviderClient, remoteCollection: Collection) {
-        logger.info("Synchronizing jtx collection $this")
+    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalJtxCollection, remoteCollection: Collection) {
+        logger.info("Synchronizing jtx collection $localCollection")
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account,
@@ -103,7 +103,7 @@ class JtxSyncer @AssistedInject constructor(
             httpClient.value,
             authority,
             syncResult,
-            this,
+            localCollection,
             remoteCollection
         )
         syncManager.performSync()

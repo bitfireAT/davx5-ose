@@ -122,7 +122,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         // 4. sync local resources
         for (localCollection in localSyncCollections(provider))
             remoteCollections[localCollection.collectionUrl]?.let { remoteCollection ->
-                localCollection.syncCollection(provider, remoteCollection)
+                syncCollection(provider, localCollection, remoteCollection)
             }
 
     }
@@ -149,7 +149,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     abstract fun create(provider: ContentProviderClient, remoteCollection: Collection)
 
-    abstract fun CollectionType.syncCollection(provider: ContentProviderClient, remoteCollection: Collection)
+    abstract fun syncCollection(provider: ContentProviderClient, localCollection: CollectionType, remoteCollection: Collection)
 
     /**
      * Prepares the sync
