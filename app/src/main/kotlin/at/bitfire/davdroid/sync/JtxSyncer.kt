@@ -77,14 +77,14 @@ class JtxSyncer @AssistedInject constructor(
         collectionRepository.getSyncJtxCollections(serviceId)
 
     override fun LocalJtxCollection.deleteCollection() {
-        logger.log(Level.INFO, "Deleting obsolete local jtx collection", collectionUrl)
+        logger.log(Level.INFO, "Deleting obsolete local jtx collection", url)
         delete()
     }
 
-    override fun LocalJtxCollection.updateCollection(remoteCollection: Collection) {
-        logger.log(Level.FINE, "Updating local jtx collection $collectionUrl", remoteCollection)
+    override fun update(localCollection: LocalJtxCollection, remoteCollection: Collection) {
+        logger.log(Level.FINE, "Updating local jtx collection ${remoteCollection.url}", remoteCollection)
         val owner = remoteCollection.ownerId?.let { principalRepository.get(it) }
-        updateCollection(remoteCollection, owner, accountSettings.getManageCalendarColors())
+        localCollection.updateCollection(remoteCollection, owner, accountSettings.getManageCalendarColors())
     }
 
     override fun create(provider: ContentProviderClient, remoteCollection: Collection) {

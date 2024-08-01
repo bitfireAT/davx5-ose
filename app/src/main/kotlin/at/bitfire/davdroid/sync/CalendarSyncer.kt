@@ -80,9 +80,9 @@ class CalendarSyncer @AssistedInject constructor(
         syncManager.performSync()
     }
 
-    override fun LocalCalendar.updateCollection(remoteCollection: Collection) {
-        logger.log(Level.FINE, "Updating local calendar $collectionUrl", remoteCollection)
-        update(remoteCollection, accountSettings.getManageCalendarColors())
+    override fun update(localCollection: LocalCalendar, remoteCollection: Collection) {
+        logger.log(Level.FINE, "Updating local calendar ${remoteCollection.url}", remoteCollection)
+        localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
     }
 
     override fun create(provider: ContentProviderClient, remoteCollection: Collection) {

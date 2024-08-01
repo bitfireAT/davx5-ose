@@ -110,7 +110,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
                 localCollection.deleteCollection()
             else {
                 // Collection exists locally, update local resource and don't add it again
-                localCollection.updateCollection(remoteCollection)
+                update(localCollection, remoteCollection)
                 newRemoteCollections -= remoteCollection.url
             }
         }
@@ -145,7 +145,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     abstract fun CollectionType.deleteCollection()
 
-    abstract fun CollectionType.updateCollection(remoteCollection: Collection)
+    abstract fun update(localCollection: CollectionType, remoteCollection: Collection)
 
     abstract fun create(provider: ContentProviderClient, remoteCollection: Collection)
 
