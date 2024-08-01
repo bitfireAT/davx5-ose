@@ -76,8 +76,6 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     abstract val authority: String
 
-    abstract val CollectionType.collectionUrl: HttpUrl?
-
     val remoteCollections = mutableMapOf<HttpUrl, Collection>()
     val accountSettings by lazy { accountSettingsFactory.forAccount(account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
@@ -104,10 +102,10 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         // 2. update/delete local resources and determine new (unknown) remote collections
         val newRemoteCollections = HashMap(remoteCollections)
         for (localCollection in localCollections(provider)) {
-            val remoteCollection = remoteCollections[localCollection.collectionUrl]
+            val remoteCollection = remoteCollections[getUrl(localCollection)]
             if (remoteCollection == null)
                 // Collection got deleted on server, delete obsolete local resource
-                localCollection.deleteCollection()
+                delete(localCollection)
             else {
                 // Collection exists locally, update local resource and don't add it again
                 update(localCollection, remoteCollection)
@@ -121,7 +119,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // 4. sync local resources
         for (localCollection in localSyncCollections(provider))
-            remoteCollections[localCollection.collectionUrl]?.let { remoteCollection ->
+            remoteCollections[getUrl(localCollection)]?.let { remoteCollection ->
                 syncCollection(provider, localCollection, remoteCollection)
             }
 
@@ -143,7 +141,9 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     abstract fun getSyncCollections(serviceId: Long): List<Collection>
 
-    abstract fun CollectionType.deleteCollection()
+    abstract fun getUrl(localCollection: CollectionType): HttpUrl?
+
+    abstract fun delete(localCollection: CollectionType)
 
     abstract fun update(localCollection: CollectionType, remoteCollection: Collection)
 

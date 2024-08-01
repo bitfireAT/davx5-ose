@@ -43,12 +43,8 @@ class JtxSyncer @AssistedInject constructor(
         get() = Service.TYPE_CALDAV
     override val authority: String
         get() = TaskProvider.ProviderName.JtxBoard.authority
-    override val LocalJtxCollection.collectionUrl: HttpUrl?
-        get() = url?.toHttpUrl()
-
     override fun localCollections(provider: ContentProviderClient): List<LocalJtxCollection>
         = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
-
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalJtxCollection>
         = localCollections(provider)
 
@@ -76,9 +72,12 @@ class JtxSyncer @AssistedInject constructor(
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncJtxCollections(serviceId)
 
-    override fun LocalJtxCollection.deleteCollection() {
-        logger.log(Level.INFO, "Deleting obsolete local jtx collection", url)
-        delete()
+    override fun getUrl(localCollection: LocalJtxCollection): HttpUrl? =
+        localCollection.url?.toHttpUrl()
+
+    override fun delete(localCollection: LocalJtxCollection) {
+        logger.log(Level.INFO, "Deleting obsolete local jtx collection", localCollection.url)
+        localCollection.delete()
     }
 
     override fun update(localCollection: LocalJtxCollection, remoteCollection: Collection) {

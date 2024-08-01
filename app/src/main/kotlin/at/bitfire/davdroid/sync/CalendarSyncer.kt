@@ -38,8 +38,6 @@ class CalendarSyncer @AssistedInject constructor(
         get() = Service.TYPE_CALDAV
     override val authority: String
         get() = CalendarContract.AUTHORITY
-    override val LocalCalendar.collectionUrl: HttpUrl?
-        get() = name?.toHttpUrl()
 
     override fun localCollections(provider: ContentProviderClient): List<LocalCalendar>
         = AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null)
@@ -59,9 +57,12 @@ class CalendarSyncer @AssistedInject constructor(
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncCalendars(serviceId)
 
-    override fun LocalCalendar.deleteCollection() {
-        logger.log(Level.INFO, "Deleting obsolete local calendar", name)
-        delete()
+    override fun getUrl(localCollection: LocalCalendar): HttpUrl? =
+        localCollection.name?.toHttpUrl()
+
+    override fun delete(localCollection: LocalCalendar) {
+        logger.log(Level.INFO, "Deleting obsolete local calendar", localCollection.name)
+        localCollection.delete()
     }
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalCalendar, remoteCollection: Collection) {
@@ -79,6 +80,7 @@ class CalendarSyncer @AssistedInject constructor(
         )
         syncManager.performSync()
     }
+
 
     override fun update(localCollection: LocalCalendar, remoteCollection: Collection) {
         logger.log(Level.FINE, "Updating local calendar ${remoteCollection.url}", remoteCollection)
