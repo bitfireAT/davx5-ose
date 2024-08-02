@@ -24,6 +24,11 @@ import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
 
+/**
+ * Application-specific subclass of [AndroidCalendar] for local calendars.
+ *
+ * [Calendars.NAME] is used to store the calendar URL.
+ */
 class LocalCalendar private constructor(
     account: Account,
     provider: ContentProviderClient,

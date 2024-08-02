@@ -19,6 +19,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -65,21 +66,21 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     lateinit var context: Context
 
     @Inject
-    lateinit var serviceRepository: DavServiceRepository
-
-    @Inject
     lateinit var collectionRepository: DavCollectionRepository
 
     @Inject
     lateinit var logger: Logger
 
-    abstract val serviceType: String
+    @Inject
+    lateinit var serviceRepository: DavServiceRepository
 
     abstract val authority: String
+    abstract val serviceType: String
 
-    private val remoteCollections = mutableMapOf<HttpUrl, Collection>()
     val accountSettings by lazy { accountSettingsFactory.forAccount(account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
+
+    private val dbCollections = mutableMapOf<HttpUrl, Collection>()
 
     /**
      * Creates, updates and/or deletes local resources (calendars, address books, etc) according to
@@ -87,43 +88,41 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
      * of the remaining up-to-date resources.
      */
     fun sync(provider: ContentProviderClient) {
-
         // 0. resource specific preparations
-        if(!prepare(provider)) {
+        if (!prepare(provider)) {
             logger.log(Level.WARNING, "Failed to prepare sync. Won't run sync.")
             return
         }
 
         // 1. find resource collections to be synced
-        val service = serviceRepository.getByAccountAndType(account.name, serviceType)
-        if (service != null)
-            for (remoteCollection in getSyncCollections(service.id))
-                remoteCollections[remoteCollection.url] = remoteCollection
+        serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
+            for (dbCollection in getSyncCollections(service.id))
+                dbCollections[dbCollection.url] = dbCollection
+        }
 
         // 2. update/delete local resources and determine new (unknown) remote collections
-        val newRemoteCollections = HashMap(remoteCollections)
+        val newDbCollections = HashMap(dbCollections)   // create a copy
         for (localCollection in localCollections(provider)) {
-            val remoteCollection = remoteCollections[localCollection.url?.toHttpUrl()]
-            if (remoteCollection == null)
-                // Collection got deleted on server, delete obsolete local resource
+            val dbCollection = dbCollections[localCollection.url?.toHttpUrlOrNull()]
+            if (dbCollection == null)
+                // Collection not available in db = on server (anymore), delete obsolete local collection
                 localCollection.delete()
             else {
-                // Collection exists locally, update local resource and don't add it again
-                update(localCollection, remoteCollection)
-                newRemoteCollections -= remoteCollection.url
+                // Collection exists locally, update local collection and remove it from "to be created" map
+                update(localCollection, dbCollection)
+                newDbCollections -= dbCollection.url
             }
         }
 
         // 3. create new local collections for newly found remote collections
-        for ((_, collection) in newRemoteCollections)
+        for ((_, collection) in newDbCollections)
             create(provider, collection)
 
         // 4. sync local resources
         for (localCollection in localSyncCollections(provider))
-            remoteCollections[localCollection.url?.toHttpUrl()]?.let { remoteCollection ->
-                syncCollection(provider, localCollection, remoteCollection)
+            dbCollections[localCollection.url?.toHttpUrl()]?.let { dbCollection ->
+                syncCollection(provider, localCollection, dbCollection)
             }
-
     }
 
 

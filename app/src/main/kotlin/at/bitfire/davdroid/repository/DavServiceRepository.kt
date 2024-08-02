@@ -40,9 +40,9 @@ class DavServiceRepository @Inject constructor(
 
     // Delete
 
+    fun deleteAll() = dao.deleteAll()
+
     suspend fun deleteByAccount(accountName: String) =
         dao.deleteByAccount(accountName)
-
-    fun deleteAll() = dao.deleteAll()
 
 }
