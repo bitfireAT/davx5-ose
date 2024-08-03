@@ -74,6 +74,10 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+
+@Serializable
+object AccountsRoute
 
 @Composable
 fun AccountsScreen(

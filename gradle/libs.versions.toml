@@ -10,6 +10,7 @@ androidx-browser = "1.8.0"
 androidx-core = "1.13.1"
 androidx-hilt = "1.2.0"
 androidx-lifecycle = "2.8.4"
+androidx-navigation = "2.8.0-beta06"
 androidx-paging = "3.3.1"
 androidx-preference = "1.2.1"
 androidx-security = "1.1.0-alpha06"
@@ -32,6 +33,8 @@ hilt = "2.51.1"
 #                    * com.google.devtools.ksp at the end of this file
 kotlin = "2.0.0"
 kotlinx-coroutines = "1.8.1"
+kotlinx-serialization = "2.0.0"
+kotlinx-serialization-json = "1.7.1"
 # see https://github.com/google/ksp/releases for version numbers
 ksp = "2.0.0-1.0.21"
 mikepenz-aboutLibraries = "11.2.2"
@@ -55,6 +58,8 @@ androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androi
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-base = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+androidx-navigation-compose = { module="androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
+androidx-navigation-ui = { module="androidx.navigation:navigation-ui-ktx", version.ref = "androidx-navigation" }
 androidx-paging = { module = "androidx.paging:paging-runtime-ktx", version.ref = "androidx-paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
@@ -86,6 +91,7 @@ hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", vers
 junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 mikepenz-aboutLibraries = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "mikepenz-aboutLibraries" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
@@ -107,5 +113,6 @@ android-application = { id = "com.android.application", version.ref = "android-a
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinx-serialization" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mikepenz-aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "mikepenz-aboutLibraries" }

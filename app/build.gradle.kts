@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
 }
 
@@ -133,6 +134,7 @@ dependencies {
     // core
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.serialization.json)
     coreLibraryDesugaring(libs.android.desugaring)
 
     // Hilt
@@ -150,6 +152,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.base)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.preference)
