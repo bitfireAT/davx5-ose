@@ -65,7 +65,6 @@
         <activity android:name="net.openid.appauth.RedirectUriReceiverActivity"
             tools:node="remove" tools:selector="net.openid.appauth"/>
 
-        <activity android:name=".ui.intro.IntroActivity" />
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
@@ -74,6 +73,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".ui.intro.IntroActivity" />
 
         <activity
             android:name=".ui.AboutActivity"

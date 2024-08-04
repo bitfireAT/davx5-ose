@@ -8,25 +8,34 @@ import android.accounts.Account
 import android.content.Intent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import kotlinx.serialization.Serializable
 
 @Serializable
-private data class AccountDestination(
+data class AccountDestination(
     val accountName: String
 )
+
+fun accountDeepLink(accountName: String) = "${BuildConfig.APPLICATION_ID}://account/$accountName".toUri()
 
 fun NavController.navigateToAccount(accountName: String) {
     navigate(AccountDestination(accountName))
 }
 
 fun NavGraphBuilder.accountDestination() {
-    composable<AccountDestination> { backStackEntry ->
+    composable<AccountDestination>(
+        deepLinks = listOf(
+            navDeepLink { uriPattern = "${BuildConfig.APPLICATION_ID}://account/{accountName}" }
+        )
+    ) { backStackEntry ->
         val destination: AccountDestination = backStackEntry.toRoute()
         val account = Account(destination.accountName, stringResource(R.string.account_type))
 
