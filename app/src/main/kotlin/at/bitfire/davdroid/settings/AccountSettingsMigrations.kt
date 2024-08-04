@@ -109,7 +109,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
      * Updates the periodic sync workers by re-setting the same sync interval.
      *
      * The goal is to add the [BaseSyncWorker.commonTag] to all existing periodic sync workers so that they can be detected by
-     * the new [BaseSyncWorker.exists] and [at.bitfire.davdroid.ui.AccountsActivity.Model].
+     * the new [BaseSyncWorker.exists] and [at.bitfire.davdroid.ui.MainActivity.Model].
      */
     @Suppress("unused","FunctionName")
     fun update_14_15() {

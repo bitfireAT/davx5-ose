@@ -4,9 +4,7 @@
 
 package at.bitfire.davdroid.ui.account
 
-import AccountScreen
 import android.accounts.Account
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -26,32 +24,7 @@ class AccountActivity : AppCompatActivity() {
             ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
 
         setContent {
-            AccountScreen(
-                account = account,
-                onAccountSettings = {
-                    val intent = Intent(this, AccountSettingsActivity::class.java)
-                    intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
-                    startActivity(intent, null)
-                },
-                onCreateAddressBook = {
-                    val intent = Intent(this, CreateAddressBookActivity::class.java)
-                    intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, account)
-                    startActivity(intent)
-                },
-                onCreateCalendar = {
-                    val intent = Intent(this, CreateCalendarActivity::class.java)
-                    intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, account)
-                    startActivity(intent)
-                },
-                onCollectionDetails = { collection ->
-                    val intent = Intent(this, CollectionActivity::class.java)
-                    intent.putExtra(CollectionActivity.EXTRA_ACCOUNT, account)
-                    intent.putExtra(CollectionActivity.EXTRA_COLLECTION_ID, collection.id)
-                    startActivity(intent, null)
-                },
-                onNavUp = ::onSupportNavigateUp,
-                onFinish = ::finish
-            )
+            // noop
         }
     }
 

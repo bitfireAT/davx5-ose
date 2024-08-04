@@ -1,3 +1,4 @@
+package at.bitfire.davdroid.ui.account
 
 import android.Manifest
 import android.accounts.Account
@@ -63,6 +64,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.R
@@ -70,16 +76,13 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.PermissionsActivity
-import at.bitfire.davdroid.ui.account.AccountProgress
-import at.bitfire.davdroid.ui.account.AccountScreenModel
-import at.bitfire.davdroid.ui.account.CollectionsList
-import at.bitfire.davdroid.ui.account.RenameAccountDialog
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.ical4android.TaskProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
 @Composable
 fun AccountScreen(
@@ -88,8 +91,7 @@ fun AccountScreen(
     onCreateAddressBook: () -> Unit,
     onCreateCalendar: () -> Unit,
     onCollectionDetails: (Collection) -> Unit,
-    onNavUp: () -> Unit,
-    onFinish: () -> Unit
+    onNavUp: () -> Unit
 ) {
     val model: AccountScreenModel = hiltViewModel(
         creationCallback = { factory: AccountScreenModel.Factory ->
@@ -154,8 +156,7 @@ fun AccountScreen(
         onCreateCalendar = onCreateCalendar,
         onRenameAccount = model::renameAccount,
         onDeleteAccount = model::deleteAccount,
-        onNavUp = onNavUp,
-        onFinish = onFinish
+        onNavUp = onNavUp
     )
 }
 
@@ -191,15 +192,14 @@ fun AccountScreen(
     onCreateCalendar: () -> Unit = {},
     onRenameAccount: (newName: String) -> Unit = {},
     onDeleteAccount: () -> Unit = {},
-    onNavUp: () -> Unit = {},
-    onFinish: () -> Unit = {}
+    onNavUp: () -> Unit = {}
 ) {
     AppTheme {
         val context = LocalContext.current
         val scope = rememberCoroutineScope()
 
         if (invalidAccount)
-            onFinish()
+            onNavUp()
 
         val pullRefreshState = rememberPullToRefreshState()
         LaunchedEffect(pullRefreshState.isRefreshing) {

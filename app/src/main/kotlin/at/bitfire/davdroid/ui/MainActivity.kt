@@ -10,10 +10,12 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import at.bitfire.davdroid.ui.account.accountDestination
+import at.bitfire.davdroid.ui.account.navigateToAccount
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AccountsActivity: AppCompatActivity() {
+class MainActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,12 +28,14 @@ class AccountsActivity: AppCompatActivity() {
             val navController = rememberNavController()
             NavHost(
                 navController = navController,
-                startDestination = Accounts
+                startDestination = AccountsDestination
             ) {
                 accountsDestination(
                     initialSyncAccounts = syncAccounts,
-                    onClose = ::finish
+                    onClose = ::finish,
+                    onNavigateToAccount = navController::navigateToAccount
                 )
+                accountDestination()
             }
         }
     }

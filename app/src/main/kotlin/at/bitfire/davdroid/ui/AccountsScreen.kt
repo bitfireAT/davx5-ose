@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -66,55 +65,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.ui.intro.IntroActivity
-import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
-
-@Serializable
-object Accounts
-
-fun NavGraphBuilder.accountsDestination(
-    initialSyncAccounts: Boolean,
-    onClose: () -> Unit
-) {
-    composable<Accounts> {
-        val showIntro = rememberLauncherForActivityResult(IntroActivity.Contract) { cancelled ->
-            if (cancelled)
-                onClose()
-        }
-
-        val context = LocalContext.current
-        AccountsScreen(
-            initialSyncAccounts = initialSyncAccounts,
-            onShowAppIntro = {
-                showIntro.launch(Unit)
-            },
-            onAddAccount = {
-                context.startActivity(Intent(context, LoginActivity::class.java))
-            },
-            onShowAccount = { account ->
-                val intent = Intent(context, AccountActivity::class.java)
-                intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
-                context.startActivity(intent)
-            },
-            onManagePermissions = {
-                context.startActivity(Intent(context, PermissionsActivity::class.java))
-            }
-        )
-    }
-}
 
 @Composable
 fun AccountsScreen(
