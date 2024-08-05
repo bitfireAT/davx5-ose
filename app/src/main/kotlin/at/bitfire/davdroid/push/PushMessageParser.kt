@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.push
 
+import at.bitfire.dav4jvm.XmlReader
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.property.push.PushMessage
 import org.xmlpull.v1.XmlPullParserException
@@ -28,7 +29,7 @@ class PushMessageParser @Inject constructor(
         try {
             parser.setInput(StringReader(message))
 
-            XmlUtils.processTag(parser, PushMessage.NAME) {
+            XmlReader(parser).processTag(PushMessage.NAME) {
                 val pushMessage = PushMessage.Factory.create(parser)
                 topic = pushMessage.topic
             }
