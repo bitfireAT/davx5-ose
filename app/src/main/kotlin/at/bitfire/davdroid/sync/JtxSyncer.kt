@@ -41,10 +41,10 @@ class JtxSyncer @AssistedInject constructor(
         get() = Service.TYPE_CALDAV
     override val authority: String
         get() = TaskProvider.ProviderName.JtxBoard.authority
-    override fun localCollections(provider: ContentProviderClient): List<LocalJtxCollection>
-        = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
+
+
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalJtxCollection>
-        = localCollections(provider)
+        = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
 
     override fun prepare(provider: ContentProviderClient): Boolean {
         // check whether jtx Board is new enough

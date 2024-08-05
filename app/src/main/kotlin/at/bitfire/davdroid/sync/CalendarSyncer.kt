@@ -37,8 +37,6 @@ class CalendarSyncer @AssistedInject constructor(
     override val authority: String
         get() = CalendarContract.AUTHORITY
 
-    override fun localCollections(provider: ContentProviderClient): List<LocalCalendar>
-        = AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null)
 
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalCalendar>
         = AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)

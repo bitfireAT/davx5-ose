@@ -100,9 +100,10 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
                 dbCollections[dbCollection.url] = dbCollection
         }
 
-        // 2. update/delete local resources and determine new (unknown) remote collections
+        // 2. update/delete local collections and determine new (unknown) remote collections
+        val localSyncCollections = localSyncCollections(provider)
         val newDbCollections = HashMap(dbCollections)   // create a copy
-        for (localCollection in localCollections(provider)) {
+        for (localCollection in localSyncCollections) {
             val dbCollection = dbCollections[localCollection.url?.toHttpUrlOrNull()]
             if (dbCollection == null)
                 // Collection not available in db = on server (anymore), delete obsolete local collection
@@ -118,16 +119,12 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         for ((_, collection) in newDbCollections)
             create(provider, collection)
 
-        // 4. sync local resources
-        for (localCollection in localSyncCollections(provider))
+        // 4. sync local collection contents (events, contacts, tasks)
+        for (localCollection in localSyncCollections)
             dbCollections[localCollection.url?.toHttpUrl()]?.let { dbCollection ->
                 syncCollection(provider, localCollection, dbCollection)
             }
     }
-
-
-    /** All local collections of a specific type (calendar, address book, etc) */
-    abstract fun localCollections(provider: ContentProviderClient): List<CollectionType>
 
     /** Sync enabled local collections of specific type */
     abstract fun localSyncCollections(provider: ContentProviderClient): List<CollectionType>

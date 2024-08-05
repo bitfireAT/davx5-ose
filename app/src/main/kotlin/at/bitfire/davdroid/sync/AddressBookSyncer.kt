@@ -46,10 +46,10 @@ class AddressBookSyncer @AssistedInject constructor(
         get() = Service.TYPE_CARDDAV
     override val authority: String
         get() = ContactsContract.AUTHORITY // Address books use the contacts authority for sync
-    override fun localCollections(provider: ContentProviderClient): List<LocalAddressBook>
-        = LocalAddressBook.findAll(context, provider, account)
+
+
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalAddressBook>
-        = localCollections(provider)
+        = LocalAddressBook.findAll(context, provider, account)
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getByServiceAndSync(serviceId)

@@ -41,8 +41,8 @@ class TaskSyncer @AssistedInject constructor(
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
-    override fun localCollections(provider: ContentProviderClient): List<LocalTaskList>
-        = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, null, null)
+
+
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalTaskList>
         = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
 
