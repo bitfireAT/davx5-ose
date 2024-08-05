@@ -125,9 +125,6 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
             }
     }
 
-    /** Sync enabled local collections of specific type */
-    abstract fun localSyncCollections(provider: ContentProviderClient): List<CollectionType>
-
     /**
      * For collection specific sync preparations.
      * @param provider Content provider for syncer specific authority
@@ -136,8 +133,18 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     open fun prepare(provider: ContentProviderClient): Boolean = true
 
     /**
-     * Retrieve the local collections which are sync-enabled (should by synchronized)
+     * Get the local collections to be updated after sync
+     *
+     * @param provider Content provider to access local collections
+     * @return Local collections to be updated
+     */
+    abstract fun localSyncCollections(provider: ContentProviderClient): List<CollectionType>
+
+    /**
+     * Get the local database collections which are sync-enabled (should by synchronized)
+     *
      * @param serviceId The CalDAV or CardDAV service (account) to be synchronized
+     * @return Database collections to be synchronized
      */
     abstract fun getSyncCollections(serviceId: Long): List<Collection>
 
