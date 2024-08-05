@@ -4,14 +4,17 @@
   <string name="account_invalid">Účet (už) neexistuje</string>
   <string name="account_title_address_book">DAVx⁵ adresář kontaktů</string>
   <string name="address_books_authority_title">Adresáře kontaktů</string>
+  <string name="dialog_delete">Odstranit</string>
   <string name="dialog_remove">Odebrat</string>
   <string name="dialog_deny">Storno</string>
   <string name="field_required">Tuto kolonku je třeba vyplnit</string>
   <string name="help">Pomoc</string>
   <string name="manage_accounts">Spravovat účty</string>
   <string name="navigate_up">Navigovat nahoru</string>
+  <string name="optional_label">* volitelné</string>
   <string name="options_menu">Menu možností</string>
   <string name="share">Sdílet</string>
+  <string name="sync_started">Synchronizace spuštěna/přidána do fronty</string>
   <string name="database_destructive_migration_title">Databáze rozbitá</string>
   <string name="database_destructive_migration_text">Všechny účty byly lokálně odebrány.</string>
   <string name="notification_channel_debugging">Ladění</string>
@@ -201,29 +204,40 @@
   <string name="account_calendar">kalendář</string>
   <string name="account_journal">žurnál</string>
   <string name="account_only_personal">Zobrazit pouze osobní</string>
+  <string name="account_refresh_collections">Obnovit seznam</string>
   <string name="account_webcal_external_app">Odběry webcal mohou být synchronizovány externími aplikacemi.</string>
   <string name="account_no_webcal_handler_found">Nenalezena žádná aplikace, která by umožňovala webcal</string>
   <string name="account_install_icsx5">Nainstalovat ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Přidat účet</string>
+  <string name="login_generic_login">Obecné přihlášení</string>
+  <string name="login_provider_login">Přihlášení specifické pro poskytovatele</string>
+  <string name="login_continue">Pokračovat</string>
   <string name="login_login">Přihlášení</string>
   <string name="login_type_email">Přihlášení se e-mailovou adresou</string>
   <string name="login_email_address">E-mailová adresa</string>
   <string name="login_email_address_error">Vyžadován platný e-mail</string>
+  <string name="login_email_address_info"><![CDATA[E-maiová doména je použita jako základní URL. <a href="%s">Služby jsou objevovány</a> pomocí záznamů DNS a dobře známých URL.]]></string>
   <string name="login_password">Heslo</string>
   <string name="login_password_hide">Skrýt heslo</string>
   <string name="login_password_show">Zobrazit heslo</string>
+  <string name="login_password_optional">Heslo*</string>
   <string name="login_type_url">Přihlášení s URL a uživatelským jménem</string>
   <string name="login_user_name">Uživatelské jméno</string>
+  <string name="login_user_name_optional">Uživatelské jméno*</string>
   <string name="login_base_url">Základ URL</string>
   <string name="login_select_certificate">Vybrat certifikát</string>
   <string name="login_create_account">Vytvořit účet</string>
   <string name="login_account_name">Název účtu</string>
+  <string name="login_account_avoid_apostrophe">Používání apostrofů (\') může způsobit problémy na některých zařízeních.</string>
   <string name="login_account_name_info">Pro jméno účtu použijte svou e-mailovou adresu, protože Android bude brát jméno účtu jako údaj pro ORGANIZÁTORA vytvořených událostí. Nelze mít dva účty stejného jména.</string>
   <string name="login_account_contact_group_method">Metoda seskupování kontaktů:</string>
   <string name="login_account_name_required">Je třeba zadat název pro účet</string>
   <string name="login_account_name_already_taken">Tento název účtu už je používán někým jiným</string>
   <string name="login_account_not_created">Účet nelze vytvořit</string>
+  <string name="login_type_advanced">Pokročilé přihlášení</string>
+  <string name="login_no_client_certificate_optional">Bez certifikátu klienta</string>
+  <string name="login_client_certificate_selected">Certifikát klienta: %s</string>
   <string name="login_no_certificate_found">Nenalezen žádný certifikát</string>
   <string name="login_install_certificate">Instalovat certifikát</string>
   <string name="login_type_google">Google kontakty/kalendář</string>
@@ -245,6 +259,9 @@
   <string name="login_configuration_detection">Zjišťování nastavení</string>
   <string name="login_querying_server">Chvíli strpení, probíhá dotazování serveru…</string>
   <string name="login_no_service">Nedaří se nalézt službu CalDAV nebo CardDAV.</string>
+  <string name="login_see_tested_services"><![CDATA[Prosíme podívejte se do manuálu vašeho poskytovatele služeb a do <a href="%s">našeho seznamu testovaných služeb</a> a jejich základní URL.]]></string>
+  <string name="login_check_credentials">Prosíme též překontrolujte přihlašovací údaje (obvykle jméno a heslo).</string>
+  <string name="login_logs_available">Další technické informace jsou k dispozici v logu.</string>
   <string name="login_view_logs">Zobrazit záznamy událostí</string>
   <!--AccountSettingsActivity-->
   <string name="settings_sync">Synchronizace</string>
@@ -277,6 +294,7 @@
   <string name="settings_authentication">Ověření</string>
   <string name="settings_username">Uživatelské jméno</string>
   <string name="settings_password">Heslo</string>
+  <string name="settings_new_password">Nové heslo</string>
   <string name="settings_password_summary">Aktualizovat heslo dle svého serveru.</string>
   <string name="settings_certificate_alias">Certifikát klienta</string>
   <string name="settings_certificate_alias_empty">Certifikát není vybrán nebo k dispozici </string>
@@ -314,20 +332,38 @@
   </string-array>
   <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Vytvořit adresář</string>
+  <string name="create_addressbook_maybe_not_supported">Vytváření adresář kontaků přes CardDAV nemusí být serverem podporováno.</string>
   <string name="create_calendar">Vytvořit kalendář</string>
+  <string name="create_calendar_time_zone_optional">Výchozí časová zóna*</string>
+  <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Možné položky kalendáře</string>
   <string name="create_calendar_type_vevent">Události</string>
   <string name="create_calendar_type_vtodo">Úkoly</string>
   <string name="create_calendar_type_vjournal">Poznámky / deník</string>
+  <string name="create_calendar_maybe_not_supported">Vytváření kalendáře přes CalCAV nemusí být serverem podporováno.</string>
   <string name="create_collection_color">Barva</string>
   <string name="create_collection_display_name">Nadpis</string>
   <string name="create_collection_home_set">Umístění úložiště</string>
+  <string name="create_collection_description_optional">Popis*</string>
   <string name="create_collection_create">Vytvořit</string>
+  <string name="create_collection_optional">* volitelné</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Smazat sadu</string>
+  <string name="collection_delete_warning">Tato kolekce (%s) a její data budou navždy odstraněna, lokálně i na serveru.</string>
   <string name="collection_synchronization">Synchronizace</string>
+  <string name="collection_synchronization_on">Synchronizace povolena</string>
+  <string name="collection_synchronization_off">Synchronizace zakázána</string>
+  <string name="collection_read_only">Pouze pro čtení</string>
+  <string name="collection_read_only_by_server">Jen pro čtení (od serveru)</string>
+  <string name="collection_read_only_forced">Jen pro čtení (jen lokálně)</string>
+  <string name="collection_read_write">Čtení/zápis</string>
   <string name="collection_title">Nadpis</string>
   <string name="collection_description">Popis</string>
+  <string name="collection_owner">Vlastník</string>
+  <string name="collection_push_support">Podpora Push</string>
+  <string name="collection_push_web_push">Server propaguje podporu Push</string>
+  <string name="collection_last_sync">Poslední synchronizace (%s)</string>
+  <string name="collection_url">Adresa (URL)</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Ladící informace</string>
   <string name="debug_info_archive_caption">ZIP archiv</string>
@@ -395,6 +431,7 @@
   <string name="sync_invalid_task">Ze serveru obdržen neplatný úkol</string>
   <string name="sync_invalid_resources_ignoring">Ignoruje se jeden či více neplatný prostředků</string>
   <!--widgets-->
+  <string name="widget_sync_all">Synchronizovat vše</string>
   <string name="widget_sync_all_accounts">Synchronizovat všechny účty</string>
   <!--cert4android-->
 </resources>
