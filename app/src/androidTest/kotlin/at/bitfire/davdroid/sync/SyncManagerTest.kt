@@ -10,7 +10,6 @@ import android.content.SyncResult
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration
 import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.dav4jvm.PropStat
@@ -18,15 +17,19 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.Response.HrefRelation
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.TestUtils.assertWithin
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.TestAccountAuthenticator
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.components.SingletonComponent
 import io.mockk.every
 import io.mockk.mockk
 import okhttp3.Protocol
@@ -46,6 +49,14 @@ import javax.inject.Inject
 @HiltAndroidTest
 class SyncManagerTest {
 
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object SyncManagerTestModule {
+        @Provides
+        fun davSyncStatsRepository(): DavSyncStatsRepository = mockk<DavSyncStatsRepository>(relaxed = true)
+    }
+
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
@@ -55,10 +66,6 @@ class SyncManagerTest {
     @Inject
     @ApplicationContext
     lateinit var context: Context
-    val testContext = InstrumentationRegistry.getInstrumentation().context
-
-    @Inject
-    lateinit var db: AppDatabase
 
     @Inject
     lateinit var syncManagerFactory: TestSyncManager.Factory
@@ -510,6 +517,7 @@ class SyncManagerTest {
         localCollection: LocalTestCollection,
         syncResult: SyncResult = SyncResult(),
         collection: Collection = mockk<Collection>() {
+            every { id } returns 1
             every { url } returns server.url("/")
         }
     ) = syncManagerFactory.create(

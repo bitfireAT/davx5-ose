@@ -7,6 +7,7 @@ package at.bitfire.davdroid.repository
 import android.content.Context
 import android.content.pm.PackageManager
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.SyncStats
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -38,6 +39,15 @@ class DavSyncStatsRepository @Inject constructor(
                 collator.compare(a.appName, b.appName)
             }
         }
+
+    fun logSyncTime(collectionId: Long, authority: String, lastSync: Long = System.currentTimeMillis()) {
+        dao.insertOrReplace(SyncStats(
+            id = 0,
+            collectionId = collectionId,
+            authority = authority,
+            lastSync = lastSync
+        ))
+    }
 
 
     /**

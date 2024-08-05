@@ -37,12 +37,10 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.SyncState
-import at.bitfire.davdroid.db.SyncStats
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalContact
@@ -152,13 +150,13 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     lateinit var context: Context
 
     @Inject
-    lateinit var db: AppDatabase
-
-    @Inject
     lateinit var logger: Logger
 
     @Inject
     lateinit var notificationRegistry: NotificationRegistry
+
+    @Inject
+    lateinit var syncStatsRepository: DavSyncStatsRepository
 
 
     init {
@@ -189,9 +187,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 logger.info("No reason to synchronize, aborting")
                 return
             }
-
-            // log sync time
-            saveSyncTime()
+            syncStatsRepository.logSyncTime(collection.id, authority)
 
             logger.info("Querying server capabilities")
             var remoteSyncState = queryCapabilities()
@@ -338,34 +334,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 else ->
                     notifyException(e, local, remote)
             }
-        }
-    }
-
-    /**
-     * Saves the sync time of the synced account and service.
-     */
-    private fun saveSyncTime() {
-        val serviceType = when (authority) {
-            ContactsContract.AUTHORITY ->       // contacts
-                Service.TYPE_CARDDAV
-            else ->                             // calendars and tasks
-                Service.TYPE_CALDAV
-        }
-
-        val accountName =
-            if (localCollection is LocalAddressBook)
-                localCollection.requireMainAccount().name
-            else
-                account.name
-
-        db.runInTransaction {
-            val service = db.serviceDao().getByAccountAndType(accountName, serviceType)
-                ?: return@runInTransaction
-            val collection = db.collectionDao().getByServiceAndUrl(service.id, collection.url.toString())
-                ?: return@runInTransaction
-            db.syncStatsDao().insertOrReplace(
-                SyncStats(0, collection.id, authority, System.currentTimeMillis())
-            )
         }
     }
 
