@@ -47,7 +47,6 @@ class TaskSyncer @AssistedInject constructor(
         = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
 
     override fun prepare(provider: ContentProviderClient): Boolean {
-
         // Acquire task provider
         val providerName = TaskProvider.ProviderName.fromAuthority(authority)
         taskProvider = try {
