@@ -80,8 +80,6 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     val accountSettings by lazy { accountSettingsFactory.forAccount(account) }
     val httpClient = lazy { HttpClient.Builder(context, accountSettings).build() }
 
-    private val dbCollections = mutableMapOf<HttpUrl, Collection>()
-
     /**
      * Creates, updates and/or deletes local collections (calendars, address books, etc) according to
      * remote collection information. Then syncs the actual entries (events, tasks, contacts, etc)
@@ -95,6 +93,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         }
 
         // Find sync-enabled collections
+        val dbCollections = mutableMapOf<HttpUrl, Collection>()
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
             for (dbCollection in getSyncCollections(service.id))
                 dbCollections[dbCollection.url] = dbCollection
