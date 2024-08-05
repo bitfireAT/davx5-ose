@@ -83,24 +83,24 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
     private val dbCollections = mutableMapOf<HttpUrl, Collection>()
 
     /**
-     * Creates, updates and/or deletes local resources (calendars, address books, etc) according to
+     * Creates, updates and/or deletes local collections (calendars, address books, etc) according to
      * remote collection information. Then syncs the actual entries (events, tasks, contacts, etc)
-     * of the remaining up-to-date resources.
+     * of the remaining, now up-to-date, collections.
      */
     private fun sync(provider: ContentProviderClient) {
-        // 0. resource specific preparations
+        // Collection type specific preparations
         if (!prepare(provider)) {
             logger.log(Level.WARNING, "Failed to prepare sync. Won't run sync.")
             return
         }
 
-        // 1. find resource collections to be synced
+        // Find sync-enabled collections
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
             for (dbCollection in getSyncCollections(service.id))
                 dbCollections[dbCollection.url] = dbCollection
         }
 
-        // 2. update/delete local collections and determine new (unknown) remote collections
+        // Update/delete local collections and determine new (unknown) remote collections
         val localSyncCollections = localSyncCollections(provider)
         val newDbCollections = HashMap(dbCollections)   // create a copy
         for (localCollection in localSyncCollections) {
@@ -136,12 +136,36 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
      */
     open fun prepare(provider: ContentProviderClient): Boolean = true
 
+    /**
+     * Retrieve the local collections which are sync-enabled (should by synchronized)
+     * @param serviceId The CalDAV or CardDAV service (account) to be synchronized
+     */
     abstract fun getSyncCollections(serviceId: Long): List<Collection>
 
+    /**
+     * Update an existing local collection with remote collection information
+     *
+     * @param localCollection The local collection to be updated
+     * @param remoteCollection The new remote collection information
+     */
     abstract fun update(localCollection: CollectionType, remoteCollection: Collection)
 
+    /**
+     * Create a new local collection from remote collection information
+     *
+     * @param provider The content provider client to create the local collection
+     * @param remoteCollection The remote collection to be created locally
+     */
     abstract fun create(provider: ContentProviderClient, remoteCollection: Collection)
 
+    /**
+     * Synchronise local with remote collection contents
+     *
+     * @param provider The content provider client to access the local collection to be updated
+     * @param localCollection The local collection to be synchronized
+     * @param remoteCollection The database collection representing the remote collection. Contains
+     * remote address of the collection to be synchronized.
+     */
     abstract fun syncCollection(provider: ContentProviderClient, localCollection: CollectionType, remoteCollection: Collection)
 
     /**
