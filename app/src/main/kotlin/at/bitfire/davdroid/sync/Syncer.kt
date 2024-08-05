@@ -87,7 +87,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
      * remote collection information. Then syncs the actual entries (events, tasks, contacts, etc)
      * of the remaining up-to-date resources.
      */
-    fun sync(provider: ContentProviderClient) {
+    private fun sync(provider: ContentProviderClient) {
         // 0. resource specific preparations
         if (!prepare(provider)) {
             logger.log(Level.WARNING, "Failed to prepare sync. Won't run sync.")
@@ -156,49 +156,47 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         logger.log(Level.INFO, "$authority sync of $account initiated", extras.joinToString(", "))
 
         // Acquire ContentProviderClient
-        val provider = try {
+        try {
             context.contentResolver.acquireContentProviderClient(authority)
         } catch (e: SecurityException) {
             logger.log(Level.WARNING, "Missing permissions for authority $authority", e)
             null
-        }
+        }.use { provider ->
+            if (provider == null) {
+                /* Can happen if
+                 - we're not allowed to access the content provider, or
+                 - the content provider is not available at all, for instance because the respective
+                   system app, like "calendar storage" is disabled */
+                logger.warning("Couldn't connect to content provider of authority $authority")
+                syncResult.stats.numParseExceptions++ // hard sync error
 
-        if (provider == null) {
-            /* Can happen if
-             - we're not allowed to access the content provider, or
-             - the content provider is not available at all, for instance because the respective
-               system app, like "calendar storage" is disabled */
-            logger.warning("Couldn't connect to content provider of authority $authority")
-            syncResult.stats.numParseExceptions++ // hard sync error
-
-            return // Don't continue without provider
-        }
-
-        // run sync
-        try {
-            provider.use {
-                sync(provider)
+                return // Don't continue without provider
             }
-        } catch (e: DeadObjectException) {
-            /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
-            is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
-            logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
-            syncResult.stats.numIoExceptions++
 
-        } catch (e: InvalidAccountException) {
-            logger.log(Level.WARNING, "Account was removed during synchronization", e)
+            // run sync
+            try {
+                sync(provider)
+            } catch (e: DeadObjectException) {
+                /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
+                is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
+                logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
+                syncResult.stats.numIoExceptions++
 
-        } catch (e: Exception) {
-            logger.log(Level.SEVERE, "Couldn't sync $authority", e)
-            syncResult.stats.numParseExceptions++ // Hard sync error
+            } catch (e: InvalidAccountException) {
+                logger.log(Level.WARNING, "Account was removed during synchronization", e)
 
-        } finally {
-            if (httpClient.isInitialized())
-                httpClient.value.close()
-            logger.log(
-                Level.INFO,
-                "$authority sync of $account finished",
-                extras.joinToString(", "))
+            } catch (e: Exception) {
+                logger.log(Level.SEVERE, "Couldn't sync $authority", e)
+                syncResult.stats.numParseExceptions++ // Hard sync error
+
+            } finally {
+                if (httpClient.isInitialized())
+                    httpClient.value.close()
+                logger.log(
+                    Level.INFO,
+                    "$authority sync of $account finished",
+                    extras.joinToString(", "))
+            }
         }
     }
 
