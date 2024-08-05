@@ -11,109 +11,91 @@ import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.TaskProvider
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
-import javax.inject.Inject
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
-class TaskSyncer @Inject constructor(
+class TaskSyncer @AssistedInject constructor(
+    @Assisted account: Account,
+    @Assisted override val authority: String,
+    @Assisted extras: Array<String>,
+    @Assisted syncResult: SyncResult,
+    private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
-    private val tasksAppManager: dagger.Lazy<TasksAppManager>
-): Syncer() {
+): Syncer<LocalTaskList>(account, extras, syncResult) {
 
-    override fun sync(
-        account: Account,
-        extras: Array<String>,
-        authority: String,
-        httpClient: Lazy<HttpClient>,
-        provider: ContentProviderClient,
-        syncResult: SyncResult
-    ) {
-        try {
-            val providerName = TaskProvider.ProviderName.fromAuthority(authority)
-            val taskProvider = TaskProvider.fromProviderClient(context, providerName, provider)
+    @AssistedFactory
+    interface Factory {
+        fun create(account: Account, authority: String, extras: Array<String>, syncResult: SyncResult): TaskSyncer
+    }
 
-            // make sure account can be seen by task provider
-            if (Build.VERSION.SDK_INT >= 26) {
-                /* Warning: If setAccountVisibility is called, Android 12 broadcasts the
-                   AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs
-                   and starts them again! So make sure setAccountVisibility is only called when necessary. */
-                val am = AccountManager.get(context)
-                if (am.getAccountVisibility(account, providerName.packageName) != AccountManager.VISIBILITY_VISIBLE)
-                    am.setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
-            }
+    private lateinit var taskProvider: TaskProvider
 
-            val accountSettings = accountSettingsFactory.forAccount(account)
+    override val serviceType: String
+        get() = Service.TYPE_CALDAV
 
-            // 1. find task collections to be synced
-            val remoteCollections = mutableMapOf<HttpUrl, Collection>()
-            val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
-            if (service != null)
-                for (collection in db.collectionDao().getSyncTaskLists(service.id))
-                    remoteCollections[collection.url] = collection
 
-            // 2. delete/update local task lists and determine new remote collections
-            val updateColors = accountSettings.getManageCalendarColors()
-            val newCollections = HashMap(remoteCollections)
-            for (list in DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, null, null))
-                list.syncId?.let {
-                    val url = it.toHttpUrl()
-                    val info = remoteCollections[url]
-                    if (info == null) {
-                        logger.fine("Deleting obsolete local task list $url")
-                        list.delete()
-                    } else {
-                        // remote CollectionInfo found for this local collection, update data
-                        logger.log(Level.FINE, "Updating local task list $url", info)
-                        list.update(info, updateColors)
-                        // we already have a local task list for this remote collection, don't create a new local task list
-                        newCollections -= url
-                    }
-                }
+    override fun localSyncCollections(provider: ContentProviderClient): List<LocalTaskList>
+        = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
 
-            // 3. create new local task lists
-            for ((_,info) in newCollections) {
-                logger.log(Level.INFO, "Adding local task list", info)
-                LocalTaskList.create(account, taskProvider, info)
-            }
-
-            // 4. sync local task lists
-            val localTaskLists = DmfsTaskList
-                .find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
-            for (localTaskList in localTaskLists) {
-                logger.info("Synchronizing task list #${localTaskList.id} [${localTaskList.syncId}]")
-
-                val url = localTaskList.syncId?.toHttpUrl()
-                remoteCollections[url]?.let { collection ->
-                    val syncManager = tasksSyncManagerFactory.tasksSyncManager(
-                        account,
-                        accountSettings,
-                        httpClient.value,
-                        extras,
-                        authority,
-                        syncResult,
-                        localTaskList,
-                        collection
-                    )
-                    syncManager.performSync()
-                }
-            }
+    override fun prepare(provider: ContentProviderClient): Boolean {
+        // Acquire task provider
+        val providerName = TaskProvider.ProviderName.fromAuthority(authority)
+        taskProvider = try {
+            TaskProvider.fromProviderClient(context, providerName, provider)
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
             syncResult.databaseError = true
-        } catch (e: Exception) {
-            logger.log(Level.SEVERE, "Couldn't sync task lists", e)
-            syncResult.databaseError = true
+            return false // Don't sync
         }
 
-        logger.info("Task sync complete")
+        // make sure account can be seen by task provider
+        if (Build.VERSION.SDK_INT >= 26) {
+            /* Warning: If setAccountVisibility is called, Android 12 broadcasts the
+               AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs
+               and starts them again! So make sure setAccountVisibility is only called when necessary. */
+            val am = AccountManager.get(context)
+            if (am.getAccountVisibility(account, providerName.packageName) != AccountManager.VISIBILITY_VISIBLE)
+                am.setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
+        }
+        return true
     }
+
+    override fun getSyncCollections(serviceId: Long): List<Collection> =
+        collectionRepository.getSyncTaskLists(serviceId)
+
+    override fun update(localCollection: LocalTaskList, remoteCollection: Collection) {
+        logger.log(Level.FINE, "Updating local task list ${remoteCollection.url}", remoteCollection)
+        localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
+    }
+
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
+        logger.log(Level.INFO, "Adding local task list", remoteCollection)
+        LocalTaskList.create(account, taskProvider, remoteCollection)
+    }
+
+    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalTaskList, remoteCollection: Collection) {
+        logger.info("Synchronizing task list #${localCollection.id} [${localCollection.syncId}]")
+
+        val syncManager = tasksSyncManagerFactory.tasksSyncManager(
+            account,
+            accountSettings,
+            httpClient.value,
+            extras,
+            authority,
+            syncResult,
+            localCollection,
+            remoteCollection
+        )
+        syncManager.performSync()
+    }
+
 }

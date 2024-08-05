@@ -4,13 +4,10 @@
 
 package at.bitfire.davdroid.sync
 
-import android.Manifest
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.SyncResult
-import android.content.pm.PackageManager
 import android.provider.ContactsContract
-import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
@@ -18,109 +15,74 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import java.util.logging.Level
-import javax.inject.Inject
 
 /**
  * Sync logic for address books
  */
-class AddressBookSyncer @Inject constructor(
+class AddressBookSyncer @AssistedInject constructor(
+    @Assisted account: Account,
+    @Assisted extras: Array<String>,
+    @Assisted syncResult: SyncResult,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
-    private val settingsManager: SettingsManager
-) : Syncer() {
+    settingsManager: SettingsManager
+): Syncer<LocalAddressBook>(account, extras, syncResult) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): AddressBookSyncer
+    }
 
     companion object {
         const val PREVIOUS_GROUP_METHOD = "previous_group_method"
     }
 
-    override fun sync(
-        account: Account,
-        extras: Array<String>,
-        authority: String,                      // address book authority (not contacts authority)
-        httpClient: Lazy<HttpClient>,
-        provider: ContentProviderClient,        // for noop address book provider (not for contacts provider)
-        syncResult: SyncResult
-    ) {
+    private val forceAllReadOnly = settingsManager.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
 
-        // 1. find address book collections to be synced
-        val remoteCollections = mutableMapOf<HttpUrl, Collection>()
-        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)
-        if (service != null)
-            for (collection in db.collectionDao().getByServiceAndSync(service.id))
-                remoteCollections[collection.url] = collection
+    override val serviceType: String
+        get() = Service.TYPE_CARDDAV
+    override val authority: String
+        get() = ContactsContract.AUTHORITY // Address books use the contacts authority for sync
 
-        // permission check
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            if (remoteCollections.isEmpty())
-                logger.info("No contacts permission, but no address book selected for synchronization")
-            else
-                logger.warning("No contacts permission, but address books are selected for synchronization")
-            return // Don't sync
-        }
 
-        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY).use { contactsProvider ->
-            if (contactsProvider == null) {
-                logger.severe("Couldn't access contacts provider")
-                syncResult.databaseError = true
-                return // Don't sync
-            }
+    override fun localSyncCollections(provider: ContentProviderClient): List<LocalAddressBook>
+        = LocalAddressBook.findAll(context, provider, account)
 
-            // 2. update/delete local address books and determine new remote collections
-            val forceAllReadOnly = settingsManager.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
-            val newCollections = HashMap(remoteCollections)
-            for (addressBook in LocalAddressBook.findAll(context, contactsProvider, account)) {
-                val url = addressBook.url.toHttpUrl()
-                val collection = remoteCollections[url]
-                if (collection == null) {
-                    logger.log(Level.INFO, "Deleting obsolete local address book", url)
-                    addressBook.delete()
-                } else {
-                    // remote CollectionInfo found for this local collection, update data
-                    try {
-                        logger.log(Level.FINE, "Updating local address book $url", collection)
-                        addressBook.update(collection, forceAllReadOnly)
-                    } catch (e: Exception) {
-                        logger.log(Level.WARNING, "Couldn't rename address book account", e)
-                    }
-                    // we already have a local address book for this remote collection, don't create a new local address book
-                    newCollections -= url
-                }
-            }
+    override fun getSyncCollections(serviceId: Long): List<Collection> =
+        collectionRepository.getByServiceAndSync(serviceId)
 
-            // 3. create new local address books
-            for ((_, info) in newCollections) {
-                logger.log(Level.INFO, "Adding local address book", info)
-                LocalAddressBook.create(context, contactsProvider, account, info, forceAllReadOnly)
-            }
-        }
-
-        // 4. sync local address books
-        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { contactsProvider ->
-            for (addressBook in LocalAddressBook.findAll(context, null, account)) {
-                logger.info("Synchronizing address book $addressBook")
-
-                val url = addressBook.url.toHttpUrl()
-                remoteCollections[url]?.let { collection ->
-                    syncAddressBook(
-                        addressBook.account,
-                        extras,
-                        ContactsContract.AUTHORITY,
-                        httpClient,
-                        contactsProvider,
-                        syncResult,
-                        collection
-                    )
-                }
-            }
+    override fun update(localCollection: LocalAddressBook, remoteCollection: Collection) {
+        try {
+            logger.log(Level.FINE, "Updating local address book ${remoteCollection.url}", remoteCollection)
+            localCollection.update(remoteCollection, forceAllReadOnly)
+        } catch (e: Exception) {
+            logger.log(Level.WARNING, "Couldn't rename address book account", e)
         }
     }
 
-    fun syncAddressBook(
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
+        logger.log(Level.INFO, "Adding local address book", remoteCollection)
+        LocalAddressBook.create(context, provider, account, remoteCollection, forceAllReadOnly)
+    }
+
+    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalAddressBook, remoteCollection: Collection) {
+        logger.info("Synchronizing address book $localCollection")
+        syncAddressBook(
+            localCollection.account,
+            extras,
+            httpClient,
+            provider,
+            syncResult,
+            remoteCollection
+        )
+    }
+
+    private fun syncAddressBook(
         account: Account,
         extras: Array<String>,
-        authority: String,
         httpClient: Lazy<HttpClient>,
         provider: ContentProviderClient,
         syncResult: SyncResult,
@@ -155,6 +117,7 @@ class AddressBookSyncer @Inject constructor(
         } catch(e: Exception) {
             logger.log(Level.SEVERE, "Couldn't sync contacts", e)
         }
+
         logger.info("Contacts sync complete")
     }
 

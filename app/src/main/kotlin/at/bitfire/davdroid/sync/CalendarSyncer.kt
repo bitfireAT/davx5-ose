@@ -10,89 +10,73 @@ import android.content.SyncResult
 import android.provider.CalendarContract
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.ical4android.AndroidCalendar
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import java.util.logging.Level
-import javax.inject.Inject
 
 /**
  * Sync logic for calendars
  */
-class CalendarSyncer @Inject constructor(
+class CalendarSyncer @AssistedInject constructor(
+    @Assisted account: Account,
+    @Assisted extras: Array<String>,
+    @Assisted syncResult: SyncResult,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
-): Syncer() {
+): Syncer<LocalCalendar>(account, extras, syncResult) {
 
-    override fun sync(
-        account: Account,
-        extras: Array<String>,
-        authority: String,
-        httpClient: Lazy<HttpClient>,
-        provider: ContentProviderClient,
-        syncResult: SyncResult
-    ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): CalendarSyncer
+    }
 
-        // 0. preparations
-        val accountSettings = accountSettingsFactory.forAccount(account)
+    override val serviceType: String
+        get() = Service.TYPE_CALDAV
+    override val authority: String
+        get() = CalendarContract.AUTHORITY
+
+
+    override fun localSyncCollections(provider: ContentProviderClient): List<LocalCalendar>
+        = AndroidCalendar.find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
+
+    override fun prepare(provider: ContentProviderClient): Boolean {
+        // Update colors
         if (accountSettings.getEventColors())
             AndroidCalendar.insertColors(provider, account)
         else
             AndroidCalendar.removeColors(provider, account)
-
-        // 1. find calendar collections to be synced
-        val remoteCollections = mutableMapOf<HttpUrl, Collection>()
-        val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
-        if (service != null)
-            for (collection in db.collectionDao().getSyncCalendars(service.id))
-                remoteCollections[collection.url] = collection
-
-        // 2. update/delete local calendars and determine new remote collections
-        val newCollections = HashMap(remoteCollections)
-        val updateColors = accountSettings.getManageCalendarColors()
-        for (calendar in AndroidCalendar.find(account, provider, LocalCalendar.Factory, null, null))
-            calendar.name?.let {
-                val url = it.toHttpUrl()
-                val collection = remoteCollections[url]
-                if (collection == null) {
-                    logger.log(Level.INFO, "Deleting obsolete local calendar", url)
-                    calendar.delete()
-                } else {
-                    // remote CollectionInfo found for this local collection, update data
-                    logger.log(Level.FINE, "Updating local calendar $url", collection)
-                    calendar.update(collection, updateColors)
-                    // we already have a local calendar for this remote collection, don't create a new local calendar
-                    newCollections -= url
-                }
-            }
-
-        // 3. create new local calendars
-        for ((_, info) in newCollections) {
-            logger.log(Level.INFO, "Adding local calendar", info)
-            LocalCalendar.create(account, provider, info)
-        }
-
-        // 4. sync local calendars
-        val calendars = AndroidCalendar
-            .find(account, provider, LocalCalendar.Factory, "${CalendarContract.Calendars.SYNC_EVENTS}!=0", null)
-        for (calendar in calendars) {
-            val url = calendar.name?.toHttpUrl()
-            remoteCollections[url]?.let { collection ->
-                logger.info("Synchronizing calendar #${calendar.id}, URL: ${calendar.name}")
-
-                val syncManager = calendarSyncManagerFactory.calendarSyncManager(
-                    account,
-                    accountSettings,
-                    extras,
-                    httpClient.value,
-                    authority,
-                    syncResult,
-                    calendar,
-                    collection
-                )
-                syncManager.performSync()
-            }
-        }
+        return true
     }
+
+    override fun getSyncCollections(serviceId: Long): List<Collection> =
+        collectionRepository.getSyncCalendars(serviceId)
+
+    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalCalendar, remoteCollection: Collection) {
+        logger.info("Synchronizing calendar #${localCollection.id}, URL: ${localCollection.name}")
+
+        val syncManager = calendarSyncManagerFactory.calendarSyncManager(
+            account,
+            accountSettings,
+            extras,
+            httpClient.value,
+            authority,
+            syncResult,
+            localCollection,
+            remoteCollection
+        )
+        syncManager.performSync()
+    }
+
+    override fun update(localCollection: LocalCalendar, remoteCollection: Collection) {
+        logger.log(Level.FINE, "Updating local calendar ${remoteCollection.url}", remoteCollection)
+        localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
+    }
+
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
+        logger.log(Level.INFO, "Adding local calendar", remoteCollection)
+        LocalCalendar.create(account, provider, remoteCollection)
+    }
+
 }

@@ -9,8 +9,12 @@ import at.bitfire.davdroid.db.SyncState
 
 interface LocalCollection<out T: LocalResource<*>> {
 
-    /** a tag that uniquely identifies the collection (DAVx5-wide) */
+    /** A tag that uniquely identifies the collection (DAVx5-wide) */
     val tag: String
+
+    /** Address of the remote collection */
+    @Deprecated("Local collection should be identified by ID, not by URL")
+    val url: String?
 
     /** collection title (used for user notifications etc.) **/
     val title: String
@@ -22,6 +26,13 @@ interface LocalCollection<out T: LocalResource<*>> {
      * Stops uploading dirty events (Server side changes are still downloaded).
      */
     val readOnly: Boolean
+
+    /**
+     * Deletes the local collection.
+     *
+     * @return true if the collection was deleted, false otherwise
+     */
+    fun delete(): Boolean
 
     /**
      * Finds local resources of this collection which have been marked as *deleted* by the user

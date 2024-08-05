@@ -6,6 +6,8 @@ package at.bitfire.davdroid.repository
 
 import android.accounts.Account
 import android.content.Context
+import android.provider.CalendarContract
+import android.provider.ContactsContract
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
@@ -27,6 +29,7 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.util.DateUtils
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -183,6 +186,14 @@ class DavCollectionRepository @Inject constructor(
     fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
 
     fun getFlow(id: Long) = dao.getFlow(id)
+
+    fun getByServiceAndSync(serviceId: Long) = dao.getByServiceAndSync(serviceId)
+
+    fun getSyncCalendars(serviceId: Long) = dao.getSyncCalendars(serviceId)
+
+    fun getSyncJtxCollections(serviceId: Long) = dao.getSyncJtxCollections(serviceId)
+
+    fun getSyncTaskLists(serviceId: Long) = dao.getSyncTaskLists(serviceId)
 
     /** Returns all collections that are both selected for synchronization and push-capable. */
     suspend fun getSyncableAndPushCapable(): List<Collection> =
@@ -378,7 +389,6 @@ class DavCollectionRepository @Inject constructor(
             listener.onCollectionsChanged()
         }
     }
-
 
     fun interface OnChangeListener {
         /**

@@ -20,6 +20,11 @@ import org.dmfs.tasks.contract.TaskContract.*
 import java.util.logging.Level
 import java.util.logging.Logger
 
+/**
+ * App-specific implementation of a task list.
+ *
+ * [TaskLists._SYNC_ID] is used to store the task list URL.
+ */
 class LocalTaskList private constructor(
         account: Account,
         provider: TaskProvider,
@@ -76,6 +81,9 @@ class LocalTaskList private constructor(
         get() =
             accessLevel != TaskListColumns.ACCESS_LEVEL_UNDEFINED &&
             accessLevel <= TaskListColumns.ACCESS_LEVEL_READ
+
+    override val url: String?
+        get() = syncId
 
     override val tag: String
         get() = "tasks-${account.name}-$id"

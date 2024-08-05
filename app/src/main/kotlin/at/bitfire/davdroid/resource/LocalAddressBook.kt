@@ -218,7 +218,7 @@ open class LocalAddressBook @Inject constructor(
     fun requireMainAccount(): Account =
         mainAccount ?: throw IllegalArgumentException("No main account assigned to address book $account")
 
-    var url: String
+    override var url: String
         get() = AccountManager.get(context).getUserData(account, USER_DATA_URL)
                 ?: throw IllegalStateException("Address book has no URL")
         set(url) = AccountManager.get(context).setAndVerifyUserData(account, USER_DATA_URL, url)
@@ -304,9 +304,9 @@ open class LocalAddressBook @Inject constructor(
         updateSyncFrameworkSettings()
     }
 
-    fun delete() {
+    override fun delete(): Boolean {
         val accountManager = AccountManager.get(context)
-        accountManager.removeAccount(account, null, null, null)
+        return accountManager.removeAccountExplicitly(account)
     }
 
 

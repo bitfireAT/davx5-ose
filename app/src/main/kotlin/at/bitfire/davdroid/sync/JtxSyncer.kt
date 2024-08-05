@@ -11,104 +11,91 @@ import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import java.util.logging.Level
-import javax.inject.Inject
 
 /**
  * Sync logic for jtx board
  */
-class JtxSyncer @Inject constructor(
+class JtxSyncer @AssistedInject constructor(
+    @Assisted account: Account,
+    @Assisted extras: Array<String>,
+    @Assisted syncResult: SyncResult,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
+    private val principalRepository: PrincipalRepository,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>
-): Syncer() {
+): Syncer<LocalJtxCollection>(account, extras, syncResult) {
 
-    override fun sync(
-        account: Account,
-        extras: Array<String>,
-        authority: String,
-        httpClient: Lazy<HttpClient>,
-        provider: ContentProviderClient,
-        syncResult: SyncResult
-    ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(account: Account, extras: Array<String>, syncResult: SyncResult): JtxSyncer
+    }
+
+    override val serviceType: String
+        get() = Service.TYPE_CALDAV
+    override val authority: String
+        get() = TaskProvider.ProviderName.JtxBoard.authority
+
+
+    override fun localSyncCollections(provider: ContentProviderClient): List<LocalJtxCollection>
+        = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
+
+    override fun prepare(provider: ContentProviderClient): Boolean {
+        // check whether jtx Board is new enough
         try {
-            // check whether jtx Board is new enough
             TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
-
-            // make sure account can be seen by task provider
-            if (Build.VERSION.SDK_INT >= 26) {
-                /* Warning: If setAccountVisibility is called, Android 12 broadcasts the
-                   AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs
-                   and starts them again! So make sure setAccountVisibility is only called when necessary. */
-                val am = AccountManager.get(context)
-                if (am.getAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName) != AccountManager.VISIBILITY_VISIBLE)
-                    am.setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
-            }
-
-            val accountSettings = accountSettingsFactory.forAccount(account)
-
-            // 1. find jtxCollection collections to be synced
-            val remoteCollections = mutableMapOf<HttpUrl, Collection>()
-            val service = db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)
-            if (service != null)
-                for (collection in db.collectionDao().getSyncJtxCollections(service.id))
-                    remoteCollections[collection.url] = collection
-
-            // 2. delete/update local jtxCollection lists and determine new remote collections
-            val updateColors = accountSettings.getManageCalendarColors()
-            val newCollections = HashMap(remoteCollections)
-            for (jtxCollection in JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null))
-                jtxCollection.url?.let { strUrl ->
-                    val url = strUrl.toHttpUrl()
-                    val collection = remoteCollections[url]
-                    if (collection == null) {
-                        logger.fine("Deleting obsolete local collection $url")
-                        jtxCollection.delete()
-                    } else {
-                        // remote CollectionInfo found for this local collection, update data
-                        logger.log(Level.FINE, "Updating local collection $url", collection)
-                        val owner = collection.ownerId?.let { db.principalDao().get(it) }
-                        jtxCollection.updateCollection(collection, owner, updateColors)
-                        // we already have a local task list for this remote collection, don't create a new local task list
-                        newCollections -= url
-                    }
-                }
-
-            // 3. create new local jtxCollections
-            for ((_,info) in newCollections) {
-                logger.log(Level.INFO, "Adding local collections", info)
-                val owner = info.ownerId?.let { db.principalDao().get(it) }
-                LocalJtxCollection.create(account, provider, info, owner)
-            }
-
-            // 4. sync local jtxCollection lists
-            val localCollections = JtxCollection.find(account, provider, context, LocalJtxCollection.Factory, null, null)
-            for (localCollection in localCollections) {
-                logger.info("Synchronizing $localCollection")
-
-                val url = localCollection.url?.toHttpUrl()
-                remoteCollections[url]?.let { collection ->
-                    val syncManager = jtxSyncManagerFactory.jtxSyncManager(
-                        account,
-                        accountSettings,
-                        extras,
-                        httpClient.value,
-                        authority,
-                        syncResult,
-                        localCollection,
-                        collection
-                    )
-                    syncManager.performSync()
-                }
-            }
-
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
+            return false // Don't sync
         }
+
+        // make sure account can be seen by task provider
+        if (Build.VERSION.SDK_INT >= 26) {
+            /* Warning: If setAccountVisibility is called, Android 12 broadcasts the
+               AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs
+               and starts them again! So make sure setAccountVisibility is only called when necessary. */
+            val am = AccountManager.get(context)
+            if (am.getAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName) != AccountManager.VISIBILITY_VISIBLE)
+                am.setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
+        }
+        return true
     }
+
+    override fun getSyncCollections(serviceId: Long): List<Collection> =
+        collectionRepository.getSyncJtxCollections(serviceId)
+
+    override fun update(localCollection: LocalJtxCollection, remoteCollection: Collection) {
+        logger.log(Level.FINE, "Updating local jtx collection ${remoteCollection.url}", remoteCollection)
+        val owner = remoteCollection.ownerId?.let { principalRepository.get(it) }
+        localCollection.updateCollection(remoteCollection, owner, accountSettings.getManageCalendarColors())
+    }
+
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
+        logger.log(Level.INFO, "Adding local jtx collection", remoteCollection)
+        val owner = remoteCollection.ownerId?.let { principalRepository.get(it) }
+        LocalJtxCollection.create(account, provider, remoteCollection, owner)
+    }
+
+    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalJtxCollection, remoteCollection: Collection) {
+        logger.info("Synchronizing jtx collection $localCollection")
+
+        val syncManager = jtxSyncManagerFactory.jtxSyncManager(
+            account,
+            accountSettings,
+            extras,
+            httpClient.value,
+            authority,
+            syncResult,
+            localCollection,
+            remoteCollection
+        )
+        syncManager.performSync()
+    }
+
 }
