@@ -32,7 +32,7 @@ interface LocalCollection<out T: LocalResource<*>> {
      *
      * @return true if the collection was deleted, false otherwise
      */
-    fun delete(): Boolean
+    fun deleteCollection(): Boolean
 
     /**
      * Finds local resources of this collection which have been marked as *deleted* by the user

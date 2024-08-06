@@ -98,7 +98,7 @@ class InitCalendarProviderRule private constructor(): ExternalResource() {
             localRecurringEvent.add()
             LocalEvent.numInstances(provider, account, localRecurringEvent.id!!)
         } finally {
-            calendar.delete()
+            calendar.deleteCollection()
         }
     }
 

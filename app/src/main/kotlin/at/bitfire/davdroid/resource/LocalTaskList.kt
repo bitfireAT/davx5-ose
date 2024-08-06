@@ -82,6 +82,8 @@ class LocalTaskList private constructor(
             accessLevel != TaskListColumns.ACCESS_LEVEL_UNDEFINED &&
             accessLevel <= TaskListColumns.ACCESS_LEVEL_READ
 
+    override fun deleteCollection(): Boolean = delete()
+
     override val url: String?
         get() = syncId
 

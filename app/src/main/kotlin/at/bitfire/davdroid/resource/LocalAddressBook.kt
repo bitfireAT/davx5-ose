@@ -94,7 +94,7 @@ open class LocalAddressBook @Inject constructor(
         fun deleteByAccount(context: Context, accountName: String) {
             val mainAccount = Account(accountName, context.getString(R.string.account_type))
             findAll(context, null, mainAccount).forEach {
-                it.delete()
+                it.deleteCollection()
             }
         }
 
@@ -304,7 +304,7 @@ open class LocalAddressBook @Inject constructor(
         updateSyncFrameworkSettings()
     }
 
-    override fun delete(): Boolean {
+    override fun deleteCollection(): Boolean {
         val accountManager = AccountManager.get(context)
         return accountManager.removeAccountExplicitly(account)
     }

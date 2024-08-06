@@ -106,7 +106,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
             val dbCollection = dbCollections[localCollection.url?.toHttpUrlOrNull()]
             if (dbCollection == null)
                 // Collection not available in db = on server (anymore), delete obsolete local collection
-                localCollection.delete()
+                localCollection.deleteCollection()
             else {
                 // Collection exists locally, update local collection and remove it from "to be created" map
                 update(localCollection, dbCollection)

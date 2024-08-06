@@ -21,7 +21,7 @@ class LocalTestCollection: LocalCollection<LocalTestResource> {
     override val readOnly: Boolean
         get() = throw NotImplementedError()
 
-    override fun delete(): Boolean = true
+    override fun deleteCollection(): Boolean = true
 
     override fun findDeleted() = entries.filter { it.deleted }
     override fun findDirty() = entries.filter { it.dirty }

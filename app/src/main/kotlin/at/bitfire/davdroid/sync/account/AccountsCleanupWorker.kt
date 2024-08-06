@@ -84,7 +84,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
                 val mainAccount = addressBook.mainAccount
                 if (mainAccount == null || !mainAccountNames.contains(mainAccount.name))
                     // the main account for this address book doesn't exist anymore
-                    addressBook.delete()
+                    addressBook.deleteCollection()
             } catch(e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't delete address book account", e)
             }

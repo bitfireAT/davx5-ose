@@ -11,7 +11,6 @@ import android.content.ContentValues
 import android.provider.CalendarContract
 import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
 import android.provider.CalendarContract.Events
-import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.InitCalendarProviderRule
 import at.bitfire.ical4android.AndroidCalendar
@@ -67,7 +66,7 @@ class LocalCalendarTest {
 
     @After
     fun tearDown() {
-        calendar.delete()
+        calendar.deleteCollection()
     }
 
 
