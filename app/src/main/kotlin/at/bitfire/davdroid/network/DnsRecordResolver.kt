@@ -13,6 +13,7 @@ import org.xbill.DNS.ExtendedResolver
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.Record
 import org.xbill.DNS.Resolver
+import org.xbill.DNS.ResolverConfig
 import org.xbill.DNS.SRVRecord
 import org.xbill.DNS.SimpleResolver
 import org.xbill.DNS.TXTRecord
@@ -39,6 +40,11 @@ class DnsRecordResolver @Inject constructor(
     private val DNS_FALLBACK = InetAddress.getByAddress(byteArrayOf(9,9,9,9))
 
     private val resolver by lazy { chooseResolver() }
+
+    init {
+        // empty initialization for dnsjava because we set the servers for each request
+        ResolverConfig.setConfigProviders(listOf())
+    }
 
     /**
      * Creates a matching Resolver, depending on the Android version:
