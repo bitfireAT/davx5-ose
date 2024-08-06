@@ -279,7 +279,7 @@ open class LocalAddressBook @Inject constructor(
 
         val nowReadOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
         if (nowReadOnly != readOnly) {
-            Constants.log.info("Address book now read-only = $nowReadOnly, updating contacts")
+            logger.info("Address book now read-only = $nowReadOnly, updating contacts")
 
             // update address book itself
             readOnly = nowReadOnly
