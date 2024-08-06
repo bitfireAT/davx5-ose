@@ -95,6 +95,7 @@ fun CollectionScreen(
         description = collection.description,
         owner = model.owner.collectAsStateWithLifecycle(null).value,
         lastSynced = model.lastSynced.collectAsStateWithLifecycle(emptyList()).value,
+        supportsWebPush = collection.supportsWebPush,
         url = collection.url.toString(),
         onDelete = model::delete,
         onNavUp = onNavUp
