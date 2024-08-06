@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404020003
-        versionName = "4.4.2-rc.1"
+        versionCode = 404020004
+        versionName = "4.4.2"
 
         buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
 
