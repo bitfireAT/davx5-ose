@@ -9,10 +9,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.ui.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
-@Deprecated("Use Compose Navigation instead")
+@Deprecated("Remove this activity and use Compose Navigation")
 class AccountActivity : AppCompatActivity() {
 
     companion object {
@@ -25,11 +23,10 @@ class AccountActivity : AppCompatActivity() {
         val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
             ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
 
-        // TODO remove this activity and use Compose Navigation
         startActivity(Intent(this, MainActivity::class.java).apply {
             data = accountDeepLink(account.name)
-            addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP)
         })
+        finish()
     }
 
 }
