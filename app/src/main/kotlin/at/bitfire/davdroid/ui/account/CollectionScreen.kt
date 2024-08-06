@@ -96,6 +96,7 @@ fun CollectionScreen(
         owner = model.owner.collectAsStateWithLifecycle(null).value,
         lastSynced = model.lastSynced.collectAsStateWithLifecycle(emptyList()).value,
         supportsWebPush = collection.supportsWebPush,
+        pushSubscriptionCreated = collection.pushSubscriptionCreated,
         url = collection.url.toString(),
         onDelete = model::delete,
         onNavUp = onNavUp
@@ -119,6 +120,7 @@ fun CollectionScreen(
     owner: String? = null,
     lastSynced: List<DavSyncStatsRepository.LastSynced> = emptyList(),
     supportsWebPush: Boolean = false,
+    pushSubscriptionCreated: Long? = null,
     url: String,
     onDelete: () -> Unit = {},
     onNavUp: () -> Unit = {}
@@ -245,12 +247,20 @@ fun CollectionScreen(
                             text = owner
                         )
 
-                    if (supportsWebPush)
+                    if (supportsWebPush) {
+                        val text =
+                            if (pushSubscriptionCreated != null) {
+                                val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault())
+                                val time = Instant.ofEpochMilli(pushSubscriptionCreated)
+                                stringResource(R.string.collection_push_subscribed_at, formatter.format(time))
+                            } else
+                                stringResource(R.string.collection_push_web_push)
                         CollectionScreen_Entry(
                             icon = Icons.Default.CloudSync,
                             title = stringResource(R.string.collection_push_support),
-                            text = stringResource(R.string.collection_push_web_push)
+                            text = text
                         )
+                    }
 
                     Column(Modifier.padding(start = 44.dp)) {
                         if (sync && lastSynced.isNotEmpty()) {
