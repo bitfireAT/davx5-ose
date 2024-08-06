@@ -218,7 +218,7 @@ open class LocalAddressBook @Inject constructor(
     fun requireMainAccount(): Account =
         mainAccount ?: throw IllegalArgumentException("No main account assigned to address book $account")
 
-    override var url: String
+    override var collectionUrl: String
         get() = AccountManager.get(context).getUserData(account, USER_DATA_URL)
                 ?: throw IllegalStateException("Address book has no URL")
         set(url) = AccountManager.get(context).setAndVerifyUserData(account, USER_DATA_URL, url)

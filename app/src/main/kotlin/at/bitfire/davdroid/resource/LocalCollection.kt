@@ -14,7 +14,7 @@ interface LocalCollection<out T: LocalResource<*>> {
 
     /** Address of the remote collection */
     @Deprecated("Local collection should be identified by ID, not by URL")
-    val url: String?
+    val collectionUrl: String?
 
     /** collection title (used for user notifications etc.) **/
     val title: String

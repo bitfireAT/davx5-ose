@@ -103,7 +103,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         val localSyncCollections = localSyncCollections(provider)
         val newDbCollections = HashMap(dbCollections)   // create a copy
         for (localCollection in localSyncCollections) {
-            val dbCollection = dbCollections[localCollection.url?.toHttpUrlOrNull()]
+            val dbCollection = dbCollections[localCollection.collectionUrl?.toHttpUrlOrNull()]
             if (dbCollection == null)
                 // Collection not available in db = on server (anymore), delete obsolete local collection
                 localCollection.deleteCollection()
@@ -120,7 +120,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // 4. sync local collection contents (events, contacts, tasks)
         for (localCollection in localSyncCollections)
-            dbCollections[localCollection.url?.toHttpUrl()]?.let { dbCollection ->
+            dbCollections[localCollection.collectionUrl?.toHttpUrl()]?.let { dbCollection ->
                 syncCollection(provider, localCollection, dbCollection)
             }
     }

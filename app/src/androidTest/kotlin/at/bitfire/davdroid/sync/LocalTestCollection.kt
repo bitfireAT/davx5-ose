@@ -10,7 +10,7 @@ import at.bitfire.davdroid.resource.LocalCollection
 class LocalTestCollection: LocalCollection<LocalTestResource> {
 
     override val tag = "LocalTestCollection"
-    override val url: String
+    override val collectionUrl: String
         get() = "https://example.com"
     override val title = "Local Test Collection"
 

@@ -84,7 +84,7 @@ class LocalTaskList private constructor(
 
     override fun deleteCollection(): Boolean = delete()
 
-    override val url: String?
+    override val collectionUrl: String?
         get() = syncId
 
     override val tag: String

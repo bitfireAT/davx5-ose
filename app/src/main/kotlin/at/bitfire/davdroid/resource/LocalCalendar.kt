@@ -94,7 +94,7 @@ class LocalCalendar private constructor(
 
     }
 
-    override val url: String?
+    override val collectionUrl: String?
         get() = name
 
     override val tag: String
