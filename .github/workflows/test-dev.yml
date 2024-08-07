@@ -23,7 +23,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3            # creates build cache when on main branch
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
-          gradle-home-cache-cleanup: true               # clean up unused files
+          cache-write-only: ${{ github.ref == 'refs/heads/main-ose' }}
           dependency-graph: generate-and-submit         # submit Github Dependency Graph info
           dependency-graph-continue-on-failure: false
 
