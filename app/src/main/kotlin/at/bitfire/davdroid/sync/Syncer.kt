@@ -9,6 +9,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.DeadObjectException
+import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.HttpClient
@@ -85,7 +86,8 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
      * remote collection information. Then syncs the actual entries (events, tasks, contacts, etc)
      * of the remaining, now up-to-date, collections.
      */
-    private fun sync(provider: ContentProviderClient) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun sync(provider: ContentProviderClient) {
         // Collection type specific preparations
         if (!prepare(provider)) {
             logger.log(Level.WARNING, "Failed to prepare sync. Won't run sync.")
