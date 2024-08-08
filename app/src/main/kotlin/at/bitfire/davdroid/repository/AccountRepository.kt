@@ -174,7 +174,9 @@ class AccountRepository @Inject constructor(
         val listener = OnAccountsUpdateListener { accounts ->
             trySend(accounts.filter { it.type == accountType }.toSet())
         }
-        accountManager.addOnAccountsUpdatedListener(listener, null, true)
+        withContext(Dispatchers.Default) {  // causes disk I/O
+            accountManager.addOnAccountsUpdatedListener(listener, null, true)
+        }
 
         awaitClose {
             accountManager.removeOnAccountsUpdatedListener(listener)
