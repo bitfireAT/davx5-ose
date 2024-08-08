@@ -14,7 +14,7 @@ interface LocalCollection<out T: LocalResource<*>> {
 
     /** Address of the remote collection */
     @Deprecated("Local collection should be identified by ID, not by URL")
-    val url: String?
+    val collectionUrl: String?
 
     /** collection title (used for user notifications etc.) **/
     val title: String
@@ -32,7 +32,7 @@ interface LocalCollection<out T: LocalResource<*>> {
      *
      * @return true if the collection was deleted, false otherwise
      */
-    fun delete(): Boolean
+    fun deleteCollection(): Boolean
 
     /**
      * Finds local resources of this collection which have been marked as *deleted* by the user

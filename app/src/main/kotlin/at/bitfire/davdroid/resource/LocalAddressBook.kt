@@ -94,7 +94,7 @@ open class LocalAddressBook @Inject constructor(
         fun deleteByAccount(context: Context, accountName: String) {
             val mainAccount = Account(accountName, context.getString(R.string.account_type))
             findAll(context, null, mainAccount).forEach {
-                it.delete()
+                it.deleteCollection()
             }
         }
 
@@ -218,7 +218,7 @@ open class LocalAddressBook @Inject constructor(
     fun requireMainAccount(): Account =
         mainAccount ?: throw IllegalArgumentException("No main account assigned to address book $account")
 
-    override var url: String
+    override var collectionUrl: String
         get() = AccountManager.get(context).getUserData(account, USER_DATA_URL)
                 ?: throw IllegalStateException("Address book has no URL")
         set(url) = AccountManager.get(context).setAndVerifyUserData(account, USER_DATA_URL, url)
@@ -279,7 +279,7 @@ open class LocalAddressBook @Inject constructor(
 
         val nowReadOnly = forceReadOnly || !info.privWriteContent || info.forceReadOnly
         if (nowReadOnly != readOnly) {
-            Constants.log.info("Address book now read-only = $nowReadOnly, updating contacts")
+            logger.info("Address book now read-only = $nowReadOnly, updating contacts")
 
             // update address book itself
             readOnly = nowReadOnly
@@ -304,7 +304,7 @@ open class LocalAddressBook @Inject constructor(
         updateSyncFrameworkSettings()
     }
 
-    override fun delete(): Boolean {
+    override fun deleteCollection(): Boolean {
         val accountManager = AccountManager.get(context)
         return accountManager.removeAccountExplicitly(account)
     }

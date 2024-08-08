@@ -108,7 +108,7 @@ class AddressBookSyncer @AssistedInject constructor(
             }
             accountSettings.accountManager.setAndVerifyUserData(account, PREVIOUS_GROUP_METHOD, groupMethod)
 
-            logger.info("Synchronizing address book: ${addressBook.url}")
+            logger.info("Synchronizing address book: ${addressBook.collectionUrl}")
             logger.info("Taking settings from: ${addressBook.mainAccount}")
 
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)

@@ -94,7 +94,7 @@ class LocalCalendar private constructor(
 
     }
 
-    override val url: String?
+    override val collectionUrl: String?
         get() = name
 
     override val tag: String
@@ -106,6 +106,8 @@ class LocalCalendar private constructor(
     private var accessLevel: Int = Calendars.CAL_ACCESS_OWNER   // assume full access if not specified
     override val readOnly
         get() = accessLevel <= Calendars.CAL_ACCESS_READ
+
+    override fun deleteCollection(): Boolean = delete()
 
     override var lastSyncState: SyncState?
         get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.use { cursor ->

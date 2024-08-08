@@ -74,7 +74,7 @@ class LocalEventTest {
 
     @After
     fun removeCalendar() {
-        calendar.delete()
+        calendar.deleteCollection()
     }
 
 

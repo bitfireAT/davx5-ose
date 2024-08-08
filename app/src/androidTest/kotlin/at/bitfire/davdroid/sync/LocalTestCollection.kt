@@ -10,7 +10,7 @@ import at.bitfire.davdroid.resource.LocalCollection
 class LocalTestCollection: LocalCollection<LocalTestResource> {
 
     override val tag = "LocalTestCollection"
-    override val url: String
+    override val collectionUrl: String
         get() = "https://example.com"
     override val title = "Local Test Collection"
 
@@ -21,7 +21,7 @@ class LocalTestCollection: LocalCollection<LocalTestResource> {
     override val readOnly: Boolean
         get() = throw NotImplementedError()
 
-    override fun delete(): Boolean = true
+    override fun deleteCollection(): Boolean = true
 
     override fun findDeleted() = entries.filter { it.deleted }
     override fun findDirty() = entries.filter { it.dirty }
