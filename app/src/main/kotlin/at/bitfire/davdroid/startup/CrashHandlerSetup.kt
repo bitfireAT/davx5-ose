@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.startup
 
 import android.content.Context
+import android.os.Build
 import android.os.StrictMode
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.startup.StartupPlugin.Companion.PRIORITY_DEFAULT
@@ -50,17 +51,23 @@ class CrashHandlerSetup @Inject constructor(
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
                     .detectAll()
-                    .penaltyFlashScreen()
                     .penaltyLog()
                     .build()
             )
 
-            StrictMode.setVmPolicy(
-                StrictMode.VmPolicy.Builder()
-                    .detectAll()
-                    .penaltyLog()
-                    .build()
-            )
+            val builder = StrictMode.VmPolicy.Builder()     // don't use detectAll() because it causes "untagged socket" warnings
+                .detectActivityLeaks()
+                .detectFileUriExposure()
+                .detectLeakedClosableObjects()
+                .detectLeakedRegistrationObjects()
+                .detectLeakedSqlLiteObjects()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                builder.detectContentUriWithoutPermission()
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)   // often triggered by Conscrypt
+               builder.detectNonSdkApiUsage()*/
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                builder.detectUnsafeIntentLaunch()
+            StrictMode.setVmPolicy(builder.penaltyLog().build())
 
         } else {
             // release build
