@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
+import android.content.ContentUris
 import android.content.SyncResult
 import android.provider.CalendarContract
 import at.bitfire.davdroid.db.Collection
@@ -74,9 +75,10 @@ class CalendarSyncer @AssistedInject constructor(
         localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
     }
 
-    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalCalendar {
         logger.log(Level.INFO, "Adding local calendar", remoteCollection)
-        LocalCalendar.create(account, provider, remoteCollection)
+        val uri = LocalCalendar.create(account, provider, remoteCollection)
+        return AndroidCalendar.findByID(account, provider, LocalCalendar.Factory, ContentUris.parseId(uri))
     }
 
 }

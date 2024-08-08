@@ -7,6 +7,7 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
+import android.net.Uri
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Principal
@@ -24,9 +25,9 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
 
     companion object {
 
-        fun create(account: Account, client: ContentProviderClient, info: Collection, owner: Principal?) {
+        fun create(account: Account, client: ContentProviderClient, info: Collection, owner: Principal?): Uri {
             val values = valuesFromCollection(info, account, owner, true)
-            create(account, client, values)
+            return create(account, client, values)
         }
 
         fun valuesFromCollection(info: Collection, account: Account, owner: Principal?, withColor: Boolean) =

@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
+import android.content.ContentUris
 import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
@@ -15,6 +16,7 @@ import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.ical4android.JtxCollection
 import at.bitfire.ical4android.TaskProvider
+import at.techbee.jtx.JtxContract
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -76,10 +78,18 @@ class JtxSyncer @AssistedInject constructor(
         localCollection.updateCollection(remoteCollection, owner, accountSettings.getManageCalendarColors())
     }
 
-    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalJtxCollection {
         logger.log(Level.INFO, "Adding local jtx collection", remoteCollection)
         val owner = remoteCollection.ownerId?.let { principalRepository.get(it) }
-        LocalJtxCollection.create(account, provider, remoteCollection, owner)
+        val uri = LocalJtxCollection.create(account, provider, remoteCollection, owner)
+        return JtxCollection.find(
+            account,
+            provider,
+            context,
+            LocalJtxCollection.Factory,
+            "${JtxContract.JtxCollection.ID} = ?",
+            arrayOf("${ContentUris.parseId(uri)}")
+        ).first()
     }
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalJtxCollection, remoteCollection: Collection) {
