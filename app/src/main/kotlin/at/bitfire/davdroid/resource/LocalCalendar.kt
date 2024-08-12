@@ -43,7 +43,11 @@ class LocalCalendar private constructor(
             get() = Logger.getGlobal()
 
         fun create(account: Account, provider: ContentProviderClient, info: Collection): Uri {
-            val values = valuesFromCollectionInfo(info, true)
+            // If the collection doesn't have a color, use a default color.
+            if (info.color != null)
+                info.color = Constants.DAVDROID_GREEN_RGBA
+
+            val values = valuesFromCollectionInfo(info, withColor = true)
 
             // ACCOUNT_NAME and ACCOUNT_TYPE are required (see docs)! If it's missing, other apps will crash.
             values.put(Calendars.ACCOUNT_NAME, account.name)
@@ -65,8 +69,8 @@ class LocalCalendar private constructor(
             values.put(Calendars.CALENDAR_DISPLAY_NAME,
                 if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
 
-            if (withColor)
-                values.put(Calendars.CALENDAR_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)
+            if (withColor && info.color != null)
+                values.put(Calendars.CALENDAR_COLOR, info.color)
 
             if (info.privWriteContent && !info.forceReadOnly) {
                 values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER)
@@ -129,11 +133,11 @@ class LocalCalendar private constructor(
     }
 
     fun update(info: Collection, updateColor: Boolean) =
-            update(valuesFromCollectionInfo(info, updateColor))
+        update(valuesFromCollectionInfo(info, updateColor))
 
 
     override fun findDeleted() =
-            queryEvents("${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null)
+        queryEvents("${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL", null)
 
     override fun findDirty(): List<LocalEvent> {
         val dirty = LinkedList<LocalEvent>()
