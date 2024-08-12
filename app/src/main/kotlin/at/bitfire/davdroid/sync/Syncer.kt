@@ -100,8 +100,8 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
         }
 
         // Update/delete local collections and determine new (unknown) remote collections
-        val localSyncCollections = localSyncCollections(provider)
         val newDbCollections = HashMap(dbCollections)   // create a copy
+        val localSyncCollections = localSyncCollections(provider).toMutableList()
         for (localCollection in localSyncCollections) {
             val dbCollection = dbCollections[localCollection.collectionUrl?.toHttpUrlOrNull()]
             if (dbCollection == null)
@@ -116,7 +116,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
         // 3. create new local collections for newly found remote collections
         for ((_, collection) in newDbCollections)
-            create(provider, collection)
+            localSyncCollections += create(provider, collection)
 
         // 4. sync local collection contents (events, contacts, tasks)
         for (localCollection in localSyncCollections)
@@ -162,7 +162,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
      * @param provider The content provider client to create the local collection
      * @param remoteCollection The remote collection to be created locally
      */
-    abstract fun create(provider: ContentProviderClient, remoteCollection: Collection)
+    abstract fun create(provider: ContentProviderClient, remoteCollection: Collection): CollectionType
 
     /**
      * Synchronise local with remote collection contents

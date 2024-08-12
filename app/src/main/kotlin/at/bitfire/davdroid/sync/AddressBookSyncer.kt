@@ -63,9 +63,9 @@ class AddressBookSyncer @AssistedInject constructor(
         }
     }
 
-    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalAddressBook {
         logger.log(Level.INFO, "Adding local address book", remoteCollection)
-        LocalAddressBook.create(context, provider, account, remoteCollection, forceAllReadOnly)
+        return LocalAddressBook.create(context, provider, account, remoteCollection, forceAllReadOnly)
     }
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalAddressBook, remoteCollection: Collection) {

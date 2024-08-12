@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
+import android.content.ContentUris
 import android.content.SyncResult
 import android.os.Build
 import at.bitfire.davdroid.db.Collection
@@ -17,7 +18,7 @@ import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import org.dmfs.tasks.contract.TaskContract
+import org.dmfs.tasks.contract.TaskContract.TaskLists
 import java.util.logging.Level
 
 /**
@@ -44,7 +45,7 @@ class TaskSyncer @AssistedInject constructor(
 
 
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalTaskList>
-        = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskContract.TaskLists.SYNC_ENABLED}!=0", null)
+        = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskLists.SYNC_ENABLED}!=0", null)
 
     override fun prepare(provider: ContentProviderClient): Boolean {
         // Acquire task provider
@@ -77,9 +78,10 @@ class TaskSyncer @AssistedInject constructor(
         localCollection.update(remoteCollection, accountSettings.getManageCalendarColors())
     }
 
-    override fun create(provider: ContentProviderClient, remoteCollection: Collection) {
+    override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalTaskList {
         logger.log(Level.INFO, "Adding local task list", remoteCollection)
-        LocalTaskList.create(account, taskProvider, remoteCollection)
+        val uri = LocalTaskList.create(account, taskProvider, remoteCollection)
+        return DmfsTaskList.findByID(account, taskProvider, LocalTaskList.Factory, ContentUris.parseId(uri))
     }
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalTaskList, remoteCollection: Collection) {
