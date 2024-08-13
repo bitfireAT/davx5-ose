@@ -10,7 +10,8 @@ concurrency:
 
 jobs:
   compile:
-    name: Compile and cache
+    name: Compile for build cache
+    if: ${{ github.ref == 'refs/heads/main-ose' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +24,6 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3            # creates build cache when on main branch
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
-          cache-write-only: ${{ github.ref == 'refs/heads/main-ose' }}
           dependency-graph: generate-and-submit         # submit Github Dependency Graph info
           dependency-graph-continue-on-failure: false
 
@@ -31,6 +31,7 @@ jobs:
 
   test:
     needs: compile
+    if: ${{ always() }}     # even if compile didn't run (because not on main branch)
     name: Tests without emulator
     runs-on: ubuntu-latest
     steps:
@@ -49,9 +50,9 @@ jobs:
       - name: Run unit tests
         run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:testOseDebugUnitTest
 
-  # generates the build caches because it uses more gradle dependencies
   test_on_emulator:
     needs: compile
+    if: ${{ always() }}     # even if compile didn't run (because not on main branch)
     name: Tests with emulator
     runs-on: ubuntu-latest
     steps:
