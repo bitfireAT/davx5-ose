@@ -26,7 +26,12 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
     companion object {
 
         fun create(account: Account, client: ContentProviderClient, info: Collection, owner: Principal?): Uri {
-            val values = valuesFromCollection(info, account, owner, true)
+            // If the collection doesn't have a color, use a default color.
+            if (info.color != null)
+                info.color = Constants.DAVDROID_GREEN_RGBA
+
+            val values = valuesFromCollection(info, account, owner, withColor = true)
+
             return create(account, client, values)
         }
 
@@ -43,8 +48,8 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
                 else
                     Logger.getGlobal().warning("No collection owner given. Will create jtx collection without owner")
                 put(JtxContract.JtxCollection.OWNER_DISPLAYNAME, owner?.displayName)
-                if (withColor)
-                    put(JtxContract.JtxCollection.COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)
+                if (withColor && info.color != null)
+                    put(JtxContract.JtxCollection.COLOR, info.color)
                 put(JtxContract.JtxCollection.SUPPORTSVEVENT, info.supportsVEVENT)
                 put(JtxContract.JtxCollection.SUPPORTSVJOURNAL, info.supportsVJOURNAL)
                 put(JtxContract.JtxCollection.SUPPORTSVTODO, info.supportsVTODO)
@@ -69,8 +74,8 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
         get() = SyncState.fromString(syncstate)
         set(value) { syncstate = value.toString() }
 
-    fun updateCollection(info: Collection, owner: Principal?, withColor: Boolean) {
-        val values = valuesFromCollection(info, account, owner, withColor)
+    fun updateCollection(info: Collection, owner: Principal?, updateColor: Boolean) {
+        val values = valuesFromCollection(info, account, owner, updateColor)
         update(values)
     }
 
