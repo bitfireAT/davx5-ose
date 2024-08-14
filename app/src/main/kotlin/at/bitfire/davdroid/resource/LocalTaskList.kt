@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource
 
 import android.accounts.Account
 import android.annotation.SuppressLint
+import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
@@ -27,13 +28,14 @@ import java.util.logging.Logger
  */
 class LocalTaskList private constructor(
         account: Account,
-        provider: TaskProvider,
+        provider: ContentProviderClient,
+        providerName: TaskProvider.ProviderName,
         id: Long
-): DmfsTaskList<LocalTask>(account, provider, LocalTask.Factory, id), LocalCollection<LocalTask> {
+): DmfsTaskList<LocalTask>(account, provider, providerName, LocalTask.Factory, id), LocalCollection<LocalTask> {
 
     companion object {
 
-        fun create(account: Account, provider: TaskProvider, info: Collection): Uri {
+        fun create(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName, info: Collection): Uri {
             // If the collection doesn't have a color, use a default color.
             if (info.color != null)
                 info.color = Constants.DAVDROID_GREEN_RGBA
@@ -42,7 +44,7 @@ class LocalTaskList private constructor(
             values.put(TaskLists.OWNER, account.name)
             values.put(TaskLists.SYNC_ENABLED, 1)
             values.put(TaskLists.VISIBLE, 1)
-            return create(account, provider, values)
+            return create(account, provider, providerName, values)
         }
 
         @SuppressLint("Recycle")
@@ -100,7 +102,7 @@ class LocalTaskList private constructor(
     override var lastSyncState: SyncState?
         get() {
             try {
-                provider.client.query(taskListSyncUri(), arrayOf(TaskLists.SYNC_VERSION),
+                provider.query(taskListSyncUri(), arrayOf(TaskLists.SYNC_VERSION),
                         null, null, null)?.use { cursor ->
                     if (cursor.moveToNext())
                         cursor.getString(0)?.let {
@@ -115,7 +117,7 @@ class LocalTaskList private constructor(
         set(state) {
             val values = ContentValues(1)
             values.put(TaskLists.SYNC_VERSION, state?.toString())
-            provider.client.update(taskListSyncUri(), values, null, null)
+            provider.update(taskListSyncUri(), values, null, null)
         }
 
 
@@ -154,28 +156,32 @@ class LocalTaskList private constructor(
     override fun markNotDirty(flags: Int): Int {
         val values = ContentValues(1)
         values.put(LocalTask.COLUMN_FLAGS, flags)
-        return provider.client.update(tasksSyncUri(), values,
+        return provider.update(tasksSyncUri(), values,
                 "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0",
                 arrayOf(id.toString()))
     }
 
     override fun removeNotDirtyMarked(flags: Int) =
-            provider.client.delete(tasksSyncUri(),
+            provider.delete(tasksSyncUri(),
                     "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${LocalTask.COLUMN_FLAGS}=?",
                     arrayOf(id.toString(), flags.toString()))
 
     override fun forgetETags() {
         val values = ContentValues(1)
         values.putNull(LocalEvent.COLUMN_ETAG)
-        provider.client.update(tasksSyncUri(), values, "${Tasks.LIST_ID}=?",
+        provider.update(tasksSyncUri(), values, "${Tasks.LIST_ID}=?",
                 arrayOf(id.toString()))
     }
 
 
     object Factory: DmfsTaskListFactory<LocalTaskList> {
 
-        override fun newInstance(account: Account, provider: TaskProvider, id: Long) =
-                LocalTaskList(account, provider, id)
+        override fun newInstance(
+            account: Account,
+            provider: ContentProviderClient,
+            providerName: TaskProvider.ProviderName,
+            id: Long
+        ) = LocalTaskList(account, provider, providerName, id)
 
     }
 
