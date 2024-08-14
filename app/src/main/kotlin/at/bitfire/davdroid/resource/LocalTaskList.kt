@@ -34,7 +34,11 @@ class LocalTaskList private constructor(
     companion object {
 
         fun create(account: Account, provider: TaskProvider, info: Collection): Uri {
-            val values = valuesFromCollectionInfo(info, true)
+            // If the collection doesn't have a color, use a default color.
+            if (info.color != null)
+                info.color = Constants.DAVDROID_GREEN_RGBA
+
+            val values = valuesFromCollectionInfo(info, withColor = true)
             values.put(TaskLists.OWNER, account.name)
             values.put(TaskLists.SYNC_ENABLED, 1)
             values.put(TaskLists.VISIBLE, 1)
@@ -61,8 +65,8 @@ class LocalTaskList private constructor(
             values.put(TaskLists.LIST_NAME,
                 if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
 
-            if (withColor)
-                values.put(TaskLists.LIST_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)
+            if (withColor && info.color != null)
+                values.put(TaskLists.LIST_COLOR, info.color)
 
             if (info.privWriteContent && !info.forceReadOnly)
                 values.put(TaskListColumns.ACCESS_LEVEL, TaskListColumns.ACCESS_LEVEL_OWNER)
