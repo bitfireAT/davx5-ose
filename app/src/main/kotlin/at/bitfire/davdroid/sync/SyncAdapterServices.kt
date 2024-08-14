@@ -23,8 +23,10 @@ import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
@@ -62,18 +64,13 @@ abstract class SyncAdapterService: Service() {
     ) {
 
         /**
-         * Completable [Boolean], which will be set to
-         *
-         * - `true` when the related sync worker has finished
-         * - `false` when the sync framework has requested cancellation.
-         *
-         * In any case, the sync framework shouldn't be blocked anymore as soon as a
-         * value is available.
+         * Scope used to wait until the synchronization is finished. Will be cancelled when the sync framework
+         * requests cancellation.
          */
-        private val finished = CompletableDeferred<Boolean>()
+        private val waitScope = CoroutineScope(Dispatchers.Default)
 
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
-            // We seem to have to pass this old SyncFramework extra for an Android 7 workaround
+            // We have to pass this old SyncFramework extra for an Android 7 workaround
             val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
             logger.info("Sync request via sync framework for $account $authority (upload=$upload)")
 
@@ -104,27 +101,31 @@ abstract class SyncAdapterService: Service() {
             logger.fine("Starting OneTimeSyncWorker for $workerAccount $workerAuthority and waiting for it")
             val workerName = OneTimeSyncWorker.enqueue(context, workerAccount, workerAuthority, upload = upload)
 
-            // Because we are not allowed to observe worker state on a background thread, we can not
-            // use it to block the sync adapter. Instead we check periodically whether the sync has
-            // finished, putting the thread to sleep in between checks.
+            /* Because we are not allowed to observe worker state on a background thread, we can not
+            use it to block the sync adapter. Instead we use a Flow to get notified when the sync
+            has finished. */
             val workManager = WorkManager.getInstance(context)
 
             try {
+                val waitJob = waitScope.launch {
+                    // wait for finished worker state
+                    workManager.getWorkInfosForUniqueWorkFlow(workerName).collect { info ->
+                        if (info.any { it.state.isFinished })
+                            cancel("$workerName has finished")
+                    }
+                }
+
                 runBlocking {
                     withTimeout(10 * 60 * 1000) {   // block max. 10 minutes
-                        // wait for finished worker state
-                        workManager.getWorkInfosForUniqueWorkFlow(workerName).collect { info ->
-                            if (info.any { it.state.isFinished })
-                                cancel(CancellationException("$workerName has finished"))
-                        }
+                        waitJob.join()              // wait until worker has finished
                     }
                 }
             } catch (e: CancellationException) {
                 // waiting for work was cancelled, either by timeout or because the worker has finished
-                logger.log(Level.FINE, "Not waiting for OneTimeSyncWorker anymore (this is not an error)", e)
+                logger.fine("Not waiting for OneTimeSyncWorker anymore.")
             }
 
-            logger.fine("Returning to sync framework")
+            logger.info("Returning to sync framework.")
         }
 
         override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
@@ -135,7 +136,7 @@ abstract class SyncAdapterService: Service() {
             logger.info("Sync adapter requested cancellation – won't cancel sync, but also won't block sync framework anymore")
 
             // unblock sync framework
-            finished.complete(false)
+            waitScope.cancel()
         }
 
         override fun onSyncCanceled(thread: Thread) = onSyncCanceled()
