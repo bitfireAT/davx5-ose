@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncResult
+import android.os.Build
 import android.provider.CalendarContract
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -194,6 +195,9 @@ abstract class BaseSyncWorker(
         } finally {
             logger.info("${javaClass.simpleName} finished for $syncTag")
             runningSyncs -= syncTag
+
+            if (Build.VERSION.SDK_INT >= 31 && stopReason != WorkInfo.STOP_REASON_NOT_STOPPED)
+                logger.warning("Worker was stopped with reason: $stopReason")
         }
     }
 
