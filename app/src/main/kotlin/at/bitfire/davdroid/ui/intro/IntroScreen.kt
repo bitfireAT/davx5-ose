@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M3ColorScheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -68,7 +69,7 @@ fun IntroScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(90.dp)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(M3ColorScheme.primaryLight)
         ) {
             PositionIndicator(
                 index = pagerState.currentPage,
@@ -78,8 +79,8 @@ fun IntroScreen(
                     .padding(horizontal = 128.dp)
                     .align(Alignment.Center)
                     .fillMaxWidth(),
-                selectedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
-                unselectedIndicatorColor = MaterialTheme.colorScheme.tertiary,
+                selectedIndicatorColor = M3ColorScheme.onPrimaryLight,
+                unselectedIndicatorColor = M3ColorScheme.tertiaryLight,
                 indicatorSize = 15f
             )
 
@@ -92,7 +93,8 @@ fun IntroScreen(
                 contentDescription = stringResource(R.string.intro_next),
                 modifier = Modifier
                     .padding(end = 16.dp)
-                    .align(Alignment.CenterEnd)
+                    .align(Alignment.CenterEnd),
+                color = M3ColorScheme.tertiaryLight
             ) {
                 if (pagerState.currentPage + 1 == pagerState.pageCount) {
                     onDonePressed()
@@ -219,11 +221,12 @@ fun ButtonWithIcon(
     modifier: Modifier = Modifier,
     size: Dp = 56.dp,
     color: Color = MaterialTheme.colorScheme.tertiary,
+    contentColor: Color = contentColorFor(backgroundColor = color),
     onClick: () -> Unit
 ) {
     Surface(
         color = color,
-        contentColor = contentColorFor(backgroundColor = color),
+        contentColor = contentColor,
         modifier = modifier
             .size(size)
             .aspectRatio(1f),
