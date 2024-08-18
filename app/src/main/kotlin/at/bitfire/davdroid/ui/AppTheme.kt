@@ -6,8 +6,10 @@ package at.bitfire.davdroid.ui
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
@@ -34,6 +36,10 @@ fun AppTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        content = content
-    )
+    ) {
+        CompositionLocalProvider(
+            value = LocalContentColor provides MaterialTheme.colorScheme.onBackground,
+            content = content
+        )
+    }
 }
