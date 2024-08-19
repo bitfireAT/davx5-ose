@@ -38,14 +38,14 @@ class SyncerTest {
 
     lateinit var account: Account
 
-    lateinit var syncer: TestSyncer
+    private lateinit var syncer: TestSyncer
 
     @Before
     fun setUp() {
         hiltRule.inject()
 
         account = TestAccountAuthenticator.create()
-        syncer = spyk(testSyncer.create(account, arrayOf(), SyncResult()))
+        syncer = spyk(testSyncer.create(account, emptyArray(), SyncResult()))
     }
 
     @After
@@ -78,15 +78,16 @@ class SyncerTest {
         verify(exactly = 1) { syncer.getSyncEnabledCollections() }
     }
 
+
     @Test
     fun testUpdateCollections_deletesCollection() {
-        val providerCollection = mockk<LocalTestCollection>()
-        every { providerCollection.collectionUrl } returns "http://delete.the/collection"
-        every { providerCollection.deleteCollection() } returns true
+        val localCollection = mockk<LocalTestCollection>()
+        every { localCollection.collectionUrl } returns "http://delete.the/collection"
+        every { localCollection.deleteCollection() } returns true
 
-        // Should delete the providerCollection (local) if dbCollection (remote) does not exist
-        syncer.updateCollections(listOf(providerCollection), dbCollections = emptyMap())
-        verify(exactly = 1) { providerCollection.deleteCollection() }
+        // Should delete the localCollection if dbCollection (remote) does not exist
+        syncer.updateCollections(listOf(localCollection), dbCollections = emptyMap())
+        verify(exactly = 1) { localCollection.deleteCollection() }
     }
 
     @Test
@@ -97,7 +98,7 @@ class SyncerTest {
         every { dbCollection.url } returns "http://update.the/collection".toHttpUrl()
         every { localCollection.collectionUrl } returns "http://update.the/collection"
 
-        // Should update the providerCollection (local) if it exists ...
+        // Should update the localCollection if it exists ...
         val newCollections = syncer.updateCollections(listOf(localCollection), dbCollections)
         verify(exactly = 1) { syncer.update(localCollection, dbCollection) }
         // ... and remove it from the "new found" collections which are to be created
@@ -115,6 +116,7 @@ class SyncerTest {
         assertEquals(dbCollection, newCollections["http://newly.found/collection".toHttpUrl()])
     }
 
+
     @Test
     fun testCreateLocalCollections() {
         val provider = mockk<ContentProviderClient>()
@@ -128,6 +130,7 @@ class SyncerTest {
         val newLocalCollections = syncer.createLocalCollections(provider, dbCollections)
         assertEquals(listOf(localCollection), newLocalCollections)
     }
+
     
     @Test
     fun testSyncCollectionContents() {
