@@ -111,7 +111,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     /**
      * Finds sync enabled collections in database. They contain collection info which might have
-     * been updated by collection refresh [DavResourceFinder].
+     * been updated by collection refresh [at.bitfire.davdroid.servicedetection.DavResourceFinder].
      *
      * @return The sync enabled collections as hash map identified by their URL
      */
@@ -127,7 +127,7 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
 
     /**
      * Updates and deletes local collections. Specifically:
-     * - Deletes local collections if corresponding database collections is missing.
+     * - Deletes local collections if corresponding database collections are missing.
      * - Updates local collections with possibly new info from corresponding database collections.
      * - Determines new database collections to be also created as local collections.
      *
