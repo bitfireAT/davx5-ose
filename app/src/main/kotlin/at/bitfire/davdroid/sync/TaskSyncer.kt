@@ -49,7 +49,7 @@ class TaskSyncer @AssistedInject constructor(
     override fun prepare(provider: ContentProviderClient): Boolean {
         // Don't sync if task provider is too old
         try {
-            TaskProvider.fromProviderClient(context, providerName, provider)
+            TaskProvider.checkVersion(context, providerName)
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
             syncResult.databaseError = true
