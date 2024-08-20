@@ -38,20 +38,18 @@ class TaskSyncer @AssistedInject constructor(
         fun create(account: Account, authority: String, extras: Array<String>, syncResult: SyncResult): TaskSyncer
     }
 
-    private lateinit var taskProvider: TaskProvider
+    private val providerName = TaskProvider.ProviderName.fromAuthority(authority)
 
     override val serviceType: String
         get() = Service.TYPE_CALDAV
 
-
     override fun localSyncCollections(provider: ContentProviderClient): List<LocalTaskList>
-        = DmfsTaskList.find(account, taskProvider, LocalTaskList.Factory, "${TaskLists.SYNC_ENABLED}!=0", null)
+        = DmfsTaskList.find(account, LocalTaskList.Factory, provider, providerName, "${TaskLists.SYNC_ENABLED}!=0", null)
 
     override fun prepare(provider: ContentProviderClient): Boolean {
-        // Acquire task provider
-        val providerName = TaskProvider.ProviderName.fromAuthority(authority)
-        taskProvider = try {
-            TaskProvider.fromProviderClient(context, providerName, provider)
+        // Don't sync if task provider is too old
+        try {
+            TaskProvider.checkVersion(context, providerName)
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
             syncResult.databaseError = true
@@ -80,8 +78,8 @@ class TaskSyncer @AssistedInject constructor(
 
     override fun create(provider: ContentProviderClient, remoteCollection: Collection): LocalTaskList {
         logger.log(Level.INFO, "Adding local task list", remoteCollection)
-        val uri = LocalTaskList.create(account, taskProvider, remoteCollection)
-        return DmfsTaskList.findByID(account, taskProvider, LocalTaskList.Factory, ContentUris.parseId(uri))
+        val uri = LocalTaskList.create(account, provider, providerName, remoteCollection)
+        return DmfsTaskList.findByID(account, provider, providerName, LocalTaskList.Factory, ContentUris.parseId(uri))
     }
 
     override fun syncCollection(provider: ContentProviderClient, localCollection: LocalTaskList, remoteCollection: Collection) {
