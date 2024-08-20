@@ -183,7 +183,7 @@ open class LocalAddressBook @Inject constructor(
      * but if it is enabled, [findDirty] will find dirty [LocalContact]s and [LocalGroup]s.
      */
     open val groupMethod: GroupMethod by lazy {
-        val accountSettings = accountSettingsFactory.forAccount(requireMainAccount())
+        val accountSettings = accountSettingsFactory.forAccount(account)
         accountSettings.getGroupMethod()
     }
     val includeGroups
