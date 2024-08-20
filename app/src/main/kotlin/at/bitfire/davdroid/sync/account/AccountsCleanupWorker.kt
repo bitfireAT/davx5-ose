@@ -81,7 +81,8 @@ class AccountsCleanupWorker @AssistedInject constructor(
             .map { addressBookAccount -> LocalAddressBook(applicationContext, addressBookAccount, null) }
         for (addressBook in addressBooks) {
             try {
-                val mainAccount = addressBook.mainAccount
+                val addressBookAccount = Account(addressBook.account.name, addressBookAccountType)
+                val mainAccount = accountRepository.mainAccount(addressBookAccount)
                 if (mainAccount == null || !mainAccountNames.contains(mainAccount.name))
                     // the main account for this address book doesn't exist anymore
                     addressBook.deleteCollection()

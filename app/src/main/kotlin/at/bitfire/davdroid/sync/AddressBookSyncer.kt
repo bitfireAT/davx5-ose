@@ -48,8 +48,12 @@ class AddressBookSyncer @AssistedInject constructor(
         get() = ContactsContract.AUTHORITY // Address books use the contacts authority for sync
 
 
-    override fun localSyncCollections(provider: ContentProviderClient): List<LocalAddressBook>
-        = LocalAddressBook.findAll(context, provider, account)
+    override fun localSyncCollections(provider: ContentProviderClient): List<LocalAddressBook> =
+        serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
+            getSyncCollections(service.id).mapNotNull { collection ->
+                LocalAddressBook.find(context, provider, collection)
+            }
+        } ?: emptyList()
 
     override fun getSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getByServiceAndSync(serviceId)
@@ -109,7 +113,6 @@ class AddressBookSyncer @AssistedInject constructor(
             accountSettings.accountManager.setAndVerifyUserData(account, PREVIOUS_GROUP_METHOD, groupMethod)
 
             logger.info("Synchronizing address book: ${addressBook.collectionUrl}")
-            logger.info("Taking settings from: ${addressBook.mainAccount}")
 
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, collection)
             syncManager.performSync()

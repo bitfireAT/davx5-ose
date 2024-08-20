@@ -20,6 +20,8 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_MAIN_ACCOUNT_NAME
+import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_MAIN_ACCOUNT_TYPE
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -31,6 +33,7 @@ import at.bitfire.davdroid.sync.account.AccountUtils
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
+import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.vcard4android.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -135,8 +138,9 @@ class AccountRepository @Inject constructor(
     }
 
     suspend fun delete(accountName: String): Boolean {
+        val account = fromName(accountName)
         // remove account
-        val future = accountManager.removeAccount(fromName(accountName), null, null, null)
+        val future = accountManager.removeAccount(account, null, null, null)
         return try {
             // wait for operation to complete
             withContext(Dispatchers.Default) {
@@ -145,7 +149,11 @@ class AccountRepository @Inject constructor(
             }
 
             // delete address book accounts
-            LocalAddressBook.deleteByAccount(context, accountName)
+            serviceRepository.getByAccountAndType(accountName, Service.TYPE_CARDDAV)?.let { service ->
+                collectionRepository.getByService(service.id).forEach { collection ->
+                    LocalAddressBook.find(context, null, collection)?.deleteCollection()
+                }
+            }
 
             // delete from database
             serviceRepository.deleteByAccount(accountName)
@@ -169,6 +177,27 @@ class AccountRepository @Inject constructor(
         Account(accountName, accountType)
 
     fun getAll(): Array<Account> = accountManager.getAccountsByType(accountType)
+
+    /**
+     * Finds and returns the main account of the given address book's account (sub-account)
+     *
+     * @param account the address book account to find the main account for
+     *
+     * @return the associated main account, `null` if none can be found (e.g. when main account has been deleted)
+     *
+     * @throws IllegalArgumentException when [account] is not an address book account
+     */
+    fun mainAccount(account: Account): Account? =
+        if (account.type == context.getString(R.string.account_type_address_book)) {
+            val manager = AccountManager.get(context)
+            val accountName = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
+            val accountType = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
+            if (accountName != null && accountType != null)
+                Account(accountName, accountType)
+            else
+                null
+        } else
+            throw IllegalArgumentException("$account is not an address book account")
 
     fun getAllFlow() = callbackFlow<Set<Account>> {
         val listener = OnAccountsUpdateListener { accounts ->
@@ -252,9 +281,13 @@ class AccountRepository @Inject constructor(
                 try {
                     context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
                         for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-                            val addressBook = LocalAddressBook(context, addrBookAccount, provider)
-                            if (oldAccount == addressBook.mainAccount)
-                                addressBook.mainAccount = Account(newName, oldAccount.type)
+                            val mainAccount = mainAccount(addrBookAccount)
+                            if (oldAccount == mainAccount) {
+                                AccountManager.get(context).let { accountManager ->
+                                    accountManager.setAndVerifyUserData(mainAccount, USER_DATA_MAIN_ACCOUNT_NAME, newName)
+                                    accountManager.setAndVerifyUserData(mainAccount, USER_DATA_MAIN_ACCOUNT_TYPE, oldAccount.type)
+                                }
+                            }
                         }
                     }
                 } catch (e: Exception) {

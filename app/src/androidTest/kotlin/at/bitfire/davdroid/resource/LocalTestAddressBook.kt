@@ -19,10 +19,6 @@ class LocalTestAddressBook(
         val ACCOUNT = Account("LocalTestAddressBook", "at.bitfire.davdroid.test")
     }
 
-    override var mainAccount: Account?
-        get() = throw NotImplementedError()
-        set(_) = throw NotImplementedError()
-
     override var readOnly: Boolean
         get() = false
         set(_) = throw NotImplementedError()

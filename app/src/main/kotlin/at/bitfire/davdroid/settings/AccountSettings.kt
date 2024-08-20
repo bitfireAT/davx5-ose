@@ -13,7 +13,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -42,7 +42,8 @@ class AccountSettings @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    private val accountRepository: AccountRepository
 ) {
 
     @AssistedFactory
@@ -141,7 +142,7 @@ class AccountSettings @AssistedInject constructor(
             context.getString(R.string.account_type_address_book) -> {
                 /* argument is an address book account, which is not a main account. However settings are
                 stored in the main account, so resolve and use the main account instead. */
-                LocalAddressBook.mainAccount(context, accountOrAddressBookAccount) ?: throw IllegalArgumentException("Main account of $accountOrAddressBookAccount not found")
+                accountRepository.mainAccount(accountOrAddressBookAccount) ?: throw IllegalArgumentException("Main account of $accountOrAddressBookAccount not found")
             }
 
             context.getString(R.string.account_type),

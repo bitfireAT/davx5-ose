@@ -17,7 +17,6 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
-import android.util.Base64
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
@@ -71,7 +70,7 @@ open class LocalAddressBook @Inject constructor(
          * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
          */
         fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: Collection, forceReadOnly: Boolean): LocalAddressBook {
-            val account = Account(accountName(mainAccount, info), context.getString(R.string.account_type_address_book))
+            val account = Account(accountName(info), context.getString(R.string.account_type_address_book))
             val userData = initialUserData(mainAccount, info.url.toString())
             logger.log(Level.INFO, "Creating local address book $account", userData)
             if (!AccountUtils.createAccount(context, account, userData))
@@ -90,43 +89,36 @@ open class LocalAddressBook @Inject constructor(
             return addressBook
         }
 
-        fun deleteByAccount(context: Context, accountName: String) {
-            val mainAccount = Account(accountName, context.getString(R.string.account_type))
-            findAll(context, null, mainAccount).forEach {
-                it.deleteCollection()
-            }
-        }
+        /**
+         * Finds a [LocalAddressBook] based on its corresponding collection
+         * @param info The corresponding collection
+         * @return The [LocalAddressBook] for the given collection or *null* if not found
+         */
+        fun find(context: Context, provider: ContentProviderClient?, info: Collection) =
+            AccountManager.get(context)
+                .getAccountsByType(context.getString(R.string.account_type_address_book))
+                .filter { account -> account.name == accountName(info) }
+                .map { account -> LocalAddressBook(context, account, provider) }
+                .firstOrNull()
 
         /**
-         * Finds and returns all the local address books belonging to a given main account
+         * Creates a name for the address book account from its corresponding db collection info.
          *
-         * @param mainAccount the main account to use
-         * @return list of [mainAccount]'s address books
+         * The address book account name contains the collection display name or last URL segment as
+         * well as the collection ID, to make the name unique.
+         *
+         * @param info The corresponding collection
          */
-        fun findAll(context: Context, provider: ContentProviderClient?, mainAccount: Account) = AccountManager.get(context)
-                .getAccountsByType(context.getString(R.string.account_type_address_book))
-                .map { LocalAddressBook(context, it, provider) }
-                .filter {
-                    try {
-                        it.mainAccount == mainAccount
-                    } catch(e: IllegalArgumentException) {
-                        false
-                    }
-                }
-                .toList()
-
-        fun accountName(mainAccount: Account, info: Collection): String {
+        fun accountName(info: Collection): String {
             val baos = ByteArrayOutputStream()
             baos.write(info.url.hashCode())
-            val hash = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP or Base64.NO_PADDING)
-
             val sb = StringBuilder(info.displayName.let {
                 if (it.isNullOrEmpty())
                     info.url.lastSegment
                 else
                     it
             })
-            sb.append(" (${mainAccount.name} $hash)")
+            sb.append(" (${info.id})")
             return sb.toString()
         }
 
@@ -137,28 +129,6 @@ open class LocalAddressBook @Inject constructor(
             bundle.putString(USER_DATA_URL, url)
             return bundle
         }
-
-        /**
-         * Finds and returns the main account of the given address book's account (sub-account)
-         *
-         * @param account the address book account to find the main account for
-         *
-         * @return the associated main account, `null` if none can be found (e.g. when main account has been deleted)
-         *
-         * @throws IllegalArgumentException when [account] is not an address book account
-         */
-        fun mainAccount(context: Context, account: Account): Account? =
-            if (account.type == context.getString(R.string.account_type_address_book)) {
-                val manager = AccountManager.get(context)
-                val accountName = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
-                val accountType = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
-                if (accountName != null && accountType != null)
-                    Account(accountName, accountType)
-                else
-                    null
-            } else
-                throw IllegalArgumentException("$account is not an address book account")
-
     }
 
     @EntryPoint
@@ -188,34 +158,6 @@ open class LocalAddressBook @Inject constructor(
     }
     val includeGroups
         get() = groupMethod == GroupMethod.GROUP_VCARDS
-
-    private var _mainAccount: Account? = null
-    /**
-     * The associated main account which this address book's accounts belong to.
-     *
-     * @throws IllegalArgumentException when [account] is not an address book account or when no main account is assigned
-     */
-    open var mainAccount: Account?
-        get() {
-            _mainAccount?.let { return it }
-
-            val result = mainAccount(context, account)
-            _mainAccount = result
-            return result
-        }
-        set(newMainAccount) {
-            if (newMainAccount == null)
-                throw IllegalArgumentException("Main account must not be null")
-
-            AccountManager.get(context).let { accountManager ->
-                accountManager.setAndVerifyUserData(account, USER_DATA_MAIN_ACCOUNT_NAME, newMainAccount.name)
-                accountManager.setAndVerifyUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE, newMainAccount.type)
-            }
-
-            _mainAccount = newMainAccount
-        }
-    fun requireMainAccount(): Account =
-        mainAccount ?: throw IllegalArgumentException("No main account assigned to address book $account")
 
     override var collectionUrl: String
         get() = AccountManager.get(context).getUserData(account, USER_DATA_URL)
@@ -267,7 +209,7 @@ open class LocalAddressBook @Inject constructor(
      * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
      */
     fun update(info: Collection, forceReadOnly: Boolean) {
-        val newAccountName = accountName(requireMainAccount(), info)
+        val newAccountName = accountName(info)
 
         if (account.name != newAccountName) {
             // no need to re-assign contacts to new account, because they will be deleted by contacts provider in any case

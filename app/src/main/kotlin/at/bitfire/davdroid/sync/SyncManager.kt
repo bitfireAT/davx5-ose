@@ -40,6 +40,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCollection
@@ -156,6 +157,9 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     lateinit var notificationRegistry: NotificationRegistry
 
     @Inject
+    lateinit var accountRepository: AccountRepository
+
+    @Inject
     lateinit var syncStatsRepository: DavSyncStatsRepository
 
 
@@ -164,10 +168,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         Ical4Android.checkThreadContextClassLoader()
     }
 
-    protected val mainAccount = if (localCollection is LocalAddressBook)
-        localCollection.requireMainAccount()
-    else
-        account
+    private val mainAccount by lazy {
+        if (localCollection is LocalAddressBook)
+            accountRepository.mainAccount(localCollection.account)
+        else
+            account
+    }
 
     protected val notificationTag = localCollection.tag
 
@@ -833,7 +839,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 .setContentTitle(localCollection.title)
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
-                .setSubText(mainAccount.name)
+                .setSubText(mainAccount?.name)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(
                     PendingIntent.getActivity(
@@ -896,7 +902,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             builder.setSmallIcon(R.drawable.ic_warning_notify)
                 .setContentTitle(notifyInvalidResourceTitle())
                 .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
-                .setSubText(mainAccount.name)
+                .setSubText(mainAccount?.name)
                 .setContentIntent(
                     PendingIntent.getActivity(
                         context,

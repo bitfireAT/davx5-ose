@@ -30,6 +30,7 @@ import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
+import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
@@ -48,6 +49,7 @@ import net.fortuna.ical4j.model.property.Url
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.dmfs.tasks.contract.TaskContract
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -392,6 +394,20 @@ class AccountSettingsMigrations @AssistedInject constructor(
     @Suppress("unused")
     @SuppressLint("ParcelClassLoader")
     private fun update_5_6() {
+        fun accountName(mainAccount: Account, info: Collection): String {
+            val baos = ByteArrayOutputStream()
+            baos.write(info.url.hashCode())
+            val hash = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP or Base64.NO_PADDING)
+
+            val sb = StringBuilder(info.displayName.let {
+                if (it.isNullOrEmpty())
+                    info.url.lastSegment
+                else
+                    it
+            })
+            sb.append(" (${mainAccount.name} $hash)")
+            return sb.toString()
+        }
         context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
             val parcel = Parcel.obtain()
             try {
@@ -416,7 +432,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                         val info = Collection(url = url, type = Collection.TYPE_ADDRESSBOOK, displayName = account.name)
                         logger.log(Level.INFO, "Creating new address book account", url)
                         val addressBookAccount = Account(
-                            LocalAddressBook.accountName(account, info), context.getString(
+                            accountName(account, info), context.getString(
                                 R.string.account_type_address_book))
                         if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.url.toString())))
                             throw ContactsStorageException("Couldn't create address book account")
