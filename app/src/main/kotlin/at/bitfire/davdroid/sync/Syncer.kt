@@ -9,6 +9,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
 import android.os.DeadObjectException
+import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.HttpClient
@@ -85,24 +86,62 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
      * remote collection information. Then syncs the actual entries (events, tasks, contacts, etc)
      * of the remaining, now up-to-date, collections.
      */
-    private fun sync(provider: ContentProviderClient) {
+    @VisibleForTesting
+    internal fun sync(provider: ContentProviderClient) {
         // Collection type specific preparations
         if (!prepare(provider)) {
             logger.log(Level.WARNING, "Failed to prepare sync. Won't run sync.")
             return
         }
 
-        // Find sync-enabled collections
+        // Find collections in database and provider which should be synced (are sync-enabled)
+        val dbCollections = getSyncEnabledCollections()
+        val localCollections = localSyncCollections(provider).toMutableList()
+
+        // Update/delete local collections and determine new (unknown) remote collections
+        val newDbCollections = updateCollections(localCollections, dbCollections)
+
+        // Create new local collections for newly found remote collections
+        val newProviderCollections = createLocalCollections(provider, newDbCollections)
+        localCollections.addAll(newProviderCollections) // Add the newly created collections
+
+        // Sync local collection contents (events, contacts, tasks)
+        syncCollectionContents(provider, localCollections, dbCollections)
+    }
+
+    /**
+     * Finds sync enabled collections in database. They contain collection info which might have
+     * been updated by collection refresh [at.bitfire.davdroid.servicedetection.DavResourceFinder].
+     *
+     * @return The sync enabled collections as hash map identified by their URL
+     */
+    @VisibleForTesting
+    internal fun getSyncEnabledCollections(): Map<HttpUrl, Collection> {
         val dbCollections = mutableMapOf<HttpUrl, Collection>()
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
             for (dbCollection in getSyncCollections(service.id))
                 dbCollections[dbCollection.url] = dbCollection
         }
+        return dbCollections
+    }
 
-        // Update/delete local collections and determine new (unknown) remote collections
+    /**
+     * Updates and deletes local collections. Specifically:
+     * - Deletes local collections if corresponding database collections are missing.
+     * - Updates local collections with possibly new info from corresponding database collections.
+     * - Determines new database collections to be also created as local collections.
+     *
+     * @param localCollections The local collections to be updated or deleted
+     * @param dbCollections The database collections possibly containing new information
+     * @return New found database collections to be created in provider
+     */
+    @VisibleForTesting
+    internal fun updateCollections(
+        localCollections: List<CollectionType>,
+        dbCollections: Map<HttpUrl, Collection>
+    ): HashMap<HttpUrl, Collection> {
         val newDbCollections = HashMap(dbCollections)   // create a copy
-        val localSyncCollections = localSyncCollections(provider).toMutableList()
-        for (localCollection in localSyncCollections) {
+        for (localCollection in localCollections) {
             val dbCollection = dbCollections[localCollection.collectionUrl?.toHttpUrlOrNull()]
             if (dbCollection == null)
                 // Collection not available in db = on server (anymore), delete obsolete local collection
@@ -113,20 +152,45 @@ abstract class Syncer<CollectionType: LocalCollection<*>>(
                 newDbCollections -= dbCollection.url
             }
         }
+        return newDbCollections
+    }
 
-        // 3. create new local collections for newly found remote collections
-        for ((_, collection) in newDbCollections)
-            localSyncCollections += create(provider, collection)
+    /**
+     * Creates new local collections from database collections.
+     *
+     * @param provider Content provider client to access local collections.
+     * @param dbCollections Database collections to be created as local collections.
+     * @return Newly created local collections.
+     */
+    @VisibleForTesting
+    internal fun createLocalCollections(
+        provider: ContentProviderClient,
+        dbCollections: Map<HttpUrl, Collection>
+    ): List<CollectionType> =
+        dbCollections.map { (_, collection) -> create(provider, collection) }
 
-        // 4. sync local collection contents (events, contacts, tasks)
-        for (localCollection in localSyncCollections)
-            dbCollections[localCollection.collectionUrl?.toHttpUrl()]?.let { dbCollection ->
-                syncCollection(provider, localCollection, dbCollection)
-            }
+
+    /**
+     * Synchronize the actual collection contents.
+     *
+     * @param provider Content provider client to access local collections
+     * @param localCollections Collections to be synchronized
+     * @param dbCollections Remote collection information
+     */
+    @VisibleForTesting
+    internal fun syncCollectionContents(
+        provider: ContentProviderClient,
+        localCollections: List<CollectionType>,
+        dbCollections: Map<HttpUrl, Collection>
+    ) = localCollections.forEach { localCollection ->
+        dbCollections[localCollection.collectionUrl?.toHttpUrl()]?.let { dbCollection ->
+            syncCollection(provider, localCollection, dbCollection)
+        }
     }
 
     /**
      * For collection specific sync preparations.
+     *
      * @param provider Content provider for syncer specific authority
      * @return *true* to run the sync; *false* to abort
      */
