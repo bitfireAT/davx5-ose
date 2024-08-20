@@ -65,7 +65,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
             // update in tasks provider
             val values = ContentValues(1)
             values.put(Tasks._UID, newUid)
-            taskList.provider.client.update(taskSyncURI(), values, null, null)
+            taskList.provider.update(taskSyncURI(), values, null, null)
 
             // update this task
             task!!.uid = newUid
@@ -86,7 +86,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
         values.put(COLUMN_ETAG, eTag)
         values.put(Tasks.SYNC_VERSION, task!!.sequence)
         values.put(Tasks._DIRTY, 0)
-        taskList.provider.client.update(taskSyncURI(), values, null, null)
+        taskList.provider.update(taskSyncURI(), values, null, null)
 
         if (fileName != null)
             this.fileName = fileName
@@ -97,7 +97,7 @@ class LocalTask: DmfsTask, LocalResource<Task> {
         if (id != null) {
             val values = ContentValues(1)
             values.put(COLUMN_FLAGS, flags)
-            taskList.provider.client.update(taskSyncURI(), values, null, null)
+            taskList.provider.update(taskSyncURI(), values, null, null)
         }
 
         this.flags = flags
