@@ -28,7 +28,6 @@ import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.vcard4android.AndroidAddressBook
 import at.bitfire.vcard4android.AndroidContact
 import at.bitfire.vcard4android.AndroidGroup
-import at.bitfire.vcard4android.Constants
 import at.bitfire.vcard4android.GroupMethod
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn

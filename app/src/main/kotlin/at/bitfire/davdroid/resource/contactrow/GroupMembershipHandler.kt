@@ -15,8 +15,6 @@ import java.io.FileNotFoundException
 import java.util.logging.Logger
 
 class GroupMembershipHandler(val localContact: LocalContact): DataRowHandler() {
-    
-    private val logger: Logger = Logger.getGlobal()
 
     override fun forMimeType() = GroupMembership.CONTENT_ITEM_TYPE
 
