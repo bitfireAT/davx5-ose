@@ -25,9 +25,8 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           dependency-graph: generate-and-submit         # submit Github Dependency Graph info
-          dependency-graph-continue-on-failure: false
 
-      - run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:assembleDebug
+      - run: ./gradlew --build-cache --configuration-cache --configuration-cache-problems=warn app:compileOseDebugSource
 
   test:
     needs: compile
