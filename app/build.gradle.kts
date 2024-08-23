@@ -1,3 +1,5 @@
+import java.time.Instant
+
 /***************************************************************************************************
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
@@ -21,7 +23,15 @@ android {
         versionCode = 404030000
         versionName = "4.4.3-alpha.1"
 
-        buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
+        val buildDate = System.getenv("BUILD_DATE")
+        val buildTime = if (buildDate != null) {
+            // BUILD_DATE is passed by github as ISO 8601. eg. 2021-09-30T12:00:00Z
+            // Convert the string to an epoch timestamp
+            Instant.parse(buildDate).toEpochMilli()
+        } else {
+            System.currentTimeMillis()
+        }
+        buildConfigField("long", "buildTime", "${buildTime}L")
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
