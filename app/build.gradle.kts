@@ -128,6 +128,10 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+aboutLibraries {
+    excludeFields = arrayOf("generated")
+}
+
 configurations {
     configureEach {
         // exclude modules which are in conflict with system libraries
