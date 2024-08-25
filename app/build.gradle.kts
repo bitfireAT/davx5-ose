@@ -1,6 +1,3 @@
-import java.io.OutputStream
-import java.time.Instant
-
 /***************************************************************************************************
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  **************************************************************************************************/
