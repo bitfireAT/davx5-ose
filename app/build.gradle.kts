@@ -1,3 +1,4 @@
+import java.io.OutputStream
 import java.time.Instant
 
 /***************************************************************************************************
@@ -13,6 +14,20 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+fun runCommand(vararg command: String): String {
+    val process = ProcessBuilder(*command)
+        .directory(rootDir)
+        .redirectErrorStream(true)
+        .start()
+    val reader = process.inputStream.bufferedReader()
+    val builder = StringBuilder()
+    var line: String?
+    while (reader.readLine().also { line = it } != null) {
+        builder.appendLine(line)
+    }
+    return builder.toString()
+}
+
 // Android configuration
 android {
     compileSdk = 34
@@ -23,15 +38,8 @@ android {
         versionCode = 404030000
         versionName = "4.4.3-alpha.1"
 
-        val buildDate = System.getenv("BUILD_DATE")
-        val buildTime = if (buildDate != null) {
-            // BUILD_DATE is passed by github as ISO 8601. eg. 2021-09-30T12:00:00Z
-            // Convert the string to an epoch timestamp
-            Instant.parse(buildDate).toEpochMilli()
-        } else {
-            System.currentTimeMillis()
-        }
-        buildConfigField("long", "buildTime", "${buildTime}L")
+        val buildTime = runCommand("git", "log", "-1", "--pretty=%ct").trim()
+        buildConfigField("long", "buildTime", "${buildTime}000L")
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
