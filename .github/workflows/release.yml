@@ -37,8 +37,6 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
           ANDROID_KEY_ALIAS: ${{ secrets.android_key_alias }}
           ANDROID_KEY_PASSWORD: ${{ secrets.android_key_password }}
-          # Pass current build date
-          BUILD_DATE: ${{ github.event.repository.updated_at }}
 
       - name: Create Github release
         uses: softprops/action-gh-release@v2
