@@ -13,7 +13,7 @@ plugins {
 
 // Android configuration
 android {
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
@@ -24,7 +24,7 @@ android {
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
         minSdk = 24        // Android 7.0
-        targetSdk = 34     // Android 14
+        targetSdk = 35     // Android 15
 
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }
