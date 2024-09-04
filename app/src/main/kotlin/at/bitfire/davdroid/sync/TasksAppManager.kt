@@ -28,13 +28,13 @@ import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.logging.Logger
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import java.util.logging.Logger
-import javax.inject.Inject
 
 /**
  * Responsible for setting/getting the currently used tasks app, and for communicating with it.
@@ -168,7 +168,7 @@ class TasksAppManager @Inject constructor(
 
             val pm = context.packageManager
             val tasksAppInfo = pm.getPackageInfo(e.provider.packageName, 0)
-            val tasksAppLabel = tasksAppInfo.applicationInfo.loadLabel(pm)
+            val tasksAppLabel = tasksAppInfo.applicationInfo?.loadLabel(pm)
 
             val notify = NotificationCompat.Builder(context, registry.CHANNEL_SYNC_ERRORS)
                 .setSmallIcon(R.drawable.ic_sync_problem_notify)

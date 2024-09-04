@@ -9,11 +9,11 @@ import android.content.pm.PackageManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.SyncStats
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import java.text.Collator
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class DavSyncStatsRepository @Inject constructor(
     @ApplicationContext val context: Context,
@@ -61,10 +61,13 @@ class DavSyncStatsRepository @Inject constructor(
         val packageManager = context.packageManager
         val packageName = packageManager.resolveContentProvider(authority, 0)?.packageName ?: authority
         return try {
-            val appInfo = packageManager.getPackageInfo(packageName, 0).applicationInfo
+            val appInfo = packageManager.getPackageInfo(packageName, 0).applicationInfo!!
             packageManager.getApplicationLabel(appInfo).toString()
         } catch (e: PackageManager.NameNotFoundException) {
             logger.warning("Application name not found for authority: $authority")
+            authority
+        } catch (_: NullPointerException) {
+            logger.warning("Package name ($packageName) not found for authority: $authority")
             authority
         }
     }
