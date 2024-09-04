@@ -87,7 +87,10 @@ android {
     }
 
     lint {
-        disable += arrayOf("GoogleAppIndexingWarning", "ImpliedQuantity", "MissingQuantity", "MissingTranslation", "ExtraTranslation", "RtlEnabled", "RtlHardcoded", "Typos", "NullSafeMutableLiveData", "CoroutineCreationDuringComposition")
+        disable += arrayOf("GoogleAppIndexingWarning", "ImpliedQuantity", "MissingQuantity", "MissingTranslation", "ExtraTranslation", "RtlEnabled", "RtlHardcoded", "Typos", "NullSafeMutableLiveData")
+        // TODO: Remove on the next Compose release, should be fixed
+        // Maybe related to https://issuetracker.google.com/issues/298483892
+        disable += "CoroutineCreationDuringComposition"
     }
 
     packaging {
