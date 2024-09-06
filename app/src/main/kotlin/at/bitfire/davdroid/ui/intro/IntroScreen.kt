@@ -81,8 +81,8 @@ fun IntroScreen(
                         .padding(horizontal = 128.dp)
                         .align(Alignment.Center)
                         .fillMaxWidth(),
-                    selectedIndicatorColor = M3ColorScheme.onPrimaryLight,
-                    unselectedIndicatorColor = M3ColorScheme.tertiaryLight,
+                    selectedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
+                    unselectedIndicatorColor = MaterialTheme.colorScheme.tertiary,
                     indicatorSize = 15f
                 )
 
