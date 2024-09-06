@@ -26,18 +26,15 @@ import java.util.logging.Logger
 
 /**
  * JUnit ClassRule which initializes the AOSP CalendarProvider.
- * Needed for some "flaky" tests which would otherwise only succeed on second run.
  *
- * Currently tested on development machine (Ryzen) with Android 12 images (with/without Google Play).
- * Calendar provider behaves quite randomly, so it may or may not work. If you (the reader
- * if this comment) can find out on how to initialize the calendar provider so that the
- * tests are reliably run after `adb shell pm clear com.android.providers.calendar`,
- * please let us know!
+ * It seems that the calendar provider unfortunately forgets the very first requests when it is used the very first time,
+ * maybe by some wrongly synchronized database initialization. So things like querying the instances
+ * fails in this case.
  *
- * If you run tests manually, just make sure to ignore the first run after the calendar
- * provider has been accessed the first time.
+ * So this rule is needed to allow tests which need the calendar provider to succeed even when the calendar provider
+ * is used the very first time (especially in CI tests / a fresh emulator).
  *
- * See [at.bitfire.davdroid.resource.LocalCalendarTest] for how to use this rule.
+ * See [at.bitfire.davdroid.resource.LocalCalendarTest] for an example of how to use this rule.
  */
 class InitCalendarProviderRule private constructor(): ExternalResource() {
 
@@ -71,13 +68,18 @@ class InitCalendarProviderRule private constructor(): ExternalResource() {
 
     private fun initCalendarProvider(provider: ContentProviderClient) {
         val account = Account("LocalCalendarTest", CalendarContract.ACCOUNT_TYPE_LOCAL)
-        val uri = AndroidCalendar.create(account, provider, ContentValues())
-        val calendar = AndroidCalendar.findByID(
-            account,
-            provider,
-            LocalCalendar.Factory,
-            ContentUris.parseId(uri)
-        )
+
+        // Sometimes, the calendar provider returns an ID for the created calendar, but then fails to find it.
+        var calendarOrNull: LocalCalendar? = null
+        for (i in 0..50) {
+            calendarOrNull = createAndVerifyCalendar(account, provider)
+            if (calendarOrNull != null)
+                break
+            else
+                Thread.sleep(100)
+        }
+        val calendar = calendarOrNull ?: throw IllegalStateException("Couldn't create calendar")
+
         try {
             // single event init
             val normalEvent = Event().apply {
@@ -98,7 +100,23 @@ class InitCalendarProviderRule private constructor(): ExternalResource() {
             localRecurringEvent.add()
             LocalEvent.numInstances(provider, account, localRecurringEvent.id!!)
         } finally {
-            calendar.deleteCollection()
+            calendar.delete()
+        }
+    }
+
+    private fun createAndVerifyCalendar(account: Account, provider: ContentProviderClient): LocalCalendar? {
+        val uri = AndroidCalendar.create(account, provider, ContentValues())
+
+        return try {
+            AndroidCalendar.findByID(
+                account,
+                provider,
+                LocalCalendar.Factory,
+                ContentUris.parseId(uri)
+            )
+        } catch (e: Exception) {
+            logger.warning("Couldn't find calendar after creation: $e")
+            null
         }
     }
 

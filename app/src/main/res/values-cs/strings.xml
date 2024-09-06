@@ -96,7 +96,6 @@
   <string name="about_translations">Překlady</string>
   <string name="about_libraries">Knihovny</string>
   <string name="about_version">Verze %1$s (%2$d)</string>
-  <string name="about_build_date">Sestaveno %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) a přispěvatelé</string>
   <string name="about_license_info_no_warranty">Na tento program nejsou poskytovány ŽÁDNÉ ZÁRUKY. Jedná se o svobodný software a jeho šíření dál je vítáno, ovšem za podmínky, že stejné svobody zůstanou zachovány i všem dalším příjemcům.</string>
   <!--global settings-->

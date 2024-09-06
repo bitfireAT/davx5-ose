@@ -95,7 +95,6 @@
   <string name="about_translations">თარგმანი</string>
   <string name="about_libraries">ბიბლიოთეკები</string>
   <string name="about_version">ვერსია %1$s (%2$d)</string>
-  <string name="about_build_date">კომპილირებულია %s-ს</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) და მონაწილეები</string>
   <string name="about_license_info_no_warranty">ამ პროგრამას არ აქვს არანაირი გარანტია. იგი არის უფასო პროგრამული უზრუნველყოფა, ხოლო თქვენ შეგეძლეიათ იგი გაავრცელოთ გარკვეული პირობების გათვალისწინებით.</string>
   <!--global settings-->
