@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId = "at.bitfire.davdroid"
 
-        versionCode = 404020004
-        versionName = "4.4.2"
+        versionCode = 404030000
+        versionName = "4.4.3-alpha.1"
 
         buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
 
@@ -88,6 +88,9 @@ android {
 
     lint {
         disable += arrayOf("GoogleAppIndexingWarning", "ImpliedQuantity", "MissingQuantity", "MissingTranslation", "ExtraTranslation", "RtlEnabled", "RtlHardcoded", "Typos", "NullSafeMutableLiveData")
+        // TODO: Remove on the next Compose release, should be fixed
+        // Maybe related to https://issuetracker.google.com/issues/298483892
+        disable += "CoroutineCreationDuringComposition"
     }
 
     packaging {
