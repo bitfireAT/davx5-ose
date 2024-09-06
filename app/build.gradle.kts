@@ -11,20 +11,6 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-fun runCommand(vararg command: String): String {
-    val process = ProcessBuilder(*command)
-        .directory(rootDir)
-        .redirectErrorStream(true)
-        .start()
-    val reader = process.inputStream.bufferedReader()
-    val builder = StringBuilder()
-    var line: String?
-    while (reader.readLine().also { line = it } != null) {
-        builder.appendLine(line)
-    }
-    return builder.toString()
-}
-
 // Android configuration
 android {
     compileSdk = 34
@@ -34,9 +20,6 @@ android {
 
         versionCode = 404030000
         versionName = "4.4.3-alpha.1"
-
-        val buildTime = runCommand("git", "log", "-1", "--pretty=%ct").trim()
-        buildConfigField("long", "buildTime", "${buildTime}000L")
 
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 

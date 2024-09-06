@@ -22,6 +22,21 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import java.io.File
+import java.net.InetSocketAddress
+import java.net.Proxy
+import java.net.Socket
+import java.security.KeyStore
+import java.security.Principal
+import java.util.Locale
+import java.util.concurrent.TimeUnit
+import java.util.logging.Level
+import java.util.logging.Logger
+import javax.net.ssl.KeyManager
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509ExtendedKeyManager
+import javax.net.ssl.X509TrustManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
@@ -36,23 +51,6 @@ import okhttp3.Response
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
-import java.io.File
-import java.net.InetSocketAddress
-import java.net.Proxy
-import java.net.Socket
-import java.security.KeyStore
-import java.security.Principal
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.concurrent.TimeUnit
-import java.util.logging.Level
-import java.util.logging.Logger
-import javax.net.ssl.KeyManager
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManagerFactory
-import javax.net.ssl.X509ExtendedKeyManager
-import javax.net.ssl.X509TrustManager
 
 class HttpClient @AssistedInject constructor(
     @Assisted val okHttpClient: OkHttpClient,
@@ -319,10 +317,7 @@ class HttpClient @AssistedInject constructor(
 
     object UserAgentInterceptor: Interceptor {
 
-        // use Locale.ROOT because numbers may be encoded as non-ASCII characters in other locales
-        private val userAgentDateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.ROOT)
-        private val userAgentDate = userAgentDateFormat.format(Date(BuildConfig.buildTime))
-        val userAgent = "DAVx5/${BuildConfig.VERSION_NAME} ($userAgentDate; dav4jvm; " +
+        val userAgent = "DAVx5/${BuildConfig.VERSION_NAME} (dav4jvm; " +
                 "okhttp/${OkHttp.VERSION}) Android/${Build.VERSION.RELEASE}"
 
         init {
