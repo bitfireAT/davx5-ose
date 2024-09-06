@@ -91,7 +91,6 @@
   <string name="about_translations">Преводи</string>
   <string name="about_libraries">Библиотеки</string>
   <string name="about_version">Издание %1$s (%2$d)</string>
-  <string name="about_build_date">Компилирано на %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) и сътрудници</string>
   <string name="about_license_info_no_warranty">Тази програма се предлага с АБСОЛЮТНО НИКАКВА ГАРАНЦИЯ. Тя е свободен софтуер и можете да я разпространявате при определени условия.</string>
   <!--global settings-->

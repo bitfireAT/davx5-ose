@@ -85,7 +85,6 @@
   <string name="about_translations">Traduzioni</string>
   <string name="about_libraries">Librerie</string>
   <string name="about_version">Versione %1$s (%2$d)</string>
-  <string name="about_build_date">Compilato su %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) e contibutori</string>
   <string name="about_license_info_no_warranty">Il programma è distribuito SENZA ALCUNA GARANZIA. È software libero e può essere redistribuito sotto alcune condizioni.</string>
   <!--global settings-->
