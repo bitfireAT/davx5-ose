@@ -25,6 +25,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.M3ColorScheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -56,48 +58,51 @@ fun IntroScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) { pages[it].ComposePage() }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(90.dp)
-                .background(MaterialTheme.colorScheme.primary)
-        ) {
-            PositionIndicator(
-                index = pagerState.currentPage,
-                max = pages.size,
+    Scaffold { paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(horizontal = 128.dp)
-                    .align(Alignment.Center)
-                    .fillMaxWidth(),
-                selectedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
-                unselectedIndicatorColor = MaterialTheme.colorScheme.tertiary,
-                indicatorSize = 15f
-            )
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) { pages[it].ComposePage() }
 
-            ButtonWithIcon(
-                icon = if (pagerState.currentPage + 1 == pagerState.pageCount) {
-                    Icons.Default.Check
-                } else {
-                    Icons.AutoMirrored.Default.ArrowForward
-                },
-                contentDescription = stringResource(R.string.intro_next),
+            Box(
                 modifier = Modifier
-                    .padding(end = 16.dp)
-                    .align(Alignment.CenterEnd)
+                    .fillMaxWidth()
+                    .height(90.dp)
+                    .background(M3ColorScheme.primaryLight)
             ) {
-                if (pagerState.currentPage + 1 == pagerState.pageCount) {
-                    onDonePressed()
-                } else scope.launch {
-                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                PositionIndicator(
+                    index = pagerState.currentPage,
+                    max = pages.size,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(horizontal = 128.dp)
+                        .align(Alignment.Center)
+                        .fillMaxWidth(),
+                    selectedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
+                    unselectedIndicatorColor = MaterialTheme.colorScheme.tertiary,
+                    indicatorSize = 15f
+                )
+
+                ButtonWithIcon(
+                    icon = if (pagerState.currentPage + 1 == pagerState.pageCount) {
+                        Icons.Default.Check
+                    } else {
+                        Icons.AutoMirrored.Default.ArrowForward
+                    },
+                    contentDescription = stringResource(R.string.intro_next),
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .align(Alignment.CenterEnd),
+                    color = M3ColorScheme.tertiaryLight
+                ) {
+                    if (pagerState.currentPage + 1 == pagerState.pageCount) {
+                        onDonePressed()
+                    } else scope.launch {
+                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                    }
                 }
             }
         }
@@ -219,11 +224,12 @@ fun ButtonWithIcon(
     modifier: Modifier = Modifier,
     size: Dp = 56.dp,
     color: Color = MaterialTheme.colorScheme.tertiary,
+    contentColor: Color = contentColorFor(backgroundColor = color),
     onClick: () -> Unit
 ) {
     Surface(
         color = color,
-        contentColor = contentColorFor(backgroundColor = color),
+        contentColor = contentColor,
         modifier = modifier
             .size(size)
             .aspectRatio(1f),
