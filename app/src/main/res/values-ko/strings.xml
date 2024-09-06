@@ -82,7 +82,6 @@
   <string name="about_translations">번역</string>
   <string name="about_libraries">라이브러리</string>
   <string name="about_version">버전 %1$s (%2$d)</string>
-  <string name="about_build_date">%s에서 컴파일</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) and contributors</string>
   <string name="about_license_info_no_warranty">이 프로그램은 보증 없이 제공됩니다. 그것은 무료 소프트웨어이며, 특정한 조건 하에서 재배포하는 것을 환영합니다.</string>
   <!--global settings-->

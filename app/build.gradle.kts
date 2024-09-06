@@ -21,8 +21,6 @@ android {
         versionCode = 404030000
         versionName = "4.4.3-alpha.1"
 
-        buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
-
         setProperty("archivesBaseName", "davx5-ose-$versionName")
 
         minSdk = 24        // Android 7.0
@@ -119,6 +117,10 @@ android {
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+aboutLibraries {
+    excludeFields = arrayOf("generated")
 }
 
 configurations {

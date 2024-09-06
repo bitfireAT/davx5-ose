@@ -73,7 +73,6 @@
   <string name="about_translations">Μεταφράσεις</string>
   <string name="about_libraries">Βιβλιοθήκες</string>
   <string name="about_version">Έκδοση %1$s (%2$d)</string>
-  <string name="about_build_date">Μεταγλωττισμένο σε %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) και συνεργάτες</string>
   <string name="about_license_info_no_warranty">Αυτό το πρόγραμμα συνοδεύεται χωρις ΚΑΜΙΑ ΕΓΓΥΗΣΗ. Είναι ελεύθερο λογισμικό και είστε ευπρόσδεκτοι να το αναδιανείμετε υπό ορισμένες προϋποθέσεις.</string>
   <!--global settings-->

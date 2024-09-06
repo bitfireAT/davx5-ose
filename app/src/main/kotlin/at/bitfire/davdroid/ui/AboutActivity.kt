@@ -284,14 +284,6 @@ fun AboutApp(licenseInfoProvider: AboutActivity.AppLicenseInfoProvider? = null) 
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
-        val buildTime = LocalDateTime.ofEpochSecond(BuildConfig.buildTime / 1000, 0, ZoneOffset.UTC)
-        val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
-        Text(
-            stringResource(R.string.about_build_date, dateFormatter.format(buildTime)),
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
 
         Text(
             stringResource(R.string.about_copyright),
