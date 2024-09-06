@@ -31,7 +31,7 @@ jobs:
   test:
     needs: compile
     if: ${{ always() }}     # even if compile didn't run (because not on main branch)
-    name: Tests without emulator
+    name: Lint and unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,7 +52,7 @@ jobs:
   test_on_emulator:
     needs: compile
     if: ${{ always() }}     # even if compile didn't run (because not on main branch)
-    name: Tests with emulator
+    name: Instrumented tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
