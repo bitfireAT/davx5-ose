@@ -55,9 +55,8 @@ open class LocalAddressBook @Inject constructor(
         private val logger
             get() = Logger.getGlobal()
 
-        const val USER_DATA_MAIN_ACCOUNT_TYPE = "real_account_type"
-        const val USER_DATA_MAIN_ACCOUNT_NAME = "real_account_name"
         const val USER_DATA_URL = "url"
+        const val USER_DATA_COLLECTION_ID = "collection_id"
         const val USER_DATA_READ_ONLY = "read_only"
 
         /**
@@ -65,13 +64,12 @@ open class LocalAddressBook @Inject constructor(
          *
          * @param context        app context to resolve string resources
          * @param provider       contacts provider client
-         * @param mainAccount    main account this address book (account) belongs to
          * @param info           collection where to take the name and settings from
          * @param forceReadOnly  `true`: set the address book to "force read-only"; `false`: determine read-only flag from [info]
          */
-        fun create(context: Context, provider: ContentProviderClient, mainAccount: Account, info: Collection, forceReadOnly: Boolean): LocalAddressBook {
+        fun create(context: Context, provider: ContentProviderClient, info: Collection, forceReadOnly: Boolean): LocalAddressBook {
             val account = Account(accountName(info), context.getString(R.string.account_type_address_book))
-            val userData = initialUserData(mainAccount, info.url.toString())
+            val userData = initialUserData(info.url.toString(), info.id.toString())
             logger.log(Level.INFO, "Creating local address book $account", userData)
             if (!AccountUtils.createAccount(context, account, userData))
                 throw IllegalStateException("Couldn't create address book account")
@@ -122,10 +120,9 @@ open class LocalAddressBook @Inject constructor(
             return sb.toString()
         }
 
-        fun initialUserData(mainAccount: Account, url: String): Bundle {
+        private fun initialUserData(url: String, collectionId: String): Bundle {
             val bundle = Bundle(3)
-            bundle.putString(USER_DATA_MAIN_ACCOUNT_NAME, mainAccount.name)
-            bundle.putString(USER_DATA_MAIN_ACCOUNT_TYPE, mainAccount.type)
+            bundle.putString(USER_DATA_COLLECTION_ID, collectionId)
             bundle.putString(USER_DATA_URL, url)
             return bundle
         }

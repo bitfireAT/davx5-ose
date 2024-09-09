@@ -389,10 +389,7 @@ class DebugInfoModel @AssistedInject constructor(
                 val iter = addressBookAccounts.iterator()
                 while (iter.hasNext()) {
                     val addressBookAccount = iter.next()
-                    val mainAccount = Account(
-                        accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_MAIN_ACCOUNT_NAME),
-                        accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_MAIN_ACCOUNT_TYPE)
-                    )
+                    val mainAccount = accountRepository.mainAccount(addressBookAccount)
                     if (mainAccount == account) {
                         dumpAddressBookAccount(addressBookAccount, accountManager, writer)
                         iter.remove()

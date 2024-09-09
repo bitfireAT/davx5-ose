@@ -12,6 +12,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Bundle
 import android.os.Parcel
 import android.os.RemoteException
 import android.provider.CalendarContract
@@ -24,7 +25,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_URL
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -408,6 +409,13 @@ class AccountSettingsMigrations @AssistedInject constructor(
             sb.append(" (${mainAccount.name} $hash)")
             return sb.toString()
         }
+        fun initialUserData(mainAccount: Account, url: String): Bundle {
+            val bundle = Bundle(3)
+            bundle.putString("real_account_name", mainAccount.name)
+            bundle.putString("real_account_type", mainAccount.type)
+            bundle.putString(USER_DATA_URL, url)
+            return bundle
+        }
         context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
             val parcel = Parcel.obtain()
             try {
@@ -434,7 +442,7 @@ class AccountSettingsMigrations @AssistedInject constructor(
                         val addressBookAccount = Account(
                             accountName(account, info), context.getString(
                                 R.string.account_type_address_book))
-                        if (!accountManager.addAccountExplicitly(addressBookAccount, null, LocalAddressBook.initialUserData(account, info.url.toString())))
+                        if (!accountManager.addAccountExplicitly(addressBookAccount, null, initialUserData(account, info.url.toString())))
                             throw ContactsStorageException("Couldn't create address book account")
 
                         // move contacts to new address book

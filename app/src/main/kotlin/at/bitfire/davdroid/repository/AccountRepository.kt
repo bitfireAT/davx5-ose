@@ -4,24 +4,19 @@
 
 package at.bitfire.davdroid.repository
 
-import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.ContentResolver
 import android.content.Context
-import android.content.pm.PackageManager
 import android.provider.CalendarContract
-import android.provider.ContactsContract
-import androidx.core.content.ContextCompat
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_MAIN_ACCOUNT_NAME
-import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_MAIN_ACCOUNT_TYPE
+import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -33,7 +28,6 @@ import at.bitfire.davdroid.sync.account.AccountUtils
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
-import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.vcard4android.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -179,7 +173,7 @@ class AccountRepository @Inject constructor(
     fun getAll(): Array<Account> = accountManager.getAccountsByType(accountType)
 
     /**
-     * Finds and returns the main account of the given address book's account (sub-account)
+     * Finds and returns the main account of the given address book's account
      *
      * @param account the address book account to find the main account for
      *
@@ -190,12 +184,13 @@ class AccountRepository @Inject constructor(
     fun mainAccount(account: Account): Account? =
         if (account.type == context.getString(R.string.account_type_address_book)) {
             val manager = AccountManager.get(context)
-            val accountName = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_NAME)
-            val accountType = manager.getUserData(account, USER_DATA_MAIN_ACCOUNT_TYPE)
-            if (accountName != null && accountType != null)
-                Account(accountName, accountType)
-            else
-                null
+            manager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
+                collectionRepository.get(collectionId)?.let { collection ->
+                    serviceRepository.get(collection.serviceId)?.let { service ->
+                        Account(service.accountName, accountType)
+                    }
+                }
+            }
         } else
             throw IllegalArgumentException("$account is not an address book account")
 
@@ -275,25 +270,6 @@ class AccountRepository @Inject constructor(
 
             // update account name references in database
             serviceRepository.renameAccount(oldName, newName)
-
-            // update main account of address book accounts
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
-                try {
-                    context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
-                        for (addrBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-                            val mainAccount = mainAccount(addrBookAccount)
-                            if (oldAccount == mainAccount) {
-                                AccountManager.get(context).let { accountManager ->
-                                    accountManager.setAndVerifyUserData(mainAccount, USER_DATA_MAIN_ACCOUNT_NAME, newName)
-                                    accountManager.setAndVerifyUserData(mainAccount, USER_DATA_MAIN_ACCOUNT_TYPE, oldAccount.type)
-                                }
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    logger.log(Level.SEVERE, "Couldn't update address book accounts", e)
-                    // Couldn't update address book accounts, but this is not a fatal error (will be fixed at next sync)
-                }
 
             // calendar provider doesn't allow changing account_name of Events
             // (all events will have to be downloaded again at next sync)
