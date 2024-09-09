@@ -19,7 +19,7 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
-import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.exception.DavException
 import at.bitfire.dav4jvm.property.push.NS_WEBDAV_PUSH
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
@@ -145,7 +145,12 @@ class PushRegistrationWorker @AssistedInject constructor(
                 logger.info("Registering push for ${collection.url}")
                 serviceRepository.get(collection.serviceId)?.let { service ->
                     val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
-                    registerPushSubscription(collection, account, endpoint)
+                    try {
+                        registerPushSubscription(collection, account, endpoint)
+                    } catch (e: DavException) {
+                        // catch possible per-collection exception so that all collections can be processed
+                        logger.log(Level.WARNING, "Couldn't register push for ${collection.url}", e)
+                    }
                 }
             }
         else
@@ -166,7 +171,7 @@ class PushRegistrationWorker @AssistedInject constructor(
                         DavResource(httpClient, url).delete {
                             // deleted
                         }
-                    } catch (e: HttpException) {
+                    } catch (e: DavException) {
                         logger.log(Level.WARNING, "Couldn't unregister push for ${collection.url}", e)
                     }
 
