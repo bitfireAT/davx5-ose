@@ -37,6 +37,8 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.StringWriter
 import java.util.concurrent.TimeUnit
@@ -48,7 +50,8 @@ import javax.inject.Inject
  * To be run as soon as a collection that supports push is changed (selected for sync status
  * changes, or collection is created, deleted, etc).
  *
- * TODO Should run periodically, too. Not required for a first demonstration version.
+ * TODO Should run periodically, too (to refresh registrations that are about to expire).
+ * Not required for a first demonstration version.
  */
 @Suppress("unused")
 @HiltWorker
@@ -85,7 +88,16 @@ class PushRegistrationWorker @AssistedInject constructor(
     }
 
 
-    private suspend fun requestPushRegistration(collection: Collection, account: Account, endpoint: String) {
+    override suspend fun doWork(): Result {
+        logger.info("Running push registration worker")
+
+        registerSyncable()
+        unregisterNotSyncable()
+
+        return Result.success()
+    }
+
+    private suspend fun registerPushSubscription(collection: Collection, account: Account, endpoint: String) {
         val settings = accountSettingsFactory.forAccount(account)
 
         runInterruptible {
@@ -123,23 +135,50 @@ class PushRegistrationWorker @AssistedInject constructor(
         }
     }
 
-    override suspend fun doWork(): Result {
-        logger.info("Running push registration worker")
-
+    private suspend fun registerSyncable() {
         val endpoint = preferenceRepository.unifiedPushEndpoint()
 
+        // register push subscription for syncable collections
         if (endpoint != null)
-            for (collection in collectionRepository.getSyncableAndPushCapable()) {
+            for (collection in collectionRepository.getPushCapableAndSyncable()) {
                 logger.info("Registering push for ${collection.url}")
-                val service = serviceRepository.get(collection.serviceId) ?: continue
-                val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
-
-                requestPushRegistration(collection, account, endpoint)
+                serviceRepository.get(collection.serviceId)?.let { service ->
+                    val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
+                    registerPushSubscription(collection, account, endpoint)
+                }
             }
         else
             logger.info("No UnifiedPush endpoint configured")
+    }
 
-        return Result.success()
+    private suspend fun unregisterPushSubscription(collection: Collection, account: Account, url: HttpUrl) {
+        val settings = accountSettingsFactory.forAccount(account)
+
+        runInterruptible {
+            HttpClient.Builder(applicationContext, settings)
+                .setForeground(true)
+                .build()
+                .use { client ->
+                    val httpClient = client.okHttpClient
+
+                    DavResource(httpClient, url).delete { response ->
+                        if (!response.isSuccessful)
+                            logger.warning("Couldn't unregister push for ${collection.url}: $response")
+                    }
+                }
+        }
+    }
+
+    private suspend fun unregisterNotSyncable() {
+        for (collection in collectionRepository.getPushRegisteredAndNotSyncable()) {
+            logger.info("Unregistering push for ${collection.url}")
+            collection.pushSubscription?.toHttpUrlOrNull()?.let { url ->
+                serviceRepository.get(collection.serviceId)?.let { service ->
+                    val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
+                    unregisterPushSubscription(collection, account, url)
+                }
+            }
+        }
     }
 
 

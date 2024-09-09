@@ -72,6 +72,9 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE sync AND supportsWebPush AND pushTopic IS NOT NULL")
     suspend fun getPushCapableSyncCollections(): List<Collection>
 
+    @Query("SELECT * FROM collection WHERE pushSubscription IS NOT NULL AND NOT sync")
+    suspend fun getPushRegisteredAndNotSyncable(): List<Collection>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(collection: Collection): Long
 
