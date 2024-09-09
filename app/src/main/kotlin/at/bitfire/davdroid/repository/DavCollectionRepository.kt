@@ -246,7 +246,7 @@ class DavCollectionRepository @Inject constructor(
         notifyOnChangeListeners()
     }
 
-    suspend fun updatePushSubscription(id: Long, subscriptionUrl: String) {
+    fun updatePushSubscription(id: Long, subscriptionUrl: String?) {
         dao.updatePushSubscription(id, subscriptionUrl)
     }
 

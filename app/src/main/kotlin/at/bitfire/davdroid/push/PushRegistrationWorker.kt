@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
+import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.push.NS_WEBDAV_PUSH
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
@@ -35,13 +36,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.StringWriter
 import java.util.concurrent.TimeUnit
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -124,7 +125,7 @@ class PushRegistrationWorker @AssistedInject constructor(
 
                     val xml = writer.toString().toRequestBody(DavResource.MIME_XML)
                     DavCollection(httpClient, collection.url).post(xml) { response ->
-                        if (response.isSuccessful) runBlocking {
+                        if (response.isSuccessful) {
                             response.header("Location")?.let  { subscriptionUrl ->
                                 collectionRepository.updatePushSubscription(collection.id, subscriptionUrl)
                             }
@@ -161,10 +162,16 @@ class PushRegistrationWorker @AssistedInject constructor(
                 .use { client ->
                     val httpClient = client.okHttpClient
 
-                    DavResource(httpClient, url).delete { response ->
-                        if (!response.isSuccessful)
-                            logger.warning("Couldn't unregister push for ${collection.url}: $response")
+                    try {
+                        DavResource(httpClient, url).delete {
+                            // deleted
+                        }
+                    } catch (e: HttpException) {
+                        logger.log(Level.WARNING, "Couldn't unregister push for ${collection.url}", e)
                     }
+
+                    // remove registration URL from DB in any case
+                    collectionRepository.updatePushSubscription(collection.id, null)
                 }
         }
     }
