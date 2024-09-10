@@ -72,6 +72,9 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE sync AND supportsWebPush AND pushTopic IS NOT NULL")
     suspend fun getPushCapableSyncCollections(): List<Collection>
 
+    @Query("SELECT * FROM collection WHERE pushSubscription IS NOT NULL AND NOT sync")
+    suspend fun getPushRegisteredAndNotSyncable(): List<Collection>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(collection: Collection): Long
 
@@ -85,7 +88,7 @@ interface CollectionDao {
     suspend fun updateForceReadOnly(id: Long, forceReadOnly: Boolean)
 
     @Query("UPDATE collection SET pushSubscription=:pushSubscription, pushSubscriptionCreated=:updatedAt WHERE id=:id")
-    suspend fun updatePushSubscription(id: Long, pushSubscription: String, updatedAt: Long = System.currentTimeMillis())
+    fun updatePushSubscription(id: Long, pushSubscription: String?, updatedAt: Long = System.currentTimeMillis())
 
     @Query("UPDATE collection SET sync=:sync WHERE id=:id")
     suspend fun updateSync(id: Long, sync: Boolean)
