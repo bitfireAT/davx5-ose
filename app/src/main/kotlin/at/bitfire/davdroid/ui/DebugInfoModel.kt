@@ -56,9 +56,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.dmfs.tasks.contract.TaskContract
 import java.io.File
 import java.io.IOException
 import java.io.Writer
@@ -67,6 +64,9 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.dmfs.tasks.contract.TaskContract
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
@@ -239,9 +239,9 @@ class DebugInfoModel @AssistedInject constructor(
                         val info = pm.getPackageInfo(packageName, 0)
                         val appInfo = info.applicationInfo
                         val notes = mutableListOf<String>()
-                        if (!appInfo.enabled)
+                        if (appInfo?.enabled == false)
                             notes += "disabled"
-                        if (appInfo.flags.and(ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0)
+                        if (appInfo?.flags?.and(ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0)
                             notes += "<em>on external storage</em>"
                         table.addLine(
                             info.packageName, info.versionName, PackageInfoCompat.getLongVersionCode(info),
@@ -366,7 +366,7 @@ class DebugInfoModel @AssistedInject constructor(
             // permissions
             writer.append("Permissions:\n")
             val ownPkgInfo = context.packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, PackageManager.GET_PERMISSIONS)
-            for (permission in ownPkgInfo.requestedPermissions) {
+            for (permission in ownPkgInfo.requestedPermissions.orEmpty()) {
                 val shortPermission = permission.removePrefix("android.permission.")
                 writer.append(" - $shortPermission: ")
                     .append(

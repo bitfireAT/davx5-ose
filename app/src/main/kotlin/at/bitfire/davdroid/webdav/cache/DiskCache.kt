@@ -95,7 +95,7 @@ class DiskCache(
         files.sortBy { file -> file.lastModified() }    // sort by modification time (ascending)
 
         while (files.sumOf { file -> file.length() } > maxSize) {
-            val file = files.removeFirst()      // take first (= oldest) file
+            val file = files.removeAt(0)      // take first (= oldest) file
             logger.finer("Removing $file")
             file.delete()
             removed++
