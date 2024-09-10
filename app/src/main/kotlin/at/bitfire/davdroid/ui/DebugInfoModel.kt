@@ -366,7 +366,7 @@ class DebugInfoModel @AssistedInject constructor(
             // permissions
             writer.append("Permissions:\n")
             val ownPkgInfo = context.packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, PackageManager.GET_PERMISSIONS)
-            for (permission in ownPkgInfo.requestedPermissions ?: emptyArray()) {
+            for (permission in ownPkgInfo.requestedPermissions.orEmpty()) {
                 val shortPermission = permission.removePrefix("android.permission.")
                 writer.append(" - $shortPermission: ")
                     .append(
