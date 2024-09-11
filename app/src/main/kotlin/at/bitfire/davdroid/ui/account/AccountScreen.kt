@@ -28,7 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -505,7 +505,7 @@ fun AccountScreen_Actions(
         DropdownMenuItem(
             leadingIcon = {
                 CompositionLocalProvider(
-                    LocalMinimumInteractiveComponentEnforcement provides false
+                    LocalMinimumInteractiveComponentSize provides Dp.Unspecified
                 ) {
                     Checkbox(
                         checked = showOnlyPersonal.onlyPersonal,
