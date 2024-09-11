@@ -40,7 +40,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,6 +70,7 @@ import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.widget.ClickableTextWithLink
 import at.bitfire.davdroid.util.DavUtils
+import kotlinx.coroutines.delay
 import okhttp3.HttpUrl
 
 @Composable
@@ -108,11 +109,11 @@ fun WebdavMountsScreen(
 ) {
     val uriHandler = LocalUriHandler.current
 
-    val refreshState = rememberPullToRefreshState()
-    LaunchedEffect(refreshState.isRefreshing) {
-        if (refreshState.isRefreshing) {
-            onRefreshQuota()
-            refreshState.endRefresh()
+    var isRefreshing by remember { mutableStateOf(false) }
+    LaunchedEffect(isRefreshing) {
+        if (isRefreshing) {
+            delay(100)
+            isRefreshing = false
         }
     }
 
@@ -155,10 +156,11 @@ fun WebdavMountsScreen(
                     contentDescription = stringResource(R.string.webdav_add_mount_add)
                 )
             }
-        },
-        modifier = Modifier.nestedScroll(refreshState.nestedScrollConnection)
+        }
     ) { paddingValues ->
-        Box(
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { isRefreshing = true; onRefreshQuota() },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -190,11 +192,6 @@ fun WebdavMountsScreen(
                     }
                 }
             }
-
-            PullToRefreshContainer(
-                state = refreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
     }
 }

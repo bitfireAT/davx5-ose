@@ -43,15 +43,17 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -73,6 +75,7 @@ import at.bitfire.davdroid.ui.composable.ProgressBar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -140,13 +143,11 @@ fun AccountsScreen(
         }
     }
 
-    val refreshState = rememberPullToRefreshState(
-        enabled = { showSyncAll }
-    )
-    LaunchedEffect(refreshState.isRefreshing) {
-        if (refreshState.isRefreshing) {
-            onSyncAll()
-            refreshState.endRefresh()
+    var isRefreshing by remember { mutableStateOf(false) }
+    LaunchedEffect(isRefreshing) {
+        if (isRefreshing) {
+            delay(100)
+            isRefreshing = false
         }
     }
 
@@ -225,11 +226,14 @@ fun AccountsScreen(
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) }
             ) { padding ->
-                Box(Modifier.padding(padding)) {
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = { isRefreshing = true; onSyncAll() },
+                    modifier = Modifier.padding(padding)
+                ) {
                     Box(
                         Modifier
                             .fillMaxSize()
-                            .nestedScroll(refreshState.nestedScrollConnection)
                             .verticalScroll(rememberScrollState())
                     ) {
                         // background image
@@ -293,12 +297,6 @@ fun AccountsScreen(
                                     .padding(8.dp)
                             )
                         }
-
-                        // indicate when the user pulls down
-                        PullToRefreshContainer(
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            state = refreshState
-                        )
                     }
                 }
             }
