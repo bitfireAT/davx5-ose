@@ -3,7 +3,7 @@
 [versions]
 android-agp = "8.6.0"
 android-desugaring = "2.1.2"
-androidx-activityCompose = "1.9.1"
+androidx-activityCompose = "1.9.2"
 androidx-appcompat = "1.7.0"
 androidx-arch = "2.2.0"
 androidx-browser = "1.8.0"
