@@ -109,7 +109,7 @@ fun WebdavMountsScreen(
     var isRefreshing by remember { mutableStateOf(false) }
     LaunchedEffect(isRefreshing) {
         if (isRefreshing) {
-            delay(100)
+            delay(300)
             isRefreshing = false
         }
     }
