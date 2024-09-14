@@ -56,6 +56,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.dmfs.tasks.contract.TaskContract
 import java.io.File
 import java.io.IOException
 import java.io.Writer
@@ -64,9 +67,6 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.dmfs.tasks.contract.TaskContract
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.vcard4android.Utils.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
@@ -379,25 +379,14 @@ class DebugInfoModel @AssistedInject constructor(
             }
             writer.append('\n')
 
-            // accounts (grouped by main account)
+            // accounts
             writer.append("\nACCOUNTS\n\n")
             val accountManager = AccountManager.get(context)
-            val addressBookAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).toMutableList()
-            for (account in accountRepository.getAll()) {
+            for (account in accountRepository.getAll())
                 dumpMainAccount(account, writer)
-
-                val iter = addressBookAccounts.iterator()
-                while (iter.hasNext()) {
-                    val addressBookAccount = iter.next()
-                    val mainAccount = accountRepository.mainAccount(addressBookAccount)
-                    if (mainAccount == account) {
-                        dumpAddressBookAccount(addressBookAccount, accountManager, writer)
-                        iter.remove()
-                    }
-                }
-            }
+            val addressBookAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).toMutableList()
             if (addressBookAccounts.isNotEmpty()) {
-                writer.append("Address book accounts without main account:\n")
+                writer.append("Address book accounts:\n")
                 for (account in addressBookAccounts)
                     dumpAddressBookAccount(account, accountManager, writer)
             }
