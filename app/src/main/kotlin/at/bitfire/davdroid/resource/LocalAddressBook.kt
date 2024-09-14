@@ -42,8 +42,10 @@ import javax.inject.Inject
 /**
  * A local address book. Requires an own Android account, because Android manages contacts per
  * account and there is no such thing as "address books". So, DAVx5 creates a "DAVx5
- * address book" account for every CardDAV address book. These accounts are bound to a
- * DAVx5 main account.
+ * address book" account for every CardDAV address book.
+ *
+ * @param account Address book account storing the actual android address book
+ * @param provider Content provider needed to access and modify the address book.
  */
 open class LocalAddressBook @Inject constructor(
     private val context: Context,
