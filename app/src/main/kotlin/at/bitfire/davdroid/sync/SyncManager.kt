@@ -41,6 +41,8 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.repository.AccountRepository
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCollection
@@ -162,6 +164,12 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     @Inject
     lateinit var syncStatsRepository: DavSyncStatsRepository
 
+    @Inject
+    lateinit var serviceRepository: DavServiceRepository
+
+    @Inject
+    lateinit var collectionRepository: DavCollectionRepository
+
 
     init {
         // required for ServiceLoader -> ical4j -> ical4android
@@ -170,7 +178,11 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
 
     private val mainAccount by lazy {
         if (localCollection is LocalAddressBook)
-            accountRepository.mainAccount(localCollection.account)
+            collectionRepository.get(collection.id)?.let { collection ->
+                serviceRepository.get(collection.serviceId)?.let { service ->
+                    Account(service.accountName, context.getString(R.string.account_type))
+                }
+            }
         else
             account
     }
