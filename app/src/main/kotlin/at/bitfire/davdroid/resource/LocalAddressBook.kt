@@ -32,7 +32,6 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import java.io.ByteArrayOutputStream
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -108,8 +107,6 @@ open class LocalAddressBook @Inject constructor(
          * @param info The corresponding collection
          */
         fun accountName(info: Collection): String {
-            val baos = ByteArrayOutputStream()
-            baos.write(info.url.hashCode())
             val sb = StringBuilder(info.displayName.let {
                 if (it.isNullOrEmpty())
                     info.url.lastSegment
