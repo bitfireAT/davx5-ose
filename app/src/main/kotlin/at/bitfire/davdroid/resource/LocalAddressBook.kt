@@ -20,6 +20,8 @@ import android.provider.ContactsContract.RawContacts
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.AccountUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -129,9 +131,13 @@ open class LocalAddressBook @Inject constructor(
     @InstallIn(SingletonComponent::class)
     interface LocalAddressBookEntryPoint {
         fun accountSettingsFactory(): AccountSettings.Factory
+        fun collectionRepository(): DavCollectionRepository
+        fun serviceRepository(): DavServiceRepository
     }
     private val entryPoint = EntryPointAccessors.fromApplication(context, LocalAddressBookEntryPoint::class.java)
     private val accountSettingsFactory = entryPoint.accountSettingsFactory()
+    private val collectionRepository = entryPoint.collectionRepository()
+    private val serviceRepository = entryPoint.serviceRepository()
 
 
     override val tag: String
@@ -147,7 +153,17 @@ open class LocalAddressBook @Inject constructor(
      * but if it is enabled, [findDirty] will find dirty [LocalContact]s and [LocalGroup]s.
      */
     open val groupMethod: GroupMethod by lazy {
-        val accountSettings = accountSettingsFactory.forAccount(account)
+        val manager = AccountManager.get(context)
+        val mainAccount = manager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
+            collectionRepository.get(collectionId)?.let { collection ->
+                serviceRepository.get(collection.serviceId)?.let { service ->
+                    Account(service.accountName, context.getString(R.string.account_type))
+                }
+            }
+        }
+        if (mainAccount == null)
+            throw IllegalArgumentException("Address book account $account does not have a main account")
+        val accountSettings = accountSettingsFactory.forAccount(mainAccount)
         accountSettings.getGroupMethod()
     }
     val includeGroups

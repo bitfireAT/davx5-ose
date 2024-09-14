@@ -13,7 +13,6 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.sync.SyncUtils
 import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -43,11 +42,13 @@ class AccountSettings @AssistedInject constructor(
     private val logger: Logger,
     private val migrationsFactory: AccountSettingsMigrations.Factory,
     private val settingsManager: SettingsManager,
-    private val accountRepository: AccountRepository
 ) {
 
     @AssistedFactory
     interface Factory {
+        /**
+         * Only for main (caldav) accounts - not for address book accounts
+         */
         fun forAccount(account: Account): AccountSettings
     }
 
@@ -139,11 +140,8 @@ class AccountSettings @AssistedInject constructor(
 
     val accountManager: AccountManager = AccountManager.get(context)
     val account: Account = when (accountOrAddressBookAccount.type) {
-            context.getString(R.string.account_type_address_book) -> {
-                /* argument is an address book account, which is not a main account. However settings are
-                stored in the main account, so resolve and use the main account instead. */
-                accountRepository.mainAccount(accountOrAddressBookAccount) ?: throw IllegalArgumentException("Main account of $accountOrAddressBookAccount not found")
-            }
+            context.getString(R.string.account_type_address_book) ->
+                throw IllegalArgumentException("$accountOrAddressBookAccount is an address book account, but only main accounts store settings")
 
             context.getString(R.string.account_type),
             "at.bitfire.davdroid.test" /* defined in androidTest/strings/account_type_test */ ->

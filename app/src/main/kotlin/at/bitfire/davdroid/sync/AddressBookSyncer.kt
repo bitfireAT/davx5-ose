@@ -5,13 +5,16 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.SyncResult
 import android.provider.ContactsContract
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.setAndVerifyUserData
@@ -84,6 +87,16 @@ class AddressBookSyncer @AssistedInject constructor(
         )
     }
 
+    /**
+     * Synchronizes an address book
+     *
+     * @param account address book account which stores the address book
+     * @param extras Sync specific instructions. IE [Syncer.SYNC_EXTRAS_FULL_RESYNC]
+     * @param httpClient
+     * @param provider Content provider to access android contacts
+     * @param syncResult Stores hard and soft sync errors
+     * @param collection The database collection associated with this address book
+     */
     private fun syncAddressBook(
         account: Account,
         extras: Array<String>,
@@ -93,7 +106,18 @@ class AddressBookSyncer @AssistedInject constructor(
         collection: Collection
     ) {
         try {
-            val accountSettings = accountSettingsFactory.forAccount(account)
+            val manager = AccountManager.get(context)
+            val mainAccount = manager.getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
+                collectionRepository.get(collectionId)?.let { collection ->
+                    serviceRepository.get(collection.serviceId)?.let { service ->
+                        Account(service.accountName, context.getString(R.string.account_type))
+                    }
+                }
+            }
+            if (mainAccount == null)
+                throw IllegalArgumentException("Main account for address book account missing. Can't sync address book")
+
+            val accountSettings = accountSettingsFactory.forAccount(mainAccount)
             val addressBook = LocalAddressBook(context, account, provider)
 
             // handle group method change

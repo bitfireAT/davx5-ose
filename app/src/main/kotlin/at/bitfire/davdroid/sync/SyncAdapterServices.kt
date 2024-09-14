@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.app.Service
 import android.content.AbstractThreadedSyncAdapter
 import android.content.ContentProviderClient
@@ -18,6 +19,9 @@ import android.provider.ContactsContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,6 +58,8 @@ abstract class SyncAdapterService: Service() {
      */
     class SyncAdapter @Inject constructor(
         private val accountSettingsFactory: AccountSettings.Factory,
+        private val collectionRepository: DavCollectionRepository,
+        private val serviceRepository: DavServiceRepository,
         @ApplicationContext context: Context,
         private val logger: Logger,
         private val syncConditionsFactory: SyncConditions.Factory
@@ -75,7 +81,18 @@ abstract class SyncAdapterService: Service() {
             logger.info("Sync request via sync framework for $account $authority (upload=$upload)")
 
             val accountSettings = try {
-                accountSettingsFactory.forAccount(account)
+               val mainAccount = if (account.type == context.getString(R.string.account_type_address_book)) {
+                   AccountManager.get(context).getUserData(account, USER_DATA_COLLECTION_ID)?.toLongOrNull()?.let { collectionId ->
+                        collectionRepository.get(collectionId)?.let { collection ->
+                            serviceRepository.get(collection.serviceId)?.let { service ->
+                                Account(service.accountName, context.getString(R.string.account_type))
+                            }
+                        }
+                    } ?: throw IllegalArgumentException("Main account for address book account missing. Can't sync address book")
+               } else
+                   account
+
+                accountSettingsFactory.forAccount(mainAccount)
             } catch (e: InvalidAccountException) {
                 logger.log(Level.WARNING, "Account doesn't exist anymore", e)
                 return
